@@ -69,3 +69,5 @@ android/local.properties
 
 # Stray local file
 3000
+auth-endpoint-audit.md
+checkout-payment-audit.md
