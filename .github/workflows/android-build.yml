@@ -1,0 +1,72 @@
+name: android-build
+
+# Continuous installable build — every commit to main must produce a
+# downloadable debug APK for the audit loop (see android/ARCHITECTURE.md).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: android-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle (with dependency caching)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug APK
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew :app:assembleDebug --stacktrace
+
+      - name: Lint (non-blocking — report surfaces as artifact)
+        run: |
+          cd android
+          ./gradlew :app:lintDebug --stacktrace || echo "::warning::Lint reported issues — see lint artifact"
+
+      - name: Collect lint report (on any result)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report-${{ github.sha }}
+          path: android/app/build/reports/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Build info
+        run: |
+          VERSION=$(grep -o 'versionName = "[^"]*"' android/app/build.gradle.kts | cut -d'"' -f2)
+          {
+            echo "app:            Zylod (com.zylod.wholesale.debug)"
+            echo "versionName:    $VERSION"
+            echo "versionCode:    $(grep -o 'versionCode = [0-9]*' android/app/build.gradle.kts | grep -o '[0-9]*')"
+            echo "commit:         $GITHUB_SHA"
+            echo "built from:     https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+            echo "workflow run:   ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > build-info.txt
+          cat build-info.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zylod-debug-apk-${{ github.sha }}
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            build-info.txt
+          if-no-files-found: error
+          retention-days: 30

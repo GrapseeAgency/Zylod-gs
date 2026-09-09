@@ -49,11 +49,17 @@ download/
 upload/
 ids-chunk-*
 all-registered-ids.txt
+.opencode/
 *.png
 !public/**/*.png
 !src/**/*.png
 !android/**/*.png
 !Zylod_Official.svg
+
+# Android signing credentials (never commit)
+android/keystore.properties
+*.jks
+*.keystore
 
 # Android build caches
 android/.gradle/
