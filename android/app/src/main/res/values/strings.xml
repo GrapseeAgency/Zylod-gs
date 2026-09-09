@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Zylod</string>
+    <string name="offline_banner_title">Offline Mode Active</string>
+    <string name="offline_banner_desc">Showing locally cached wholesale catalogue</string>
+    <string name="biometric_prompt_title">Authenticate with Biometrics</string>
+    <string name="biometric_prompt_subtitle">Confirm identity for SafePay transaction</string>
+</resources>

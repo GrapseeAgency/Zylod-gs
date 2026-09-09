@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+}
+
+:root {
+  --radius: 0.625rem;
+  /* Height of the fixed mobile bottom nav (incl. safe area). Fixed bottom
+     CTA bars in pages use this to sit above the nav; 0 on desktop where
+     the nav doesn't exist. */
+  --bottom-nav-h: 0px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --bottom-nav-h: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
+:root {
+  /* B2B Wholesale theme — Red primary (#E53935), warm neutrals */
+  --background: oklch(0.985 0.002 60);
+  --foreground: oklch(0.195 0.02 60);
+  --card: oklch(0.995 0.002 60);
+  --card-foreground: oklch(0.195 0.02 60);
+  --popover: oklch(0.995 0.002 60);
+  --popover-foreground: oklch(0.195 0.02 60);
+  --primary: oklch(0.52 0.22 25);
+  --primary-foreground: oklch(0.98 0.01 60);
+  --secondary: oklch(0.96 0.01 60);
+  --secondary-foreground: oklch(0.25 0.02 60);
+  --muted: oklch(0.955 0.01 60);
+  --muted-foreground: oklch(0.5 0.02 60);
+  --accent: oklch(0.92 0.04 25);
+  --accent-foreground: oklch(0.25 0.02 25);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.91 0.01 60);
+  --input: oklch(0.91 0.01 60);
+  --ring: oklch(0.52 0.22 25);
+  --success: oklch(0.55 0.17 155);
+  --success-foreground: oklch(0.98 0.01 155);
+  --warning: oklch(0.75 0.15 80);
+  --warning-foreground: oklch(0.25 0.05 80);
+  --chart-1: oklch(0.52 0.22 25);
+  --chart-2: oklch(0.6 0.15 80);
+  --chart-3: oklch(0.55 0.12 260);
+  --chart-4: oklch(0.7 0.15 60);
+  --chart-5: oklch(0.65 0.2 30);
+  --sidebar: oklch(0.97 0.01 60);
+  --sidebar-foreground: oklch(0.195 0.02 60);
+  --sidebar-primary: oklch(0.52 0.22 25);
+  --sidebar-primary-foreground: oklch(0.98 0.01 60);
+  --sidebar-accent: oklch(0.92 0.04 25);
+  --sidebar-accent-foreground: oklch(0.25 0.02 25);
+  --sidebar-border: oklch(0.91 0.01 60);
+  --sidebar-ring: oklch(0.52 0.22 25);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   DARK MODE — Hot Deals palette (site-wide standard)
+   Copied from flash-deals-page: #121212 page, #1E1E1E cards,
+   #2E2E2E borders, #C8102E primary red, near-white text.
+   ──────────────────────────────────────────────────────────────── */
+.dark {
+  --background: #121212;
+  --foreground: #F5F5F5;
+  --card: #1E1E1E;
+  --card-foreground: #F5F5F5;
+  --popover: #1E1E1E;
+  --popover-foreground: #F5F5F5;
+  --primary: #C8102E;
+  --primary-foreground: #FFFFFF;
+  --secondary: #262626;
+  --secondary-foreground: #E5E5E5;
+  --muted: #262626;
+  --muted-foreground: #9CA3AF;
+  --accent: #331B20;
+  --accent-foreground: #FF8FA0;
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: #2E2E2E;
+  --input: #2E2E2E;
+  --ring: #C8102E;
+  --success: oklch(0.6 0.2 155);
+  --success-foreground: oklch(0.95 0.01 155);
+  --warning: oklch(0.8 0.15 80);
+  --warning-foreground: oklch(0.25 0.05 80);
+  --chart-1: #C8102E;
+  --chart-2: oklch(0.7 0.15 80);
+  --chart-3: oklch(0.65 0.12 260);
+  --chart-4: oklch(0.75 0.15 60);
+  --chart-5: oklch(0.7 0.2 30);
+  --sidebar: #1E1E1E;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #C8102E;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #331B20;
+  --sidebar-accent-foreground: #FF8FA0;
+  --sidebar-border: #2E2E2E;
+  --sidebar-ring: #C8102E;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  /* Buttons should feel clickable — Tailwind v4 drops the pointer cursor by default */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Custom scrollbar */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+/* ════════════════════════════════════════════════════════════════
+/* ─── New skeleton loading system — shimmer sweep ─── */
+@layer utilities {
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--muted);
+  }
+  .skeleton-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    animation: skeleton-sweep 1.6s infinite;
+  }
+  .dark .skeleton-shimmer::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+  }
+  @keyframes skeleton-sweep {
+    100% { transform: translateX(100%); }
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SITE-WIDE DARK MODE REMAPPING (Hot Deals palette)
+   Many pages hardcode light Tailwind utilities (bg-white,
+   text-slate-900, border-slate-200 …). These rules remap them
+   under `.dark` so the entire site follows the theme without
+   touching every file. Higher specificity (.dark .class) wins.
+   ════════════════════════════════════════════════════════════════ */
+.dark {
+  color-scheme: dark;
+}
+
+@layer utilities {
+  /* ── Page & surface backgrounds ── */
+  .dark .bg-white { background-color: #1E1E1E; }
+  .dark .bg-white\/95, .dark .bg-white\/90, .dark .bg-white\/80 { background-color: rgba(30, 30, 30, 0.95); }
+  .dark .bg-slate-50, .dark .bg-gray-50 { background-color: #161616; }
+  .dark .bg-slate-100, .dark .bg-gray-100 { background-color: #262626; }
+  .dark .bg-slate-200, .dark .bg-gray-200 { background-color: #333333; }
+  .dark .hover\:bg-slate-50:hover, .dark .hover\:bg-gray-50:hover { background-color: #232323; }
+  .dark .hover\:bg-slate-100:hover, .dark .hover\:bg-gray-100:hover { background-color: #2C2C2C; }
+  .dark .active\:bg-gray-100:active { background-color: #2C2C2C; }
+
+  /* ── Text ── */
+  .dark .text-slate-900, .dark .text-gray-900, .dark .text-slate-800, .dark .text-gray-800 { color: #F5F5F5; }
+  .dark .text-slate-700, .dark .text-gray-700 { color: #D4D4D4; }
+  .dark .text-slate-600, .dark .text-gray-600 { color: #B3B3B3; }
+  .dark .text-slate-500, .dark .text-gray-500 { color: #9CA3AF; }
+  .dark .text-slate-400, .dark .text-gray-400 { color: #7A7A7A; }
+  .dark .text-slate-300 { color: #666666; }
+
+  /* ── Borders & dividers ── */
+  .dark .border-slate-100, .dark .border-gray-100, .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) { border-color: #262626; }
+  .dark .border-slate-200, .dark .border-gray-200, .dark .border-slate-300, .dark .border-gray-300,
+  .dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]), .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: #2E2E2E; }
+
+  /* ── Tinted chips / badges ── */
+  .dark .bg-rose-50, .dark .bg-red-50, .dark .bg-rose-50\/60 { background-color: rgba(200, 16, 46, 0.12); }
+  .dark .border-rose-100, .dark .border-rose-200, .dark .border-red-100, .dark .border-red-200 { border-color: rgba(200, 16, 46, 0.35); }
+  .dark .text-rose-600, .dark .text-rose-700, .dark .text-red-600, .dark .text-red-700 { color: #FF6B81; }
+  .dark .bg-green-50, .dark .bg-emerald-50 { background-color: rgba(34, 197, 94, 0.12); }
+  .dark .border-green-100, .dark .border-emerald-100, .dark .border-green-200, .dark .border-emerald-200 { border-color: rgba(34, 197, 94, 0.35); }
+  .dark .text-green-600, .dark .text-green-700, .dark .text-emerald-600, .dark .text-emerald-700 { color: #4ADE80; }
+
+  /* ── Shadows read better on dark surfaces when softened ── */
+  .dark .shadow-xs, .dark .shadow-sm, .dark .shadow-md, .dark .shadow-xl, .dark .shadow-2xs { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); }
+
+  /* ── Skeleton loading follows theme ── */
+  .dark [data-slot="skeleton"] { background-color: #2A2A2A; }
+}
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--muted);
+    border-radius: 3px;
+  }
+}

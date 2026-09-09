@@ -1,0 +1,36 @@
+'use client'
+
+import dynamic from 'next/dynamic'
+
+// Load your existing components independently — each gets its own chunk
+// This avoids the page-loader cascade that causes OOM
+const Header = dynamic(() => import('@/components/layout/header').then(m => ({ default: m.Header })), {
+  ssr: false,
+  loading: () => <div className="h-16 border-b" />,
+})
+
+const HomePage = dynamic(() => import('@/components/pages/home-page'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center min-h-[60vh]">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#C8102E]" />
+    </div>
+  ),
+})
+
+const Footer = dynamic(() => import('@/components/layout/footer').then(m => ({ default: m.Footer })), {
+  ssr: false,
+  loading: () => <div className="h-24 bg-muted" />,
+})
+
+export default function Home() {
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <Header />
+      <main className="flex-1">
+        <HomePage />
+      </main>
+      <Footer />
+    </div>
+  )
+}

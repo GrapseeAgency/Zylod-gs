@@ -1,0 +1,67 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+
+/**
+ * GET /api/app/version
+ * Checks for app updates. Compares client version with latest published release.
+ * Query params: ?platform=android&currentVersionCode=231
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const platform = searchParams.get('platform') || 'android'
+    const currentVersionCode = parseInt(searchParams.get('currentVersionCode') || '200')
+
+    const latest = await db.appVersions.findFirst({
+      where: { platform, isPublished: true },
+      orderBy: { versionCode: 'desc' },
+    })
+
+    const history = await db.appVersions.findMany({
+      where: { platform, isPublished: true },
+      orderBy: { versionCode: 'desc' },
+      take: 5,
+    })
+
+    if (!latest) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          updateAvailable: false,
+          currentVersion: '2.4.0',
+          latestVersion: '2.4.0',
+          isMandatory: false,
+        },
+      })
+    }
+
+    const updateAvailable = latest.versionCode > currentVersionCode
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        updateAvailable,
+        isMandatory: latest.isMandatory,
+        latestVersion: {
+          versionNumber: latest.versionNumber,
+          versionCode: latest.versionCode,
+          changelogEn: latest.changelogEn,
+          changelogBn: latest.changelogBn,
+          apkDownloadUrl: latest.apkDownloadUrl || '/downloads/zylod-b2b-v2.4.0.apk',
+          apkSizeBytes: latest.apkSizeBytes ? Number(latest.apkSizeBytes) : 28500000,
+          releasedAt: latest.releasedAt,
+          releaseNotes: latest.releaseNotes,
+        },
+        history: history.map(h => ({
+          versionNumber: h.versionNumber,
+          versionCode: h.versionCode,
+          changelogEn: h.changelogEn,
+          releasedAt: h.releasedAt,
+        })),
+      },
+    })
+  } catch (error) {
+    console.error('App version check GET error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}

@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js build output
+.next/
+out/
+build/
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# Logs
+*.log
+dev.log
+server.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing
+coverage/
+
+# Misc
+.DS_Store
+*.pem
+.idea/
+.vscode/
+
+# Project artifacts (local only)
+.zylod-desktop-shots/
+tool-results/
+phase0-verification/
+agent-ctx/
+download/
+upload/
+ids-chunk-*
+all-registered-ids.txt
+*.png
+!public/**/*.png
+!src/**/*.png
+!android/**/*.png
+!Zylod_Official.svg
+
+# Android build caches
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+
+# Stray local file
+3000
