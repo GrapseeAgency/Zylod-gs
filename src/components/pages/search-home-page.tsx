@@ -114,7 +114,7 @@ export function SearchHomePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="overflow-x-hidden flex flex-col min-h-screen bg-white">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 pt-4 pb-3 md:px-6">
         <div className="flex items-center gap-3">

@@ -70,7 +70,7 @@ export function SellerAddProductPage() {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, x: 20 }}
+      initial={{ opacity: 0 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       className="min-h-screen bg-gray-50 pb-20 md:pb-8"

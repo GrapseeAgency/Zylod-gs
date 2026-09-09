@@ -13,7 +13,7 @@ export function QrDeeplinkPage() {
   const [targetUrl, setTargetUrl] = useState('https://zylod.com/dl/product/clx8919')
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl space-y-6">
+    <div className="overflow-x-hidden container mx-auto px-4 py-8 max-w-2xl space-y-6">
       <Button variant="ghost" size="sm" onClick={() => navigate('deep-link-handler')} className="gap-2 text-xs font-semibold">
         <ArrowLeft className="h-4 w-4" /> Back to Deep Link Engine
       </Button>
@@ -73,7 +73,7 @@ export function QrDeeplinkPage() {
               onClick={() => alert('Printing high-resolution 300 DPI QR code vector...')}
               className="w-full bg-primary text-primary-foreground text-xs font-bold py-5 rounded-xl gap-2 shadow-sm"
             >
-              <Printer className="h-4 w-4" /> Print Trade Show QR Poster
+              <Printer className="h-4 w-4 shrink-0" /> <span className="whitespace-normal text-left">Print Trade Show QR Poster</span>
             </Button>
             <Button
               variant="outline"

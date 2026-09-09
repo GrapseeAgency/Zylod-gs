@@ -158,7 +158,7 @@ export function SellerRegistrationPage() {
                 {step === 1 && (
                   <motion.div
                     key="step1"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     className="space-y-4"
@@ -228,7 +228,7 @@ export function SellerRegistrationPage() {
                 {step === 2 && (
                   <motion.div
                     key="step2"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     className="space-y-4"
@@ -278,7 +278,7 @@ export function SellerRegistrationPage() {
                 {step === 3 && (
                   <motion.div
                     key="step3"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     className="space-y-4"
@@ -337,7 +337,7 @@ export function SellerRegistrationPage() {
                 {step === 4 && (
                   <motion.div
                     key="step4"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     className="space-y-4"

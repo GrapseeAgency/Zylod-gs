@@ -14,7 +14,7 @@ export function ProductSpecEditorPage() {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, x: 20 }}
+      initial={{ opacity: 0 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       className="min-h-screen bg-gray-50 pb-20 md:pb-8"
@@ -50,7 +50,7 @@ export function ProductSpecEditorPage() {
                      newSpecs[i].key = e.target.value;
                      setSpecs(newSpecs);
                    }}
-                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                   className="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-lg text-sm"
                  />
                  <input 
                    type="text" 
@@ -61,7 +61,7 @@ export function ProductSpecEditorPage() {
                      newSpecs[i].value = e.target.value;
                      setSpecs(newSpecs);
                    }}
-                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                   className="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-lg text-sm"
                  />
                  <button onClick={() => removeSpec(i)} className="p-2 text-gray-400 hover:text-red-500">
                    <X className="w-5 h-5" />

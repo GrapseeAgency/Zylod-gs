@@ -294,7 +294,7 @@ export function WelcomePage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="min-h-screen bg-[#F8F9FA] flex flex-col"
+        className="overflow-x-hidden min-h-screen bg-[#F8F9FA] flex flex-col"
       >
         {/* Brand Header */}
         <div className="pt-12 pb-4 text-center">
@@ -362,7 +362,7 @@ export function WelcomePage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-8"
+      className="overflow-x-hidden min-h-screen bg-[#F8F9FA] flex items-center justify-center p-8"
     >
       {/* Subtle background pattern */}
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none">
