@@ -32,7 +32,9 @@ jobs:
         run: |
           chmod +x android/gradlew
           cd android
-          ./gradlew :app:assembleDebug --stacktrace
+          # Embed the short commit SHA into versionName so an installed APK
+          # can be traced to its exact commit on-device.
+          ./gradlew :app:assembleDebug "-PcommitSuffix=${GITHUB_SHA::7}" --stacktrace
 
       - name: Lint (non-blocking — report surfaces as artifact)
         run: |
@@ -50,15 +52,13 @@ jobs:
 
       - name: Build info
         run: |
-          VERSION=$(grep -o 'versionName = "[^"]*"' android/app/build.gradle.kts | cut -d'"' -f2)
           {
             echo "app:            Zylod (com.zylod.wholesale.debug)"
-            echo "versionName:    $VERSION"
-            echo "versionCode:    $(grep -o 'versionCode = [0-9]*' android/app/build.gradle.kts | grep -o '[0-9]*')"
             echo "commit:         $GITHUB_SHA"
             echo "built from:     https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
             echo "workflow run:   ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           } > build-info.txt
+          cat android/app/build/outputs/apk/debug/output-metadata.json >> build-info.txt
           cat build-info.txt
 
       - name: Upload APK artifact
