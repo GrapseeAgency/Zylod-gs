@@ -35,7 +35,7 @@ export function ProductListingsManagerPage() {
     try {
       const res = await fetch(`/api/supplier/products?status=${activeTab !== 'All' ? activeTab.toLowerCase().replace(' ', '_') : ''}`);
       const data = await res.json();
-      setProducts(data);
+      setProducts(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {

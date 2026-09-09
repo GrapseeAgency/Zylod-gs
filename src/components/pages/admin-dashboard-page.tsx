@@ -213,7 +213,7 @@ export function AdminDashboardPage() {
                 <p className="text-xs font-semibold text-muted-foreground mb-2">Monthly Registrations</p>
                 <div className="h-[160px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data!.growthData}>
+                    <BarChart data={data?.growthData ?? []}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="month" stroke="#999" fontSize={11} />
                       <YAxis stroke="#999" fontSize={11} />
@@ -227,7 +227,7 @@ export function AdminDashboardPage() {
                 <p className="text-xs font-semibold text-muted-foreground mb-2">Order Volume</p>
                 <div className="h-[160px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={data!.growthData}>
+                    <LineChart data={data?.growthData ?? []}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="month" stroke="#999" fontSize={11} />
                       <YAxis stroke="#999" fontSize={11} />
@@ -241,7 +241,7 @@ export function AdminDashboardPage() {
                 <p className="text-xs font-semibold text-muted-foreground mb-2">Revenue Trends</p>
                 <div className="h-[160px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data!.growthData}>
+                    <BarChart data={data?.growthData ?? []}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="month" stroke="#999" fontSize={11} />
                       <YAxis stroke="#999" fontSize={11} tickFormatter={(v) => formatPrice(v)} />

@@ -181,3 +181,10 @@ The WebView shell had NO WebChromeClient, no DownloadListener, and no external-s
 
 ### Verification:
 - tsc 0, npm run build OK, live re-sweep of previously broken ids: 0 boilerplate / 0 blank / 0 crash; 30-id sample of new aliases all render real components.
+
+## Session: 2026-09-09 (Round 3: production sweep + stale-server fix)
+
+- The user-facing production server on :3000 was still serving a pre-fix build (stale next-start process survived pkill; killed by pid). Restarted on the fresh build.
+- Full 728-id live sweep of PRODUCTION found 12 remaining issues, all fixed: admin-dashboard chart crash (3 unguarded data!.growthData), product-listings-manager crash on non-array API (Array.isArray guard; also fixed catalog-management + seller-products-manager which alias to it), 4 unmapped ids registered (data-sync, display-settings, shipping-policy-detail, misc->explore), profile-settings->account-settings.
+- Re-verified all 12 + 14 earlier fixes on production: 100% real UI. tsc 0, build OK.
+- Production now on :3000 (fresh build), dev on :3100.

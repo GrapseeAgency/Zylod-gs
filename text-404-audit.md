@@ -98,3 +98,17 @@ Swept every registered page id at 1280px in the browser. Found and fixed:
 
 Post-fix verification: re-swept the previously broken ids -> 0 boilerplate, 0 blank,
 0 crash (buyer-dashboard renders its full dashboard shell). tsc 0, build OK.
+
+## Round 3 (same day): production full sweep — 728 ids on :3000
+
+The user-facing production server was still running a pre-fix build (stale `next start`
+process that survived pkill). After force-killing it and restarting on the fresh build,
+a complete 728-id sweep of production found 12 remaining issues, all fixed and verified:
+
+- CRASH admin-dashboard: 3 unguarded `data!.growthData` chart derefs -> safe fallbacks
+- CRASH product-listings-manager (also hit catalog-management + seller-products-manager via alias): API returning a non-array crashed `products.filter` -> `Array.isArray` guard
+- NOTFOUND data-sync / display-settings / shipping-policy-detail / misc: unmapped set ids -> mapped to offline-sync-queue / theme-settings / shipping-policy / explore
+- BOILER profile-settings: mapped to account-settings
+- collection-detail + seller-order-detail/disputes: transient, verified OK on retest
+
+Post-fix: re-verified all 12 plus a 14-id sample of earlier fixes on production — all render real UI. tsc 0, build OK.
