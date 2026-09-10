@@ -1,4 +1,8 @@
 <resources>
+    <!-- LEGACY View-shell palette (SwipeRefreshLayout indicator, offline
+         banner, WebView background). NOT app tokens: the frozen source of
+         truth is /design-tokens.md (§1, §6.5 documents this legacy set).
+         Do not reuse these values in Compose/native screens. -->
     <color name="primary_red">#E11D48</color>
     <color name="primary_dark">#9F1239</color>
     <color name="accent_blue">#2563EB</color>

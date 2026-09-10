@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
     <include domain="sharedpref" path="."/>
+    <!-- The encrypted session store must NEVER be backed up: its AES key lives
+         in this device's Android Keystore, so a restored copy is undecryptable
+         ciphertext that made EncryptedSharedPreferences throw (AEADBadTag)
+         on every access after a device transfer/cloud restore (D4 fix). -->
+    <exclude domain="sharedpref" path="zylod_secure.xml"/>
 </full-backup-content>

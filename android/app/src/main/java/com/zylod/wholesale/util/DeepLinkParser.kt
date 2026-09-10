@@ -22,7 +22,10 @@ object DeepLinkParser {
             val id = pathSegments.firstOrNull()
             return when (page) {
                 "product" -> ParsedDeepLink("product-detail", id?.let { mapOf("id" to it) } ?: emptyMap())
-                "supplier" -> ParsedDeepLink("supplier-storefront", id?.let { mapOf("id" to it) } ?: emptyMap())
+                // Web Round-1/2 audits retired supplier-storefront in favor of
+                // seller-storefront (see page-routing-audit) — keep the scheme
+                // pointed at the live pageId (D9 fix).
+                "supplier" -> ParsedDeepLink("seller-storefront", id?.let { mapOf("id" to it) } ?: emptyMap())
                 "deal" -> ParsedDeepLink("exclusive-deal-detail", id?.let { mapOf("id" to it) } ?: emptyMap())
                 "cart" -> ParsedDeepLink("cart")
                 "orders" -> ParsedDeepLink("my-orders")
@@ -40,7 +43,8 @@ object DeepLinkParser {
 
             return when (firstSegment) {
                 "product" -> ParsedDeepLink("product-detail", secondSegment?.let { mapOf("id" to it) } ?: emptyMap())
-                "supplier" -> ParsedDeepLink("supplier-storefront", secondSegment?.let { mapOf("id" to it) } ?: emptyMap())
+                // Same D9 fix as the custom scheme above.
+                "supplier" -> ParsedDeepLink("seller-storefront", secondSegment?.let { mapOf("id" to it) } ?: emptyMap())
                 "deals" -> ParsedDeepLink("daily-deals")
                 "cart" -> ParsedDeepLink("cart")
                 "orders" -> ParsedDeepLink("my-orders")

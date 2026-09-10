@@ -57,8 +57,12 @@ class OfflineSyncWorker(context: Context, params: WorkerParameters) :
         var hadTransientFailure = false
 
         // Replay as the signed-in user when the WebView mirrored a session
-        // token into the encrypted store.
-        val authToken = ZylodApp.instance.securePrefs.getString("auth_token", null)
+        // token into the encrypted store. EncryptedSharedPreferences throws
+        // (rather than returning null) when the ciphertext is undecryptable —
+        // e.g. after a device restore without its Keystore master key (D4).
+        val authToken = runCatching {
+            ZylodApp.instance.securePrefs.getString("auth_token", null)
+        }.getOrNull()
 
         for (item in pending) {
             val body = JSONObject()

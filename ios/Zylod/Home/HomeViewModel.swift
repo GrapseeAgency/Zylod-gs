@@ -21,8 +21,18 @@ final class HomeViewModel: ObservableObject {
         loading = true
         error = nil
         let base = await ServerConfig.resolve()
-        let client = self.client ?? ApiClient(base: base)
-        self.client = client
+        let client: ApiClient
+        if let existing = self.client {
+            client = existing
+        } else if let created = ApiClient(base: base) {
+            client = created
+            self.client = created
+        } else {
+            // Corrupted cached base URL — don't crash, surface it (D2 fix).
+            error = "Invalid server address"
+            loading = false
+            return
+        }
 
         async let categoriesCall = client.categories()
         async let dealsCall = client.deals()
@@ -37,6 +47,13 @@ final class HomeViewModel: ObservableObject {
         let supplierTotalResult = try? await supplierTotal
 
         if categoriesResult == nil && productsResult == nil {
+            // A cancelled refresh (view torn down mid-flight) must not show a
+            // false "can't reach server" state (D3 fix — parity with Android's
+            // safeCall rethrowing CancellationException).
+            guard !Task.isCancelled else {
+                loading = false
+                return
+            }
             error = "Can't reach Zylod servers"
             loading = false
             return

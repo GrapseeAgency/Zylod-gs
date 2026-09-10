@@ -27,6 +27,8 @@ enum ZylodColor {
     static let background = dynamic(0xFBFAF9, 0x121212)
     static let onBackground = dynamic(0x1C130C, 0xF5F5F5)
     static let card = dynamic(0xFEFDFC, 0x1E1E1E)
+    static let popover = dynamic(0xFEFDFC, 0x1E1E1E)
+    static let onPopover = dynamic(0x1C130C, 0xF5F5F5)
     static let primary = dynamic(0xC90019, 0xC8102E)
     static let onPrimary = dynamic(0xFEF7F2, 0xFFFFFF)
     static let secondary = dynamic(0xF7F0EB, 0x262626)
@@ -37,8 +39,12 @@ enum ZylodColor {
     static let onAccent = dynamic(0x2B1E1D, 0xFF8FA0)
     static let destructive = dynamic(0xE7000B, 0xFF6467)
     static let border = dynamic(0xE6E0DB, 0x2E2E2E)
+    static let input = dynamic(0xE6E0DB, 0x2E2E2E)
+    static let ring = dynamic(0xC90019, 0xC8102E)
     static let success = dynamic(0x008C41, 0x00A045)
+    static let onSuccess = dynamic(0xF3FBF5, 0xEAF1EB)
     static let warning = dynamic(0xDFA11A, 0xF0B135)
+    static let onWarning = dynamic(0x2E1E01, 0x2E1E01)
 }
 
 // Quick-Access chip spec (mobile-promo-icon-grid.tsx) — icon tints and the
@@ -61,5 +67,14 @@ extension Color {
             green: Double((hex >> 8) & 0xFF) / 255,
             blue: Double(hex & 0xFF) / 255
         )
+    }
+}
+
+/// Token type scale (design-tokens.md §5) rendered with the SYSTEM font and
+/// scaled by the user's Dynamic Type setting via UIFontMetrics (D5 fix).
+/// Sizes match the frozen spec exactly at the default text size.
+enum ZylodFont {
+    static func scaled(_ size: CGFloat, _ weight: Font.Weight = .regular, relativeTo style: Font.TextStyle = .body) -> Font {
+        .system(size: UIFontMetrics(forTextStyle: .body).scaledValue(for: size), weight: weight)
     }
 }

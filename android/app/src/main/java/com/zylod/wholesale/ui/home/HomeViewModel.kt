@@ -134,6 +134,10 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
                         products = it.products + (res.data ?: emptyList()),
                     )
                 }
+            } catch (ce: kotlinx.coroutines.CancellationException) {
+                // Re-thrown so cancellation never masquerades as a load
+                // failure (D11 fix — parity with safeCall/refresh).
+                throw ce
             } catch (_: Exception) {
                 _state.update { it.copy(loadingMore = false) }
             }

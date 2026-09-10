@@ -1,5 +1,6 @@
 package com.zylod.wholesale.bridge
 
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.os.Build
@@ -8,7 +9,6 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.webkit.JavascriptInterface
 import android.widget.Toast
-import com.zylod.wholesale.MainActivity
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.Executors
@@ -19,7 +19,7 @@ import java.util.concurrent.Executors
  * the blob and passes the bytes here as a data URL via the ZylodDownload
  * JavaScript interface.
  */
-class DownloadBridge(private val activity: MainActivity) {
+class DownloadBridge(private val activity: Activity) {
 
     @JavascriptInterface
     fun save(dataUrl: String, filename: String, mime: String) {

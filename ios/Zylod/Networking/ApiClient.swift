@@ -7,6 +7,7 @@ struct ApiEnvelope<Data: Codable>: Codable {
     var success: Bool?
     var data: Data?
     var pagination: Pagination?
+    var error: String?
 }
 
 struct CountEnvelope: Codable {
@@ -23,10 +24,12 @@ struct Pagination: Codable {
 
 enum ApiError: Error, LocalizedError {
     case http(Int)
+    case badUrl(String)
 
     var errorDescription: String? {
         switch self {
         case .http(let status): return "Server returned HTTP \(status)"
+        case .badUrl(let raw): return "Invalid server address: \(raw)"
         }
     }
 }
@@ -100,16 +103,25 @@ final class ApiClient {
     private let session = URLSession.shared
     private let decoder = JSONDecoder()
 
-    init(base: String) {
-        self.base = URL(string: base.hasSuffix("/") ? base : base + "/")!
+    /// Failable: a corrupted `native_base_url` (UserDefaults is user-editable
+    /// via instrumentation) must surface as nil, never crash at init (D2 fix).
+    init?(base: String) {
+        let normalized = base.hasSuffix("/") ? base : base + "/"
+        guard let url = URL(string: normalized) else { return nil }
+        self.base = url
     }
 
-    private func request(_ path: String, query: [URLQueryItem] = []) -> URLRequest {
-        var components = URLComponents(url: base.appendingPathComponent(path), resolvingAgainstBaseURL: false)!
+    private func request(_ path: String, query: [URLQueryItem] = []) throws -> URLRequest {
+        guard var components = URLComponents(url: base.appendingPathComponent(path), resolvingAgainstBaseURL: false) else {
+            throw ApiError.badUrl(path)
+        }
         if !query.isEmpty {
             components.queryItems = query
         }
-        var request = URLRequest(url: components.url!, timeoutInterval: 20)
+        guard let url = components.url else {
+            throw ApiError.badUrl(path)
+        }
+        var request = URLRequest(url: url, timeoutInterval: 20)
         if let token = SessionManager.token() {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }

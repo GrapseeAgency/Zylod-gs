@@ -43,6 +43,10 @@ private let moreLinks: [QuickLink] = [
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var moreOpen = false
+    // Observing the Dynamic Type size makes ZylodFont.scaled re-evaluate the
+    // moment the user changes their text size (UIFontMetrics isn't reactive
+    // on its own — D5 fix).
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let openPage: (String, String) -> Void
 
     var body: some View {
@@ -82,17 +86,17 @@ struct HomeView: View {
     private var topBar: some View {
         HStack {
             Text("Zylod")
-                .font(.system(size: 18, weight: .bold))
+                .font(ZylodFont.scaled(18, .bold, relativeTo: .title3))
                 .foregroundColor(ZylodColor.primary)
             Spacer()
             Button { openPage("notifications", "") } label: {
                 Image(systemName: "bell")
-                    .font(.system(size: 17))
+                    .font(ZylodFont.scaled(17, relativeTo: .body))
                     .foregroundColor(ZylodColor.onMuted)
             }
             Button { openPage("category-browser", "") } label: {
                 Image(systemName: "line.3.horizontal")
-                    .font(.system(size: 17))
+                    .font(ZylodFont.scaled(17, relativeTo: .body))
                     .foregroundColor(ZylodColor.onMuted)
             }
         }
@@ -102,10 +106,10 @@ struct HomeView: View {
     private var searchPill: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 12))
+                .font(ZylodFont.scaled(12, relativeTo: .footnote))
                 .foregroundColor(ZylodColor.onMuted)
             Text("Search products, suppliers...")
-                .font(.system(size: 12))
+                .font(ZylodFont.scaled(12, relativeTo: .footnote))
                 .foregroundColor(ZylodColor.onMuted)
             Spacer()
         }
@@ -118,7 +122,7 @@ struct HomeView: View {
 
     private var statsCaption: some View {
         Text("\(ZylodFormat.compact(viewModel.stats.productCount))+ products · \(ZylodFormat.compact(viewModel.stats.supplierCount))+ verified suppliers")
-            .font(.system(size: 10))
+            .font(ZylodFont.scaled(10, relativeTo: .caption2))
             .foregroundColor(ZylodColor.onMuted)
     }
 
@@ -130,7 +134,7 @@ struct HomeView: View {
                         openPage("category-products", "category=\(category.slug ?? "")")
                     } label: {
                         Text(category.name)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(ZylodFont.scaled(11, .medium, relativeTo: .caption))
                             .foregroundColor(ZylodColor.onSecondary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
@@ -147,14 +151,14 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Quick Access")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(ZylodFont.scaled(12, .semibold, relativeTo: .footnote))
                     .foregroundColor(ZylodColor.onBackground)
                 Spacer()
                 Button {
                     moreOpen = true
                 } label: {
                     Text("More")
-                        .font(.system(size: 10, weight: .medium))
+                        .font(ZylodFont.scaled(10, .medium, relativeTo: .caption2))
                         .foregroundColor(ZylodColor.primary)
                 }
             }
@@ -172,11 +176,11 @@ struct HomeView: View {
                                     .fill(ZylodColor.muted)
                                     .frame(width: 44, height: 44)
                                 Text("+\(moreLinks.count)")
-                                    .font(.system(size: 10, weight: .black))
+                                    .font(ZylodFont.scaled(10, .black, relativeTo: .caption2))
                                     .foregroundColor(ZylodColor.onMuted)
                             }
                             Text("More")
-                                .font(.system(size: 10, weight: .medium))
+                                .font(ZylodFont.scaled(10, .medium, relativeTo: .caption2))
                                 .foregroundColor(ZylodColor.onBackground)
                         }
                         .frame(width: 68)
@@ -210,7 +214,7 @@ struct HomeView: View {
                                     RemoteImage(url: imageURL(deal.effectiveImage), cornerRadius: 8)
                                         .frame(width: 58, height: 58)
                                     Text(ZylodFormat.bdt(deal.effectivePrice))
-                                        .font(.system(size: 10, weight: .bold))
+                                        .font(ZylodFont.scaled(10, .bold, relativeTo: .caption2))
                                         .foregroundColor(ZylodColor.primary)
                                         .lineLimit(1)
                                 }
@@ -245,7 +249,7 @@ struct HomeView: View {
                         Task { await viewModel.loadMore() }
                     } label: {
                         Text("Load more")
-                            .font(.system(size: 12))
+                            .font(ZylodFont.scaled(12, relativeTo: .footnote))
                             .foregroundColor(ZylodColor.primary)
                     }
                 }
@@ -253,7 +257,7 @@ struct HomeView: View {
             }
         } else if viewModel.products.isEmpty {
             Text("No products found")
-                .font(.system(size: 12))
+                .font(ZylodFont.scaled(12, relativeTo: .footnote))
                 .foregroundColor(ZylodColor.onMuted)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 32)
@@ -279,12 +283,12 @@ private struct QuickIconView: View {
                     RoundedRectangle(cornerRadius: 14)
                         .fill(LinearGradient(colors: link.gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
                     Image(systemName: link.icon)
-                        .font(.system(size: 19))
+                        .font(ZylodFont.scaled(19, relativeTo: .title3))
                         .foregroundColor(link.tint)
                 }
                 .frame(width: 44, height: 44)
                 Text(link.label)
-                    .font(.system(size: 10, weight: .medium))
+                    .font(ZylodFont.scaled(10, .medium, relativeTo: .caption2))
                     .foregroundColor(ZylodColor.onBackground)
                     .lineLimit(1)
             }
@@ -306,7 +310,7 @@ private struct QuickAccessMoreSheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 Text("All Services")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(ZylodFont.scaled(14, .bold, relativeTo: .body))
                     .foregroundColor(ZylodColor.onBackground)
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(moreLinks) { link in
@@ -331,9 +335,9 @@ private struct RemoteImage: View {
             image.resizable().scaledToFill()
         } placeholder: {
             ZStack {
-                Color.white
+                ZylodColor.muted // token placeholder — was Color.white, broke dark mode (D1 fix)
                 Image(systemName: "shippingbox")
-                    .font(.system(size: 16))
+                    .font(ZylodFont.scaled(16, relativeTo: .body))
                     .foregroundColor(ZylodColor.onMuted)
             }
         }
@@ -361,18 +365,18 @@ private struct ProductCardView: View {
                     .clipped()
                 VStack(alignment: .leading, spacing: 2) {
                     Text(product.name)
-                        .font(.system(size: 10, weight: .medium))
+                        .font(ZylodFont.scaled(10, .medium, relativeTo: .caption2))
                         .foregroundColor(ZylodColor.onBackground)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                         .frame(minHeight: 26, alignment: .topLeading)
                     HStack(alignment: .bottom, spacing: 4) {
                         Text(ZylodFormat.bdt(product.basePrice ?? 0))
-                            .font(.system(size: 11, weight: .bold))
+                            .font(ZylodFont.scaled(11, .bold, relativeTo: .caption))
                             .foregroundColor(ZylodColor.primary)
                         if let sold = product.soldCount, sold > 0 {
                             Text("\(ZylodFormat.compact(sold)) sold")
-                                .font(.system(size: 8))
+                                .font(ZylodFont.scaled(8, relativeTo: .caption2))
                                 .foregroundColor(ZylodColor.onMuted)
                         }
                         Spacer(minLength: 0)
@@ -396,18 +400,18 @@ private struct HomeErrorView: View {
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "cloud.off")
-                .font(.system(size: 44))
+                .font(ZylodFont.scaled(44, relativeTo: .largeTitle))
                 .foregroundColor(ZylodColor.onMuted)
             Text("Can't reach Zylod")
-                .font(.system(size: 14, weight: .semibold))
+                .font(ZylodFont.scaled(14, .semibold, relativeTo: .body))
                 .foregroundColor(ZylodColor.onBackground)
             Text(message)
-                .font(.system(size: 11))
+                .font(ZylodFont.scaled(11, relativeTo: .caption))
                 .foregroundColor(ZylodColor.onMuted)
                 .multilineTextAlignment(.center)
             Button(action: retry) {
                 Text("Retry")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(ZylodFont.scaled(13, .semibold, relativeTo: .footnote))
                     .foregroundColor(ZylodColor.onPrimary)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 10)

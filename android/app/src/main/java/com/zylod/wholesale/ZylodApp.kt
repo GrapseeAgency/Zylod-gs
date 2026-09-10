@@ -24,14 +24,33 @@ class ZylodApp : Application() {
     lateinit var networkMonitor: NetworkMonitor
         private set
 
-    /** Encrypted store for the session token mirrored from the WebView. */
+    /** Encrypted store for the session token mirrored from the WebView.
+     *
+     *  AEADBadTagException-safe: if the ciphertext file can't be decrypted
+     *  (e.g. restored from a cloud backup whose Keystore master key doesn't
+     *  exist on this device), reset the store once instead of crashing every
+     *  subsequent access. The backup rules exclude this file since the D4 fix,
+     *  so this is belt-and-braces for pre-existing restores.
+     */
     val securePrefs: SharedPreferences by lazy {
+        try {
+            createSecurePrefs()
+        } catch (_: Exception) {
+            // Unrecoverable ciphertext: delete + recreate (minSdk 24 supports
+            // Context.deleteSharedPreferences). The mirrored token is lost —
+            // the user signs in again — but the app must not crash-loop.
+            applicationContext.deleteSharedPreferences(SECURE_PREFS_FILE)
+            createSecurePrefs()
+        }
+    }
+
+    private fun createSecurePrefs(): SharedPreferences {
         val masterKey = MasterKey.Builder(applicationContext)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
-        EncryptedSharedPreferences.create(
+        return EncryptedSharedPreferences.create(
             applicationContext,
-            "zylod_secure",
+            SECURE_PREFS_FILE,
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
@@ -107,6 +126,7 @@ class ZylodApp : Application() {
         lateinit var instance: ZylodApp
             private set
 
+        const val SECURE_PREFS_FILE = "zylod_secure"
         const val CHANNEL_ORDERS = "zylod_orders_channel"
         const val CHANNEL_ESCROW = "zylod_escrow_channel"
         const val CHANNEL_DEALS = "zylod_deals_channel"

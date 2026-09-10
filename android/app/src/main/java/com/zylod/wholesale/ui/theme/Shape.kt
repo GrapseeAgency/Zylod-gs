@@ -10,5 +10,5 @@ val ZylodShapes = Shapes(
     small = RoundedCornerShape(8.dp),
     medium = RoundedCornerShape(10.dp),
     large = RoundedCornerShape(14.dp),
-    extraLarge = RoundedCornerShape(16.dp),
+    extraLarge = RoundedCornerShape(14.dp),
 )

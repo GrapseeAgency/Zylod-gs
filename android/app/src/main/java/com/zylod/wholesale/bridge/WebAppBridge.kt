@@ -1,5 +1,6 @@
 package com.zylod.wholesale.bridge
 
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -12,7 +13,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.zylod.wholesale.BuildConfig
-import com.zylod.wholesale.MainActivity
 import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.data.model.OfflineProduct
 import com.zylod.wholesale.data.model.SyncQueueItem
@@ -24,7 +24,13 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicInteger
 
-class WebAppBridge(private val activity: MainActivity) {
+/**
+ * @param host the activity hosting the WebView (either shell). See
+ *   [WebViewHost] — capability parity across the legacy and Compose shells.
+ */
+class WebAppBridge(private val host: WebViewHost) {
+
+    private val activity: Activity get() = host as Activity
 
     private val vibrator = activity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -56,7 +62,7 @@ class WebAppBridge(private val activity: MainActivity) {
     @JavascriptInterface
     fun loadLiveUrl(url: String) {
         activity.runOnUiThread {
-            activity.loadCustomUrl(url)
+            host.loadCustomUrl(url)
         }
     }
 
@@ -92,10 +98,20 @@ class WebAppBridge(private val activity: MainActivity) {
     @JavascriptInterface
     fun setAuthToken(token: String) {
         scope.launch {
-            val editor = ZylodApp.instance.securePrefs.edit()
-            val trimmed = token.trim()
-            if (trimmed.isEmpty()) editor.remove("auth_token") else editor.putString("auth_token", trimmed)
-            editor.apply()
+            // EncryptedSharedPreferences can throw (AEADBadTagException after a
+            // botched restore, disk full, …). A JS-triggered path must never
+            // crash the app — report failure back to the page instead.
+            runCatching {
+                val editor = ZylodApp.instance.securePrefs.edit()
+                val trimmed = token.trim()
+                if (trimmed.isEmpty()) editor.remove("auth_token") else editor.putString("auth_token", trimmed)
+                editor.apply()
+            }.onFailure { e ->
+                android.util.Log.w("ZylodBridge", "auth token mirror failed", e)
+                activity.runOnUiThread {
+                    activity.evaluateJavascript("window.ZylodNativeBridge?.onTokenMirrorError?.()")
+                }
+            }
         }
     }
 
@@ -116,7 +132,7 @@ class WebAppBridge(private val activity: MainActivity) {
     @JavascriptInterface
     fun retryServerConnection() {
         activity.runOnUiThread {
-            activity.retryServerConnection()
+            host.retryServerConnection()
         }
     }
 
@@ -150,7 +166,7 @@ class WebAppBridge(private val activity: MainActivity) {
     @JavascriptInterface
     fun startVoiceRecognition(callbackJsFunction: String) {
         activity.runOnUiThread {
-            activity.startVoiceRecognition(callbackJsFunction)
+            host.startVoiceRecognition(callbackJsFunction)
         }
     }
 
@@ -193,7 +209,7 @@ class WebAppBridge(private val activity: MainActivity) {
     @JavascriptInterface
     fun startBarcodeScanner(callbackJsFunction: String) {
         activity.runOnUiThread {
-            activity.startBarcodeScanner(callbackJsFunction)
+            host.startBarcodeScanner(callbackJsFunction)
         }
     }
 
@@ -230,15 +246,24 @@ class WebAppBridge(private val activity: MainActivity) {
     @JavascriptInterface
     fun enqueueOfflineAction(actionType: String, entityType: String, payloadJson: String) {
         scope.launch {
-            val item = SyncQueueItem(
-                actionType = actionType,
-                entityType = entityType,
-                payloadJson = payloadJson
-            )
-            ZylodApp.instance.database.syncQueueDao().enqueueItem(item)
-            // Try to drain the queue right away when a connection is available;
-            // otherwise the reconnect listener in ZylodApp picks it up.
-            OfflineSyncScheduler.schedule(activity.applicationContext)
+            // Room/disk failures are data problems, not crashes: tell the page.
+            runCatching {
+                val item = SyncQueueItem(
+                    actionType = actionType,
+                    entityType = entityType,
+                    payloadJson = payloadJson
+                )
+                ZylodApp.instance.database.syncQueueDao().enqueueItem(item)
+                // Try to drain the queue right away when a connection is available;
+                // otherwise the reconnect listener in ZylodApp picks it up.
+                OfflineSyncScheduler.schedule(activity.applicationContext)
+            }.onFailure { e ->
+                android.util.Log.w("ZylodBridge", "offline enqueue failed", e)
+                activity.runOnUiThread {
+                    Toast.makeText(activity, "Could not save the operation for offline sync.", Toast.LENGTH_SHORT).show()
+                }
+                return@launch
+            }
             activity.runOnUiThread {
                 Toast.makeText(activity, "Operation saved offline. Will sync when connected.", Toast.LENGTH_SHORT).show()
             }
@@ -314,9 +339,13 @@ class WebAppBridge(private val activity: MainActivity) {
     @JavascriptInterface
     fun clearLocalAppCache() {
         scope.launch {
-            ZylodApp.instance.database.productDao().clearAll()
+            runCatching {
+                ZylodApp.instance.database.productDao().clearAll()
+            }.onFailure { e ->
+                android.util.Log.w("ZylodBridge", "local cache clear failed", e)
+            }
             activity.runOnUiThread {
-                activity.clearWebViewCache()
+                host.clearWebViewCache()
                 Toast.makeText(activity, "Local storage & product cache cleared.", Toast.LENGTH_SHORT).show()
             }
         }

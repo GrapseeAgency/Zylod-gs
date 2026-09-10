@@ -69,7 +69,7 @@ import org.json.JSONObject
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), com.zylod.wholesale.bridge.WebViewHost {
 
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
@@ -316,11 +316,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Liveness probe — MUST stay consistent with ServerConfig.probe() (the
+     * Compose shell) and the iOS probe: hit /api/app/version and accept ANY
+     * HTTP response. Probing the bare host root with a 2xx-only rule used to
+     * diverge from the native shells (a SPA root returning 404/HTML passed
+     * here but failed there, and vice versa) — one contract, one definition.
+     */
     private fun isEndpointReachable(url: String): Boolean = try {
-        val request = Request.Builder().url(url).head().build()
-        httpClient.newCall(request).execute().use { response ->
-            response.isSuccessful || response.code in 200..399
-        }
+        val probeUrl = url.trimEnd('/') + "/api/app/version"
+        val request = Request.Builder()
+            .url(probeUrl)
+            .header("User-Agent", "ZylodNative/2.5.0")
+            .build()
+        httpClient.newCall(request).execute().use { true } // any response = alive
     } catch (_: Exception) {
         false
     }
@@ -708,7 +717,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun loadCustomUrl(url: String) {
+    override fun loadCustomUrl(url: String) {
         val cleanUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) {
             "http://$url"
         } else {
@@ -726,18 +735,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Launches the native scanner; result is delivered to [callbackJsFunction]. */
-    fun startBarcodeScanner(callbackJsFunction: String) {
+    override fun startBarcodeScanner(callbackJsFunction: String) {
         pendingBarcodeCallback = callbackJsFunction
         barcodeLauncher.launch(Intent(this, BarcodeScannerActivity::class.java))
     }
 
     /** Re-runs endpoint discovery — the offline shell's "retry" button. */
-    fun retryServerConnection() {
+    override fun retryServerConnection() {
         handleStartup(intent)
     }
 
     /** Native speech recognition for the WebView (no Web Speech API in WebView). */
-    fun startVoiceRecognition(callbackJsFunction: String) {
+    override fun startVoiceRecognition(callbackJsFunction: String) {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             evaluateJavascript("$callbackJsFunction(false, 'Voice recognition is not available on this device')")
             return
@@ -824,13 +833,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun evaluateJavascript(script: String) {
+    override fun evaluateJavascript(script: String) {
         runOnUiThread {
             webView.evaluateJavascript(script, null)
         }
     }
 
-    fun clearWebViewCache() {
+    override fun clearWebViewCache() {
         webView.clearCache(true)
         webView.clearHistory()
     }

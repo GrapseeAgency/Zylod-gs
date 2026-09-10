@@ -132,7 +132,7 @@ private fun ZylodBottomBar(activeTab: String, onTab: (TabItem) -> Unit) {
             modifier = Modifier
                 .navigationBarsPadding()
                 .fillMaxWidth()
-                .height(56.dp)
+                .height(64.dp) // frozen token: design-tokens.md §3 (was 56dp — D5 fix)
                 .background(MaterialTheme.colorScheme.background),
         ) {
             TABS.forEach { tab ->
