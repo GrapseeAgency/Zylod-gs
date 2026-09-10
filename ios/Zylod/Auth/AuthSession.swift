@@ -10,7 +10,12 @@ enum AuthSession {
 
     /// Resolves (cache-first) the active server and returns a client.
     static func client() async -> ApiClient? {
-        let base = ServerConfig.cached() ?? await ServerConfig.resolve()
+        let base: String
+        if let cached = ServerConfig.cached() {
+            base = cached
+        } else {
+            base = await ServerConfig.resolve()
+        }
         return ApiClient(base: base)
     }
 
@@ -41,7 +46,12 @@ enum AuthSession {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
 
         // Hydrate (best-effort, silent on failure — auth-store parity).
-        let base = ServerConfig.cached() ?? await ServerConfig.resolve()
+        let base: String
+        if let cached = ServerConfig.cached() {
+            base = cached
+        } else {
+            base = await ServerConfig.resolve()
+        }
         guard let client = ApiClient(base: base) else { return }
         guard let envelope = try? await client.profileMe(),
               envelope.success == true, let me = envelope.data else { return }

@@ -58,8 +58,8 @@ interface ZylodApi {
  * and swaps SessionManager's token for the rotated one.
  *
  * Rules implemented here:
- *  - Only `/api/*` requests are considered (page loads never authenticate).
- *  - `/api/auth/*` endpoints are excluded: their 401/403s are *meaningful*
+ *  - Only `/api/` paths are considered (page loads never authenticate).
+ *  - `/api/auth/` endpoints are excluded: their 401/403s are meaningful
  *    responses (invalid credentials, suspended, rate limited) that screens
  *    must see, not session expiry.
  *  - Exactly one retry per request (guarded with the X-Zylod-Reauth header).

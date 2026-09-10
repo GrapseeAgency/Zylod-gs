@@ -187,7 +187,13 @@ final class OfflineStore {
                 )
                 guard let body = try? JSONEncoder().encode(event) else { continue }
                 // Cache-first resolution (parity with WebViewScreen.resolveAndLoad).
-                let base = ServerConfig.cached() ?? await ServerConfig.resolve()
+                // Note: `await` cannot sit inside the `??` autoclosure — branch explicitly.
+                let base: String
+                if let cached = ServerConfig.cached() {
+                    base = cached
+                } else {
+                    base = await ServerConfig.resolve()
+                }
                 guard let url = URL(string: base.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/api/native/offline-sync") else { continue }
                 var request = URLRequest(url: url, timeoutInterval: 20)
                 request.httpMethod = "POST"
