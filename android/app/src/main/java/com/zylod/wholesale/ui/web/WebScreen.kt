@@ -58,9 +58,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.zylod.wholesale.BuildConfig
 import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.bridge.DownloadBridge
+import com.zylod.wholesale.bridge.WebAppBridge
 import com.zylod.wholesale.bridge.WebViewHost
 import com.zylod.wholesale.data.api.ServerConfig
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
@@ -243,10 +245,8 @@ private fun createShellWebView(ctx: android.content.Context, host: WebViewHost?)
             setOffscreenPreRaster(true)
         }
 
-        CookieManager.getInstance().apply {
-            setAcceptCookie(true)
-            setAcceptThirdPartyCookies(this@apply, true)
-        }
+        CookieManager.getInstance().setAcceptCookie(true)
+        CookieManager.setAcceptThirdPartyCookies(this, true)
 
         if (host != null) {
             addJavascriptInterface(WebAppBridge(host), "ZylodNativeBridge")
@@ -302,7 +302,7 @@ private fun createShellWebViewClient(ctx: android.content.Context): WebViewClien
             val linkHost = uri.host?.lowercase() ?: return false
             val ownHosts = mutableSetOf("zylod.com", "www.zylod.com", "localhost", "127.0.0.1", "10.0.2.2")
             ServerConfig.cached(ctx)?.let { base ->
-                okhttp3.HttpUrl.Companion.toHttpUrlOrNull(base)?.let { ownHosts.add(it.host) }
+                base.toHttpUrlOrNull()?.let { httpUrl -> ownHosts.add(httpUrl.host) }
             }
             if (ownHosts.contains(linkHost)) return false
 
