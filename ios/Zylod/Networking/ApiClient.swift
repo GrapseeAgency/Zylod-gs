@@ -101,7 +101,7 @@ final class ApiClient {
     private let decoder = JSONDecoder()
 
     init(base: String) {
-        base = URL(string: base.hasSuffix("/") ? base : base + "/")!
+        self.base = URL(string: base.hasSuffix("/") ? base : base + "/")!
     }
 
     private func request(_ path: String, query: [URLQueryItem] = []) -> URLRequest {
