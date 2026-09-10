@@ -188,3 +188,24 @@ The WebView shell had NO WebChromeClient, no DownloadListener, and no external-s
 - Full 728-id live sweep of PRODUCTION found 12 remaining issues, all fixed: admin-dashboard chart crash (3 unguarded data!.growthData), product-listings-manager crash on non-array API (Array.isArray guard; also fixed catalog-management + seller-products-manager which alias to it), 4 unmapped ids registered (data-sync, display-settings, shipping-policy-detail, misc->explore), profile-settings->account-settings.
 - Re-verified all 12 + 14 earlier fixes on production: 100% real UI. tsc 0, build OK.
 - Production now on :3000 (fresh build), dev on :3100.
+
+---
+Task ID: 1
+Agent: Z.ai Code (main orchestrator)
+Task: Clone GrapseeAgency/Zylod-gs from GitHub, replace the sandbox scaffold with it, install deps, start dev server on :3000, verify rendering in browser.
+
+Work Log:
+- Cloned repo (PAT-authenticated) to /tmp/zylod-clone, 193MB incl. .git history + android/ + ios/ + .github workflows.
+- Inspected: Next.js 16.1.3 SPA (custom pageId router), 249 API routes, Prisma 6.6.0 + Supabase (postgresql provider, 130 models), Tailwind 4, next-auth installed-but-unused, BDT payments (bKash/SSLCommerz), HANDOFF.md freezes Phase 0 (native shells) — web changes must not violate AUDIT-WORKFLOW.md.
+- Killed old scaffold dev server (pid 1258), deleted all scaffold files/folders, kept sandbox infra (.zscripts, skills, Caddyfile — project's Caddyfile is byte-identical anyway) + upload/ (user content).
+- Moved clone into /home/z/my-project (git remote intact: origin github.com/GrapseeAgency/Zylod-gs, PAT embedded in remote URL per owner's existing setup).
+- Created .env from .env.example: placeholder DATABASE_URL (user will supply real Supabase creds later), JWT_SECRET generated (64-hex), APP_URL=http://localhost:3000.
+- bun install: 678 packages, 9.5s. Bun blocked 2 postinstalls (onnxruntime-node, unrs-resolver) → trusted both. bunx prisma generate OK.
+- CRITICAL SANDBOX GOTCHA: dev servers started via direct backgrounding or plain `setsid ... &` get reaped between Bash tool calls (3 confirmed deaths during "Compiling /"). WORKING PATTERN: double-fork orphan `( setsid bun run dev </dev/null >/dev/null 2>&1 & )`. Server (next-server pid 3086) now persists across tool calls. Do NOT use project start-dev.sh / its respawn loop — plain `bun run dev` double-forked is enough.
+- First compile of / takes ~24s (Turbopack), ~2GB RAM peak (4.1GB total — no OOM; no memory limit tuning needed).
+- Browser verification (agent-browser): desktop 1280px renders full shell (title "Zylod — B2B Wholesale Marketplace", header nav, search hero, categories, B2B services, login card); SPA nav works (Home→Deals); mobile 390px renders dedicated mobile layout (search chips, Quick Access, bottom tab bar). No console errors except expected API 500s.
+
+Stage Summary:
+- Project is LIVE on port 3000 via gateway (preview panel) with full git history; .env placeholder means data APIs (products/categories/deals) return 500 and pages show graceful "unavailable" states — EXPECTED until real Supabase DATABASE_URL is provided.
+- Next topic (user-stated): GitHub Actions for iOS/Android builds. Repo already has .github/workflows (ios-build.yml: macos-15 + XcodeGen; android-build green per HANDOFF §1/§3; ios ApiClient.swift `self.base` fix still pending).
+- Risks: (1) PAT exposed in git remote + pasted in chat — owner was already advised to rotate; remind again. (2) Placeholder JWT_SECRET fine for render, must come from owner with real secrets for auth features. (3) Never run `bun run build` in this sandbox (never build; dev only). (4) pkill -f next can kill own shell — kill by pid from `ss -ltnp`.

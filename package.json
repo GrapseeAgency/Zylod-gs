@@ -101,5 +101,9 @@
   },
   "prisma": {
     "seed": "bun run prisma/seed.ts"
-  }
+  },
+  "trustedDependencies": [
+    "onnxruntime-node",
+    "unrs-resolver"
+  ]
 }
