@@ -27,6 +27,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.zylod.wholesale.bridge.DownloadBridge
 import com.zylod.wholesale.bridge.WebViewHost
@@ -35,6 +36,8 @@ import com.zylod.wholesale.sync.OfflineSyncScheduler
 import com.zylod.wholesale.ui.BarcodeScannerActivity
 import com.zylod.wholesale.ui.nav.ZylodRoot
 import com.zylod.wholesale.ui.theme.ZylodTheme
+import com.zylod.wholesale.ui.web.NativeWebBus
+import com.zylod.wholesale.ui.web.NativeWebRegistry
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.File
@@ -48,7 +51,7 @@ import java.io.File
  * getUserMedia, scanner, voice, server settings) — the bridge is shared
  * infrastructure, not legacy-only (D2 remediation).
  */
-class NativeMainActivity : ComponentActivity(), WebViewHost {
+class NativeMainActivity : FragmentActivity(), WebViewHost {
 
     private lateinit var downloadBridge: DownloadBridge
     private var pendingBarcodeCallback: String? = null

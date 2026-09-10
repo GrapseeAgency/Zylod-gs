@@ -12,6 +12,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.zylod.wholesale.BuildConfig
 import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.data.model.OfflineProduct
@@ -109,7 +110,7 @@ class WebAppBridge(private val host: WebViewHost) {
             }.onFailure { e ->
                 android.util.Log.w("ZylodBridge", "auth token mirror failed", e)
                 activity.runOnUiThread {
-                    activity.evaluateJavascript("window.ZylodNativeBridge?.onTokenMirrorError?.()")
+                    host.evaluateJavascript("window.ZylodNativeBridge?.onTokenMirrorError?.()")
                 }
             }
         }
@@ -124,7 +125,7 @@ class WebAppBridge(private val host: WebViewHost) {
             } catch (_: Exception) {
                 0
             }
-            activity.evaluateJavascript("$callbackJsFunction($count)")
+            host.evaluateJavascript("$callbackJsFunction($count)")
         }
     }
 
@@ -176,7 +177,7 @@ class WebAppBridge(private val host: WebViewHost) {
         val granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             activity.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) ==
             PackageManager.PERMISSION_GRANTED
-        activity.evaluateJavascript("$callbackJsFunction($granted)")
+        host.evaluateJavascript("$callbackJsFunction($granted)")
     }
 
     /** Posts a notification through the app's native channels. */
@@ -216,19 +217,29 @@ class WebAppBridge(private val host: WebViewHost) {
     @JavascriptInterface
     fun requestBiometricAuth(callbackJsFunction: String) {
         activity.runOnUiThread {
+            // androidx.biometric requires a FragmentActivity host. Both shells
+            // qualify (legacy: AppCompatActivity; Compose: FragmentActivity) —
+            // anything else degrades to a reported auth error, never a crash.
+            val fragmentActivity = activity as? FragmentActivity
+            if (fragmentActivity == null) {
+                host.evaluateJavascript(
+                    "$callbackJsFunction(false, 'Biometric authentication is not available here')"
+                )
+                return@runOnUiThread
+            }
             val executor = ContextCompat.getMainExecutor(activity)
             val prompt = BiometricPrompt(
-                activity,
+                fragmentActivity,
                 executor,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
-                        activity.evaluateJavascript("$callbackJsFunction(true, null)")
+                        host.evaluateJavascript("$callbackJsFunction(true, null)")
                     }
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                         super.onAuthenticationError(errorCode, errString)
-                        activity.evaluateJavascript("$callbackJsFunction(false, '${errString.toString().replace("'", "\\'")}')")
+                        host.evaluateJavascript("$callbackJsFunction(false, '${errString.toString().replace("'", "\\'")}')")
                     }
                 }
             )
@@ -290,7 +301,7 @@ class WebAppBridge(private val host: WebViewHost) {
             } catch (_: Exception) {
                 -1
             }
-            activity.evaluateJavascript("$callbackJsFunction($count)")
+            host.evaluateJavascript("$callbackJsFunction($count)")
         }
     }
 
@@ -319,7 +330,7 @@ class WebAppBridge(private val host: WebViewHost) {
             } catch (_: Exception) {
                 "[]"
             }
-            activity.evaluateJavascript("$callbackJsFunction(${JSONObject.quote(json)})")
+            host.evaluateJavascript("$callbackJsFunction(${JSONObject.quote(json)})")
         }
     }
 
@@ -332,7 +343,7 @@ class WebAppBridge(private val host: WebViewHost) {
             } catch (_: Exception) {
                 -1
             }
-            activity.evaluateJavascript("$callbackJsFunction($count)")
+            host.evaluateJavascript("$callbackJsFunction($count)")
         }
     }
 

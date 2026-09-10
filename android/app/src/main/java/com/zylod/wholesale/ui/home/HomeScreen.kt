@@ -71,6 +71,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -379,7 +380,7 @@ private fun FlashDealsRow(deals: List<DealDto>, serverUrl: String, navigateToPag
 @Composable
 private fun DealImage(deal: DealDto, serverUrl: String) {
     val url = resolveImageUrl(deal.effectiveImage, serverUrl)
-    Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.card, modifier = Modifier.fillMaxWidth().aspectRatio(1f)) {
+    Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceContainer, modifier = Modifier.fillMaxWidth().aspectRatio(1f)) {
         if (url != null) {
             AsyncImage(model = url, contentDescription = deal.effectiveName, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         } else {
@@ -426,7 +427,7 @@ private fun ProductCard(product: ProductDto, serverUrl: String, modifier: Modifi
 private fun ProductImage(product: ProductDto, serverUrl: String) {
     val raw = product.firstImage
     val url = resolveImageUrl(raw?.takeIf { !it.startsWith("/placeholder") }, serverUrl)
-    Surface(color = MaterialTheme.colorScheme.card, modifier = Modifier.fillMaxWidth().aspectRatio(5f / 6f)) {
+    Surface(color = MaterialTheme.colorScheme.surfaceContainer, modifier = Modifier.fillMaxWidth().aspectRatio(5f / 6f)) {
         if (url != null) {
             AsyncImage(model = url, contentDescription = product.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         } else {

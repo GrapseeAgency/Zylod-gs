@@ -41,7 +41,7 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath ios/build \
             CODE_SIGNING_ALLOWED=NO \
-            build > ios/build/xcodebuild.log 2>&1 || { tail -80 ios/build/xcodebuild.log; exit 1; }
+            build > ios/build/xcodebuild.log 2>&1 || { grep -E "error:" ios/build/xcodebuild.log | head -50; tail -40 ios/build/xcodebuild.log; exit 1; }
           grep -E "BUILD SUCCEEDED" ios/build/xcodebuild.log || true
 
       - name: Stamp version with commit + write build info

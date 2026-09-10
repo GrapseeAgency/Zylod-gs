@@ -13,60 +13,58 @@ struct WebViewScreen: View {
     let pageId: String
     let query: String
 
-    private enum Phase {
-        case resolving
-        case loading(URL)
-        case failed(String)
-    }
-
-    @State private var phase: Phase = .resolving
-    @State private var reloadToken = 0
+    @State private var loadedUrl: URL?
+    @State private var loadError: String?
 
     var body: some View {
         Group {
-            switch phase {
-            case .resolving:
+            if let message = loadError {
+                webErrorView(message)
+            } else if let url = loadedUrl {
+                WebWebView(url: url, onFailure: {
+                    loadError = "The server isn't responding. Check your connection and try again."
+                })
+                .ignoresSafeArea(edges: .bottom)
+            } else {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(ZylodColor.background)
-            case .loading(let url):
-                WebWebView(url: url, reloadToken: reloadToken, onFailure: {
-                    phase = .failed("The server isn't responding. Check your connection and try again.")
-                })
-                .ignoresSafeArea(edges: .bottom)
-            case .failed(let message):
-                webErrorView(message)
             }
         }
         .background(ZylodColor.background)
-        // Runs on appear (token = 0) and again whenever retry() bumps the
-        // token — the single driver of resolveAndLoad (no double-resolve).
-        .task(id: reloadToken) {
+        .task {
             await resolveAndLoad()
         }
     }
 
     private func resolveAndLoad() async {
-        guard case .resolving = phase else { return }
+        guard loadedUrl == nil, loadError == nil else { return }
         // Cache-first: skip the probe storm when a winner is already known
         // (parity with android WebScreen.kt:30-36).
-        let base = ServerConfig.cached() ?? await ServerConfig.resolve()
+        let base: String
+        if let cached = ServerConfig.cached() {
+            base = cached
+        } else {
+            base = await ServerConfig.resolve()
+        }
         let trimmed = base.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         // ?page=<id> contract; the id is percent-encoded (D10 parity).
-        var target = trimmed + "/?page=" + (pageId.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? pageId)
+        let encodedPageId = pageId.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? pageId
+        var target = trimmed + "/?page=" + encodedPageId
         if !query.isEmpty {
             target += "&" + query
         }
         if let url = URL(string: target) {
-            phase = .loading(url)
+            loadedUrl = url
         } else {
-            phase = .failed("Invalid server address.")
+            loadError = "Invalid server address."
         }
     }
 
     private func retry() {
-        phase = .resolving
-        reloadToken += 1 // triggers .task(id:) → resolveAndLoad
+        loadError = nil
+        loadedUrl = nil // forces a fresh WKWebView with a fresh navigation
+        Task { await resolveAndLoad() }
     }
 
     private func webErrorView(_ message: String) -> some View {
@@ -97,7 +95,6 @@ struct WebViewScreen: View {
 
 private struct WebWebView: UIViewRepresentable {
     let url: URL
-    let reloadToken: Int
     let onFailure: () -> Void
 
     func makeUIView(context: Context) -> WKWebView {
@@ -111,12 +108,6 @@ private struct WebWebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         context.coordinator.onFailure = onFailure
-        // reloadToken changes only on retry-after-failure, which always passes
-        // through a fresh .loading(URL) — reload just the changed navigation.
-        if context.coordinator.lastToken != reloadToken {
-            context.coordinator.lastToken = reloadToken
-            webView.reload()
-        }
     }
 
     func makeCoordinator() -> NavigationCoordinator {
@@ -125,7 +116,6 @@ private struct WebWebView: UIViewRepresentable {
 
     final class NavigationCoordinator: NSObject, WKNavigationDelegate {
         var onFailure: (() -> Void)?
-        var lastToken = 0
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
             onFailure?()
