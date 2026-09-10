@@ -209,3 +209,21 @@ Stage Summary:
 - Project is LIVE on port 3000 via gateway (preview panel) with full git history; .env placeholder means data APIs (products/categories/deals) return 500 and pages show graceful "unavailable" states — EXPECTED until real Supabase DATABASE_URL is provided.
 - Next topic (user-stated): GitHub Actions for iOS/Android builds. Repo already has .github/workflows (ios-build.yml: macos-15 + XcodeGen; android-build green per HANDOFF §1/§3; ios ApiClient.swift `self.base` fix still pending).
 - Risks: (1) PAT exposed in git remote + pasted in chat — owner was already advised to rotate; remind again. (2) Placeholder JWT_SECRET fine for render, must come from owner with real secrets for auth features. (3) Never run `bun run build` in this sandbox (never build; dev only). (4) pkill -f next can kill own shell — kill by pid from `ss -ltnp`.
+
+---
+Task ID: 2
+Agent: Z.ai Code (main orchestrator, cron review round)
+Task: Assess project status, QA via agent-browser, then advance the highest-priority sanctioned work (iOS CI compile fix per HANDOFF §1).
+
+Work Log:
+- Status check: dev server still alive on :3000 (pid 3086, double-fork pattern from Task 1 held). dev.log shows only expected placeholder-DB 500s (products/categories APIs) — owner will supply Supabase creds; NOT mocked per owner instruction.
+- agent-browser QA: homepage renders full shell, correct title, SPA stable; only expected DB-less states. Web phase = STABLE → per HANDOFF phase gates, no drive-by web styling/feature changes (owner's law: fix only reported findings; Phase 0 native/CI is the authorized lane).
+- Fixed the in-flight iOS CI bug (HANDOFF §1): ios/Zylod/Networking/ApiClient.swift init assigned the immutable `base` parameter instead of the stored property → `self.base = URL(string: base.hasSuffix("/") ? base : base + "/")!`.
+- Committed as d70aae3 ("fix(ios): ApiClient.init assigns self.base stored property...") and pushed to origin main (git identity: Grapsee-Official <graphesee@gmail.com>).
+- Polled GitHub Actions API on head_sha d70aae3: ios-build run 34427018334 = SUCCESS — all steps green (XcodeGen generate, signing-free simulator build, version stamp, artifact upload). android-build run 34427018201 = SUCCESS.
+
+Stage Summary:
+- **iOS CI is GREEN for the first time — the compile-fix loop (expectation was 1–3 rounds) closed in 1 round.** Both platform CIs now build on every push.
+- Audit loop state (owner's law): awaiting OWNER audit of (a) iOS simulator artifact from run 34427018334, (b) Android APK (Zylod-debug-apk-ea704b2 or newer). No further agent code changes until audit findings arrive — only reported findings will be fixed.
+- Still blocked/pending: real Supabase DATABASE_URL from owner (web data APIs return graceful 500s until then).
+- Risks: PAT embedded in git remote + previously pasted in chat — rotate when convenient. macOS runner minutes are consumed on every push (both workflows rebuild); batch pushes when possible.
