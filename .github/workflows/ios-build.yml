@@ -1,0 +1,67 @@
+name: ios-build
+
+# iOS foundation CI — clean-checkout SwiftUI build validated on a macOS runner.
+# Produces a traceable simulator .app for the audit loop. A device-installable
+# signed IPA requires Apple signing secrets (see "Known limitations" in the
+# phase report): APPLE_CERT_P12_BASE64, APPLE_CERT_PASSWORD, and a provisioning
+# profile; the build step below is signing-free by design until then.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Build (iOS Simulator, signing-free)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios/Zylod.xcodeproj \
+            -scheme Zylod \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ios/build \
+            CODE_SIGNING_ALLOWED=NO \
+            build 2>&1 | tail -30
+
+      - name: Stamp version with commit + write build info
+        run: |
+          SHA7=${GITHUB_SHA::7}
+          APP_PATH=$(find ios/build/Build/Products/Debug-iphonesimulator -maxdepth 1 -name "*.app" | head -n 1)
+          test -n "$APP_PATH" || { echo "No .app produced"; exit 1; }
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 2.4.5-$SHA7" "$APP_PATH/Info.plist"
+          {
+            echo "app:          Zylod iOS (com.zylod.wholesale.debug, simulator build)"
+            echo "version:      2.4.5-$SHA7 (build 245)"
+            echo "commit:       $GITHUB_SHA"
+            echo "built from:   https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+            echo "workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > ios/build/build-info.txt
+          cat ios/build/build-info.txt
+
+      - name: Upload simulator app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zylod-ios-simulator-${{ github.sha }}
+          path: |
+            ios/build/Build/Products/Debug-iphonesimulator/*.app
+            ios/build/build-info.txt
+          if-no-files-found: error
+          retention-days: 30

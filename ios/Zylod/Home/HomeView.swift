@@ -1,0 +1,420 @@
+import SwiftUI
+
+// Faithful port of src/components/mobile/mobile-home-page.tsx (Phase 0
+// reference, same as android ui/home/HomeScreen.kt). Section order: top bar →
+// search → category pills → quick access → flash deals → product grid.
+
+struct QuickLink: Identifiable {
+    let label: String
+    let icon: String
+    let tint: Color
+    let gradient: [Color]
+    let pageId: String
+
+    var id: String { label }
+}
+
+private let primaryLinks: [QuickLink] = [
+    QuickLink(label: "Explore", icon: "safari", tint: Color(hex: 0xC8102E), gradient: ZylodChip.red, pageId: "explore"),
+    QuickLink(label: "Trending", icon: "arrow.trend.up", tint: Color(hex: 0xE53935), gradient: ZylodChip.red, pageId: "trending-products"),
+    QuickLink(label: "Flash Sale", icon: "bolt.fill", tint: Color(hex: 0xF57C00), gradient: ZylodChip.orange, pageId: "flash-sale"),
+    QuickLink(label: "Daily Deals", icon: "scissors", tint: Color(hex: 0xE53935), gradient: ZylodChip.red, pageId: "daily-deals"),
+    QuickLink(label: "New Arrivals", icon: "sparkles", tint: Color(hex: 0x1565C0), gradient: ZylodChip.blue, pageId: "new-arrivals"),
+    QuickLink(label: "Clearance", icon: "tag", tint: Color(hex: 0xC62828), gradient: ZylodChip.red, pageId: "clearance"),
+    QuickLink(label: "Seasonal", icon: "rosette", tint: Color(hex: 0x2E7D32), gradient: ZylodChip.green, pageId: "seasonal-offers"),
+    QuickLink(label: "Brands", icon: "building.2", tint: Color(hex: 0x6A1B9A), gradient: ZylodChip.purple, pageId: "brand-showcase"),
+]
+
+private let moreLinks: [QuickLink] = [
+    QuickLink(label: "Categories", icon: "square.grid.2x2", tint: Color(hex: 0x1976D2), gradient: ZylodChip.blue, pageId: "category-browser"),
+    QuickLink(label: "Coupons", icon: "percent", tint: Color(hex: 0xC62828), gradient: ZylodChip.red, pageId: "coupons"),
+    QuickLink(label: "Suppliers", icon: "storefront", tint: Color(hex: 0xE53935), gradient: ZylodChip.red, pageId: "suppliers"),
+    QuickLink(label: "Trade Assurance", icon: "shield", tint: Color(hex: 0x1976D2), gradient: ZylodChip.blue, pageId: "suppliers"),
+    QuickLink(label: "Easy Payments", icon: "creditcard", tint: Color(hex: 0x388E3C), gradient: ZylodChip.green, pageId: "checkout"),
+    QuickLink(label: "Fast Shipping", icon: "shippingbox", tint: Color(hex: 0x6A1B9A), gradient: ZylodChip.purple, pageId: "orders"),
+    QuickLink(label: "Top Deals", icon: "clock", tint: Color(hex: 0xF57C00), gradient: ZylodChip.orange, pageId: "top-deals"),
+    QuickLink(label: "Bulk Orders", icon: "shippingbox", tint: Color(hex: 0x00695C), gradient: ZylodChip.teal, pageId: "bulk-order"),
+    QuickLink(label: "RFQ", icon: "doc.plaintext", tint: Color(hex: 0x37474F), gradient: ZylodChip.grey, pageId: "rfq-list"),
+    QuickLink(label: "Support", icon: "headphones", tint: Color(hex: 0xC8102E), gradient: ZylodChip.red, pageId: "support"),
+    QuickLink(label: "Cross-border", icon: "globe", tint: Color(hex: 0x1976D2), gradient: ZylodChip.blue, pageId: "cross-border"),
+    QuickLink(label: "Factory Direct", icon: "factory", tint: Color(hex: 0x388E3C), gradient: ZylodChip.green, pageId: "factory-direct"),
+]
+
+struct HomeView: View {
+    @StateObject private var viewModel = HomeViewModel()
+    @State private var moreOpen = false
+    let openPage: (String, String) -> Void
+
+    var body: some View {
+        Group {
+            if viewModel.loading {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if let message = viewModel.error {
+                HomeErrorView(message: message) {
+                    Task { await viewModel.refresh() }
+                }
+            } else {
+                content
+            }
+        }
+        .background(ZylodColor.background)
+        .task { await viewModel.refresh() }
+    }
+
+    private var content: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                topBar
+                searchPill.padding(.top, 4)
+                statsCaption.padding(.top, 10)
+                categoryPills.padding(.top, 10)
+                quickAccess.padding(.top, 16)
+                flashDeals.padding(.top, 12)
+                productGrid.padding(.top, 8)
+                loadMore.padding(.top, 10)
+                Color.clear.frame(height: 24)
+            }
+            .padding(.horizontal, 12)
+        }
+    }
+
+    private var topBar: some View {
+        HStack {
+            Text("Zylod")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundColor(ZylodColor.primary)
+            Spacer()
+            Button { openPage("notifications", "") } label: {
+                Image(systemName: "bell")
+                    .font(.system(size: 17))
+                    .foregroundColor(ZylodColor.onMuted)
+            }
+            Button { openPage("category-browser", "") } label: {
+                Image(systemName: "line.3.horizontal")
+                    .font(.system(size: 17))
+                    .foregroundColor(ZylodColor.onMuted)
+            }
+        }
+        .frame(height: 44)
+    }
+
+    private var searchPill: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 12))
+                .foregroundColor(ZylodColor.onMuted)
+            Text("Search products, suppliers...")
+                .font(.system(size: 12))
+                .foregroundColor(ZylodColor.onMuted)
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 9)
+        .background(Capsule().fill(ZylodColor.muted.opacity(0.6)))
+        .contentShape(Capsule())
+        .onTapGesture { openPage("search-home", "") }
+    }
+
+    private var statsCaption: some View {
+        Text("\(ZylodFormat.compact(viewModel.stats.productCount))+ products · \(ZylodFormat.compact(viewModel.stats.supplierCount))+ verified suppliers")
+            .font(.system(size: 10))
+            .foregroundColor(ZylodColor.onMuted)
+    }
+
+    private var categoryPills: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(viewModel.categories, id: \.id) { category in
+                    Button {
+                        openPage("category-products", "category=\(category.slug ?? "")")
+                    } label: {
+                        Text(category.name)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(ZylodColor.onSecondary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Capsule().fill(ZylodColor.secondary))
+                            .overlay(Capsule().stroke(ZylodColor.border.opacity(0.4), lineWidth: 1))
+                            .lineLimit(1)
+                    }
+                }
+            }
+        }
+    }
+
+    private var quickAccess: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Quick Access")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(ZylodColor.onBackground)
+                Spacer()
+                Button {
+                    moreOpen = true
+                } label: {
+                    Text("More")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(ZylodColor.primary)
+                }
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 4) {
+                    ForEach(primaryLinks) { link in
+                        QuickIconView(link: link) { openPage(link.pageId, "") }
+                    }
+                    Button {
+                        moreOpen = true
+                    } label: {
+                        VStack(spacing: 6) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .fill(ZylodColor.muted)
+                                    .frame(width: 44, height: 44)
+                                Text("+\(moreLinks.count)")
+                                    .font(.system(size: 10, weight: .black))
+                                    .foregroundColor(ZylodColor.onMuted)
+                            }
+                            Text("More")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(ZylodColor.onBackground)
+                        }
+                        .frame(width: 68)
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .background(RoundedRectangle(cornerRadius: 14).fill(ZylodColor.card))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(ZylodColor.border.opacity(0.5), lineWidth: 1))
+        .sheet(isPresented: $moreOpen) {
+            QuickAccessMoreSheet { link in
+                moreOpen = false
+                openPage(link.pageId, "")
+            }
+        }
+    }
+
+    private var flashDeals: some View {
+        Group {
+            if !viewModel.deals.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(viewModel.deals, id: \.effectiveId) { deal in
+                            Button {
+                                if let id = deal.effectiveId {
+                                    openPage("product-detail", "productId=\(id)")
+                                }
+                            } label: {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    RemoteImage(url: imageURL(deal.effectiveImage), cornerRadius: 8)
+                                        .frame(width: 58, height: 58)
+                                    Text(ZylodFormat.bdt(deal.effectivePrice))
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundColor(ZylodColor.primary)
+                                        .lineLimit(1)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var productGrid: some View {
+        LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+            ForEach(viewModel.products, id: \.id) { product in
+                ProductCardView(product: product, serverUrl: viewModel.serverUrl) {
+                    openPage("product-detail", "productId=\(product.id)")
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var loadMore: some View {
+        if viewModel.page < viewModel.totalPages {
+            HStack {
+                Spacer()
+                if viewModel.loadingMore {
+                    ProgressView()
+                } else {
+                    Button {
+                        Task { await viewModel.loadMore() }
+                    } label: {
+                        Text("Load more")
+                            .font(.system(size: 12))
+                            .foregroundColor(ZylodColor.primary)
+                    }
+                }
+                Spacer()
+            }
+        } else if viewModel.products.isEmpty {
+            Text("No products found")
+                .font(.system(size: 12))
+                .foregroundColor(ZylodColor.onMuted)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 32)
+        }
+    }
+
+    private func imageURL(_ raw: String?) -> URL? {
+        guard let raw, !raw.isEmpty else { return nil }
+        if raw.hasPrefix("http") { return URL(string: raw) }
+        guard !viewModel.serverUrl.isEmpty else { return nil }
+        return URL(string: viewModel.serverUrl.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + raw)
+    }
+}
+
+private struct QuickIconView: View {
+    let link: QuickLink
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(LinearGradient(colors: link.gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
+                    Image(systemName: link.icon)
+                        .font(.system(size: 19))
+                        .foregroundColor(link.tint)
+                }
+                .frame(width: 44, height: 44)
+                Text(link.label)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(ZylodColor.onBackground)
+                    .lineLimit(1)
+            }
+            .frame(width: 68)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct QuickAccessMoreSheet: View {
+    let onSelect: (QuickLink) -> Void
+
+    private let columns = [
+        GridItem(.flexible()), GridItem(.flexible()),
+        GridItem(.flexible()), GridItem(.flexible()),
+    ]
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("All Services")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(ZylodColor.onBackground)
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(moreLinks) { link in
+                        QuickIconView(link: link) { onSelect(link) }
+                    }
+                }
+            }
+            .padding(16)
+            .padding(.bottom, 24)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .presentationDetents([.medium, .large])
+    }
+}
+
+private struct RemoteImage: View {
+    let url: URL?
+    var cornerRadius: CGFloat
+
+    var body: some View {
+        AsyncImage(url: url) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
+            ZStack {
+                Color.white
+                Image(systemName: "shippingbox")
+                    .font(.system(size: 16))
+                    .foregroundColor(ZylodColor.onMuted)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+    }
+}
+
+private struct ProductCardView: View {
+    let product: Product
+    let serverUrl: String
+    let action: () -> Void
+
+    private var resolvedImage: URL? {
+        guard let raw = product.firstImage, !raw.isEmpty, !raw.hasPrefix("/placeholder") else { return nil }
+        if raw.hasPrefix("http") { return URL(string: raw) }
+        guard !serverUrl.isEmpty else { return nil }
+        return URL(string: serverUrl.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + raw)
+    }
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 0) {
+                RemoteImage(url: resolvedImage, cornerRadius: 0)
+                    .aspectRatio(5.0 / 6.0, contentMode: .fit)
+                    .clipped()
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(product.name)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(ZylodColor.onBackground)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .frame(minHeight: 26, alignment: .topLeading)
+                    HStack(alignment: .bottom, spacing: 4) {
+                        Text(ZylodFormat.bdt(product.basePrice ?? 0))
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(ZylodColor.primary)
+                        if let sold = product.soldCount, sold > 0 {
+                            Text("\(ZylodFormat.compact(sold)) sold")
+                                .font(.system(size: 8))
+                                .foregroundColor(ZylodColor.onMuted)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                }
+                .padding(.horizontal, 6)
+                .padding(.top, 4)
+                .padding(.bottom, 6)
+            }
+            .background(RoundedRectangle(cornerRadius: 6).fill(ZylodColor.card))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct HomeErrorView: View {
+    let message: String
+    let retry: () -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "cloud.off")
+                .font(.system(size: 44))
+                .foregroundColor(ZylodColor.onMuted)
+            Text("Can't reach Zylod")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(ZylodColor.onBackground)
+            Text(message)
+                .font(.system(size: 11))
+                .foregroundColor(ZylodColor.onMuted)
+                .multilineTextAlignment(.center)
+            Button(action: retry) {
+                Text("Retry")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(ZylodColor.onPrimary)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 10)
+                    .background(Capsule().fill(ZylodColor.primary))
+            }
+        }
+        .padding(32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}

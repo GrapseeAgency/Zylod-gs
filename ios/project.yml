@@ -1,0 +1,44 @@
+name: Zylod
+options:
+  bundleIdPrefix: com.zylod
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "2.4.5"
+    CURRENT_PROJECT_VERSION: "245"
+    TARGETED_DEVICE_FAMILY: "1"
+  configs:
+    Debug:
+      PRODUCT_BUNDLE_IDENTIFIER: com.zylod.wholesale.debug
+    Release:
+      PRODUCT_BUNDLE_IDENTIFIER: com.zylod.wholesale
+targets:
+  Zylod:
+    type: application
+    platform: iOS
+    sources:
+      - Zylod
+    info:
+      path: Zylod/Info.plist
+      properties:
+        CFBundleDisplayName: Zylod
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSAppTransportSecurity:
+          # Debug server candidates include local http:// hosts (LAN, emulator
+          # loopback). Release candidates are HTTPS-only; remove before any
+          # App Store submission.
+          NSAllowsLocalNetworking: true
+schemes:
+  Zylod:
+    build:
+      targets:
+        Zylod: all
+    run:
+      config: Debug

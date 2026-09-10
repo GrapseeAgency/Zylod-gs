@@ -13,14 +13,19 @@ agent implements → commit + push to main → GitHub Actions builds APK
 ```
 
 - A feature is **never** accepted because it compiles. The installed build is the acceptance target.
-- Every push to `main` produces an APK artifact named `Zylod-debug-apk-<full-commit-sha>`.
-- CI builds stamp the short SHA into `versionName` (`2.4.5-<sha7>`), so the installed
-  app is traceable on-device: **Settings → Apps → Zylod → Version** (or
-  `adb shell dumpsys package com.zylod.wholesale.debug | grep versionName`).
+- Every push to `main` produces, per platform:
+  - `Zylod-debug-apk-<full-commit-sha>` (Android Actions run)
+  - `Zylod-ios-simulator-<full-commit-sha>` (iOS Actions run, macOS runner)
+- CI builds stamp the short SHA into the version strings so installed builds are
+  traceable on-device: Android **Settings → Apps → Zylod → Version** shows
+  `2.4.5-<sha7>` (or `adb shell dumpsys package com.zylod.wholesale.debug |
+  grep versionName`); the iOS simulator app's Info.plist
+  `CFBundleShortVersionString` carries the same `2.4.5-<sha7>`.
   Local/`gradlew` builds stay plain `2.4.5`.
 
 ## 2. Installing & verifying a build (owner)
 
+### Android
 1. Open the run: `https://github.com/GrapseeAgency/Zylod-gs/actions` → newest green
    **android-build** run (each run page shows its commit).
 2. Download artifact **Zylod-debug-apk-\<sha\>** from the run's Artifacts section
@@ -32,6 +37,17 @@ agent implements → commit + push to main → GitHub Actions builds APK
    Zylod app, launcher label "Zylod".
 6. Verify on-device: Settings → Apps → **Zylod** (debug) → Version must read
    `2.4.5-<short-sha>` matching the run's commit. That string is the proof of origin.
+
+### iOS
+1. Newest green **ios-build** run → download **Zylod-ios-simulator-\<sha\>**;
+   unzip → `Zylod.app` + `build-info.txt` (commit + run URL inside).
+2. Run it in the iOS Simulator on a Mac: `xcrun simctl install booted Zylod.app`
+   then `xcrun simctl launch booted com.zylod.wholesale.debug` (or drag onto a
+   running Simulator window). Verify `CFBundleShortVersionString` =
+   `2.4.5-<short-sha>` in the app bundle's Info.plist.
+3. Real-device install (audit on an iPhone) requires Apple signing: set repo
+   secrets `APPLE_CERT_P12_BASE64`, `APPLE_CERT_PASSWORD`, and a provisioning
+   profile; a signed-IPA job will be added to ios-build.yml once provided.
 
 ## 3. Hard rules
 
@@ -48,8 +64,9 @@ agent implements → commit + push to main → GitHub Actions builds APK
 
 | Phase | Status | Commit / run | Known limitations |
 |---|---|---|---|
-| 0 — foundations | **done, awaiting device audit** | see §5 | dead Supabase project (`tenant not found`) → APIs 500 → app shows error state until DB restored; sticky-search + cart badge deferred to Phase 1; WebView tab unverified against live backend |
-| 1 — auth + PDP + cart native | **blocked** on owner audit of Phase 0 build | — | — |
+| 0 — foundations (Android) | **built, awaiting device audit** | latest `Zylod-debug-apk-<sha>` | sticky-search + cart badge deferred to Phase 1; WebView tab unverified against live backend |
+| 0 — foundations (iOS) | **built, awaiting simulator audit** | latest `Zylod-ios-simulator-<sha>` | CI-compiled only (no local macOS); simulator artifact until Apple signing secrets provided; Home animations/skeleton polish deferred |
+| 1 — auth + PDP + cart native (both platforms) | **blocked** on owner audit of both Phase 0 builds | — | — |
 
 ## 5. Current build pointer (update on every accepted phase)
 
