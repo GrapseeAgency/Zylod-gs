@@ -33,6 +33,7 @@ jobs:
 
       - name: Build (iOS Simulator, signing-free)
         run: |
+          mkdir -p ios/build
           xcodebuild \
             -project ios/Zylod.xcodeproj \
             -scheme Zylod \
