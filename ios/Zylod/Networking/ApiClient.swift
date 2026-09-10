@@ -117,12 +117,12 @@ final class ApiClient {
         return request
     }
 
-    private func get<Data: Codable>(_ path: String, query: [URLQueryItem] = []) async throws -> ApiEnvelope<Data> {
+    private func get<Envelope: Codable>(_ path: String, query: [URLQueryItem] = []) async throws -> Envelope {
         let (data, response) = try await session.data(for: request(path, query: query))
         if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
             throw ApiError.http(http.statusCode)
         }
-        return try decoder.decode(ApiEnvelope<Data>.self, from: data)
+        return try decoder.decode(Envelope.self, from: data)
     }
 
     func categories() async throws -> ApiEnvelope<[Category]> {
