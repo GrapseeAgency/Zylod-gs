@@ -55,7 +55,7 @@ final class BarcodeScannerViewController: UIViewController, DataScannerViewContr
         }
         let scanner = DataScannerViewController(
             recognizedDataTypes: [.barcode()],
-            qualityMode: .balanced,
+            qualityLevel: .balanced,
             recognizesMultipleItems: false,
             isHighFrameRateTrackingEnabled: true,
             isPinchToZoomEnabled: true,

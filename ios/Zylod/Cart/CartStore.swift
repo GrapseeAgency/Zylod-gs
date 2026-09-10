@@ -64,7 +64,7 @@ final class CartStore: ObservableObject {
         var applicablePrice = item.unitPrice
         if !item.priceTiers.isEmpty {
             for tier in item.priceTiers {
-                if quantity >= tier.minQty && (tier.maxQty == nil || quantity <= tier.maxQty) {
+                if quantity >= tier.minQty && (tier.maxQty == nil || quantity <= (tier.maxQty ?? Int.max)) {
                     applicablePrice = tier.pricePerUnit
                     break
                 }

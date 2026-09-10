@@ -92,9 +92,9 @@ object WebAuthSeeder {
         lastScript = script
         val origin = originRule(baseUrl) ?: return
         primaryApiAvailable = try {
-            // webkit 1.11.0 signature: (WebView, String script, String[] allowedOriginRules).
+            // webkit 1.11.0 public signature: (WebView, String script, Set<String> allowedOriginRules).
             // One script string per install() call — the seeder rebuilds it each load.
-            WebViewCompat.addDocumentStartJavaScript(webView, script, arrayOf(origin))
+            WebViewCompat.addDocumentStartJavaScript(webView, script, setOf(origin))
             true
         } catch (_: Throwable) {
             false

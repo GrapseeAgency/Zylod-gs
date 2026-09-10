@@ -284,7 +284,7 @@ struct ProductDetailView: View {
                     .font(ZylodFont.scaled(14, .semibold, relativeTo: .body))
                     .foregroundColor(ZylodColor.onBackground)
                     .monospacedDigit()
-                    .frame(width: 48, minHeight: 32)
+                    .frame(width: 48, height: 32)
                     .overlay(
                         Rectangle().fill(ZylodColor.border.opacity(0.6)).frame(width: 1), alignment: .leading
                     )
@@ -308,7 +308,7 @@ struct ProductDetailView: View {
             Image(systemName: symbol)
                 .font(ZylodFont.scaled(12, .semibold, relativeTo: .footnote))
                 .foregroundColor(ZylodColor.onBackground)
-                .frame(width: 34, minHeight: 32)
+                .frame(width: 34, height: 32)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

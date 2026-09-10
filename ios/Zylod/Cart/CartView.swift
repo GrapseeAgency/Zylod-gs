@@ -225,7 +225,7 @@ struct CartView: View {
                 .font(ZylodFont.scaled(12, .bold, relativeTo: .footnote))
                 .foregroundColor(ZylodColor.onBackground)
                 .monospacedDigit()
-                .frame(width: 44, minHeight: 30)
+                .frame(width: 44, height: 30)
                 .background(ZylodColor.card)
             stepperButton("plus", item: item) {
                 cartStore.updateQuantity(item.id, quantity: item.quantity + step)
@@ -242,7 +242,7 @@ struct CartView: View {
             Image(systemName: symbol)
                 .font(ZylodFont.scaled(11, .semibold, relativeTo: .caption))
                 .foregroundColor(ZylodColor.onMuted)
-                .frame(width: 30, minHeight: 30)
+                .frame(width: 30, height: 30)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

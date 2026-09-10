@@ -27,9 +27,32 @@ struct ApiFailure: Error, LocalizedError {
 
     var errorDescription: String? { error }
 
+    /// Decodable mirror of the wire body — `status` is client-side only, so a
+    /// straight `decode(ApiFailure.self)` would always throw on the missing key.
+    private struct Body: Decodable {
+        var error: String?
+        var code: String?
+        var attemptsRemaining: Int?
+        var accountLocked: Bool?
+        var lockedUntil: Double?
+        var suspension: Suspension?
+        var stockAvailable: Int?
+        var moq: Int?
+    }
+
     static func decode(status: Int, data: Data) -> ApiFailure {
-        if let decoded = try? JSONDecoder().decode(ApiFailure.self, from: data), !decoded.error.isEmpty {
-            return decoded
+        if let body = try? JSONDecoder().decode(Body.self, from: data), let message = body.error, !message.isEmpty {
+            return ApiFailure(
+                status: status,
+                error: message,
+                code: body.code,
+                attemptsRemaining: body.attemptsRemaining,
+                accountLocked: body.accountLocked,
+                lockedUntil: body.lockedUntil,
+                suspension: body.suspension,
+                stockAvailable: body.stockAvailable,
+                moq: body.moq
+            )
         }
         return ApiFailure(status: status, error: "Request failed (HTTP \(status))")
     }
