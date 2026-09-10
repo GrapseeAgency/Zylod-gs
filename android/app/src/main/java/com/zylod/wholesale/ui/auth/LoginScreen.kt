@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Mail
-import androidx.compose.material.icons.outlined.ShieldAlert
+import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.AlertDialog
@@ -447,7 +447,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.ShieldAlert, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Outlined.Security, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
                         Spacer(Modifier.width(10.dp))
                         Column {
                             Text("Account Temporarily Locked", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.error)
@@ -485,7 +485,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-                        Icon(Icons.Outlined.ShieldAlert, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
+                        Icon(Icons.Outlined.Security, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
                         Spacer(Modifier.width(8.dp))
                         Text(state.captcha.question, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.width(8.dp))

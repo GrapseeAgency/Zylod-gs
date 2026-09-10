@@ -332,7 +332,7 @@ struct TierPriceTable: View {
     }
 
     private func isActive(_ tier: TierRow) -> Bool {
-        quantity >= tier.minQty && (tier.maxQty == nil || quantity <= tier.maxQty)
+        quantity >= tier.minQty && (tier.maxQty == nil || quantity <= (tier.maxQty ?? Int.max))
     }
 }
 

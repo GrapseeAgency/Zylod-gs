@@ -202,8 +202,8 @@ fun OtpInputBox(
         val chars = value.padEnd(boxCount, ' ').toCharArray().toMutableList()
         digits.take(boxCount - index).forEachIndexed { offset, d -> chars[index + offset] = d }
         onValueChange(chars.joinToString("").trimEnd(' '))
-        val target = (index + digits.size).coerceAtMost(boxCount - 1)
-        if (index + digits.size < boxCount) focusRequesters[target].requestFocus()
+        val target = (index + digits.length).coerceAtMost(boxCount - 1)
+        if (index + digits.length < boxCount) focusRequesters[target].requestFocus()
     }
 
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {

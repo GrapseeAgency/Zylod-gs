@@ -22,8 +22,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Minus
-import androidx.compose.material.icons.outlined.Plus
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -371,7 +371,7 @@ private fun QuantityStepper(quantity: Int, onChange: (Int) -> Unit) {
             )
             .padding(4.dp),
     ) {
-        StepperIcon(Icons.Outlined.Minus, "Decrease quantity", enabled = true) { onChange(-1) }
+        StepperIcon(Icons.Outlined.Remove, "Decrease quantity", enabled = true) { onChange(-1) }
         Text(
             quantity.toString(),
             fontSize = 12.sp,
@@ -379,7 +379,7 @@ private fun QuantityStepper(quantity: Int, onChange: (Int) -> Unit) {
             textAlign = TextAlign.Center,
             modifier = Modifier.width(44.dp),
         )
-        StepperIcon(Icons.Outlined.Plus, "Increase quantity", enabled = true) { onChange(1) }
+        StepperIcon(Icons.Outlined.Add, "Increase quantity", enabled = true) { onChange(1) }
     }
 }
 

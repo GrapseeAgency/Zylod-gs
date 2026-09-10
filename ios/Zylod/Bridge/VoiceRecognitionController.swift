@@ -111,7 +111,7 @@ final class VoiceRecognitionController: NSObject, SFSpeechRecognizerDelegate {
 
     private func stopAndDeliverBestResult() {
         // Keep the engine's tap long enough to finalize, but cap delivery.
-        if let task, !task.isFinished {
+        if let task, !task.isFinishing {
             task.finish()
         }
         request?.endAudio()

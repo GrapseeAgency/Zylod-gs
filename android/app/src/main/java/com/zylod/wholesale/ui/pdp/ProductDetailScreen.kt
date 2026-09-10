@@ -263,6 +263,25 @@ fun ProductDetailScreen(
     }
 }
 
+/** Label/value row inside the buy-now confirmation dialog. */
+@Composable
+private fun ConfirmLine(label: String, value: String) {
+    Row(modifier = Modifier.padding(top = 4.dp)) {
+        Text(
+            label,
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.width(120.dp),
+        )
+        Text(
+            value,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+
 /** LazyColumn item index of the main Add/Buy row (sticky-bar threshold). */
 private const val ACTION_ITEM_INDEX = 2
 
@@ -338,7 +357,7 @@ private fun Gallery(product: ProductDetailDto) {
                         .crossfade(200)
                         .build(),
                     contentDescription = "${product.name} image ${page + 1}",
-                    contentScale = ContentScale.Contain,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp),

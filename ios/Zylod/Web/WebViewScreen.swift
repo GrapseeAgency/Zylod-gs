@@ -135,9 +135,10 @@ private struct WebWebView: UIViewRepresentable {
         webView.navigationDelegate = context.coordinator
         webView.uiDelegate = context.coordinator
         Self.bridge.attach(webView: webView)
-        if #available(iOS 14.5, *) {
-            webView.downloadDelegate = ZylodDownloadDelegate.shared
-        }
+        // Download plumbing: WKWebView has no downloadDelegate member — when a
+        // navigation becomes a download (`.download` policy below), the WKWebView
+        // asks its WKNavigationDelegate for a delegate via the `didBecome` hooks,
+        // implemented on BridgeCoordinator below (iOS 14.5+ API, target is 16).
         webView.load(URLRequest(url: url))
         return webView
     }
@@ -280,6 +281,16 @@ extension BridgeCoordinator: WKNavigationDelegate, WKUIDelegate {
             }
         }
         decisionHandler(.allow)
+    }
+
+    /// A navigation the user asked to download (`.download` policy) is handed
+    /// back here — supply the delegate that decides the destination file URL.
+    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) -> WKDownloadDelegate? {
+        ZylodDownloadDelegate.shared
+    }
+
+    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) -> WKDownloadDelegate? {
+        ZylodDownloadDelegate.shared
     }
 }
 

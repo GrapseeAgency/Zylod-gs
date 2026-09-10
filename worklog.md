@@ -488,3 +488,18 @@ Work Log:
 
 Stage Summary:
 - Ready to commit + push; expecting android-build.yml + ios-build.yml green runs and SHA-stamped artifacts; CI result is the next gate.
+
+---
+Task ID: 5 (orchestrator CI-fix rounds)
+Agent: Z.ai Code orchestrator
+Task: Fix CI round-1 + round-2 findings (0405f7e, 5299532)
+
+Work Log:
+- Round 1 (Android): Kotlin nested block comments — `/api/*` inside ApiClient.kt KDoc opened a nested comment swallowing the file (Kotlin block comments NEST). Rewrote comment text; swept all changed .kt for unbalanced nesting (clean).
+- Round 1 (iOS): `?? await` autoclosure misuse — OfflineStore.swift + AuthSession.swift ×2 rewritten to explicit if/else branches; repo-wide scan for the pattern (clean).
+- Round 2 (Android): 13 errors fixed — retrofit2.http.GET/Query imports restored in ApiClient.kt (lost in review edits); WebAuthSeeder call corrected to the REAL webkit 1.11.0 signature (WebView, String script, String[] origins) verified by downloading the AAR and parsing the constant-pool descriptor; `digits.size`→`length` ×2 in ZylodUi OTP; ShieldAlert→Security (Login/Forgot); Minus/Plus→Remove/Add (CartScreen); ConfirmLine composable defined (PDP buy-now dialog); ContentScale.Contain→Fit (Contain is not a real API).
+- Round 2 (iOS): 3 errors fixed — SFSpeechRecognitionTask.isFinished→isFinishing; WKWebView has NO downloadDelegate member → removed and wired the correct path (.download policy → WKNavigationDelegate `didBecome download:` hooks returning ZylodDownloadDelegate); TierRow `Int?` comparison unwrapped in ZylodUI.
+- Proactive: validated all 50 Icons.Outlined.* names against the Material codepoints table (ALL VALID); verified formatBdt file-scoped definitions where used.
+
+Stage Summary:
+- All findings from CI rounds 1-2 fixed with root causes (not patches); pushing 5299532→round 3 and watching CI again.

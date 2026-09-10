@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Mail
-import androidx.compose.material.icons.outlined.ShieldAlert
+import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -223,7 +223,7 @@ fun ForgotPasswordScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-                    Icon(Icons.Outlined.ShieldAlert, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Outlined.Security, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
                     Spacer(Modifier.width(8.dp))
                     Text(state.captcha.question, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.width(8.dp))
