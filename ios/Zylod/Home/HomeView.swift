@@ -48,12 +48,17 @@ struct HomeView: View {
     // on its own — D5 fix).
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let openPage: (String, String) -> Void
+    /// Phase 1: product taps open the NATIVE PDP (§3.9 acceptance — "renders
+    /// real product by id … from list taps") instead of the Tier 3 WebView.
+    var openProduct: (String) -> Void
+
+    @State private var showStickySearch = false
+    @State private var subcategorySheetFor: Category?
 
     var body: some View {
         Group {
             if viewModel.loading {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                skeletonLayout
             } else if let message = viewModel.error {
                 HomeErrorView(message: message) {
                     Task { await viewModel.refresh() }
@@ -80,6 +85,96 @@ struct HomeView: View {
                 Color.clear.frame(height: 24)
             }
             .padding(.horizontal, 12)
+            .background(scrollOffsetReader)
+        }
+        .coordinateSpace(name: "homeScroll")
+        .onPreferenceChange(HomeScrollOffsetKey.self) { offset in
+            // Sticky compact search swap after ~120px (mobile-home-page.tsx:83-90).
+            let scrolled = offset < -120
+            if scrolled != showStickySearch { showStickySearch = scrolled }
+        }
+        .overlay(alignment: .top) {
+            if showStickySearch {
+                stickySearchBar
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: showStickySearch)
+        .sheet(item: $subcategorySheetFor) { category in
+            subcategorySheet(category)
+        }
+    }
+
+    private var scrollOffsetReader: some View {
+        GeometryReader { geo in
+            Color.clear.preference(
+                key: HomeScrollOffsetKey.self,
+                value: geo.frame(in: .named("homeScroll")).minY
+            )
+        }
+    }
+
+    /// Compact search bar shown when the full top bar scrolls away
+    /// (mobile-home-page.tsx StickySearchBar parity).
+    private var stickySearchBar: some View {
+        HStack(spacing: 10) {
+            Text("Zylod")
+                .font(ZylodFont.scaled(15, .bold, relativeTo: .headline))
+                .foregroundColor(ZylodColor.primary)
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .font(ZylodFont.scaled(12, relativeTo: .footnote))
+                    .foregroundColor(ZylodColor.onMuted)
+                Text("Search products, suppliers...")
+                    .font(ZylodFont.scaled(12, relativeTo: .footnote))
+                    .foregroundColor(ZylodColor.onMuted)
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Capsule().fill(ZylodColor.muted.opacity(0.6)))
+            .contentShape(Capsule())
+            .onTapGesture { openPage("search-home", "") }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(ZylodColor.background.opacity(0.97))
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(ZylodColor.border.opacity(0.6)).frame(height: 1)
+        }
+    }
+
+    /// Mirror skeleton (loading-skeletons.tsx MobileHomeLoading parity — §3.8
+    /// delta c): same section order as the live layout.
+    private var skeletonLayout: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 10) {
+                    SkeletonBlock(height: 20).frame(width: 72)
+                    Spacer()
+                    SkeletonBlock(height: 20).frame(width: 20)
+                    SkeletonBlock(height: 20).frame(width: 20)
+                }
+                SkeletonBlock(height: 36, cornerRadius: 18)
+                HStack(spacing: 8) {
+                    ForEach(0..<5, id: \.self) { _ in
+                        SkeletonBlock(height: 28, cornerRadius: 14).frame(width: 84)
+                    }
+                }
+                SkeletonBlock(height: 122, cornerRadius: 14)
+                HStack(spacing: 8) {
+                    ForEach(0..<4, id: \.self) { _ in
+                        SkeletonBlock(height: 84, cornerRadius: 8).frame(width: 58)
+                    }
+                }
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+                    ForEach(0..<6, id: \.self) { _ in
+                        SkeletonBlock(height: 172, cornerRadius: 6)
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 8)
         }
     }
 
@@ -126,25 +221,76 @@ struct HomeView: View {
             .foregroundColor(ZylodColor.onMuted)
     }
 
+    /// Category pills (mobile-category-pills.tsx): tap → category page;
+    /// 500ms long-press on a pill WITH children → subcategory sheet
+    /// (handleTouchStart/handlePillLongPress:143-158).
     private var categoryPills: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 ForEach(viewModel.categories, id: \.id) { category in
-                    Button {
+                    CategoryPill(category: category) {
                         openPage("category-products", "category=\(category.slug ?? "")")
-                    } label: {
-                        Text(category.name)
-                            .font(ZylodFont.scaled(11, .medium, relativeTo: .caption))
-                            .foregroundColor(ZylodColor.onSecondary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Capsule().fill(ZylodColor.secondary))
-                            .overlay(Capsule().stroke(ZylodColor.border.opacity(0.4), lineWidth: 1))
-                            .lineLimit(1)
+                    } onLongPress: {
+                        if category.children?.isEmpty == false {
+                            subcategorySheetFor = category
+                        }
                     }
                 }
             }
         }
+    }
+
+    /// Subcategory drawer parity (mobile-category-pills.tsx drawer).
+    private func subcategorySheet(_ category: Category) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(category.name)
+                    .font(ZylodFont.scaled(16, .bold, relativeTo: .headline))
+                    .foregroundColor(ZylodColor.onBackground)
+                Text("Subcategories")
+                    .font(ZylodFont.scaled(11, relativeTo: .caption))
+                    .foregroundColor(ZylodColor.onMuted)
+                    .textCase(.uppercase)
+            }
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(category.children ?? [], id: \.id) { child in
+                        Button {
+                            subcategorySheetFor = nil
+                            openPage("category-products", "category=\(child.slug ?? "")")
+                        } label: {
+                            HStack {
+                                Text(child.name)
+                                    .font(ZylodFont.scaled(13, .medium, relativeTo: .footnote))
+                                    .foregroundColor(ZylodColor.onBackground)
+                                Spacer()
+                                if let count = child.productCount, count > 0 {
+                                    Text("\(count)")
+                                        .font(ZylodFont.scaled(11, relativeTo: .caption))
+                                        .foregroundColor(ZylodColor.onMuted)
+                                }
+                                Image(systemName: "chevron.right")
+                                    .font(ZylodFont.scaled(10, relativeTo: .caption2))
+                                    .foregroundColor(ZylodColor.onMuted)
+                            }
+                            .padding(.vertical, 12)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .overlay(alignment: .top) {
+                            Rectangle().fill(ZylodColor.border.opacity(0.4)).frame(height: 1)
+                        }
+                    }
+                }
+            }
+            ZylodOutlineButton(title: "View all in \(category.name)") {
+                subcategorySheetFor = nil
+                openPage("category-products", "category=\(category.slug ?? "")")
+            }
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .presentationDetents([.medium, .large])
     }
 
     private var quickAccess: some View {
@@ -207,7 +353,7 @@ struct HomeView: View {
                         ForEach(viewModel.deals, id: \.effectiveId) { deal in
                             Button {
                                 if let id = deal.effectiveId {
-                                    openPage("product-detail", "productId=\(id)")
+                                    openProduct(id)
                                 }
                             } label: {
                                 VStack(alignment: .leading, spacing: 2) {
@@ -231,7 +377,7 @@ struct HomeView: View {
         LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
             ForEach(viewModel.products, id: \.id) { product in
                 ProductCardView(product: product, serverUrl: viewModel.serverUrl) {
-                    openPage("product-detail", "productId=\(product.id)")
+                    openProduct(product.id)
                 }
             }
         }
@@ -420,5 +566,41 @@ private struct HomeErrorView: View {
         }
         .padding(32)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+// MARK: - Scroll offset (sticky-search trigger)
+
+/// Reports the content's minY inside the "homeScroll" coordinate space;
+/// < -120 swaps in the compact search bar (mobile-home-page.tsx:83-90).
+private struct HomeScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
+// MARK: - Category pill (tap + 500ms long-press)
+
+private struct CategoryPill: View {
+    let category: Category
+    let onTap: () -> Void
+    let onLongPress: () -> Void
+
+    var body: some View {
+        Text(category.name)
+            .font(ZylodFont.scaled(11, .medium, relativeTo: .caption))
+            .foregroundColor(ZylodColor.onSecondary)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(ZylodColor.secondary))
+            .overlay(Capsule().stroke(ZylodColor.border.opacity(0.4), lineWidth: 1))
+            .lineLimit(1)
+            .contentShape(Capsule())
+            .onTapGesture { onTap() }
+            // 500ms threshold — mobile-category-pills.tsx handleTouchStart:150-154.
+            .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 12) {
+                onLongPress()
+            }
     }
 }

@@ -1,5 +1,6 @@
 import SwiftUI
 import WebKit
+import SafariServices
 
 // WebView shell for Tier 3 pageIds inside the SwiftUI navigation, mirroring
 // android ui/web/WebScreen.kt: loads the SPA deep-link URL (?page=<id>) on the
@@ -8,6 +9,12 @@ import WebKit
 // D4 remediation: cache-first server resolution (no re-probe storm per tab),
 // WKNavigationDelegate error handling with an explicit retry state, and a
 // bounded state machine (invalid URL can no longer spin forever).
+//
+// Phase 1 (§7.1/§7.4): the WKWebViewConfiguration carries the ZylodNativeBridge
+// script handler + document-start user scripts (bridge shim, connectivity
+// snapshot, b2b-auth-storage seeding), external schemes (tel:/mailto:) and
+// off-origin http(s) are routed out of the WebView, and iOS 17+ downloads go
+// through WKDownloadDelegate.
 
 struct WebViewScreen: View {
     let pageId: String
@@ -32,6 +39,7 @@ struct WebViewScreen: View {
             }
         }
         .background(ZylodColor.background)
+        .overlay(ToastOverlay())
         .task {
             await resolveAndLoad()
         }
@@ -115,11 +123,21 @@ private struct WebWebView: UIViewRepresentable {
     let url: URL
     let onFailure: () -> Void
 
+    static let bridge = ZylodNativeBridge(host: BridgeCoordinatorHolder.shared)
+
     func makeUIView(context: Context) -> WKWebView {
-        let webView = WKWebView()
+        let configuration = Self.bridge.userContentConfiguration()
+        let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.allowsBackForwardNavigationGestures = true
+        webView.allowsLinkPreview = false
         context.coordinator.onFailure = onFailure
+        context.coordinator.webView = webView
         webView.navigationDelegate = context.coordinator
+        webView.uiDelegate = context.coordinator
+        Self.bridge.attach(webView: webView)
+        if #available(iOS 14.5, *) {
+            webView.downloadDelegate = ZylodDownloadDelegate.shared
+        }
         webView.load(URLRequest(url: url))
         return webView
     }
@@ -128,29 +146,147 @@ private struct WebWebView: UIViewRepresentable {
         context.coordinator.onFailure = onFailure
     }
 
-    func makeCoordinator() -> NavigationCoordinator {
-        NavigationCoordinator()
-    }
-
-    final class NavigationCoordinator: NSObject, WKNavigationDelegate {
-        var onFailure: (() -> Void)?
-
-        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            guard !error.isCancelledNavigation else { return }
-            onFailure?()
-        }
-
-        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-            guard !error.isCancelledNavigation else { return }
-            onFailure?()
-        }
+    func makeCoordinator() -> BridgeCoordinator {
+        BridgeCoordinatorHolder.shared
     }
 }
 
-extension Error {
-    /// WKWebView reports user/SPA-initiated aborts (swipe-back mid-load,
-    /// redirect churn) as NSURLErrorCancelled (-999) — normal navigation
-    /// noise, NOT "server unreachable". Never surface them as failures.
+/// The bridge host and the navigation delegate are the same object — the
+/// bridge needs the WKWebView's evaluateJavaScript, and the coordinator needs
+/// the bridge for downloads. One shared instance keeps the singleton WebKit
+/// surface (script handlers register per-configuration, so sharing the
+/// coordinator object is safe).
+final class BridgeCoordinatorHolder {
+    static let shared = BridgeCoordinator()
+}
+
+final class BridgeCoordinator: NSObject, BridgeHost {
+    weak var webView: WKWebView?
+    var onFailure: (() -> Void)?
+
+    // MARK: BridgeHost
+
+    func evaluateJavaScript(_ script: String) {
+        DispatchQueue.main.async {
+            self.webView?.evaluateJavaScript(script, completionHandler: nil)
+        }
+    }
+
+    func showNativeToast(_ message: String) {
+        // ToastCenter.show is @MainActor; this host method is called from the
+        // (nonisolated) WKScriptMessageHandler path, so hop to main explicitly.
+        DispatchQueue.main.async { ToastCenter.shared.show(message) }
+    }
+
+    func presentShareSheet(with items: [Any]) {
+        guard let top = Self.topViewController() else { return }
+        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        controller.popoverPresentationController?.sourceView = top.view
+        top.present(controller, animated: true)
+    }
+
+    func present(_ viewController: UIViewController) {
+        guard let top = Self.topViewController() else { return }
+        top.present(viewController, animated: true)
+    }
+
+    var isNetworkConnected: Bool { true }
+
+    func retryServerConnection() {
+        // Android WebScreen retry parity: fresh resolve + full reload.
+        ServerConfig.invalidateCache()
+        guard let webView else { return }
+        if let url = webView.url {
+            webView.load(URLRequest(url: url))
+        } else {
+            webView.reload()
+        }
+    }
+
+    // MARK: Helpers
+
+    static func topViewController() -> UIViewController? {
+        guard var top = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .flatMap({ $0.windows })
+            .first(where: { $0.isKeyWindow })?.rootViewController else { return nil }
+        while let presented = top.presentedViewController {
+            top = presented
+        }
+        return top
+    }
+}
+
+extension BridgeCoordinator: WKNavigationDelegate, WKUIDelegate {
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        guard !error.isCancelledNavigation else { return }
+        onFailure?()
+    }
+
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        guard !error.isCancelledNavigation else { return }
+        onFailure?()
+    }
+
+    /// decidePolicyFor: external schemes → OS; off-origin http(s) → external
+    /// browser (web .target=_blank parity); requested downloads → WKDownload;
+    /// everything else loads in place.
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
+        if #available(iOS 14.5, *) {
+            if navigationAction.shouldPerformDownload {
+                decisionHandler(.download, preferences)
+                return
+            }
+        }
+        guard let url = navigationAction.request.url else {
+            decisionHandler(.allow, preferences)
+            return
+        }
+        let scheme = url.scheme?.lowercased() ?? ""
+
+        if ["tel", "mailto", "sms", "whatsapp", "itms-apps"].contains(scheme) {
+            decisionHandler(.cancel, preferences)
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            return
+        }
+
+        if navigationAction.targetFrame == nil, scheme == "http" || scheme == "https" {
+            // Off-origin / new-window navigation (Android WebScreen parity:
+            // external browser or in-app SFSafariViewController).
+            if let active = ServerConfig.cached(),
+               url.absoluteString.hasPrefix(active.trimmingCharacters(in: CharacterSet(charactersIn: "/"))) {
+                decisionHandler(.allow, preferences)
+                return
+            }
+            decisionHandler(.cancel, preferences)
+            let safari = SFSafariViewController(url: url)
+            if let top = BridgeCoordinator.topViewController() {
+                top.present(safari, animated: true)
+            } else {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+            return
+        }
+
+        decisionHandler(.allow, preferences)
+    }
+
+    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        if #available(iOS 14.5, *) {
+            if navigationResponse.canShowMIMEType == false {
+                decisionHandler(.download)
+                return
+            }
+        }
+        decisionHandler(.allow)
+    }
+}
+
+// WKNavigationDelegate failures must ignore user/system cancellations
+// (WKError surfacing NSURLErrorCancelled -999); without this guard every
+// back-swipe would flip the shell into the retry state.
+private extension Error {
     var isCancelledNavigation: Bool {
         (self as NSError).code == NSURLErrorCancelled
     }

@@ -1,6 +1,7 @@
 package com.zylod.wholesale.ui.nav
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -25,10 +26,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,8 +43,23 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.zylod.wholesale.session.PendingRegistration
+import com.zylod.wholesale.ui.auth.AccountSuspendedScreen
+import com.zylod.wholesale.ui.auth.ForgotPasswordScreen
+import com.zylod.wholesale.ui.auth.LoginScreen
+import com.zylod.wholesale.ui.auth.OtpVerificationScreen
+import com.zylod.wholesale.ui.auth.RegisterBuyerScreen
+import com.zylod.wholesale.ui.auth.RegisterSupplierScreen
+import com.zylod.wholesale.ui.auth.ResetPasswordScreen
+import com.zylod.wholesale.ui.auth.TwoFactorAuthScreen
+import com.zylod.wholesale.ui.cart.CartScreen
+import com.zylod.wholesale.ui.cart.CartStore
 import com.zylod.wholesale.ui.home.HomeScreen
+import com.zylod.wholesale.ui.pdp.ProductDetailScreen
 import com.zylod.wholesale.ui.web.WebScreen
+import com.zylod.wholesale.ui.welcome.WelcomeScreen
+import com.zylod.wholesale.ui.welcome.isOnboardingSeen
+import com.zylod.wholesale.ui.welcome.markOnboardingSeen
 
 // Same 5 tabs as mobile-bottom-nav.tsx (frozen in ARCHITECTURE.md §3)
 private data class TabItem(val id: String, val label: String, val icon: ImageVector, val pageId: String)
@@ -78,13 +97,34 @@ private fun activeTabFor(pageId: String?): String = when (pageId) {
     else -> TAB_ALIASES[pageId] ?: "home"
 }
 
+// Native fullscreen routes (web FULLSCREEN_PAGES) — the bottom bar is hidden.
+private val FULLSCREEN_ROUTES = setOf(
+    "welcome", "login", "register-buyer", "register-supplier", "forgot-password",
+    "reset-password/{token}", "two-factor/{userId}",
+    "otp/{flow}/{target}", "suspended/{reason}/{reference}/{suspendedAt}?email={email}",
+)
+
 @Composable
 fun ZylodRoot() {
+    val context = LocalContext.current
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val route = backStackEntry?.destination?.route
     val webPageId = backStackEntry?.arguments?.getString("pageId")
-    val activeTab = if (route == "home") "home" else activeTabFor(webPageId)
+    val cartState by CartStore.state.collectAsState()
+
+    // First-run gate (web AppEntry: mobile first-run → welcome).
+    val startDestination = remember { if (isOnboardingSeen(context)) "home" else "welcome" }
+
+    // Native fullscreen routes and the back-bar product page highlight no tab;
+    // the native cart route highlights the cart tab.
+    val activeTab = when (route) {
+        null, "home" -> "home"
+        "cart" -> "cart"
+        in FULLSCREEN_ROUTES, "product-detail/{productId}" -> ""
+        else -> activeTabFor(webPageId)
+    }
+    val showBottomBar = route !in FULLSCREEN_ROUTES
 
     val openPage: (String, String) -> Unit = { pageId, query ->
         // params is an optional query argument: a path segment cannot match
@@ -96,17 +136,68 @@ fun ZylodRoot() {
         }
     }
 
+    // Native PDP — a back-bar push (web pushState semantics), no tab highlight.
+    val openProductDetail: (String) -> Unit = { productId ->
+        navController.navigate("product-detail/${Uri.encode(productId)}")
+    }
+
+    // Native callers that only know the web pageId contract (CartScreen taps)
+    // get the native PDP when the pageId is product-detail.
+    val openPageRouted: (String, String) -> Unit = { pageId, query ->
+        if (pageId == "product-detail") {
+            val productId = query.substringAfter("productId=", "").substringBefore("&")
+            if (productId.isNotBlank()) openProductDetail(productId) else openPage(pageId, query)
+        } else {
+            openPage(pageId, query)
+        }
+    }
+
+    // Post-auth landing: home replaces the whole auth stack (no back into login).
+    val goHomeAfterAuth: () -> Unit = {
+        navController.navigate("home") {
+            popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+            launchSingleTop = true
+        }
+    }
+
+    fun backToLogin() {
+        if (!navController.popBackStack("login", inclusive = false)) {
+            navController.navigate("login") { launchSingleTop = true }
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = { ZylodBottomBar(activeTab) { tab -> openPage(tab.pageId, "") } },
+        bottomBar = {
+            if (showBottomBar) {
+                ZylodBottomBar(
+                    activeTab = activeTab,
+                    cartBadge = cartState.items.size,
+                    onTab = { tab ->
+                        if (tab.id == "cart") {
+                            navController.navigate("cart") {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        } else {
+                            openPage(tab.pageId, "")
+                        }
+                    },
+                )
+            }
+        },
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = startDestination,
             modifier = Modifier.padding(padding),
         ) {
             composable("home") {
-                HomeScreen(navigateToPage = { pageId, query -> openPage(pageId, query) })
+                HomeScreen(
+                    navigateToPage = { pageId, query -> openPage(pageId, query) },
+                    openProductDetail = { productId -> openProductDetail(productId) },
+                )
             }
             composable(
                 route = "web/{pageId}?params={params}",
@@ -120,12 +211,161 @@ fun ZylodRoot() {
                     query = entry.arguments?.getString("params").orEmpty(),
                 )
             }
+            composable("cart") {
+                CartScreen(
+                    onBack = null, // tab destination — no back bar
+                    openPage = { pageId, query -> openPageRouted(pageId, query) },
+                    openAuth = { navController.navigate("login") { launchSingleTop = true } },
+                )
+            }
+            composable("product-detail/{productId}") { entry ->
+                ProductDetailScreen(
+                    productId = entry.arguments?.getString("productId").orEmpty(),
+                    onBack = { navController.popBackStack() },
+                    openPage = { pageId, query -> openPage(pageId, query) },
+                )
+            }
+
+            // ── Auth suite (web FULLSCREEN_PAGES) ──
+            composable("welcome") {
+                WelcomeScreen(
+                    onCreateBuyerAccount = { navController.navigate("register-buyer") { launchSingleTop = true } },
+                    onSignIn = { navController.navigate("login") { launchSingleTop = true } },
+                    onContinueAsGuest = {
+                        markOnboardingSeen(context)
+                        navController.navigate("home") {
+                            popUpTo("welcome") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                )
+            }
+            composable("login") {
+                LoginScreen(
+                    onAuthenticated = goHomeAfterAuth,
+                    onTwoFactor = { userId ->
+                        navController.navigate("two-factor/${Uri.encode(userId)}") { launchSingleTop = true }
+                    },
+                    onSuspended = { reason, reference, suspendedAt, email ->
+                        navController.navigate(
+                            "suspended/${Uri.encode(reason)}/${Uri.encode(reference)}/${Uri.encode(suspendedAt)}?email=${Uri.encode(email)}",
+                        ) { launchSingleTop = true }
+                    },
+                    onForgotPassword = { navController.navigate("forgot-password") { launchSingleTop = true } },
+                    onRegisterBuyer = { navController.navigate("register-buyer") { launchSingleTop = true } },
+                    onRegisterSupplier = { navController.navigate("register-supplier") { launchSingleTop = true } },
+                    onHelp = { openPage("help-center", "") },
+                )
+            }
+            composable("register-buyer") {
+                RegisterBuyerScreen(
+                    onOtpSent = { _ ->
+                        // The OTP screen re-derives the target from the pending
+                        // registration payload (RegisterBuyerScreen stores it).
+                        val pending = PendingRegistration.get()
+                        val target = pending?.phone ?: pending?.email ?: ""
+                        navController.navigate("otp/register/${Uri.encode(target)}") { launchSingleTop = true }
+                    },
+                    onLogin = { backToLogin() },
+                )
+            }
+            composable("register-supplier") {
+                RegisterSupplierScreen(
+                    onAuthenticated = goHomeAfterAuth,
+                    onLogin = { backToLogin() },
+                )
+            }
+            composable(
+                route = "otp/{flow}/{target}",
+                arguments = listOf(
+                    navArgument("flow") { type = NavType.StringType },
+                    navArgument("target") { type = NavType.StringType },
+                ),
+            ) { entry ->
+                OtpVerificationScreen(
+                    flow = entry.arguments?.getString("flow").orEmpty(),
+                    target = entry.arguments?.getString("target").orEmpty(),
+                    onCompletedRegister = goHomeAfterAuth,
+                    onRegisterFailed = {
+                        // Back to the register form (payload was cleared on failure).
+                        if (!navController.popBackStack("register-buyer", inclusive = false)) {
+                            navController.navigate("register-buyer") { launchSingleTop = true }
+                        }
+                    },
+                    onCompletedLogin = goHomeAfterAuth,
+                    onResetToken = { token ->
+                        navController.navigate("reset-password/${Uri.encode(token)}") { launchSingleTop = true }
+                    },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable("forgot-password") {
+                ForgotPasswordScreen(
+                    onProceedToOtp = { email ->
+                        navController.navigate("otp/reset/${Uri.encode(email)}") { launchSingleTop = true }
+                    },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable(
+                route = "reset-password/{token}",
+                arguments = listOf(navArgument("token") { type = NavType.StringType }),
+            ) { entry ->
+                ResetPasswordScreen(
+                    resetToken = entry.arguments?.getString("token").orEmpty(),
+                    onSuccess = {
+                        Toast.makeText(
+                            context,
+                            "Password reset successful — please sign in with your new password",
+                            Toast.LENGTH_LONG,
+                        ).show()
+                        // popUpTo login inclusive clears forgot/otp/reset from the stack.
+                        navController.navigate("login") {
+                            popUpTo("login") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            composable(
+                route = "two-factor/{userId}",
+                arguments = listOf(navArgument("userId") { type = NavType.StringType }),
+            ) { entry ->
+                TwoFactorAuthScreen(
+                    userId = entry.arguments?.getString("userId").orEmpty(),
+                    onAuthenticated = goHomeAfterAuth,
+                    onSuspended = { reason, reference, suspendedAt ->
+                        navController.navigate(
+                            "suspended/${Uri.encode(reason)}/${Uri.encode(reference)}/${Uri.encode(suspendedAt)}",
+                        ) { launchSingleTop = true }
+                    },
+                    onCancel = { navController.popBackStack() },
+                )
+            }
+            composable(
+                route = "suspended/{reason}/{reference}/{suspendedAt}?email={email}",
+                arguments = listOf(
+                    navArgument("reason") { type = NavType.StringType },
+                    navArgument("reference") { type = NavType.StringType },
+                    navArgument("suspendedAt") { type = NavType.StringType },
+                    navArgument("email") { type = NavType.StringType; defaultValue = "" },
+                ),
+            ) { entry ->
+                AccountSuspendedScreen(
+                    email = entry.arguments?.getString("email").orEmpty(),
+                    reason = entry.arguments?.getString("reason").orEmpty(),
+                    reference = entry.arguments?.getString("reference").orEmpty(),
+                    suspendedAt = entry.arguments?.getString("suspendedAt").orEmpty(),
+                    onSignOut = { backToLogin() },
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun ZylodBottomBar(activeTab: String, onTab: (TabItem) -> Unit) {
+private fun ZylodBottomBar(activeTab: String, cartBadge: Int, onTab: (TabItem) -> Unit) {
     Column {
         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
         Row(
@@ -151,12 +391,27 @@ private fun ZylodBottomBar(activeTab: String, onTab: (TabItem) -> Unit) {
                         }
                     }
                     Spacer(Modifier.height(3.dp))
-                    Icon(
-                        tab.icon,
-                        tab.label,
-                        tint = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(22.dp),
-                    )
+                    Box {
+                        Icon(
+                            tab.icon,
+                            tab.label,
+                            tint = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(22.dp),
+                        )
+                        // Cart tab badge — distinct items, 99+ cap (§3.10).
+                        if (tab.id == "cart" && cartBadge > 0) {
+                            Text(
+                                if (cartBadge > 99) "99+" else cartBadge.toString(),
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .background(MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape)
+                                    .padding(horizontal = 3.dp),
+                            )
+                        }
+                    }
                     Text(
                         tab.label,
                         fontSize = 10.sp,

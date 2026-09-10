@@ -30,6 +30,17 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
+        # §7.2 — zylod:// deep links (DeepLinkParser port lives in Zylod/Nav/DeepLink.swift).
+        CFBundleURLTypes:
+          - CFBundleURLName: com.zylod.wholesale
+            CFBundleURLSchemes:
+              - zylod
+        # §7.3 — permission strings required by the bridge (camera barcode
+        # scanner, voice recognition, FaceID biometric prompt).
+        NSCameraUsageDescription: "Zylod uses the camera to scan product and supplier barcodes/QR codes."
+        NSMicrophoneUsageDescription: "Zylod uses the microphone for voice product search."
+        NSSpeechRecognitionUsageDescription: "Zylod uses speech recognition to turn your spoken search into text."
+        NSFaceIDUsageDescription: "Zylod uses Face ID to confirm sensitive actions like signing in."
         NSAppTransportSecurity:
           # Debug server candidates include local http:// hosts (LAN, emulator
           # loopback). Release candidates are HTTPS-only; remove before any

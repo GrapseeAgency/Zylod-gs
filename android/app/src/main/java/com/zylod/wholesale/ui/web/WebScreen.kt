@@ -61,6 +61,7 @@ import com.zylod.wholesale.bridge.DownloadBridge
 import com.zylod.wholesale.bridge.WebAppBridge
 import com.zylod.wholesale.bridge.WebViewHost
 import com.zylod.wholesale.data.api.ServerConfig
+import com.zylod.wholesale.session.WebAuthSeeder
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
@@ -149,6 +150,10 @@ fun WebScreen(pageId: String, query: String) {
             NativeWebBus.pendingBase = null
         }
         val base = baseUrl ?: return@LaunchedEffect
+        // Phase 1 token handoff (spec §3.0/§6.3): seed b2b-auth-storage at
+        // document-start on every (re)load — token present → seed, token
+        // removed after native logout → removal script.
+        webView?.let { created -> WebAuthSeeder.install(created, base, context) }
         // ?page=<id> contract; the id and every query VALUE are URL-encoded (D10).
         val target = base.trimEnd('/') + "/?page=" + Uri.encode(pageId) +
             (if (query.isNotBlank()) "&" + encodeQueryValues(query) else "")
@@ -275,7 +280,10 @@ private val ngrokClient by lazy {
 private fun createShellWebViewClient(ctx: android.content.Context): WebViewClient =
     object : WebViewClient() {
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            // Loading is surfaced by the caller via pageLoading; no per-page bar.
+            // Document-start injection fallback when the webkit API is not
+            // supported by the WebView provider (WebAuthSeeder no-ops itself
+            // when the primary API is available).
+            WebAuthSeeder.injectFallback(view)
         }
 
         override fun onPageFinished(view: WebView?, url: String?) {

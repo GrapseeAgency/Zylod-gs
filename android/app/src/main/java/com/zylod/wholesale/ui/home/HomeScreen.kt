@@ -1,11 +1,13 @@
 package com.zylod.wholesale.ui.home
 
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apartment
@@ -63,18 +66,20 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -85,16 +90,23 @@ import com.zylod.wholesale.data.api.CategoryDto
 import com.zylod.wholesale.data.api.DealDto
 import com.zylod.wholesale.data.api.ProductDto
 import com.zylod.wholesale.data.api.StatsDto
+import com.zylod.wholesale.ui.components.SkeletonBox
 import com.zylod.wholesale.ui.theme.QuickChipColors
 import com.zylod.wholesale.ui.theme.QuickChipGradients
 import kotlin.math.floor
 
-// Faithful port of src/components/mobile/mobile-home-page.tsx (Phase 0 reference).
+// Faithful port of src/components/mobile/mobile-home-page.tsx (Phase 0).
 // Section order: top bar → search → category pills → quick access → flash deals
-// → product grid. Sticky-on-scroll search bar is deferred to Phase 1.
+// → product grid. Phase 1 parity deltas (spec §3.8): sticky compact search bar
+// swap after ~120 px scroll (mobile-home-page.tsx:101-128), category-pill
+// long-press → subcategory drawer (mobile-category-pills.tsx:143-158), and the
+// 1:1 mirror loading skeleton (loading-skeletons.tsx MobileHomeLoading).
 
 @Composable
-fun HomeScreen(navigateToPage: (pageId: String, query: String) -> Unit) {
+fun HomeScreen(
+    navigateToPage: (pageId: String, query: String) -> Unit,
+    openProductDetail: (productId: String) -> Unit = {},
+) {
     val context = LocalContext.current
     val vm: HomeViewModel = viewModel { HomeViewModel(context.applicationContext) }
     val state by vm.state.collectAsState()
@@ -102,52 +114,112 @@ fun HomeScreen(navigateToPage: (pageId: String, query: String) -> Unit) {
     when {
         state.loading -> HomeLoading()
         state.error != null -> HomeError(state.error!!) { vm.refresh() }
-        else -> HomeContent(state, vm, navigateToPage)
+        else -> HomeContent(state, vm, navigateToPage, openProductDetail)
     }
 }
 
 @Composable
-private fun HomeContent(state: HomeUiState, vm: HomeViewModel, navigateToPage: (String, String) -> Unit) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(horizontal = 12.dp),
-    ) {
-        item { HomeTopBar(navigateToPage) }
-        item { SearchPill(onClick = { navigateToPage("search-home", "") }) }
-        item { StatsCaption(state.stats) }
-        item { CategoryPills(state.categories) { slug -> navigateToPage("category-products", "category=$slug") } }
-        item { QuickAccessCard(navigateToPage) }
-        item { FlashDealsRow(state.deals, state.serverUrl, navigateToPage) }
-        val rows = state.products.chunked(2)
-        items(rows.size) { rowIdx ->
-            val row = rows[rowIdx]
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                row.forEach { product ->
-                    ProductCard(product, state.serverUrl, Modifier.weight(1f)) {
-                        navigateToPage("product-detail", "productId=${product.id}")
-                    }
-                }
-                if (row.size == 1) Spacer(Modifier.weight(1f))
-            }
-            Spacer(Modifier.height(8.dp))
-            if (rowIdx == rows.lastIndex && state.page < state.totalPages) {
-                LoadMoreItem(state.loadingMore) { vm.loadMore() }
-            }
+private fun HomeContent(
+    state: HomeUiState,
+    vm: HomeViewModel,
+    navigateToPage: (String, String) -> Unit,
+    openProductDetail: (String) -> Unit,
+) {
+    val listState = rememberLazyListState()
+    // Sticky search swap threshold — web scrollY > 120 (mobile-home-page.tsx:104).
+    val stickyThresholdPx = with(LocalDensity.current) { 120.dp.toPx() }
+    val showStickySearch by remember(stickyThresholdPx) {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > stickyThresholdPx
         }
-        if (rows.isEmpty()) {
+    }
+    // Category-pill long-press drawer (mobile-category-pills.tsx:143-158).
+    var subcategoryFor by remember { mutableStateOf<CategoryDto?>(null) }
+
+    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 12.dp),
+        ) {
+            item { HomeTopBar(navigateToPage) }
+            item { SearchPill(onClick = { navigateToPage("search-home", "") }) }
+            item { StatsCaption(state.stats) }
             item {
-                Text(
-                    "No products found",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 32.dp).fillMaxWidth(),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                CategoryPills(
+                    categories = state.categories,
+                    onCategory = { slug -> navigateToPage("category-products", "category=$slug") },
+                    onLongPress = { category -> subcategoryFor = category },
                 )
             }
+            item { QuickAccessCard(navigateToPage) }
+            item { FlashDealsRow(state.deals, state.serverUrl, openProductDetail) }
+            val rows = state.products.chunked(2)
+            items(rows.size) { rowIdx ->
+                val row = rows[rowIdx]
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    row.forEach { product ->
+                        ProductCard(product, state.serverUrl, Modifier.weight(1f)) {
+                            openProductDetail(product.id)
+                        }
+                    }
+                    if (row.size == 1) Spacer(Modifier.weight(1f))
+                }
+                Spacer(Modifier.height(8.dp))
+                if (rowIdx == rows.lastIndex && state.page < state.totalPages) {
+                    LoadMoreItem(state.loadingMore) { vm.loadMore() }
+                }
+            }
+            if (rows.isEmpty()) {
+                item {
+                    Text(
+                        "No products found",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 32.dp).fillMaxWidth(),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    )
+                }
+            }
+            item { Spacer(Modifier.height(24.dp)) }
         }
-        item { Spacer(Modifier.height(24.dp)) }
+
+        // Sticky compact search bar — swaps in for the top bar after ~120 px.
+        AnimatedVisibility(
+            visible = showStickySearch,
+            enter = slideInVertically(animationSpec = tween(200)) { -it } + fadeIn(tween(200)),
+            exit = slideOutVertically(animationSpec = tween(200)) { -it } + fadeOut(tween(200)),
+            modifier = Modifier.align(Alignment.TopCenter),
+        ) {
+            Surface(
+                color = MaterialTheme.colorScheme.background,
+                shadowElevation = 4.dp,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+                    SearchPill(onClick = { navigateToPage("search-home", "") })
+                }
+            }
+        }
+    }
+
+    subcategoryFor?.let { category ->
+        SubcategorySheet(
+            category = category,
+            onDismiss = { subcategoryFor = null },
+            onSubcategory = { slug ->
+                subcategoryFor = null
+                navigateToPage("category-products", "category=$slug")
+            },
+            onViewAll = {
+                subcategoryFor = null
+                navigateToPage("category-products", "category=${category.slug}")
+            },
+            onFindSuppliers = {
+                subcategoryFor = null
+                navigateToPage("suppliers", "")
+            },
+        )
     }
 }
 
@@ -195,7 +267,11 @@ private fun StatsCaption(stats: StatsDto?) {
 }
 
 @Composable
-private fun CategoryPills(categories: List<CategoryDto>, onCategory: (String) -> Unit) {
+private fun CategoryPills(
+    categories: List<CategoryDto>,
+    onCategory: (String) -> Unit,
+    onLongPress: (CategoryDto) -> Unit,
+) {
     if (categories.isEmpty()) return
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 10.dp)) {
         items(categories, key = { it.id }) { category ->
@@ -203,7 +279,15 @@ private fun CategoryPills(categories: List<CategoryDto>, onCategory: (String) ->
                 shape = RoundedCornerShape(50),
                 color = MaterialTheme.colorScheme.secondary,
                 border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)),
-                modifier = Modifier.clickable { category.slug?.let(onCategory) },
+                modifier = Modifier.pointerInput(category.id) {
+                    // 500 ms long-press opens the subcategory drawer; a normal
+                    // tap navigates (detectTapGestures suppresses the tap when
+                    // the long press fires, matching the web isLongPress flag).
+                    detectTapGestures(
+                        onTap = { category.slug?.let(onCategory) },
+                        onLongPress = { onLongPress(category) },
+                    )
+                },
             ) {
                 Text(
                     category.name,
@@ -215,6 +299,69 @@ private fun CategoryPills(categories: List<CategoryDto>, onCategory: (String) ->
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                 )
             }
+        }
+    }
+}
+
+/** Subcategory drawer — mobile-category-pills.tsx long-press ModalDrawer. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SubcategorySheet(
+    category: CategoryDto,
+    onDismiss: () -> Unit,
+    onSubcategory: (String) -> Unit,
+    onViewAll: () -> Unit,
+    onFindSuppliers: () -> Unit,
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp)) {
+            Text(category.name, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            Text(
+                "${category.productCount} products · long-press any category for subcategories",
+                fontSize = 10.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 2.dp),
+            )
+            Spacer(Modifier.height(10.dp))
+            category.children.forEach { child ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { child.slug?.let(onSubcategory) }
+                        .padding(vertical = 10.dp),
+                ) {
+                    Text(child.name, fontSize = 13.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+                    if (child.productCount > 0) {
+                        Text(
+                            "${child.productCount}",
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+            HorizontalDivider(Modifier.padding(vertical = 6.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
+            Text(
+                "View all in ${category.name}",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onViewAll)
+                    .padding(vertical = 10.dp),
+            )
+            Text(
+                "Find suppliers",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onFindSuppliers)
+                    .padding(vertical = 10.dp),
+            )
         }
     }
 }
@@ -350,7 +497,7 @@ private fun QuickIcon(link: QuickLink, modifier: Modifier = Modifier, onClick: (
 }
 
 @Composable
-private fun FlashDealsRow(deals: List<DealDto>, serverUrl: String, navigateToPage: (String, String) -> Unit) {
+private fun FlashDealsRow(deals: List<DealDto>, serverUrl: String, onOpen: (String) -> Unit) {
     if (deals.isEmpty()) return
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -359,7 +506,7 @@ private fun FlashDealsRow(deals: List<DealDto>, serverUrl: String, navigateToPag
         items(deals, key = { it.effectiveId ?: it.hashCode().toString() }) { deal ->
             Column(
                 modifier = Modifier.width(58.dp).clickable {
-                    deal.effectiveId?.let { navigateToPage("product-detail", "productId=$it") }
+                    deal.effectiveId?.let(onOpen)
                 },
             ) {
                 DealImage(deal, serverUrl)
@@ -449,38 +596,98 @@ private fun LoadMoreItem(loadingMore: Boolean, onLoadMore: () -> Unit) {
     }
 }
 
+/** 1:1 mirror of MobileHomeLoading (loading-skeletons.tsx:178-…): top nav →
+ *  search card + tool chips → category pills (first active) → quick-access card
+ *  → deals tiles → grid heading + compact product cards. */
 @Composable
 private fun HomeLoading() {
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(12.dp)) {
-        SkeletonBox(Modifier.fillMaxWidth().height(40.dp), RoundedCornerShape(50))
-        Spacer(Modifier.height(12.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            repeat(3) { SkeletonBox(Modifier.weight(1f).height(30.dp), RoundedCornerShape(50)) }
+        // Top nav bar (h-12, like MobileTopNav).
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SkeletonBox(Modifier.width(96.dp).height(20.dp))
+            Spacer(Modifier.weight(1f))
+            SkeletonBox(Modifier.size(18.dp), corner = 6)
+            Spacer(Modifier.width(8.dp))
+            SkeletonBox(Modifier.size(18.dp), corner = 6)
         }
+        Spacer(Modifier.height(14.dp))
+        // Search bar card + tool chips row.
+        SkeletonBox(Modifier.fillMaxWidth().height(40.dp), corner = 12)
+        Spacer(Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            listOf(74, 62, 86, 60, 44).forEach { width ->
+                SkeletonBox(Modifier.width(width.dp).height(24.dp), corner = 12)
+            }
+        }
+        // Category pills (first active).
+        Spacer(Modifier.height(12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            SkeletonBox(Modifier.width(80.dp).height(28.dp), corner = 14)
+            listOf(64, 80, 56, 96).forEach { width ->
+                SkeletonBox(Modifier.width(width.dp).height(28.dp), corner = 14)
+            }
+        }
+        // Quick Access card (header + icon row, mirrors MobilePromoIconGrid).
         Spacer(Modifier.height(16.dp))
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(Modifier.padding(12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    SkeletonBox(Modifier.width(80.dp).height(12.dp))
+                    Spacer(Modifier.weight(1f))
+                    SkeletonBox(Modifier.width(32.dp).height(10.dp))
+                }
+                Spacer(Modifier.height(10.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    repeat(5) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            SkeletonBox(Modifier.size(44.dp), corner = 14)
+                            Spacer(Modifier.height(6.dp))
+                            SkeletonBox(Modifier.width(48.dp).height(8.dp))
+                        }
+                    }
+                }
+            }
+        }
+        // Deals row (58dp square tiles + price line, mirrors MobileSubsidySection).
+        Spacer(Modifier.height(12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            repeat(5) {
+                Column {
+                    SkeletonBox(Modifier.size(58.dp), corner = 6)
+                    Spacer(Modifier.height(2.dp))
+                    SkeletonBox(Modifier.width(40.dp).height(8.dp))
+                }
+            }
+        }
+        // Product grid heading + compact card grid (5:6 image mirrors).
+        Spacer(Modifier.height(20.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SkeletonBox(Modifier.width(144.dp).height(24.dp))
+            Spacer(Modifier.weight(1f))
+            SkeletonBox(Modifier.width(64.dp).height(28.dp), corner = 8)
+            Spacer(Modifier.width(8.dp))
+            SkeletonBox(Modifier.width(64.dp).height(28.dp), corner = 8)
+        }
+        Spacer(Modifier.height(12.dp))
         repeat(2) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                repeat(2) { SkeletonBox(Modifier.weight(1f).aspectRatio(0.78f), RoundedCornerShape(6.dp)) }
+                repeat(2) {
+                    Column(Modifier.weight(1f)) {
+                        SkeletonBox(Modifier.fillMaxWidth().aspectRatio(5f / 6f), corner = 6)
+                        Spacer(Modifier.height(6.dp))
+                        SkeletonBox(Modifier.fillMaxWidth(0.9f).height(10.dp))
+                        Spacer(Modifier.height(4.dp))
+                        SkeletonBox(Modifier.fillMaxWidth(0.55f).height(10.dp))
+                    }
+                }
             }
             Spacer(Modifier.height(8.dp))
         }
     }
-}
-
-@Composable
-private fun SkeletonBox(modifier: Modifier = Modifier, shape: RoundedCornerShape) {
-    val transition = rememberInfiniteTransition(label = "skeleton")
-    val alpha by transition.animateFloat(
-        initialValue = 0.5f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(800), RepeatMode.Reverse),
-        label = "skeletonAlpha",
-    )
-    Box(
-        modifier
-            .alpha(alpha)
-            .background(MaterialTheme.colorScheme.surfaceVariant, shape),
-    )
 }
 
 @Composable

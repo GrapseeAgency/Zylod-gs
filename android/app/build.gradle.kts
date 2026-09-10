@@ -154,6 +154,15 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
+    // WebView document-start JS injection — Phase 1 auth handoff seeds
+    // b2b-auth-storage before the SPA boots (spec §3.0 / §6.3). Frozen-stack
+    // addition authorised by the Phase 1 brief.
+    implementation("androidx.webkit:webkit:1.11.0")
+
+    // QR generation for the PDP share dialog (port of web qrcode.react).
+    // Generator-only artifact; no scanner (ML Kit already covers scanning).
+    implementation("com.google.zxing:core:3.5.3")
+
     // Barcode scanner
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
     implementation("androidx.camera:camera-camera2:1.3.2")
