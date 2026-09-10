@@ -325,3 +325,17 @@ Stage Summary:
 - 729 unique named pageIds in code (691 REAL_PAGES-unique incl. 15 CHUNK_CORE, 20 categories, 10 deal-only, 8 set-only) + unbounded wildcard families (admin-/supplier-/seller-/buyer- → GenericInfoPage; 18 finance substrings → GenericFinancePage; everything else → GenericInfoPage boilerplate). Registered-id 404 is impossible today: every REAL id has a reachable loader; unknown ids land on designed generic pages.
 - 707 loader keys → 402 distinct page component files + 4 generic renderers; 307 alias mappings over 143 components; 0 orphan files, 0 dangling imports.
 - Implementation mix of the 406 components: 265 fetch-backed (214 endpoints), 93 auth-aware, 115 static, 19 derived, 7 store-driven; dedicated mobile variants exist only for home + product-detail.
+
+---
+Task ID: 1-d + Task ID: 4 (combined record)
+Agent: Explore 1-d + Z.ai Code orchestrator
+Task: 1-d = forensic map of Android/iOS shells, frozen tier plan, bridge parity, perf workloads; 4 = synthesis of docs/NATIVE_PRODUCT_SPECIFICATION.md
+
+Work Log:
+- 1-d: extracted verbatim Tier 1/2/3 + phase definitions (HANDOFF.md §7, ARCHITECTURE.md §3, migration-analysis §7, platform-contracts §6); Android = 24/24 bridge methods, iOS = 0/24 (no WKScriptMessageHandler); native today = Home only on both platforms; perf verdict = no C++/Rust justified (all heavy work on platform APIs or server-side).
+- 4: 4 forensic passes (pages 729 ids/402 components; design tokens+bridge contract; 247 API routes/auth/data; shells/tiering/perf) synthesized into docs/NATIVE_PRODUCT_SPECIFICATION.md (11 sections, evidence-cited), committed and pushed to main.
+
+Stage Summary:
+- Spec v1.0 live on GitHub for owner review; STOP honored — no Phase 1 implementation, web untouched.
+- Phase 1 scope frozen: welcome/login/otp/register-buyer/register-supplier/forgot+reset/2FA/product-detail/cart BOTH platforms; iOS bridge + zylod:// scheme + auth seeding = prerequisites; checkout gated on backend fixes.
+- Open backend facts: /api/chat/upload missing; checkout not gateway-connected; OTP devCode leak; 3 pagination shapes; no realtime (chat polls 3s).
