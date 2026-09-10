@@ -97,7 +97,7 @@ struct RootView: View {
                 flow.openProduct(id)
             })
             .toolbar(.hidden, for: .navigationBar)
-            .phaseDestinations(flow: flow, push: { flow.openAuth($0) }) {
+            .phaseDestinations(flow: flow, push: { flow.openAuth($0) }, onAuthenticated: { self.handleAuthenticated(flow: flow) }) {
                 flow.homePath.removeLast()
             }
         }
@@ -118,7 +118,7 @@ struct RootView: View {
             )
             .environmentObject(cartStore)
             .toolbar(.hidden, for: .navigationBar)
-            .phaseDestinations(flow: flow, push: { flow.cartPath.append($0) }) {
+            .phaseDestinations(flow: flow, push: { flow.cartPath.append($0) }, onAuthenticated: { self.handleAuthenticated(flow: flow) }) {
                 flow.cartPath.removeLast()
             }
         }
@@ -152,7 +152,11 @@ struct RootView: View {
 
     private func routeDeepLink(_ link: ParsedDeepLink) {
         Task { @MainActor in
-            let query = link.params.map { "\($0.key)=\($0.value)" }.sorted { $0.key < $1.key }.joined(separator: "&")
+            // Sort the pairs BEFORE stringifying — the closure compares keys.
+            let query = link.params
+                .sorted { $0.key < $1.key }
+                .map { "\($0.key)=\($0.value)" }
+                .joined(separator: "&")
             switch link.targetPage {
             case "product-detail":
                 tab = .home
@@ -221,10 +225,18 @@ extension AuthRoute: Identifiable {
 
 // MARK: - Destination builder (shared by Home stack, Cart stack, cover)
 
-extension RootView {
+// Destination registration must attach to ANY view in the chain (HomeView with
+// toolbar, CartView with environmentObject), so this is a View extension —
+// RootView-owned behavior (auth success hand-off) is injected via closure.
+extension View {
 
     /// Registers the Phase 1 native destinations on a NavigationStack.
-    func phaseDestinations(flow: AppFlow, push: @escaping (AuthRoute) -> Void, pop: @escaping () -> Void) -> some View {
+    func phaseDestinations(
+        flow: AppFlow,
+        push: @escaping (AuthRoute) -> Void,
+        onAuthenticated: @escaping () -> Void,
+        pop: @escaping () -> Void
+    ) -> some View {
         self
             .navigationDestination(for: WebRoute.self) { route in
                 WebViewScreen(pageId: route.pageId, query: route.query)
@@ -239,16 +251,16 @@ extension RootView {
                     route: route,
                     push: push,
                     pop: pop,
-                    onAuthenticated: {
-                        self.handleAuthenticated(flow: flow)
-                    },
+                    onAuthenticated: onAuthenticated,
                     onCancel: pop
                 )
                 .navigationBarTitleDisplayMode(.inline)
                 .environmentObject(flow)
             }
     }
+}
 
+extension RootView {
     /// Auth success hand-off (§3.2): pop to root; supplier logins land on the
     /// supplier-dashboard WebView (supplier screens are Phase 3), everyone
     /// else lands on Home; pull the authoritative server cart.
@@ -262,7 +274,10 @@ extension RootView {
         }
         Task { await cartStore.pullServerCart() }
     }
+}
 
+// static shared view builder — no RootView state touched here.
+extension RootView {
     @ViewBuilder
     static func authView(
         route: AuthRoute,

@@ -286,7 +286,7 @@ struct RegisterSupplierView: View {
                 selection: Binding(
                     get: { nil },
                     set: { newValue in
-                        guard newValue != nil else { return }
+                        guard let newValue else { return }
                         Task { await loadAndValidate(newValue, into: image, kind: kind) }
                     }
                 ),
