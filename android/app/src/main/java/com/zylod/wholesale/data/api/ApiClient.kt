@@ -27,7 +27,7 @@ interface ZylodApi {
     suspend fun flashDeals(
         @Query("type") type: String = "flash",
         @Query("limit") limit: Int = 8,
-    ): ApiEnvelope<List<DealDto>>
+    ): ApiEnvelope<DealsData>
 
     // Count probes only need pagination.total — data can be any list shape.
     @GET("api/products")

@@ -425,8 +425,8 @@ private fun ProductCard(product: ProductDto, serverUrl: String, modifier: Modifi
 
 @Composable
 private fun ProductImage(product: ProductDto, serverUrl: String) {
-    val raw = product.images.firstOrNull { !it.startsWith("/placeholder") } ?: product.thumbnailUrl
-    val url = resolveImageUrl(raw, serverUrl)
+    val raw = product.firstImage
+    val url = resolveImageUrl(raw?.takeIf { !it.startsWith("/placeholder") }, serverUrl)
     Surface(color = Color.White, modifier = Modifier.fillMaxWidth().aspectRatio(5f / 6f)) {
         if (url != null) {
             AsyncImage(model = url, contentDescription = product.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())

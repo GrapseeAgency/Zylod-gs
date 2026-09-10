@@ -32,6 +32,10 @@ data class HomeUiState(
 
 class HomeViewModel(private val appContext: Context) : ViewModel() {
 
+    companion object {
+        private const val TAG = "ZylodHome"
+    }
+
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state
 
@@ -46,7 +50,8 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
             block()
         } catch (ce: CancellationException) {
             throw ce
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            android.util.Log.w(TAG, "home section call failed", e)
             null
         }
 
@@ -62,7 +67,7 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
                 val client = api ?: ApiClient.create(baseUrl, appContext).also { api = it }
 
                 var cat: com.zylod.wholesale.data.api.ApiEnvelope<List<CategoryDto>>? = null
-                var deal: com.zylod.wholesale.data.api.ApiEnvelope<List<DealDto>>? = null
+                var deal: com.zylod.wholesale.data.api.ApiEnvelope<com.zylod.wholesale.data.api.DealsData>? = null
                 var prod: com.zylod.wholesale.data.api.ApiEnvelope<List<ProductDto>>? = null
                 var productTotal: com.zylod.wholesale.data.api.ApiEnvelope<kotlinx.serialization.json.JsonElement>? = null
                 var supplierTotal: com.zylod.wholesale.data.api.ApiEnvelope<kotlinx.serialization.json.JsonElement>? = null
@@ -94,7 +99,7 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
                         loading = false,
                         serverUrl = baseUrl,
                         categories = (cat?.data ?: emptyList()).take(12),
-                        deals = (deal?.data ?: emptyList()).take(8),
+                        deals = (deal?.data?.all ?: emptyList()).take(8),
                         products = prod?.data ?: emptyList(),
                         page = prod?.pagination?.page ?: 1,
                         totalPages = prod?.pagination?.totalPages ?: 1,

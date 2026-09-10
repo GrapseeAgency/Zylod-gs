@@ -36,13 +36,20 @@ data class CategoryDto(
 )
 
 @Serializable
+data class ProductImageDto(
+    val id: String? = null,
+    val imageUrl: String? = null,
+    val sortOrder: Int = 0,
+)
+
+@Serializable
 data class ProductDto(
     val id: String,
     val name: String,
     val slug: String? = null,
     val basePrice: Double = 0.0,
     val thumbnailUrl: String? = null,
-    val images: List<String> = emptyList(),
+    val images: List<ProductImageDto> = emptyList(),
     val unit: String? = null,
     val moq: Int = 1,
     val soldCount: Int = 0,
@@ -50,7 +57,21 @@ data class ProductDto(
     val reviewCount: Int = 0,
     val supplier: SupplierBrief? = null,
     val category: CategoryBrief? = null,
-)
+) {
+    // Real API: images are objects with relative imageUrl paths sorted by sortOrder.
+    val firstImage: String?
+        get() = images.filter { !it.imageUrl.isNullOrBlank() }.minByOrNull { it.sortOrder }?.imageUrl
+            ?: thumbnailUrl
+}
+
+// /api/deals returns data as { flashDeals: [...], dailyDeals: [...] }
+@Serializable
+data class DealsData(
+    val flashDeals: List<DealDto> = emptyList(),
+    val dailyDeals: List<DealDto> = emptyList(),
+) {
+    val all: List<DealDto> get() = flashDeals + dailyDeals
+}
 
 @Serializable
 data class DealDto(
