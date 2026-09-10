@@ -17,7 +17,9 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-14
+    # macos-15: default Xcode 16 reads XcodeGen 2.46's project format
+    # (objectVersion 77), which Xcode 15.4 on macos-14 cannot open.
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,7 +33,6 @@ jobs:
 
       - name: Build (iOS Simulator, signing-free)
         run: |
-          set -o pipefail
           xcodebuild \
             -project ios/Zylod.xcodeproj \
             -scheme Zylod \
@@ -39,7 +40,8 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath ios/build \
             CODE_SIGNING_ALLOWED=NO \
-            build 2>&1 | tail -30
+            build > ios/build/xcodebuild.log 2>&1 || { tail -80 ios/build/xcodebuild.log; exit 1; }
+          grep -E "BUILD SUCCEEDED" ios/build/xcodebuild.log || true
 
       - name: Stamp version with commit + write build info
         run: |
