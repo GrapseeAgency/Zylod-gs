@@ -245,8 +245,11 @@ private fun createShellWebView(ctx: android.content.Context, host: WebViewHost?)
             setOffscreenPreRaster(true)
         }
 
-        CookieManager.getInstance().setAcceptCookie(true)
-        CookieManager.setAcceptThirdPartyCookies(this, true)
+        val shellWebView = this
+        CookieManager.getInstance().apply {
+            setAcceptCookie(true)
+            setAcceptThirdPartyCookies(shellWebView, true)
+        }
 
         if (host != null) {
             addJavascriptInterface(WebAppBridge(host), "ZylodNativeBridge")
