@@ -33,10 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.zylod.wholesale.ui.home.HomeScreen
 import com.zylod.wholesale.ui.web.WebScreen
 
@@ -85,7 +87,9 @@ fun ZylodRoot() {
     val activeTab = if (route == "home") "home" else activeTabFor(webPageId)
 
     val openPage: (String, String) -> Unit = { pageId, query ->
-        navController.navigate("web/$pageId/${Uri.encode(query)}") {
+        // params is an optional query argument: a path segment cannot match
+        // an empty value, so an empty query must ride in the query string.
+        navController.navigate("web/$pageId?params=${Uri.encode(query)}") {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
             launchSingleTop = true
             restoreState = true
@@ -104,7 +108,13 @@ fun ZylodRoot() {
             composable("home") {
                 HomeScreen(navigateToPage = { pageId, query -> openPage(pageId, query) })
             }
-            composable("web/{pageId}/{params}") { entry ->
+            composable(
+                route = "web/{pageId}?params={params}",
+                arguments = listOf(
+                    navArgument("pageId") { type = NavType.StringType },
+                    navArgument("params") { type = NavType.StringType; defaultValue = "" },
+                ),
+            ) { entry ->
                 WebScreen(
                     pageId = entry.arguments?.getString("pageId").orEmpty(),
                     query = entry.arguments?.getString("params").orEmpty(),

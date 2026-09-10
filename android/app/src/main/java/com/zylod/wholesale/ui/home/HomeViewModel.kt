@@ -9,7 +9,9 @@ import com.zylod.wholesale.data.api.DealDto
 import com.zylod.wholesale.data.api.ProductDto
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.StatsDto
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -35,6 +37,19 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
 
     private var api: com.zylod.wholesale.data.api.ZylodApi? = null
 
+    // Parallel section calls must never throw into the parent scope: an async
+    // child failure cancels viewModelScope.launch and bypasses the try/catch,
+    // crashing the app (FATAL HttpException on main). Failure here is data:
+    // null = that section couldn't load, rendered as the error state.
+    private suspend fun <T> safeCall(block: suspend () -> T): T? =
+        try {
+            block()
+        } catch (ce: CancellationException) {
+            throw ce
+        } catch (_: Exception) {
+            null
+        }
+
     init {
         refresh()
     }
@@ -45,17 +60,32 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
             try {
                 val baseUrl = ServerConfig.resolve(appContext)
                 val client = api ?: ApiClient.create(baseUrl, appContext).also { api = it }
-                val categories = async { client.categories() }
-                val deals = async { client.flashDeals() }
-                val products = async { client.products(page = 1) }
-                val productTotal = async { client.productCount() }
-                val supplierTotal = async { client.supplierCount() }
 
-                val cat = categories.await()
-                val deal = deals.await()
-                val prod = products.await()
-                if (!cat.success || !prod.success) {
-                    _state.update { it.copy(loading = false, error = "Server returned an error") }
+                var cat: com.zylod.wholesale.data.api.ApiEnvelope<List<CategoryDto>>? = null
+                var deal: com.zylod.wholesale.data.api.ApiEnvelope<List<DealDto>>? = null
+                var prod: com.zylod.wholesale.data.api.ApiEnvelope<List<ProductDto>>? = null
+                var productTotal: com.zylod.wholesale.data.api.ApiEnvelope<kotlinx.serialization.json.JsonElement>? = null
+                var supplierTotal: com.zylod.wholesale.data.api.ApiEnvelope<kotlinx.serialization.json.JsonElement>? = null
+
+                coroutineScope {
+                    val c = async { safeCall { client.categories() } }
+                    val d = async { safeCall { client.flashDeals() } }
+                    val p = async { safeCall { client.products(page = 1) } }
+                    val pt = async { safeCall { client.productCount() } }
+                    val st = async { safeCall { client.supplierCount() } }
+                    cat = c.await()
+                    deal = d.await()
+                    prod = p.await()
+                    productTotal = pt.await()
+                    supplierTotal = st.await()
+                }
+
+                if (cat == null && prod == null) {
+                    _state.update { it.copy(loading = false, error = "Can't reach Zylod servers") }
+                    return@launch
+                }
+                if (cat?.success != true || prod?.success != true) {
+                    _state.update { it.copy(loading = false, error = "Server error — the backend is unhealthy") }
                     return@launch
                 }
 
@@ -63,17 +93,19 @@ class HomeViewModel(private val appContext: Context) : ViewModel() {
                     it.copy(
                         loading = false,
                         serverUrl = baseUrl,
-                        categories = (cat.data ?: emptyList()).take(12),
-                        deals = (deal.data ?: emptyList()).take(8),
-                        products = prod.data ?: emptyList(),
-                        page = prod.pagination?.page ?: 1,
-                        totalPages = prod.pagination?.totalPages ?: 1,
+                        categories = (cat?.data ?: emptyList()).take(12),
+                        deals = (deal?.data ?: emptyList()).take(8),
+                        products = prod?.data ?: emptyList(),
+                        page = prod?.pagination?.page ?: 1,
+                        totalPages = prod?.pagination?.totalPages ?: 1,
                         stats = StatsDto(
-                            productCount = productTotal.await().pagination?.total ?: 0,
-                            supplierCount = supplierTotal.await().pagination?.total ?: 0,
+                            productCount = productTotal?.pagination?.total ?: 0,
+                            supplierCount = supplierTotal?.pagination?.total ?: 0,
                         ),
                     )
                 }
+            } catch (ce: CancellationException) {
+                throw ce
             } catch (e: Exception) {
                 _state.update { it.copy(loading = false, error = e.message ?: "Network error") }
             }
