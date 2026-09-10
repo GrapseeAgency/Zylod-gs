@@ -243,3 +243,26 @@ Stage Summary:
 - Phase 0 agent-side work is COMPLETE on both platforms: Android (audited) + iOS (CI green, artifact verified, awaiting owner simulator audit).
 - Next action belongs to OWNER: audit iOS simulator build 2.4.5-d70aae3 in Xcode Simulator; report findings; then authorize Phase 1 explicitly.
 - Unchanged blockers: Supabase DATABASE_URL dead/placeholder (data audits need it); PAT rotation still recommended.
+
+---
+Task ID: 7-a
+Agent: Explore (Android re-audit)
+Task: Fresh full-scope Phase 0 re-review, Android platform
+Work Log:
+- Read worklog.md for Phase 0 context (remediation chain f3c4563→81b99b2→20c557b→1db74a8, all Android MAJOR+MINOR fixes); confirmed chain via git log.
+- D1: WebScreen.kt — WebErrorState composable (L428-470), onReceivedError gates on isForMainFrame + excludes file:///android_asset (L363-374), NativeWebBus reload/error ticks (L85-100), Retry re-resolves ServerConfig + manualReload++ → loadUrl (L166-181). Sub-resource failures never reach the bus. Traced the destroy-on-error → factory-recreate → reload path: no loadUrl-on-destroyed-WebView hazard (scope.launch resumes after recomposition).
+- D2: WebViewHost.kt interface read in full (6 methods + WebChromeDelegate defaults). NativeMainActivity : FragmentActivity implements WebViewHost, overrides all 6 + all 4 WebChromeDelegate methods (L160-313); mounts WebAppBridge(host)+DownloadBridge, chrome client with dialogs/console/chooser/getUserMedia, download listener (WebScreen L254-265, 377-424); NativeWebRegistry routes evaluateJavascript to topmost WebView (NativeMainActivity L160-164); biometrics: androidx.biometric:biometric:1.1.0 in deps, WebAppBridge casts `activity as? FragmentActivity` (L223) — NativeMainActivity qualifies. Legacy MainActivity : AppCompatActivity implements WebViewHost with `override` on all 6 (L720/738/744/749/836/842).
+- D3: proguard-rules.pro L15-20 keep @kotlinx.serialization.Serializable class com.zylod.wholesale.data.api.** (Companion/fields/<init> + $$serializer); Dtos.kt has @Serializable ApiEnvelope/ProductDto/CategoryDto/DealDto consumed by Retrofit ZylodApi; release isMinifyEnabled=true (build.gradle.kts L54).
+- D4: backup_rules.xml + data_extraction_rules.xml exclude sharedpref zylod_secure.xml (cloud + device-transfer); ZylodApp.SECURE_PREFS_FILE="zylod_secure" matches; securePrefs lazy catches Exception → deleteSharedPreferences + recreate (ZylodApp L35-45); OfflineSyncWorker L63-65 and WebAppBridge.setAuthToken L105-115 wrap securePrefs in runCatching.
+- E: ZylodRoot.kt L135 .height(64.dp); Shape.kt extraLarge=14dp (design-tokens.md L102: xl 14); grep Color.White under app/src/main/java → 0 hits; colors.xml documented LEGACY-only; R.color only referenced in legacy MainActivity (View shell), never in Compose.
+- F: MainActivity.isEndpointReachable (L326-335) and ServerConfig.probe (L46-55) both probe <base>/api/app/version, UA "ZylodNative/2.5.0", accept ANY response (.use { true }).
+- G: DeepLinkParser maps supplier→"seller-storefront" for zylod:// (L28) and https (L47); WebScreen target URL uses Uri.encode(pageId) + encodeQueryValues (L153-154, 207-212); web SPA registers pageId in page-loader.ts REAL_PAGES (L54), chunk-seller.ts (L11/L102), renders SellerStorefrontPage (generic-info-page.tsx L5405).
+- H: HomeViewModel.loadMore rethrows CancellationException before generic catch (L137-141), safeCall does the same (L51-52); WebAppBridge wraps securePrefs write / Room enqueue / cache clear in runCatching with Toast or JS error feedback; no unguarded IO launches found.
+- I (adversarial): createShellWebView cookie pattern (shellWebView local + CookieManager.getInstance().apply, WebScreen L248-252) is correct; FragmentActivity cast is null-safe; FragmentActivity+setContent/enableEdgeToEdge valid (FragmentActivity extends androidx.activity.ComponentActivity); no removed-API references; legacy shell unchanged (cookie flush onPause L186-190, handleStartup probe+retry L245-270, auto-retry on reconnect L828-830, offline fallback onReceivedError L508-522).
+- J: android-build.yml — assembleDebug with -PcommitSuffix=<short sha> (L37), lint non-blocking (L42), artifact Zylod-debug-apk-${{ github.sha }} (L67); gradle wrapper (jar+properties, Gradle 8.7) present; AGP 8.6.1 / Kotlin 1.9.24 / KSP pinned; all deps versioned, no dynamic versions.
+- Did NOT modify any file except this worklog append; did not run gradle (no SDK) per instructions.
+
+Stage Summary:
+- Verdicts: PASS 10 / FAIL 0 / NOT VERIFIABLE 4 (runtime-only: AEAD recovery on real corrupted store; biometric prompt on device; WebScreen error+retry under real dead network; CI-green-on-1db74a8 claim from this sandbox).
+- No FAIL findings. NEW MINOR issue: MainActivity.toastDownloadResult (L712-718) is dead code — no callers since DownloadBridge took over toasts; harmless lint noise.
+- Observations (non-defects): BarcodeScannerActivity uses raw 0x88000000 overlays (View shell, out of Compose-token scope); Compose launcher (NativeMainActivity) has no deep-link intent filters — zylod:// links still land in the legacy MainActivity by design; ZylodApp.securePrefs recovery assumes second createSecurePrefs() succeeds.

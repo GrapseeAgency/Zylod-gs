@@ -709,14 +709,6 @@ class MainActivity : AppCompatActivity(), com.zylod.wholesale.bridge.WebViewHost
         }
     }
 
-    private fun toastDownloadResult(saved: Boolean) {
-        if (saved) {
-            Toast.makeText(this, "Saved to Downloads", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "Could not save the file", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     override fun loadCustomUrl(url: String) {
         val cleanUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) {
             "http://$url"

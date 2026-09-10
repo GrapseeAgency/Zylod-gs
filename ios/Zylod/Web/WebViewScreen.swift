@@ -48,11 +48,12 @@ struct WebViewScreen: View {
             base = await ServerConfig.resolve()
         }
         let trimmed = base.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        // ?page=<id> contract; the id is percent-encoded (D10 parity).
+        // ?page=<id> contract; the id and every query VALUE are percent-encoded
+        // (D10 parity with android WebScreen.encodeQueryValues).
         let encodedPageId = pageId.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? pageId
         var target = trimmed + "/?page=" + encodedPageId
         if !query.isEmpty {
-            target += "&" + query
+            target += "&" + Self.encodeQueryValues(query)
         }
         if let url = URL(string: target) {
             loadedUrl = url
@@ -62,9 +63,26 @@ struct WebViewScreen: View {
     }
 
     private func retry() {
+        // Fresh resolve on retry: a dead cached host must not be retried
+        // forever (parity with android WebScreen retry → ServerConfig.resolve).
+        ServerConfig.invalidateCache()
         loadError = nil
         loadedUrl = nil // forces a fresh WKWebView with a fresh navigation
         Task { await resolveAndLoad() }
+    }
+
+    /// Encodes every VALUE segment of a preassembled query string (keeps '&'
+    /// and '=') — mirrors android ui/web/WebScreen.encodeQueryValues.
+    private static func encodeQueryValues(_ query: String) -> String {
+        query.split(separator: "&", omittingEmptySubsequences: false).map { pair -> String in
+            if let eq = pair.firstIndex(of: "=") {
+                let rawValue = String(pair[pair.index(after: eq)...])
+                let encoded = rawValue.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? rawValue
+                return String(pair[pair.startIndex...eq]) + encoded
+            }
+            let raw = String(pair)
+            return raw.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? raw
+        }.joined(separator: "&")
     }
 
     private func webErrorView(_ message: String) -> some View {
@@ -118,11 +136,22 @@ private struct WebWebView: UIViewRepresentable {
         var onFailure: (() -> Void)?
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            guard !error.isCancelledNavigation else { return }
             onFailure?()
         }
 
         func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            guard !error.isCancelledNavigation else { return }
             onFailure?()
         }
+    }
+}
+
+extension Error {
+    /// WKWebView reports user/SPA-initiated aborts (swipe-back mid-load,
+    /// redirect churn) as NSURLErrorCancelled (-999) — normal navigation
+    /// noise, NOT "server unreachable". Never surface them as failures.
+    var isCancelledNavigation: Bool {
+        (self as NSError).code == NSURLErrorCancelled
     }
 }

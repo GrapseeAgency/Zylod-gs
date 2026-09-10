@@ -25,6 +25,13 @@ enum ServerConfig {
         defaults.string(forKey: cacheKey)
     }
 
+    /// Drops the cached winner so the next resolve() re-probes every candidate.
+    /// Retry-after-failure must not loop forever on a dead cached host —
+    /// parity with android WebScreen retry → ServerConfig.resolve.
+    static func invalidateCache() {
+        defaults.removeObject(forKey: cacheKey)
+    }
+
     static func resolve() async -> String {
         var alive: [Int: Bool] = [:]
         await withTaskGroup(of: (Int, Bool).self) { group in

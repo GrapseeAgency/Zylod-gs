@@ -46,14 +46,16 @@ final class HomeViewModel: ObservableObject {
         let productTotalResult = try? await productTotal
         let supplierTotalResult = try? await supplierTotal
 
+        // A cancelled refresh (view torn down mid-flight, or one section
+        // cancelled after another succeeded) must never publish a false
+        // error state — `try?` maps cancellation to nil, so EVERY error
+        // branch below must be gated on it (D3 fix — parity with Android's
+        // safeCall rethrowing CancellationException).
+        guard !Task.isCancelled else {
+            loading = false
+            return
+        }
         if categoriesResult == nil && productsResult == nil {
-            // A cancelled refresh (view torn down mid-flight) must not show a
-            // false "can't reach server" state (D3 fix — parity with Android's
-            // safeCall rethrowing CancellationException).
-            guard !Task.isCancelled else {
-                loading = false
-                return
-            }
             error = "Can't reach Zylod servers"
             loading = false
             return
