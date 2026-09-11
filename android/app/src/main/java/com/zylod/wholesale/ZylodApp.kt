@@ -97,7 +97,7 @@ class ZylodApp : Application(), coil.ImageLoaderFactory {
      * every AsyncImage used the default no-disk-cache loader, so every list
      * scroll re-decoded full-size product images over the network.
      */
-    override fun createImageLoader(): coil.ImageLoader =
+    override fun newImageLoader(): coil.ImageLoader =
         coil.ImageLoader.Builder(this)
             .memoryCache {
                 coil.memory.MemoryCache.Builder(this)

@@ -396,7 +396,7 @@ internal object NativeWebViewPool {
                 }
                 handle?.let { h ->
                     android.os.Handler(android.os.Looper.getMainLooper()).post {
-                        h.onMainFrameError.invoke()
+                        h.onMainFrameError?.invoke()
                     }
                 }
                 return true
