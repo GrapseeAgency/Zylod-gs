@@ -1,12 +1,8 @@
 package com.zylod.wholesale.util
 
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.view.FrameMetrics
-import android.view.Window
-import androidx.annotation.RequiresApi
+import android.view.Choreographer
 import com.zylod.wholesale.BuildConfig
 import java.util.ArrayDeque
 import java.util.Locale
@@ -16,25 +12,26 @@ import java.util.Locale
  * and determine why it underperforms the existing WebView implementation…
  * using actual frame/jank measurements, memory, image decode time,
  * recomposition, main-thread work and input latency." This is the in-app
- * half of that harness — an objective, per-surface frame/jank recorder built
- * on the platform's own FrameMetrics pipeline (the same source `adb shell
- * dumpsys gfxinfo` samples, but per-surface-tagged and instantly readable
- * from logcat).
+ * half of that harness — an objective, per-surface frame-cadence recorder
+ * built on Choreographer, the same vsync source the render pipeline and
+ * `dumpsys gfxinfo` ultimately sample.
  *
  * The harness tags the two competing implementations of the SAME surface:
  * `native:home` (Compose HomeScreen) and `web:<pageId>` (a WebView-hosted
- * SPA page). Because both are captured by the SAME window-level pipeline,
- * "Compose Home vs WebView Home" is an apples-to-apples comparison of
- * frame production on the same device, same session.
+ * SPA page). Both are captured by the SAME window-level pipeline, so
+ * "Compose Home vs WebView Home" is an apples-to-apples comparison of frame
+ * production on the same device, same session.
  *
  * Method:
  *  - Every surface transition calls [tag]; the tag switch DUMPS the previous
- *    surface's stats (frames, jank%, p50/p90/p95/p99, worst frame) and
- *    starts a fresh bucket, so numbers never mix two surfaces.
- *  - Frames are the OS-reported TOTAL_DURATION ns of each Choreographer
- *    frame while the surface is active. A frame is JANKY at > 1× the
- *    display period (read from the display's real refresh rate, fallback
- *    16.67 ms @60 Hz), FROZEN at > 3×.
+ *    surface's stats (frames, jank%, p50/p90/p95/p99, worst) and starts a
+ *    fresh bucket, so numbers never mix two surfaces.
+ *  - A Choreographer frame callback chain measures the interval between
+ *    consecutive produced frames. A frame is JANKY when the interval
+ *    exceeds 1.5× the display period (read from the real refresh rate,
+ *    fallback 16.67 ms @60 Hz) and FROZEN at > 3×. Gaps > [IDLE_GAP_MS]
+ *    are the renderer going idle (no frames requested — list settled, page
+ *    parked) and are excluded: idle time is not jank.
  *  - DEBUG builds only ([enabled]) — release APKs carry zero overhead.
  *
  * Owner workflow (documented in docs/PERFORMANCE-PROFILE.md):
@@ -45,8 +42,11 @@ object JankProfiler {
 
     private const val TAG = "ZylodPerf"
 
-    /** FrameMetrics requires API 24+; the app minSdk is 24. */
+    /** Debug-only: the harness never runs in release builds. */
     val enabled: Boolean = BuildConfig.DEBUG
+
+    /** Gaps longer than this are idle, not jank (renderer parked). */
+    private const val IDLE_GAP_NS: Long = 250_000_000L
 
     @Volatile
     private var surface: String? = null
@@ -57,70 +57,88 @@ object JankProfiler {
 
     private val frames = ArrayDeque<Long>()
     private var vsyncPeriodNs: Long = 16_666_667L
-    private var installed = false
+    private var lastFrameNs: Long = 0L
+    private var running = false
 
-    // SAM signature: onFrameMetricsAvailable(window, frameMetrics, frameCount).
-    private val listener =
-        Window.OnFrameMetricsAvailableListener { window, frameMetrics, _ ->
-            val active = surface ?: return@OnFrameMetricsAvailableListener
-            val total = frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
-            synchronized(frames) {
-                frames.addLast(total)
-                while (frames.size > 600) frames.removeFirst()
-                if (frames.size % 300 == 0) dumpLocked(active)
-            }
+    private val choreographer: Choreographer?
+        get() = try {
+            Choreographer.getInstance()
+        } catch (_: Exception) {
+            null
         }
+
+    private val frameCallback = object : Choreographer.FrameCallback {
+        override fun doFrame(frameTimeNanos: Long) {
+            if (!running) return
+            synchronized(this@JankProfiler) {
+                val gap = frameTimeNanos - lastFrameNs
+                lastFrameNs = frameTimeNanos
+                if (gap in 1L until IDLE_GAP_NS) {
+                    frames.addLast(gap)
+                    while (frames.size > 600) frames.removeFirst()
+                    if (frames.size % 300 == 0) surface?.let { dumpLocked(it) }
+                }
+            }
+            choreographer?.postFrameCallback(this)
+        }
+    }
 
     /**
      * Marks the beginning of [name]'s frame bucket. Dumps the previous
      * surface's stats first — call on every screen enter/leave.
      */
-    fun tag(window: Window?, name: String) {
+    fun tag(window: android.view.Window?, name: String) {
         if (!enabled || window == null) return
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
-        synchronized(frames) {
+        synchronized(this) {
             surface?.let { dumpLocked(it) }
             frames.clear()
             surface = name
             lastSurface = name
+            // Display period from the real refresh rate (fallback 60 Hz).
+            val hz = try {
+                window.decorView.display?.refreshRate ?: 60f
+            } catch (_: Exception) {
+                60f
+            }
+            if (hz > 20f) vsyncPeriodNs = (1_000_000_000f / hz).toLong()
         }
-        // Display period from the real refresh rate (fallback 60 Hz).
-        val hz = try {
-            window.decorView.display?.refreshRate ?: 60f
-        } catch (_: Exception) {
-            60f
-        }
-        if (hz > 20f) vsyncPeriodNs = (1_000_000_000f / hz).toLong()
-        install(window)
+        startLocked()
         Log.i(TAG, "surface → $name")
     }
 
     /** Re-arms the last tagged surface after an app switch (onResume). */
-    fun retag(window: Window?) {
+    fun retag(window: android.view.Window?) {
         if (!enabled || window == null) return
         lastSurface?.let { tag(window, it) }
     }
 
     /** Stops attribution (activity pause) — dumps what the surface collected. */
-    fun clear(window: Window?) {
+    fun clear(window: android.view.Window?) {
         if (!enabled || window == null) return
-        synchronized(frames) {
+        synchronized(this) {
             surface?.let { dumpLocked(it) }
             frames.clear()
             surface = null
         }
+        stopLocked()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun install(window: Window) {
-        if (installed) return
-        installed = true
-        try {
-            window.setOnFrameMetricsAvailableListener(listener, Handler(Looper.getMainLooper()))
-        } catch (e: Exception) {
-            Log.w(TAG, "FrameMetrics unavailable on this device/profile", e)
-            installed = false
+    private fun startLocked() {
+        if (running) return
+        val choreo = choreographer ?: return
+        running = true
+        lastFrameNs = 0L
+        choreo.postFrameCallback { first ->
+            synchronized(this@JankProfiler) {
+                lastFrameNs = first
+            }
+            choreo.postFrameCallback(frameCallback)
         }
+    }
+
+    private fun stopLocked() {
+        running = false
+        choreographer?.removeFrameCallback(frameCallback)
     }
 
     private fun dumpLocked(surfaceName: String) {
@@ -130,7 +148,7 @@ object JankProfiler {
         }
         val sorted = frames.toSortedSet().toLongArray()
         fun pct(p: Double): Long = sorted[((sorted.size - 1) * p).toInt().coerceIn(0, sorted.size - 1)]
-        val jank = frames.count { it > vsyncPeriodNs }
+        val jank = frames.count { it > vsyncPeriodNs * 3 / 2 }
         val frozen = frames.count { it > vsyncPeriodNs * 3 }
         val worst = sorted.last()
         Log.i(
@@ -141,7 +159,7 @@ object JankProfiler {
                 surfaceName,
                 frames.size,
                 100.0 * jank / frames.size,
-                vsyncPeriodNs / 1_000_000.0,
+                vsyncPeriodNs * 1.5 / 1_000_000.0,
                 frozen,
                 pct(0.50) / 1_000_000.0,
                 pct(0.90) / 1_000_000.0,
