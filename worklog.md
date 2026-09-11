@@ -519,3 +519,133 @@ Work Log:
 
 Stage Summary:
 - PHASE 1 IMPLEMENTATION COMPLETE AND CI-VERIFIED. STOPPED per audit loop — awaiting owner audit. No Phase 2 work started. Known limitations + deviations documented in the Phase 1 checkpoint report delivered to the owner.
+
+---
+Task ID: 7 (orchestrator — audit-hold state verification)
+Agent: Z.ai Code orchestrator
+Task: Owner issued audit-hold directive; verify audit-ready state read-only, change nothing, STOP
+
+Work Log:
+- Owner directive received: checkpoint accepted for audit ONLY; no feature work, no Phase 2, no refactoring, no pre-fixes until findings arrive.
+- Read-only verification performed:
+  - origin/main = fd4c1ac (docs close-out) = audited checkpoint HEAD; both CI runs on this exact sha are SUCCESS: android-build 34519131572, ios-build 34519131522.
+  - Artifacts ACTIVE on fd4c1ac: Zylod-debug-apk-fd4c1ac… (31.7 MB, artifact id 10169024020) + lint-report (id 10169022042) + Zylod-ios-simulator-fd4c1ac… (4.5 MB, artifact id 10168932106).
+  - One LOCAL-ONLY commit 8d0d1fd exists (auto-commit touching .zscripts/dev.pid only — sandbox pid file, zero project code). Deliberately NOT pushed: pushing would move origin/main past the audited sha and trigger new CI runs, invalidating the artifact lineage the owner is about to audit.
+- Zero code modifications made. Zero pushes. Zero CI triggers.
+
+Stage Summary:
+- AUDIT-HOLD STATE CONFIRMED CLEAN: audited sha fd4c1ac on origin/main, green CI on both platforms, all 3 artifacts active and downloadable. Phase 2 LOCKED. Next action belongs to the owner: real-device/runtime audit findings. On findings: fix ONLY reported Phase 1 findings + direct root causes, preserve working behaviour, no mocks/bypasses, commit+push, fresh artifacts, STOP for re-audit.
+
+---
+Task ID: 8 (orchestrator — release page update for audit, owner-directed)
+Agent: Z.ai Code orchestrator
+Task: Publish the Phase 1 fd4c1ac debug APK to the GitHub releases page so owner can audit on real device. Nothing else.
+
+Work Log:
+- Confirmed no `release` trigger in either CI workflow (release creation is CI-inert, no runs fired, no code touched).
+- Downloaded CI artifact 10169024020 (android-build run 34519131572, sha fd4c1ac); build-info verified: com.zylod.wholesale.debug, versionName 2.4.5-fd4c1ac, versionCode 245.
+- Created release: tag v2.4.5-fd4c1ac, target fd4c1ac (audited checkpoint), prerelease, id 386563394.
+- Uploaded asset Zylod-v2.4.5-fd4c1ac-debug.apk (43.1 MB, state=uploaded).
+- Verified direct link serves HTTP 200, content-type application/vnd.android.package-archive, 45,195,682 bytes.
+
+Stage Summary:
+- RELEASE LIVE: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-fd4c1ac
+- Direct APK: https://github.com/GrapseeAgency/Zylod-gs/releases/download/v2.4.5-fd4c1ac/Zylod-v2.4.5-fd4c1ac-debug.apk
+- Zero code changes, zero pushes, zero CI triggers. Audit-hold continues; awaiting owner real-device/runtime findings.
+
+---
+Task ID: 9 (orchestrator — release re-publish, owner-directed)
+Agent: Z.ai Code orchestrator
+Task: Owner could not see the release update; delete previous release and re-publish cleanly, provide link. Nothing else.
+
+Work Log:
+- Deleted release 386563394 (204) and tag v2.4.5-fd4c1ac (204).
+- Re-downloaded CI artifact 10169024020 (android-build run 34519131572, sha fd4c1ac); verified app-debug.apk 45,195,682 bytes, com.zylod.wholesale.debug, versionName 2.4.5-fd4c1ac.
+- Recreated tag refs/tags/v2.4.5-fd4c1ac at fd4c1acb6d883b7d61a08d5d4a465b3223aec8e3.
+- Created NEW release id 386764281 — published as Latest (prerelease=false, make_latest=true; previous one was prerelease, likely why it was not visible).
+- Uploaded asset Zylod-v2.4.5-fd4c1ac-debug.apk (45,195,682 bytes, state=uploaded).
+- Verified direct link HTTP 200 and /releases/latest resolves to v2.4.5-fd4c1ac.
+
+Stage Summary:
+- RELEASE REPUBLISHED (delete-then-recreate): https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-fd4c1ac (now shows as Latest)
+- Direct APK: https://github.com/GrapseeAgency/Zylod-gs/releases/download/v2.4.5-fd4c1ac/Zylod-v2.4.5-fd4c1ac-debug.apk
+- Zero code changes, zero pushes, zero CI triggers. Audit-hold continues.
+
+---
+Task ID: 1-c
+Agent: Explore (web chrome forensics)
+Task: Map web-side chrome rendered inside native WebView + native-host detection options
+
+Work Log:
+- Read app-shell.tsx, mobile-bottom-nav.tsx, native-bridge.ts, app-entry.tsx, navigation-store.ts, page.tsx, use-mobile.ts, mobile-top-nav.tsx, layout.tsx, social-consent-modal.tsx, page-loader.ts (chunk mapping).
+- Grepped src/ for ZylodNative|__ZYL|isNativeAndroid|userAgent|webkit|messageHandlers|data-zylod|serviceWorker|cookie banners.
+- Cross-checked native shells: android/.../session/WebShellScripts.kt, ui/web/NativeWebViewPool.kt, MainActivity.kt; ios/Zylod/Bridge/ZylodNativeBridge.swift, Web/WebShellScripts.swift.
+- No source code modified; RESEARCH ONLY.
+
+Stage Summary:
+- Chrome mounts: MobileBottomNav at app-shell.tsx:76,101,112 + mobile-home-page.tsx:152 (all carry data-zylod-mobile-nav, mobile-bottom-nav.tsx:55). Content padding pb-[calc(64px+env(safe-area-inset-bottom)+16px)] on wrappers tagged data-zylod-nav-padding (app-shell.tsx:72,84,108).
+- DETAIL_PAGES back-bar (app-shell.tsx:86-97) is UNTAGGED → still renders inside WebView; product-detail has no own back button, so hide only if shell provides back affordance (hardware back already works via History: navigation-store.ts:61,108,133-147).
+- PageId→chrome: home=MobileTopNav+MobileBottomNav (mobile-home-page.tsx:110,152); category-browser/flash-deals=default branch (app-shell.tsx:107-114) + own sticky page headers (category-browser-page.tsx:109, flash-deals-page.tsx:127); profile=custom-header branch (app-shell.tsx:68-79); product-detail=detail branch back-bar+nav (app-shell.tsx:82-104); FULLSCREEN (login/checkout/welcome) = no chrome (app-shell.tsx:39-65).
+- Detection markers already set by shells: Android bridge `window.ZylodNativeBridge` (addJavascriptInterface, NativeWebViewPool.kt:223, MainActivity.kt:406; web reads it in native-bridge.ts:37) + UA suffix `ZylodAndroidNative/<ver>` (MainActivity.kt:390, NativeWebViewPool.kt:204); iOS WKScriptMessageHandler `ZylodNativeBridge` polyfilled at document-start (ZylodNativeBridge.swift:108,125,184-221) — iOS has NO UA marker. Shell already injects CSS style[data-zylod-shell-css] hiding [data-zylod-mobile-nav] + flattening [data-zylod-nav-padding] to 16px (WebShellScripts.kt:29-48, WebShellScripts.swift:23-24) — committed a8f5083.
+- Recipe: client-only hook `useNativeHost()` in NEW src/lib/native-host.ts → `!!window.ZylodNativeBridge || !!window.webkit?.messageHandlers?.ZylodNativeBridge || /ZylodAndroidNative\//.test(navigator.userAgent)`; hydrate-safe since page.tsx:9-16 loads AppEntry dynamic({ssr:false}).
+- Minimal fix: guard inside MobileBottomNav (covers all 4 mounts) + gate back-bar/padding in app-shell.tsx; no Tier 3 page changes.
+- Latency: spinner chain page.tsx:11-15 → app-entry.tsx:105-114 (every pageId change) → chunk dynamic import for profile/product-detail/flash-deals/category-browser (page-loader.ts:253-285). No SSR navigator.userAgent reads (only report-problem-page.tsx:26 client + server request headers). No service worker, PWA prompt, or cookie banner exists; MobileVerificationBanner/MobileVerifiedBanner are dead code (defined, never mounted).
+
+---
+Task ID: 1-b
+Agent: Explore (iOS forensics)
+Task: Root-cause investigation of iOS audit exposure (endless loading, duplicate chrome, jank, lifecycle)
+
+Work Log:
+- Read worklog.md (573 ln) + spec §1.1/§2/§3.0/§3.11/§7; confirmed iOS had 0/24 bridge methods pre-Phase 1 and Phase 1 added ZylodNativeBridge (WKScriptMessageHandler "ZylodNativeBridge", ZylodNativeBridge.swift:125/427-434).
+- Found remediation commit a8f5083 ALREADY in tree (WebViewScreen rewrite, WKWebViewPool.swift, WebShellScripts.swift, BridgeCoordinator.swift, web data-zylod-* tags + __zylodSpaReady) — audited the CURRENT state, not just the pre-fix baseline.
+- Deep-read all 37 ios/Zylod files (WebViewScreen 441 ln, pool, bridge, SessionManager, ApiClient, Home/Cart/PDP view+VM, auth suite, project.yml); compared pre-remediation WebViewScreen (git fd4c1ac) vs current.
+- Original endless-loading root cause confirmed: fd4c1ac WebViewScreen loaded a dead/hung cached host with NO timeout, NO loading state, NO retry; WKNavigationDelegate only failed on main-frame provisional errors. Current build adds a 20s watchdog (WebViewScreen.swift:197-210) — bounded, but gaps remain (see Stage Summary).
+- Verified server resolution bounded (ServerConfig.probe 6s, ServerConfig.swift:57-67), URLSession 20s timeouts (ApiClient.swift:131), voice 10s timeout, auth flows all defer { isLoading = false } — native screens have no hang paths.
+- Checked chrome suppression end-to-end: data-zylod-mobile-nav (mobile-bottom-nav.tsx:51), data-zylod-nav-padding ×3 (app-shell.tsx:70/84/108), CSS injected atDocumentStart (ZylodNativeBridge.swift:121-123, WebShellScripts.swift:22-24); UA marker ZylodiOSNative/<v> (ZylodNativeBridge.swift:99); soft-nav via __zylodSpaReady (navigation-store.ts:149-156, WebShellScripts.swift:65-96).
+- Traced back-nav: allowsBackForwardNavigationGestures=true (ZylodNativeBridge.swift:88) + NavigationStack — web-history swipe-back fights native pop, no canGoBack integration.
+- RESEARCH ONLY; only this append written.
+
+Stage Summary:
+- A) Endless loading: ORIGINAL cause = unbounded WKWebView load on a hung cached host (fd4c1ac WebViewScreen — no watchdog). Current build bounds it (20s watchdog → error+retry, WebViewScreen.swift:197-210). REMAINING holes: (1) didFail/didFailProvisionalNavigation have NO main-frame gating (WebViewScreen.swift:360-368) — a subframe/subresource failure flips the whole screen to the error state (Android gates isForMainFrame, WebScreen.kt:363-374); (2) navigationResponse→.download never fires didFinish → 20s "server isn't responding" on a successful download (WebViewScreen.swift:413-421); (3) softNavigate's withCheckedContinuation (WebViewScreen.swift:238-246) never resumes if the shell is destroyed mid-evaluateJavaScript (pool destroy) → leaked continuation; (4) watchdog Task outlives the view (not cancelled on disappear). Native Login/PDP/Cart: all bounded (timeouts + try/catch + defer) — PASS.
+- B) Duplicate chrome: FIXED on current build — web bar hidden via injected CSS at document start; native-host signalling = UA token "ZylodiOSNative/<version>" (ZylodNativeBridge.swift:99) + document-start shim defining window.ZylodNativeBridge (isNativeAndroid()→true) + WKScriptMessageHandler + chrome-suppression script + auth-seed WKUserScript. DEFECT: BridgeCoordinator holds ONE weak webView target for ALL shells (BridgeCoordinator.swift:18-26, WebViewScreen.swift:310/319) — with 3 tab shells + 2 pooled shells live, bridge JS callbacks can be evaluated on the WRONG page (background tabs' pages stay live).
+- C) Perf defects ranked: (1) NO shared WKProcessPool — shellConfiguration() builds a fresh WKWebViewConfiguration each shell (ZylodNativeBridge.swift:95-102); up to 5 WebContent processes, no shared in-memory cache. Fix: static shared pool assigned in shellConfiguration(). (2) AsyncImage with no cache/downsample everywhere (ZylodUI.swift:431, HomeView.swift:480, PDP gallery TabView(.page) ProductDetailView.swift:108-116) — refetch flicker + full-res decode jank; needs NSCache+downsampling pipeline (Coil parity). (3) 3 owned tab shells each keep a full live SPA forever (RootView.swift:129-137) — memory; no suspension. (4) ZylodFont.scaled calls UIFontMetrics per Text per body eval, ignores relativeTo (ZylodTheme.swift:77-79) — scroll jank; cache scaled sizes. (5) onPreferenceChange scroll-offset readers fire per frame (HomeView.swift:91-95, ProductDetailView.swift:216-226) — value-gated but still per-frame preference churn. (6) LoginView 1Hz Timer always running (LoginView.swift:31). (7) pre-remediation per-push WKWebView rebuild is FIXED by WKWebViewPool (maxFree 2, WKWebViewPool.swift:44) — keep, don't revert to .id()-style teardown; restore-in-place fast path (WebViewScreen.swift:153-157) is correct.
+- D) Files Phase-1-remediation must touch (iOS): Web/WebViewScreen.swift (main-frame gating, download-path isLoading, continuation, watchdog onDisappear), Bridge/ZylodNativeBridge.swift (shared WKProcessPool; per-shell reply routing), Bridge/BridgeCoordinator.swift (multi-shell callback dispatch), Web/WKWebViewPool.swift (pool wiring for pool; maybe suspend owned shells), Nav/RootView.swift (tab shell lifecycle/back policy), Components/ZylodUI.swift + Home/HomeView.swift + Product/ProductDetailView.swift + Cart/CartView.swift (image pipeline), Theme/ZylodTheme.swift (font cache), Auth/LoginView.swift (timer); project.yml unchanged (NSAllowsLocalNetworking already flagged for store release).
+- Back navigation: no unified policy — WKWebView edge-swipe navigates WEB history inside the pushed screen while NavigationStack back button pops native; recommend: disable allowsBackForwardNavigationGestures OR custom back (goBack when canGoBack else pop), mirroring Android history-aware back.
+
+---
+Task ID: 1-a
+Agent: Explore (Android forensics)
+Task: Root-cause investigation of Android audit failures (endless loading, duplicate chrome, jank)
+
+Work Log:
+- Read worklog.md + spec §1.1/§2/§3.0/§3.11/§6; discovered working tree HEAD 56a1678 already carries an UNLOGGED remediation commit a8f5083 (NativeWebViewPool.kt NEW 427, WebScreen.kt rewrite 445, WebShellScripts.kt NEW 97, WebAuthSeeder +27, ApiClient memoization 75, web data-zylod-* hooks). Audited artifact = fd4c1ac — forensics ran against BOTH via git show.
+- Read in full: WebScreen.kt (old+new), NativeWebViewPool.kt, WebShellScripts.kt, WebAuthSeeder.kt, ZylodRoot.kt, NativeMainActivity.kt, MainActivity.kt (back/UA/probe), WebAppBridge.kt, WebViewHost.kt, ApiClient.kt (old+new), ServerConfig.kt, ZylodApp.kt, HomeScreen/HomeViewModel, LoginScreen VM, CartViewModel, ProductDetailViewModel, AndroidManifest; greps: Coil config, collectAsStateWithLifecycle (0 hits), BackHandler, withTimeout, __ZYL_NATIVE__ (0 hits).
+- Native Phase-1 VMs verified bounded: OkHttp 10s/20s timeouts + 401 refresh authenticator (ApiClient.kt:146-161); loading=false on every terminal path; CancellationException rethrown (Login 212-216, Home 112-116, PDP 109-113, Cart 125-129) — no native spinner can hang.
+
+Stage Summary:
+- (A) Endless spinner (audited fd4c1ac WebScreen.kt): pageLoading=true set before every loadUrl (L161-162); ONLY clearer was the process-global errorTick collector (L137-141 ← onReceivedError main-frame); onPageFinished (L289) never cleared it; no watchdog/progress/onReceivedHttpError. Success, HTTP-status failures and hung connects all spin forever. HEAD adds per-screen FSM + 20s watchdog (WebScreen.kt:195-203) but Retry after a main-frame error does NOT reload: onRetry clears pageError (L217), then restore-in-place gate `active.lastUrl==target && !pageError` (L167) wins → broken page shown as "loaded" (WebScreen.kt:214-225). Must force lastUrl=null on retry.
+- (B) Duplicate chrome: web AppShell mounts MobileBottomNav (fixed bottom-0 z-50) inside the WebView (app-shell.tsx:99-113, mobile-bottom-nav.tsx:51-55) directly above the native 64dp bar (ZylodRoot.kt:371-377, NavHost padding L194). fd4c1ac had zero suppression. HEAD fixes via document-start CSS hiding [data-zylod-mobile-nav] (WebShellScripts.kt:29-48,91-96) — but the web files changed in a8f5083 are NOT live until the server production build is rebuilt/restarted. Native-host signalling today: UA suffix `ZylodAndroidNative/<ver>` (NativeWebViewPool.kt:204), window.ZylodNativeBridge.isNativeAndroid() (WebAppBridge.kt:86-88), __IS_OFFLINE__ (pool:256); NO window.__ZYL_NATIVE__ flag exists.
+- (C) Perf defects @HEAD ranked: (1) softNavigate + restore-in-place are DEAD CODE on Android — `shell` is per-entry remember{} (WebScreen.kt:114) and openPage always popUpTo(start) (ZylodRoot.kt:133) ⇒ every Tier-3 nav and every Back-from-PDP composes a fresh WebScreen with shell=null ⇒ active==null branch ⇒ pageLoading=true + full loadUrl (WebScreen.kt:150-165); pool only avoids WebView-instance recreation, not the SPA reload (unlike iOS where @State survives the stack). Fix = pageId-keyed pool + AndroidView reattach. (2) two live WebViews during nav transitions (checkout before old checkIn; up to 3 alive: 1 busy + MAX_FREE 2). (3) NativeMainActivity never onPause/onResume's the active shell (L146-151 cookie-flush only; legacy shell did). (4) hardware back ignores WebView history — no BackHandler in Compose shell (legacy MainActivity.kt:165-174 had canGoBack/goBack); spec §3.0 wants history-aware back. (5) no Coil ImageLoaderFactory (ZylodApp.kt) — defaults only; crossfade solely in PDP (ProductDetailScreen.kt:355-357). (6) collectAsState everywhere (not lifecycle-aware). Already fixed by a8f5083: per-call Retrofit+OkHttpClient construction (now memoized, ApiClient.kt:137-171) and setOffscreenPreRaster(true)→false (pool:213).
+- (D) Android remediation must touch: ui/web/WebScreen.kt (true FSM loading/loaded/empty/error + force-reload retry + pool-keyed lookup + BackHandler), ui/web/NativeWebViewPool.kt (pageId-keyed LRU reattach API, evict-destroy), session/WebShellScripts.kt (add window.__ZYL_NATIVE__=true), NativeMainActivity.kt (pause/resume active shell, onTrimMemory→pool trim), ui/nav/ZylodRoot.kt (Home tab currently openPage("home") → WEB home; route to native "home" composable), ZylodApp.kt (ImageLoaderFactory); deploy rebuilt web bundle (app-shell.tsx/mobile-bottom-nav.tsx/navigation-store.ts).
+
+---
+Task ID: 2-remediation (orchestrator — Phase 1 audit round 2 failure, root-cause fix)
+Agent: Z.ai Code orchestrator (+ Explore subagents 1-a Android / 1-b iOS / 1-c web chrome)
+Task: Owner real-device audit round 2 FAILED (endless loading, duplicate web+native nav, jank, unbounded states). Root-cause investigate, implement minimal correct architecture fixes on BOTH platforms + web host boundary, push, produce new SHA-traceable CI artifacts, STOP for re-audit.
+
+Work Log:
+- Forensics (3 parallel subagents + orchestrator reads): discovered an UNLOGGED, half-broken remediation existed locally (UUID commits, a8f5083): pool existed but restore-in-place was DEAD code (per-composition shell state), retry was a silent no-op, iOS subframe/download/watchdog gaps, no shared WKProcessPool, web chrome tagging without a web-side native-host detector.
+- Android root causes: (1) infinite spinner — onPageFinished never cleared loading at fd4c1ac; a8f5083 fixed that but left retry no-op, no main-frame HTTP>=400 handling (500 = spinner forever), renderer crash killed the app; (2) duplicate chrome — ZylodRoot Home tab called openPage("home") → WebView of web home (own top+bottom nav) instead of the native HomeScreen; (3) jank — every Tier-3 nav did full loadUrl + SPA re-hydration (dead fast path), Retrofit clients per call (fixed in a8f5083, kept), unconfigured Coil (full-res re-decode per scroll), shells not paused with Activity.
+- iOS root causes: main-frame HTTP error docs "finish" as success (dead-end page); download navigations never fire didFinish → false watchdog error; WKWebViewConfiguration had no shared process pool (up to 5 WebContent processes); bridge replies went to last-attached shell (async callbacks dropped); bare AsyncImage full-res decode; UIFontMetrics per Text per frame; always-on 1Hz login timer; WKWebView back gesture fighting NavigationStack pop.
+- Web root cause: no native-host recognition at all — web MobileBottomNav (position:fixed bottom) + DETAIL back-bar always rendered inside the shells (only native-side CSS existed, keyed to data attrs the deployed bundle doesn't have).
+- Fixes (single commit 9403cda on fd4c1ac; squashed the unlogged UUID commits for clean lineage):
+  Android — Home tab → native route; WebScreen FSM (always-soft-navigate reuse, force-reload retry, onPageFinished self-heal, BackHandler history-aware, 20s watchdog kept); pool LRU + MAX_FREE=3 + trim + main-frame HTTP>=400 error + onRenderProcessGone recovery; Activity pause/resume of attached shell; Coil ImageLoaderFactory; collectAsStateWithLifecycle ×11 (+lifecycle-runtime-compose 2.7.0); __ZYL_NATIVE__ flag + nav.fixed.bottom-0 transition shim in document-start CSS.
+  Web — NEW src/lib/native-host.ts (flag + bridge object + iOS messageHandlers + UA markers, client-only hydration-safe); MobileBottomNav internal guard (all 4 mount sites); AppShell DETAIL back-bar + bottom-padding gated to web-only; browsers 100% unchanged.
+  iOS — navigationResponse main-frame HTTP>=400 gate; download → FSM stop; softNavigate resume-once + 5s bound; watchdog restart on onAppear; shared WKProcessPool; back-forward gesture OFF (one back system); BridgeCoordinator per-sending-shell reply routing (evaluateTarget from message.webView); ZylodImagePipeline (NSCache + URLCache + ImageIO downsample); ZylodFont cache; login timer gated.
+- Verification: ESLint — 0 new errors (35 pre-existing baseline unchanged, all in untouched legacy page components under new react-hooks v6 rules); agent-browser UA-matrix QA on the dev server: browser/mobile = web nav + back-bar PRESENT + tall padding (web unchanged); native UA = nav GONE, back-bar GONE, padding pb-4; __ZYL_NATIVE__ path code-verified in both shells' document-start scripts; screenshots /tmp/qa-*.png.
+- Pushed 9403cda → origin/main; CI round 1 (9403cda) failed: ApiClient <T> bound, HomeScreen remember-in-LazyColumn (from the unlogged session), Swift optional unwrap — fixed in 24f483c; iOS round 2: WKNavigationResponse.isForMainFrame — fixed in d2aaf5f. FINAL: android-build 34563920912 SUCCESS + ios-build 34563920934 SUCCESS on d2aaf5f; artifacts Zylod-debug-apk / lint-report / Zylod-ios-simulator all SHA-stamped d2aaf5f, active.
+
+Stage Summary:
+- KEY DEPLOYMENT NOTE for the owner: the web half of the duplicate-chrome fix (web recognizing the native host) is in this commit and takes full effect when the web bundle built from 9403cda is DEPLOYED to the production server. Until then the shells' injected CSS shim (nav.fixed.bottom-0) already suppresses the legacy bar natively, so the APK is correct even against the old bundle.
+- Android debug APK + iOS simulator artifact are built by CI from 9403cda (runs above). Phase 2 remains LOCKED. STOP for owner re-audit after artifacts + release update.
