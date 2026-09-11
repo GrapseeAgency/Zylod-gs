@@ -1,6 +1,7 @@
 package com.zylod.wholesale.ui.nav
 
 import android.net.Uri
+import androidx.compose.runtime.DisposableEffect
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -97,6 +98,30 @@ private fun activeTabFor(pageId: String?): String = when (pageId) {
     else -> TAB_ALIASES[pageId] ?: "home"
 }
 
+/**
+ * Bridge for web-initiated navigation (`window.ZylodNativeBridge.openPage`):
+ * when a web page inside a shell must change the NATIVE route (e.g. a legacy
+ * web bundle whose bottom bar slipped past chrome suppression), the tap must
+ * land in the same navigation contract as the native bottom bar — never in a
+ * WebView-internal SPA state that diverges from the shell chrome.
+ *
+ * [ZylodRoot] installs the handler while it is composed; the host activity
+ * forwards bridge calls here. Registered on the main thread only.
+ */
+object NativeNavBus {
+    @Volatile
+    internal var openPageHandler: ((pageId: String, params: String) -> Unit)? = null
+
+    /** Called from the bridge thread — always hops to main. */
+    fun openPage(pageId: String, params: String) {
+        val handler = openPageHandler ?: return
+        android.os.Handler(android.os.Looper.getMainLooper()).post { handler(pageId, params) }
+    }
+}
+
+/** The tab root every bottom-bar navigation pops up to (see openPage KDoc). */
+private const val HOME_ROUTE = "home"
+
 // Native fullscreen routes (web FULLSCREEN_PAGES) — the bottom bar is hidden.
 private val FULLSCREEN_ROUTES = setOf(
     "welcome", "login", "register-buyer", "register-supplier", "forgot-password",
@@ -126,13 +151,28 @@ fun ZylodRoot() {
     }
     val showBottomBar = route !in FULLSCREEN_ROUTES
 
+    // ── Navigation contract (deterministic, no per-screen special cases) ────
+    //
+    // popUpTo targets the HOME ROUTE — not graph.findStartDestination(). The
+    // graph's start destination is "welcome" on first run and is popped
+    // INCLUSIVELY by the guest flow, so an id-based popUpTo silently no-ops
+    // for the app's entire post-onboarding lifetime (saveState/restoreState
+    // never engaged and web destinations stacked unboundedly). "home" is the
+    // tab root and is always on the stack once onboarding completes.
+    //
+    // Tier-3 pages all share ONE generic destination ("web/{pageId}"), so
+    // saveState/restoreState would couple unrelated tabs (the saved state of
+    // destination web/{pageId} would leak args across Categories/Deals/Profile).
+    // Tab state restoration is the POOLED SHELL's job: the warm WebView
+    // re-attaches and soft-navigates client-side — no Compose state restore
+    // needed. Native tabs (home/cart) have distinct routes and keep the
+    // standard saveState/restoreState pattern.
     val openPage: (String, String) -> Unit = { pageId, query ->
         // params is an optional query argument: a path segment cannot match
         // an empty value, so an empty query must ride in the query string.
         navController.navigate("web/$pageId?params=${Uri.encode(query)}") {
-            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+            popUpTo(HOME_ROUTE) { saveState = false }
             launchSingleTop = true
-            restoreState = true
         }
     }
 
@@ -152,12 +192,23 @@ fun ZylodRoot() {
         }
     }
 
-    // Post-auth landing: home replaces the whole auth stack (no back into login).
+    // Post-auth landing: home replaces the whole auth stack (no back into
+    // login, no back into welcome). Popping the graph id inclusively is the
+    // one deterministic way to guarantee a fresh [home] root — the start
+    // destination may itself be "welcome" (first run) and a route-based
+    // popUpTo("home") would no-op when no home entry exists yet.
     val goHomeAfterAuth: () -> Unit = {
-        navController.navigate("home") {
-            popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+        navController.navigate(HOME_ROUTE) {
+            popUpTo(navController.graph.id) { inclusive = true }
             launchSingleTop = true
         }
+    }
+
+    // Web-initiated navigation rides the SAME contract as the native bar
+    // (openPageRouted — product-detail resolves to the native PDP).
+    DisposableEffect(Unit) {
+        NativeNavBus.openPageHandler = { pageId, params -> openPageRouted(pageId, params) }
+        onDispose { NativeNavBus.openPageHandler = null }
     }
 
     fun backToLogin() {
@@ -187,7 +238,7 @@ fun ZylodRoot() {
                         }
                         if (nativeDestination != null) {
                             navController.navigate(nativeDestination) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                popUpTo(HOME_ROUTE) { saveState = true }
                                 launchSingleTop = true
                                 restoreState = true
                             }
@@ -204,7 +255,7 @@ fun ZylodRoot() {
             startDestination = startDestination,
             modifier = Modifier.padding(padding),
         ) {
-            composable("home") {
+            composable(HOME_ROUTE) {
                 HomeScreen(
                     navigateToPage = { pageId, query -> openPage(pageId, query) },
                     openProductDetail = { productId -> openProductDetail(productId) },

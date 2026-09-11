@@ -21,6 +21,15 @@ interface WebViewHost : WebChromeDelegate {
     /** Re-runs backend discovery (offline shell / error screen retry button). */
     fun retryServerConnection()
 
+    /**
+     * Web-initiated navigation (`window.ZylodNativeBridge.openPage(pageId,
+     * params)`): a page hosted in a shell asks the NATIVE shell to change
+     * screens — e.g. a legacy web bundle whose own bottom bar slipped past
+     * chrome suppression must never navigate the SPA divergently from the
+     * shell chrome. Default no-op keeps hosts without a nav surface safe.
+     */
+    fun openWebPage(pageId: String, params: String) {}
+
     /** Launches the native CameraX/MLKit scanner; result → [callbackJsFunction]. */
     fun startBarcodeScanner(callbackJsFunction: String)
 

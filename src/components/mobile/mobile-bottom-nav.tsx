@@ -4,7 +4,7 @@ import { Home, Grid3X3, Zap, ShoppingCart, User } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
-import { useNativeHost } from '@/lib/native-host'
+import { useNativeHost, nativeOpenPage } from '@/lib/native-host'
 
 interface NavItem {
   id: string
@@ -48,6 +48,11 @@ export function MobileBottomNav() {
   const activeId = getActiveId()
 
   const handleNavClick = (item: NavItem) => {
+    // Defense-in-depth (round-3 nav contract): the bar is hidden inside the
+    // native shells (isNative → null above), but IF it ever renders there,
+    // its taps must change the NATIVE route — a bare SPA navigate would move
+    // the page inside the WebView while the shell's own bar stays behind.
+    if (isNative && nativeOpenPage(item.pageId)) return
     if (item.id === 'profile' && !isAuthenticated) {
       navigate('login')
       return

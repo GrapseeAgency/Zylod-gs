@@ -666,3 +666,48 @@ Stage Summary:
 - Release page: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-767a039
 - Direct APK: https://github.com/GrapseeAgency/Zylod-gs/releases/download/v2.4.5-767a039/Zylod-v2.4.5-767a039-debug.apk
 - Owner action item (independent of the audit): deploy the web bundle from 767a039 so the web side's native-host recognition (the primary suppression layer) takes effect; the APK's injected-CSS shim already covers the transition.
+
+---
+Task ID: 2-remediation (final close-out — CORRECTED lineage)
+Agent: Z.ai Code orchestrator
+Task: Land the complete remediation tree, republish the release from it, STOP.
+
+Work Log:
+- Self-caught the stale-index incident: 9403cda (and therefore d2aaf5f + 767a039 + the interim release v2.4.5-767a039) contained only the lost-session tree + partial file adds. Landed the full working tree in 65db309; fixed 2 real compile findings (coil newImageLoader method name, nullable onMainFrameError invoke) in 4ee3954; docs 99271b5.
+- FINAL CI on 99271b5 (complete remediation): android-build 34566172999 SUCCESS + ios-build 34566172981 SUCCESS. Artifacts: Zylod-debug-apk-99271b5 (id 10186141120) + lint-report (10186140264) + Zylod-ios-simulator-99271b5, all active, SHA-stamped.
+- APK verified: com.zylod.wholesale.debug, versionName 2.4.5-99271b5, 45,212,066 bytes.
+- Release: deleted v2.4.5-767a039 (release+tag 204/204) → created tag v2.4.5-99271b5 at 99271b51ce4c6698df81474df2043971882cf08a → release id 386807949 (Latest) → asset uploaded (state=uploaded) → direct link HTTP 200.
+
+Stage Summary:
+- DO NOT AUDIT any artifact/tag older than 99271b5 — everything earlier is the incomplete tree.
+- RELEASE LIVE: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-99271b5
+- Direct APK: https://github.com/GrapseeAgency/Zylod-gs/releases/download/v2.4.5-99271b5/Zylod-v2.4.5-99271b5-debug.apk
+- iOS equivalent build: CI run 34566172981, artifact Zylod-ios-simulator-99271b5.
+- Owner note: deploy web bundle from 99271b5 for the primary native-host suppression layer; the APK's injected-CSS shim covers the transition. Phase 2 LOCKED. STOPPED for owner re-audit.
+
+---
+Task ID: 3-remediation (orchestrator — Phase 1 audit round 3 failure: nav contract + dual-path scroll)
+Agent: Z.ai Code orchestrator (+ Explore forensics: Android nav/scroll, iOS nav/scroll)
+Task: Owner real-device audit round 3 FAILED — (1) bottom nav functionally broken from Category (Profile/Home taps dead), (2) Home scroll jank, (3) Category scroll jank. Root-cause both platforms, fix the CONTRACT (no special cases), push, produce SHA-traceable CI artifacts, STOP.
+
+Work Log:
+- Forensics (2 parallel Explore agents + orchestrator reads). Root causes:
+  ANDROID NAV: (a) popUpTo(graph.findStartDestination) silently no-ops for the app's whole post-onboarding lifetime — start destination "welcome" is popped INCLUSIVELY by the guest flow, so saveState/restoreState never engaged and web destinations stacked unboundedly; (b) saveState/restoreState on the SHARED generic destination "web/{pageId}" would cross-contaminate tabs (state keyed by destination id, not args); (c) softNavigate "ok" was never verified against the rendered page — a contract drift left the previous page painted under a new native route ("tapped Profile, nothing happened"); (d) chrome suppression had NO runtime fallback — WebViewCompat.addDocumentStartJavaScript unsupported by the device's WebView provider failed SILENTLY (runCatching), so the legacy web bar painted and its taps could only do divergent SPA navigation (old bundle: Profile tap = navigate('login')!); (e) BackHandler walked WebView history first → native route + tab highlight desynced from the SPA page ("Back doesn't work correctly").
+  IOS NAV: (a) CONFIRMED no-op — Category is pushed INSIDE the Home tab's NavigationStack, so re-tapping the Home tab writes the same TabView selection → nothing happens (no pop-to-root-on-reselection anywhere); (b) WebView extended under the translucent tab bar (.ignoresSafeArea(.bottom)) and the loading overlay was opacity(0.001) — a slow first shell load looked exactly like dead taps; (c) same suppression fragility as Android (static CSS only).
+  HOME SCROLL: Android — positional items() keys (no reuse across loadMore pages), unstable DTOs (List fields → non-skippable cards → whole-grid recomposition per emission), NumberFormat.getInstance() per price text; iOS — 900px decodes for 170pt cells / 58pt thumbs, NSCache with NO totalCostLimit (>1GB possible → mid-fling eviction churn), per-frame preference plumbing (already threshold-guarded, left as-is).
+  CATEGORY SCROLL (WebView path): Android — TRANSPARENT WebView background (per-frame blend) + forced LAYER_TYPE_HARDWARE (extra layer); iOS — OfflineStore disk I/O (ioQueue.sync + JSONSerialization) ran on the MAIN thread from the script-message path during scroll.
+- Fixes (all contract-level, no per-screen special cases):
+  Android (ZylodRoot.kt): popUpTo(HOME_ROUTE) route-based (home = tab root, always on stack post-onboarding); web routes drop saveState/restoreState (pool provides warm restoration), native tabs keep the standard pattern; goHomeAfterAuth pops graph id inclusively (fresh [home] root); NEW NativeNavBus + WebAppBridge.openPage @JavascriptInterface + WebViewHost.openWebPage — web-initiated nav rides the SAME contract as the native bar.
+  Android (WebScreen.kt + NativeWebViewPool.kt): restore-in-place via Shell.lastPageId/lastQuery (Back out of native PDP = instant re-attach, no re-nav, scroll preserved; both checkout and re-attach branches); WebView-history BackHandler REMOVED (native stack = the one back system); softNavigate verifies history.state.page===pageId (contract drift → loadUrl fallback); opaque theme-matched WebView background; LAYER_TYPE_HARDWARE removed; suppression fallback injected at onPageStarted.
+  Android (WebShellScripts.kt): 3-layer suppression — document-start CSS + idempotent DOM sweep with MutationObserver + CAPTURE-phase click routing of the legacy bar's 5 buttons to ZylodNativeBridge.openPage (a visible legacy bar can never diverge).
+  iOS (RootView.swift): custom TabView selection Binding — re-tap selected tab pops that tab's stack to root (Category→Home tap now works); ZylodNativeBridge.onOpenPage router (same tab contract, guest Profile → native login).
+  iOS (WebViewScreen.swift): .ignoresSafeArea(.bottom) removed (WebView ends ABOVE the tab bar); loading overlay made opaque (slow load ≠ dead taps).
+  iOS (WebShellScripts.swift + ZylodNativeBridge.swift): same 3-layer suppression with openPage postMessage; shim gains openPage; OfflineStore dispatch moved OFF the main thread (cacheProducts/search/count/queue/enqueue).
+  Scroll: Android HomeScreen keyed items + contentType + itemsIndexed deal keys + hoisted BDT_INTEGER_FORMAT; Dtos.kt @Immutable across all wire models (skippable cards); iOS ZylodImagePipeline totalCostLimit 96MB + cost accounting + per-context decode caps (grid 600 / thumbs 200, key includes maxPixel).
+  Web: native-host.ts nativeOpenPage() helper; MobileBottomNav routes taps through the native bridge when hosted (defense-in-depth; bar remains hidden in native mode; browsers 100% unchanged — verified).
+- Verification: npx tsc --noEmit clean; ESLint — changed files clean (35 pre-existing baseline errors in untouched legacy pages unchanged); agent-browser QA — browser: no __ZYL_NATIVE__ flag, no shell CSS/attrs (web unchanged); Kotlin/Swift brace-balance + API checks (popUpTo(String) since nav 2.4 ✓, Swift 5.9 no strict concurrency). No Android SDK/Xcode on this machine — CI is the compile gate.
+
+Stage Summary:
+- Nav contract is now: native bar = the only visible chrome on every surface (3-layer suppression + runtime sweep), every tab tap lands via popUpTo(home) + pool soft-navigate (verified), re-tap selected tab pops to root (iOS), Back pops the native stack (no dual-history desync), web-initiated taps route through the native bridge (both platforms).
+- Scroll: Android grid = stable keys + skippable cards + zero per-call formatting; iOS = bounded image cache + right-sized decodes; Category path = opaque renderer + no forced HW layer (Android) + zero main-thread disk I/O (iOS).
+- STOP for owner re-audit after CI artifacts. Phase 2 LOCKED.

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -160,7 +161,17 @@ private fun HomeContent(
             }
             item { QuickAccessCard(navigateToPage) }
             item { FlashDealsRow(state.deals, state.serverUrl, openProductDetail) }
-            items(rows.size) { rowIdx ->
+            // STABLE IDENTITY + CONTENT TYPE (scroll jank fix): positional
+            // item identity re-diffed EVERY row on each loadMore() page,
+            // breaking Lazy item reuse and state retention mid-fling. Row
+            // keys derive from the product ids (unique per product), and
+            // contentType lets Lazy reuse the row composables it already
+            // has instead of rebuilding from scratch.
+            items(
+                count = rows.size,
+                key = { rowIdx -> rows[rowIdx].joinToString("|") { it.id } },
+                contentType = { "product-row" },
+            ) { rowIdx ->
                 val row = rows[rowIdx]
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     row.forEach { product ->
@@ -508,7 +519,11 @@ private fun FlashDealsRow(deals: List<DealDto>, serverUrl: String, onOpen: (Stri
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.padding(top = 12.dp),
     ) {
-        items(deals, key = { it.effectiveId ?: it.hashCode().toString() }) { deal ->
+        itemsIndexed(
+            deals,
+            key = { index, deal -> deal.effectiveId ?: "deal-$index-${deal.productName}" },
+            contentType = { _, _ -> "flash-deal" },
+        ) { _, deal ->
             Column(
                 modifier = Modifier.width(58.dp).clickable {
                     deal.effectiveId?.let(onOpen)
@@ -724,8 +739,14 @@ private fun resolveImageUrl(raw: String?, serverUrl: String): String? {
 }
 
 private fun formatBdt(value: Double): String =
-    if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance().format(value.toLong())
+    if (value % 1.0 == 0.0) "৳" + BDT_INTEGER_FORMAT.format(value.toLong())
     else "৳" + String.format(java.util.Locale.US, "%.2f", value)
+
+// NumberFormat.getInstance() allocates + locale-lookup PER CALL — it ran once
+// per price text on every card composition during scroll. One process-wide
+// instance (NumberFormat is not thread-safe, but all Compose formatting runs
+// on the UI thread).
+private val BDT_INTEGER_FORMAT by lazy { java.text.NumberFormat.getIntegerInstance() }
 
 private fun compact(count: Int): String =
     if (count >= 1000) "${floor(count / 1000.0).toInt()}k" else count.toString()

@@ -1,6 +1,16 @@
 package com.zylod.wholesale.data.api
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
+
+//
+// @Immutable on every wire model that reaches composition: Compose's default
+// inference treats List<*>/nested models as UNSTABLE, which made every
+// product card non-skippable — any ViewModel emission recomposed the whole
+// visible grid mid-scroll. These models are replaced wholesale on update
+// (never mutated in place), so the annotation is sound and cards become
+// skippable again.
+//
 
 // Wire envelope used by 242/249 API routes: { success, data, pagination?, error? }
 @Serializable
@@ -19,12 +29,15 @@ data class Pagination(
     val totalPages: Int = 1,
 )
 
+@Immutable
 @Serializable
 data class SupplierBrief(val companyName: String? = null)
 
+@Immutable
 @Serializable
 data class CategoryBrief(val name: String? = null, val slug: String? = null)
 
+@Immutable
 @Serializable
 data class CategoryDto(
     val id: String,
@@ -35,6 +48,7 @@ data class CategoryDto(
     val children: List<CategoryDto> = emptyList(),
 )
 
+@Immutable
 @Serializable
 data class ProductImageDto(
     val id: String? = null,
@@ -42,6 +56,7 @@ data class ProductImageDto(
     val sortOrder: Int = 0,
 )
 
+@Immutable
 @Serializable
 data class ProductDto(
     val id: String,
@@ -65,6 +80,7 @@ data class ProductDto(
 }
 
 // /api/deals returns data as { flashDeals: [...], dailyDeals: [...] }
+@Immutable
 @Serializable
 data class DealsData(
     val flashDeals: List<DealDto> = emptyList(),
@@ -73,6 +89,7 @@ data class DealsData(
     val all: List<DealDto> get() = flashDeals + dailyDeals
 }
 
+@Immutable
 @Serializable
 data class DealDto(
     val productId: String? = null,
@@ -87,5 +104,6 @@ data class DealDto(
     val effectiveImage: String? get() = productThumbnail ?: product?.thumbnailUrl
 }
 
+@Immutable
 @Serializable
 data class StatsDto(val productCount: Int = 0, val supplierCount: Int = 0)

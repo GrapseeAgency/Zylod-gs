@@ -424,6 +424,12 @@ enum ZylodImagePipeline {
     private static let cache: NSCache<NSString, UIImage> = {
         let c = NSCache<NSString, UIImage>()
         c.countLimit = 400
+        // COST LIMIT (round-3 Home-scroll finding): a 900px decode is ~3.2MB;
+        // 400 uncapped entries could hold >1GB before eviction, so a long
+        // fling evicted mid-scroll and re-downloaded/re-decoded the SAME
+        // images. A 96MB ceiling (~30 grid images) keeps eviction rare and
+        // predictable under memory pressure.
+        c.totalCostLimit = 96 * 1024 * 1024
         return c
     }()
 
@@ -439,15 +445,15 @@ enum ZylodImagePipeline {
         return URLSession(configuration: conf)
     }()
 
-    static func image(for url: URL, maxPixel: CGFloat = 900) async -> UIImage? {
-        let key = url.absoluteString as NSString
+    static func image(for url: URL, maxPixel: CGFloat = 600) async -> UIImage? {
+        let key = "\(url.absoluteString)#\(Int(maxPixel))" as NSString
         if let hit = cache.object(forKey: key) { return hit }
         guard let (data, response) = try? await session.data(from: url),
               let http = response as? HTTPURLResponse,
               (200..<300).contains(http.statusCode),
               let decoded = downsampled(data: data, maxPixel: maxPixel)
         else { return nil }
-        cache.setObject(decoded, forKey: key)
+        cache.setObject(decoded, forKey: key, cost: decoded.estimatedByteCost)
         return decoded
     }
 
@@ -465,6 +471,14 @@ enum ZylodImagePipeline {
         ] as CFDictionary
         guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, thumbnailOptions) else { return nil }
         return UIImage(cgImage: cgImage)
+    }
+}
+
+private extension UIImage {
+    /// Approximate decoded bitmap size for NSCache cost accounting.
+    var estimatedByteCost: Int {
+        guard let cg = cgImage else { return 1 }
+        return cg.bytesPerRow * cg.height
     }
 }
 

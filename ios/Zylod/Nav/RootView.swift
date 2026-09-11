@@ -27,7 +27,27 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            TabView(selection: $tab) {
+            // Tab selection with RE-TAP semantics (owner round-3 finding: from
+            // a pushed Category screen, tapping Home did nothing). TabView's
+            // plain selection binding writes the SAME value when the selected
+            // tab is re-tapped — SwiftUI sees no change and the pushed
+            // Category stays on top. The custom binding intercepts EVERY tap:
+            // re-tapping the selected tab pops that tab's stack to its root,
+            // matching UIKit tab-bar convention.
+            TabView(selection: Binding(
+                get: { tab },
+                set: { tapped in
+                    if tapped == tab {
+                        switch tapped {
+                        case .home: flow.popHomeToRoot()
+                        case .cart: flow.popCartToRoot()
+                        default: break // webView tabs are single-root stacks
+                        }
+                    } else {
+                        tab = tapped
+                    }
+                }
+            )) {
                 homeTab
                     .tabItem { Label("Home", systemImage: "house") }
                     .tag(Tab.home)
@@ -59,6 +79,13 @@ struct RootView: View {
             }
         }
         .onAppear {
+            // Web-initiated navigation contract (Android NativeNavBus parity):
+            // a page inside any shell can ask the NATIVE shell to change
+            // screens (`ZylodNativeBridge.openPage`) — a visible legacy web
+            // bottom bar must never perform a divergent SPA navigation.
+            ZylodNativeBridge.onOpenPage = { pageId, query in
+                routeWebNav(pageId, query)
+            }
             Task { await cartStore.pullServerCart() }
         }
     }
@@ -134,6 +161,37 @@ struct RootView: View {
             TabWebViewScreen(pageId: pageId, query: "")
         }
         .tabItem { Label(title, systemImage: systemImage) }
+    }
+
+    // MARK: - Web-initiated navigation (bridge contract)
+
+    /// Routes `openPage` calls from hosted web pages through the SAME tab
+    /// contract as the native tab bar — no per-screen special cases.
+    private func routeWebNav(_ pageId: String, _ query: String) {
+        switch pageId {
+        case "home":
+            tab = .home
+            flow.popHomeToRoot()
+        case "cart":
+            tab = .cart
+        case "category-browser":
+            tab = .categories
+        case "flash-deals", "flash-sale", "daily-deals":
+            tab = .deals
+        case "profile":
+            // Guest parity with the web bar's own behavior: Profile for an
+            // unauthenticated user opens the native login flow.
+            if SessionManager.isAuthenticated {
+                tab = .profile
+            } else {
+                tab = .home
+                flow.openAuth(.login)
+            }
+        default:
+            // Any other Tier-3 pageId: open in the Home stack (shared contract).
+            tab = .home
+            flow.openPage(pageId, query)
+        }
     }
 
     // MARK: - Deep links (§7.2)

@@ -9,9 +9,11 @@ import org.json.JSONObject
  * Static document-start + soft-navigation scripts shared by the native
  * WebView shell and the pooled shells (Phase 1 runtime-audit fixes #1/#2).
  *
- * Chrome suppression — owner audit finding #4: the web app renders its own
- * fixed bottom navigation bar (mobile-bottom-nav.tsx), which duplicated the
- * native bottom bar inside the app. Two layers:
+ * Chrome suppression — owner audit findings (rounds 2 and 3): the web app
+ * renders its own fixed bottom navigation bar (mobile-bottom-nav.tsx). When
+ * the page is hosted in a shell, EXACTLY ONE navigation system may exist.
+ * Three independent layers, because a silent failure of one must not break
+ * the navigation contract:
  *
  *  1. Primary (post-deploy web bundle): the web side tags that bar with
  *     `data-zylod-mobile-nav` (and its bottom-inset wrappers with
@@ -20,12 +22,22 @@ import org.json.JSONObject
  *     recognises the native host and renders no duplicate chrome at all.
  *
  *  2. Fallback (transition shim while the older web bundle is still
- *     deployed): the same stylesheet also targets the legacy bar by its
- *     stable shape — `nav.fixed.bottom-0` — and flattens the legacy wrapper
- *     padding class. Verified: the only `nav` element in the web app that is
+ *     deployed): the same stylesheet targets the legacy bar by its stable
+ *     shape — `nav.fixed.bottom-0` — and flattens the legacy wrapper padding
+ *     class. Verified: the only `nav` element in the web app that is
  *     position:fixed at the bottom is the mobile bottom bar (sheets and
  *     sticky buy-bars are divs), so the shim cannot hide legitimate web
  *     functionality.
+ *
+ *  3. Runtime sweep (round-3 fix — the audit device kept the legacy bar
+ *     visible because `addDocumentStartJavaScript` can be unsupported by the
+ *     WebView provider, which failed silently): an idempotent JS sweep hides
+ *     the bar again after every DOM mutation (MutationObserver) and — belt
+ *     and suspenders — CAPTURES clicks on the legacy bar's five buttons and
+ *     routes them to the native navigation bridge
+ *     (`window.ZylodNativeBridge.openPage(pageId)`), so even a visible
+ *     legacy bar can never perform a divergent SPA navigation.
+ *
  * Browsers never receive the injection, so no legitimate web functionality
  * changes for web users.
  *
@@ -33,8 +45,12 @@ import org.json.JSONObject
  * `window.__zylodSpaReady` (set by the web navigation store right after the
  * popstate listener is registered), the shell can drive pageId changes with
  * history.pushState + a synthetic popstate — the store's own contract —
- * instead of a full document reload. Falls back to loadUrl when the flag is
- * absent (SPA not hydrated yet, or a stale cached bundle).
+ * instead of a full document reload. The script VERIFIES the navigation was
+ * consumed (history.state.page === pageId after the synchronous popstate
+ * handler ran) and falls back to loadUrl when the flag is absent (SPA not
+ * hydrated yet, or a stale cached bundle) or the contract drifted — a false
+ * "ok" previously left the previous page painted under a new native route
+ * (round-3 finding: taps appeared dead).
  */
 object WebShellScripts {
 
@@ -45,28 +61,103 @@ object WebShellScripts {
             "nav.fixed.bottom-0{display:none!important}" +
             "[class*=\"pb-[calc(64px\"]{padding-bottom:16px!important}"
 
-    /** Injects the suppression stylesheet as early as possible, zero flash. */
-    fun chromeSuppressionScript(): String = """
+    /** Set by [installDocumentStartScripts] — false ⇒ runtime fallbacks must inject. */
+    @Volatile
+    internal var primaryDocumentStartApiAvailable: Boolean = false
+
+    /** Legacy bottom bar's fixed button order (mobile-bottom-nav.tsx NAV_ITEMS). */
+    private val LEGACY_BAR_PAGE_IDS = listOf("home", "category-browser", "flash-deals", "cart", "profile")
+
+    /**
+     * The full document-start script: native flag + suppression stylesheet +
+     * idempotent DOM sweep with a MutationObserver + legacy-bar click capture
+     * that routes taps into the native navigation bridge.
+     */
+    fun chromeSuppressionScript(): String {
+        val pageIdsLiteral = LEGACY_BAR_PAGE_IDS.joinToString(",") { "'$it'" }
+        return """
         window.__ZYL_NATIVE__ = true;
         (function(){
           try{
+            if (window.__ZYL_SHELL_SUPPRESS__) return;
+            window.__ZYL_SHELL_SUPPRESS__ = true;
             var css = '$CHROME_SUPPRESSION_CSS';
-            function add(){
+            function addStyle(){
+              if (document.getElementById('zylod-shell-css')) return;
               var s = document.createElement('style');
-              s.setAttribute('data-zylod-shell-css','');
+              s.id = 'zylod-shell-css';
               s.textContent = css;
               (document.head || document.documentElement).appendChild(s);
             }
-            if (document.head || document.documentElement) { add(); }
-            else { document.addEventListener('readystatechange', function(){ add(); }); }
+            addStyle();
+            document.addEventListener('readystatechange', addStyle);
+            // Runtime sweep: re-assert suppression after SPA mutations, and
+            // capture clicks on the legacy bar so a tap can only ever reach
+            // the native navigation contract (never a divergent SPA nav).
+            var PAGE_IDS = [$pageIdsLiteral];
+            function sweep(){
+              try{
+                addStyle();
+                var bars = document.querySelectorAll('nav[data-zylod-mobile-nav], nav.fixed.bottom-0');
+                for (var i = 0; i < bars.length; i++){
+                  var bar = bars[i];
+                  if (bar.getAttribute('data-zylod-shell-nav') === '1') continue;
+                  bar.setAttribute('data-zylod-shell-nav', '1');
+                  bar.addEventListener('click', function(e){
+                    try{
+                      var btn = e.target && e.target.closest ? e.target.closest('button') : null;
+                      if (!btn) return;
+                      var host = btn.parentElement;
+                      var idx = host ? Array.prototype.indexOf.call(host.children, btn) : -1;
+                      var pageId = (idx >= 0 && idx < PAGE_IDS.length) ? PAGE_IDS[idx] : null;
+                      if (!pageId) return;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (window.ZylodNativeBridge && window.ZylodNativeBridge.openPage){
+                        window.ZylodNativeBridge.openPage(pageId, '');
+                      }
+                    }catch(err){}
+                  }, true);
+                }
+              }catch(e){}
+            }
+            if (window.MutationObserver){
+              new MutationObserver(sweep).observe(document.documentElement, {childList:true, subtree:true});
+            }
+            document.addEventListener('DOMContentLoaded', sweep);
+            window.addEventListener('load', sweep);
           }catch(e){}
         })();
-    """.trimIndent()
+        """.trimIndent()
+    }
+
+    /** Injects the suppression script at page start when the webkit API is unavailable. */
+    fun injectSuppressionFallback(view: WebView?) {
+        if (primaryDocumentStartApiAvailable) return
+        view?.evaluateJavascript(chromeSuppressionScript(), null)
+    }
 
     /**
-     * Returns "ok" after driving the SPA to (pageId, query) client-side, or
-     * "no" when the SPA has not signalled readiness — the caller must then
-     * fall back to a full loadUrl of the `?page=` deep link.
+     * Installs the static document-start scripts (chrome suppression) for the
+     * shell's origin. The auth seed is installed separately via
+     * [WebAuthSeeder] because it changes with the session state.
+     */
+    fun installDocumentStartScripts(webView: WebView, baseUrl: String) {
+        val origin = documentStartOriginRule(baseUrl) ?: return
+        primaryDocumentStartApiAvailable = try {
+            WebViewCompat.addDocumentStartJavaScript(webView, chromeSuppressionScript(), setOf(origin))
+            true
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
+    /**
+     * Returns "ok" after driving the SPA to (pageId, query) client-side AND
+     * verifying the store consumed it (history.state.page === pageId — the
+     * popstate handler runs synchronously inside dispatchEvent), or "no" when
+     * the SPA has not signalled readiness / the contract drifted — the caller
+     * must then fall back to a full loadUrl of the `?page=` deep link.
      */
     fun softNavigateScript(pageId: String, query: String): String {
         val params = JSONObject()
@@ -93,21 +184,11 @@ object WebShellScripts {
                   window.location.pathname + (qs ? "?" + qs : "")
                 );
                 window.dispatchEvent(new PopStateEvent("popstate", { state: history.state }));
+                var st = history.state;
+                if (!st || st.page !== $pageIdLiteral) return "no";
                 return "ok";
               }catch(e){ return "no"; }
             })();
         """.trimIndent()
-    }
-
-    /**
-     * Installs the static document-start scripts (chrome suppression) for the
-     * shell's origin. The auth seed is installed separately via
-     * [WebAuthSeeder] because it changes with the session state.
-     */
-    fun installDocumentStartScripts(webView: WebView, baseUrl: String) {
-        val origin = documentStartOriginRule(baseUrl) ?: return
-        runCatching {
-            WebViewCompat.addDocumentStartJavaScript(webView, chromeSuppressionScript(), setOf(origin))
-        }
     }
 }

@@ -51,6 +51,11 @@ final class ZylodNativeBridge: NSObject {
     private let networkMonitor = NetworkPathMonitor()
     private var notificationIds = 5000
 
+    /// Web-initiated navigation hook (`ZylodNativeBridge.openPage`): set by
+    /// RootView on appear — routes the request through the SAME tab contract
+    /// as the native tab bar (Android NativeNavBus parity). Main-thread only.
+    static var onOpenPage: ((String, String) -> Void)?
+
     init(host: BridgeHost) {
         self.host = host
         super.init()
@@ -227,7 +232,11 @@ final class ZylodNativeBridge: NSObject {
             authenticateWithBiometrics: function(title, callback){ post({method:'requestBiometricAuth', callback: String(callback || '')}); },
             showNativeNotification: function(title, body, channelId){ post({method:'showNativeNotification', title: String(title || ''), body: String(body || ''), channelId: String(channelId || '')}); },
             // Android DownloadBridge.save(dataUrl, filename, mime) parity.
-            save: function(dataUrl, filename, mime){ post({method:'downloadSave', dataUrl: String(dataUrl || ''), filename: String(filename || 'zylod_download'), mime: String(mime || 'application/octet-stream')}); }
+            save: function(dataUrl, filename, mime){ post({method:'downloadSave', dataUrl: String(dataUrl || ''), filename: String(filename || 'zylod_download'), mime: String(mime || 'application/octet-stream')}); },
+            // Native navigation contract (Android WebAppBridge.openPage parity):
+            // a hosted page asks the SHELL to change screens — never a divergent
+            // SPA navigation inside the WebView.
+            openPage: function(pageId, params){ post({method:'openPage', pageId: String(pageId || ''), params: String(params || '')}); }
           };
           window.ZylodNativeBridge = bridge;
           window.ZylodDownload = { save: bridge.save };
@@ -252,6 +261,13 @@ final class ZylodNativeBridge: NSObject {
 
     private func dispatch(method: String, message: [String: Any]) {
         switch method {
+        // Native navigation FIRST — must never queue behind disk work.
+        case "openPage":
+            let pageId = message["pageId"] as? String ?? ""
+            let params = message["params"] as? String ?? ""
+            DispatchQueue.main.async {
+                ZylodNativeBridge.onOpenPage?(pageId, params)
+            }
         case "copyToClipboard":
             let text = message["text"] as? String ?? ""
             UIPasteboard.general.string = text
@@ -280,26 +296,48 @@ final class ZylodNativeBridge: NSObject {
         case "cacheOfflineProducts":
             let json = message["productsJson"] as? String ?? "[]"
             let callback = message["callback"] as? String ?? ""
-            let count = offlineStore.cacheProducts(json: json)
-            invokeCallback(callback, String(count))
+            // OFF-MAIN: OfflineStore methods do synchronous disk I/O
+            // (ioQueue.sync + JSONSerialization) — running them on the main
+            // thread from the script-message path dropped frames whenever a
+            // page cached/searched products while a list scrolled (round-3
+            // Category-scroll finding). invokeCallback hops back to main.
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                guard let self else { return }
+                let count = self.offlineStore.cacheProducts(json: json)
+                self.invokeCallback(callback, String(count))
+            }
         case "searchOfflineProducts":
             let query = message["query"] as? String ?? ""
             let callback = message["callback"] as? String ?? ""
-            let results = offlineStore.search(query: query)
-            let payload = (try? JSONEncoder().encode(results)).flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
-            // Android passes the JSON array as a quoted string argument.
-            invokeCallback(callback, jsQuote(payload))
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                guard let self else { return }
+                let results = self.offlineStore.search(query: query)
+                let payload = (try? JSONEncoder().encode(results)).flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
+                // Android passes the JSON array as a quoted string argument.
+                self.invokeCallback(callback, self.jsQuote(payload))
+            }
         case "getOfflineProductCount":
-            invokeCallback(message["callback"] as? String ?? "", String(offlineStore.productCount()))
+            let callback = message["callback"] as? String ?? ""
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                guard let self else { return }
+                self.invokeCallback(callback, String(self.offlineStore.productCount()))
+            }
         case "getOfflineQueueCount":
-            invokeCallback(message["callback"] as? String ?? "", String(offlineStore.queueCount()))
+            let callback = message["callback"] as? String ?? ""
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                guard let self else { return }
+                self.invokeCallback(callback, String(self.offlineStore.queueCount()))
+            }
         case "enqueueOfflineAction":
             let actionType = message["actionType"] as? String ?? ""
             let entityType = message["entityType"] as? String ?? ""
             let payloadJson = message["payloadJson"] as? String ?? "{}"
-            offlineStore.enqueue(actionType: actionType, entityType: entityType, payloadJson: payloadJson)
-            offlineStore.drainQueue()
-            host?.showNativeToast("Operation saved offline. Will sync when connected.")
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                guard let self else { return }
+                self.offlineStore.enqueue(actionType: actionType, entityType: entityType, payloadJson: payloadJson)
+                self.offlineStore.drainQueue()
+                self.host?.showNativeToast("Operation saved offline. Will sync when connected.")
+            }
         case "startBarcodeScanner":
             startBarcodeScanner(callback: message["callback"] as? String ?? "")
         case "startVoiceRecognition":

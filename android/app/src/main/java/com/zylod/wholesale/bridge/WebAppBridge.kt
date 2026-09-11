@@ -87,6 +87,17 @@ class WebAppBridge(private val host: WebViewHost) {
         return true
     }
 
+    /**
+     * Web-initiated navigation: the page asks the NATIVE shell to change
+     * screens (native bottom-bar parity — ZylodRoot.openPageRouted). Runs on
+     * the JS bridge thread, so the host hop to the UI thread happens inside
+     * NativeNavBus.
+     */
+    @JavascriptInterface
+    fun openPage(pageId: String, params: String) {
+        com.zylod.wholesale.ui.nav.NativeNavBus.openPage(pageId, params)
+    }
+
     @JavascriptInterface
     fun isNetworkConnected(): Boolean {
         return ZylodApp.instance.networkMonitor.isConnected.value

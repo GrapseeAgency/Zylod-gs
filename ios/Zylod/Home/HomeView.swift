@@ -357,7 +357,7 @@ struct HomeView: View {
                                 }
                             } label: {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    RemoteImage(url: imageURL(deal.effectiveImage), cornerRadius: 8)
+                                    RemoteImage(url: imageURL(deal.effectiveImage), cornerRadius: 8, maxPixel: 200)
                                         .frame(width: 58, height: 58)
                                     Text(ZylodFormat.bdt(deal.effectivePrice))
                                         .font(ZylodFont.scaled(10, .bold, relativeTo: .caption2))
@@ -475,6 +475,11 @@ private struct QuickAccessMoreSheet: View {
 private struct RemoteImage: View {
     let url: URL?
     var cornerRadius: CGFloat
+    /// Per-context decode cap (round-3 Home-scroll finding): grid cards render
+    /// ~170pt wide (≈520px @3x) and flash thumbs 58pt (≈175px @3x) — decoding
+    /// everything at the old 900px default tripled bitmap memory and the
+    /// per-cell layer-upload cost mid-fling.
+    var maxPixel: CGFloat = 600
     @State private var image: UIImage?
 
     var body: some View {
@@ -496,7 +501,7 @@ private struct RemoteImage: View {
                 image = nil
                 return
             }
-            image = await ZylodImagePipeline.image(for: url)
+            image = await ZylodImagePipeline.image(for: url, maxPixel: maxPixel)
         }
     }
 }

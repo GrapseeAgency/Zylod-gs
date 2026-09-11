@@ -2,7 +2,6 @@ package com.zylod.wholesale.ui.web
 
 import android.net.Uri
 import android.view.ViewGroup
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -118,13 +117,15 @@ fun WebScreen(pageId: String, query: String) {
     // watchdog can tell a stale timer from the active one.
     var loadGen by remember { mutableIntStateOf(0) }
 
-    // Hardware/gesture back inside the shell: walk the WebView's own history
-    // first (the SPA mirrors pageId state into History), pop the native stack
-    // only when there is nothing web-side to go back to (spec §3.0).
-    val backWebView = shell?.webView
-    BackHandler(enabled = backWebView?.canGoBack() == true) {
-        backWebView?.goBack()
-    }
+    // ── Back contract (one navigation system) ─────────────────────────────
+    // Hardware Back pops the NATIVE stack — deliberately NOT WebView history.
+    // The previous design walked the WebView's history first (every soft-nav
+    // pushState creates an entry), which desynchronised the two systems: the
+    // SPA moved to the previous page while the native route (and therefore
+    // the bottom-bar highlight) stayed on the old page — "Back doesn't work
+    // correctly". With the flat tab model (every tab/openPage pops to home)
+    // the native back stack IS the navigation truth; the SPA's own in-page
+    // back affordances keep working inside the page.
 
     // Initial backend discovery only when no cached winner exists.
     LaunchedEffect(Unit) {
@@ -181,12 +182,24 @@ fun WebScreen(pageId: String, query: String) {
             checkedOut.webView.onResume()
             if (forceReload) {
                 checkedOut.webView.loadUrl(target)
+                checkedOut.lastPageId = pageId
+                checkedOut.lastQuery = query
+            } else if (checkedOut.lastPageId == pageId && checkedOut.lastQuery == query) {
+                // Restore-in-place on a re-checked-out shell: the pool handed
+                // back the SAME warm shell already showing exactly this page
+                // (Back out of a native PDP) — re-attach only, no re-navigation,
+                // SPA scroll position preserved.
+                pageLoading = false
             } else {
                 // The shell may be a warm SPA reuse — drive it client-side;
                 // softNavigate falls back to a full load itself when the SPA
                 // has not signalled readiness (fresh shell / stale bundle).
                 NativeWebViewPool.softNavigate(checkedOut, pageId, query) { ok ->
-                    if (!ok) checkedOut.webView.loadUrl(target)
+                    if (!ok) {
+                        checkedOut.webView.loadUrl(target)
+                        checkedOut.lastPageId = pageId
+                        checkedOut.lastQuery = query
+                    }
                 }
             }
         } else {
@@ -198,6 +211,15 @@ fun WebScreen(pageId: String, query: String) {
                 pageLoading = true
                 loadGen++
                 active.webView.loadUrl(target)
+                active.lastPageId = pageId
+                active.lastQuery = query
+            } else if (active.lastPageId == pageId && active.lastQuery == query) {
+                // Restore-in-place: the shell is ALREADY showing exactly this
+                // page (Back out of a native PDP, or returning to the tab's
+                // page) — re-attach only. A redundant softNavigate would push
+                // another history entry and reset the SPA scroll position.
+                pageLoading = false
+                pageError = false
             } else {
                 pageLoading = true
                 loadGen++
@@ -210,6 +232,8 @@ fun WebScreen(pageId: String, query: String) {
                     } else {
                         com.zylod.wholesale.session.WebAuthSeeder.install(active.webView, base, context)
                         active.webView.loadUrl(target)
+                        active.lastPageId = pageId
+                        active.lastQuery = query
                     }
                 }
             }

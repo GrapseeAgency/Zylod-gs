@@ -9,7 +9,6 @@ import android.graphics.Bitmap
 import android.graphics.Color as AndroidColor
 import android.net.Uri
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.JsResult
@@ -77,7 +76,17 @@ internal object NativeWebViewPool {
         val baseUrl: String,
         val seedScript: String,
         val handle: WebShellHandle,
-    )
+    ) {
+        /**
+         * The page the SPA currently renders in this shell — maintained by
+         * [softNavigate]/loadUrl callers. Lets a re-composing WebScreen skip
+         * the soft-navigate entirely when the shell is already showing the
+         * requested page (Back out of a native PDP: instant re-attach, no
+         * re-navigation, scroll position preserved).
+         */
+        var lastPageId: String? = null
+        var lastQuery: String? = null
+    }
 
     private val free = ArrayDeque<Shell>()
     private val busy = HashSet<Shell>()
@@ -176,13 +185,19 @@ internal object NativeWebViewPool {
      * Drives the already-hydrated SPA to [pageId] via history.pushState + a
      * synthetic popstate — the exact contract the web app's own navigation
      * store uses. Returns false when the SPA hasn't signalled readiness
-     * (window.__zylodSpaReady), in which case the caller falls back to a
-     * full loadUrl. Runs on the WebView thread (call from the main thread).
+     * (window.__zylodSpaReady) or the navigation was not consumed (contract
+     * drift) — the caller then falls back to a full loadUrl. Runs on the
+     * WebView thread (call from the main thread).
      */
     fun softNavigate(shell: Shell, pageId: String, query: String, onDone: (Boolean) -> Unit) {
         val script = WebShellScripts.softNavigateScript(pageId, query)
         shell.webView.evaluateJavascript(script) { result ->
-            onDone(result?.contains("ok") == true)
+            val ok = result?.contains("ok") == true && result?.contains("\"no\"") != true
+            if (ok) {
+                shell.lastPageId = pageId
+                shell.lastQuery = query
+            }
+            onDone(ok)
         }
     }
 
@@ -190,8 +205,11 @@ internal object NativeWebViewPool {
 
     private fun createShellWebView(ctx: Context, host: WebViewHost?): WebView =
         WebView(ctx).apply {
-            setBackgroundColor(AndroidColor.TRANSPARENT)
-            setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            // OPAQUE background: a transparent WebView forces the compositor
+            // to blend every frame of web content over the Compose layer —
+            // measurable raster cost while the Category grid scrolls. The
+            // value matches the Compose background behind this view.
+            setBackgroundColor(resolveShellBackground(ctx))
             settings.apply {
                 javaScriptEnabled = true
                 domStorageEnabled = true
@@ -256,8 +274,11 @@ internal object NativeWebViewPool {
         object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 // Document-start injection fallback when the webkit API is not
-                // supported by the WebView provider (WebAuthSeeder no-ops itself
-                // when the primary API is available).
+                // supported by the WebView provider: BOTH seeds must fall back
+                // (the chrome suppression previously had NO fallback — the
+                // legacy web bar stayed visible and its taps could only ever
+                // perform divergent SPA navigation; round-3 audit finding).
+                WebShellScripts.injectSuppressionFallback(view)
                 WebAuthSeeder.injectFallback(view)
             }
 
@@ -473,4 +494,19 @@ internal fun documentStartOriginRule(baseUrl: String): String? {
     val url = baseUrl.toHttpUrlOrNull() ?: return null
     val defaultPort = if (url.isHttps) 443 else 80
     return if (url.port == defaultPort) "${url.scheme}://${url.host}" else "${url.scheme}://${url.host}:${url.port}"
+}
+
+/**
+ * Resolves the theme's window background so the shell WebView is opaque and
+ * matches the Compose surface behind it (a transparent WebView blends every
+ * scrolled frame — Category grid raster cost). Falls back to white, the
+ * app's light-theme background.
+ */
+private fun resolveShellBackground(ctx: Context): Int {
+    val typedValue = android.util.TypedValue()
+    return if (ctx.theme.resolveAttribute(android.R.attr.windowBackground, typedValue, true)) {
+        typedValue.data
+    } else {
+        AndroidColor.WHITE
+    }
 }

@@ -49,3 +49,35 @@ export function isNativeHost(): boolean {
 export function useNativeHost(): boolean {
   return useMemo(() => isNativeHost(), [])
 }
+
+/**
+ * Web-initiated navigation through the NATIVE shell (`ZylodNativeBridge.
+ * openPage`, Android WebAppBridge / iOS script-message parity): when any web
+ * chrome is visible inside a shell, its taps must change the NATIVE route —
+ * never an SPA state that diverges from the shell's own navigation bar.
+ * Returns false when no native transport is available (plain browser).
+ */
+export function nativeOpenPage(pageId: string, params = ''): boolean {
+  if (typeof window === 'undefined') return false
+  const w = window as unknown as {
+    ZylodNativeBridge?: { openPage?: (pageId: string, params: string) => void }
+    webkit?: { messageHandlers?: { ZylodNativeBridge?: { postMessage: (msg: unknown) => void } } }
+  }
+  try {
+    if (typeof w.ZylodNativeBridge?.openPage === 'function') {
+      w.ZylodNativeBridge.openPage(pageId, params)
+      return true
+    }
+    if (w.webkit?.messageHandlers?.ZylodNativeBridge) {
+      w.webkit.messageHandlers.ZylodNativeBridge.postMessage({
+        method: 'openPage',
+        pageId,
+        params,
+      })
+      return true
+    }
+  } catch {
+    // A bridge failure must never break the web fallback navigation.
+  }
+  return false
+}

@@ -92,11 +92,19 @@ struct WebViewScreen: View {
                             cancelWatchdog()
                         }
                     )
-                    .ignoresSafeArea(edges: .bottom)
+                    // No .ignoresSafeArea(.bottom): the WebView must end ABOVE
+                    // the native tab bar. The previous underlap painted the
+                    // page's last rows behind the translucent tab bar AND let
+                    // the web page's own bottom chrome occupy the same region
+                    // as the tab bar (owner round-3 finding: duplicate/merged
+                    // bottom chrome; category rows unreachable under the bar).
                     if isLoading {
+                        // OPAQUE loading surface (was opacity 0.001): a slow
+                        // first shell load must look like a loading screen,
+                        // never like dead taps on an invisible layer.
                         ProgressView()
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(ZylodColor.background.opacity(0.001))
+                            .background(ZylodColor.background)
                     }
                 }
             } else {
