@@ -711,3 +711,23 @@ Stage Summary:
 - Nav contract is now: native bar = the only visible chrome on every surface (3-layer suppression + runtime sweep), every tab tap lands via popUpTo(home) + pool soft-navigate (verified), re-tap selected tab pops to root (iOS), Back pops the native stack (no dual-history desync), web-initiated taps route through the native bridge (both platforms).
 - Scroll: Android grid = stable keys + skippable cards + zero per-call formatting; iOS = bounded image cache + right-sized decodes; Category path = opaque renderer + no forced HW layer (Android) + zero main-thread disk I/O (iOS).
 - STOP for owner re-audit after CI artifacts. Phase 2 LOCKED.
+
+---
+Task ID: 3-remediation (close-out)
+Agent: Z.ai Code orchestrator
+Task: Land round-3 remediation, CI-green on final HEAD, SHA-traceable artifacts, release republished, STOP.
+
+Work Log:
+- Pushed 0a6d789 (clean lineage: soft-reset past the 2 unpushed noise commits — dev.pid never pushed; single remediation commit on 99271b5).
+- CI FIRST-ATTEMPT GREEN on 0a6d789: android-build 34593023875 SUCCESS + ios-build 34593023868 SUCCESS.
+- Artifacts (SHA-stamped, active): Zylod-debug-apk-0a6d789… (id 10196479801, 33,317,104 B zip) + lint-report-0a6d789… (10196478636) + Zylod-ios-simulator-0a6d789… (10196421015).
+- APK identity verified by AXML string-pool parse: com.zylod.wholesale.debug, versionName 2.4.5-0a6d789, 45,212,066 bytes.
+- Release republished per standing instruction: deleted release 386807949 + tag v2.4.5-99271b5 (204/204) → tag v2.4.5-0a6d789 at 0a6d789521856a2ca669364808ebd8176d3c8f4f → release id 386984064 (Latest, prerelease=false) → asset Zylod-v2.4.5-0a6d789-debug.apk state=uploaded → direct link HTTP 200 → /releases/latest → v2.4.5-0a6d789.
+
+Stage Summary:
+- PHASE 1 REMEDIATION ROUND 3 COMPLETE — CI GREEN (first attempt), artifacts traceable, release live. STOPPING for owner re-audit. Phase 2 LOCKED.
+- Release page: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-0a6d789
+- Direct APK: https://github.com/GrapseeAgency/Zylod-gs/releases/download/v2.4.5-0a6d789/Zylod-v2.4.5-0a6d789-debug.apk
+- iOS equivalent: CI run 34593023868, artifact Zylod-ios-simulator-0a6d789.
+- Owner note (unchanged): deploy the web bundle from 0a6d789 so the web-side native-host suppression takes effect as the primary layer; the shells' 3-layer injected suppression covers the transition regardless.
+- Verification matrix mapped to fixes: Category→Home/Profile + Home/Profile→everywhere = popUpTo(home) contract (Android) + re-tap pop-to-root (iOS) + verified softNavigate + native nav bridge; Back = native-stack-only back (Android, no dual-history desync) + NavigationStack back (iOS); scroll = keyed/skippable grid (Android) + bounded right-sized image cache (iOS) + opaque WebView (Android) + off-main bridge I/O (iOS); no duplicate nav = 3-layer suppression both platforms; no indefinite loading = 20s watchdog + verified soft-nav fallback (unchanged, hardened).
