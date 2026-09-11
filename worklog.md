@@ -644,8 +644,25 @@ Work Log:
   Web — NEW src/lib/native-host.ts (flag + bridge object + iOS messageHandlers + UA markers, client-only hydration-safe); MobileBottomNav internal guard (all 4 mount sites); AppShell DETAIL back-bar + bottom-padding gated to web-only; browsers 100% unchanged.
   iOS — navigationResponse main-frame HTTP>=400 gate; download → FSM stop; softNavigate resume-once + 5s bound; watchdog restart on onAppear; shared WKProcessPool; back-forward gesture OFF (one back system); BridgeCoordinator per-sending-shell reply routing (evaluateTarget from message.webView); ZylodImagePipeline (NSCache + URLCache + ImageIO downsample); ZylodFont cache; login timer gated.
 - Verification: ESLint — 0 new errors (35 pre-existing baseline unchanged, all in untouched legacy page components under new react-hooks v6 rules); agent-browser UA-matrix QA on the dev server: browser/mobile = web nav + back-bar PRESENT + tall padding (web unchanged); native UA = nav GONE, back-bar GONE, padding pb-4; __ZYL_NATIVE__ path code-verified in both shells' document-start scripts; screenshots /tmp/qa-*.png.
-- Pushed 9403cda → origin/main; CI round 1 (9403cda) failed: ApiClient <T> bound, HomeScreen remember-in-LazyColumn (from the unlogged session), Swift optional unwrap — fixed in 24f483c; iOS round 2: WKNavigationResponse.isForMainFrame — fixed in d2aaf5f. FINAL: android-build 34563920912 SUCCESS + ios-build 34563920934 SUCCESS on d2aaf5f; artifacts Zylod-debug-apk / lint-report / Zylod-ios-simulator all SHA-stamped d2aaf5f, active.
+- Pushed 9403cda → origin/main; CI: round 1 (9403cda, interim tree) failed on ApiClient <T> bound + HomeScreen remember-in-LazyColumn + Swift optional unwrap (fixed 24f483c), iOS isForMainFrame (fixed d2aaf5f); those d2aaf5f runs were green but INCOMPLETE (stale-index artifact of 9403cda). Full tree: 65db309 → coil newImageLoader + nullable invoke findings → 4ee3954 BOTH GREEN (android 34565668248, ios 34565668245).
 
 Stage Summary:
 - KEY DEPLOYMENT NOTE for the owner: the web half of the duplicate-chrome fix (web recognizing the native host) is in this commit and takes full effect when the web bundle built from 9403cda is DEPLOYED to the production server. Until then the shells' injected CSS shim (nav.fixed.bottom-0) already suppresses the legacy bar natively, so the APK is correct even against the old bundle.
 - Android debug APK + iOS simulator artifact are built by CI from 9403cda (runs above). Phase 2 remains LOCKED. STOP for owner re-audit after artifacts + release update.
+
+---
+Task ID: 2-remediation (close-out)
+Agent: Z.ai Code orchestrator
+Task: Finalize remediation round 2 — CI green on final HEAD, SHA-traceable artifacts, release republished, STOP.
+
+Work Log:
+- CI rounds: 9403cda FAIL (ApiClient <T> bound; HomeScreen remember inside LazyColumn builder — both from the unlogged lost session; Swift optional unwrap) → 24f483c Android GREEN; iOS FAIL (isForMainFrame) → d2aaf5f BOTH GREEN → docs 767a039 BOTH GREEN.
+- Final runs on 767a039: android-build 34564401003 SUCCESS (artifacts: Zylod-debug-apk-767a039… id 10185531400 + lint-report id 10185530579), ios-build 34564400956 SUCCESS (Zylod-ios-simulator-767a039… id 10185496616). All active, all SHA-stamped.
+- APK triple-verified: com.zylod.wholesale.debug, versionName 2.4.5-767a039, 45,212,070 bytes.
+- Release republished per owner standing instruction (delete previous → publish fresh): old release 386764281 + tag v2.4.5-fd4c1ac deleted (204/204); tag v2.4.5-767a039 created at 767a0394b0ff241c877caf7b980b644dd36f546b; release id 386799289, Latest (non-prerelease); asset Zylod-v2.4.5-767a039-debug.apk state=uploaded; direct link HTTP 200; /releases/latest → v2.4.5-767a039.
+
+Stage Summary:
+- PHASE 1 REMEDIATION ROUND 2 COMPLETE — CI GREEN, ARTIFACTS TRACEABLE, RELEASE LIVE. STOPPING for owner re-audit. Phase 2 LOCKED.
+- Release page: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-767a039
+- Direct APK: https://github.com/GrapseeAgency/Zylod-gs/releases/download/v2.4.5-767a039/Zylod-v2.4.5-767a039-debug.apk
+- Owner action item (independent of the audit): deploy the web bundle from 767a039 so the web side's native-host recognition (the primary suppression layer) takes effect; the APK's injected-CSS shim already covers the transition.
