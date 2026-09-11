@@ -452,7 +452,7 @@ extension ShellNavCoordinator: WKNavigationDelegate, WKUIDelegate {
         // "finishes" and the screen shows a dead error document with no
         // recovery path (Android onReceivedHttpError parity — audit finding
         // #1). Subresource failures are ignored (graceful degradation).
-        if navigationResponse.isMainFrame,
+        if navigationResponse.isForMainFrame,
            let http = navigationResponse.response as? HTTPURLResponse,
            http.statusCode >= 400 {
             decisionHandler(.cancel)
