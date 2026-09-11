@@ -770,3 +770,23 @@ Stage Summary:
 - Web SPA verified in browser: renders; __zylodCurrentPage/params mirror live; real UI nav Deals→daily-deals + history.back→home round-trip OK; tsc src/ clean; eslint — my files clean, 35 pre-existing errors identical on bare HEAD.
 - Kotlin/Swift compile via CI (no local toolchain); static review pass done on every changed file.
 - STOP for owner re-audit. Phase 2 untouched.
+
+---
+Task ID: R4-CI (Phase 1 round-4 CI + release close-out)
+Agent: Z.ai Code (main)
+Task: Green dual-platform CI on the round-4 remediation tree, publish traceable artifacts, STOP for owner re-audit.
+
+Work Log:
+- CI round 1 (eb38bc4): both platforms FAILED — Android: `fun shell(for webView:)` used the Kotlin hard keyword `for` as a parameter name (NativeWebViewPool.kt:103, function was unused → deleted); iOS: optional WKWebView passed to non-optional pool lookup (ZylodNativeBridge.swift:281 → guard-let). 
+- CI round 2 (0a01e24): iOS GREEN; Android FAILED — ZylodRoot.kt missing `androidx.compose.runtime.setValue` import for the MutableIntState delegate; JankProfiler SAM takes (window, frameMetrics, frameCount) — 3 params, and INTENDED_VSYNC constant dropped.
+- CI round 3 (b48e0ec): iOS GREEN; Android FAILED — Window.setOnFrameMetricsAvailableListener is absent from the SDK stubs this build compiles against (nested OnFrameMetricsAvailableListener interface resolves, the Window method does not).
+- CI round 4 (c71357e): JankProfiler rebuilt on the Choreographer frame-cadence pipeline (inter-frame interval vs real refresh rate; idle gaps >250ms excluded; jank >1.5×period, frozen >3×; p50/p90/p95/p99/worst per surface; DEBUG-only). SAME measurement semantics, portable API. 
+- RESULT: android-build #37 (run 34607348478) SUCCESS + ios-build #31 (run 34607348364) SUCCESS on c71357e.
+- Artifacts verified (SHA-stamped): Zylod-debug-apk-c71357e (33.3MB), Zylod-ios-simulator-c71357e (4.9MB), lint-report-c71357e.
+- Release published: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-c71357e (release id 387090688) — Latest, NOT prerelease, asset Zylod-v2.4.5-c71357e-debug.apk (45.2MB). On-device version string: 2.4.5-c71357e.
+- Lineage: eb38bc4 → 0a01e24 → b48e0ec → c71357e (HEAD, pushed).
+
+Stage Summary:
+- Phase 1 round-4 remediation is code-complete, dual-platform CI green, traceable artifacts published.
+- STOP for owner re-audit. Phase 2 remains locked. The owner's real-device audit steps: install Zylod-v2.4.5-c71357e-debug.apk → run the mandated test matrix (Home → Categories → Home → Profile → Home → Hot Deals → Home → Cart → Home; Profile-start variant; Product-Detail-start variant) → verify single bar / single loading owner / correct content / Back / responsiveness; for performance: docs/PERFORMANCE-PROFILE.md §2 protocol (adb logcat -s ZylodPerf) for native:home vs web:<pageId> numbers.
+- No autonomous dev-loop cron was scheduled: the owner's binding directive for this native-app phase is STOP-for-audit; a self-directed loop would violate it.
