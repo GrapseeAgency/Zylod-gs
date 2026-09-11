@@ -38,6 +38,7 @@ import com.zylod.wholesale.ui.nav.ZylodRoot
 import com.zylod.wholesale.ui.theme.ZylodTheme
 import com.zylod.wholesale.ui.web.NativeWebBus
 import com.zylod.wholesale.ui.web.NativeWebRegistry
+import com.zylod.wholesale.ui.web.NativeWebViewPool
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.File
@@ -145,14 +146,30 @@ class NativeMainActivity : FragmentActivity(), WebViewHost {
 
     override fun onPause() {
         // Flush cookies so the web session survives process death (parity with
-        // the legacy shell).
+        // the legacy shell). Also pause the ATTACHED shell's timers/JS — the
+        // legacy shell did this; the pooled shells pause at check-in, but the
+        // visible one must not keep burning CPU while backgrounded.
         CookieManager.getInstance().flush()
+        NativeWebRegistry.webView?.onPause()
         super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        NativeWebRegistry.webView?.onResume()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        // Warm pooled shells are the first thing to go under memory pressure —
+        // they are rebuilt+reloaded transparently on the next checkout.
+        NativeWebViewPool.trim(level)
     }
 
     override fun onDestroy() {
         speechRecognizer?.destroy()
         super.onDestroy()
+        NativeWebViewPool.reset()
     }
 
     // ----- WebViewHost: the embedded WebView's native capabilities -----

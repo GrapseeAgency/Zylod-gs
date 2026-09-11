@@ -64,7 +64,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -119,7 +119,7 @@ fun ProductDetailScreen(
     val vm: ProductDetailViewModel = viewModel(key = "pdp-$productId") {
         ProductDetailViewModel(context.applicationContext)
     }
-    val state by vm.state.collectAsState()
+    val state by vm.state.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     var showQr by remember { mutableStateOf(false) }
     var shareRequested by remember { mutableStateOf(false) }

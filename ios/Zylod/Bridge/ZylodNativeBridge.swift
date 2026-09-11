@@ -85,15 +85,26 @@ final class ZylodNativeBridge: NSObject {
     /// gesture settings and the native-host user-agent marker.
     static func makeShellWebView(baseUrl: String) -> WKWebView {
         let webView = WKWebView(frame: .zero, configuration: shellConfiguration())
-        webView.allowsBackForwardNavigationGestures = true
+        // One navigation system: the NavigationStack owns back (system back
+        // button + edge-swipe pop). Enabling WKWebView's back-forward gesture
+        // here made the edge swipe drive the SPA's pushState history INSIDE a
+        // pushed screen while the same swipe popped the native screen — two
+        // competing back semantics with gesture contention.
+        webView.allowsBackForwardNavigationGestures = false
         webView.allowsLinkPreview = false
         return webView
     }
+
+    /// All shells share ONE WebContent process pool: JS heaps, caches and
+    /// the renderer warm up once instead of up to five times (audit finding
+    /// #3 — WebView creation/destruction and JS execution cost).
+    private static let sharedProcessPool = WKProcessPool()
 
     /// The one shell configuration: all three document-start scripts (bridge
     /// shim, current auth seed, chrome suppression) + native UA marker.
     static func shellConfiguration() -> WKWebViewConfiguration {
         let configuration = WKWebViewConfiguration()
+        configuration.processPool = sharedProcessPool
         // Append-only UA token — web code can detect the native host without
         // breaking the default Safari UA string.
         configuration.applicationNameForUserAgent = "ZylodiOSNative/\(versionName)"
@@ -429,6 +440,9 @@ extension ZylodNativeBridge: WKScriptMessageHandler {
         guard message.name == "ZylodNativeBridge",
               let body = message.body as? [String: Any],
               let method = body["method"] as? String else { return }
+        // Route async replies back to the SENDING shell (pooled + owned shells
+        // are alive simultaneously — see BridgeCoordinator.evaluateTarget).
+        (host as? BridgeCoordinator)?.evaluateTarget = message.webView
         dispatch(method: method, message: body)
     }
 }

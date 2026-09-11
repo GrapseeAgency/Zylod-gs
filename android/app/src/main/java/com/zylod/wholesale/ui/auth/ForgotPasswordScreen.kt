@@ -18,7 +18,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -163,7 +163,7 @@ fun ForgotPasswordScreen(
 ) {
     val context = LocalContext.current
     val vm: ForgotPasswordViewModel = viewModel(factory = ForgotVmFactory(context.applicationContext))
-    val state by vm.state.collectAsState()
+    val state by vm.state.collectAsStateWithLifecycle()
 
     var email by rememberSaveable { mutableStateOf("") }
     var captchaAnswer by rememberSaveable { mutableStateOf("") }

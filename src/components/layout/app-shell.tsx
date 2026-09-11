@@ -7,6 +7,7 @@ import { MobileBottomNav } from '@/components/mobile/mobile-bottom-nav'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { useNativeHost } from '@/lib/native-host'
 import { ArrowLeft } from 'lucide-react'
 
 /* ─── Page category helpers (compact) ─── */
@@ -34,6 +35,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile()
   const currentPage = useNavigationStore((s) => s.currentPage)
   const { goBack } = useNavigationStore()
+  // Deterministic native-host boundary (Phase 1 remediation): inside the
+  // Android/iOS shell the app owns navigation chrome (its own bottom bar and
+  // back affordances), so the web shell drops its back-bar and the tall
+  // bottom inset. Browsers never match the shell markers — web UI unchanged.
+  const isNative = useNativeHost()
 
   // Fullscreen pages (welcome onboarding, auth) - render immediately without desktop header
   if (FULLSCREEN_PAGES.has(currentPage)) {
@@ -69,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       return (
         // data-zylod-nav-padding: native shells flatten this to 16px via
         // document-start CSS (the app's own bottom bar provides the inset).
-        <div data-zylod-nav-padding="" className="min-h-screen pb-[calc(64px+env(safe-area-inset-bottom)+16px)]">
+        <div data-zylod-nav-padding="" className={isNative ? 'min-h-screen pb-4' : 'min-h-screen pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}>
           <main className="flex-1">
             {children}
           </main>
@@ -81,20 +87,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     // Detail/sub pages - show back button + bottom nav
     if (DETAIL_PAGES.has(currentPage)) {
       return (
-        <div data-zylod-nav-padding="" className="min-h-screen bg-background pb-[calc(64px+env(safe-area-inset-bottom)+16px)]">
-          {/* Mobile top bar with back button */}
-          <header className="sticky top-0 z-50 flex items-center gap-3 px-4 h-12 bg-background border-b border-border/50">
-            <button
-              onClick={goBack}
-              className="p-1.5 rounded-lg active:scale-95 transition-transform"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="w-5 h-5 text-foreground" />
-            </button>
-            <h1 className="text-sm font-semibold text-foreground capitalize">
-              {currentPage.replace(/-/g, ' ')}
-            </h1>
-          </header>
+        <div data-zylod-nav-padding="" className={`min-h-screen bg-background ${isNative ? 'pb-4' : 'pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}`}>
+          {/* Mobile top bar with back button — web-only chrome: the native
+              shells provide their own deterministic back (Android BackHandler
+              with WebView history, iOS NavigationStack back button), so the
+              bar would duplicate native affordances inside the shell. */}
+          {!isNative && (
+            <header className="sticky top-0 z-50 flex items-center gap-3 px-4 h-12 bg-background border-b border-border/50">
+              <button
+                onClick={goBack}
+                className="p-1.5 rounded-lg active:scale-95 transition-transform"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="w-5 h-5 text-foreground" />
+              </button>
+              <h1 className="text-sm font-semibold text-foreground capitalize">
+                {currentPage.replace(/-/g, ' ')}
+              </h1>
+            </header>
+          )}
           <main className="flex-1">
             {children}
           </main>
@@ -105,7 +116,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
     // Default mobile layout - show bottom nav
     return (
-      <div data-zylod-nav-padding="" className="min-h-screen bg-background pb-[calc(64px+env(safe-area-inset-bottom)+16px)]">
+      <div data-zylod-nav-padding="" className={`min-h-screen bg-background ${isNative ? 'pb-4' : 'pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}`}>
         <main className="flex-1">
           {children}
         </main>

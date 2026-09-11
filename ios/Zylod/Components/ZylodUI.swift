@@ -414,6 +414,60 @@ struct StarRating: View {
 
 // MARK: - Remote image (relative /uploads paths resolved against server)
 
+/// Shared image pipeline (Phase 1 remediation, finding #3 — image decoding):
+/// NSCache-backed memory tier + shared URLSession with a disk URLCache +
+/// ImageIO downsampling. Previously every remote image was fetched and
+/// decoded at FULL resolution on every appearance — the single biggest
+/// scroll-jank source in Home/Cart/PDP galleries (parity with the Android
+/// Coil pipeline configured in ZylodApp.createImageLoader).
+enum ZylodImagePipeline {
+    private static let cache: NSCache<NSString, UIImage> = {
+        let c = NSCache<NSString, UIImage>()
+        c.countLimit = 400
+        return c
+    }()
+
+    private static let session: URLSession = {
+        let conf = URLSessionConfiguration.default
+        conf.urlCache = URLCache(
+            memoryCapacity: 32 * 1024 * 1024,
+            diskCapacity: 128 * 1024 * 1024,
+            directory: nil
+        )
+        conf.requestCachePolicy = .returnCacheDataElseLoad
+        conf.timeoutIntervalForRequest = 20
+        return URLSession(configuration: conf)
+    }()
+
+    static func image(for url: URL, maxPixel: CGFloat = 900) async -> UIImage? {
+        let key = url.absoluteString as NSString
+        if let hit = cache.object(forKey: key) { return hit }
+        guard let (data, response) = try? await session.data(from: url),
+              let http = response as? HTTPURLResponse,
+              (200..<300).contains(http.statusCode),
+              let decoded = downsampled(data: data, maxPixel: maxPixel)
+        else { return nil }
+        cache.setObject(decoded, forKey: key)
+        return decoded
+    }
+
+    /// Decode at display size (ImageIO thumbnail) instead of the full bitmap —
+    /// a 1600px product photo decodes to ~900px at a fraction of the memory
+    /// and without the main-thread decode spike.
+    private static func downsampled(data: Data, maxPixel: CGFloat) -> UIImage? {
+        let sourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let source = CGImageSourceCreateWithData(data as CFData, sourceOptions) else { return nil }
+        let thumbnailOptions = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixel,
+        ] as CFDictionary
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, thumbnailOptions) else { return nil }
+        return UIImage(cgImage: cgImage)
+    }
+}
+
 struct RemoteImageView: View {
     let rawPath: String?
     let serverUrl: String
@@ -427,18 +481,29 @@ struct RemoteImageView: View {
         return URL(string: serverUrl.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + raw)
     }
 
+    @State private var image: UIImage?
+
     var body: some View {
-        AsyncImage(url: resolved) { image in
-            image.resizable().scaledToFill()
-        } placeholder: {
-            ZStack {
-                ZylodColor.muted
+        ZStack {
+            ZylodColor.muted
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
                 Image(systemName: "shippingbox")
                     .font(ZylodFont.scaled(placeholderSize, relativeTo: .body))
                     .foregroundColor(ZylodColor.onMuted)
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .task(id: resolved) {
+            guard let url = resolved else {
+                image = nil
+                return
+            }
+            image = await ZylodImagePipeline.image(for: url)
+        }
     }
 }
 

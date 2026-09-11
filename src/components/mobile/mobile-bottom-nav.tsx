@@ -4,6 +4,7 @@ import { Home, Grid3X3, Zap, ShoppingCart, User } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
+import { useNativeHost } from '@/lib/native-host'
 
 interface NavItem {
   id: string
@@ -24,8 +25,15 @@ export function MobileBottomNav() {
   const { currentPage, navigate } = useNavigationStore()
   const { isAuthenticated } = useAuthStore()
   const cartItems = useCartStore((s) => s.items)
+  // Deterministic native-host boundary (Phase 1 remediation): inside the
+  // Android/iOS shell the app renders its own bottom navigation bar — the web
+  // bar must not paint a second one. Browsers never match the shell markers,
+  // so the web navigation is unchanged for web users.
+  const isNative = useNativeHost()
   // Distinct products in cart — not summed quantity (MOQ would show 99+ after one add)
   const cartCount = cartItems.length
+
+  if (isNative) return null
 
   const getActiveId = (): string => {
     if (currentPage === 'home') return 'home'

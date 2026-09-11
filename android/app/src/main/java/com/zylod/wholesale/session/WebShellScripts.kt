@@ -11,11 +11,23 @@ import org.json.JSONObject
  *
  * Chrome suppression — owner audit finding #4: the web app renders its own
  * fixed bottom navigation bar (mobile-bottom-nav.tsx), which duplicated the
- * native bottom bar inside the app. The web side tags that bar with
- * `data-zylod-mobile-nav` (and its bottom-inset wrappers with
- * `data-zylod-nav-padding`); this injected stylesheet hides them ONLY inside
- * the native shells. Browsers never receive the injection and are unaffected,
- * so no legitimate web functionality changes for web users.
+ * native bottom bar inside the app. Two layers:
+ *
+ *  1. Primary (post-deploy web bundle): the web side tags that bar with
+ *     `data-zylod-mobile-nav` (and its bottom-inset wrappers with
+ *     `data-zylod-nav-padding`) AND self-suppresses via the native-host flag
+ *     (`window.__ZYL_NATIVE__`, src/lib/native-host.ts) — the web app
+ *     recognises the native host and renders no duplicate chrome at all.
+ *
+ *  2. Fallback (transition shim while the older web bundle is still
+ *     deployed): the same stylesheet also targets the legacy bar by its
+ *     stable shape — `nav.fixed.bottom-0` — and flattens the legacy wrapper
+ *     padding class. Verified: the only `nav` element in the web app that is
+ *     position:fixed at the bottom is the mobile bottom bar (sheets and
+ *     sticky buy-bars are divs), so the shim cannot hide legitimate web
+ *     functionality.
+ * Browsers never receive the injection, so no legitimate web functionality
+ * changes for web users.
  *
  * Soft navigation — findings #1/#2: once the SPA signals
  * `window.__zylodSpaReady` (set by the web navigation store right after the
@@ -28,10 +40,14 @@ object WebShellScripts {
 
     private const val CHROME_SUPPRESSION_CSS =
         "[data-zylod-mobile-nav]{display:none!important}" +
-            "[data-zylod-nav-padding]{padding-bottom:16px!important}"
+            "[data-zylod-nav-padding]{padding-bottom:16px!important}" +
+            // Transition shim for the not-yet-redeployed web bundle (see KDoc):
+            "nav.fixed.bottom-0{display:none!important}" +
+            "[class*=\"pb-[calc(64px\"]{padding-bottom:16px!important}"
 
     /** Injects the suppression stylesheet as early as possible, zero flash. */
     fun chromeSuppressionScript(): String = """
+        window.__ZYL_NATIVE__ = true;
         (function(){
           try{
             var css = '$CHROME_SUPPRESSION_CSS';

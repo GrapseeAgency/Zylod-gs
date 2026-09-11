@@ -74,7 +74,28 @@ extension Color {
 /// scaled by the user's Dynamic Type setting via UIFontMetrics (D5 fix).
 /// Sizes match the frozen spec exactly at the default text size.
 enum ZylodFont {
+    /// UIFontMetrics re-queries the system content size category on EVERY
+    /// call — during fast scrolls that ran thousands of times per second
+    /// across every Text in Home/Cart/PDP (audit finding #3). The scaled
+    /// value only changes when the point size changes or the user changes
+    /// their Dynamic Type setting, so it is cached and invalidated on the
+    /// content-size-change notification.
+    private static var cache: [CGFloat: CGFloat] = [:]
+
+    private static let resetObserver: NSObjectProtocol = NotificationCenter.default.addObserver(
+        forName: UIContentSizeCategory.didChangeNotification,
+        object: nil,
+        queue: .main
+    ) { _ in cache.removeAll() }
+
     static func scaled(_ size: CGFloat, _ weight: Font.Weight = .regular, relativeTo style: Font.TextStyle = .body) -> Font {
-        .system(size: UIFontMetrics(forTextStyle: .body).scaledValue(for: size), weight: weight)
+        .system(size: scaledSize(size), weight: weight)
+    }
+
+    private static func scaledSize(_ size: CGFloat) -> CGFloat {
+        if let hit = cache[size] { return hit }
+        let scaled = UIFontMetrics(forTextStyle: .body).scaledValue(for: size)
+        cache[size] = scaled
+        return scaled
     }
 }

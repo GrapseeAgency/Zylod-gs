@@ -2,6 +2,7 @@ package com.zylod.wholesale.ui.web
 
 import android.net.Uri
 import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -111,10 +112,19 @@ fun WebScreen(pageId: String, query: String) {
     var pageError by remember { mutableStateOf(false) }
     var pageLoading by remember { mutableStateOf(true) }
     var manualReload by remember { mutableIntStateOf(0) }
+    var lastHandledReload by remember { mutableIntStateOf(0) }
     var shell by remember { mutableStateOf<NativeWebViewPool.Shell?>(null) }
     // Generation counter: bumped on every load/soft-nav attempt so the
     // watchdog can tell a stale timer from the active one.
     var loadGen by remember { mutableIntStateOf(0) }
+
+    // Hardware/gesture back inside the shell: walk the WebView's own history
+    // first (the SPA mirrors pageId state into History), pop the native stack
+    // only when there is nothing web-side to go back to (spec §3.0).
+    val backWebView = shell?.webView
+    BackHandler(enabled = backWebView?.canGoBack() == true) {
+        backWebView?.goBack()
+    }
 
     // Initial backend discovery only when no cached winner exists.
     LaunchedEffect(Unit) {
@@ -134,6 +144,9 @@ fun WebScreen(pageId: String, query: String) {
         val base = baseUrl ?: return@LaunchedEffect
         pageError = false
 
+        val forceReload = manualReload != lastHandledReload
+        if (forceReload) lastHandledReload = manualReload
+
         val current = shell
         if (current != null && current.baseUrl != base) {
             // Server switched underneath us — drop the old shell entirely.
@@ -152,6 +165,10 @@ fun WebScreen(pageId: String, query: String) {
             loadGen++
             val checkedOut = NativeWebViewPool.checkOut(context, host, base)
             checkedOut.handle.onPageFinished = {
+                // Success is terminal AND self-healing: a watchdog that fired
+                // at 20 s must not keep the error up when the page lands at
+                // 25 s — recovery beats a stale error (bounded, deterministic).
+                pageError = false
                 pageLoading = false
                 NativeWebRegistry.webView = checkedOut.webView
             }
@@ -162,29 +179,38 @@ fun WebScreen(pageId: String, query: String) {
             shell = checkedOut
             NativeWebRegistry.webView = checkedOut.webView
             checkedOut.webView.onResume()
-            checkedOut.webView.loadUrl(target)
-            checkedOut.lastUrl = target
-        } else if (active.lastUrl == target && !pageError) {
-            // Restore-in-place: the shell is already showing exactly this page
-            // (e.g. Back from a native PDP) — re-attach with zero work.
-            pageLoading = false
-            loadGen++
-            active.webView.onResume()
+            if (forceReload) {
+                checkedOut.webView.loadUrl(target)
+            } else {
+                // The shell may be a warm SPA reuse — drive it client-side;
+                // softNavigate falls back to a full load itself when the SPA
+                // has not signalled readiness (fresh shell / stale bundle).
+                NativeWebViewPool.softNavigate(checkedOut, pageId, query) { ok ->
+                    if (!ok) checkedOut.webView.loadUrl(target)
+                }
+            }
         } else {
-            pageLoading = true
-            loadGen++
             active.webView.onResume()
-            // Fast path: client-side pageId navigation on the hydrated SPA.
-            NativeWebViewPool.softNavigate(active, pageId, query) { ok ->
-                if (ok) {
-                    active.lastUrl = target
-                    pageLoading = false
-                } else {
-                    // Fallback: full deep-link load (first load, stale bundle,
-                    // or the SPA rejected the synthetic navigation).
-                    com.zylod.wholesale.session.WebAuthSeeder.install(active.webView, base, context)
-                    active.webView.loadUrl(target)
-                    active.lastUrl = target
+            if (forceReload) {
+                // Retry (or settings-driven reload): a hard reload of the
+                // target — the previous attempt is presumed broken, so the
+                // restore/soft-nav fast paths are explicitly bypassed.
+                pageLoading = true
+                loadGen++
+                active.webView.loadUrl(target)
+            } else {
+                pageLoading = true
+                loadGen++
+                // Page change (or re-attach after pool reuse): client-side
+                // navigation on the hydrated SPA; full deep-link load only as
+                // the fallback (first load, stale bundle, rejected soft-nav).
+                NativeWebViewPool.softNavigate(active, pageId, query) { ok ->
+                    if (ok) {
+                        pageLoading = false
+                    } else {
+                        com.zylod.wholesale.session.WebAuthSeeder.install(active.webView, base, context)
+                        active.webView.loadUrl(target)
+                    }
                 }
             }
         }
@@ -217,9 +243,17 @@ fun WebScreen(pageId: String, query: String) {
                         pageError = false
                         scope.launch {
                             val fresh = runCatching { ServerConfig.resolve(context) }.getOrNull()
-                            if (fresh != null) baseUrl = fresh
                             resolving = false
-                            manualReload++
+                            if (fresh != null && fresh != baseUrl) {
+                                // New winner: the effect re-runs on baseUrl,
+                                // drops the incompatible shell, and hard-loads
+                                // the target on a fresh checkout.
+                                baseUrl = fresh
+                            } else {
+                                // Same host: force a hard reload (the effect's
+                                // forceReload branch) — NEVER a silent no-op.
+                                manualReload++
+                            }
                         }
                     }
                 },

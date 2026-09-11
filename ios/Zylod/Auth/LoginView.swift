@@ -28,8 +28,6 @@ struct LoginView: View {
     @State private var socialEmail = ""
     @State private var socialName = ""
 
-    private let countdown = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -45,9 +43,8 @@ struct LoginView: View {
         .background(ZylodColor.background)
         .overlay(ToastOverlay())
         .scrollDismissesKeyboard(.interactively)
-        .onReceive(countdown) { _ in
-            guard lockoutRemainingMs > 0 else { return }
-            lockoutRemainingMs = max(0, lockoutRemainingMs - 1000)
+        .task(id: lockoutRemainingMs > 0) {
+            await runLockoutCountdown()
         }
         .sheet(item: $socialChoice) { choice in
             socialConsentSheet(choice.id)
@@ -56,6 +53,19 @@ struct LoginView: View {
     }
 
     // MARK: Sections
+
+    /// 1 Hz lockout countdown — alive ONLY while a lockout is running. The
+    /// previous autoconnected timer ticked every second forever, waking the
+    /// whole view hierarchy even on the idle login screen.
+    private func runLockoutCountdown() async {
+        guard lockoutRemainingMs > 0 else { return }
+        while !Task.isCancelled {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            guard lockoutRemainingMs > 0 else { return }
+            lockoutRemainingMs = max(0, lockoutRemainingMs - 1000)
+            if lockoutRemainingMs <= 0 { return }
+        }
+    }
 
     private var header: some View {
         VStack(spacing: 6) {

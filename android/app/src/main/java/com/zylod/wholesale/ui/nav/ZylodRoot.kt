@@ -26,7 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -111,7 +111,7 @@ fun ZylodRoot() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val route = backStackEntry?.destination?.route
     val webPageId = backStackEntry?.arguments?.getString("pageId")
-    val cartState by CartStore.state.collectAsState()
+    val cartState by CartStore.state.collectAsStateWithLifecycle()
 
     // First-run gate (web AppEntry: mobile first-run → welcome).
     val startDestination = remember { if (isOnboardingSeen(context)) "home" else "welcome" }
@@ -174,8 +174,19 @@ fun ZylodRoot() {
                     activeTab = activeTab,
                     cartBadge = cartState.items.size,
                     onTab = { tab ->
-                        if (tab.id == "cart") {
-                            navController.navigate("cart") {
+                        // Home and Cart are NATIVE Tier 1 screens (spec §2.2):
+                        // their tabs must route to the native destinations —
+                        // routing Home through openPage loaded the web `?page=home`
+                        // document (with its own top+bottom chrome) inside the
+                        // native shell — the exact duplicate-chrome + jank
+                        // surface the owner's audit captured.
+                        val nativeDestination = when (tab.id) {
+                            "home" -> "home"
+                            "cart" -> "cart"
+                            else -> null
+                        }
+                        if (nativeDestination != null) {
+                            navController.navigate(nativeDestination) {
                                 popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                                 launchSingleTop = true
                                 restoreState = true

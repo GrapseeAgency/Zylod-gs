@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-class ZylodApp : Application() {
+class ZylodApp : Application(), coil.ImageLoaderFactory {
 
     lateinit var database: AppDatabase
         private set
@@ -90,6 +90,28 @@ class ZylodApp : Application() {
         // Setup notification channels
         createNotificationChannels()
     }
+
+    /**
+     * Shared Coil pipeline (Phase 1 remediation, finding #3 — image decoding
+     * strategy): memory + disk caching and a default crossfade. Previously
+     * every AsyncImage used the default no-disk-cache loader, so every list
+     * scroll re-decoded full-size product images over the network.
+     */
+    override fun createImageLoader(): coil.ImageLoader =
+        coil.ImageLoader.Builder(this)
+            .memoryCache {
+                coil.memory.MemoryCache.Builder(this)
+                    .maxSizePercent(0.20)
+                    .build()
+            }
+            .diskCache {
+                coil.disk.DiskCache.Builder()
+                    .directory(cacheDir.resolve("image_cache"))
+                    .maxSizeBytes(64L * 1024 * 1024)
+                    .build()
+            }
+            .crossfade(200)
+            .build()
 
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

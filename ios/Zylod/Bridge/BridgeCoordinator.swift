@@ -16,12 +16,18 @@ final class BridgeCoordinatorHolder {
 
 final class BridgeCoordinator: NSObject, BridgeHost {
     weak var webView: WKWebView?
+    /// The shell that SENT the script message currently being handled. Async
+    /// bridge replies (scanner, voice, offline callbacks) must land in the
+    /// SAME shell that asked — with pooled + owned shells alive at once, the
+    /// previous single-target design delivered callbacks to whichever shell
+    /// was attached last, silently dropping them in backgrounded pages.
+    weak var evaluateTarget: WKWebView?
 
     // MARK: BridgeHost
 
     func evaluateJavaScript(_ script: String) {
         DispatchQueue.main.async {
-            self.webView?.evaluateJavaScript(script, completionHandler: nil)
+            (self.evaluateTarget ?? self.webView)?.evaluateJavaScript(script, completionHandler: nil)
         }
     }
 

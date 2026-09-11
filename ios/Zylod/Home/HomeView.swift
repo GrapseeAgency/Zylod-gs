@@ -475,19 +475,29 @@ private struct QuickAccessMoreSheet: View {
 private struct RemoteImage: View {
     let url: URL?
     var cornerRadius: CGFloat
+    @State private var image: UIImage?
 
     var body: some View {
-        AsyncImage(url: url) { image in
-            image.resizable().scaledToFill()
-        } placeholder: {
-            ZStack {
-                ZylodColor.muted // token placeholder — was Color.white, broke dark mode (D1 fix)
+        ZStack {
+            ZylodColor.muted // token placeholder — was Color.white, broke dark mode (D1 fix)
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
                 Image(systemName: "shippingbox")
                     .font(ZylodFont.scaled(16, relativeTo: .body))
                     .foregroundColor(ZylodColor.onMuted)
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .task(id: url) {
+            guard let url else {
+                image = nil
+                return
+            }
+            image = await ZylodImagePipeline.image(for: url)
+        }
     }
 }
 

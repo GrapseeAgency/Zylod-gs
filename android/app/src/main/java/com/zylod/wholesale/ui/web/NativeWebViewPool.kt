@@ -70,17 +70,14 @@ internal class WebShellHandle {
  */
 internal object NativeWebViewPool {
 
-    private const val MAX_FREE = 2
+    private const val MAX_FREE = 3
 
     internal class Shell(
         val webView: WebView,
         val baseUrl: String,
         val seedScript: String,
         val handle: WebShellHandle,
-    ) {
-        /** Last URL this shell was driven to (load target or soft-nav target). */
-        var lastUrl: String? = null
-    }
+    )
 
     private val free = ArrayDeque<Shell>()
     private val busy = HashSet<Shell>()
@@ -89,8 +86,9 @@ internal object NativeWebViewPool {
 
     /**
      * Returns a shell for [baseUrl], reusing a compatible free one when the
-     * base URL and the current auth-seed script both match. [host] receives
-     * the bridge capability set (scanner, voice, downloads, file chooser…).
+     * base URL and the current auth-seed script both match (most-recently
+     * used first — LRU). [host] receives the bridge capability set (scanner,
+     * voice, downloads, file chooser…).
      */
     @SuppressLint("SetJavaScriptEnabled")
     fun checkOut(context: Context, host: WebViewHost?, baseUrl: String): Shell {
@@ -130,14 +128,12 @@ internal object NativeWebViewPool {
     fun checkIn(shell: Shell) {
         synchronized(this) {
             if (!busy.remove(shell)) return
-            // The anchor for the restore-in-place fast path: the SPA keeps its
-            // own URL in sync via pushState, so webView.url is the truth about
-            // what the shell is currently showing.
-            shell.lastUrl = shell.webView.url
             (shell.webView.parent as? ViewGroup)?.removeView(shell.webView)
             shell.webView.onPause()
-            free.addLast(shell)
-            while (free.size > MAX_FREE) destroy(free.removeFirst())
+            // LRU: most-recently-freed at the front — the next checkout reuses
+            // it first, so tab-hopping keeps the warm shells alive.
+            free.addFirst(shell)
+            while (free.size > MAX_FREE) destroy(free.removeLast())
         }
     }
 
@@ -146,6 +142,22 @@ internal object NativeWebViewPool {
         synchronized(this) {
             free.forEach { destroy(it) }
             free.clear()
+        }
+    }
+
+    /**
+     * Memory pressure hook (called from the host activity's onTrimMemory):
+     * pooled shells are warm SPA heaps — under pressure drop the coldest
+     * first so a backgrounded app is never killed for cached webviews.
+     */
+    fun trim(level: Int) {
+        val keep = when {
+            level >= android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> 0
+            level >= android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW -> 1
+            else -> return
+        }
+        synchronized(this) {
+            while (free.size > keep) destroy(free.removeLast())
         }
     }
 
@@ -351,6 +363,43 @@ internal object NativeWebViewPool {
                         view?.post { handle?.onMainFrameError?.invoke() }
                     }
                 }
+            }
+
+            // Main-frame HTTP failure (500/404/...) — onReceivedError does NOT
+            // fire for these; without this the screen spun forever whenever
+            // the server responded with an error document (audit finding #1).
+            // Subresource failures are ignored (graceful degradation).
+            override fun onReceivedHttpError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                errorResponse: WebResourceResponse?
+            ) {
+                if (request?.isForMainFrame == true && (errorResponse?.statusCode ?: 0) >= 400) {
+                    val handle = synchronized(NativeWebViewPool) {
+                        busy.firstOrNull { it.webView === view }?.handle
+                    }
+                    view?.post { handle?.onMainFrameError?.invoke() }
+                }
+            }
+
+            // Renderer crash/OOM kill: without returning true here the whole
+            // APP is killed. Destroy the poisoned shell and surface the
+            // bounded error state; Retry builds a fresh shell (finding #3).
+            override fun onRenderProcessGone(view: WebView?, detail: android.webkit.RenderProcessGoneDetail?): Boolean {
+                val handle = synchronized(NativeWebViewPool) {
+                    val gone = busy.firstOrNull { it.webView === view }
+                    if (gone != null) {
+                        busy.remove(gone)
+                        destroy(gone)
+                    }
+                    gone?.handle
+                }
+                handle?.let { h ->
+                    android.os.Handler(android.os.Looper.getMainLooper()).post {
+                        h.onMainFrameError.invoke()
+                    }
+                }
+                return true
             }
         }
 

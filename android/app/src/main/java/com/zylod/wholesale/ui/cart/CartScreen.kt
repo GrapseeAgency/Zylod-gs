@@ -39,7 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -73,11 +73,11 @@ fun CartScreen(
 ) {
     val context = LocalContext.current
     val vm: CartViewModel = viewModel { CartViewModel(context.applicationContext) }
-    val state by vm.items.collectAsState()
-    val authed by vm.authed.collectAsState()
-    val itemErrors by vm.itemErrors.collectAsState()
-    val notice by vm.notice.collectAsState()
-    val syncing by vm.syncing.collectAsState()
+    val state by vm.items.collectAsStateWithLifecycle()
+    val authed by vm.authed.collectAsStateWithLifecycle()
+    val itemErrors by vm.itemErrors.collectAsStateWithLifecycle()
+    val notice by vm.notice.collectAsStateWithLifecycle()
+    val syncing by vm.syncing.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 

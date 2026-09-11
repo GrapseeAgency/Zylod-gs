@@ -26,7 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -153,7 +153,7 @@ fun RegisterBuyerScreen(
 ) {
     val context = LocalContext.current
     val vm: RegisterBuyerViewModel = viewModel(factory = RegisterBuyerVmFactory(context.applicationContext))
-    val state by vm.state.collectAsState()
+    val state by vm.state.collectAsStateWithLifecycle()
 
     var fullName by rememberSaveable { mutableStateOf("") }
     var businessName by rememberSaveable { mutableStateOf("") }
