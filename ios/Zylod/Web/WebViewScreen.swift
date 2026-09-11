@@ -83,6 +83,13 @@ struct WebViewScreen: View {
                         onDidFinish: {
                             isLoading = false
                             cancelWatchdog()
+                        },
+                        onDownload: {
+                            // A navigation that became a download NEVER fires
+                            // didFinish — without this the watchdog turned a
+                            // successful download into a fake server error.
+                            isLoading = false
+                            cancelWatchdog()
                         }
                     )
                     .ignoresSafeArea(edges: .bottom)
@@ -105,6 +112,15 @@ struct WebViewScreen: View {
         }
         .task(id: navKey) {
             await drive()
+        }
+        // Tab switches: SwiftUI keeps tab state alive, but callbacks-driven
+        // loads must stay bounded across disappear/reappear — a hang while a
+        // tab is off-screen must still resolve into the error state on return.
+        .onAppear {
+            if isLoading && loadError == nil { startWatchdog() }
+        }
+        .onDisappear {
+            cancelWatchdog()
         }
     }
 
@@ -237,10 +253,18 @@ struct WebViewScreen: View {
 
     private static func softNavigate(_ shell: PooledWebView, pageId: String, query: String) async -> Bool {
         await withCheckedContinuation { continuation in
+            let box = ResumeOnce(continuation: continuation)
             shell.webView.evaluateJavaScript(
                 WebShellScripts.softNavigateScript(pageId: pageId, query: query)
             ) { result, _ in
-                continuation.resume(returning: (result as? String) == "ok")
+                box.resume(returning: (result as? String) == "ok")
+            }
+            // The evaluateJavaScript completion is not guaranteed if the shell
+            // is torn down mid-call — the timeout guarantees the continuation
+            // resumes (no leaked task), and the caller falls back to a load.
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 5_000_000_000)
+                box.resume(returning: false)
             }
         }
     }
@@ -296,6 +320,7 @@ private struct ShellWebView: UIViewRepresentable {
     var onFailure: () -> Void
     var onDidCommit: () -> Void
     var onDidFinish: () -> Void
+    var onDownload: () -> Void
 
     func makeUIView(context: Context) -> WKWebView {
         let webView = shell.webView
@@ -305,6 +330,7 @@ private struct ShellWebView: UIViewRepresentable {
         context.coordinator.onFailure = onFailure
         context.coordinator.onDidCommit = onDidCommit
         context.coordinator.onDidFinish = onDidFinish
+        context.coordinator.onDownload = onDownload
         webView.navigationDelegate = context.coordinator
         webView.uiDelegate = context.coordinator
         ShellWebViewCenter.bridge.attach(webView: webView)
@@ -315,6 +341,7 @@ private struct ShellWebView: UIViewRepresentable {
         context.coordinator.onFailure = onFailure
         context.coordinator.onDidCommit = onDidCommit
         context.coordinator.onDidFinish = onDidFinish
+        context.coordinator.onDownload = onDownload
         // The visible screen is always the bridge's evaluation target.
         ShellWebViewCenter.bridge.attach(webView: webView)
     }
@@ -326,8 +353,8 @@ private struct ShellWebView: UIViewRepresentable {
         if coordinator.owned {
             uiView.navigationDelegate = nil
             uiView.uiDelegate = nil
-        } else {
-            WKWebViewPool.shared.checkIn(coordinator.shell)
+        } else if let shell = coordinator.shell {
+            WKWebViewPool.shared.checkIn(shell)
         }
     }
 
@@ -345,6 +372,7 @@ final class ShellNavCoordinator: NSObject {
     var onFailure: (() -> Void)?
     var onDidCommit: (() -> Void)?
     var onDidFinish: (() -> Void)?
+    var onDownload: (() -> Void)?
 }
 
 extension ShellNavCoordinator: WKNavigationDelegate, WKUIDelegate {
@@ -373,6 +401,7 @@ extension ShellNavCoordinator: WKNavigationDelegate, WKUIDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
         if #available(iOS 14.5, *) {
             if navigationAction.shouldPerformDownload {
+                onDownload?()
                 decisionHandler(.download, preferences)
                 return
             }
@@ -413,9 +442,22 @@ extension ShellNavCoordinator: WKNavigationDelegate, WKUIDelegate {
     func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
         if #available(iOS 14.5, *) {
             if navigationResponse.canShowMIMEType == false {
+                onDownload?()
                 decisionHandler(.download)
                 return
             }
+        }
+        // Main-frame HTTP failure (500/404/…): WKWebView treats an error
+        // document as a SUCCESSFUL navigation, so without this gate the page
+        // "finishes" and the screen shows a dead error document with no
+        // recovery path (Android onReceivedHttpError parity — audit finding
+        // #1). Subresource failures are ignored (graceful degradation).
+        if navigationResponse.isMainFrame,
+           let http = navigationResponse.response as? HTTPURLResponse,
+           http.statusCode >= 400 {
+            decisionHandler(.cancel)
+            onFailure?()
+            return
         }
         decisionHandler(.allow)
     }
@@ -423,11 +465,13 @@ extension ShellNavCoordinator: WKNavigationDelegate, WKUIDelegate {
     /// A navigation the user asked to download (`.download` policy) is handed
     /// back here — supply the delegate that decides the destination file URL.
     func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) -> WKDownloadDelegate? {
-        ZylodDownloadDelegate.shared
+        onDownload?()
+        return ZylodDownloadDelegate.shared
     }
 
     func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) -> WKDownloadDelegate? {
-        ZylodDownloadDelegate.shared
+        onDownload?()
+        return ZylodDownloadDelegate.shared
     }
 }
 
@@ -437,5 +481,20 @@ extension ShellNavCoordinator: WKNavigationDelegate, WKUIDelegate {
 private extension Error {
     var isCancelledNavigation: Bool {
         (self as NSError).code == NSURLErrorCancelled
+    }
+}
+
+/// Resumes the softNavigate continuation exactly once — the JS callback and
+/// the 5 s timeout race for it, and whichever loses must be a no-op.
+private final class ResumeOnce {
+    private var continuation: CheckedContinuation<Bool, Never>?
+
+    init(continuation: CheckedContinuation<Bool, Never>) {
+        self.continuation = continuation
+    }
+
+    func resume(returning value: Bool) {
+        continuation?.resume(returning: value)
+        continuation = nil
     }
 }

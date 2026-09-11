@@ -65,7 +65,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -109,7 +109,7 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val vm: HomeViewModel = viewModel { HomeViewModel(context.applicationContext) }
-    val state by vm.state.collectAsState()
+    val state by vm.state.collectAsStateWithLifecycle()
 
     when {
         state.loading -> HomeLoading()
@@ -135,6 +135,12 @@ private fun HomeContent(
     }
     // Category-pill long-press drawer (mobile-category-pills.tsx:143-158).
     var subcategoryFor by remember { mutableStateOf<CategoryDto?>(null) }
+    // Phase 1 audit: chunk ONCE per product list, OUTSIDE the LazyColumn
+    // builder (remember is @Composable — it cannot run inside the list
+    // content lambda) — recomputing chunked(2) inside the builder
+    // re-allocated the whole row list on every recomposition (scroll-time
+    // garbage churn).
+    val rows = remember(state.products) { state.products.chunked(2) }
 
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         LazyColumn(
@@ -154,10 +160,6 @@ private fun HomeContent(
             }
             item { QuickAccessCard(navigateToPage) }
             item { FlashDealsRow(state.deals, state.serverUrl, openProductDetail) }
-            // Phase 1 audit: chunk ONCE per product list — recomputing chunked(2)
-            // inside the LazyColumn builder re-allocated the whole row list on
-            // every recomposition (scroll-time garbage churn).
-            val rows = remember(state.products) { state.products.chunked(2) }
             items(rows.size) { rowIdx ->
                 val row = rows[rowIdx]
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

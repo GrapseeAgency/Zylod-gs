@@ -171,7 +171,7 @@ object ApiClient {
         }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T> cachedApi(baseUrl: String, tag: String, factory: (Retrofit) -> T): T =
+    private fun <T : Any> cachedApi(baseUrl: String, tag: String, factory: (Retrofit) -> T): T =
         apiCache.computeIfAbsent(baseUrl to tag) { factory(retrofit(baseUrl)) } as T
 
     fun create(baseUrl: String, context: Context): ZylodApi =
