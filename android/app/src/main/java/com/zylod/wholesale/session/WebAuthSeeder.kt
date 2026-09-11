@@ -42,6 +42,10 @@ object WebAuthSeeder {
     private const val PREFS = "zylod_web_seed"
     private const val KEY_SEEDED = "b2b_auth_seeded"
 
+    /** Scripts already installed per WebView (weak refs) — pooled WebViews
+     *  must not accumulate one document-start script per load. */
+    private val installed = java.util.WeakHashMap<WebView, String>()
+
     @Volatile
     var lastScript: String? = null
         private set
@@ -83,18 +87,31 @@ object WebAuthSeeder {
 
     /**
      * Installs the document-start script for [webView]. Idempotent per
-     * (webView, script) pair; falls back to onPageStarted injection when the
-     * webkit API is unavailable. Called right before loadUrl so the resolved
-     * base origin is known.
+     * (webView, script) pair — a pooled WebView that already carries the
+     * exact same script is skipped (addDocumentStartJavaScript accumulates;
+     * re-adding on every load would stack stale seeds). The pool recreates
+     * the WebView whenever the seed script changes (token rotation), so a
+     * different script only ever lands on a fresh instance. Falls back to
+     * onPageStarted injection when the webkit API is unavailable. Called
+     * right before loadUrl so the resolved base origin is known.
      */
     fun install(webView: WebView, baseUrl: String, context: Context) {
-        val script = buildScript(context)
+        installScript(webView, baseUrl, buildScript(context))
+    }
+
+    /**
+     * Installs an already-built seed script (the pool builds it once per
+     * checkout so the seeded-flag side effects run exactly once).
+     */
+    fun installScript(webView: WebView, baseUrl: String, script: String) {
         lastScript = script
         val origin = originRule(baseUrl) ?: return
+        val key = "$origin|$script"
+        if (installed[webView] == key) return
         primaryApiAvailable = try {
             // webkit 1.11.0 public signature: (WebView, String script, Set<String> allowedOriginRules).
-            // One script string per install() call — the seeder rebuilds it each load.
             WebViewCompat.addDocumentStartJavaScript(webView, script, setOf(origin))
+            installed[webView] = key
             true
         } catch (_: Throwable) {
             false

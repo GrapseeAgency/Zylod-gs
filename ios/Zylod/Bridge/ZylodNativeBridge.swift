@@ -74,16 +74,42 @@ final class ZylodNativeBridge: NSObject {
         }
     }
 
-    func userContentConfiguration() -> WKWebViewConfiguration {
+    // MARK: - Shell construction (pooled + owned shells)
+    //
+    // The former per-call userContentConfiguration() is folded into
+    // shellConfiguration() so every shell registers exactly ONE script
+    // handler (ZylodNativeBridge.shared) — duplicate registrations on
+    // separate controllers would fork the OfflineStore/NetworkMonitor state.
+
+    /// Builds a fully-configured shell WebView: bridge configuration,
+    /// gesture settings and the native-host user-agent marker.
+    static func makeShellWebView(baseUrl: String) -> WKWebView {
+        let webView = WKWebView(frame: .zero, configuration: shellConfiguration())
+        webView.allowsBackForwardNavigationGestures = true
+        webView.allowsLinkPreview = false
+        return webView
+    }
+
+    /// The one shell configuration: all three document-start scripts (bridge
+    /// shim, current auth seed, chrome suppression) + native UA marker.
+    static func shellConfiguration() -> WKWebViewConfiguration {
         let configuration = WKWebViewConfiguration()
+        // Append-only UA token — web code can detect the native host without
+        // breaking the default Safari UA string.
+        configuration.applicationNameForUserAgent = "ZylodiOSNative/\(versionName)"
+        configuration.userContentController = userContentController()
+        return configuration
+    }
+
+    private static func userContentController() -> WKUserContentController {
         let controller = WKUserContentController()
 
         // 1. Snapshot + shim (document start, main world). The shim defines
         //    window.ZylodNativeBridge BEFORE any page script runs.
-        let bootstrap = Self.bridgeBootstrapJavaScript(
-            versionName: Self.versionName,
-            versionCode: Self.versionCode,
-            deviceId: Self.deviceId
+        let bootstrap = bridgeBootstrapJavaScript(
+            versionName: versionName,
+            versionCode: versionCode,
+            deviceId: deviceId
         )
         controller.addUserScript(WKUserScript(source: bootstrap, injectionTime: .atDocumentStart, forMainFrameOnly: true))
 
@@ -92,9 +118,34 @@ final class ZylodNativeBridge: NSObject {
         let authScript = SessionManager.seedJavaScript() ?? SessionManager.clearAuthJavaScript
         controller.addUserScript(WKUserScript(source: authScript, injectionTime: .atDocumentStart, forMainFrameOnly: true))
 
-        controller.add(self, name: "ZylodNativeBridge")
-        configuration.userContentController = controller
-        return configuration
+        // 3. Duplicate-chrome suppression (Phase 1 audit fix #4) — hides the
+        //    web app's own bottom navigation bar inside the shell.
+        controller.addUserScript(WKUserScript(source: WebShellScripts.chromeSuppressionScript, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+
+        controller.add(Self.shared, name: "ZylodNativeBridge")
+        return controller
+    }
+
+    /// The single script-message handler shared by every shell. One instance
+    /// owns the one OfflineStore + NetworkPathMonitor — creating more would
+    /// duplicate monitors and queues.
+    static let shared = ZylodNativeBridge(host: BridgeCoordinatorHolder.shared)
+
+    /// In-place re-seed after a token change (pooled shell reuse): user
+    /// scripts are REMOVABLE on iOS (unlike Android's document-start API),
+    /// so the full set is rebuilt with the current auth script.
+    static func reinstallUserScripts(on webView: WKWebView, authScript: String) {
+        let controller = webView.configuration.userContentController
+        controller.removeAllUserScripts()
+
+        let bootstrap = bridgeBootstrapJavaScript(
+            versionName: versionName,
+            versionCode: versionCode,
+            deviceId: deviceId
+        )
+        controller.addUserScript(WKUserScript(source: bootstrap, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        controller.addUserScript(WKUserScript(source: authScript, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        controller.addUserScript(WKUserScript(source: WebShellScripts.chromeSuppressionScript, injectionTime: .atDocumentStart, forMainFrameOnly: true))
     }
 
     // MARK: - Version / device

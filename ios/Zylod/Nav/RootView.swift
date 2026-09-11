@@ -128,7 +128,10 @@ struct RootView: View {
 
     private func webViewTab(_ title: String, systemImage: String, pageId: String) -> some View {
         NavigationStack {
-            WebViewScreen(pageId: pageId, query: "")
+            // OWNED shell (not pooled): TabView keeps each tab's WebView for
+            // the tab's lifetime — tab switches are instant and a tab shell
+            // can never collide with a pooled push from another stack.
+            TabWebViewScreen(pageId: pageId, query: "")
         }
         .tabItem { Label(title, systemImage: systemImage) }
     }

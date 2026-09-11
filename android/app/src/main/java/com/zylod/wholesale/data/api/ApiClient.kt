@@ -20,6 +20,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.ConcurrentHashMap
 
 interface ZylodApi {
     @GET("api/categories")
@@ -126,53 +127,71 @@ object ApiClient {
         explicitNulls = false
     }
 
+    //
+    // Phase 1 runtime-audit fix: clients are MEMOIZED per baseUrl. Every
+    // screen used to build a fresh Retrofit + OkHttpClient per API call —
+    // a new connection pool, fresh TCP/TLS handshake and new dispatcher
+    // threads per request — which showed up as sluggish screens and jank
+    // from GC churn. One shared client keeps keep-alive connection reuse.
+    //
+    private val httpClients = ConcurrentHashMap<String, OkHttpClient>()
+    private val retrofits = ConcurrentHashMap<String, Retrofit>()
+    private val apiCache = ConcurrentHashMap<Pair<String, String>, Any>()
+
     /**
      * Shared OkHttp client: Bearer header from SessionManager (kept dynamic so
      * a refresh-rotated token is picked up without rebuilding) + the 401
-     * refresh authenticator above.
+     * refresh authenticator above. Memoized — one connection pool process-wide.
      */
-    fun okHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(20, TimeUnit.SECONDS)
-        .addInterceptor { chain ->
-            val token = SessionManager.token()
-            val request = if (token != null) {
-                chain.request().newBuilder().header("Authorization", "Bearer $token").build()
-            } else {
-                chain.request()
+    fun okHttpClient(): OkHttpClient = httpClients.computeIfAbsent("shared") {
+        OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                val token = SessionManager.token()
+                val request = if (token != null) {
+                    chain.request().newBuilder().header("Authorization", "Bearer $token").build()
+                } else {
+                    chain.request()
+                }
+                chain.proceed(request)
             }
-            chain.proceed(request)
-        }
-        .authenticator(SessionAuthenticator())
-        .build()
-
-    fun retrofit(baseUrl: String, client: OkHttpClient = okHttpClient()): Retrofit {
-        val root = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
-        return Retrofit.Builder()
-            .baseUrl(root)
-            .client(client)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .authenticator(SessionAuthenticator())
             .build()
     }
 
+    fun retrofit(baseUrl: String, client: OkHttpClient = okHttpClient()): Retrofit =
+        retrofits.computeIfAbsent(baseUrl) {
+            val root = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
+            Retrofit.Builder()
+                .baseUrl(root)
+                .client(client)
+                .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+                .build()
+        }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> cachedApi(baseUrl: String, tag: String, factory: (Retrofit) -> T): T =
+        apiCache.computeIfAbsent(baseUrl to tag) { factory(retrofit(baseUrl)) } as T
+
     fun create(baseUrl: String, context: Context): ZylodApi =
-        retrofit(baseUrl).create(ZylodApi::class.java)
+        cachedApi(baseUrl, "zylod") { it.create(ZylodApi::class.java) }
 
     fun authApi(baseUrl: String): AuthApi =
-        retrofit(baseUrl).create(AuthApi::class.java)
+        cachedApi(baseUrl, "auth") { it.create(AuthApi::class.java) }
 
     fun profileApi(baseUrl: String): ProfileApi =
-        retrofit(baseUrl).create(ProfileApi::class.java)
+        cachedApi(baseUrl, "profile") { it.create(ProfileApi::class.java) }
 
     fun productDetailApi(baseUrl: String): ProductDetailApi =
-        retrofit(baseUrl).create(ProductDetailApi::class.java)
+        cachedApi(baseUrl, "productDetail") { it.create(ProductDetailApi::class.java) }
 
     fun cartApi(baseUrl: String): CartApi =
-        retrofit(baseUrl).create(CartApi::class.java)
+        cachedApi(baseUrl, "cart") { it.create(CartApi::class.java) }
 
     fun wishlistApi(baseUrl: String): WishlistApi =
-        retrofit(baseUrl).create(WishlistApi::class.java)
+        cachedApi(baseUrl, "wishlist") { it.create(WishlistApi::class.java) }
 
     fun ordersApi(baseUrl: String): OrdersApi =
-        retrofit(baseUrl).create(OrdersApi::class.java)
+        cachedApi(baseUrl, "orders") { it.create(OrdersApi::class.java) }
 }

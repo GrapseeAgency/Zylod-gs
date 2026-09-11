@@ -48,7 +48,11 @@ export function MobileBottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full z-50 bg-background border-t border-border/50 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+    // data-zylod-mobile-nav: stable hook for the native shells (Android/iOS)
+    // to hide this bar at document-start when the page is hosted inside the
+    // app's WebView (the app renders its own bottom bar — duplicate chrome
+    // otherwise). Browsers never receive that injected CSS and are unaffected.
+    <nav data-zylod-mobile-nav="" className="fixed bottom-0 left-0 w-full z-50 bg-background border-t border-border/50 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
       <div className="flex justify-around items-center px-2 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]">
         {NAV_ITEMS.map((item) => {
           const isActive = activeId === item.id

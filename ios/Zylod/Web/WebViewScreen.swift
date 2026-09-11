@@ -2,36 +2,96 @@ import SwiftUI
 import WebKit
 import SafariServices
 
-// WebView shell for Tier 3 pageIds inside the SwiftUI navigation, mirroring
-// android ui/web/WebScreen.kt: loads the SPA deep-link URL (?page=<id>) on the
-// active server so state stays uniform with the web app.
+// WebView shell for Tier 3 pageIds inside the SwiftUI navigation.
 //
-// D4 remediation: cache-first server resolution (no re-probe storm per tab),
-// WKNavigationDelegate error handling with an explicit retry state, and a
-// bounded state machine (invalid URL can no longer spin forever).
+// Phase 1 runtime-audit remediation (owner findings #1/#2/#3/#4):
 //
-// Phase 1 (§7.1/§7.4): the WKWebViewConfiguration carries the ZylodNativeBridge
-// script handler + document-start user scripts (bridge shim, connectivity
-// snapshot, b2b-auth-storage seeding), external schemes (tel:/mailto:) and
-// off-origin http(s) are routed out of the WebView, and iOS 17+ downloads go
-// through WKDownloadDelegate.
+//  - Pushed WebRoutes check a POOLED WKWebView out of WKWebViewPool instead of
+//    building a new one per push — subsequent Tier-3 navigations drive the
+//    already-hydrated SPA client-side (history.pushState + popstate via the
+//    web store's own contract) with a full deep-link load only as fallback.
+//    Popped destinations check the shell back in (paused, warm cache).
+//
+//  - Tab destinations (Categories / Hot Deals / Profile) use OWNED shells that
+//    live for the tab's lifetime — TabView keeps them, so tab switches stay
+//    instant and a tab shell can never collide with a pooled push.
+//
+//  - Deterministic state machine per screen: loading → success / error+retry.
+//    A 20 s watchdog bounds every load; a hung server can never leave a blank
+//    or spinning screen indefinitely (previously a hang showed a blank screen
+//    with no recovery).
+//
+//  - Duplicated web bottom navigation is suppressed at document start via the
+//    injected stylesheet (WebShellScripts.chromeSuppressionScript); the
+//    native tab bar is the only navigation chrome.
+//
+//  - Shells identify themselves to the web layer as
+//    "ZylodiOSNative/<version>" in the user agent.
+//
+// Parity: ZylodNativeBridge script handler, auth seeding (re-seeded in place
+// on token rotation), external schemes (tel:/mailto:) and off-origin http(s)
+// routed out of the WebView, iOS 14.5+ downloads via WKDownloadDelegate.
 
 struct WebViewScreen: View {
     let pageId: String
     let query: String
 
-    @State private var loadedUrl: URL?
+    /// Pooled shells serve pushed destinations; owned shells serve tabs.
+    /// Defaults to pooled — pushed WebRoutes across the app need no change.
+    let ownership: ShellOwnership
+
+    enum ShellOwnership {
+        case pooled
+        case owned
+    }
+
+    init(pageId: String, query: String, ownership: ShellOwnership = .pooled) {
+        self.pageId = pageId
+        self.query = query
+        self.ownership = ownership
+    }
+
+    @State private var shell: PooledWebView?
+    @State private var baseUrl: String?
     @State private var loadError: String?
+    @State private var isLoading = true
+    @State private var reloadGen = 0
+    @State private var watchdog: Task<Void, Never>?
+
+    /// Stable identity of the current navigation target — drives the shell.
+    private var navKey: String {
+        "\(baseUrl ?? "-")|\(pageId)|\(query)|\(reloadGen)"
+    }
 
     var body: some View {
         Group {
             if let message = loadError {
                 webErrorView(message)
-            } else if let url = loadedUrl {
-                WebWebView(url: url, onFailure: {
-                    loadError = "The server isn't responding. Check your connection and try again."
-                })
-                .ignoresSafeArea(edges: .bottom)
+            } else if let shell = shell {
+                ZStack {
+                    ShellWebView(
+                        shell: shell,
+                        owned: ownership == .owned,
+                        onFailure: {
+                            isLoading = false
+                            cancelWatchdog()
+                            loadError = "The server isn't responding. Check your connection and try again."
+                        },
+                        onDidCommit: {
+                            isLoading = true
+                        },
+                        onDidFinish: {
+                            isLoading = false
+                            cancelWatchdog()
+                        }
+                    )
+                    .ignoresSafeArea(edges: .bottom)
+                    if isLoading {
+                        ProgressView()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(ZylodColor.background.opacity(0.001))
+                    }
+                }
             } else {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -41,46 +101,128 @@ struct WebViewScreen: View {
         .background(ZylodColor.background)
         .overlay(ToastOverlay())
         .task {
-            await resolveAndLoad()
+            await resolveBaseIfNeeded()
+        }
+        .task(id: navKey) {
+            await drive()
         }
     }
 
-    private func resolveAndLoad() async {
-        guard loadedUrl == nil, loadError == nil else { return }
-        // Cache-first: skip the probe storm when a winner is already known
-        // (parity with android WebScreen.kt:30-36).
+    // MARK: - State machine
+
+    private func resolveBaseIfNeeded() async {
+        guard baseUrl == nil, loadError == nil else { return }
+        // Cache-first: skip the probe storm when a winner is already known.
         let base: String
         if let cached = ServerConfig.cached() {
             base = cached
         } else {
             base = await ServerConfig.resolve()
         }
+        baseUrl = base
+    }
+
+    @MainActor
+    private func drive() async {
+        guard loadError == nil else { return }
+        guard let base = baseUrl else { return } // resolve task keeps driving via navKey
+        guard let target = Self.targetURL(base: base, pageId: pageId, query: query) else {
+            isLoading = false
+            loadError = "Invalid server address."
+            return
+        }
+
+        // Server switched underneath an existing shell → replace it.
+        if let current = shell, current.baseUrl != base {
+            if ownership == .pooled {
+                WKWebViewPool.shared.checkIn(current)
+            }
+            shell = nil
+        }
+
+        if shell == nil {
+            shell = ownership == .pooled
+                ? WKWebViewPool.shared.checkOut(baseUrl: base)
+                : WKWebViewPool.shared.makeOwnedShell(baseUrl: base)
+            WKWebViewPool.shared.reseedIfNeeded(shell!)
+        }
+        guard let active = shell else { return }
+
+        // Restore-in-place: the shell is already showing exactly this page
+        // (e.g. Back onto a previously visited web route) — zero work.
+        if loadError == nil, active.lastURL == target.absoluteString {
+            isLoading = false
+            cancelWatchdog()
+            return
+        }
+
+        isLoading = true
+        startWatchdog()
+
+        // Fast path: client-side pageId navigation on the hydrated SPA.
+        if active.webView.url != nil {
+            let ok = await Self.softNavigate(active, pageId: pageId, query: query)
+            if ok {
+                active.lastURL = target.absoluteString
+                isLoading = false
+                cancelWatchdog()
+                return
+            }
+        }
+
+        // Fallback: full deep-link load (?page= contract, D10 value encoding).
+        active.webView.load(URLRequest(url: target))
+        active.lastURL = target.absoluteString
+    }
+
+    private func retry() {
+        // Fresh resolve on retry: a dead cached host must not be retried forever.
+        ServerConfig.invalidateCache()
+        loadError = nil
+        isLoading = true
+        if let current = shell {
+            if ownership == .pooled {
+                WKWebViewPool.shared.checkIn(current)
+            } else {
+                current.webView.stopLoading()
+            }
+            shell = nil
+        }
+        baseUrl = nil
+        reloadGen += 1 // re-drives resolve + navigation via navKey
+    }
+
+    // MARK: - Watchdog (finding #3: no indefinite loading)
+
+    private func startWatchdog() {
+        watchdog?.cancel()
+        watchdog = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 20_000_000_000)
+            guard !Task.isCancelled else { return }
+            isLoading = false
+            loadError = "The server isn't responding. Check your connection and try again."
+        }
+    }
+
+    private func cancelWatchdog() {
+        watchdog?.cancel()
+        watchdog = nil
+    }
+
+    // MARK: - Helpers
+
+    static func targetURL(base: String, pageId: String, query: String) -> URL? {
         let trimmed = base.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         // ?page=<id> contract; the id and every query VALUE are percent-encoded
         // (D10 parity with android WebScreen.encodeQueryValues).
         let encodedPageId = pageId.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? pageId
         var target = trimmed + "/?page=" + encodedPageId
         if !query.isEmpty {
-            target += "&" + Self.encodeQueryValues(query)
+            target += "&" + encodeQueryValues(query)
         }
-        if let url = URL(string: target) {
-            loadedUrl = url
-        } else {
-            loadError = "Invalid server address."
-        }
+        return URL(string: target)
     }
 
-    private func retry() {
-        // Fresh resolve on retry: a dead cached host must not be retried
-        // forever (parity with android WebScreen retry → ServerConfig.resolve).
-        ServerConfig.invalidateCache()
-        loadError = nil
-        loadedUrl = nil // forces a fresh WKWebView with a fresh navigation
-        Task { await resolveAndLoad() }
-    }
-
-    /// Encodes every VALUE segment of a preassembled query string (keeps '&'
-    /// and '=') — mirrors android ui/web/WebScreen.encodeQueryValues.
     private static func encodeQueryValues(_ query: String) -> String {
         query.split(separator: "&", omittingEmptySubsequences: false).map { pair -> String in
             if let eq = pair.firstIndex(of: "=") {
@@ -91,6 +233,16 @@ struct WebViewScreen: View {
             let raw = String(pair)
             return raw.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? raw
         }.joined(separator: "&")
+    }
+
+    private static func softNavigate(_ shell: PooledWebView, pageId: String, query: String) async -> Bool {
+        await withCheckedContinuation { continuation in
+            shell.webView.evaluateJavaScript(
+                WebShellScripts.softNavigateScript(pageId: pageId, query: query)
+            ) { result, _ in
+                continuation.resume(returning: (result as? String) == "ok")
+            }
+        }
     }
 
     private func webErrorView(_ message: String) -> some View {
@@ -119,106 +271,91 @@ struct WebViewScreen: View {
     }
 }
 
-private struct WebWebView: UIViewRepresentable {
-    let url: URL
-    let onFailure: () -> Void
+/// Tab destinations — owned shell, loaded once, kept for the tab lifetime.
+struct TabWebViewScreen: View {
+    let pageId: String
+    let query: String
 
-    static let bridge = ZylodNativeBridge(host: BridgeCoordinatorHolder.shared)
+    var body: some View {
+        WebViewScreen(pageId: pageId, query: query, ownership: .owned)
+    }
+}
+
+// MARK: - Representable
+
+/// Bridge singleton shared by every shell (the script handler registers per
+/// configuration; the bridge routes evaluateJavaScript at the last-attached
+/// view — updateUIView re-attaches the visible screen).
+enum ShellWebViewCenter {
+    static let bridge = ZylodNativeBridge.shared
+}
+
+private struct ShellWebView: UIViewRepresentable {
+    let shell: PooledWebView
+    let owned: Bool
+    var onFailure: () -> Void
+    var onDidCommit: () -> Void
+    var onDidFinish: () -> Void
 
     func makeUIView(context: Context) -> WKWebView {
-        let configuration = Self.bridge.userContentConfiguration()
-        let webView = WKWebView(frame: .zero, configuration: configuration)
-        webView.allowsBackForwardNavigationGestures = true
-        webView.allowsLinkPreview = false
+        let webView = shell.webView
+        webView.removeFromSuperview()
+        context.coordinator.shell = shell
+        context.coordinator.owned = owned
         context.coordinator.onFailure = onFailure
-        context.coordinator.webView = webView
+        context.coordinator.onDidCommit = onDidCommit
+        context.coordinator.onDidFinish = onDidFinish
         webView.navigationDelegate = context.coordinator
         webView.uiDelegate = context.coordinator
-        Self.bridge.attach(webView: webView)
-        // Download plumbing: WKWebView has no downloadDelegate member — when a
-        // navigation becomes a download (`.download` policy below), the WKWebView
-        // asks its WKNavigationDelegate for a delegate via the `didBecome` hooks,
-        // implemented on BridgeCoordinator below (iOS 14.5+ API, target is 16).
-        webView.load(URLRequest(url: url))
+        ShellWebViewCenter.bridge.attach(webView: webView)
         return webView
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         context.coordinator.onFailure = onFailure
+        context.coordinator.onDidCommit = onDidCommit
+        context.coordinator.onDidFinish = onDidFinish
+        // The visible screen is always the bridge's evaluation target.
+        ShellWebViewCenter.bridge.attach(webView: webView)
     }
 
-    func makeCoordinator() -> BridgeCoordinator {
-        BridgeCoordinatorHolder.shared
-    }
-}
-
-/// The bridge host and the navigation delegate are the same object — the
-/// bridge needs the WKWebView's evaluateJavaScript, and the coordinator needs
-/// the bridge for downloads. One shared instance keeps the singleton WebKit
-/// surface (script handlers register per-configuration, so sharing the
-/// coordinator object is safe).
-final class BridgeCoordinatorHolder {
-    static let shared = BridgeCoordinator()
-}
-
-final class BridgeCoordinator: NSObject, BridgeHost {
-    weak var webView: WKWebView?
-    var onFailure: (() -> Void)?
-
-    // MARK: BridgeHost
-
-    func evaluateJavaScript(_ script: String) {
-        DispatchQueue.main.async {
-            self.webView?.evaluateJavaScript(script, completionHandler: nil)
-        }
-    }
-
-    func showNativeToast(_ message: String) {
-        // ToastCenter.show is @MainActor; this host method is called from the
-        // (nonisolated) WKScriptMessageHandler path, so hop to main explicitly.
-        DispatchQueue.main.async { ToastCenter.shared.show(message) }
-    }
-
-    func presentShareSheet(with items: [Any]) {
-        guard let top = Self.topViewController() else { return }
-        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        controller.popoverPresentationController?.sourceView = top.view
-        top.present(controller, animated: true)
-    }
-
-    func present(_ viewController: UIViewController) {
-        guard let top = Self.topViewController() else { return }
-        top.present(viewController, animated: true)
-    }
-
-    var isNetworkConnected: Bool { true }
-
-    func retryServerConnection() {
-        // Android WebScreen retry parity: fresh resolve + full reload.
-        ServerConfig.invalidateCache()
-        guard let webView else { return }
-        if let url = webView.url {
-            webView.load(URLRequest(url: url))
+    /// True representable lifetime: popped destinations check their pooled
+    /// shell in HERE (TabView switches keep the representable alive, so a
+    /// tab switch never pauses a shell that SwiftUI will keep showing).
+    static func dismantleUIView(_ uiView: WKWebView, coordinator: Coordinator) {
+        if coordinator.owned {
+            uiView.navigationDelegate = nil
+            uiView.uiDelegate = nil
         } else {
-            webView.reload()
+            WKWebViewPool.shared.checkIn(coordinator.shell)
         }
     }
 
-    // MARK: Helpers
-
-    static func topViewController() -> UIViewController? {
-        guard var top = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .flatMap({ $0.windows })
-            .first(where: { $0.isKeyWindow })?.rootViewController else { return nil }
-        while let presented = top.presentedViewController {
-            top = presented
-        }
-        return top
+    func makeCoordinator() -> ShellNavCoordinator {
+        ShellNavCoordinator()
     }
 }
 
-extension BridgeCoordinator: WKNavigationDelegate, WKUIDelegate {
+/// Per-checkout navigation/UI delegate. The shared bridge host stays the
+/// script-message target; this object owns per-screen load events and the
+/// external-navigation/download policies.
+final class ShellNavCoordinator: NSObject {
+    weak var shell: PooledWebView?
+    var owned = false
+    var onFailure: (() -> Void)?
+    var onDidCommit: (() -> Void)?
+    var onDidFinish: (() -> Void)?
+}
+
+extension ShellNavCoordinator: WKNavigationDelegate, WKUIDelegate {
+
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        onDidCommit?()
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        onDidFinish?()
+    }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         guard !error.isCancelledNavigation else { return }

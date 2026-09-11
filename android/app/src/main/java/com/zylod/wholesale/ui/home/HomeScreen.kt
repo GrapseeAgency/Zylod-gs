@@ -154,7 +154,10 @@ private fun HomeContent(
             }
             item { QuickAccessCard(navigateToPage) }
             item { FlashDealsRow(state.deals, state.serverUrl, openProductDetail) }
-            val rows = state.products.chunked(2)
+            // Phase 1 audit: chunk ONCE per product list — recomputing chunked(2)
+            // inside the LazyColumn builder re-allocated the whole row list on
+            // every recomposition (scroll-time garbage churn).
+            val rows = remember(state.products) { state.products.chunked(2) }
             items(rows.size) { rowIdx ->
                 val row = rows[rowIdx]
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

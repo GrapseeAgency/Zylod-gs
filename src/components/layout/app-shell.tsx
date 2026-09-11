@@ -67,7 +67,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     // Pages with custom header - show bottom nav only, page handles its own header
     if (isCustomHeaderPage(currentPage)) {
       return (
-        <div className="min-h-screen pb-[calc(64px+env(safe-area-inset-bottom)+16px)]">
+        // data-zylod-nav-padding: native shells flatten this to 16px via
+        // document-start CSS (the app's own bottom bar provides the inset).
+        <div data-zylod-nav-padding="" className="min-h-screen pb-[calc(64px+env(safe-area-inset-bottom)+16px)]">
           <main className="flex-1">
             {children}
           </main>
@@ -79,7 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     // Detail/sub pages - show back button + bottom nav
     if (DETAIL_PAGES.has(currentPage)) {
       return (
-        <div className="min-h-screen bg-background pb-[calc(64px+env(safe-area-inset-bottom)+16px)]">
+        <div data-zylod-nav-padding="" className="min-h-screen bg-background pb-[calc(64px+env(safe-area-inset-bottom)+16px)]">
           {/* Mobile top bar with back button */}
           <header className="sticky top-0 z-50 flex items-center gap-3 px-4 h-12 bg-background border-b border-border/50">
             <button
@@ -103,7 +105,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
     // Default mobile layout - show bottom nav
     return (
-      <div className="min-h-screen bg-background pb-[calc(64px+env(safe-area-inset-bottom)+16px)]">
+      <div data-zylod-nav-padding="" className="min-h-screen bg-background pb-[calc(64px+env(safe-area-inset-bottom)+16px)]">
         <main className="flex-1">
           {children}
         </main>

@@ -1,26 +1,7 @@
 package com.zylod.wholesale.ui.web
 
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Color as AndroidColor
 import android.net.Uri
-import android.util.Log
-import android.view.View
-import android.webkit.CookieManager
-import android.webkit.JsResult
-import android.webkit.PermissionRequest
-import android.webkit.ValueCallback
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.Toast
+import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,8 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,38 +38,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.zylod.wholesale.BuildConfig
-import com.zylod.wholesale.ZylodApp
-import com.zylod.wholesale.bridge.DownloadBridge
-import com.zylod.wholesale.bridge.WebAppBridge
 import com.zylod.wholesale.bridge.WebViewHost
 import com.zylod.wholesale.data.api.ServerConfig
-import com.zylod.wholesale.session.WebAuthSeeder
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.util.concurrent.TimeUnit
 
 /**
  * Registry for the WebView the Compose shell is currently showing. Lets the
  * host activity route bridge calls (evaluateJavascript, cache clearing) to the
- * topmost embedded WebView. Last-created wins — matching user-visible stacking.
+ * topmost embedded WebView. The pooled shell that is checked out last wins —
+ * matching user-visible stacking.
  */
 object NativeWebRegistry {
     @Volatile
-    internal var webView: WebView? = null
+    internal var webView: android.webkit.WebView? = null
 }
 
 /**
- * Reload / error channel between the host activity, the WebViewClient and the
- * Compose state. Snapshot writes happen on the main thread only (bridge calls
- * are marshalled via runOnUiThread, WebViewClient callbacks arrive on it).
+ * Reload channel between the host activity and the screens: a settings-driven
+ * server change bumps [reloadTick] (optionally with a new base). The error
+ * channel that used to live here is GONE — main-frame failures are per-screen
+ * now; the old global tick made every future screen show the error state
+ * after one transient failure (owner audit finding #2).
  */
 object NativeWebBus {
     var reloadTick by mutableIntStateOf(0)
-        private set
-    var errorTick by mutableIntStateOf(0)
         private set
     internal var pendingBase: String? = null
 
@@ -94,36 +70,51 @@ object NativeWebBus {
         pendingBase = newBase
         reloadTick++
     }
-
-    internal fun reportMainFrameError() {
-        errorTick++
-    }
 }
 
 /**
- * WebView shell for Tier 3 pageIds inside the Compose navigation. Loads the SPA
- * deep-link URL (?page=<id>) on the active server so state stays uniform with
- * the web app and the zylod:// link scheme.
+ * WebView shell for Tier 3 pageIds inside the Compose navigation.
  *
- * Capability parity with the legacy shell (MainActivity.setupWebView): same
- * settings, same JS bridges (ZylodNativeBridge / ZylodDownload), same clients
- * (external-scheme routing, ngrok interstitial bypass, JS dialogs, console,
- * file chooser, getUserMedia, downloads, __IS_OFFLINE__ injection) and —
- * unlike the legacy root — an explicit unreachable-server error state with
- * Retry (D1/D2 remediation).
+ * Phase 1 runtime-audit remediation (owner findings #1/#2/#3/#4):
+ *
+ *  - Pooled shell ([NativeWebViewPool]): navigating between Tier-3 pages no
+ *    longer destroys and re-creates the WebView (no full SPA reload per
+ *    navigation). Same-page returns (Back from a native PDP) re-attach
+ *    instantly; pageId changes drive the hydrated SPA client-side via
+ *    history.pushState + popstate, with a full `?page=` loadUrl only as the
+ *    fallback (first load / SPA not ready / soft-nav rejected).
+ *
+ *  - Deterministic state machine per screen: loading → success / error+retry.
+ *    Success is delivered by the shell's onPageFinished (previously the
+ *    spinner never cleared — screens looked stuck forever). A 20 s watchdog
+ *    bounds every load: a hung server can never spin indefinitely.
+ *
+ *  - Main-frame failures are per-screen callbacks (no global error broadcast).
+ *
+ *  - Duplicated web bottom navigation is suppressed at document-start by the
+ *    shell's injected stylesheet ([com.zylod.wholesale.session.WebShellScripts]);
+ *    the native Scaffold bottom bar is the only navigation chrome.
+ *
+ * Capability parity with the legacy shell: same settings, same JS bridges
+ * (ZylodNativeBridge / ZylodDownload), same clients (external-scheme routing,
+ * ngrok interstitial bypass, JS dialogs, console, file chooser, getUserMedia,
+ * downloads, __IS_OFFLINE__ injection) and an explicit unreachable-server
+ * error state with Retry.
  */
-@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WebScreen(pageId: String, query: String) {
     val context = LocalContext.current
     val host = context as? WebViewHost
     val scope = rememberCoroutineScope()
-    var webView by remember { mutableStateOf<WebView?>(null) }
     var baseUrl by remember { mutableStateOf(ServerConfig.cached(context)) }
     var resolving by remember { mutableStateOf(baseUrl == null) }
     var pageError by remember { mutableStateOf(false) }
     var pageLoading by remember { mutableStateOf(true) }
     var manualReload by remember { mutableIntStateOf(0) }
+    var shell by remember { mutableStateOf<NativeWebViewPool.Shell?>(null) }
+    // Generation counter: bumped on every load/soft-nav attempt so the
+    // watchdog can tell a stale timer from the active one.
+    var loadGen by remember { mutableIntStateOf(0) }
 
     // Initial backend discovery only when no cached winner exists.
     LaunchedEffect(Unit) {
@@ -133,33 +124,82 @@ fun WebScreen(pageId: String, query: String) {
         resolving = false
     }
 
-    // Main-frame load failures (WebViewClient callback) → explicit error state.
-    val errorTick = NativeWebBus.errorTick
-    LaunchedEffect(errorTick) {
-        if (errorTick > 0) {
-            pageError = true
-            pageLoading = false
-        }
-    }
-
     val reloadTick = NativeWebBus.reloadTick
-    LaunchedEffect(webView, baseUrl, pageId, query, reloadTick, manualReload) {
+    LaunchedEffect(baseUrl, pageId, query, reloadTick, manualReload) {
         val pending = NativeWebBus.pendingBase
         if (pending != null) {
             baseUrl = pending
             NativeWebBus.pendingBase = null
         }
         val base = baseUrl ?: return@LaunchedEffect
-        // Phase 1 token handoff (spec §3.0/§6.3): seed b2b-auth-storage at
-        // document-start on every (re)load — token present → seed, token
-        // removed after native logout → removal script.
-        webView?.let { created -> WebAuthSeeder.install(created, base, context) }
-        // ?page=<id> contract; the id and every query VALUE are URL-encoded (D10).
+        pageError = false
+
+        val current = shell
+        if (current != null && current.baseUrl != base) {
+            // Server switched underneath us — drop the old shell entirely.
+            NativeWebViewPool.checkIn(current)
+            if (NativeWebRegistry.webView === current.webView) NativeWebRegistry.webView = null
+            shell = null
+        }
+
+        // `?page=<id>` contract; the id and every query VALUE are URL-encoded (D10).
         val target = base.trimEnd('/') + "/?page=" + Uri.encode(pageId) +
             (if (query.isNotBlank()) "&" + encodeQueryValues(query) else "")
-        pageError = false
-        pageLoading = true
-        webView?.loadUrl(target)
+
+        val active = shell
+        if (active == null) {
+            pageLoading = true
+            loadGen++
+            val checkedOut = NativeWebViewPool.checkOut(context, host, base)
+            checkedOut.handle.onPageFinished = {
+                pageLoading = false
+                NativeWebRegistry.webView = checkedOut.webView
+            }
+            checkedOut.handle.onMainFrameError = {
+                pageError = true
+                pageLoading = false
+            }
+            shell = checkedOut
+            NativeWebRegistry.webView = checkedOut.webView
+            checkedOut.webView.onResume()
+            checkedOut.webView.loadUrl(target)
+            checkedOut.lastUrl = target
+        } else if (active.lastUrl == target && !pageError) {
+            // Restore-in-place: the shell is already showing exactly this page
+            // (e.g. Back from a native PDP) — re-attach with zero work.
+            pageLoading = false
+            loadGen++
+            active.webView.onResume()
+        } else {
+            pageLoading = true
+            loadGen++
+            active.webView.onResume()
+            // Fast path: client-side pageId navigation on the hydrated SPA.
+            NativeWebViewPool.softNavigate(active, pageId, query) { ok ->
+                if (ok) {
+                    active.lastUrl = target
+                    pageLoading = false
+                } else {
+                    // Fallback: full deep-link load (first load, stale bundle,
+                    // or the SPA rejected the synthetic navigation).
+                    com.zylod.wholesale.session.WebAuthSeeder.install(active.webView, base, context)
+                    active.webView.loadUrl(target)
+                    active.lastUrl = target
+                }
+            }
+        }
+    }
+
+    // Bounded loading (finding #3): any load that hasn't settled in 20 s
+    // becomes an explicit error with Retry — never an indefinite spinner.
+    LaunchedEffect(shell, loadGen) {
+        if (pageLoading) {
+            delay(20_000)
+            if (pageLoading) {
+                pageError = true
+                pageLoading = false
+            }
+        }
     }
 
     Box(
@@ -185,24 +225,44 @@ fun WebScreen(pageId: String, query: String) {
                 },
             )
         } else {
-            AndroidView(
-                factory = { ctx ->
-                    createShellWebView(ctx, host).also { created ->
-                        webView = created
-                        NativeWebRegistry.webView = created
-                    }
-                },
-                onRelease = { created ->
-                    if (NativeWebRegistry.webView === created) NativeWebRegistry.webView = null
-                    created.destroy()
-                },
-                update = { created ->
-                    if (NativeWebRegistry.webView !== created) NativeWebRegistry.webView = created
-                },
-                modifier = Modifier.fillMaxSize(),
-            )
+            // Keyed on the checked-out shell: the AndroidView factory re-runs
+            // when the pool hands us a (possibly different) WebView. Shell
+            // OWNERSHIP is explicit below — AndroidView only attaches views.
+            key(shell?.webView) {
+                val current = shell?.webView
+                AndroidView(
+                    factory = { _ ->
+                        (current as? android.webkit.WebView)?.also { attached ->
+                            (attached.parent as? ViewGroup)?.removeView(attached)
+                            attached.onResume()
+                        } ?: android.view.View(context)
+                    },
+                    onRelease = { view ->
+                        if (NativeWebRegistry.webView === view) NativeWebRegistry.webView = null
+                    },
+                    update = { view ->
+                        if (NativeWebRegistry.webView !== view && view is android.webkit.WebView) {
+                            NativeWebRegistry.webView = view
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
             if (resolving || pageLoading) {
                 CircularProgressIndicator()
+            }
+        }
+    }
+
+    // Shell ownership: whenever this screen stops hosting a shell (leaves
+    // composition, or the shell is swapped), return it to the pool PAUSED —
+    // never destroyed — so the next checkout re-attaches instantly.
+    DisposableEffect(shell) {
+        val owned = shell
+        onDispose {
+            owned?.let { pooled ->
+                NativeWebViewPool.checkIn(pooled)
+                if (NativeWebRegistry.webView === pooled.webView) NativeWebRegistry.webView = null
             }
         }
     }
@@ -214,221 +274,6 @@ private fun encodeQueryValues(query: String): String =
         val eq = pair.indexOf('=')
         if (eq < 0) Uri.encode(pair)
         else pair.substring(0, eq + 1) + Uri.encode(pair.substring(eq + 1))
-    }
-
-/** Full-parity WebView: settings, bridges, clients — mirrors MainActivity.setupWebView. */
-private fun createShellWebView(ctx: android.content.Context, host: WebViewHost?): WebView =
-    WebView(ctx).apply {
-        setBackgroundColor(AndroidColor.TRANSPARENT)
-        setLayerType(View.LAYER_TYPE_HARDWARE, null)
-        settings.apply {
-            javaScriptEnabled = true
-            domStorageEnabled = true
-            databaseEnabled = true
-            cacheMode = WebSettings.LOAD_DEFAULT
-            mediaPlaybackRequiresUserGesture = true
-            if (BuildConfig.DEBUG) {
-                allowFileAccess = true
-                allowContentAccess = true
-                mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-            } else {
-                allowFileAccess = false
-                allowContentAccess = false
-                mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                safeBrowsingEnabled = true
-            }
-            // The app ships its own responsive layout; the system font-scale
-            // would otherwise break it (classic WebView bug).
-            textZoom = 100
-            userAgentString = "$userAgentString ZylodAndroidNative/${BuildConfig.VERSION_NAME}"
-            setSupportZoom(false)
-            displayZoomControls = false
-            loadWithOverviewMode = true
-            useWideViewPort = true
-            setOffscreenPreRaster(true)
-        }
-
-        val shellWebView = this
-        CookieManager.getInstance().apply {
-            setAcceptCookie(true)
-            setAcceptThirdPartyCookies(shellWebView, true)
-        }
-
-        if (host != null) {
-            addJavascriptInterface(WebAppBridge(host), "ZylodNativeBridge")
-        }
-        if (ctx is android.app.Activity) {
-            addJavascriptInterface(DownloadBridge(ctx), "ZylodDownload")
-            setDownloadListener { url, userAgent, contentDisposition, mimetype, _ ->
-                host?.handleWebDownload(url, userAgent, contentDisposition, mimetype)
-            }
-        }
-
-        webViewClient = createShellWebViewClient(ctx)
-        webChromeClient = createShellWebChromeClient(ctx, host)
-    }
-
-private val ngrokClient by lazy {
-    OkHttpClient.Builder()
-        .connectTimeout(6, TimeUnit.SECONDS)
-        .readTimeout(6, TimeUnit.SECONDS)
-        .build()
-}
-
-private fun createShellWebViewClient(ctx: android.content.Context): WebViewClient =
-    object : WebViewClient() {
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            // Document-start injection fallback when the webkit API is not
-            // supported by the WebView provider (WebAuthSeeder no-ops itself
-            // when the primary API is available).
-            WebAuthSeeder.injectFallback(view)
-        }
-
-        override fun onPageFinished(view: WebView?, url: String?) {
-            // Re-assert the connectivity flag: navigation wipes values the
-            // NetworkMonitor collector injected into the previous document.
-            val offline = !ZylodApp.instance.networkMonitor.isConnected.value
-            view?.evaluateJavascript("window.__IS_OFFLINE__ = $offline", null)
-        }
-
-        // Route non-web schemes (tel:, mailto:, intent:, market:, ...) to their
-        // apps and off-origin http(s) links to the browser — same policy as the
-        // legacy shell.
-        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-            val uri = request?.url ?: return false
-            val scheme = uri.scheme?.lowercase() ?: return false
-
-            if (scheme != "http" && scheme != "https") {
-                return try {
-                    ctx.startActivity(Intent(Intent.ACTION_VIEW, uri))
-                    true
-                } catch (_: ActivityNotFoundException) {
-                    Toast.makeText(ctx, "No app can open this link", Toast.LENGTH_SHORT).show()
-                    true
-                }
-            }
-
-            val linkHost = uri.host?.lowercase() ?: return false
-            val ownHosts = mutableSetOf("zylod.com", "www.zylod.com", "localhost", "127.0.0.1", "10.0.2.2")
-            ServerConfig.cached(ctx)?.let { base ->
-                base.toHttpUrlOrNull()?.let { httpUrl -> ownHosts.add(httpUrl.host) }
-            }
-            if (ownHosts.contains(linkHost)) return false
-
-            return try {
-                ctx.startActivity(Intent(Intent.ACTION_VIEW, uri))
-                true
-            } catch (_: ActivityNotFoundException) {
-                false // No browser on the device — fall back to loading it.
-            }
-        }
-
-        // ngrok's free domains show a browser-warning interstitial to
-        // browser-like requests; bypass it with the skip header (same as legacy).
-        override fun shouldInterceptRequest(
-            view: WebView?,
-            request: WebResourceRequest?
-        ): WebResourceResponse? {
-            val reqUrl = request?.url ?: return null
-            val reqHost = reqUrl.host ?: return null
-            val isNgrok = reqHost.endsWith(".ngrok-free.dev") ||
-                reqHost.endsWith(".ngrok-free.app") ||
-                reqHost.endsWith(".ngrok.io")
-            if (!isNgrok) return null
-
-            return try {
-                val builder = Request.Builder()
-                    .url(reqUrl.toString())
-                    .header("ngrok-skip-browser-warning", "zylod-app")
-                request.requestHeaders?.forEach { (name, value) ->
-                    if (!value.isNullOrEmpty() && !name.equals("ngrok-skip-browser-warning", ignoreCase = true)) {
-                        builder.header(name, value)
-                    }
-                }
-                val response = ngrokClient.newCall(builder.build()).execute()
-                val contentType = response.header("Content-Type")
-                val mime = contentType?.substringBefore(";")?.trim()
-                val encoding = contentType?.substringAfter("charset=", "")
-                    ?.trim()?.takeIf { it.isNotEmpty() }
-                val webResponse = WebResourceResponse(mime, encoding, response.body?.byteStream())
-                val reason = response.message.ifEmpty { if (response.code in 200..299) "OK" else "Error" }
-                webResponse.setStatusCodeAndReasonPhrase(response.code, reason)
-                val headersMap = linkedMapOf<String, String>()
-                for (i in 0 until response.headers.size) {
-                    headersMap[response.headers.name(i)] = response.headers.value(i)
-                }
-                webResponse.responseHeaders = headersMap
-                webResponse
-            } catch (_: Exception) {
-                null // fall back to the default WebView loader
-            }
-        }
-
-        // Main-frame load failure = unreachable server → explicit error state
-        // with Retry (D1). Sub-resource failures never take the page down.
-        override fun onReceivedError(
-            view: WebView?,
-            request: WebResourceRequest?,
-            error: WebResourceError?
-        ) {
-            if (request?.isForMainFrame == true) {
-                val failingUrl = request.url.toString()
-                if (!failingUrl.startsWith("file:///android_asset/")) {
-                    view?.post { NativeWebBus.reportMainFrameError() }
-                }
-            }
-        }
-    }
-
-private fun createShellWebChromeClient(ctx: android.content.Context, host: WebViewHost?): WebChromeClient =
-    object : WebChromeClient() {
-        override fun onJsAlert(view: WebView?, url: String?, message: String?, result: JsResult): Boolean {
-            AlertDialog.Builder(ctx)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok) { _, _ -> result.confirm() }
-                .setOnCancelListener { result.cancel() }
-                .show()
-            return true
-        }
-
-        override fun onJsConfirm(view: WebView?, url: String?, message: String?, result: JsResult): Boolean {
-            AlertDialog.Builder(ctx)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok) { _, _ -> result.confirm() }
-                .setNegativeButton(android.R.string.cancel) { _, _ -> result.cancel() }
-                .setOnCancelListener { result.cancel() }
-                .show()
-            return true
-        }
-
-        override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
-            if (BuildConfig.DEBUG) {
-                Log.d(
-                    "ZylodWeb",
-                    "${consoleMessage?.message()} (@${consoleMessage?.lineNumber()} ${consoleMessage?.sourceId()})"
-                )
-            }
-            return true
-        }
-
-        override fun onShowFileChooser(
-            view: WebView?,
-            filePathCallback: ValueCallback<Array<Uri>>?,
-            fileChooserParams: FileChooserParams
-        ): Boolean {
-            val callback = filePathCallback ?: return false
-            return host?.onShowFileChooser(callback, fileChooserParams) ?: false
-        }
-
-        override fun onPermissionRequest(request: PermissionRequest) {
-            host?.onWebPermissionRequest(request) ?: request.deny()
-        }
-
-        override fun onPermissionRequestCanceled(request: PermissionRequest) {
-            host?.onWebPermissionRequestCanceled(request)
-        }
     }
 
 /** Offline/error state for the WebView surface — same visual language as Home. */

@@ -146,6 +146,14 @@ if (typeof window !== 'undefined') {
     }
   })
 
+  // Native-host soft-navigation contract: the embedded shells (Android
+  // WebView / iOS WKWebView) probe this flag before driving in-page
+  // navigation with history.pushState + a synthetic popstate (no document
+  // reload). It flips only after THIS module — which owns the popstate
+  // listener — has executed, so a synthetic event can never be lost. Browsers
+  // never read it; the assignment is inert outside the native shells.
+  ;(window as any).__zylodSpaReady = true
+
   // Establish the initial entry's state so going back to the very root still
   // resolves. IMPORTANT: does NOT strip the '?page=' deep-link param — AppEntry
   // reads window.location.search on mount to handle deep links, so we must not
