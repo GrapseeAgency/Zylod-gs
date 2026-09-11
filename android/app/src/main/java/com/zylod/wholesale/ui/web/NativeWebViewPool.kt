@@ -100,10 +100,6 @@ internal object NativeWebViewPool {
     private val free = ArrayDeque<Shell>()
     private val busy = HashSet<Shell>()
 
-    fun shell(for webView: WebView): Shell? = synchronized(this) {
-        busy.firstOrNull { it.webView === webView } ?: free.firstOrNull { it.webView === webView }
-    }
-
     /** Handle for the BUSY shell owning [webView] — the page-change ack fan-out. */
     fun handleFor(webView: WebView?): WebShellHandle? {
         webView ?: return null

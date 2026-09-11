@@ -278,6 +278,7 @@ final class ZylodNativeBridge: NSObject {
             let pageId = message["pageId"] as? String ?? ""
             let attached = self.webView
             Task { @MainActor in
+                guard let attached else { return }
                 WKWebViewPool.shared.shell(for: attached)?.onPageChanged?(pageId)
             }
         case "copyToClipboard":
