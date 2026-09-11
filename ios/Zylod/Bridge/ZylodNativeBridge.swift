@@ -236,7 +236,11 @@ final class ZylodNativeBridge: NSObject {
             // Native navigation contract (Android WebAppBridge.openPage parity):
             // a hosted page asks the SHELL to change screens — never a divergent
             // SPA navigation inside the WebView.
-            openPage: function(pageId, params){ post({method:'openPage', pageId: String(pageId || ''), params: String(params || '')}); }
+            openPage: function(pageId, params){ post({method:'openPage', pageId: String(pageId || ''), params: String(params || '')}); },
+            // Web→native PAGE-CHANGE ack (Android WebAppBridge.onPageChanged
+            // parity, round-4): the SPA's navigation store reports every
+            // committed page change so the shell's knowledge stays live truth.
+            onPageChanged: function(pageId){ post({method:'pageChanged', pageId: String(pageId || '')}); }
           };
           window.ZylodNativeBridge = bridge;
           window.ZylodDownload = { save: bridge.save };
@@ -267,6 +271,14 @@ final class ZylodNativeBridge: NSObject {
             let params = message["params"] as? String ?? ""
             DispatchQueue.main.async {
                 ZylodNativeBridge.onOpenPage?(pageId, params)
+            }
+        case "pageChanged":
+            // Round-4 ack: deliver to the ATTACHED shell's screen. Main-actor
+            // hop — WKWebViewPool/PooledWebView are MainActor-bound.
+            let pageId = message["pageId"] as? String ?? ""
+            let attached = self.webView
+            Task { @MainActor in
+                WKWebViewPool.shared.shell(for: attached)?.onPageChanged?(pageId)
             }
         case "copyToClipboard":
             let text = message["text"] as? String ?? ""

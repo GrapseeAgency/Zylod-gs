@@ -5,8 +5,9 @@ import android.webkit.ValueCallback
 
 /**
  * The native capabilities the WebView exposes to its host activity. BOTH shells
- * implement this — the legacy WebView [com.zylod.wholesale.MainActivity] and the
- * Compose [com.zylod.wholesale.NativeMainActivity] — so Tier 3 pages keep the
+ * implement this — the Compose shell [com.zylod.wholesale.NativeMainActivity],
+ * the app's single activity (the legacy WebView activity was retired with the
+ * round-4 single-navigation-authority fix) — so Tier 3 pages keep the
  * full native capability set (toasts, haptics, biometrics, offline queue,
  * scanner, voice, downloads, session mirroring) no matter which shell hosts
  * them (android/ARCHITECTURE.md §2: the bridge is shared infra, not legacy-only).

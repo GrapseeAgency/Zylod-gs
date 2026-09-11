@@ -24,9 +24,15 @@ final class PooledWebView {
     /// login/logout between checkouts is re-seeded IN PLACE (WKUserScripts
     /// are removable, unlike Android's document-start API).
     var seedFingerprint: String
-    /// Anchor for the restore-in-place fast path: the SPA keeps location in
-    /// sync via pushState, so webView.URL is the truth about what is showing.
+    /// Anchor for the restore-in-place fast path (informational — the DECISION
+    /// comes from the live-state probe; see WebViewScreen.drive).
     var lastURL: String?
+    /// Web→native PAGE-CHANGE ack (round-4: one navigation authority). The
+    /// SPA's navigation store reports every committed page change; the hosting
+    /// WebViewScreen matches the acked pageId against its target to lift
+    /// stale-content suppression. Advisory — bundles without the hook are
+    /// covered by the soft-navigate result and didFinish paths.
+    var onPageChanged: ((String) -> Void)?
 
     fileprivate init(webView: WKWebView, baseUrl: String, seedFingerprint: String) {
         self.webView = webView

@@ -98,6 +98,23 @@ class WebAppBridge(private val host: WebViewHost) {
         com.zylod.wholesale.ui.nav.NativeNavBus.openPage(pageId, params)
     }
 
+    /**
+     * Web→native PAGE-CHANGE ACK (round-4: one navigation authority). The
+     * SPA's navigation store notifies EVERY committed page change; the shell
+     * uses this to (a) keep its knowledge of "which page is showing" equal
+     * to the SPA's live truth and (b) stop suppressing the previous route's
+     * pixels exactly when the SPA has consumed the new page. The listener is
+     * fanned out with the registry's topmost WebView so a hosting WebScreen
+     * can filter acks belonging to its own shell.
+     */
+    @JavascriptInterface
+    fun onPageChanged(pageId: String) {
+        val webView = com.zylod.wholesale.ui.web.NativeWebRegistry.webView
+        android.os.Handler(android.os.Looper.getMainLooper()).post {
+            com.zylod.wholesale.ui.web.NativeWebPageAcks.dispatch(webView, pageId)
+        }
+    }
+
     @JavascriptInterface
     fun isNetworkConnected(): Boolean {
         return ZylodApp.instance.networkMonitor.isConnected.value

@@ -9,7 +9,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.zylod.wholesale.MainActivity
+import com.zylod.wholesale.NativeMainActivity
 import com.zylod.wholesale.ZylodApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -120,7 +120,7 @@ class OfflineSyncWorker(context: Context, params: WorkerParameters) :
         val intent = PendingIntent.getActivity(
             applicationContext,
             0,
-            Intent(applicationContext, MainActivity::class.java),
+            Intent(applicationContext, NativeMainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 

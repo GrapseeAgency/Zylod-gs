@@ -45,6 +45,15 @@ import java.util.concurrent.TimeUnit
 internal class WebShellHandle {
     var onPageFinished: (() -> Unit)? = null
     var onMainFrameError: (() -> Unit)? = null
+
+    /**
+     * Web→native PAGE-CHANGE ack (round-4): the SPA's navigation store
+     * reports every committed page change. The hosting WebScreen matches the
+     * acked pageId against its own target to lift stale-content suppression.
+     * Advisory only — older web bundles emit nothing; the
+     * soft-navigate-result and onPageFinished paths remain the guarantees.
+     */
+    var onPageChanged: ((pageId: String) -> Unit)? = null
 }
 
 /**
@@ -90,6 +99,16 @@ internal object NativeWebViewPool {
 
     private val free = ArrayDeque<Shell>()
     private val busy = HashSet<Shell>()
+
+    fun shell(for webView: WebView): Shell? = synchronized(this) {
+        busy.firstOrNull { it.webView === webView } ?: free.firstOrNull { it.webView === webView }
+    }
+
+    /** Handle for the BUSY shell owning [webView] — the page-change ack fan-out. */
+    fun handleFor(webView: WebView?): WebShellHandle? {
+        webView ?: return null
+        return synchronized(this) { busy.firstOrNull { it.webView === webView }?.handle }
+    }
 
     // ── Checkout / check-in ────────────────────────────────────────────────
 

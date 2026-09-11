@@ -175,4 +175,23 @@ enum WebShellScripts {
         })();
         """
     }
+
+    /// Reads the SPA's LIVE page state (round-4: one navigation authority).
+    /// Returns `{page: <id>, params: {...}}` (bridged as a dictionary) or
+    /// null when the SPA has not booted — the caller then drives a
+    /// soft-navigate / full load. This replaces "what the shell last asked
+    /// for" bookkeeping, which could drift from what the WebView actually
+    /// renders (the drifted-bookkeeping class let a Profile route show Home).
+    static let livePageProbeScript = """
+        (function(){
+          try{
+            if (window.__zylodSpaReady !== true) return null;
+            var page = window.__zylodCurrentPage;
+            if (typeof page !== 'string') return null;
+            var params = {};
+            try { params = JSON.parse(window.__zylodCurrentParams || '{}') || {}; } catch (e) { params = {}; }
+            return { page: page, params: params };
+          }catch(e){ return null; }
+        })();
+    """
 }

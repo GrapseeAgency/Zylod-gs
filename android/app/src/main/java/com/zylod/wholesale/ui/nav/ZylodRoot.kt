@@ -28,6 +28,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -45,6 +47,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.zylod.wholesale.session.PendingRegistration
+import com.zylod.wholesale.data.session.SessionManager
 import com.zylod.wholesale.ui.auth.AccountSuspendedScreen
 import com.zylod.wholesale.ui.auth.ForgotPasswordScreen
 import com.zylod.wholesale.ui.auth.LoginScreen
@@ -56,13 +59,18 @@ import com.zylod.wholesale.ui.auth.TwoFactorAuthScreen
 import com.zylod.wholesale.ui.cart.CartScreen
 import com.zylod.wholesale.ui.cart.CartStore
 import com.zylod.wholesale.ui.home.HomeScreen
+import com.zylod.wholesale.ui.nav.RouteOwnership.Destination
 import com.zylod.wholesale.ui.pdp.ProductDetailScreen
 import com.zylod.wholesale.ui.web.WebScreen
 import com.zylod.wholesale.ui.welcome.WelcomeScreen
 import com.zylod.wholesale.ui.welcome.isOnboardingSeen
 import com.zylod.wholesale.ui.welcome.markOnboardingSeen
+import com.zylod.wholesale.util.DeepLinkParser
+import com.zylod.wholesale.util.ParsedDeepLink
 
-// Same 5 tabs as mobile-bottom-nav.tsx (frozen in ARCHITECTURE.md §3)
+// Same 5 tabs as mobile-bottom-nav.tsx (frozen in ARCHITECTURE.md §3).
+// Tab HIGHLIGHT for a given pageId comes from RouteOwnership.activeTabFor —
+// the single alias map (was duplicated here as TAB_ALIASES).
 private data class TabItem(val id: String, val label: String, val icon: ImageVector, val pageId: String)
 
 private val TABS = listOf(
@@ -72,31 +80,6 @@ private val TABS = listOf(
     TabItem("cart", "Cart", Icons.Outlined.ShoppingCart, "cart"),
     TabItem("profile", "Profile", Icons.Outlined.Person, "profile"),
 )
-
-// Alias map ported from mobile-bottom-nav.tsx getActiveId()
-private val TAB_ALIASES: Map<String, String> = buildMap {
-    putAll(listOf(
-        "category-products", "category-browser", "textiles-fabrics", "agriculture-food",
-        "electronics", "construction", "packaging", "home-garden", "gifts-crafts",
-        "beauty-personal-care", "promotional-items", "garments", "spices",
-        "mobile-accessories", "led-lighting", "automotive", "sports-fitness",
-        "books-stationery", "toys", "jewelry", "medical-supplies", "furniture",
-    ).associateWith { "categories" })
-    putAll(listOf("chat-list", "chat-detail", "messages").associateWith { "profile" })
-    putAll(listOf("flash-sale", "flash-deals", "daily-deals").associateWith { "deals" })
-    putAll(listOf("cart", "checkout").associateWith { "cart" })
-    putAll(listOf(
-        "profile", "buyer-dashboard", "buyer-orders", "buyer-wishlist", "buyer-settings",
-        "buyer-profile", "supplier-dashboard", "supplier-profile", "admin-dashboard",
-        "notification-preferences", "privacy-settings", "language-settings",
-        "theme-settings", "linked-accounts", "business-profile",
-    ).associateWith { "profile" })
-}
-
-private fun activeTabFor(pageId: String?): String = when (pageId) {
-    null, "home" -> "home"
-    else -> TAB_ALIASES[pageId] ?: "home"
-}
 
 /**
  * Bridge for web-initiated navigation (`window.ZylodNativeBridge.openPage`):
@@ -116,6 +99,35 @@ object NativeNavBus {
     fun openPage(pageId: String, params: String) {
         val handler = openPageHandler ?: return
         android.os.Handler(android.os.Looper.getMainLooper()).post { handler(pageId, params) }
+    }
+}
+
+/**
+ * Deep-link intake (round-4: ONE navigation authority). The manifest's only
+ * activity is the native shell — intents land here and are consumed by
+ * [ZylodRoot] through the SAME [RouteOwnership] resolver as every other
+ * entry point. Links that arrive while the welcome gate is up (first run)
+ * are HELD until home is on top — nothing may navigate into a gated shell.
+ * [tick] is observable so composition re-runs the drain when a link arrives
+ * while home is already the active surface.
+ */
+object DeepLinkBus {
+    private val pending = java.util.concurrent.ConcurrentLinkedQueue<ParsedDeepLink>()
+
+    var tick by androidx.compose.runtime.mutableIntStateOf(0)
+        private set
+
+    fun open(uri: android.net.Uri?) {
+        val parsed = DeepLinkParser.parse(uri) ?: return
+        pending.add(parsed)
+        tick++
+    }
+
+    /** Consumes every held link (call only when the app surface exists). */
+    fun drain(): List<ParsedDeepLink> {
+        val out = mutableListOf<ParsedDeepLink>()
+        while (true) out.add(pending.poll() ?: break)
+        return out
     }
 }
 
@@ -142,16 +154,24 @@ fun ZylodRoot() {
     val startDestination = remember { if (isOnboardingSeen(context)) "home" else "welcome" }
 
     // Native fullscreen routes and the back-bar product page highlight no tab;
-    // the native cart route highlights the cart tab.
+    // the native cart route highlights the cart tab. Web-surface highlights
+    // come from RouteOwnership.activeTabFor (the single alias map).
     val activeTab = when (route) {
         null, "home" -> "home"
         "cart" -> "cart"
         in FULLSCREEN_ROUTES, "product-detail/{productId}" -> ""
-        else -> activeTabFor(webPageId)
+        else -> RouteOwnership.activeTabFor(webPageId)
     }
     val showBottomBar = route !in FULLSCREEN_ROUTES
 
-    // ── Navigation contract (deterministic, no per-screen special cases) ────
+    // ── Navigation contract (round-4: ONE navigation authority) ────────────
+    //
+    // EVERY entry point — the native bottom bar, web-initiated `openPage`
+    // (NativeNavBus), Home quick-access tiles, Cart links, PDP links and
+    // deep links (DeepLinkBus) — funnels through RouteOwnership.resolve()
+    // and [navigateResolved] below. There are NO per-screen special cases:
+    // "if pageId == x, open y" logic is forbidden outside the ownership
+    // table, and no pageId is owned by both Compose and the WebView.
     //
     // popUpTo targets the HOME ROUTE — not graph.findStartDestination(). The
     // graph's start destination is "welcome" on first run and is popped
@@ -167,29 +187,43 @@ fun ZylodRoot() {
     // re-attaches and soft-navigates client-side — no Compose state restore
     // needed. Native tabs (home/cart) have distinct routes and keep the
     // standard saveState/restoreState pattern.
+    val navigateResolved: (Destination) -> Unit = { destination ->
+        when (destination) {
+            is Destination.Home ->
+                navController.navigate(HOME_ROUTE) {
+                    popUpTo(HOME_ROUTE) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            is Destination.Cart ->
+                navController.navigate("cart") {
+                    popUpTo(HOME_ROUTE) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            is Destination.Product ->
+                navController.navigate("product-detail/${Uri.encode(destination.productId)}")
+            is Destination.Auth ->
+                navController.navigate(destination.route) { launchSingleTop = true }
+            is Destination.Web ->
+                // params is an optional query argument: a path segment cannot
+                // match an empty value, so an empty query rides the query string.
+                navController.navigate(
+                    "web/${Uri.encode(destination.pageId)}?params=${Uri.encode(destination.query)}",
+                ) {
+                    popUpTo(HOME_ROUTE) { saveState = false }
+                    launchSingleTop = true
+                }
+        }
+    }
+
+    // THE one navigation entry point. Guest-profile parity: the resolver
+    // decides — an unauthenticated Profile request opens native login, the
+    // same behavior as the web bar in a browser.
     val openPage: (String, String) -> Unit = { pageId, query ->
-        // params is an optional query argument: a path segment cannot match
-        // an empty value, so an empty query must ride in the query string.
-        navController.navigate("web/$pageId?params=${Uri.encode(query)}") {
-            popUpTo(HOME_ROUTE) { saveState = false }
-            launchSingleTop = true
-        }
-    }
-
-    // Native PDP — a back-bar push (web pushState semantics), no tab highlight.
-    val openProductDetail: (String) -> Unit = { productId ->
-        navController.navigate("product-detail/${Uri.encode(productId)}")
-    }
-
-    // Native callers that only know the web pageId contract (CartScreen taps)
-    // get the native PDP when the pageId is product-detail.
-    val openPageRouted: (String, String) -> Unit = { pageId, query ->
-        if (pageId == "product-detail") {
-            val productId = query.substringAfter("productId=", "").substringBefore("&")
-            if (productId.isNotBlank()) openProductDetail(productId) else openPage(pageId, query)
-        } else {
-            openPage(pageId, query)
-        }
+        navigateResolved(
+            RouteOwnership.resolve(pageId, query, isAuthenticated = SessionManager.token() != null),
+        )
     }
 
     // Post-auth landing: home replaces the whole auth stack (no back into
@@ -204,11 +238,26 @@ fun ZylodRoot() {
         }
     }
 
-    // Web-initiated navigation rides the SAME contract as the native bar
-    // (openPageRouted — product-detail resolves to the native PDP).
+    // Web-initiated navigation rides the SAME contract as the native bar.
     DisposableEffect(Unit) {
-        NativeNavBus.openPageHandler = { pageId, params -> openPageRouted(pageId, params) }
+        NativeNavBus.openPageHandler = { pageId, params -> openPage(pageId, params) }
         onDispose { NativeNavBus.openPageHandler = null }
+    }
+
+    // Deep links are consumed only when the app surface exists: the welcome
+    // gate (first run) must not be skipped by a cold-start link, and nothing
+    // may navigate behind it. The tick re-runs this when a link arrives
+    // while home is already the top surface.
+    val deepLinkTick = DeepLinkBus.tick
+    LaunchedEffect(route, deepLinkTick) {
+        if (route == HOME_ROUTE) {
+            DeepLinkBus.drain().forEach { link ->
+                val query = link.params.entries.joinToString("&") { (k, v) ->
+                    "${Uri.encode(k)}=${Uri.encode(v)}"
+                }
+                openPage(link.targetPage, query)
+            }
+        }
     }
 
     fun backToLogin() {
@@ -225,26 +274,10 @@ fun ZylodRoot() {
                     activeTab = activeTab,
                     cartBadge = cartState.items.size,
                     onTab = { tab ->
-                        // Home and Cart are NATIVE Tier 1 screens (spec §2.2):
-                        // their tabs must route to the native destinations —
-                        // routing Home through openPage loaded the web `?page=home`
-                        // document (with its own top+bottom chrome) inside the
-                        // native shell — the exact duplicate-chrome + jank
-                        // surface the owner's audit captured.
-                        val nativeDestination = when (tab.id) {
-                            "home" -> "home"
-                            "cart" -> "cart"
-                            else -> null
-                        }
-                        if (nativeDestination != null) {
-                            navController.navigate(nativeDestination) {
-                                popUpTo(HOME_ROUTE) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        } else {
-                            openPage(tab.pageId, "")
-                        }
+                        // THE contract: tab taps go through the SAME resolver as
+                        // every other entry point. RouteOwnership decides native
+                        // (home/cart) vs WebView — no per-tab special cases.
+                        openPage(tab.pageId, "")
                     },
                 )
             }
@@ -258,7 +291,9 @@ fun ZylodRoot() {
             composable(HOME_ROUTE) {
                 HomeScreen(
                     navigateToPage = { pageId, query -> openPage(pageId, query) },
-                    openProductDetail = { productId -> openProductDetail(productId) },
+                    openProductDetail = { productId ->
+                        openPage("product-detail", "productId=${Uri.encode(productId)}")
+                    },
                 )
             }
             composable(
@@ -276,7 +311,7 @@ fun ZylodRoot() {
             composable("cart") {
                 CartScreen(
                     onBack = null, // tab destination — no back bar
-                    openPage = { pageId, query -> openPageRouted(pageId, query) },
+                    openPage = { pageId, query -> openPage(pageId, query) },
                     openAuth = { navController.navigate("login") { launchSingleTop = true } },
                 )
             }

@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,6 +53,21 @@ import kotlinx.coroutines.launch
 object NativeWebRegistry {
     @Volatile
     internal var webView: android.webkit.WebView? = null
+}
+
+/**
+ * Web→native PAGE-CHANGE ACK fan-out (round-4: one navigation authority).
+ * [com.zylod.wholesale.bridge.WebAppBridge.onPageChanged] posts acks here;
+ * the ack is delivered to the BUSY shell that owns the registry's topmost
+ * WebView via its [WebShellHandle.onPageChanged] — no global listener, no
+ * dispose race between screens. Acks are advisory (an older deployed web
+ * bundle emits none) — every consumer keeps a bundle-independent fallback.
+ */
+object NativeWebPageAcks {
+    fun dispatch(webView: android.webkit.WebView?, pageId: String) {
+        webView ?: return
+        NativeWebViewPool.handleFor(webView)?.onPageChanged?.invoke(pageId)
+    }
 }
 
 /**
@@ -75,41 +91,67 @@ object NativeWebBus {
 /**
  * WebView shell for Tier 3 pageIds inside the Compose navigation.
  *
- * Phase 1 runtime-audit remediation (owner findings #1/#2/#3/#4):
+ * Round-4 audit contract (owner: "one authoritative navigation controller",
+ * "loading must also have one owner"):
  *
- *  - Pooled shell ([NativeWebViewPool]): navigating between Tier-3 pages no
- *    longer destroys and re-creates the WebView (no full SPA reload per
- *    navigation). Same-page returns (Back from a native PDP) re-attach
- *    instantly; pageId changes drive the hydrated SPA client-side via
- *    history.pushState + popstate, with a full `?page=` loadUrl only as the
- *    fallback (first load / SPA not ready / soft-nav rejected).
+ *  ── ROUTE OWNERSHIP ────────────────────────────────────────────────────
+ *  This screen is ONLY reachable for pageIds that [com.zylod.wholesale.ui.nav.
+ *  RouteOwnership] resolved to WEBVIEW. It never decides what "home" or any
+ *  native surface means, and the native bar never renders a WebView page —
+ *  one resolver, one owner per pageId.
  *
- *  - Deterministic state machine per screen: loading → success / error+retry.
- *    Success is delivered by the shell's onPageFinished (previously the
- *    spinner never cleared — screens looked stuck forever). A 20 s watchdog
- *    bounds every load: a hung server can never spin indefinitely.
+ *  ── LIVE STATE, NOT BOOKKEEPING ────────────────────────────────────────
+ *  Restore-in-place (Back out of a native PDP) is decided by probing the
+ *  SPA's LIVE page state (`window.__zylodCurrentPage` + params, mirrored by
+ *  the web navigation store) — never by remembered "last requested" values,
+ *  which could drift from what the WebView actually renders (drifted
+ *  bookkeeping is exactly how a Profile route ended up painting Home).
+ *  Unknown/diverged state degrades to driving the SPA (soft-navigate, then
+ *  full deep-link load) — the safe direction.
  *
- *  - Main-frame failures are per-screen callbacks (no global error broadcast).
+ *  ── STALE PIXELS ARE FORBIDDEN ─────────────────────────────────────────
+ *  While a route change is in flight the previous page's pixels are
+ *  suppressed (alpha 0 over the theme background); they return only when
+ *  the SPA acks the new page (`onPageChanged`), the soft-navigate result
+ *  confirms the store consumed it, or a full document load finishes —
+ *  whichever lands first (three independent lift paths, so an older
+ *  deployed web bundle without the ack hook still works).
  *
- *  - Duplicated web bottom navigation is suppressed at document-start by the
- *    shell's injected stylesheet ([com.zylod.wholesale.session.WebShellScripts]);
- *    the native Scaffold bottom bar is the only navigation chrome.
+ *  ── ONE LOADING OWNER ──────────────────────────────────────────────────
+ *  WebView surfaces are loaded by the WEB's own loading UI only. The shell
+ *  paints NO spinner while a WebView is attached (the old native spinner
+ *  over the SPA's own spinner was the "two loading systems" defect, and a
+ *  soft-navigate that was never accounted for spun forever into a false
+ *  error). The ONLY native loading surface is the pre-web bootstrap (server
+ *  discovery / first checkout — no web content exists to own loading yet).
+ *  Every load is bounded by a 20 s watchdog and terminates in
+ *  success / (web-rendered) content / error + retry — never an indefinite
+ *  spinner.
  *
- * Capability parity with the legacy shell: same settings, same JS bridges
- * (ZylodNativeBridge / ZylodDownload), same clients (external-scheme routing,
- * ngrok interstitial bypass, JS dialogs, console, file chooser, getUserMedia,
- * downloads, __IS_OFFLINE__ injection) and an explicit unreachable-server
- * error state with Retry.
+ *  Capability parity: same settings, same JS bridges (ZylodNativeBridge /
+ *  ZylodDownload), same clients (external-scheme routing, ngrok interstitial
+ *  bypass, JS dialogs, console, file chooser, getUserMedia, downloads,
+ *  __IS_OFFLINE__ injection) and an explicit unreachable-server error state
+ *  with Retry.
  */
 @Composable
 fun WebScreen(pageId: String, query: String) {
+    // Frame/jank attribution for the owner's Compose-vs-WebView comparison —
+    // "web:<pageId>" pairs with "native:home" on the same FrameMetrics
+    // pipeline (round-4: measure BEFORE optimizing).
+    com.zylod.wholesale.ui.components.SurfacePerfTag("web:$pageId")
     val context = LocalContext.current
     val host = context as? WebViewHost
     val scope = rememberCoroutineScope()
     var baseUrl by remember { mutableStateOf(ServerConfig.cached(context)) }
     var resolving by remember { mutableStateOf(baseUrl == null) }
     var pageError by remember { mutableStateOf(false) }
+    // Drives the watchdog only (bounds every load attempt). The UI NEVER
+    // paints a native spinner from this while a WebView is attached.
     var pageLoading by remember { mutableStateOf(true) }
+    // Stale-pixel suppression: true from the moment a route change starts
+    // until the SPA confirms the new page (ack / soft-nav ok / load finished).
+    var suppressContent by remember { mutableStateOf(false) }
     var manualReload by remember { mutableIntStateOf(0) }
     var lastHandledReload by remember { mutableIntStateOf(0) }
     var shell by remember { mutableStateOf<NativeWebViewPool.Shell?>(null) }
@@ -119,12 +161,7 @@ fun WebScreen(pageId: String, query: String) {
 
     // ── Back contract (one navigation system) ─────────────────────────────
     // Hardware Back pops the NATIVE stack — deliberately NOT WebView history.
-    // The previous design walked the WebView's history first (every soft-nav
-    // pushState creates an entry), which desynchronised the two systems: the
-    // SPA moved to the previous page while the native route (and therefore
-    // the bottom-bar highlight) stayed on the old page — "Back doesn't work
-    // correctly". With the flat tab model (every tab/openPage pops to home)
-    // the native back stack IS the navigation truth; the SPA's own in-page
+    // The native back stack IS the navigation truth; the SPA's own in-page
     // back affordances keep working inside the page.
 
     // Initial backend discovery only when no cached winner exists.
@@ -166,82 +203,90 @@ fun WebScreen(pageId: String, query: String) {
             loadGen++
             val checkedOut = NativeWebViewPool.checkOut(context, host, base)
             checkedOut.handle.onPageFinished = {
-                // Success is terminal AND self-healing: a watchdog that fired
-                // at 20 s must not keep the error up when the page lands at
-                // 25 s — recovery beats a stale error (bounded, deterministic).
                 pageError = false
                 pageLoading = false
+                suppressContent = false
                 NativeWebRegistry.webView = checkedOut.webView
             }
             checkedOut.handle.onMainFrameError = {
                 pageError = true
                 pageLoading = false
             }
+            checkedOut.handle.onPageChanged = { acked ->
+                if (acked == pageId) {
+                    pageLoading = false
+                    suppressContent = false
+                }
+            }
             shell = checkedOut
             NativeWebRegistry.webView = checkedOut.webView
             checkedOut.webView.onResume()
             if (forceReload) {
+                suppressContent = true
                 checkedOut.webView.loadUrl(target)
                 checkedOut.lastPageId = pageId
                 checkedOut.lastQuery = query
-            } else if (checkedOut.lastPageId == pageId && checkedOut.lastQuery == query) {
-                // Restore-in-place on a re-checked-out shell: the pool handed
-                // back the SAME warm shell already showing exactly this page
-                // (Back out of a native PDP) — re-attach only, no re-navigation,
-                // SPA scroll position preserved.
-                pageLoading = false
             } else {
-                // The shell may be a warm SPA reuse — drive it client-side;
-                // softNavigate falls back to a full load itself when the SPA
-                // has not signalled readiness (fresh shell / stale bundle).
-                NativeWebViewPool.softNavigate(checkedOut, pageId, query) { ok ->
-                    if (!ok) {
+                navigateShell(
+                    shell = checkedOut,
+                    pageId = pageId,
+                    query = query,
+                    onDriving = { suppressContent = true; pageLoading = true },
+                    onInPlace = { suppressContent = false; pageLoading = false },
+                    onSoftOk = { suppressContent = false; pageLoading = false },
+                    onFallback = {
+                        // Full deep-link load: onPageFinished lifts
+                        // suppression + loading (ack also may, first).
+                        suppressContent = true
                         checkedOut.webView.loadUrl(target)
                         checkedOut.lastPageId = pageId
                         checkedOut.lastQuery = query
-                    }
-                }
+                    },
+                )
             }
         } else {
             active.webView.onResume()
+            active.handle.onPageChanged = { acked ->
+                if (acked == pageId) {
+                    pageLoading = false
+                    suppressContent = false
+                }
+            }
             if (forceReload) {
                 // Retry (or settings-driven reload): a hard reload of the
                 // target — the previous attempt is presumed broken, so the
                 // restore/soft-nav fast paths are explicitly bypassed.
                 pageLoading = true
+                suppressContent = true
                 loadGen++
                 active.webView.loadUrl(target)
                 active.lastPageId = pageId
                 active.lastQuery = query
-            } else if (active.lastPageId == pageId && active.lastQuery == query) {
-                // Restore-in-place: the shell is ALREADY showing exactly this
-                // page (Back out of a native PDP, or returning to the tab's
-                // page) — re-attach only. A redundant softNavigate would push
-                // another history entry and reset the SPA scroll position.
-                pageLoading = false
-                pageError = false
             } else {
-                pageLoading = true
-                loadGen++
-                // Page change (or re-attach after pool reuse): client-side
-                // navigation on the hydrated SPA; full deep-link load only as
-                // the fallback (first load, stale bundle, rejected soft-nav).
-                NativeWebViewPool.softNavigate(active, pageId, query) { ok ->
-                    if (ok) {
-                        pageLoading = false
-                    } else {
-                        com.zylod.wholesale.session.WebAuthSeeder.install(active.webView, base, context)
+                navigateShell(
+                    shell = active,
+                    pageId = pageId,
+                    query = query,
+                    onDriving = { suppressContent = true; pageLoading = true },
+                    onInPlace = { suppressContent = false; pageLoading = false; pageError = false },
+                    onSoftOk = { suppressContent = false; pageLoading = false },
+                    onFallback = {
+                        // Full deep-link load (re-seed first: the shell may
+                        // have been re-seeded at checkout with a rotated
+                        // token while the loaded document predates it).
+                        suppressContent = true
+                        com.zylod.wholesale.session.WebAuthSeeder.install(active.webView, baseUrl ?: base, context)
                         active.webView.loadUrl(target)
                         active.lastPageId = pageId
                         active.lastQuery = query
-                    }
-                }
+                    },
+                )
             }
         }
     }
 
-    // Bounded loading (finding #3): any load that hasn't settled in 20 s
-    // becomes an explicit error with Retry — never an indefinite spinner.
+    // Bounded loading: any load that hasn't settled in 20 s becomes an
+    // explicit error with Retry — never an indefinite spinner.
     LaunchedEffect(shell, loadGen) {
         if (pageLoading) {
             delay(20_000)
@@ -286,6 +331,12 @@ fun WebScreen(pageId: String, query: String) {
             // Keyed on the checked-out shell: the AndroidView factory re-runs
             // when the pool hands us a (possibly different) WebView. Shell
             // OWNERSHIP is explicit below — AndroidView only attaches views.
+            //
+            // LOADING OWNERSHIP: no native spinner here, ever. While content
+            // is attached the WEB surface owns its own loading UI; the shell
+            // only suppresses the PREVIOUS page's stale pixels during a
+            // transition (alpha 0 over the theme background). The bootstrap
+            // spinner below exists only while NO shell is attached (pre-web).
             key(shell?.webView) {
                 val current = shell?.webView
                 AndroidView(
@@ -303,10 +354,16 @@ fun WebScreen(pageId: String, query: String) {
                             NativeWebRegistry.webView = view
                         }
                     },
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(if (suppressContent) 0f else 1f),
                 )
             }
-            if (resolving || pageLoading) {
+            if (shell == null && resolving) {
+                // Bootstrap ONLY: no WebView exists yet (server discovery /
+                // first checkout) — the one native loading surface, with no
+                // web content present to compete with. Every load AFTER the
+                // shell exists is owned by the web's own loading UI.
                 CircularProgressIndicator()
             }
         }
@@ -324,6 +381,111 @@ fun WebScreen(pageId: String, query: String) {
             }
         }
     }
+}
+
+/**
+ * The ONE shell-driving decision (used for both fresh checkouts and warm
+ * re-attachments). Truth comes from the SPA's live state probe:
+ *
+ *  1. Probe `window.__zylodCurrentPage` + params. A page+params MATCH means
+ *     the shell is already showing exactly the requested route — restore in
+ *     place (Back out of a native PDP: instant re-attach, scroll kept).
+ *     A probe that reports a DIFFERENT page is proof the old bookkeeping
+ *     drifted (the Home-under-Profile class of bug) — drive the SPA.
+ *  2. Soft-navigate (pushState + popstate, the store's own contract). The
+ *     result verifies the store consumed the target; "ok" lifts suppression
+ *     immediately (the SPA's own loading UI is now the loading owner).
+ *  3. Fallback via [onFallback]: full deep-link `?page=` load (first load /
+ *     stale bundle / rejected soft-nav). onPageFinished lifts suppression.
+ */
+private fun navigateShell(
+    shell: NativeWebViewPool.Shell,
+    pageId: String,
+    query: String,
+    onDriving: () -> Unit,
+    onInPlace: () -> Unit,
+    onSoftOk: () -> Unit,
+    onFallback: () -> Unit,
+) {
+    onDriving()
+    probeLivePage(shell) { live ->
+        if (live != null && live.first == pageId && paramsMatch(live.second, query)) {
+            // Live truth: the shell IS the requested page already.
+            shell.lastPageId = pageId
+            shell.lastQuery = query
+            onInPlace()
+            return@probeLivePage
+        }
+        NativeWebViewPool.softNavigate(shell, pageId, query) { ok ->
+            if (ok) {
+                shell.lastPageId = pageId
+                shell.lastQuery = query
+                onSoftOk()
+            } else {
+                onFallback()
+            }
+        }
+    }
+}
+
+/**
+ * Reads the SPA's LIVE page state. Returns (pageId, paramsMap) or null when
+ * the SPA has not booted (fresh shell / stale cached bundle) — the caller
+ * then drives a soft-navigate / full load. Runs on the WebView thread.
+ */
+private fun probeLivePage(
+    shell: NativeWebViewPool.Shell,
+    onResult: (Pair<String, Map<String, String>>?) -> Unit,
+) {
+    val script = """
+        (function(){
+          try{
+            if (window.__zylodSpaReady !== true) return null;
+            var page = window.__zylodCurrentPage;
+            if (typeof page !== 'string') return null;
+            var params = {};
+            try { params = JSON.parse(window.__zylodCurrentParams || '{}') || {}; } catch (e) { params = {}; }
+            return { page: page, params: params };
+          }catch(e){ return null; }
+        })();
+    """.trimIndent()
+    shell.webView.evaluateJavascript(script) { result ->
+        val parsed = result?.let(::parseLivePageJson)
+        android.os.Handler(android.os.Looper.getMainLooper()).post { onResult(parsed) }
+    }
+}
+
+/** Minimal, exception-free parse of the probe's `{"page":..,"params":{..}}`. */
+private fun parseLivePageJson(json: String): Pair<String, Map<String, String>>? {
+    if (json == "null" || json.isBlank()) return null
+    return try {
+        val obj = org.json.JSONObject(json)
+        val page = obj.optString("page", "")
+        if (page.isEmpty()) return null
+        val paramsObj = obj.optJSONObject("params")
+        val params = mutableMapOf<String, String>()
+        paramsObj?.let { o ->
+            for (key in o.keys()) params[key] = o.optString(key, "")
+        }
+        page to params
+    } catch (_: Exception) {
+        null
+    }
+}
+
+/** Compares the SPA's live params map against the requested query string. */
+private fun paramsMatch(live: Map<String, String>, query: String): Boolean {
+    val expected = mutableMapOf<String, String>()
+    if (query.isNotBlank()) {
+        query.split('&').forEach { pair ->
+            if (pair.isEmpty()) return@forEach
+            val eq = pair.indexOf('=')
+            val key = if (eq < 0) pair else pair.substring(0, eq)
+            val value = if (eq < 0) "" else pair.substring(eq + 1)
+            if (key.isNotEmpty()) expected[key] = Uri.decode(value)
+        }
+    }
+    return live == expected
 }
 
 /** Encodes every VALUE segment of a preassembled query string (keeps '&' and '='). */

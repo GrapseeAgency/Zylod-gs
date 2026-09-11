@@ -119,7 +119,11 @@ struct RootView: View {
     private var homeTab: some View {
         NavigationStack(path: $flow.homePath) {
             HomeView(openPage: { pageId, query in
-                flow.openPage(pageId, query)
+                // THE contract: Home tiles resolve through the SAME ownership
+                // table as the tab bar (a "cart" tile reaches NATIVE cart).
+                self.navigate(
+                    RouteOwnership.resolve(pageId, query, isAuthenticated: SessionManager.isAuthenticated),
+                )
             }, openProduct: { id in
                 flow.openProduct(id)
             })
@@ -134,7 +138,11 @@ struct RootView: View {
         NavigationStack(path: $flow.cartPath) {
             CartView(
                 openPage: { pageId, query in
-                    flow.cartPath.append(WebRoute(pageId: pageId, query: query))
+                    // THE contract: Cart links resolve through the SAME
+                    // ownership table (product-detail → NATIVE PDP).
+                    self.navigate(
+                        RouteOwnership.resolve(pageId, query, isAuthenticated: SessionManager.isAuthenticated),
+                    )
                 },
                 openProduct: { id in
                     flow.cartPath.append(ProductRoute(id: id))
@@ -163,36 +171,57 @@ struct RootView: View {
         .tabItem { Label(title, systemImage: systemImage) }
     }
 
-    // MARK: - Web-initiated navigation (bridge contract)
+    // MARK: - THE navigation entry point (round-4: one navigation authority)
 
-    /// Routes `openPage` calls from hosted web pages through the SAME tab
-    /// contract as the native tab bar — no per-screen special cases.
+    /// Web-initiated navigation (`ZylodNativeBridge.openPage`) through the
+    /// SAME contract as the native tab bar — RouteOwnership.resolve decides;
+    /// no per-screen special cases.
     private func routeWebNav(_ pageId: String, _ query: String) {
-        switch pageId {
-        case "home":
+        navigate(
+            RouteOwnership.resolve(pageId, query, isAuthenticated: SessionManager.isAuthenticated),
+        )
+    }
+
+    /// Applies a resolver destination. Every entry point funnels here: the
+    /// tab bar (via openPage below), web-initiated navigation, Home
+    /// quick-access tiles, Cart links, PDP links, deep links.
+    func navigate(_ destination: RouteOwnership.Destination) {
+        switch destination {
+        case .home:
             tab = .home
             flow.popHomeToRoot()
-        case "cart":
+        case .cart:
             tab = .cart
-        case "category-browser":
-            tab = .categories
-        case "flash-deals", "flash-sale", "daily-deals":
-            tab = .deals
-        case "profile":
-            // Guest parity with the web bar's own behavior: Profile for an
-            // unauthenticated user opens the native login flow.
-            if SessionManager.isAuthenticated {
-                tab = .profile
-            } else {
-                tab = .home
-                flow.openAuth(.login)
-            }
-        default:
-            // Any other Tier-3 pageId: open in the Home stack (shared contract).
+            flow.popCartToRoot()
+        case .product(let productId):
             tab = .home
-            flow.openPage(pageId, query)
+            flow.openProduct(productId)
+        case .auth(let route):
+            tab = .home
+            flow.openAuth(route)
+        case .web(let pageId, let query):
+            // A pageId that IS a webview tab's fixed surface selects that
+            // tab (owned shell, instant); everything else opens in the home
+            // stack (shared Tier-3 contract). The mapping is the shell's
+            // DECLARED tab structure — the same rows RouteOwnership owns.
+            switch RootView.webViewTabForPageId[pageId] {
+            case .categories?: tab = .categories
+            case .deals?: tab = .deals
+            case .profile?: tab = .profile
+            default:
+                tab = .home
+                flow.openPage(pageId, query)
+            }
         }
     }
+
+    /// Tab-structure table: which owned tab shell renders a fixed pageId.
+    /// Declared here once — the ownership table's presentation on iOS.
+    private static let webViewTabForPageId: [String: Tab] = [
+        "category-browser": .categories,
+        "flash-deals": .deals,
+        "profile": .profile,
+    ]
 
     // MARK: - Deep links (§7.2)
 
@@ -218,18 +247,14 @@ struct RootView: View {
                 .sorted { $0.key < $1.key }
                 .map { "\($0.key)=\($0.value)" }
                 .joined(separator: "&")
-            switch link.targetPage {
-            case "product-detail":
-                tab = .home
-                flow.openProduct(link.params["id"] ?? "")
-            case "cart":
-                tab = .cart
-            default:
+            switch RouteOwnership.resolve(link.targetPage, query, isAuthenticated: SessionManager.isAuthenticated) {
+            case .web:
                 // Tier 3 destination: resolve the server before opening the
                 // WebView (links can arrive before any resolution happened).
-                tab = .home
                 _ = await ServerConfig.resolve()
-                flow.openPage(link.targetPage, query)
+                navigate(.web(pageId: link.targetPage, query: query))
+            case let destination:
+                navigate(destination)
             }
         }
     }
@@ -330,8 +355,7 @@ extension RootView {
         flow.popCartToRoot()
         welcomeCover = nil
         if let profile = SessionManager.profile(), profile.userType == "supplier" {
-            tab = .home
-            flow.openPage("supplier-dashboard", "")
+            navigate(.web(pageId: "supplier-dashboard", query: ""))
         }
         Task { await cartStore.pullServerCart() }
     }

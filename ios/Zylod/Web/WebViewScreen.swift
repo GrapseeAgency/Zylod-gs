@@ -55,6 +55,11 @@ struct WebViewScreen: View {
     @State private var baseUrl: String?
     @State private var loadError: String?
     @State private var isLoading = true
+    /// Stale-pixel suppression (round-4: "never display stale content from
+    /// the previous route"): true while a route change is in flight; the
+    /// previous page's pixels are hidden over the theme background until the
+    /// SPA confirms the new page (ack / soft-navigate ok / didFinish).
+    @State private var isTransitioning = false
     @State private var reloadGen = 0
     @State private var watchdog: Task<Void, Never>?
 
@@ -74,6 +79,7 @@ struct WebViewScreen: View {
                         owned: ownership == .owned,
                         onFailure: {
                             isLoading = false
+                            isTransitioning = false
                             cancelWatchdog()
                             loadError = "The server isn't responding. Check your connection and try again."
                         },
@@ -82,6 +88,7 @@ struct WebViewScreen: View {
                         },
                         onDidFinish: {
                             isLoading = false
+                            isTransitioning = false
                             cancelWatchdog()
                         },
                         onDownload: {
@@ -89,24 +96,27 @@ struct WebViewScreen: View {
                             // didFinish — without this the watchdog turned a
                             // successful download into a fake server error.
                             isLoading = false
+                            isTransitioning = false
                             cancelWatchdog()
                         }
                     )
-                    // No .ignoresSafeArea(.bottom): the WebView must end ABOVE
-                    // the native tab bar. The previous underlap painted the
-                    // page's last rows behind the translucent tab bar AND let
-                    // the web page's own bottom chrome occupy the same region
-                    // as the tab bar (owner round-3 finding: duplicate/merged
-                    // bottom chrome; category rows unreachable under the bar).
-                    if isLoading {
-                        // OPAQUE loading surface (was opacity 0.001): a slow
-                        // first shell load must look like a loading screen,
-                        // never like dead taps on an invisible layer.
-                        ProgressView()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(ZylodColor.background)
-                    }
+                    .opacity(isTransitioning ? 0 : 1)
                 }
+                // No .ignoresSafeArea(.bottom): the WebView must end ABOVE
+                // the native tab bar. The previous underlap painted the
+                // page's last rows behind the translucent tab bar AND let
+                // the web page's own bottom chrome occupy the same region
+                // as the tab bar (owner round-3 finding: duplicate/merged
+                // bottom chrome; category rows unreachable under the bar).
+                //
+                // LOADING OWNERSHIP (round-4): NO native spinner while a
+                // shell is attached — the WEB's own loading UI is the one
+                // loading owner for this surface (a native ProgressView over
+                // the SPA's spinner was the visible "two loading systems"
+                // defect). The shell only suppresses the PREVIOUS page's
+                // stale pixels during a route change. The pre-attach
+                // ProgressView below (no shell yet) is the one native
+                // bootstrap surface — no web content exists to compete with.
             } else {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -152,6 +162,7 @@ struct WebViewScreen: View {
         guard let base = baseUrl else { return } // resolve task keeps driving via navKey
         guard let target = Self.targetURL(base: base, pageId: pageId, query: query) else {
             isLoading = false
+            isTransitioning = false
             loadError = "Invalid server address."
             return
         }
@@ -165,36 +176,65 @@ struct WebViewScreen: View {
         }
 
         if shell == nil {
-            shell = ownership == .pooled
+            let newShell = ownership == .pooled
                 ? WKWebViewPool.shared.checkOut(baseUrl: base)
                 : WKWebViewPool.shared.makeOwnedShell(baseUrl: base)
-            WKWebViewPool.shared.reseedIfNeeded(shell!)
+            WKWebViewPool.shared.reseedIfNeeded(newShell)
+            // PAGE-CHANGE ACK (round-4): the SPA reports every committed
+            // page change; a matching ack means the new page is consumed —
+            // lift stale suppression. Advisory (older bundles emit none);
+            // the soft-navigate result and didFinish remain guarantees.
+            newShell.onPageChanged = { [weak newShell] acked in
+                guard newShell != nil else { return }
+                if acked == pageId {
+                    isLoading = false
+                    isTransitioning = false
+                }
+            }
+            shell = newShell
         }
         guard let active = shell else { return }
 
-        // Restore-in-place: the shell is already showing exactly this page
-        // (e.g. Back onto a previously visited web route) — zero work.
-        if loadError == nil, active.lastURL == target.absoluteString {
-            isLoading = false
-            cancelWatchdog()
-            return
-        }
-
-        isLoading = true
-        startWatchdog()
-
-        // Fast path: client-side pageId navigation on the hydrated SPA.
+        // ── Drive by LIVE TRUTH, not bookkeeping (round-4) ──────────────
+        // "restore-in-place" is decided by probing the SPA's LIVE page
+        // state (window.__zylodCurrentPage + params). lastURL-style
+        // bookkeeping recorded what the shell was last TOLD — any
+        // SPA-initiated navigation drifted it, and a drifted re-attach is
+        // exactly how a Profile route painted Home content.
         if active.webView.url != nil {
+            isLoading = true
+            isTransitioning = true
+            startWatchdog()
+
+            let live = await Self.probeLivePage(active)
+            if let live = live, live.page == pageId,
+               live.params == RouteOwnership.queryParams(query) {
+                // Live truth: the shell IS the requested page already
+                // (Back onto a previously visited web route) — zero work.
+                active.lastURL = target.absoluteString
+                isLoading = false
+                isTransitioning = false
+                cancelWatchdog()
+                return
+            }
+
+            // Fast path: client-side pageId navigation on the hydrated SPA.
             let ok = await Self.softNavigate(active, pageId: pageId, query: query)
             if ok {
                 active.lastURL = target.absoluteString
                 isLoading = false
+                isTransitioning = false
                 cancelWatchdog()
                 return
             }
+        } else {
+            isLoading = true
+            isTransitioning = true
+            startWatchdog()
         }
 
         // Fallback: full deep-link load (?page= contract, D10 value encoding).
+        // didFinish lifts isLoading + isTransitioning (ack may lift earlier).
         active.webView.load(URLRequest(url: target))
         active.lastURL = target.absoluteString
     }
@@ -204,6 +244,7 @@ struct WebViewScreen: View {
         ServerConfig.invalidateCache()
         loadError = nil
         isLoading = true
+        isTransitioning = false
         if let current = shell {
             if ownership == .pooled {
                 WKWebViewPool.shared.checkIn(current)
@@ -273,6 +314,29 @@ struct WebViewScreen: View {
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 5_000_000_000)
                 box.resume(returning: false)
+            }
+        }
+    }
+
+    /// Reads the SPA's LIVE page state (`window.__zylodCurrentPage` +
+    /// params, mirrored by the web navigation store). nil = SPA not booted
+    /// (fresh shell / stale bundle) — the caller drives the SPA instead.
+    private static func probeLivePage(_ shell: PooledWebView) async -> (page: String, params: [String: String])? {
+        await withCheckedContinuation { continuation in
+            let box = ResumeOnce(continuation: continuation)
+            shell.webView.evaluateJavaScript(WebShellScripts.livePageProbeScript) { result, _ in
+                guard let dict = result as? [String: Any],
+                      let page = dict["page"] as? String else {
+                    box.resume(returning: nil)
+                    return
+                }
+                let params = (dict["params"] as? [String: Any])?
+                    .compactMapValues { $0 as? String } ?? [:]
+                box.resume(returning: (page: page, params: params))
+            }
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                box.resume(returning: nil)
             }
         }
     }
@@ -492,16 +556,16 @@ private extension Error {
     }
 }
 
-/// Resumes the softNavigate continuation exactly once — the JS callback and
-/// the 5 s timeout race for it, and whichever loses must be a no-op.
-private final class ResumeOnce {
-    private var continuation: CheckedContinuation<Bool, Never>?
+/// Resumes a typed continuation exactly once — the JS callback and the
+/// timeout race for it, and whichever loses must be a no-op.
+private final class ResumeOnce<T> {
+    private var continuation: CheckedContinuation<T, Never>?
 
-    init(continuation: CheckedContinuation<Bool, Never>) {
+    init(continuation: CheckedContinuation<T, Never>) {
         self.continuation = continuation
     }
 
-    func resume(returning value: Bool) {
+    func resume(returning value: T) {
         continuation?.resume(returning: value)
         continuation = nil
     }

@@ -92,6 +92,8 @@ import com.zylod.wholesale.data.api.DealDto
 import com.zylod.wholesale.data.api.ProductDto
 import com.zylod.wholesale.data.api.StatsDto
 import com.zylod.wholesale.ui.components.SkeletonBox
+import com.zylod.wholesale.ui.components.SurfacePerfTag
+import com.zylod.wholesale.ui.components.TimedAsyncImage
 import com.zylod.wholesale.ui.theme.QuickChipColors
 import com.zylod.wholesale.ui.theme.QuickChipGradients
 import kotlin.math.floor
@@ -108,6 +110,9 @@ fun HomeScreen(
     navigateToPage: (pageId: String, query: String) -> Unit,
     openProductDetail: (productId: String) -> Unit = {},
 ) {
+    // Frame/jank attribution for the owner's Compose-vs-WebView comparison
+    // (round-4: measure BEFORE optimizing — docs/PERFORMANCE-PROFILE.md).
+    SurfacePerfTag("native:home")
     val context = LocalContext.current
     val vm: HomeViewModel = viewModel { HomeViewModel(context.applicationContext) }
     val state by vm.state.collectAsStateWithLifecycle()
@@ -549,7 +554,7 @@ private fun DealImage(deal: DealDto, serverUrl: String) {
     val url = resolveImageUrl(deal.effectiveImage, serverUrl)
     Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceContainer, modifier = Modifier.fillMaxWidth().aspectRatio(1f)) {
         if (url != null) {
-            AsyncImage(model = url, contentDescription = deal.effectiveName, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            TimedAsyncImage(url = url, contentDescription = deal.effectiveName, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         } else {
             Box(contentAlignment = Alignment.Center) {
                 Icon(Icons.Outlined.Inventory2, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
@@ -596,7 +601,7 @@ private fun ProductImage(product: ProductDto, serverUrl: String) {
     val url = resolveImageUrl(raw?.takeIf { !it.startsWith("/placeholder") }, serverUrl)
     Surface(color = MaterialTheme.colorScheme.surfaceContainer, modifier = Modifier.fillMaxWidth().aspectRatio(5f / 6f)) {
         if (url != null) {
-            AsyncImage(model = url, contentDescription = product.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            TimedAsyncImage(url = url, contentDescription = product.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         } else {
             Box(contentAlignment = Alignment.Center) {
                 Icon(Icons.Outlined.Inventory2, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))

@@ -2,20 +2,63 @@
 
 **Status: FROZEN 2026-09-09.** Changes require revisiting this file first. No broad page conversion begins until Phase 1/2 foundations are signed off.
 
-## 1. One app, two rendering shells
+## 1. One app, one navigation authority (amended round-4, 2026-09-11)
 
-`android/` (`com.zylod.wholesale`) stays the single app. Two UI shells live side by side:
+`android/` (`com.zylod.wholesale`) stays the single app with **ONE activity**:
 
 ```
-NativeMainActivity (LAUNCHER, Compose)          MainActivity (WebView shell, View-based)
- └─ ZylodTheme + Compose NavHost                 └─ WebView → SPA (?page=<id>)
-     ├─ Tier 1 pages  → native Compose screens       ├─ WebAppBridge (scanner, voice, offline, token mirror)
-     └─ Tier 3 pages  → WebScreen (embedded          ├─ Room offline cache + OfflineSyncWorker
-        WebView loading https://host/?page=<id>)      └─ biometric, deep links, version check
+NativeMainActivity (LAUNCHER + ALL deep links, Compose)
+ └─ ZylodTheme + ZylodRoot (Compose NavHost + native bottom bar)
+     ├─ Tier 1 pages  → native Compose screens
+     ├─ Auth suite    → native fullscreen screens
+     └─ Tier 3 pages  → WebScreen (embedded WebView, ?page=<id>)
 ```
 
-- **Phase 0:** NativeMainActivity is launcher + hosts Compose. Deep-link intent filters (`zylod://`, `https://zylod.com`) remain on MainActivity — unchanged behavior. Phase 2 unifies deep links into the native root.
-- A page is either native or WebView — **never both**, decided by the frozen tier list (§3).
+**The legacy View-based WebView activity was deleted in round 4** (owner
+audit: "the native application shell and the WebView application are not
+operating as one coherent navigation system"). It rendered the raw SPA with
+its own bottom bar and loading spinners in a SECOND task — two apps in one
+package. All `zylod://` / `https://zylod.com` intent filters now live on
+`NativeMainActivity`; deep links enter via `DeepLinkBus` and are routed by
+the same resolver as every other entry point.
+
+### 1.1 The route-ownership table (`ui/nav/RouteOwnership.kt`)
+
+**One resolver, every entry point.** The bottom bar, web-initiated
+`openPage` (`NativeNavBus`), Home quick-access tiles, Cart links, PDP links
+and deep links ALL funnel through `RouteOwnership.resolve(pageId, query,
+isAuthenticated)`. Per-screen special cases ("if pageId == x, open y") are
+forbidden outside this table. PageId ownership:
+
+- **NATIVE:** `home`, `cart`, `product-detail`, auth suite entry points
+  (`login`, `register-buyer`, `register-supplier`, `forgot-password`).
+  Guest `profile` resolves to native login (web-bar parity).
+- **WEBVIEW:** everything else (the Tier-3 long tail; unknown pageIds
+  default to WEBVIEW, matching the SPA's own registry).
+
+The tab-alias map (which bottom tab highlights for a pageId) lives ONLY
+here (`activeTabFor`) — the web bundle's `getActiveId` and iOS
+`RouteOwnership.swift` must mirror it. `NATIVE_PRODUCT_SPECIFICATION.md`
+remains the authoritative native roadmap; the WEBVIEW rows are Phase 1
+scope, not a permanent reduction.
+
+### 1.2 Loading ownership (one owner per surface)
+
+- **Native screens** (Home/Cart/PDP/auth): the Compose state machine owns
+  loading — skeleton → success / error + retry. Never a web spinner.
+- **WebView surfaces** (`WebScreen`): the SPA's own loading UI is the ONLY
+  loading owner once a shell is attached. The shell paints NO native
+  spinner over it; the sole native loading surface is the pre-web bootstrap
+  (server discovery / first checkout). During a route change the shell
+  suppresses the previous page's pixels (alpha 0) until the SPA confirms
+  the new page — via the `onPageChanged` ack (`WebAppBridge.onPageChanged`
+  ← `window.__zylodCurrentPage` store mirror), the soft-navigate result, or
+  `onPageFinished`. A 20 s watchdog terminates every load in
+  success / error + retry — never an indefinite spinner.
+- **State truth:** `WebScreen` restore-in-place decisions probe the SPA's
+  LIVE state (`window.__zylodCurrentPage` + params), never remembered
+  "last requested" values — drifted bookkeeping is what previously painted
+  Home under the Profile route.
 
 ## 2. Contracts between shells
 

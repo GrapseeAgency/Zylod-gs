@@ -30,6 +30,12 @@
         android:hardwareAccelerated="true"
         tools:targetApi="34">
 
+        <!-- The ONE activity (round-4 audit: single navigation authority).
+             The legacy full-screen-WebView MainActivity was a SECOND app
+             living in this package — its own bottom bar, its own loading
+             spinners, its own task in recents. It is deleted; every deep
+             link now lands in the native shell and is routed through the
+             same RouteOwnership resolver as every other entry point. -->
         <activity
             android:name=".NativeMainActivity"
             android:exported="true"
@@ -39,13 +45,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
 
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:windowSoftInputMode="adjustResize">
             <!-- Custom URI Scheme: zylod://... -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { notifyNativePageChanged } from '@/lib/native-host'
 
 // PageId is a plain string for memory efficiency
 // 400+ union literals caused OOM in Turbopack dev server (4GB container)
@@ -145,6 +146,36 @@ if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
     }
   })
+
+  // ─── Native-shell live page state (round-4: ONE navigation authority) ───
+  // EVERY committed page change — navigate / setCurrentPage / popstate /
+  // goBack / deep links — is mirrored to the native shell here, at the single
+  // choke point, so the shell's view of "which page is this WebView showing"
+  // is the SPA's LIVE truth:
+  //  1. `window.__zylodCurrentPage` — synchronously readable by the shell's
+  //     restore-in-place probe (replaces drifted per-shell bookkeeping,
+  //     which is what previously re-attached a Home-painting shell under
+  //     the Profile route).
+  //  2. `onPageChanged` ack — tells the hosting shell the SPA has CONSUMED
+  //     the page change, so it can stop suppressing the previous route's
+  //     stale pixels exactly when the SPA's own loading UI / new page is
+  //     committed.
+  // Browsers have no native transport: the flag write is inert and the ack
+  // is a no-op.
+  const hostWindow = window as unknown as { __zylodCurrentPage?: string; __zylodCurrentParams?: string }
+  const syncNativePageState = (state: { currentPage: PageId; pageParams: Record<string, string> }) => {
+    hostWindow.__zylodCurrentPage = state.currentPage
+    // Params ride along so the shell's restore-in-place probe can verify a
+    // page+param match (category=A must never be re-attached as category=B).
+    try {
+      hostWindow.__zylodCurrentParams = JSON.stringify(state.pageParams ?? {})
+    } catch {
+      hostWindow.__zylodCurrentParams = '{}'
+    }
+    notifyNativePageChanged(state.currentPage)
+  }
+  syncNativePageState(useNavigationStore.getState())
+  useNavigationStore.subscribe(syncNativePageState)
 
   // Native-host soft-navigation contract: the embedded shells (Android
   // WebView / iOS WKWebView) probe this flag before driving in-page

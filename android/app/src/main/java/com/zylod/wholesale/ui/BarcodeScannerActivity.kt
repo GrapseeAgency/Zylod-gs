@@ -37,7 +37,7 @@ import java.util.concurrent.Executors
 /**
  * BarcodeScannerActivity — full-screen CameraX + MLKit scanner.
  * Returns the first decoded code via [RESULT_BARCODE] to the caller
- * (MainActivity), which forwards it to the WebView bridge callback.
+ * (NativeMainActivity), which forwards it to the WebView bridge callback.
  */
 class BarcodeScannerActivity : AppCompatActivity() {
 

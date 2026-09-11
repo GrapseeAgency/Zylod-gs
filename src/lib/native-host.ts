@@ -51,6 +51,42 @@ export function useNativeHost(): boolean {
 }
 
 /**
+ * Round-4 navigation contract — web→native PAGE-CHANGE ACK (single
+ * navigation authority). The navigation store calls this on EVERY committed
+ * page change so the native shell's knowledge of "which page is this WebView
+ * showing" is always the SPA's live truth, never bookkeeping that can drift
+ * (drifted bookkeeping is what let a Profile route display Home content).
+ *
+ * Transports, first match wins:
+ *  - Android: `ZylodNativeBridge.onPageChanged` (@JavascriptInterface)
+ *  - iOS:     `webkit.messageHandlers.ZylodNativeBridge` postMessage
+ *             (`pageChanged` method, dispatched by ZylodNativeBridge.swift)
+ * Browsers have neither transport → no-op.
+ */
+export function notifyNativePageChanged(pageId: string): void {
+  if (typeof window === 'undefined') return
+  const w = window as unknown as {
+    ZylodNativeBridge?: { onPageChanged?: (pageId: string) => void }
+    webkit?: { messageHandlers?: { ZylodNativeBridge?: { postMessage: (msg: unknown) => void } } }
+  }
+  try {
+    if (typeof w.ZylodNativeBridge?.onPageChanged === 'function') {
+      w.ZylodNativeBridge.onPageChanged(pageId)
+      return
+    }
+    if (w.webkit?.messageHandlers?.ZylodNativeBridge) {
+      w.webkit.messageHandlers.ZylodNativeBridge.postMessage({
+        method: 'pageChanged',
+        pageId,
+      })
+    }
+  } catch {
+    // A missed ack degrades the shell to its watchdog/bounded paths —
+    // it must never break web navigation itself.
+  }
+}
+
+/**
  * Web-initiated navigation through the NATIVE shell (`ZylodNativeBridge.
  * openPage`, Android WebAppBridge / iOS script-message parity): when any web
  * chrome is visible inside a shell, its taps must change the NATIVE route —

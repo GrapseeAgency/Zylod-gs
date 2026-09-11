@@ -34,6 +34,7 @@ import com.zylod.wholesale.bridge.WebViewHost
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.sync.OfflineSyncScheduler
 import com.zylod.wholesale.ui.BarcodeScannerActivity
+import com.zylod.wholesale.ui.nav.DeepLinkBus
 import com.zylod.wholesale.ui.nav.ZylodRoot
 import com.zylod.wholesale.ui.theme.ZylodTheme
 import com.zylod.wholesale.ui.web.NativeWebBus
@@ -142,6 +143,18 @@ class NativeMainActivity : FragmentActivity(), WebViewHost {
                 ZylodRoot()
             }
         }
+        // Deep links (zylod:// / https://zylod.com) land HERE — the shell's
+        // one activity (round-4: the legacy WebView activity that previously
+        // owned these filters was a second, independent app). ZylodRoot
+        // consumes them through the RouteOwnership resolver; links arriving
+        // before the app surface exists are held by the bus until it does.
+        DeepLinkBus.open(intent?.data)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        DeepLinkBus.open(intent.data)
     }
 
     override fun onPause() {
@@ -151,12 +164,17 @@ class NativeMainActivity : FragmentActivity(), WebViewHost {
         // visible one must not keep burning CPU while backgrounded.
         CookieManager.getInstance().flush()
         NativeWebRegistry.webView?.onPause()
+        com.zylod.wholesale.util.JankProfiler.clear(window)
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
         NativeWebRegistry.webView?.onResume()
+        // Re-arm the frame profiler for the surface that resumes (the active
+        // screen re-tags itself on its next composition change; retag covers
+        // the plain app-switch case).
+        com.zylod.wholesale.util.JankProfiler.retag(window)
     }
 
     override fun onTrimMemory(level: Int) {
