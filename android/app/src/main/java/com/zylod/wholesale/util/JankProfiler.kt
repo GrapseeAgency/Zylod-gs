@@ -33,8 +33,8 @@ import java.util.Locale
  *    starts a fresh bucket, so numbers never mix two surfaces.
  *  - Frames are the OS-reported TOTAL_DURATION ns of each Choreographer
  *    frame while the surface is active. A frame is JANKY at > 1× the
- *    display period (16.67 ms @60 Hz, derived from the first frame's
- *    vsync interval), FROZEN at > 3×.
+ *    display period (read from the display's real refresh rate, fallback
+ *    16.67 ms @60 Hz), FROZEN at > 3×.
  *  - DEBUG builds only ([enabled]) — release APKs carry zero overhead.
  *
  * Owner workflow (documented in docs/PERFORMANCE-PROFILE.md):
@@ -59,22 +59,17 @@ object JankProfiler {
     private var vsyncPeriodNs: Long = 16_666_667L
     private var installed = false
 
-    private val listener = Window.OnFrameMetricsAvailableListener { window, frameMetrics ->
-        val active = surface ?: return@OnFrameMetricsAvailableListener
-        val total = frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
-        synchronized(frames) {
-            if (frames.isEmpty()) {
-                // Derive the display period from the first frame's deadline
-                // delta when possible (falls back to 60 Hz).
-                val vsync = frameMetrics.getMetric(FrameMetrics.DEADLINE) -
-                    frameMetrics.getMetric(FrameMetrics.INTENDED_VSYNC)
-                if (vsync in 1_000_000L..50_000_000L) vsyncPeriodNs = vsync
+    // SAM signature: onFrameMetricsAvailable(window, frameMetrics, frameCount).
+    private val listener =
+        Window.OnFrameMetricsAvailableListener { window, frameMetrics, _ ->
+            val active = surface ?: return@OnFrameMetricsAvailableListener
+            val total = frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)
+            synchronized(frames) {
+                frames.addLast(total)
+                while (frames.size > 600) frames.removeFirst()
+                if (frames.size % 300 == 0) dumpLocked(active)
             }
-            frames.addLast(total)
-            while (frames.size > 600) frames.removeFirst()
-            if (frames.size % 300 == 0) dumpLocked(active)
         }
-    }
 
     /**
      * Marks the beginning of [name]'s frame bucket. Dumps the previous
@@ -89,6 +84,13 @@ object JankProfiler {
             surface = name
             lastSurface = name
         }
+        // Display period from the real refresh rate (fallback 60 Hz).
+        val hz = try {
+            window.decorView.display?.refreshRate ?: 60f
+        } catch (_: Exception) {
+            60f
+        }
+        if (hz > 20f) vsyncPeriodNs = (1_000_000_000f / hz).toLong()
         install(window)
         Log.i(TAG, "surface → $name")
     }
