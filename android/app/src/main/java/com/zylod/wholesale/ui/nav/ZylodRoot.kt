@@ -59,7 +59,6 @@ import com.zylod.wholesale.ui.auth.ResetPasswordScreen
 import com.zylod.wholesale.ui.auth.TwoFactorAuthScreen
 import com.zylod.wholesale.ui.cart.CartScreen
 import com.zylod.wholesale.ui.cart.CartStore
-import com.zylod.wholesale.ui.home.HomeScreen
 import com.zylod.wholesale.ui.nav.RouteOwnership.Destination
 import com.zylod.wholesale.ui.pdp.ProductDetailScreen
 import com.zylod.wholesale.ui.web.WebScreen
@@ -186,8 +185,9 @@ fun ZylodRoot() {
     // destination web/{pageId} would leak args across Categories/Deals/Profile).
     // Tab state restoration is the POOLED SHELL's job: the warm WebView
     // re-attaches and soft-navigates client-side — no Compose state restore
-    // needed. Native tabs (home/cart) have distinct routes and keep the
-    // standard saveState/restoreState pattern.
+    // needed. The home tab route is likewise a shell-rendered root (home →
+    // WEBVIEW, owner directive); Cart is the only fully native tab and keeps
+    // the standard saveState/restoreState pattern.
     val navigateResolved: (Destination) -> Unit = { destination ->
         when (destination) {
             is Destination.Home ->
@@ -290,12 +290,15 @@ fun ZylodRoot() {
             modifier = Modifier.padding(padding),
         ) {
             composable(HOME_ROUTE) {
-                HomeScreen(
-                    navigateToPage = { pageId, query -> openPage(pageId, query) },
-                    openProductDetail = { productId ->
-                        openPage("product-detail", "productId=${Uri.encode(productId)}")
-                    },
-                )
+                // OWNER DIRECTIVE — home → WEBVIEW (native Home terminated).
+                // Exactly ONE Home: the home tab root renders the WebView
+                // shell through the SAME provenance contract as every other
+                // pageId — verified endpoint → verified bundle identity →
+                // ?page=home → SPA-confirmed pageId=home → reveal. No stale
+                // Home pixels, no Home fallback. The former native
+                // HomeScreen/HomeViewModel are quarantined
+                // (android/quarantine/native-home) and NOT part of this graph.
+                WebScreen(pageId = "home", query = "")
             }
             composable(
                 route = "web/{pageId}?params={params}",

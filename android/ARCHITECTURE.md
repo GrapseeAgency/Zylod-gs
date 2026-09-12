@@ -30,11 +30,23 @@ and deep links ALL funnel through `RouteOwnership.resolve(pageId, query,
 isAuthenticated)`. Per-screen special cases ("if pageId == x, open y") are
 forbidden outside this table. PageId ownership:
 
-- **NATIVE:** `home`, `cart`, `product-detail`, auth suite entry points
+- **NATIVE:** `cart`, `product-detail`, auth suite entry points
   (`login`, `register-buyer`, `register-supplier`, `forgot-password`).
   Guest `profile` resolves to native login (web-bar parity).
-- **WEBVIEW:** everything else (the Tier-3 long tail; unknown pageIds
-  default to WEBVIEW, matching the SPA's own registry).
+- **WEBVIEW:** `home`, plus everything else (the Tier-3 long tail; unknown
+  pageIds default to WEBVIEW, matching the SPA's own registry).
+
+**OWNER DIRECTIVE — native-Home TERMINATED.** After repeated real-device
+audit failures the owner ended ALL native-Home optimisation/patching:
+`home → WEBVIEW` on BOTH platforms (Android + iOS `RouteOwnership`), exactly
+one Home — `Home tab → native shell → WebView → ?page=home`. The home tab
+root stays native shell state (bottom nav, tab state, Back, lifecycle), but
+its renderer is `WebScreen(pageId = "home")` under the full provenance
+contract (verified endpoint → verified bundle identity → `?page=home` →
+SPA-confirmed `pageId=home` → reveal). The former Compose HomeScreen and
+HomeViewModel are quarantined at `android/quarantine/native-home/` (outside
+every source set — never compiled); the iOS HomeView/HomeViewModel are at
+`ios/Quarantined/`. Reactivation requires an explicit owner directive.
 
 The tab-alias map (which bottom tab highlights for a pageId) lives ONLY
 here (`activeTabFor`) — the web bundle's `getActiveId` and iOS
@@ -44,7 +56,7 @@ scope, not a permanent reduction.
 
 ### 1.2 Loading ownership (one owner per surface)
 
-- **Native screens** (Home/Cart/PDP/auth): the Compose state machine owns
+- **Native screens** (Cart/PDP/auth): the Compose state machine owns
   loading — skeleton → success / error + retry. Never a web spinner.
 - **WebView surfaces** (`WebScreen`): the SPA's own loading UI is the ONLY
   loading owner once a shell is attached. The shell paints NO native
@@ -90,7 +102,10 @@ com.zylod.wholesale/
   NativeMainActivity.kt        # Compose entry (launcher)
   ui/theme/                    # Color.kt Type.kt Shape.kt Theme.kt  ← from design-tokens.md ONLY
   ui/nav/                      # ZylodRoot.kt: Scaffold + NavigationBar + NavHost
-  ui/home/                     # HomeScreen, HomeViewModel  (reference screen)
+  ui/home/                     # REMOVED — native Home terminated by owner
+                               # directive; sources quarantined at
+                               # android/quarantine/native-home/. The home
+                               # tab root renders WebScreen(pageId="home").
   ui/web/                      # WebScreen: Compose-hosted WebView (?page=<id>)
   data/api/                    # ApiClient (Retrofit + kotlinx.serialization), ZylodApi, DTOs
   data/session/                # SessionManager (token store + interceptor support)

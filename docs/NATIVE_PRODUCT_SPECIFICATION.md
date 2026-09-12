@@ -141,6 +141,16 @@ Tag legend: `[lines | data-class | flags]` — `F`=fetch-backed, `A`=auth-aware,
 
 ### 2.2 Reconciled classification (evidence-based adjustments in notes)
 
+> **⚠ SUPERSEDED ROW — `home` (owner directive, native-Home termination):**
+> the Phase-2 native `home` row below no longer applies. Home is **WEBVIEW**
+> on BOTH platforms (`RouteOwnership.ownerOf("home") == WEBVIEW/.webview`),
+> exactly one Home: `Home tab → native shell → WebView → ?page=home`, under
+> the full provenance contract (verified endpoint → verified bundle identity
+> → `?page=home` → SPA-confirmed `pageId=home` → reveal). The former
+> Compose/SwiftUI Home implementations are quarantined
+> (`android/quarantine/native-home/`, `ios/Quarantined/`). All other rows
+> stand unchanged.
+
 | Tier | Surface | Disposition | Notes |
 |---|---|---|---|
 | **NATIVE Tier 1** | 5 tabs chrome (home · category-browser · flash-deals · cart · profile) | Native chrome immediately; tab **content** follows tier schedule | Tab alias highlight map already exists: `ZylodRoot.kt:57-74` |

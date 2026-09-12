@@ -173,8 +173,9 @@ final class ProductDetailViewModel: ObservableObject {
             loading = false
 
             // Optional sub-fetches — contained failures (try? maps both the
-            // network error AND task cancellation to nil, HomeViewModel D3
-            // pattern). The mobile port basis fetches specifications only;
+            // network error AND task cancellation to nil, the D3 contained-
+            // failure pattern from the former HomeViewModel). The mobile
+            // port basis fetches specifications only;
             // Q&A powers the §3.9 tab. Desktop's similar/frequently-bought
             // sections are Phase 2 layout items, intentionally not fetched.
             async let specsCall = client.productSpecifications(productId)

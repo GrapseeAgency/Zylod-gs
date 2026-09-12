@@ -1,9 +1,15 @@
 import SwiftUI
 
 // 5-tab shell matching mobile-bottom-nav.tsx (Home · Categories · Hot Deals ·
-// Cart · Profile), same as android ui/nav/ZylodRoot.kt. Tier 3 pageIds render
-// in an embedded WebView; Tier 1 destinations (auth suite, product-detail,
-// cart) are native (Phase 1, §7.5/§10).
+// Cart · Profile), same as android ui/nav/ZylodRoot.kt. PageIds render in an
+// embedded WebView; native destinations (auth suite, product-detail, cart)
+// are native (Phase 1, §7.5/§10).
+//
+// OWNER DIRECTIVE — native-Home TERMINATION: home → WEBVIEW on both
+// platforms. The Home tab root is native shell state, but its renderer is
+// the OWNED WebView shell (`TabWebViewScreen(pageId: "home")`) under the
+// same provenance contract as every other pageId. The former SwiftUI
+// HomeView/HomeViewModel are quarantined (ios/Quarantined/).
 //
 // Phase 1 deltas:
 // - Welcome gate: fullscreen WelcomeView until `zylod-onboarding-seen`
@@ -44,7 +50,13 @@ struct RootView: View {
                 set: { tapped in
                     if tapped == tab {
                         switch tapped {
-                        case .home: flow.popHomeToRoot()
+                        case .home:
+                            // Home is WebView-owned: pop pushed screens AND
+                            // re-drive the owned home shell to its canonical
+                            // pageId (UIKit pop-to-root parity — the shell's
+                            // drive() verifies instantly when already home).
+                            flow.popHomeToRoot()
+                            webTabDriveTicks[.home, default: 0] += 1
                         case .cart: flow.popCartToRoot()
                         case .categories, .deals, .profile:
                             // Re-tap re-drives the owned shell to its
@@ -126,19 +138,20 @@ struct RootView: View {
 
     private var homeTab: some View {
         NavigationStack(path: $flow.homePath) {
-            HomeView(openPage: { pageId, query in
-                // THE contract: Home tiles resolve through the SAME ownership
-                // table as the tab bar (a "cart" tile reaches NATIVE cart).
-                self.navigate(
-                    RouteOwnership.resolve(pageId, query, isAuthenticated: SessionManager.isAuthenticated),
-                )
-            }, openProduct: { id in
-                flow.openProduct(id)
-            })
-            .toolbar(.hidden, for: .navigationBar)
-            .phaseDestinations(flow: flow, push: { flow.openAuth($0) }, onAuthenticated: { self.handleAuthenticated(flow: flow) }) {
-                flow.homePath.removeLast()
-            }
+            // OWNER DIRECTIVE — home → WEBVIEW (native Home terminated).
+            // Exactly ONE Home: the home tab root renders the OWNED WebView
+            // shell through the SAME provenance contract as every other
+            // pageId — verified endpoint → verified bundle identity →
+            // ?page=home → SPA-confirmed pageId=home → reveal. No stale Home
+            // pixels, no Home fallback. Web-initiated navigation from inside
+            // the home content rides the SAME resolver (routeWebNav via the
+            // openPage bridge) — no per-screen special cases. The former
+            // SwiftUI HomeView is quarantined (ios/Quarantined/).
+            TabWebViewScreen(pageId: "home", query: "", driveTick: webTabDriveTicks[.home] ?? 0)
+                .toolbar(.hidden, for: .navigationBar)
+                .phaseDestinations(flow: flow, push: { flow.openAuth($0) }, onAuthenticated: { self.handleAuthenticated(flow: flow) }) {
+                    flow.homePath.removeLast()
+                }
         }
     }
 
@@ -198,6 +211,10 @@ struct RootView: View {
         case .home:
             tab = .home
             flow.popHomeToRoot()
+            // Home is WebView-owned: re-drive the owned home shell to its
+            // canonical pageId. drive() probes the live page first, so an
+            // already-home shell re-verifies and reveals instantly.
+            webTabDriveTicks[.home, default: 0] += 1
         case .cart:
             tab = .cart
             flow.popCartToRoot()
@@ -319,9 +336,10 @@ extension AuthRoute: Identifiable {
 
 // MARK: - Destination builder (shared by Home stack, Cart stack, cover)
 
-// Destination registration must attach to ANY view in the chain (HomeView with
-// toolbar, CartView with environmentObject), so this is a View extension —
-// RootView-owned behavior (auth success hand-off) is injected via closure.
+// Destination registration must attach to ANY view in the chain (the home
+// tab's TabWebViewScreen with toolbar, CartView with environmentObject), so
+// this is a View extension — RootView-owned behavior (auth success hand-off)
+// is injected via closure.
 extension View {
 
     /// Registers the Phase 1 native destinations on a NavigationStack.

@@ -1,5 +1,15 @@
 # Native Home vs WebView Home — Performance Profile (Phase 1, Round 4)
 
+> **⚠ SUPERSEDED BY OWNER DIRECTIVE — native-Home TERMINATED.** The native
+> Home implementation was terminated after repeated real-device audit
+> failures; `home → WEBVIEW` on BOTH platforms (see `android/ARCHITECTURE.md`
+> §1.1 and both `RouteOwnership` tables). All `native:home` measurement
+> below is historical — the Compose HomeScreen no longer exists in the
+> active graph (quarantined: `android/quarantine/native-home/`,
+> `ios/Quarantined/`) and its `native:home` surface tag is retired. The
+> `web:<pageId>` harness (including `web:home`) remains active and unchanged
+> for WebView Home measurement. No C/C++/Rust was introduced at any point.
+
 **Owner mandate (round-4 audit):** *"Do NOT introduce C/C++/Rust simply because
 the current native path feels slower. First measure the actual native Home and
 determine why it underperforms the existing WebView implementation… If the

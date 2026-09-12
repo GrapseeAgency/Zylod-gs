@@ -12,12 +12,29 @@ package com.zylod.wholesale.ui.nav
  * Ownership decisions recorded here (Phase 1, NATIVE_PRODUCT_SPECIFICATION
  * §2.2 — Tier-1 surfaces native, Tier-3 long-tail WebView):
  *
- *  NATIVE   home, cart, product-detail, and the auth suite entry points
+ *  NATIVE   cart, product-detail, and the auth suite entry points
  *           (welcome/login/register-buyer/register-supplier/forgot-password).
- *  WEBVIEW  everything else — the ~400 Tier-3 pageIds of the SPA contract
- *           (src/lib/page-loader.ts is the web-side registry; the default
- *           for an unknown pageId is WEBVIEW, matching the SPA's own
+ *  WEBVIEW  home, plus everything else — the ~400 Tier-3 pageIds of the SPA
+ *           contract (src/lib/page-loader.ts is the web-side registry; the
+ *           default for an unknown pageId is WEBVIEW, matching the SPA's own
  *           isKnownPage() which never rejects).
+ *
+ * OWNER DIRECTIVE — native-Home TERMINATION (supersedes the §2.2 `home` row
+ * after repeated real-device audit failures): home → WEBVIEW on BOTH
+ * platforms. There is exactly ONE Home:
+ *
+ *     Home tab → native application shell → WebView → ?page=home
+ *
+ * The native shell still owns the home TAB ROOT (bottom navigation, tab
+ * state, Back, lifecycle, session) — [Destination.Home] is that tab root —
+ * but its renderer is [com.zylod.wholesale.ui.web.WebScreen] with
+ * pageId "home", subject to the same provenance contract as every other
+ * pageId: verified endpoint → verified bundle identity → ?page=home →
+ * SPA-confirmed pageId=home → reveal. No stale Home pixels, no Home
+ * fallback, no "soft navigation succeeded" proof. The former Compose
+ * HomeScreen/HomeViewModel are QUARANTINED (android/quarantine/native-home,
+ * outside every source set) and must not be reactivated without a new
+ * owner directive.
  *
  * This object is also the SINGLE copy of the tab-alias map (which bottom
  * tab highlights for a given pageId). It was previously duplicated in
@@ -44,7 +61,13 @@ object RouteOwnership {
      * having passed through this resolver.
      */
     sealed class Destination {
-        /** Native Compose Home (Tier 1). */
+        /**
+         * Home TAB ROOT. The root entry itself is native shell state (the
+         * bottom bar, Back and lifecycle own it), but its RENDERER is the
+         * WebView shell — `WebScreen(pageId = "home")`, i.e. `?page=home`
+         * under the full provenance contract. Home ownership is WEBVIEW
+         * (owner directive); the Compose Home is quarantined.
+         */
         data object Home : Destination()
 
         /** Native Compose Cart (Tier 1). */
@@ -70,14 +93,19 @@ object RouteOwnership {
     private const val PAGE_CART = "cart"
     private const val PAGE_PRODUCT_DETAIL = "product-detail"
 
+    // NOTE: PAGE_HOME is deliberately NOT in the native set — home → WEBVIEW
+    // (owner directive). It survives as a named constant because the tab
+    // root, tab aliases and deep links still speak the "home" pageId.
+
     // Native auth-suite pageIds (mirrors ZylodRoot's fullscreen routes).
     private val NATIVE_AUTH_PAGE_IDS = setOf(
         "welcome", "login", "register-buyer", "register-supplier", "forgot-password",
     )
 
     fun ownerOf(pageId: String): Owner = when (pageId) {
-        PAGE_HOME, PAGE_CART, PAGE_PRODUCT_DETAIL -> Owner.NATIVE
+        PAGE_CART, PAGE_PRODUCT_DETAIL -> Owner.NATIVE
         in NATIVE_AUTH_PAGE_IDS -> Owner.NATIVE
+        // PAGE_HOME lands here too: home → WEBVIEW (owner directive).
         else -> Owner.WEBVIEW
     }
 
@@ -94,6 +122,8 @@ object RouteOwnership {
         // Unknown/blank pageIds can never resolve to a native surface.
         if (pageId.isBlank()) return Destination.Web(pageId, query)
         return when (pageId) {
+            // The home tab root — rendered by the WebView shell (?page=home),
+            // NOT a native surface. See Destination.Home.
             PAGE_HOME -> Destination.Home
             PAGE_CART -> Destination.Cart
             PAGE_PRODUCT_DETAIL -> {
@@ -108,7 +138,8 @@ object RouteOwnership {
             }
             in NATIVE_AUTH_PAGE_IDS -> when (pageId) {
                 // The welcome GATE is shell state, not a navigation target —
-                // an openPage("welcome") request means "go to the app start".
+                // an openPage("welcome") request means "go to the app start",
+                // which is the WebView-rendered home tab root.
                 "welcome" -> Destination.Home
                 else -> Destination.Auth(pageId)
             }

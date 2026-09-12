@@ -16,11 +16,11 @@ import java.util.Locale
  * built on Choreographer, the same vsync source the render pipeline and
  * `dumpsys gfxinfo` ultimately sample.
  *
- * The harness tags the two competing implementations of the SAME surface:
- * `native:home` (Compose HomeScreen) and `web:<pageId>` (a WebView-hosted
- * SPA page). Both are captured by the SAME window-level pipeline, so
- * "Compose Home vs WebView Home" is an apples-to-apples comparison of frame
- * production on the same device, same session.
+ * The harness tags the visible surface, `web:<pageId>` for a WebView-hosted
+ * SPA page — including home, which is WebView-owned since the native-Home
+ * termination directive (the retired `native:home` tag died with the
+ * quarantined Compose Home; historical native:home dumps predate it). All
+ * captures come from the SAME window-level pipeline.
  *
  * Method:
  *  - Every surface transition calls [tag]; the tag switch DUMPS the previous

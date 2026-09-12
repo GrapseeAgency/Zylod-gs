@@ -15,11 +15,27 @@ import Foundation
 /// Ownership decisions recorded here (Phase 1, NATIVE_PRODUCT_SPECIFICATION
 /// §2.2 — Tier-1 surfaces native, Tier-3 long-tail WebView):
 ///
-///  NATIVE   home, cart, product-detail, and the auth suite entry points
+///  NATIVE   cart, product-detail, and the auth suite entry points
 ///           (login / register-buyer / register-supplier / forgot-password).
-///  WEBVIEW  everything else — the ~400 Tier-3 pageIds of the SPA contract
-///           (src/lib/page-loader.ts is the web-side registry; the default
-///           for an unknown pageId is WEBVIEW).
+///  WEBVIEW  home, plus everything else — the ~400 Tier-3 pageIds of the SPA
+///           contract (src/lib/page-loader.ts is the web-side registry; the
+///           default for an unknown pageId is WEBVIEW).
+///
+/// OWNER DIRECTIVE — native-Home TERMINATION (supersedes the §2.2 `home` row
+/// after repeated real-device audit failures): home → WEBVIEW on BOTH
+/// platforms. There is exactly ONE Home:
+///
+///     Home tab → native application shell → WebView → ?page=home
+///
+/// The native shell still owns the home TAB ROOT (tab bar, tab state, Back,
+/// lifecycle, session) — `.home` is that tab root — but its renderer is the
+/// OWNED WebView shell (`TabWebViewScreen(pageId: "home")`), subject to the
+/// same provenance contract as every other pageId: verified endpoint →
+/// verified bundle identity → ?page=home → SPA-confirmed pageId=home →
+/// reveal. No stale Home pixels, no Home fallback, no "soft navigation
+/// succeeded" proof. The former SwiftUI HomeView/HomeViewModel are
+/// QUARANTINED (ios/Quarantined/, outside the XcodeGen target sources)
+/// and must not be reactivated without a new owner directive.
 ///
 /// Guest policy (parity with the web bar's own behavior): an
 /// UNAUTHENTICATED Profile request opens the native login screen.
@@ -37,7 +53,11 @@ enum RouteOwnership {
     /// A resolved navigation target. `.web` is the ONLY variant that may
     /// reach a WebView surface.
     enum Destination: Equatable {
-        /// Native SwiftUI Home (Tier 1).
+        /// Home TAB ROOT. The root itself is shell state (the tab bar, Back
+        /// and lifecycle own it), but its RENDERER is the OWNED WebView
+        /// shell — `TabWebViewScreen(pageId: "home")`, i.e. `?page=home`
+        /// under the full provenance contract. Home ownership is WEBVIEW
+        /// (owner directive); the SwiftUI Home is quarantined.
         case home
         /// Native SwiftUI Cart (Tier 1).
         case cart
@@ -60,7 +80,11 @@ enum RouteOwnership {
 
     static func ownerOf(_ pageId: String) -> Owner {
         switch pageId {
-        case pageHome, pageCart, pageProductDetail:
+        case pageHome:
+            // home → WEBVIEW (owner directive): exactly one Home, rendered
+            // by the WebView shell inside the native tab root.
+            return .webview
+        case pageCart, pageProductDetail:
             return .native
         case let id where nativeAuthPageIds.contains(id) || id == "welcome":
             return .native
@@ -79,6 +103,8 @@ enum RouteOwnership {
         guard !pageId.isEmpty else { return .web(pageId: pageId, query: query) }
         switch pageId {
         case pageHome:
+            // The home tab root — rendered by the OWNED WebView shell
+            // (?page=home), NOT a native surface. See Destination.home.
             return .home
         case pageCart:
             return .cart
@@ -104,7 +130,8 @@ enum RouteOwnership {
         case "welcome":
             // Guest-flow parity with android RouteOwnership.kt: the welcome
             // GATE is shell state, not a navigation target — an openPage/
-            // deep-link "welcome" request means "go to the app start".
+            // deep-link "welcome" request means "go to the app start",
+            // which is the WebView-rendered home tab root.
             return .home
         case "profile":
             return isAuthenticated ? .web(pageId: pageId, query: query) : .auth(.login)

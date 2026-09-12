@@ -101,14 +101,18 @@ object NativeWebBus {
 }
 
 /**
- * WebView shell for Tier 3 pageIds inside the Compose navigation.
+ * WebView shell for pageIds inside the Compose navigation — every WEBVIEW
+ * owned pageId, AND the home tab root (home → WEBVIEW, owner directive:
+ * `ZylodRoot` composes `WebScreen(pageId = "home")` at `HOME_ROUTE`).
  *
  * Round-6 remediation contract (owner-mandated order F1/F2/F3/F4/F5):
  *
  *  ── ROUTE OWNERSHIP ────────────────────────────────────────────────────
  *  This screen is ONLY reachable for pageIds that [com.zylod.wholesale.ui.nav.
- *  RouteOwnership] resolved to WEBVIEW. It never decides what "home" or any
- *  native surface means, and the native bar never renders a WebView page —
+ *  RouteOwnership] resolved to WEBVIEW — including home, whose tab-root
+ *  destination [RouteOwnership.Destination.Home] renders THIS screen with
+ *  pageId "home". It never decides what any surface means, and the native
+ *  bar never renders a page this resolver did not route —
  *  one resolver, one owner per pageId.
  *
  *  ── GENERATION-BOUND CALLBACKS (F2/F3) ─────────────────────────────────
@@ -126,7 +130,7 @@ object NativeWebBus {
  *  pushState "ok" and onPageFinished are NEVER treated as proof of a
  *  successful navigation. A destination is revealed ONLY after the
  *  authoritative verification (WebShellScripts.documentVerifyScript) reports,
-  *  for the CURRENT generation, that (a) the SPA consumed the page
+ *  for the CURRENT generation, that (a) the SPA consumed the page
  *  (__zylodSpaReady) and (b) the SPA's LIVE committed state
  *  (__zylodCurrentPage + params) equals the requested pageId+params. The
  *  verification is triggered by a matching page-change ack AND re-run on a
@@ -162,9 +166,10 @@ object NativeWebBus {
  */
 @Composable
 fun WebScreen(pageId: String, query: String) {
-    // Frame/jank attribution for the owner's Compose-vs-WebView comparison —
-    // "web:<pageId>" pairs with "native:home" on the same pipeline (measure
-    // BEFORE optimizing — F6 keeps this harness untouched).
+    // Frame/jank attribution for every WebView-hosted page — INCLUDING home,
+    // which is WebView-owned since the native-Home termination directive
+    // (web:home; the retired native:home tag died with the quarantined
+    // Compose Home). Harness untouched — measure BEFORE optimizing.
     com.zylod.wholesale.ui.components.SurfacePerfTag("web:$pageId")
     val context = LocalContext.current
     val host = context as? WebViewHost

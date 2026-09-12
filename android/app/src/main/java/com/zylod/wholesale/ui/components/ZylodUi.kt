@@ -261,7 +261,7 @@ fun ErrorBanner(message: String, modifier: Modifier = Modifier) {
     }
 }
 
-/** Shimmer skeleton box (1:1 mirror skeleton language — alpha pulse like HomeScreen). */
+/** Shimmer skeleton box (1:1 mirror of the SPA's skeleton language — alpha pulse). */
 @Composable
 fun SkeletonBox(modifier: Modifier = Modifier, corner: Int = 10) {
     val transition = rememberInfiniteTransition(label = "skeleton")
