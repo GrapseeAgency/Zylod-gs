@@ -90,6 +90,7 @@ final class ZylodNativeBridge: NSObject {
     /// gesture settings and the native-host user-agent marker.
     static func makeShellWebView(baseUrl: String) -> WKWebView {
         let webView = WKWebView(frame: .zero, configuration: shellConfiguration())
+        webView.customUserAgent = "ZylodIOSNative/2.4.5 (iOS)" // ngrok-free interstitial bypass - transport only, gate untouched
         // One navigation system: the NavigationStack owns back (system back
         // button + edge-swipe pop). Enabling WKWebView's back-forward gesture
         // here made the edge swipe drive the SPA's pushState history INSIDE a

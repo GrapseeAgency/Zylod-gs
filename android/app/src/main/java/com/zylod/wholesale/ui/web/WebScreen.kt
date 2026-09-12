@@ -272,7 +272,7 @@ fun WebScreen(pageId: String, query: String) {
             NativeWebRegistry.webView = checkedOut.webView
             checkedOut.webView.onResume()
             if (forceReload) {
-                checkedOut.webView.loadUrl(target)
+                checkedOut.webView.loadUrl(target, mapOf("ngrok-skip-browser-warning" to "1"))
                 checkedOut.lastPageId = pageId
                 checkedOut.lastQuery = query
             } else {
@@ -289,7 +289,7 @@ fun WebScreen(pageId: String, query: String) {
                 // restore/soft-nav fast paths are explicitly bypassed.
                 pageLoading = true
                 suppressContent = true
-                active.webView.loadUrl(target)
+                active.webView.loadUrl(target, mapOf("ngrok-skip-browser-warning" to "1"))
                 active.lastPageId = pageId
                 active.lastQuery = query
             } else {
@@ -613,7 +613,7 @@ private fun navigateShell(
                 com.zylod.wholesale.session.WebAuthSeeder.install(shell.webView, shell.baseUrl, context)
                 val target = shell.baseUrl.trimEnd('/') + "/?page=" + Uri.encode(pageId) +
                     (if (query.isNotBlank()) "&" + encodeQueryValues(query) else "")
-                shell.webView.loadUrl(target)
+                shell.webView.loadUrl(target, mapOf("ngrok-skip-browser-warning" to "1"))
                 shell.lastPageId = pageId
                 shell.lastQuery = query
             }

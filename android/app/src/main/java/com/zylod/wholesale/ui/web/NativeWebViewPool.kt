@@ -295,7 +295,9 @@ internal object NativeWebViewPool {
                 // The app ships its own responsive layout; the system font-scale
                 // would otherwise break it (classic WebView bug).
                 textZoom = 100
-                userAgentString = "$userAgentString ZylodAndroidNative/${BuildConfig.VERSION_NAME}"
+                // Non-browser UA: ngrok-free serves its browser-warning interstitial to browser UAs;
+                // the provenance gate would (correctly) refuse that page. Full replace - transport only, gate untouched.
+                userAgentString = "ZylodAndroidNative/${BuildConfig.VERSION_NAME} (Linux; Android ${android.os.Build.VERSION.RELEASE}; ${android.os.Build.MODEL})"
                 setSupportZoom(false)
                 displayZoomControls = false
                 loadWithOverviewMode = true
