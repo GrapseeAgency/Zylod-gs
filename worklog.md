@@ -810,3 +810,22 @@ Stage Summary:
 - Commit afc7a8f pushed to main (22 files, +1547/−297). CI: android-build 34671198363 + ios-build 34671198366 running on afc7a8f.
 - The provenance chain is now answerable on-device: exact build (versionName/CFBundleShortVersionString 2.4.5-<sha>) → exact web source (probe matrix + selected endpoint logged) → exact web bundle commit (__ZylodBundleIdentity verified per document load; mismatch/unknown never silently rendered).
 - STOP after CI + artifact verification per the owner's delivery sequence. Phase 1 remains open until the installed builds pass the real-device acceptance matrix. Phase 2 LOCKED.
+
+---
+Task ID: R6-CI (Phase 1 round-6 CI + provenance + release close-out)
+Agent: Z.ai Code (main)
+Task: Green dual-platform CI on the round-6 remediation tree, verify exact bundle provenance + artifact SHA, publish installable release, STOP.
+
+Work Log:
+- CI round 1 (afc7a8f): ios-build SUCCESS first attempt; android-build FAILED — WebProvenance.parseIdentity used an Elvis-in-initializer smart cast on an explicitly nullable local (obj.optString on JSONObject?); restructured to a non-null when expression (compiler-unambiguous).
+- CI round 2 (d470ed2): android-build 34671490112 SUCCESS + ios-build 34671490089 SUCCESS. Lineage: afc7a8f → d470ed2 (HEAD, pushed).
+- Artifacts verified (full-SHA-stamped, active): Zylod-debug-apk-d470ed2c04c3ef1b5d9b9d9a05aad9545fd807b0 (33,332,938 B zip), lint-report-d470ed2c…, Zylod-ios-simulator-d470ed2c… (5,069,271 B).
+- APK identity verified by AXML string-pool parse of the artifact itself: com.zylod.wholesale.debug, versionName 2.4.5-d470ed2, versionCode 245, 45,228,434 bytes; build-info.txt pins commit d470ed2c04c3ef1b5d9b9d9a05aad9545fd807b0, run 34671490112.
+- Release published: v2.4.5-d470ed2 (release id 387447813), tag at d470ed2, Latest, NOT prerelease; asset Zylod-v2.4.5-d470ed2-debug.apk uploaded (state=uploaded, 45,228,434 B); /releases/latest → v2.4.5-d470ed2; direct link HTTP 200.
+- Web bundle deployment requirement recorded: the served web bundle must be built from d470ed2 (or later) so __ZylodBundleIdentity matches the native build's expectedCommit — release gate blocks mismatch/unknown; debug shows the exact divergence in the diagnostics banner (by design, per F1).
+
+Stage Summary:
+- ROUND-6 REMEDIATION F1–F7 COMPLETE, dual-platform CI green, artifact + release provenance verified end-to-end.
+- Owner audit path: install the APK → adb logcat -s ZylodProvenance (startup identity, probe matrix, selected endpoint, served bundle verdict) → run the real-device acceptance matrix; performance per docs/PERFORMANCE-PROFILE.md §2 (adb logcat -s ZylodPerf; Native Home vs WebView Home; Native/Category path) — device measurements were NOT executable in this sandbox (no adb/device); no numbers fabricated, no architecture changed.
+- STOPPED per the owner's delivery sequence: "Do not continue into additional optimisation or feature work after the CI builds." Phase 1 remains open until the installed builds pass the real-device/runtime acceptance matrix. Phase 2 LOCKED.
+- Release: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-d470ed2
