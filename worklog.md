@@ -850,3 +850,24 @@ Stage Summary:
 - home → WEBVIEW is now the binding row in BOTH canonical ownership tables; exactly ONE Home per platform, rendered by the WebView shell under the full R6 provenance contract (verified endpoint → verified bundle identity → ?page=home → SPA-confirmed pageId=home → reveal; watchdog bounded; generation-bound callbacks; no stale pixels; web bottom nav suppressed document-start; native bar is the ONLY navigation chrome).
 - Native Home implementations quarantined (android/quarantine/native-home/, ios/Quarantined/) — uncompilable in every build type, history preserved via git mv.
 - Phase 1 remains FAILED until the owner accepts installed builds on real devices. Phase 2 remains LOCKED. STOP after CI + artifact verification per the delivery sequence.
+
+---
+Task ID: R7-CI (Home→WebView CI + artifact provenance + release close-out)
+Agent: Z.ai Code (main)
+Task: Dual-platform CI green on 12ef297, verify SHA-traceable artifacts + artifact-level proof that native Home is not packaged, publish installable release, STOP.
+
+Work Log:
+- Push: d470ed2..12ef297 (main). Commit 12ef297a6f56afabb4ce7d5cea6877827fb9c2f4 = "arch(phase1): owner directive — native Home TERMINATED; home → WEBVIEW on both platforms" (19 files, +265/−68; includes the pending e9df8c7 worklog commit).
+- CI BOTH GREEN FIRST ATTEMPT: android-build 34673620871 SUCCESS + ios-build 34673621090 SUCCESS on 12ef297.
+- Artifacts verified (full-SHA-stamped, active): Zylod-debug-apk-12ef297a6f56afabb4ce7d5cea6877827fb9c2f4 (33,235,156 B zip), lint-report-12ef297a6f56afabb4ce7d5cea6877827fb9c2f4, Zylod-ios-simulator-12ef297a6f56afabb4ce7d5cea6877827fb9c2f4 (4,662,924 B).
+- APK identity (AXML string-pool + output-metadata): com.zylod.wholesale.debug, versionName 2.4.5-12ef297, versionCode 245, 45,130,071 bytes; build-info.txt pins commit 12ef297a6f56afabb4ce7d5cea6877827fb9c2f4, run 34673620871.
+- ARTIFACT-LEVEL PROOF OF THE DIRECTIVE: all 16 dex files — ui/home/HomeScreen = 0 occurrences, ui/home/HomeViewModel = 0 occurrences (native Home NOT packaged); active stack present: RouteOwnership 12, ZylodRoot 107, WebScreen 41, NativeWebViewPool 26, WebProvenance 18.
+- iOS identity: CFBundleShortVersionString 2.4.5-12ef297 (build 245), build-info pins commit + run 34673621090. Zylod.debug.dylib symbol scan: HomeView = 0, HomeViewModel = 0 (native Home NOT in the build); TabWebViewScreen 98, WebViewScreen 670, RouteOwnership 238, WebProvenance 284, WKWebViewPool 118, chromeSuppression 24. (The 72 KB `Zylod` executable is the Xcode 16 debug-dylib stub executor; the app code is in Zylod.debug.dylib.)
+- Served-bundle state recorded honestly: https://zylod.com/api/app/version → HTTP 404 (zylod.com is still the static stub — no SPA bundle deployed there). Per the F1 policy the provenance gate will BLOCK and display the exact divergence (endpoint + served identity vs expected commit 12ef297) instead of silently rendering an unverified bundle. Deployment requirement: serve the web bundle built from 12ef297 or later so Home resolves.
+- Release published: v2.4.5-12ef297 (release id 387457982), tag at 12ef297, Latest, NOT prerelease; asset Zylod-v2.4.5-12ef297-debug.apk (state=uploaded, 45,130,071 B, sha256 e9cb38ad6fff580dff50d1dbf44b84dea42be6f275cf0fe332339623d1ce0b41 — matches the local artifact byte-for-byte); /releases/latest → v2.4.5-12ef297; direct download link HTTP 200.
+
+Stage Summary:
+- HOME → WEBVIEW DELIVERED ON BOTH PLATFORMS: one Home per platform (Android HOME_ROUTE → WebScreen("home"); iOS homeTab → owned TabWebViewScreen("home")), native Home absent from BOTH shipped artifacts (dex + dylib zero-hit proof), native navigation/chrome/Back/session untouched, web bottom nav suppressed document-start.
+- Owner audit path: install Zylod-v2.4.5-12ef297-debug.apk → adb logcat -s ZylodProvenance (startup identity, probe matrix, selected endpoint, served-bundle verdict — will show BLOCKED until the SPA bundle is deployed to the winning endpoint) → acceptance matrix: Categories/Hot Deals/Profile/Cart/Product-Detail → Home = WebView Home; Back returns; no stale pixels; no duplicate bottom bar.
+- STOPPED per the delivery sequence — no further optimisation or feature work after CI. Phase 1 remains FAILED until the owner accepts installed builds; Phase 2 LOCKED.
+- Release: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-12ef297
