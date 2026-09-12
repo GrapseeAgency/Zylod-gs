@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -2372,8 +2372,8 @@ model legalDocuments {
   docType       String   @unique
   titleEn       String
   titleBn       String?
-  contentEn     String   @db.Text
-  contentBn     String?  @db.Text
+  contentEn     String  
+  contentBn     String? 
   version       String   @default("1.0")
   effectiveDate DateTime @default(now())
   isActive      Boolean  @default(true)
@@ -2385,13 +2385,13 @@ model legalDocuments {
 }
 
 model faqItems {
-  id         String   @id(map: "legalFaqs_pkey") @default(cuid())
+  id         String   @id @default(cuid())
   // docType: terms_of_service | privacy_policy | account | orders | payments | etc.
   category   String   @map("docType")
   questionEn String
   questionBn String?
-  answerEn   String   @db.Text
-  answerBn   String?  @db.Text
+  answerEn   String  
+  answerBn   String? 
   sortOrder  Int      @default(0)
   isActive   Boolean  @default(true)
   helpfulYes Int      @default(0)
@@ -2429,10 +2429,10 @@ model dmcaReports {
   infringingUrl     String
   originalWorkUrl   String?
   copyrightOwner    String
-  copyrightWorkDesc String   @db.Text
+  copyrightWorkDesc String  
   declarationSigned Boolean  @default(false)
   resolvedAt        DateTime?
-  adminNotes        String?  @db.Text
+  adminNotes        String? 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -2454,9 +2454,9 @@ model jobListings {
   salaryMin        Int?
   salaryMax        Int?
   currency         String   @default("BDT")
-  descriptionEn    String   @db.Text
-  requirementsEn   String   @db.Text
-  benefitsEn       String?  @db.Text
+  descriptionEn    String  
+  requirementsEn   String  
+  benefitsEn       String? 
   isActive         Boolean  @default(true)
   isFeatured       Boolean  @default(false)
   expiresAt        DateTime?
@@ -2479,7 +2479,7 @@ model jobApplications {
   applicantEmail String
   applicantPhone String?
   resumeUrl      String?
-  coverLetter    String?  @db.Text
+  coverLetter    String? 
   portfolioUrl   String?
   linkedInUrl    String?
   yearsExp       Int?
@@ -2500,9 +2500,9 @@ model pressReleases {
   id          String   @id @default(cuid())
   slug        String   @unique
   title       String
-  summary     String   @db.Text
-  contentEn   String   @db.Text
-  contentBn   String?  @db.Text
+  summary     String  
+  contentEn   String  
+  contentBn   String? 
   // category: company_news | product_launch | partnership | funding | award | milestone
   category    String   @default("company_news")
   imageUrl    String?
@@ -2542,7 +2542,7 @@ model investorDocuments {
   fiscalYear  String?
   fiscalQ     String?
   fileUrl     String
-  summary     String?  @db.Text
+  summary     String? 
   isPublished Boolean  @default(true)
   publishedAt DateTime @default(now())
   createdAt   DateTime @default(now())
@@ -2557,7 +2557,7 @@ model companyMilestones {
   year        Int
   month       Int?
   title       String
-  description String   @db.Text
+  description String  
   iconType    String?  @default("star")
   sortOrder   Int      @default(0)
   isPublished Boolean  @default(true)
@@ -2573,7 +2573,7 @@ model companyMilestones {
 model appSystemSettings {
   id          String   @id @default(cuid())
   key         String   @unique
-  value       String   @db.Text
+  value       String  
   category    String   @default("general") // general, network, cache, storage, security
   description String?
   isPublic    Boolean  @default(true)
@@ -2590,11 +2590,11 @@ model appVersions {
   versionCode         Int      // e.g. 240
   minSupportedVersion String   @default("1.0.0")
   isMandatory         Boolean  @default(false)
-  changelogEn         String   @db.Text
-  changelogBn         String?  @db.Text
+  changelogEn         String  
+  changelogBn         String? 
   apkDownloadUrl      String?
   apkSizeBytes        BigInt?
-  releaseNotes        String?  @db.Text
+  releaseNotes        String? 
   isPublished         Boolean  @default(true)
   releasedAt          DateTime @default(now())
   createdAt           DateTime @default(now())
@@ -2606,8 +2606,8 @@ model appVersions {
 model maintenanceSchedules {
   id               String    @id @default(cuid())
   title            String
-  messageEn        String    @db.Text
-  messageBn        String?   @db.Text
+  messageEn        String   
+  messageBn        String?  
   scheduledStart   DateTime
   scheduledEnd     DateTime
   isActive         Boolean   @default(false)
@@ -2625,7 +2625,7 @@ model deepLinkRoutes {
   slug            String   @unique // e.g. "product-deals", "rmg-textiles"
   pathPattern     String   // e.g. "/product/:id", "/supplier/:id"
   targetPage      String   // e.g. "product-detail", "supplier-storefront"
-  queryParamsJson String?  @db.Text
+  queryParamsJson String? 
   clickCount      Int      @default(0)
   isDynamic       Boolean  @default(true)
   isActive        Boolean  @default(true)
@@ -2644,10 +2644,10 @@ model offlineSyncQueue {
   deviceId     String?
   syncAction   String    // CREATE_ORDER, SAVE_WISHLIST, UPDATE_PROFILE
   entityType   String    // order, wishlist, product_cache, rfq
-  payloadJson  String    @db.Text
+  payloadJson  String   
   status       String    @default("pending") // pending, syncing, completed, failed
   retryCount   Int       @default(0)
-  errorMessage String?   @db.Text
+  errorMessage String?  
   syncedAt     DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -2661,15 +2661,15 @@ model errorTelemetryLogs {
   id           String   @id @default(cuid())
   errorCode    String   @default("UNKNOWN")
   statusCode   Int      @default(500)
-  message      String   @db.Text
-  stackTrace   String?  @db.Text
+  message      String  
+  stackTrace   String? 
   route        String?
   method       String?  @default("GET")
-  userAgent    String?  @db.Text
+  userAgent    String? 
   clientIp     String?
   platform     String   @default("web") // android, ios, web
   appVersion   String?
-  metadataJson String?  @db.Text
+  metadataJson String? 
   createdAt    DateTime @default(now())
 
   @@index([errorCode])
@@ -2696,7 +2696,7 @@ model appDiagnostics {
   serviceName    String   // postgres_db, redis_cache, safepay_gateway, courier_api
   status         String   @default("healthy") // healthy, degraded, down
   responseTimeMs Int      @default(15)
-  detailsJson    String?  @db.Text
+  detailsJson    String? 
   checkedAt      DateTime @default(now())
 
   @@index([serviceName])
@@ -2714,12 +2714,12 @@ model offlineSyncEvents {
   // actionType: POST /api/orders, SAVE_WISHLIST, SUBMIT_RFQ, ...
   actionType      String
   entityType      String
-  payloadJson     String    @db.Text
+  payloadJson     String   
   clientCreatedAt DateTime
   retryCount      Int       @default(0)
   receivedAt      DateTime  @default(now())
   processedAt     DateTime?
-  processError    String?   @db.Text
+  processError    String?  
 
   @@index([userId])
   @@index([actionType])

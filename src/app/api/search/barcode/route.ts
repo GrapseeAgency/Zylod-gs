@@ -19,8 +19,8 @@ export async function GET(request: NextRequest) {
       where: {
         isActive: true,
         OR: [
-          { sku: { equals: code, mode: 'insensitive' } },
-          { sku: { contains: code, mode: 'insensitive' } },
+          { sku: { equals: code } },
+          { sku: { contains: code } },
           { id: { equals: code } }
         ]
       },
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     if (!product) {
       const variant = await db.productVariants.findFirst({
         where: {
-          sku: { equals: code, mode: 'insensitive' }
+          sku: { equals: code }
         },
         include: {
           product: {

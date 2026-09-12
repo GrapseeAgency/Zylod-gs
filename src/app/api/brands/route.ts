@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
           isActive: true,
           isApproved: true,
           brand: { not: null as string | null },
-          ...(search ? { brand: { contains: search, mode: 'insensitive' as const } } : {}),
+          ...(search ? { brand: { contains: search } } : {}),
         }
 
         const grouped = await db.products.groupBy({

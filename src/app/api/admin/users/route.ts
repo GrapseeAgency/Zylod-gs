@@ -21,10 +21,10 @@ export async function GET(request: NextRequest) {
     if (status) where.accountStatus = status
     if (search) {
       where.OR = [
-        { email: { contains: search, mode: 'insensitive' as const } },
+        { email: { contains: search } },
         { phone: { contains: search } },
-        { buyerProfile: { fullName: { contains: search, mode: 'insensitive' as const } } },
-        { supplierProfile: { companyName: { contains: search, mode: 'insensitive' as const } } },
+        { buyerProfile: { fullName: { contains: search } } },
+        { supplierProfile: { companyName: { contains: search } } },
       ]
     }
 

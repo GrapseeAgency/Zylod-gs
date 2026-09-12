@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
       where: {
         isActive: true,
         OR: [
-          { questionEn: { contains: q, mode: 'insensitive' } },
-          { answerEn: { contains: q, mode: 'insensitive' } },
+          { questionEn: { contains: q } },
+          { answerEn: { contains: q } },
           { questionBn: { contains: q } },
           { answerBn: { contains: q } },
         ],
@@ -48,8 +48,8 @@ export async function POST(request: NextRequest) {
       where: {
         isPublished: true,
         OR: [
-          { titleEn: { contains: q, mode: 'insensitive' } },
-          { contentEn: { contains: q, mode: 'insensitive' } },
+          { titleEn: { contains: q } },
+          { contentEn: { contains: q } },
           { titleBn: { contains: q } },
           { contentBn: { contains: q } },
         ],

@@ -71,3 +71,8 @@ android/local.properties
 3000
 auth-endpoint-audit.md
 checkout-payment-audit.md
+
+# F1/F5 bundle identity — generated at dev/build start from git HEAD
+# (scripts/generate-bundle-identity.mjs). A committed snapshot is always
+# stale, so it must never be tracked (docs/PROVENANCE.md deployment chain).
+src/generated/bundle-identity.ts

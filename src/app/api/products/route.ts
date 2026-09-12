@@ -47,10 +47,10 @@ export async function GET(request: NextRequest) {
           // Sanitize search input — case-insensitive so "COTTON", "cotton", "Cotton" all match
           const sanitizedSearch = search.trim().slice(0, 200)
           where.OR = [
-            { name: { contains: sanitizedSearch, mode: 'insensitive' } },
-            { description: { contains: sanitizedSearch, mode: 'insensitive' } },
-            { brand: { contains: sanitizedSearch, mode: 'insensitive' } },
-            { sku: { contains: sanitizedSearch, mode: 'insensitive' } },
+            { name: { contains: sanitizedSearch } },
+            { description: { contains: sanitizedSearch } },
+            { brand: { contains: sanitizedSearch } },
+            { sku: { contains: sanitizedSearch } },
           ]
         }
 
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
         }
 
         if (brand) {
-          where.brand = { equals: brand, mode: 'insensitive' }
+          where.brand = { equals: brand }
         }
 
         if (clearance === 'true') {

@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         const where: Record<string, unknown> = {}
         if (verificationStatus) where.verificationStatus = verificationStatus
         if (search) {
-          where.companyName = { contains: search, mode: 'insensitive' as const }
+          where.companyName = { contains: search }
         }
         if (categorySlug) {
           where.products = { some: { category: { slug: categorySlug, isActive: true, isApproved: true } } }

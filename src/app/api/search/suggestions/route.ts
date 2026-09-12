@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, data: { products: [], categories: [], suppliers: [], fallbackSuggestions: [] } })
     }
 
-    const contains = { contains: q, mode: 'insensitive' as const }
+    const contains = { contains: q }
 
     const [products, categories, suppliers, popular] = await Promise.all([
       db.products.findMany({

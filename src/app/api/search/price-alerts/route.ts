@@ -36,9 +36,9 @@ export async function GET(request: NextRequest) {
           where: {
             isActive: true,
             OR: [
-              { name: { contains: query, mode: 'insensitive' } },
-              { description: { contains: query, mode: 'insensitive' } },
-              { brand: { contains: query, mode: 'insensitive' } }
+              { name: { contains: query } },
+              { description: { contains: query } },
+              { brand: { contains: query } }
             ]
           },
           orderBy: { basePrice: 'asc' },
@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
           where: {
             isActive: true,
             OR: [
-              { name: { contains: query, mode: 'insensitive' } },
-              { description: { contains: query, mode: 'insensitive' } }
+              { name: { contains: query } },
+              { description: { contains: query } }
             ]
           }
         })

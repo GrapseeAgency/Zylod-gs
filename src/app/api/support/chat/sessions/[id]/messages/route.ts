@@ -81,8 +81,8 @@ export async function POST(
         where: {
           isActive: true,
           OR: [
-            { questionEn: { contains: q, mode: 'insensitive' } },
-            { answerEn: { contains: q, mode: 'insensitive' } },
+            { questionEn: { contains: q } },
+            { answerEn: { contains: q } },
           ],
         },
       })

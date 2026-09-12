@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = { isActive: true, isApproved: approved }
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' as const } },
-        { supplier: { companyName: { contains: search, mode: 'insensitive' as const } } },
+        { name: { contains: search } },
+        { supplier: { companyName: { contains: search } } },
       ]
     }
 

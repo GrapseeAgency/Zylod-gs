@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       whereClause.type = type
     }
     if (search) {
-      whereClause.description = { contains: search, mode: 'insensitive' }
+      whereClause.description = { contains: search }
     }
 
     const [transactions, total] = await Promise.all([

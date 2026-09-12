@@ -3,13 +3,21 @@ import os
 
 /// Resolves the active backend from the same candidate list the Android shell
 /// and WebView probe (build-config specific), caching the winner.
-/// Any HTTP response — even 4xx — proves the host is alive.
 ///
-/// F1 — deterministic, AUDITABLE endpoint discovery (Android parity):
-///  - every probe is logged (status + whether the responder is a genuine
-///    Zylod server) under the ZylodProvenance category;
-///  - the selection reason is logged ("first-alive-in-order" is the frozen
-///    policy — visibility changes, selection semantics do not);
+/// F1 — deterministic, AUDITABLE endpoint discovery (Android parity; owner
+/// deployment order: discovery is "acceptable only when the selected server
+/// actually serves the matching web bundle"):
+///  - every candidate is probed on /api/app/version; the probe records the
+///    HTTP status, whether the responder is a GENUINE Zylod server (a 2xx
+///    body that reports a bundle identity — docs/PROVENANCE.md §3) and WHICH
+///    bundle commit it serves;
+///  - SELECTION: the first candidate IN THE FROZEN ORDER that is genuine
+///    wins. A host that answers but serves no Zylod bundle identity (redirect
+///    stub, captive portal, 404) is skipped and logged — it can no longer
+///    beat a genuine server further down the list. Only when NO candidate is
+///    genuine does discovery fall back (first-alive → cache → first), with
+///    the reason logged and the provenance gate expected to refuse the
+///    non-Zylod responder;
 ///  - an endpoint change between resolves is logged prominently — endpoint
 ///    switching is never silent (owner hard rule).
 /// Owner audit:
@@ -40,8 +48,10 @@ enum ServerConfig {
     struct ProbeResult {
         var alive: Bool
         var httpStatus: Int?
-        /// true when the response parses as a Zylod /api/app/version payload.
+        /// true when the responder is a genuine Zylod server: 2xx /api/app/version body reporting a bundle identity.
         var zylodPayload: Bool
+        /// The bundle commit the endpoint reports (diagnostics; "" when absent).
+        var servedCommit: String
     }
 
     static func cached() -> String? {
@@ -56,7 +66,6 @@ enum ServerConfig {
     }
 
     static func resolve() async -> String {
-        var alive: [Int: Bool] = [:]
         var results: [Int: ProbeResult] = [:]
         await withTaskGroup(of: (Int, ProbeResult).self) { group in
             for (index, candidate) in candidates.enumerated() {
@@ -66,26 +75,34 @@ enum ServerConfig {
                 }
             }
             for await (index, result) in group {
-                alive[index] = result.alive
                 results[index] = result
             }
         }
 
         // Ordered probe matrix — the owner sees exactly why a host won.
         for (index, candidate) in candidates.enumerated() {
-            let result = results[index] ?? ProbeResult(alive: false, httpStatus: nil, zylodPayload: false)
+            let result = results[index] ?? ProbeResult(
+                alive: false, httpStatus: nil, zylodPayload: false, servedCommit: "")
             let status = result.httpStatus.map(String.init) ?? "unreachable"
-            logger.info("probe endpoint=\(candidate, privacy: .public) status=\(status, privacy: .public) zylodPayload=\(result.zylodPayload, privacy: .public) alive=\(result.alive, privacy: .public)")
+            let served = result.servedCommit.isEmpty ? "none" : String(result.servedCommit.prefix(7))
+            logger.info("probe endpoint=\(candidate, privacy: .public) status=\(status, privacy: .public) zylodPayload=\(result.zylodPayload, privacy: .public) servedBundle=\(served, privacy: .public) alive=\(result.alive, privacy: .public)")
         }
 
-        let chosenIndex = candidates.indices.first { alive[$0] == true }
+        // SELECTION (owner deployment order): the first GENUINE Zylod server
+        // in the frozen candidate order wins; a bundle-less responder can
+        // never beat a genuine server further down the list.
+        let genuineIndex = candidates.indices.first { results[$0]?.zylodPayload == true }
+        let firstAliveIndex = candidates.indices.first { results[$0]?.alive == true }
         let previous = cached()
-        let chosen = chosenIndex.map { candidates[$0] }
+        let chosen = genuineIndex.map { candidates[$0] }
+            ?? firstAliveIndex.map { candidates[$0] }
             ?? previous
             ?? candidates[0]
         let reason: String
-        if chosenIndex != nil {
-            reason = "first-alive-in-order"
+        if genuineIndex != nil {
+            reason = "first-genuine-zylod-in-order"
+        } else if firstAliveIndex != nil {
+            reason = "no-genuine-endpoint-first-alive(gate-will-refuse)"
         } else if previous != nil {
             reason = "all-dead-cache-fallback"
         } else {
@@ -99,29 +116,32 @@ enum ServerConfig {
         return chosen
     }
 
-    /// Aliveness stays "any HTTP response" (frozen selection semantics), but
-    /// the probe now ALSO fingerprints the responder: a successful
-    /// /api/app/version body that parses as the Zylod payload proves the host
-    /// is a genuine Zylod server (the payload now carries the served bundle
-    /// identity — docs/PROVENANCE.md).
+    /// A candidate is GENUINE when /api/app/version answers 2xx with a JSON
+    /// body that reports a non-empty bundle commit (PROVENANCE.md §3 — a
+    /// genuine Zylod server always identifies the web bundle it serves).
     private static func probe(_ endpoint: String) async -> ProbeResult {
         guard let url = URL(string: endpoint + "/api/app/version") else {
-            return ProbeResult(alive: false, httpStatus: nil, zylodPayload: false)
+            return ProbeResult(alive: false, httpStatus: nil, zylodPayload: false, servedCommit: "")
         }
         var request = URLRequest(url: url, timeoutInterval: 6)
         request.setValue("ZylodNative/\(WebProvenance.versionName())", forHTTPHeaderField: "User-Agent")
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             let http = response as? HTTPURLResponse
-            var zylodPayload = false
+            var servedCommit = ""
             if let http, (200..<300).contains(http.statusCode) {
-                zylodPayload = (try? JSONSerialization.jsonObject(with: data))
-                    .flatMap { $0 as? [String: Any] }
-                    .map { ($0["success"] as? Bool) == true || $0["bundle"] != nil } ?? false
+                let json = (try? JSONSerialization.jsonObject(with: data)).flatMap { $0 as? [String: Any] }
+                servedCommit = ((json?["bundle"] as? [String: Any])?["commit"] as? String ?? "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
             }
-            return ProbeResult(alive: true, httpStatus: http?.statusCode, zylodPayload: zylodPayload)
+            return ProbeResult(
+                alive: true,
+                httpStatus: http?.statusCode,
+                zylodPayload: !servedCommit.isEmpty,
+                servedCommit: servedCommit,
+            )
         } catch {
-            return ProbeResult(alive: false, httpStatus: nil, zylodPayload: false)
+            return ProbeResult(alive: false, httpStatus: nil, zylodPayload: false, servedCommit: "")
         }
     }
 }
