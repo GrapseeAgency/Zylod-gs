@@ -871,3 +871,42 @@ Stage Summary:
 - Owner audit path: install Zylod-v2.4.5-12ef297-debug.apk → adb logcat -s ZylodProvenance (startup identity, probe matrix, selected endpoint, served-bundle verdict — will show BLOCKED until the SPA bundle is deployed to the winning endpoint) → acceptance matrix: Categories/Hot Deals/Profile/Cart/Product-Detail → Home = WebView Home; Back returns; no stale pixels; no duplicate bottom bar.
 - STOPPED per the delivery sequence — no further optimisation or feature work after CI. Phase 1 remains FAILED until the owner accepts installed builds; Phase 2 LOCKED.
 - Release: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-12ef297
+---
+Task ID: 26
+Agent: fix-verify-relay (sonnet)
+Task: Fix /api/app/version 500 (Prisma provider mismatch) + record Task-25 evidence.
+
+Work Log:
+- Task 25 (prior relay, partial): server was down → started via bun run dev; 500 root cause = schema provider postgresql vs .env file:// DATABASE_URL.
+- schema.prisma (drifted tree): provider postgresql→sqlite; removed 31x "@db.Text" + 1x "@id(map: legalFaqs_pkey)"; db:push OK; DB /home/z/my-project/db/custom.db; appVersions rows = 0, no seeding.
+- Stale engine → kill -TERM 1210 (ss-verified) → restart-loop respawn → home 200; /api/app/version 200 fallback 2.4.0.
+
+Stage Summary:
+- /api/app/version FIXED (200). Dev server running on :3000 (later restored to 6b757f9 tree by Task 29).
+
+---
+Task ID: 27
+Agent: probe-relay (sonnet)
+Task: Settle GitHub releases, zylod.com, endpoint chains.
+
+Work Log:
+- Release 387519881 (v2.4.5-6b757f9): EXISTS; asset Zylod-v2.4.5-6b757f9-debug.apk 45130071 bytes, HEAD 302→200, downloadable.
+- Release 387090688 (v2.4.5-c71357e): 404 dead; APK not downloadable; R4-CI worklog release id stale.
+- zylod.com: /api/app/version 404; /?page=home 124-byte stub — not a bundle source.
+
+Stage Summary:
+- Only live APK: https://github.com/GrapseeAgency/Zylod-gs/releases/download/v2.4.5-6b757f9/Zylod-v2.4.5-6b757f9-debug.apk
+
+---
+Task ID: 29
+Agent: restore-relay (sonnet)
+Task: Restore sandbox tree to released commit 6b757f9 and verify served identity.
+
+Work Log:
+- git fetch origin OK; 6b757f9 = commit locally; origin/main IS 6b757f9 (local main was drifted to 6cddf09 by sandbox auto-commits); fixed via git branch -f main 6b757f9 && git checkout main; drift rollback ref = 6cddf09f011618fc7ceec1425684490019fa6381.
+- Sandbox actor auto-reverted detached checkouts to main within ~3s (reflog ×2) → branch-ff method used instead.
+- At 6b757f9: schema.prisma ALREADY sqlite (bad postgres reading came from drifted tree); db/custom.db tracked at 6b757f9.
+- Server restart hit "Module not found: @/generated/bundle-identity" (restart-loop skips predev) → ran node scripts/generate-bundle-identity.mjs → commit=6b757f9 version=2.4.5 → restart → 200.
+
+Stage Summary:
+- LOCAL SERVER VERIFIED SERVING RELEASED IDENTITY: /api/app/version → {"success":true,"bundle":{"commit":"6b757f965751e9394688d8676bfb666ab34c2b99","shortCommit":"6b757f9","version":"2.4.5",...}}; /?page=home HTTP 200, __ZylodBundleIdentity ×2, contains 6b757f9.
