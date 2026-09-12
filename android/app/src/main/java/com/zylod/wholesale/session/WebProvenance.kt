@@ -83,11 +83,11 @@ object WebProvenance {
      * null when the bundle exposes no usable identity.
      */
     fun parseIdentity(raw: Any?): BundleIdentity? {
-        val obj: JSONObject? = when (raw) {
+        val obj: JSONObject = when (raw) {
             is JSONObject -> raw
-            is String -> runCatching { JSONObject(raw) }.getOrNull()
-            else -> null
-        } ?: return null
+            is String -> runCatching { JSONObject(raw) }.getOrNull() ?: return null
+            else -> return null
+        }
         val commit = obj.optString("commit", "").trim()
         if (commit.isEmpty() || commit == "null") return null
         return BundleIdentity(
