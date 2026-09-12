@@ -263,7 +263,7 @@ final class ZylodNativeBridge: NSObject {
 
     // MARK: - Message dispatch
 
-    private func dispatch(method: String, message: [String: Any]) {
+    private func dispatch(method: String, message: [String: Any], from speakingWebView: WKWebView? = nil) {
         switch method {
         // Native navigation FIRST — must never queue behind disk work.
         case "openPage":
@@ -273,13 +273,16 @@ final class ZylodNativeBridge: NSObject {
                 ZylodNativeBridge.onOpenPage?(pageId, params)
             }
         case "pageChanged":
-            // Round-4 ack: deliver to the ATTACHED shell's screen. Main-actor
-            // hop — WKWebViewPool/PooledWebView are MainActor-bound.
+            // Round-6 ack: deliver to the shell that SPOKE (F7 per-shell bridge
+            // ownership + owned-shell acknowledgement routing) — previously the
+            // last-ATTACHED view was consulted, so an owned tab shell's acks
+            // were dropped and a backgrounded shell's ack could be attributed
+            // to the wrong screen. Main-actor hop — the pool is MainActor-bound.
             let pageId = message["pageId"] as? String ?? ""
-            let attached = self.webView
+            let speaking = speakingWebView
             Task { @MainActor in
-                guard let attached else { return }
-                WKWebViewPool.shared.shell(for: attached)?.onPageChanged?(pageId)
+                guard let speaking else { return }
+                WKWebViewPool.shared.shell(for: speaking)?.onPageChanged?(pageId)
             }
         case "copyToClipboard":
             let text = message["text"] as? String ?? ""
@@ -494,7 +497,9 @@ extension ZylodNativeBridge: WKScriptMessageHandler {
         // Route async replies back to the SENDING shell (pooled + owned shells
         // are alive simultaneously — see BridgeCoordinator.evaluateTarget).
         (host as? BridgeCoordinator)?.evaluateTarget = message.webView
-        dispatch(method: method, message: body)
+        // F7 — the SPEAKING instance rides along: page-change acks are routed
+        // to the shell that SENT them, never to the last-attached view.
+        dispatch(method: method, message: body, from: message.webView)
     }
 }
 

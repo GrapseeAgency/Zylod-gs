@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/generate-bundle-identity.mjs",
     "dev": "while true; do next dev -p 3000 -H 0.0.0.0 2>&1 | tee dev.log; echo '[RESTART] Server crashed, restarting in 3s...'; sleep 3; done",
+    "prebuild": "node scripts/generate-bundle-identity.mjs",
     "build": "next build && { [ -d .next/standalone ] && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ || true; }",
     "start": "NODE_ENV=production next start -p 3000 2>&1 | tee server.log",
     "lint": "eslint .",

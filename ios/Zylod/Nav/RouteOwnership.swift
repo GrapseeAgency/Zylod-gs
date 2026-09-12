@@ -62,7 +62,7 @@ enum RouteOwnership {
         switch pageId {
         case pageHome, pageCart, pageProductDetail:
             return .native
-        case let id where nativeAuthPageIds.contains(id):
+        case let id where nativeAuthPageIds.contains(id) || id == "welcome":
             return .native
         default:
             return .webview
@@ -101,6 +101,11 @@ enum RouteOwnership {
             case "forgot-password": return .auth(.forgotPassword)
             default: return .web(pageId: pageId, query: query)
             }
+        case "welcome":
+            // Guest-flow parity with android RouteOwnership.kt: the welcome
+            // GATE is shell state, not a navigation target — an openPage/
+            // deep-link "welcome" request means "go to the app start".
+            return .home
         case "profile":
             return isAuthenticated ? .web(pageId: pageId, query: query) : .auth(.login)
         default:

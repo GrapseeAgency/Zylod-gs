@@ -27,17 +27,39 @@ final class PooledWebView {
     /// Anchor for the restore-in-place fast path (informational — the DECISION
     /// comes from the live-state probe; see WebViewScreen.drive).
     var lastURL: String?
-    /// Web→native PAGE-CHANGE ack (round-4: one navigation authority). The
-    /// SPA's navigation store reports every committed page change; the hosting
-    /// WebViewScreen matches the acked pageId against its target to lift
-    /// stale-content suppression. Advisory — bundles without the hook are
-    /// covered by the soft-navigate result and didFinish paths.
+    /// Web→native PAGE-CHANGE ack. The hosting WebViewScreen reassigns this on
+    /// EVERY drive (F7 generation handling — a closure pinned at shell creation
+    /// would compare acks against a superseded pageId) and runs the
+    /// authoritative document verification — the ack only triggers it (F4).
     var onPageChanged: ((String) -> Void)?
+
+    /// F7 — navigation generation for THIS shell instance. Bumped by the
+    /// hosting WebViewScreen at the start of every drive; every async callback
+    /// (ack, soft-navigate result, probe result, load events) captures the
+    /// generation it belongs to and is dropped unless the shell is still in
+    /// that exact generation — a stale callback from a superseded navigation
+    /// or a reused pooled shell may never reveal or modify the current screen.
+    private(set) var navGeneration: Int = 0
+
+    /// F1 — the bundle identity the CURRENT document reported (nil until a
+    /// document verifies). Diagnostic surface for provenance audit.
+    private(set) var servedIdentity: WebProvenance.BundleIdentity?
 
     fileprivate init(webView: WKWebView, baseUrl: String, seedFingerprint: String) {
         self.webView = webView
         self.baseUrl = baseUrl
         self.seedFingerprint = seedFingerprint
+    }
+
+    /// Starts a new navigation generation; returns the new value.
+    func bumpGeneration() -> Int {
+        navGeneration += 1
+        return navGeneration
+    }
+
+    /// Records the identity reported by the currently-loaded document.
+    func recordIdentity(_ identity: WebProvenance.BundleIdentity?) {
+        servedIdentity = identity
     }
 }
 
@@ -47,6 +69,11 @@ final class WKWebViewPool {
 
     private var free: [PooledWebView] = []
     private var busyShells: [PooledWebView] = []
+    /// F7 — OWNED shells (tab destinations) are NOT checked out of the pool,
+    /// but their acks must still route. They register here so `shell(for:)`
+    /// finds them; without this, an owned tab shell's page-change acks were
+    /// silently DROPPED (shell(for:) searched busy+free only).
+    private var ownedShells: [PooledWebView] = []
     private let maxFree = 2
 
     private init() {}
@@ -82,9 +109,12 @@ final class WKWebViewPool {
         return shell
     }
 
-    /// Owned shells (tabs) bypass the pool entirely.
+    /// Owned shells (tabs) bypass the pool checkout/check-in entirely but
+    /// register for ack routing.
     func makeOwnedShell(baseUrl: String) -> PooledWebView {
-        makeShell(baseUrl: baseUrl)
+        let shell = makeShell(baseUrl: baseUrl)
+        ownedShells.append(shell)
+        return shell
     }
 
     func checkIn(_ shell: PooledWebView) {
@@ -101,9 +131,13 @@ final class WKWebViewPool {
         }
     }
 
+    /// F7 — resolves the shell that owns EXACTLY this WebView instance,
+    /// across BUSY (pooled) and OWNED (tab) shells. Detached (free) shells
+    /// have no reachable handle — callbacks after check-in are dropped at
+    /// the source. No global "last attached" lookup.
     func shell(for webView: WKWebView) -> PooledWebView? {
         busyShells.first(where: { $0.webView === webView })
-            ?? free.first(where: { $0.webView === webView })
+            ?? ownedShells.first(where: { $0.webView === webView })
     }
 
     private func destroy(_ shell: PooledWebView) {

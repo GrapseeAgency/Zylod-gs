@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { BUNDLE_IDENTITY } from '@/generated/bundle-identity'
 
 /**
  * GET /api/app/version
@@ -37,8 +38,12 @@ export async function GET(request: NextRequest) {
 
     const updateAvailable = latest.versionCode > currentVersionCode
 
+    // F1/F5 provenance: the endpoint the native shells probe for aliveness
+    // also reports WHICH web bundle this server is serving, so endpoint
+    // discovery is auditable end-to-end (docs/PROVENANCE.md).
     return NextResponse.json({
       success: true,
+      bundle: BUNDLE_IDENTITY,
       data: {
         updateAvailable,
         isMandatory: latest.isMandatory,

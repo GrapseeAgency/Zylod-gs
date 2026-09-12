@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.webkit.JavascriptInterface
+import android.webkit.WebView
 import android.widget.Toast
 import androidx.biometric.BiometricPrompt
 import androidx.core.app.NotificationCompat
@@ -28,8 +29,16 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * @param host the activity hosting the WebView (either shell). See
  *   [WebViewHost] — capability parity across the legacy and Compose shells.
+ * @param webView the EXACT WebView instance this JS interface is installed
+ *   on (F3 per-shell bridge ownership). Web→native page-change acks are
+ *   routed through THIS instance to its own shell handle — never through a
+ *   global "topmost WebView" lookup that a backgrounded/stale shell could
+ *   hijack or be misattributed to.
  */
-class WebAppBridge(private val host: WebViewHost) {
+class WebAppBridge(
+    private val host: WebViewHost,
+    private val webView: WebView?,
+) {
 
     private val activity: Activity get() = host as Activity
 
@@ -99,19 +108,18 @@ class WebAppBridge(private val host: WebViewHost) {
     }
 
     /**
-     * Web→native PAGE-CHANGE ACK (round-4: one navigation authority). The
-     * SPA's navigation store notifies EVERY committed page change; the shell
-     * uses this to (a) keep its knowledge of "which page is showing" equal
-     * to the SPA's live truth and (b) stop suppressing the previous route's
-     * pixels exactly when the SPA has consumed the new page. The listener is
-     * fanned out with the registry's topmost WebView so a hosting WebScreen
-     * can filter acks belonging to its own shell.
+     * Web→native PAGE-CHANGE ACK (one navigation authority). The SPA's
+     * navigation store notifies EVERY committed page change; the shell uses
+     * this to run the authoritative document verification for the current
+     * navigation generation (F4). The ack is fanned out to the shell that
+     * SPOKE — [webView], this interface's own instance — so a backgrounded
+     * or reused shell can never deliver its ack to another screen (F2/F3).
      */
     @JavascriptInterface
     fun onPageChanged(pageId: String) {
-        val webView = com.zylod.wholesale.ui.web.NativeWebRegistry.webView
+        val speaking = webView
         android.os.Handler(android.os.Looper.getMainLooper()).post {
-            com.zylod.wholesale.ui.web.NativeWebPageAcks.dispatch(webView, pageId)
+            com.zylod.wholesale.ui.web.NativeWebPageAcks.dispatch(speaking, pageId)
         }
     }
 

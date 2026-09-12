@@ -153,11 +153,61 @@ object WebShellScripts {
     }
 
     /**
+     * F1+F4 — THE authoritative verification probe. One round-trip returns
+     * everything the shell needs to decide whether a document may be shown:
+     *
+     *  - `identity` — the served bundle's build identity
+     *    (window.__ZylodBundleIdentity, set inline in <head> before any
+     *    hydration). F1: missing identity = unknown bundle = never accepted.
+     *  - `spaReady` — the SPA's popstate listener is registered, i.e. the
+     *    bundle supports the soft-navigate + ack contract.
+     *  - `page`/`params` — the SPA's LIVE committed page state
+     *    (window.__zylodCurrentPage/__zylodCurrentParams). F4: the shell may
+     *    reveal a destination ONLY when this matches the requested
+     *    pageId+params for the current navigation generation — pushState
+     *    "ok" and onPageFinished are never treated as proof on their own.
+     *
+     * The result is a JSON string (null-safe even for non-Zylod documents).
+     */
+    fun documentVerifyScript(): String = """
+        (function(){
+          var out = { identity: null, spaReady: false, page: null, params: {} };
+          try{
+            var id = window.__ZylodBundleIdentity;
+            if (id){
+              var obj = null;
+              if (typeof id === 'object') { obj = id; }
+              else if (typeof id === 'string') { try { obj = JSON.parse(id); } catch(e) { obj = null; } }
+              if (obj && typeof obj === 'object'){
+                out.identity = {
+                  commit: String(obj.commit || ''),
+                  shortCommit: String(obj.shortCommit || String(obj.commit || '').slice(0,7)),
+                  version: String(obj.version || ''),
+                  builtAt: String(obj.builtAt || '')
+                };
+                if (!out.identity.commit) out.identity = null;
+              }
+            }
+            out.spaReady = (window.__zylodSpaReady === true);
+            if (typeof window.__zylodCurrentPage === 'string') out.page = window.__zylodCurrentPage;
+            try { out.params = JSON.parse(window.__zylodCurrentParams || '{}') || {}; } catch(e) { out.params = {}; }
+          }catch(e){}
+          return JSON.stringify(out);
+        })();
+    """.trimIndent()
+
+    /**
      * Returns "ok" after driving the SPA to (pageId, query) client-side AND
      * verifying the store consumed it (history.state.page === pageId — the
      * popstate handler runs synchronously inside dispatchEvent), or "no" when
      * the SPA has not signalled readiness / the contract drifted — the caller
      * must then fall back to a full loadUrl of the `?page=` deep link.
+     *
+     * F4 NOTE: "ok" verifies only that the store CONSUMED the pushState — it
+     * is never, by itself, proof that the new page finished committing. The
+     * shell lifts stale-content suppression exclusively on the authoritative
+     * [documentVerifyScript] verification (ack-driven or polled) — never on
+     * this result alone.
      */
     fun softNavigateScript(pageId: String, query: String): String {
         val params = JSONObject()

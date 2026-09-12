@@ -138,6 +138,10 @@ class NativeMainActivity : FragmentActivity(), WebViewHost {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         downloadBridge = DownloadBridge(this)
+        // F5 — permanent provenance visibility: one line at every launch so
+        // `adb logcat -s ZylodProvenance` proves exactly which build is
+        // running and which endpoints it will consider (docs/PROVENANCE.md).
+        com.zylod.wholesale.session.WebProvenance.logAppIdentity()
         setContent {
             ZylodTheme {
                 ZylodRoot()

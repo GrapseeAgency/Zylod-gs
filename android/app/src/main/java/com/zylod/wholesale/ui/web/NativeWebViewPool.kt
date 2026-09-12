@@ -41,19 +41,33 @@ import java.util.concurrent.TimeUnit
  * WebScreen currently hosts it. Replaces the old process-global errorTick
  * broadcast, which poisoned EVERY future WebScreen composition after a single
  * transient main-frame failure (owner audit finding #2: taps appeared dead).
+ *
+ * F2/F3: every consumer closure assigned here MUST capture the shell's
+ * navigation generation (see [NativeWebViewPool.Shell.generation]) and
+ * compare it before acting — a stale onPageFinished/error/ack/JS callback
+ * from a superseded generation or a reused shell may never reveal or modify
+ * the current screen.
  */
 internal class WebShellHandle {
     var onPageFinished: (() -> Unit)? = null
     var onMainFrameError: (() -> Unit)? = null
 
     /**
-     * Web→native PAGE-CHANGE ack (round-4): the SPA's navigation store
-     * reports every committed page change. The hosting WebScreen matches the
-     * acked pageId against its own target to lift stale-content suppression.
-     * Advisory only — older web bundles emit nothing; the
-     * soft-navigate-result and onPageFinished paths remain the guarantees.
+     * Web→native PAGE-CHANGE ack: the SPA's navigation store reports every
+     * committed page change. The hosting WebScreen runs the authoritative
+     * document verification against the acked generation — the ack itself is
+     * only a trigger, never the proof (F4).
      */
     var onPageChanged: ((pageId: String) -> Unit)? = null
+
+    /** F1: the provenance gate replaced the content (message is audit-ready). */
+    var onProvenanceBlocked: ((message: String) -> Unit)? = null
+
+    /** F1/F5 debug diagnostics note (non-blocking mismatch visibility). */
+    var onDebugNote: ((note: String?) -> Unit)? = null
+
+    /** F4: the authoritative verification confirmed the committed route. */
+    var onRevealed: (() -> Unit)? = null
 }
 
 /**
@@ -88,19 +102,42 @@ internal object NativeWebViewPool {
     ) {
         /**
          * The page the SPA currently renders in this shell — maintained by
-         * [softNavigate]/loadUrl callers. Lets a re-composing WebScreen skip
-         * the soft-navigate entirely when the shell is already showing the
-         * requested page (Back out of a native PDP: instant re-attach, no
-         * re-navigation, scroll position preserved).
+         * [softNavigate]/loadUrl callers. Informational only: every restore
+         * decision comes from the live-state probe (never from this
+         * bookkeeping, which is what could drift from what the WebView
+         * actually renders).
          */
         var lastPageId: String? = null
         var lastQuery: String? = null
+
+        /**
+         * F2 — navigation generation for THIS shell instance. Bumped by the
+         * hosting WebScreen at the start of every drive (checkout, route
+         * change, reload); every async callback (evaluateJavascript result,
+         * onPageFinished, error, ack) captures the generation it belongs to
+         * and compares before acting. A stale callback from a superseded
+         * generation — same screen OR a later screen reusing the pooled
+         * shell — is dropped. Main-thread only (bump/compare both happen on
+         * the UI thread), stored as AtomicLong for defense in depth.
+         */
+        private val generation = java.util.concurrent.atomic.AtomicLong(0L)
+
+        fun generation(): Long = generation.get()
+
+        /** Starts a new navigation generation; returns the new value. */
+        fun bumpGeneration(): Long = generation.incrementAndGet()
     }
 
     private val free = ArrayDeque<Shell>()
     private val busy = HashSet<Shell>()
 
-    /** Handle for the BUSY shell owning [webView] — the page-change ack fan-out. */
+    /**
+     * F2 — every WebView callback (onPageFinished, main-frame errors,
+     * renderer crash, acks) is delivered to the handle of the BUSY shell that
+     * owns EXACTLY this WebView instance — never to a global "last checked-out
+     * shell". Detached (free) shells have no reachable handle, so callbacks
+     * fired after check-in are dropped at the source.
+     */
     fun handleFor(webView: WebView?): WebShellHandle? {
         webView ?: return null
         return synchronized(this) { busy.firstOrNull { it.webView === webView }?.handle }
@@ -203,10 +240,22 @@ internal object NativeWebViewPool {
      * (window.__zylodSpaReady) or the navigation was not consumed (contract
      * drift) — the caller then falls back to a full loadUrl. Runs on the
      * WebView thread (call from the main thread).
+     *
+     * F2: [expectedGeneration] is the generation the CALLER started (captured
+     * before the probe/soft-navigate sequence). The JS callback fires only if
+     * the shell is still in that exact generation — a soft-navigate from a
+     * superseded generation can never deliver its result.
      */
-    fun softNavigate(shell: Shell, pageId: String, query: String, onDone: (Boolean) -> Unit) {
+    fun softNavigate(
+        shell: Shell,
+        pageId: String,
+        query: String,
+        expectedGeneration: Long,
+        onDone: (Boolean) -> Unit,
+    ) {
         val script = WebShellScripts.softNavigateScript(pageId, query)
         shell.webView.evaluateJavascript(script) { result ->
+            if (shell.generation() != expectedGeneration) return@evaluateJavascript
             val ok = result?.contains("ok") == true && result?.contains("\"no\"") != true
             if (ok) {
                 shell.lastPageId = pageId
@@ -265,7 +314,12 @@ internal object NativeWebViewPool {
             }
 
             if (host != null) {
-                addJavascriptInterface(WebAppBridge(host), "ZylodNativeBridge")
+                // F3 — per-instance bridge ownership: THIS shell's JS interface
+                // carries THIS WebView instance, so web→native page-change acks
+                // route to the shell that SPOKE, never through the global
+                // "topmost WebView" registry (a stale or backgrounded shell's
+                // ack could otherwise be attributed to the wrong screen).
+                addJavascriptInterface(WebAppBridge(host, this), "ZylodNativeBridge")
             }
             if (ctx is android.app.Activity) {
                 addJavascriptInterface(DownloadBridge(ctx), "ZylodDownload")

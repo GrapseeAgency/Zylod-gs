@@ -19,6 +19,11 @@ struct RootView: View {
 
     @AppStorage("zylod-onboarding-seen") private var onboardingSeen = false
     @State private var tab: Tab = .home
+    /// F7 tab synchronisation: re-tapping the SELECTED web tab bumps its
+    /// drive counter — the owned shell re-drives to its canonical pageId
+    /// (pop-the-tab's-web-stack-to-root, UIKit convention parity with the
+    /// Home/Cart pop-to-root handling above).
+    @State private var webTabDriveTicks: [Tab: Int] = [:]
     @State private var welcomeCover: AuthRoute?
     @State private var deferredLink: ParsedDeepLink?
     @StateObject private var flow = AppFlow()
@@ -41,7 +46,10 @@ struct RootView: View {
                         switch tapped {
                         case .home: flow.popHomeToRoot()
                         case .cart: flow.popCartToRoot()
-                        default: break // webView tabs are single-root stacks
+                        case .categories, .deals, .profile:
+                            // Re-tap re-drives the owned shell to its
+                            // canonical pageId (no-op when already there).
+                            webTabDriveTicks[tapped, default: 0] += 1
                         }
                     } else {
                         tab = tapped
@@ -52,14 +60,14 @@ struct RootView: View {
                     .tabItem { Label("Home", systemImage: "house") }
                     .tag(Tab.home)
 
-                webViewTab("Categories", systemImage: "square.grid.2x2", pageId: "category-browser")
+                webViewTab("Categories", systemImage: "square.grid.2x2", pageId: "category-browser", tick: webTabDriveTicks[.categories] ?? 0)
                     .tag(Tab.categories)
-                webViewTab("Hot Deals", systemImage: "bolt", pageId: "flash-deals")
+                webViewTab("Hot Deals", systemImage: "bolt", pageId: "flash-deals", tick: webTabDriveTicks[.deals] ?? 0)
                     .tag(Tab.deals)
                 cartTab
                     .tabItem { Label("Cart", systemImage: "cart") }
                     .tag(Tab.cart)
-                webViewTab("Profile", systemImage: "person", pageId: "profile")
+                webViewTab("Profile", systemImage: "person", pageId: "profile", tick: webTabDriveTicks[.profile] ?? 0)
                     .tag(Tab.profile)
             }
         }
@@ -161,12 +169,12 @@ struct RootView: View {
         .badge(cartStore.badgeText.map(Text.init))
     }
 
-    private func webViewTab(_ title: String, systemImage: String, pageId: String) -> some View {
+    private func webViewTab(_ title: String, systemImage: String, pageId: String, tick: Int = 0) -> some View {
         NavigationStack {
             // OWNED shell (not pooled): TabView keeps each tab's WebView for
             // the tab's lifetime — tab switches are instant and a tab shell
             // can never collide with a pooled push from another stack.
-            TabWebViewScreen(pageId: pageId, query: "")
+            TabWebViewScreen(pageId: pageId, query: "", driveTick: tick)
         }
         .tabItem { Label(title, systemImage: systemImage) }
     }
