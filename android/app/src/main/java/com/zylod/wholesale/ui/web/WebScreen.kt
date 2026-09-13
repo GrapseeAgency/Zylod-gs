@@ -1,7 +1,10 @@
 package com.zylod.wholesale.ui.web
 
 import android.net.Uri
+import android.os.SystemClock
+import android.util.Log
 import android.view.ViewGroup
+import java.util.concurrent.ConcurrentHashMap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -518,6 +521,12 @@ private data class DocumentState(
     val params: Map<String, String>,
 )
 
+/** Per-generation self-healing retry state for Missing verdicts (gen → retry start, elapsed ms). */
+private val missingRetryAt = ConcurrentHashMap<Long, Long>()
+
+/** Grace window (ms) during which poll-triggered verifications wait for the cache-purge reload to land. */
+private const val MISSING_RETRY_GRACE_MS = 8000L
+
 private fun applyVerification(
     shell: NativeWebViewPool.Shell,
     generation: Long,
@@ -532,6 +541,34 @@ private fun applyVerification(
     if (WebProvenance.blocking(verdict, BuildConfig.DEBUG)) {
         // F1: a wrong/stale/unknown bundle is NEVER silently rendered — the
         // gate replaces the content with the exact provenance divergence.
+        // Self-healing retry (owner escalation: devices that connected during
+        // the stale pre-provenance epoch hold an IDENTITY-LESS document in the
+        // WebView cache under the same endpoint — the gate would refuse it
+        // forever with no recovery path). On the FIRST Missing verdict of a
+        // generation: purge the entire WebView cache and reload the deep link
+        // once. Only if the freshly loaded document STILL exposes no identity
+        // (or the grace window lapses while it never arrives) does the gate
+        // block. Mismatch keeps the original one-strike rule — a known wrong
+        // bundle is not a cache artifact.
+        if (verdict is WebProvenance.Verdict.Missing) {
+            val started = missingRetryAt[generation]
+            if (started == null) {
+                missingRetryAt[generation] = SystemClock.elapsedRealtime()
+                Log.w(WebProvenance.LOG_TAG,
+                    "served endpoint=$endpoint bundle=NONE verdict=UNKNOWN action=PURGE_CACHE_AND_RELOAD " +
+                        "(self-healing retry for a stale pre-provenance cache entry)")
+                shell.webView.clearCache(true)
+                val target = shell.baseUrl.trimEnd('/') + "/?page=" + Uri.encode(pageId) +
+                    (if (query.isNotBlank()) "&" + encodeQueryValues(query) else "")
+                shell.webView.loadUrl(target, mapOf("ngrok-skip-browser-warning" to "1"))
+                return
+            }
+            if (SystemClock.elapsedRealtime() - started < MISSING_RETRY_GRACE_MS) {
+                // Reload in flight — give the fresh document time to arrive
+                // instead of racing it with a poll-triggered block.
+                return
+            }
+        }
         val message = when (verdict) {
             is WebProvenance.Verdict.Mismatch ->
                 "The server at ${endpoint} is serving web bundle ${verdict.identity.shortCommit}, " +
@@ -543,6 +580,8 @@ private fun applyVerification(
         shell.handle.onProvenanceBlocked?.invoke(message)
         return
     }
+
+    missingRetryAt.remove(generation)
 
     if (verdict is WebProvenance.Verdict.Mismatch) {
         // DEBUG-only: visible diagnostics, non-blocking.
