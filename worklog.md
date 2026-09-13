@@ -910,3 +910,17 @@ Work Log:
 
 Stage Summary:
 - LOCAL SERVER VERIFIED SERVING RELEASED IDENTITY: /api/app/version → {"success":true,"bundle":{"commit":"6b757f965751e9394688d8676bfb666ab34c2b99","shortCommit":"6b757f9","version":"2.4.5",...}}; /?page=home HTTP 200, __ZylodBundleIdentity ×2, contains 6b757f9.
+
+---
+Task ID: 33
+Agent: glm-main
+Task: fix next/image unconfigured-host crash (picsum.photos) reported by owner
+
+Work Log:
+- Root cause: prisma/seed-sqlite.mjs seeds product images with picsum.photos URLs; next.config.ts only allowlisted z-cdn.chatglm.cn -> next/image threw -> error boundary page
+- Fix: next.config.ts remotePatterns += picsum.photos, fastly.picsum.photos, images.unsplash.com, via.placeholder.com, images.pexels.com
+- Verified: tsc --noEmit exit 0; dev server auto-restarted (Ready 949ms); /api/app/version still 6b757f9; home 200 + identity markers x2; /_next/image with the crashing picsum URL now returns 200 real 600x600 JPEG
+- Pushed: 7b8ca80 on main
+
+Stage Summary:
+- Product image rendering fixed end-to-end; owner local agent needs git pull + dev restart; main now at 7b8ca80 (tsconfig excludes c4cffd8 + image allowlist 7b8ca80)
