@@ -80,7 +80,7 @@ android {
             buildConfigField(
                 "String[]",
                 "SERVER_ENDPOINTS",
-                "new String[]{\"http://192.168.43.79:3000\", \"http://10.0.2.2:3000\", \"http://localhost:3000\", \"https://jugular-winnings-backfield.ngrok-free.dev\", \"https://zylodbd.ngrok.dev\", \"https://zylod.com\"}"
+                "new String[]{\"http://192.168.2.100:3000\", \"http://192.168.2.101:3000\", \"http://192.168.43.79:3000\", \"http://10.0.2.2:3000\", \"http://localhost:3000\", \"https://jugular-winnings-backfield.ngrok-free.dev\", \"https://zylodbd.ngrok.dev\", \"https://zylod.com\"}"
             )
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
