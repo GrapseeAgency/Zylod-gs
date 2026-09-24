@@ -13,13 +13,13 @@ export function TermsHistoryPage() {
     {
       version: '2.4',
       date: 'May 2026',
-      changes: 'Integrated Live Factory Shopping broadcasting rules, dynamic RFQ milestone escrow clauses, and sub-accounts for wholesale buying houses.',
+      changes: 'Integrated Live Factory Shopping broadcasting rules and sub-accounts for wholesale buying houses.',
       status: 'Current Active',
     },
     {
       version: '2.0',
       date: 'January 2025',
-      changes: 'Implemented Bangladesh Bank compliant SafePay Escrow multi-signature protocols and updated 7-day inspection window procedures.',
+      changes: 'Clarified payment verification steps, official payment channels, and order status rules.',
       status: 'Superceded',
     },
     {

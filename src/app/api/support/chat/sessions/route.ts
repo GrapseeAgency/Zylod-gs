@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
         senderId: 'system',
         senderType: 'system',
         message: type === 'chatbot'
-          ? 'Hello! I am Zylod AI Assistant. How can I assist you with wholesale orders, supplier verification, or escrow payments today?'
-          : 'Welcome to Zylod Live Support. A support specialist will join your conversation shortly.',
+          ? 'Hello! I am the Zylod Help Assistant. I can point you to help articles about wholesale orders, supplier verification, and payment verification.'
+          : 'Welcome to Zylod Support Chat. Messages are saved here for the Zylod team to review — for urgent issues, email support@zylod.com.',
       },
     })
 

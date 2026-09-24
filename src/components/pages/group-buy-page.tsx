@@ -126,7 +126,7 @@ export function GroupBuyPage() {
 
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs text-gray-500 font-medium">
-                    Protected by SafePay Volume Escrow
+                    Live pool progress — updates as merchants join
                   </span>
                   <Button
                     size="sm"

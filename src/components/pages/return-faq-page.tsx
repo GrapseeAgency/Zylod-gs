@@ -29,7 +29,7 @@ export function ReturnFaqPage() {
         </button>
         <div>
           <h1 className="font-bold text-gray-900 text-base md:text-xl">Return & Inspection FAQ</h1>
-          <p className="text-xs text-gray-400">Questions on Claims, Escrow Freeze & Reverse Shipping</p>
+          <p className="text-xs text-gray-400">Questions on Claims, Reviews & Reverse Shipping</p>
         </div>
       </div>
 

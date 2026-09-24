@@ -35,8 +35,8 @@ export function SafetyCenterPage() {
 
   const safetyPillars = [
     {
-      title: 'SafePay Escrow Vault',
-      desc: '100% of your funds remain in escrow until you verify goods upon delivery.',
+      title: 'Payment Verification',
+      desc: 'An order stays UNPAID and does not reach the supplier until Zylod verifies your payment.',
       icon: Lock,
       page: 'escrow-protection-guide',
     },
@@ -47,8 +47,8 @@ export function SafetyCenterPage() {
       page: 'seller-verification-guide',
     },
     {
-      title: '48-Hour Inspection Window',
-      desc: 'Test goods, count units, and raise immediate dispute if anything is defective.',
+      title: 'Report Problems Early',
+      desc: 'Test goods, count units, and report anything defective to support right away — every report is reviewed by the Zylod team.',
       icon: Eye,
       page: 'dispute-resolution-guide',
     },

@@ -155,7 +155,7 @@ export function PushNotificationSettingsPage() {
     {
       id: 'system',
       title: 'Platform & Security Alerts',
-      desc: 'Account security, policy updates, and escrow clearances',
+      desc: 'Account security, policy updates, and payment verification status',
       icon: Shield,
       iconBg: 'bg-slate-50 text-slate-700',
       pushKey: 'pushSystem' as keyof Preferences,

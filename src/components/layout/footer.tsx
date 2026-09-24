@@ -392,7 +392,7 @@ export function Footer() {
               Platform Sitemap
             </FooterLink>
             <FooterLink onClick={() => navigate('escrow-protection-guide')} size="xs">
-              SafePay Escrow Guide
+              How Payments Work Guide
             </FooterLink>
             <FooterLink onClick={() => navigate('buyer-protection-policy')} size="xs">
               Buyer Protection

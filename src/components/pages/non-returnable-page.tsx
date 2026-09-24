@@ -23,8 +23,8 @@ export function NonReturnablePage() {
       desc: 'Fabric rolls or garments that have been washed, cut, stitched, printed, or otherwise processed by the buyer after delivery acceptance.',
     },
     {
-      title: 'Claims Lodged Beyond 7 Calendar Days',
-      desc: 'Requests submitted after the statutory 7-day inspection window has elapsed and escrow funds have disbursed.',
+      title: 'Claims Without Approval or Evidence',
+      desc: 'Requests that are not approved through review, or that arrive without the documented evidence described above, cannot be processed as returns.',
     },
   ]
 

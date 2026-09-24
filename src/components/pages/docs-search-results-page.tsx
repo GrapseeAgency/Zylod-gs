@@ -33,14 +33,6 @@ export function DocsSearchResultsPage() {
   const [faqs, setFaqs] = useState<SearchResultFaq[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (query.trim()) {
-      fetchResults(query.trim())
-    } else {
-      setLoading(false)
-    }
-  }, [query])
-
   async function fetchResults(search: string) {
     setLoading(true)
     try {
@@ -59,6 +51,14 @@ export function DocsSearchResultsPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (query.trim()) {
+      fetchResults(query.trim())
+    } else {
+      setLoading(false)
+    }
+  }, [query])
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -104,7 +104,7 @@ export function DocsSearchResultsPage() {
           <div className="text-center py-16 bg-white rounded-3xl p-6 border border-gray-100 space-y-2">
             <BookOpen className="w-12 h-12 text-gray-300 mx-auto" />
             <p className="text-sm font-bold text-gray-800">No matching documentation</p>
-            <p className="text-xs text-gray-400">Try searching for keywords like "escrow", "moq", "verification", or "dispute".</p>
+            <p className="text-xs text-gray-400">Try searching for keywords like "payment", "moq", "verification", or "dispute".</p>
           </div>
         ) : (
           <div className="space-y-6">

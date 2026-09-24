@@ -431,13 +431,13 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
                 onClick={() => navigate('escrow-protection-guide')}
                 className="hover:text-red-600 hover:underline"
               >
-                SafePay Escrow Rules
+                Payment Verification Rules
               </button>
               <button
                 onClick={() => navigate('buyer-protection-policy')}
                 className="hover:text-red-600 hover:underline"
               >
-                48h Inspection Policy
+                Buyer Protection Policy
               </button>
             </div>
           </div>

@@ -19,7 +19,7 @@ export function CommunityGuidelinesPage() {
     },
     {
       title: '2. Zero Off-Platform Transactions',
-      desc: 'Asking buyers for direct bKash transfers, personal bank deposits, or cash handovers outside Zylod SafePay is grounds for permanent supplier suspension and legal blacklisting.',
+      desc: 'Asking buyers for direct bKash transfers, personal bank deposits, or cash handovers outside Zylod checkout is grounds for permanent supplier suspension and legal blacklisting.',
       icon: Ban,
     },
     {
@@ -114,7 +114,7 @@ export function CommunityGuidelinesPage() {
 
         {/* Enforcement notice */}
         <div className="bg-slate-100 rounded-2xl p-4 text-[11px] text-gray-500 text-center leading-relaxed">
-          Violations of these guidelines may result in listing removal, escrow forfeiture, supplier badge revocation, and referral to the Ministry of Commerce & Directorate of National Consumer Rights Protection (DNCRP).
+          Violations of these guidelines may result in listing removal, supplier badge revocation, and referral to the Ministry of Commerce & Directorate of National Consumer Rights Protection (DNCRP).
         </div>
       </div>
     </div>

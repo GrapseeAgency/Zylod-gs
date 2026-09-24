@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: report,
-      message: 'Report submitted. Our Trust & Safety team will review this violation within 24 hours.',
+      message: 'Report submitted. It has been saved to our inbox for review by the Zylod team.',
     }, { status: 201 })
   } catch (error) {
     console.error('Report user error:', error)

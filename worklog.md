@@ -1432,3 +1432,56 @@ Stage Summary:
   3. src/components/pages/investor-relations-page.tsx:97-103 — quick-nav links to annual-report/financial-filings/investor-presentation (generic-info fallbacks) left as navigation; a grep found no fabricated figures in annual-report-page.tsx / investor-presentation-page.tsx, but a full content audit of those two pages was out of scope.
   4. Mobile discovery gap: at 375×812 the mobile home (MobileHomePage + mobile-top-nav "Services & Deals" sheet + bottom tabs) exposes NO path to About Zylod — About is only reachable via the desktop header's More dropdown (hidden lg:flex). Mobile users may have no route to these corporate pages; needs a product decision (out of scope).
   5. company-milestones-page.tsx:11 `useState<any[]>` kept (pre-existing; typing-only, no honesty impact).
+---
+Task ID: 43-a
+Agent: subagent 43-a (died before self-reporting; record reconstructed + completed by main agent)
+Task: generic-info-page.tsx de-fake sweep — dead superseded configs/components removed, aspirational copy rewritten.
+
+Work Log:
+- Removed DEAD config entries superseded by real pages (verified intercept via page-loader/chunk-misc first): 'admin-users', 'admin-products', 'admin-reports', 'admin-analytics', 'admin-suppliers', 'split-payment', 'installment-payment'. Removed dead internal components (old AdminSuppliersPage etc.) + their now-unused imports (verifySupplier, useAdminUsers, useAdminProducts, Table, etc.). File: 5,400 → ~4,000 lines.
+- Rewrote fake facts: '50,000+ registered businesses / 200,000+ products / 5,000+ suppliers / founded 2023, 200+ employees' → honest 'Zylod is built and operated from Dhaka'; fake '+880 1700-WHOLESALE' phone and 'Gulshan-2 HQ' → 'will be published by the site owner'; '24/7 support, 15-min response' → email-only; 'deliver across all 64 districts, Dhaka 1-2 days' → 'delivery zones set by each supplier'; fake refund SLAs ('5 business days', '48 hours') → neutral honest wording; 'Verification typically 2-3 business days' → 'status updates when admin decides'; 'Pay by QR' fake claim → 'not supported yet'; partner-program fake tiers/5-day-SLA → 'not announced yet / not open yet'; quality-guarantee fake inspection+claims SLAs → honest pending state; 'Explore 20+ categories' → '20 categories' (real count).
+- MAIN AGENT COMPLETION: SupportPage had 3 hardcoded fake tickets (TK-1024/TK-1009/TK-0991) + FAKE SUCCESS submitTicket (setSubmitted(true), no API) + fake 'Call 9am–6pm / 24h reply / Live Chat Instant' cards → replaced with honest state: email-only card + 'Support tickets are not available yet — email support@zylod.com' notice; fake form+tickets removed.
+- MAIN AGENT COMPLETION: AddAddressPage silently fabricated data — `city: form.city || 'Dhaka'`, `postalCode: form.postal || '0000'` → city+postal now REQUIRED (validation + * markers), real trimmed values sent.
+- Remaining setTimeout audit: all legit (debounced search, real-API success feedback timers, rewards-spin animation delay before REAL server result).
+
+Stage Summary:
+- tsc 0 / eslint 0 / fake-token grep 0. Renderer has graceful generic fallback for unknown pageIds (no crash on removed keys). All removed keys verified intercepted by real pages.
+---
+Task ID: 43-d
+Agent: subagent 43-d (died before self-reporting; record reconstructed + verified by main agent)
+Task: purge every remaining false 'SafePay Escrow' claim across ~67 files.
+
+Work Log:
+- Rewrote false escrow claims: dispute-resolution-guide ('escrow + arbitration guarantee') → honest dispute-review wording; buyer-terms 'SafePay Escrow Commitment' section → real payment-verification commitment; data-collection 'multi-sign escrow settlement' → real data purposes; help-center 'SafePay Escrow 48h protection' card → 'How Payments Work'; payment-faq subtitle → 'Bank transfers & mobile banking (bKash / Nagad)'; coupon-detail 'escrow checkout' → 'at checkout'; return-process 'escrow disbursement frozen automatically' → honest review wording; product-detail 'SafePay Escrow & 48h Inspection' badge → 'Order stays UNPAID until payment is verified'; error-500 page's 'SafePay Escrow Funds Are 100% Protected' notice removed; exclusive-deal fake 'Lock VIP Allocation with SafePay Escrow' buttons removed.
+- INTERACTIVE AUDITS: chatbot is REAL (POST /api/support/chatbot/query — FAQ matcher): reworded greeting/suggestions AND fixed the API itself — hardcoded fake suggested articles ('how-it-works', 'escrow-buyer-protection' — nonexistent slugs) → real DB query of published helpArticles. submit-ticket is REAL (POST /api/support/tickets, 401 unauth ✓): category label fixed, form kept. version-history was a fabricated changelog (v2.1.0 'SafePay multi-tier escrow launch' etc.) → honest 'No releases published yet'. group-buy: fake 'Protected by SafePay Volume Escrow' removed; honest empty state 'No active group buy pools at this moment.' payment-methods-detail fabricated 'SafePay Escrow Wallet' method + fake fees/limits → only real methods (bank transfer / mobile banking).
+- Also fixed pre-existing eslint react-hooks/immutability errors this exposed in admin-reports-page.tsx + faq-page.tsx + report-user-page.tsx (function declarations moved above their useEffect callers).
+
+Stage Summary:
+- Remaining 'safepay' grep hits are HONESTY NOTE comments + the honest escrow guide's 'escrow service does not exist yet' disclosure. tsc 0; eslint 0 on all 67 modified files (after main-agent fixes); API matrix: POST tickets 401, chatbot 400 (public FAQ matcher by design), report-user 401.
+---
+Task ID: 43
+Agent: glm-main (de-fake cron round 8, orchestrator)
+Task: DE-FAKE round 8 — generic-info sweep completion, admin analytics (API+page), corporate-pages purge, SafePay/escrow false-claims purge, tracking truncation fix.
+
+Work Log:
+- GIT: synced origin/main (up to date at 5cbadb2). DB verified: 132 tables × 0 rows ✓ (re-verified below). Dev server healthy.
+- BASELINE QA (1280x800 + 375x812): home honest 'No products found' + 'Join 0 verified suppliers' ✓ both widths; wrong-creds login → real 'Invalid credentials' ✓; console clean (only pre-existing DialogContent aria warning).
+- FIX: /api/orders/[id] trackingHistory take:10 truncation removed — order detail now returns FULL tracking history (consistent with /track + /timeline endpoints); OrderWithIncludes type updated.
+- FEATURE (43-b): NEW real admin analytics — GET /api/admin/analytics (admin-gated, 24 real Prisma aggregates: users/products/orders/payments/reviews/sessions/KYC-pending/revenue/GMV by real statuses; recent audit logs + orders; returns/disputes returned as null with 'no module in DB yet' note because those models don't exist — honest). admin-analytics-page.tsx (KPI strip w/ honest zeros, breakdowns, recent activity, 30s auto-refresh + manual refresh, responsive grid, skeleton/401/Retry states). Wired into page-loader + chunk-misc; dashboard quick-action already targeted 'admin-analytics'. Unauth curl → 401 ✓.
+- DE-FAKE (43-a record above): generic-info sweep + SupportPage fake-success removal + address-form fabrication fix.
+- DE-FAKE (43-c): QA discovered 'About Zylod' renders about-us-page fed by GET /api/about with HARDCODED fabrications (founded 2020, 'South Asia's most trusted by 2027', 'Every supplier is verified' [false: 0 suppliers], '72 hours', 'SafePay escrow protects every transaction') → API companyInfo purged + about-us/leadership (4 fake execs w/ unsplash photos deleted)/company-values/company-milestones/investor-relations (fake Series A, 320% YoY, 'Unqualified Audit Opinion')/investor-contact all rewritten to honest states with live DB counts ('0 Verified Suppliers / 0 Registered Buyers / 0 Live Products — live counts from our database').
+- DE-FAKE (43-d record above): SafePay/escrow false-claims purge across ~67 files.
+- VERIFY: npx tsc --noEmit → 0 errors (after each stage); eslint on ALL touched files → 0 problems; fake-token greps → 0; agent-browser QA (1280x800 + 375x812): home honest ✓, About page honest ✓ (verbatim text in 43-c report), footer honest chips render ✓, console 0 fresh errors ✓. Commits pushed immediately at each stage.
+
+Stage Summary:
+- The site no longer claims anything it doesn't do: no fake stats/people/milestones/escrow/changelogs anywhere in corporate+info+support surfaces; admin now has 4 real tools (users/products/suppliers/payments) + real analytics; order detail returns full tracking history.
+- REMAINING FAKE/INCOMPLETE:
+  1. No real admin account exists (DB empty by mandate) — admin analytics/users/products/suppliers/payments E2E requires the owner to create the first admin.
+  2. Disputes backend (model+API), GET /api/returns/[id], return-evidence upload, delivery-chat socket.io transport, KYC document-image upload/review — still missing; pages honestly state unavailable.
+  3. generic-info-page.tsx: ~40 specialType interactive components remain (RFQ/reviews/addresses REAL; several 'not available yet' honest) — further audit candidates exist but no fake success paths known remaining.
+  4. admin-categories / admin-complaints / admin-settings remain honest static info pages (no backend).
+  5. Footer social links (facebook.com/zylod etc.) + support@zylod.com — owner must confirm real handles.
+  6. Home quick-action backends (Photo/AI/Voice search) still unverified; QR/Barcode verified honest.
+  7. Mobile chrome exposes no path to About/corporate pages (desktop More-menu only) — product decision needed.
+  8. investor-contact input placeholders ('e.g. Sarah Jenkins / Apex Venture Partners') kept as input placeholders — acceptable but noted.
+  9. Chatbot API is public (FAQ matcher) — consider rate limiting before launch traffic.

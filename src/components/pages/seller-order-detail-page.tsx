@@ -60,7 +60,7 @@ export function SellerOrderDetailPage() {
             <p className="font-semibold text-gray-900 text-lg">{order.status}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 text-right">Escrow Status</p>
+            <p className="text-sm text-gray-500 text-right">Payment Status</p>
             <p className="font-semibold text-green-600">{order.paymentStatus}</p>
           </div>
         </div>

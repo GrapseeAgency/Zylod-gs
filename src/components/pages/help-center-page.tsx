@@ -32,10 +32,6 @@ export function HelpCenterPage() {
   const [status, setStatus] = useState<SystemStatus | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
   async function fetchData() {
     setLoading(true)
     try {
@@ -55,6 +51,10 @@ export function HelpCenterPage() {
     setLoading(false)
   }
 
+  useEffect(() => {
+    fetchData()
+  }, [])
+
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
     if (!searchQuery.trim()) return
@@ -63,7 +63,7 @@ export function HelpCenterPage() {
 
   const topicCards = [
     { title: 'Orders & Shipping', desc: 'Tracking, courier delivery, MOQs', icon: FileText, page: 'faq', category: 'orders' },
-    { title: 'SafePay Escrow', desc: '48h buyer protection & payment terms', icon: ShieldCheck, page: 'escrow-protection-guide' },
+    { title: 'How Payments Work', desc: 'Payment verification & order status', icon: ShieldCheck, page: 'escrow-protection-guide' },
     { title: 'Supplier Hub & KYC', desc: 'Trade license, NID verification, listings', icon: HelpCircle, page: 'seller-verification-guide' },
     { title: 'Returns & Disputes', desc: 'Defective stock claims & arbitration', icon: AlertTriangle, page: 'dispute-resolution-guide' },
   ]
@@ -89,7 +89,7 @@ export function HelpCenterPage() {
           <form onSubmit={handleSearch} className="relative mt-4">
             <input
               type="text"
-              placeholder="Search help, policies, dispute rules, escrow..."
+              placeholder="Search help, policies, payments, disputes..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="w-full bg-white text-gray-900 rounded-2xl pl-11 pr-4 py-3.5 text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 placeholder:text-gray-400"

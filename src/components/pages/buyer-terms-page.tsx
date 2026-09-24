@@ -15,12 +15,12 @@ export function BuyerTermsPage() {
       desc: 'All purchase orders must be executed strictly for retail resale, manufacturing input, or commercial enterprise usage.',
     },
     {
-      title: 'Order Payment & SafePay Escrow Commitment',
-      desc: 'Payments are transferred into Bangladesh Bank approved multi-sign escrow. Buyer must confirm delivery within 48 hours of receipt.',
+      title: 'Order Payment & Verification',
+      desc: 'Orders are created UNPAID. Pay by bank transfer or mobile banking (bKash/Nagad) using only the details shown on your order — the order advances to the supplier once Zylod verifies the payment.',
     },
     {
       title: 'Inspection & Defect Reporting Protocol',
-      desc: 'Defects, shortages, or discrepancies must be documented with unboxing video/photos and lodged within the 7-day inspection window.',
+      desc: 'Defects, shortages, or discrepancies should be documented with unboxing video/photos and reported to support@zylod.com as early as possible. Return eligibility follows the supplier\u2019s published return policy.',
     },
     {
       title: 'Cancellation & Order Amendments',
@@ -47,7 +47,7 @@ export function BuyerTermsPage() {
             <h2 className="font-bold text-sm">Wholesale Buyer Code of Conduct</h2>
           </div>
           <p className="text-xs text-blue-100 leading-relaxed">
-            As an accredited wholesale buyer on Zylod, your transactions enjoy SafePay Escrow protection under these guidelines.
+            These terms set honest expectations: orders are created UNPAID, payments go only to the official details shown on your order, and an order advances to the supplier only after payment is verified by Zylod.
           </p>
         </div>
 

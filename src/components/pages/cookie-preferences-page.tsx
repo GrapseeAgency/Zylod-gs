@@ -66,7 +66,7 @@ export function CookiePreferencesPage() {
                   <Badge className="bg-gray-100 text-gray-600 border-none text-[10px]">Always Active</Badge>
                 </div>
                 <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
-                  Required for CSRF tokens, SafePay authentication, cart storage, and server load balancing.
+                  Required for CSRF tokens, sign-in sessions, cart storage, and server load balancing.
                 </p>
               </div>
             </div>

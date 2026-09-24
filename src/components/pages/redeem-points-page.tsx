@@ -17,7 +17,7 @@ const REDEEM_OPTIONS = [
   { points: 1000, bdt: 100, label: '৳100 Wholesale Voucher', minOrder: 1000 },
   { points: 2500, bdt: 250, label: '৳250 Wholesale Voucher', minOrder: 2500 },
   { points: 5000, bdt: 500, label: '৳500 Wholesale Voucher', minOrder: 5000 },
-  { points: 10000, bdt: 1000, label: '৳1,000 SafePay Wallet Credit', minOrder: 0 },
+  { points: 10000, bdt: 1000, label: '৳1,000 Wholesale Voucher', minOrder: 0 },
 ]
 
 export function RedeemPointsPage() {
@@ -115,7 +115,7 @@ export function RedeemPointsPage() {
         <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-6 text-white shadow-md space-y-2">
           <h2 className="text-base sm:text-lg md:text-2xl font-bold">Exchange Points for Real Savings</h2>
           <p className="text-xs text-amber-100">
-            Convert your points into checkout discount vouchers or direct SafePay wallet funds.
+            Convert your points into checkout discount vouchers.
           </p>
         </div>
 

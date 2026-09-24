@@ -864,24 +864,24 @@ function DesktopProductDetailPage() {
             </CardContent>
           </Card>
 
-          {/* ─── Wholesale Trust & Escrow Guarantee Banner ─── */}
+          {/* ─── Payment Verification Trust Banner ─── */}
           <div className="bg-gradient-to-r from-red-50/70 via-slate-50 to-orange-50/50 rounded-2xl p-3.5 border border-red-100 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0">
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <p className="font-bold text-gray-900 text-[11px]">SafePay Escrow & 48h Inspection Guarantee</p>
-                <p className="text-[10px] text-gray-500">100% money protection until you verify goods upon delivery.</p>
+                <p className="font-bold text-gray-900 text-[11px]">Order stays UNPAID until payment is verified</p>
+                <p className="text-[10px] text-gray-500">Pay only via the bank transfer or bKash/Nagad details shown for your order — the supplier ships once Zylod verifies the payment.</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-[11px] font-semibold text-red-600">
               <button onClick={() => navigate('escrow-protection-guide')} className="hover:underline">
-                Escrow Rules
+                Payment Rules
               </button>
               <span>•</span>
               <button onClick={() => navigate('buyer-protection-policy')} className="hover:underline">
-                48h Returns
+                Return Policy
               </button>
             </div>
           </div>

@@ -7,7 +7,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
-  ArrowLeft, Wallet, ShieldCheck, Lock,
+  ArrowLeft, Wallet, ShieldCheck,
   ArrowDownLeft, ArrowUpRight, TrendingUp,
   RefreshCw, DollarSign, PieChart, Building2,
   CheckCircle2, Sparkles, AlertCircle
@@ -20,8 +20,6 @@ export function BalanceOverviewPage() {
 
   const [data, setData] = useState<{
     availableBalance: number
-    heldInEscrow: number
-    releasedEscrow: number
     totalInflow: number
     totalOutflow: number
     totalDeposits: number
@@ -31,8 +29,6 @@ export function BalanceOverviewPage() {
     totalCashback: number
   }>({
     availableBalance: 0,
-    heldInEscrow: 0,
-    releasedEscrow: 0,
     totalInflow: 0,
     totalOutflow: 0,
     totalDeposits: 0,
@@ -77,7 +73,7 @@ export function BalanceOverviewPage() {
         {/* Desktop page title */}
         <div className="hidden md:block">
           <h1 className="text-2xl font-black tracking-tight text-slate-900">Balance Breakdown</h1>
-          <p className="text-sm text-slate-500 mt-1">Wallet, escrow, and capital flow overview</p>
+          <p className="text-sm text-slate-500 mt-1">Wallet balance and cash-flow overview</p>
         </div>
 
         {/* Total Funds Highlight */}
@@ -87,14 +83,14 @@ export function BalanceOverviewPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Net Position</span>
           </div>
           <div>
-            <span className="text-xs text-slate-300">Total Liquid + Escrow Asset Value</span>
+            <span className="text-xs text-slate-300">Total Wallet Balance</span>
             <div className="text-3xl md:text-4xl font-black mt-0.5">
-              {formatPrice(data.availableBalance + data.heldInEscrow)}
+              {formatPrice(data.availableBalance)}
             </div>
           </div>
           <div className="flex items-center gap-2 pt-2 border-t border-white/10 text-xs text-slate-300">
             <ShieldCheck className="h-4 w-4 text-emerald-400" />
-            <span>Protected by Bangladesh Bank Escrow Regulations</span>
+            <span>Figures come from your real wallet record and transaction history</span>
           </div>
         </div>
 
@@ -113,14 +109,14 @@ export function BalanceOverviewPage() {
           </div>
 
           <div className="bg-white rounded-3xl p-4 md:p-5 border border-slate-200 shadow-2xs space-y-1">
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-2">
-              <Lock className="h-4 w-4" />
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
+              <ArrowDownLeft className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Held in Escrow</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Inflow</span>
             <span className="text-base md:text-lg font-black text-slate-900 block font-mono">
-              {formatPrice(data.heldInEscrow)}
+              {formatPrice(data.totalInflow)}
             </span>
-            <span className="text-[10px] text-amber-600 font-bold block">Releasing on delivery</span>
+            <span className="text-[10px] text-emerald-600 font-bold block">Deposits, refunds & cashback</span>
           </div>
         </div>
 

@@ -44,6 +44,7 @@ export function ReportUserPage() {
   const [showSupplierDropdown, setShowSupplierDropdown] = useState(false)
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [reportRef, setReportRef] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [copied, setCopied] = useState(false)
 
@@ -55,11 +56,6 @@ export function ReportUserPage() {
     { value: 'non_delivery', label: 'Deliberate Refusal to Dispatch Confirmed Wholesale Goods' },
     { value: 'other', label: 'Other Serious Digital Commerce Policy Violation' },
   ]
-
-  useEffect(() => {
-    fetchRegisteredSuppliers()
-    fetchUserOrders()
-  }, [])
 
   async function fetchRegisteredSuppliers() {
     try {
@@ -80,6 +76,11 @@ export function ReportUserPage() {
       }
     } catch {}
   }
+
+  useEffect(() => {
+    fetchRegisteredSuppliers()
+    fetchUserOrders()
+  }, [])
 
   function handleSelectSupplier(sup: SupplierOption) {
     setFormData(prev => ({ ...prev, reportedUserId: sup.id }))
@@ -112,6 +113,7 @@ export function ReportUserPage() {
       })
       const json = await res.json()
       if (res.ok) {
+        setReportRef(json.data?.id || '')
         setSubmitted(true)
       } else {
         setErrorMsg(json.error || 'Failed to submit report')
@@ -159,13 +161,15 @@ export function ReportUserPage() {
               <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
-              <h2 className="text-lg font-bold text-gray-900">Report Under Review</h2>
+              <h2 className="text-lg font-bold text-gray-900">Report Saved</h2>
               <p className="text-xs text-gray-600 max-w-md mx-auto leading-relaxed">
-                Your report has been routed to the **Zylod Trust & Safety Moderation Council**. If fraudulent activity or counterfeit merchandise is confirmed, the entity will face immediate account restriction, escrow freeze, and DNCRP referral.
+                Your report has been saved for review by the Zylod team. If fraudulent activity or counterfeit merchandise is confirmed, the account may face restriction and, where required, referral to the relevant authorities. Zylod does not hold funds in escrow — report any payment made outside the official order instructions immediately.
               </p>
-              <div className="p-3 bg-slate-50 rounded-2xl border border-gray-100 text-xs text-gray-500 max-w-sm mx-auto">
-                Tracking Case Reference: <span className="font-mono font-bold text-gray-900">CASE-{Date.now().toString().slice(-6)}</span>
-              </div>
+              {reportRef && (
+                <div className="p-3 bg-slate-50 rounded-2xl border border-gray-100 text-xs text-gray-500 max-w-sm mx-auto">
+                  Report Reference: <span className="font-mono font-bold text-gray-900">{reportRef}</span>
+                </div>
+              )}
               <div className="flex justify-center gap-3 pt-2">
                 <button
                   onClick={goBack}

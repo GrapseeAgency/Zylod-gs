@@ -659,7 +659,7 @@ export function AdminProfilePage() {
                       {[
                         { label: 'Standard Wholesale Commission', value: '2.5%' },
                         { label: 'Payment Processing Fee', value: '1.8%' },
-                        { label: 'Trade Assurance Escrow Protection', value: '0.5%' },
+                        { label: 'Payment Verification Reviews', value: 'Admin queue' },
                       ].map(({ label, value }) => (
                         <div key={label} className="flex justify-between py-2 border-b border-slate-800 last:border-0">
                           <span className="text-slate-300">{label}</span>

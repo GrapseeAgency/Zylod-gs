@@ -28,8 +28,8 @@ export function PaymentFaqPage() {
           <ArrowLeft className="w-5 h-5 text-gray-700" />
         </button>
         <div>
-          <h1 className="font-bold text-gray-900 text-base">Payment & Escrow FAQ</h1>
-          <p className="text-xs text-gray-400">bKash, Bank Transfers, SafePay Escrow & Invoicing</p>
+          <h1 className="font-bold text-gray-900 text-base">Payment FAQ</h1>
+          <p className="text-xs text-gray-400">Bank transfers & mobile banking (bKash / Nagad)</p>
         </div>
       </div>
 

@@ -33,7 +33,7 @@ export function SubmitTicketPage() {
 
   const categories = [
     { value: 'order_issue', label: 'Order & Consignment Issue' },
-    { value: 'payment_issue', label: 'Escrow & SafePay Payment' },
+    { value: 'payment_issue', label: 'Payments & Verification' },
     { value: 'account_issue', label: 'Account, 2FA & Login' },
     { value: 'product_issue', label: 'Product Quality & Counterfeit' },
     { value: 'seller_issue', label: 'Supplier Dispute & Breach' },
@@ -47,10 +47,6 @@ export function SubmitTicketPage() {
     { value: 'urgent', label: 'Urgent', color: 'text-red-600 bg-red-50' },
   ]
 
-  useEffect(() => {
-    fetchOrders()
-  }, [])
-
   async function fetchOrders() {
     try {
       const res = await fetch('/api/orders/my-orders?limit=10')
@@ -60,6 +56,10 @@ export function SubmitTicketPage() {
       }
     } catch {}
   }
+
+  useEffect(() => {
+    fetchOrders()
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

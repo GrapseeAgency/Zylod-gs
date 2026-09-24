@@ -131,7 +131,7 @@ export function RefundToWalletPage() {
             <div>
               <h1 className="text-base font-black">Instant Wallet Re-Credit</h1>
               <p className="text-xs text-slate-300">
-                Cancelled orders and escrow dispute settlements are instantly credited with zero turnaround delays.
+                Approved refunds are credited to your wallet balance once the refund is processed — timing depends on verification of the original payment.
               </p>
             </div>
           </div>

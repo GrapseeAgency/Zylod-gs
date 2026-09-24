@@ -17,8 +17,8 @@ export function DataCollectionPage() {
     },
     {
       title: 'Transactional & Commercial Data',
-      items: ['Purchase Order SKUs and quantities', 'Payment gateway logs & escrow references', 'Courier tracking telemetry', 'Bank account routing numbers'],
-      reason: 'Execution of bulk order contracts and multi-sign SafePay escrow settlement.',
+      items: ['Purchase Order SKUs and quantities', 'Order records & payment verification logs', 'Courier tracking telemetry', 'Bank account routing numbers'],
+      reason: 'Processing orders and keeping payment verification records for each transaction.',
     },
     {
       title: 'Device & Telemetry Data',

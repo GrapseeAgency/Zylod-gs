@@ -80,7 +80,7 @@ export function PaymentPendingPage() {
             </div>
           </div>
           <p className="text-xs text-slate-300 pt-1">
-            Funds in transit or held in Trade Assurance Escrow awaiting delivery inspection.
+            Payments reported but not yet verified. Orders stay UNPAID until Zylod verifies the payment.
           </p>
         </div>
 
@@ -131,7 +131,7 @@ export function PaymentPendingPage() {
               <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500 stroke-[1.5]" />
               <span className="text-xs font-bold text-slate-700 block">All settlements cleared</span>
               <p className="text-xs text-slate-400 max-w-xs mx-auto">
-                No pending payments or escrow holds at this moment.
+                No pending payments at this moment.
               </p>
             </div>
           )}

@@ -55,7 +55,7 @@ export function ProhibitedItemsPage() {
           </div>
           <h1 className="text-lg md:text-2xl font-bold">Strictly Restricted & Prohibited Inventory</h1>
           <p className="text-xs text-red-100 leading-relaxed">
-            Listing or attempting to trade any of the items below violates Bangladesh Law and Zylod Terms. Violators are immediately banned, escrow deposits forfeited, and cases referred to the Directorate of National Consumer Rights Protection (DNCRP).
+            Listing or attempting to trade any of the items below violates Bangladesh Law and Zylod Terms. Violators may face account suspension or ban, and cases may be referred to the Directorate of National Consumer Rights Protection (DNCRP).
           </p>
         </div>
 

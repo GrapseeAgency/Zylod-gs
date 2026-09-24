@@ -134,9 +134,9 @@ export function AppSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <div className="font-semibold text-sm flex items-center gap-2">
-                  <Fingerprint className="h-4 w-4 text-primary" /> Biometric SafePay
+                  <Fingerprint className="h-4 w-4 text-primary" /> Biometric Sign-In Preference
                 </div>
-                <p className="text-xs text-muted-foreground">Require fingerprint/face authentication for escrow authorizations</p>
+                <p className="text-xs text-muted-foreground">Stored preference — biometric sign-in is not available on the web app yet</p>
               </div>
               <Switch
                 checked={biometricEnabled}

@@ -198,7 +198,7 @@ export function NotificationPreferencesPage() {
     {
       id: 'payment_finance',
       label: 'Payments & Financial Events',
-      description: 'Invoice due dates, escrow releases, trade credit utilization, and payment receipts.',
+      description: 'Payment verification updates, order status changes, and payment receipts.',
       icon: CreditCard,
       iconColor: 'text-emerald-600',
       iconBg: 'bg-emerald-50 border-emerald-100',
@@ -256,8 +256,8 @@ export function NotificationPreferencesPage() {
     },
     {
       id: 'dispute_escrow',
-      label: 'Disputes & Trade Assurance',
-      description: 'Dispute case updates, escrow hold notifications, and arbitration outcomes.',
+      label: 'Support & Dispute Updates',
+      description: 'Updates on your support tickets, reported problems, and their documented outcomes.',
       icon: Shield,
       iconColor: 'text-rose-600',
       iconBg: 'bg-rose-50 border-rose-100',

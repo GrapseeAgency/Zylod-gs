@@ -23,8 +23,8 @@ export function SellerTermsPage() {
       desc: 'All items must strictly correspond to uploaded product images, fabric GSM measurements, and stated material specifications.',
     },
     {
-      title: 'Escrow Settlement & Commission Payouts',
-      desc: 'Disbursements are executed within 48 hours of delivery confirmation minus standard platform commission (2-5%).',
+      title: 'Payment Verification & Commission Payouts',
+      desc: 'Supplier payouts are calculated from verified, fulfilled orders minus the standard platform commission recorded on each order.',
     },
   ]
 

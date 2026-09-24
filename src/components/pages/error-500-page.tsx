@@ -6,20 +6,18 @@ import {
   RefreshCw,
   Home,
   Activity,
-  ShieldCheck,
   ArrowLeft,
   AlertOctagon,
   Copy,
   Check
 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useNavigationStore } from '@/store/navigation-store'
 
 export function Error500Page() {
   const { navigate } = useNavigationStore()
-  const [ticketRef, setTicketRef] = useState<string>('ERR-8820X')
+  const [ticketRef, setTicketRef] = useState<string>('')
   const [copied, setCopied] = useState(false)
   const [reloading, setReloading] = useState(false)
 
@@ -74,15 +72,17 @@ export function Error500Page() {
           Temporary Server Exception Encountered
         </h1>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Our distributed transaction engine caught an unexpected runtime error. Automated failover telemetry has logged this incident.
+          Something went wrong on our side. The error has been reported to the Zylod team — please try again in a moment.
         </p>
 
-        <div className="inline-flex items-center gap-2 p-2 px-3 bg-muted/40 rounded-xl border font-mono text-xs text-muted-foreground">
-          <span>Incident Reference: <strong className="text-foreground">{ticketRef}</strong></span>
-          <button onClick={copyRef} className="hover:text-foreground text-primary transition-colors">
-            {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-          </button>
-        </div>
+        {ticketRef && (
+          <div className="inline-flex items-center gap-2 p-2 px-3 bg-muted/40 rounded-xl border font-mono text-xs text-muted-foreground">
+            <span>Incident Reference: <strong className="text-foreground">{ticketRef}</strong></span>
+            <button onClick={copyRef} className="hover:text-foreground text-primary transition-colors">
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Actions */}
@@ -114,19 +114,6 @@ export function Error500Page() {
           Live Server Diagnostics
         </Button>
       </div>
-
-      {/* SafePay Escrow Notice */}
-      <Card className="rounded-2xl border p-4 bg-muted/20 text-left max-w-xl mx-auto">
-        <div className="flex items-start gap-3">
-          <ShieldCheck className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <h4 className="font-bold text-xs text-foreground">SafePay Escrow Funds Are 100% Protected</h4>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              If this occurred during checkout or order disbursement, your bank transaction is cryptographically secured and ledgered. No duplicate charges can occur.
-            </p>
-          </div>
-        </div>
-      </Card>
     </div>
   )
 }

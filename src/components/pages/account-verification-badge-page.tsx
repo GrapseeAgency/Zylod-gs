@@ -120,7 +120,7 @@ export function AccountVerificationBadgePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
             {[
               { title: 'Trust Badge on Catalog Listings', desc: 'Increases quotation conversions by up to 300%' },
-              { title: 'Trade Assurance Escrow Access', desc: 'Secure payment release upon milestone confirmation' },
+              { title: 'Payment Verification Trust', desc: 'Buyers see your real verification status on every listing' },
               { title: 'Priority Search Placement', desc: 'Featured top ranking in buyer category searches' },
               { title: 'Direct RFQ Inquiries', desc: 'Receive high-value enterprise tender requests' },
             ].map(({ title, desc }) => (

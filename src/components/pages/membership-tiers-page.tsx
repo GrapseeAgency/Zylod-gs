@@ -48,7 +48,7 @@ export function MembershipTiersPage() {
         <div className="text-center space-y-1">
           <h2 className="text-xl sm:text-2xl font-black text-gray-900">Wholesale Volume Tiers</h2>
           <p className="text-xs text-gray-500 max-w-sm mx-auto">
-            Higher procurement volume automatically unlocks deeper factory discounts and extended escrow protection.
+            Higher recorded procurement volume automatically unlocks the next tier and its listed benefits.
           </p>
         </div>
 

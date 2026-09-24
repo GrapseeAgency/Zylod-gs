@@ -71,7 +71,7 @@ export function ReturnPolicyPage() {
           </p>
           <div className="flex gap-4 pt-1">
             <div><p className="text-xs font-black">7 Days</p><p className="text-xs text-orange-200">Return Window</p></div>
-            <div><p className="text-xs font-black">SafePay</p><p className="text-xs text-orange-200">Protected</p></div>
+            <div><p className="text-xs font-black">Team</p><p className="text-xs text-orange-200">Reviewed Claims</p></div>
             <div><p className="text-xs font-black">5–7 Days</p><p className="text-xs text-orange-200">Refund Time</p></div>
           </div>
         </div>

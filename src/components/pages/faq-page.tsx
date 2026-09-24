@@ -35,16 +35,12 @@ export function FAQPage() {
   const categories = [
     { id: 'all', labelEn: 'All Topics', labelBn: 'সকল বিষয়' },
     { id: 'orders', labelEn: 'Orders & MOQs', labelBn: 'অর্ডার ও MOQ' },
-    { id: 'payments', labelEn: 'SafePay Escrow', labelBn: 'এস্ক্রো পেমেন্ট' },
+    { id: 'payments', labelEn: 'Payments & Verification', labelBn: 'পেমেন্ট ও ভেরিফিকেশন' },
     { id: 'shipping', labelEn: 'Shipping & Delivery', labelBn: 'ডেলিভারি ও কুরিয়ার' },
     { id: 'returns', labelEn: 'Returns & Disputes', labelBn: 'রিটার্ন ও ডিসপুট' },
     { id: 'sellers', labelEn: 'Seller & Verification', labelBn: 'সেলার ও ভেরিফিকেশন' },
     { id: 'account', labelEn: 'Account & Security', labelBn: 'নিরাপত্তা ও অ্যাকাউন্ট' },
   ]
-
-  useEffect(() => {
-    fetchFaqs()
-  }, [selectedCategory])
 
   async function fetchFaqs() {
     setLoading(true)
@@ -60,6 +56,10 @@ export function FAQPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    fetchFaqs()
+  }, [selectedCategory])
 
   async function handleVote(id: string, helpful: boolean) {
     if (votedMap[id]) return

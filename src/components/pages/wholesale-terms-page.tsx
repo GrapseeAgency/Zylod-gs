@@ -35,7 +35,7 @@ export function WholesaleTermsPage() {
     'Provide accurate product descriptions, images, and MOQ',
     'Honor all quoted prices for confirmed purchase orders',
     'Resolve buyer disputes within 48 hours through platform chat',
-    'Accept SafePay escrow as default payment mechanism',
+    'Provide accurate bank / mobile-banking details for receiving payments',
   ]
   const buyerObligations = [
     'Register with valid TIN and business registration',

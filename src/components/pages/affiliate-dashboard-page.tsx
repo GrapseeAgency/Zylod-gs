@@ -106,7 +106,7 @@ export function AffiliateDashboardPage() {
         <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-              Pending Cleared Escrow Payout
+              Pending Payout
             </span>
             <h2 className="text-3xl font-black text-emerald-400">
               {formatPrice(dashData?.stats?.pendingPayoutBDT ?? 0)}

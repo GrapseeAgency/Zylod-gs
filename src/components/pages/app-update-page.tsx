@@ -116,7 +116,7 @@ export function AppUpdatePage() {
         <CardContent className="p-6 space-y-4">
           <div className="p-4 bg-muted/30 rounded-xl border font-mono text-xs whitespace-pre-line leading-relaxed text-foreground">
             {data?.latestVersion?.changelogEn ||
-              `- Added Native Android Live Factory Shopping hardware-accelerated video player\n- Instant SafePay Escrow multi-sign biometric authentication\n- Offline product catalogue sync for remote warehouse operations\n- 40% faster bulk image caching and background consignment tracking`}
+              'No release notes published yet. Real release notes will appear here when a version actually ships.'}
           </div>
 
           <div className="flex items-center justify-between pt-2">

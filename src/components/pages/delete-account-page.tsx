@@ -120,8 +120,8 @@ export function DeleteAccountPage() {
               <span className="font-bold text-rose-600">Permanently de-indexed</span>
             </div>
             <div className="py-2.5 flex justify-between">
-              <span className="text-slate-500">Trade Assurance Escrows</span>
-              <span className="font-bold text-emerald-600">Must be 0 active claims</span>
+              <span className="text-slate-500">Pending Support Tickets</span>
+              <span className="font-bold text-emerald-600">Must be resolved or closed</span>
             </div>
           </div>
         </div>

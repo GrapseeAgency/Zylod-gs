@@ -23,7 +23,7 @@ export function ChatbotPage() {
     {
       id: 'init-1',
       sender: 'bot',
-      text: 'Hello! I am the Zylod Wholesale AI Assistant. How can I assist you with bulk purchasing, supplier verification, SafePay Escrow, or logistics today?',
+      text: "Hi! I search Zylod's help articles and FAQs. Ask me about orders, payments, MOQs, verification, or returns.",
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     }
   ])
@@ -33,7 +33,7 @@ export function ChatbotPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const quickPrompts = [
-    { textEn: 'How does SafePay Escrow work?', textBn: 'এস্ক্রো পেমেন্ট কীভাবে কাজ করে?' },
+    { textEn: 'How do payments work on Zylod?', textBn: 'জাইলডে পেমেন্ট কীভাবে কাজ করে?' },
     { textEn: 'What is Minimum Order Quantity (MOQ)?', textBn: 'মিনিমাম অর্ডার কোয়ান্টিটি (MOQ) কী?' },
     { textEn: 'How to return defective or damaged goods?', textBn: 'নষ্ট বা ভুল পণ্য কীভাবে রিটার্ন করব?' },
     { textEn: 'What documents are required for Seller Verification?', textBn: 'সেলার ভেরিফিকেশনের জন্য কী কী লাগবে?' },
@@ -70,7 +70,7 @@ export function ChatbotPage() {
       const botMsg: BotMessage = {
         id: 'bot-' + Date.now(),
         sender: 'bot',
-        text: json.answer || 'I am ready to help. You can also explore our official policy handbook.',
+        text: json.answer || 'I could not find that in our knowledge base. Please try rephrasing, or email support@zylod.com.',
         articleSlug: json.articleSlug,
         articleTitle: json.articleTitle,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -80,7 +80,7 @@ export function ChatbotPage() {
       const errorMsg: BotMessage = {
         id: 'bot-err-' + Date.now(),
         sender: 'bot',
-        text: 'Unable to reach knowledge base. Please check internet connection or contact live support.',
+        text: 'Unable to reach the knowledge base. Please check your connection or email support@zylod.com.',
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       }
       setMessages(prev => [...prev, errorMsg])
@@ -101,9 +101,9 @@ export function ChatbotPage() {
           </div>
           <div>
             <h1 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 flex items-center gap-1.5">
-              Zylod AI Assistant
+              Zylod Help Assistant
             </h1>
-            <p className="text-[10px] text-gray-400 font-medium">Wholesale Policy & FAQ Knowledge Engine</p>
+            <p className="text-[10px] text-gray-400 font-medium">Searches our published help articles & FAQs</p>
           </div>
         </div>
 
@@ -205,7 +205,7 @@ export function ChatbotPage() {
         <form onSubmit={e => { e.preventDefault(); handleSend() }} className="flex items-center gap-2">
           <input
             type="text"
-            placeholder={language === 'bn' ? 'প্রশ্ন লিখুন...' : 'Ask about escrow, MOQs, verification, disputes...'}
+            placeholder={language === 'bn' ? 'প্রশ্ন লিখুন...' : 'Ask about payments, MOQs, verification, disputes...'}
             value={inputQuery}
             onChange={e => setInputQuery(e.target.value)}
             className="flex-1 bg-gray-100 rounded-2xl px-4 py-2.5 text-xs md:text-sm text-gray-900 outline-none focus:ring-1 focus:ring-red-500 placeholder:text-gray-400"

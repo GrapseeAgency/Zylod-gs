@@ -92,7 +92,7 @@ export function CommissionHistoryPage() {
             </div>
           </div>
           <p className="text-xs text-slate-300 pt-1">
-            Standard 3.0% platform fee on fulfilled wholesale orders covering escrow protection and RFQ matching.
+            Commission entries recorded on fulfilled wholesale orders — amounts and rates come from your real order records.
           </p>
         </div>
 

@@ -37,7 +37,7 @@ export function WholesaleAgreementPage() {
           <h3 className="text-sm font-bold text-gray-900">Key Contractual Terms</h3>
           <div className="space-y-2.5 text-xs text-gray-600 leading-relaxed">
             <p>
-              <strong>1. Binding Force of Purchase Orders:</strong> A confirmed order along with escrow deposit locks product specifications, MOQ quantities, and wholesale pricing.
+              <strong>1. Binding Force of Purchase Orders:</strong> A confirmed order locks product specifications, MOQ quantities, and wholesale pricing.
             </p>
             <p>
               <strong>2. Warranty of Title & Merchantability:</strong> The supplier warrants that it holds unencumbered title to the goods and that the items are free from latent manufacturing defects.

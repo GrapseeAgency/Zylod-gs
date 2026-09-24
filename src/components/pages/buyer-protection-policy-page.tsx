@@ -13,8 +13,8 @@ export function BuyerProtectionPolicyPage() {
 
   const protections = [
     {
-      title: 'Full Escrow Refund for Damaged Goods',
-      desc: 'If products arrive broken, non-functional, or damaged in courier transit, 100% of your escrow payment is returned or replaced at supplier expense.',
+      title: 'Report Delivery Problems',
+      desc: 'If products arrive broken, non-functional, or damaged in courier transit, report it with photos/video and your order number — the Zylod team reviews every case with the supplier.',
       icon: DollarSign,
     },
     {
@@ -52,9 +52,9 @@ export function BuyerProtectionPolicyPage() {
             <ShieldCheck className="w-4 h-4 text-white" />
             Guaranteed Wholesale Safety
           </div>
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold">100% Buyer Protection Guarantee</h1>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold">Buyer Protection Policy</h1>
           <p className="text-xs text-red-100 leading-relaxed">
-            Every transaction on Zylod is backed by our SafePay Escrow and independent arbitration.
+            Zylod does not hold funds in escrow. Our commitment: honest order status you can check at any time, payments verified before the supplier ships, and a human review of every reported problem.
           </p>
         </div>
 

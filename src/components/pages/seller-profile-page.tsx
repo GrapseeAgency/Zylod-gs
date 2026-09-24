@@ -832,7 +832,7 @@ export function SellerProfilePage() {
                         { label: 'Account Type', value: 'Verified Supplier' },
                         { label: 'Contact Phone', value: profileData?.phone || user?.phone || 'Configured in Settings' },
                         { label: 'Business Email', value: profileData?.email || user?.email || 'Configured in Settings' },
-                        { label: 'Supported Payment Methods', value: 'Trade Escrow, L/C, Bank Transfer, bKash' },
+                        { label: 'Supported Payment Methods', value: 'Bank Transfer, bKash, Nagad' },
                         { label: 'Incoterms Supported', value: 'FOB, CIF, CFR, DAP, EXW' },
                         { label: 'Shipping Port', value: 'Chittagong Port (BDCGP) / Dhaka Dry Port' },
                       ].map(({ label, value }) => (
@@ -853,7 +853,7 @@ export function SellerProfilePage() {
                     <div className="space-y-2.5 text-xs text-slate-600 leading-relaxed">
                       <div className="flex items-start gap-2.5">
                         <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <span>All products backed by Zylod Trade Assurance with secure escrow payments.</span>
+                        <span>Order payments are verified by Zylod before the supplier ships.</span>
                       </div>
                       <div className="flex items-start gap-2.5">
                         <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />

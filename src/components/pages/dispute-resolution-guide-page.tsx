@@ -11,29 +11,32 @@ import {
 export function DisputeResolutionGuidePage() {
   const { navigate, goBack } = useNavigationStore()
 
+  // HONESTY NOTE: Zylod has no escrow system and no automated dispute engine.
+  // Disputes are reported by email/ticket and reviewed by the Zylod team; the
+  // outcome is documented on the ticket. No invented SLAs or guarantees.
   const steps = [
     {
-      time: 'Step 1: Within 48h of Delivery',
-      title: 'Inspect & Open Dispute',
-      desc: 'Count all units, test product operation, and record clear unboxing video/photos. If discrepancies exist, click Raise Dispute in your Order Detail page to immediately lock escrow funds.',
+      time: 'Step 1: On Delivery',
+      title: 'Inspect & Keep Evidence',
+      desc: 'Count all units, test product operation, and record clear unboxing video/photos. Keep your order number handy — you will need it for every support contact.',
       icon: Clock,
     },
     {
-      time: 'Step 2: 24h Supplier Response',
-      title: 'Direct Merchant Negotiation',
-      desc: 'The supplier is given 24 hours to review your evidence and offer a free batch replacement, partial discount refund, or accept full return.',
+      time: 'Step 2: Report the Issue',
+      title: 'Contact Zylod Support',
+      desc: 'Email support@zylod.com or open a support ticket with your order number, photos, and video. Every report is read by the Zylod team.',
       icon: Scale,
     },
     {
-      time: 'Step 3: Zylod Arbitration',
-      title: 'Official Platform Mediation',
-      desc: 'If the supplier refuses to cooperate or fails to respond within 24 hours, Zylod Dispute Specialists step in and evaluate photographic proof against product listing specifications.',
+      time: 'Step 3: Team Review',
+      title: 'Human Review of Your Case',
+      desc: 'A Zylod team member reviews your evidence against the product listing and follows up with you and the supplier. There are no automated decisions.',
       icon: ShieldCheck,
     },
     {
-      time: 'Step 4: Escrow Resolution',
-      title: 'Instant Refund or Reshipment',
-      desc: 'Upon dispute validation, 100% of escrow funds are released back to your Zylod Wallet / bKash / Bank account within 1-2 business days.',
+      time: 'Step 4: Documented Outcome',
+      title: 'Outcome Recorded in Writing',
+      desc: 'The decision is documented on your ticket. Where a refund is approved, it is returned to your original payment method — timing depends on your bank or mobile-money provider.',
       icon: CheckCircle2,
     },
   ]
@@ -54,11 +57,11 @@ export function DisputeResolutionGuidePage() {
         <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-3xl p-6 shadow-md space-y-2">
           <div className="flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-wide">
             <Scale className="w-4 h-4" />
-            Fair Wholesale Arbitration
+            Order Dispute Help
           </div>
-          <h1 className="text-lg md:text-2xl font-bold">How Zylod Resolves Order Disputes</h1>
+          <h1 className="text-lg md:text-2xl font-bold">How Zylod Handles Order Disputes</h1>
           <p className="text-xs text-slate-300 leading-relaxed">
-            Our SafePay Escrow and independent arbitration standards guarantee that you never pay for damaged, counterfeit, or short-shipped goods.
+            Zylod has no escrow system and makes no automatic-protection guarantee. What we do promise: every dispute is reviewed by a real person on the Zylod team, and the outcome is documented on your ticket.
           </p>
         </div>
 
@@ -93,7 +96,7 @@ export function DisputeResolutionGuidePage() {
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-3">
           <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3">
             <FileCheck className="w-4 h-4 text-red-600" />
-            Evidence Required to Win a Dispute
+            Evidence That Helps Your Case
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-700">
             <div className="p-3 bg-slate-50 rounded-xl border border-gray-100 space-y-1">
@@ -119,7 +122,7 @@ export function DisputeResolutionGuidePage() {
             onClick={() => navigate('submit-ticket', { category: 'seller_issue' })}
             className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow-md transition"
           >
-            File Formal Dispute Claim
+            Open a Support Ticket
           </button>
           <button
             onClick={() => navigate('report-user')}

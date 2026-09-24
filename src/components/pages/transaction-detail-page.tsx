@@ -130,7 +130,7 @@ export function TransactionDetailPage() {
 
           <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-center gap-2 text-xs text-slate-500 font-medium">
             <ShieldCheck className="h-4 w-4 text-emerald-600" />
-            <span>Audited &amp; Authenticated by Zylod Wholesale Escrow</span>
+            <span>Recorded in your Zylod transaction history</span>
           </div>
         </div>
 

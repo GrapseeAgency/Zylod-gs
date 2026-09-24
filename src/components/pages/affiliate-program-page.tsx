@@ -181,7 +181,7 @@ export function AffiliateProgramPage() {
           <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-1">
             <CheckCircle2 className="w-5 h-5 text-purple-600" />
             <h4 className="text-xs font-bold text-gray-900">Automatic Bank Payouts</h4>
-            <p className="text-[11px] text-gray-500">Cleared escrow funds transferred directly to your nominated BEFTN/bKash account.</p>
+            <p className="text-[11px] text-gray-500">Approved commissions are transferred to your nominated BEFTN/bKash account.</p>
           </div>
         </div>
       </div>

@@ -73,7 +73,7 @@ export function VipMembershipPage() {
             <p className="text-xs font-bold text-slate-800 uppercase tracking-wider">Annual Wholesale Volume</p>
             <h2 className="text-3xl font-black">{formatPrice(vipData?.totalSpendBDT ?? 0)}</h2>
             <p className="text-xs text-slate-900 font-medium">
-              Verified cumulative SafePay purchase turnover
+              Cumulative purchase turnover recorded on Zylod
             </p>
           </div>
         </div>
@@ -88,7 +88,7 @@ export function VipMembershipPage() {
             {[
               { icon: Percent, title: 'Factory Direct Volume Rebate', desc: 'Automatic 2% to 8% deduction on direct mill consignments.' },
               { icon: Truck, title: 'Dedicated Fleet Dispatch', desc: 'Zero-cost return freight and priority nationwide road cargo.' },
-              { icon: ShieldCheck, title: 'Extended Escrow Window', desc: 'Up to 7 business days to inspect goods before funds release.' },
+              { icon: ShieldCheck, title: 'Documented Order Records', desc: 'Every order keeps its payment verification status and history on your account.' },
               { icon: PhoneCall, title: 'Key Account Director', desc: 'Direct WhatsApp and direct phone access to wholesale trading heads.' },
             ].map(item => (
               <div key={item.title} className="flex items-start gap-3.5 p-3 rounded-2xl bg-slate-900/60 border border-slate-800">

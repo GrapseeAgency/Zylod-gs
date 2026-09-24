@@ -38,10 +38,6 @@ export function UpdateChangelogPage() {
               <p>Hardware-accelerated live video stream player for factory mill tours with live bidding and sample requests.</p>
             </div>
             <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
-              <div className="font-bold text-foreground">🔒 SafePay Biometric Signing</div>
-              <p>Biometric fingerprint and 3D facial verification for signing escrow release orders over 50,000 BDT.</p>
-            </div>
-            <div className="p-3 bg-muted/30 rounded-xl border space-y-1">
               <div className="font-bold text-foreground flex items-center gap-2"><Package className="h-4 w-4 text-primary" /> Offline Wholesale Catalogue</div>
               <p>Download complete local SQLite snapshot of verified suppliers and product specs for off-grid operations.</p>
             </div>

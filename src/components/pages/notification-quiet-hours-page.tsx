@@ -140,7 +140,7 @@ export function NotificationQuietHoursPage() {
               <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 text-xs text-indigo-800 space-y-1">
                 <p className="font-bold">What happens during Quiet Hours?</p>
                 <p className="text-[11px] text-indigo-700 leading-relaxed">
-                  Promotions, price drops, and general order notifications will not make sound or vibrate. High-priority escrow disputes will still deliver silently.
+                  Promotions, price drops, and general order notifications will not make sound or vibrate. High-priority security alerts will still come through.
                 </p>
               </div>
             </div>

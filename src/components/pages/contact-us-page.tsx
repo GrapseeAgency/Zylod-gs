@@ -24,7 +24,7 @@ export function ContactUsPage() {
 
   const categories = [
     { value: 'order_issue', label: 'Order & Consignment Issue' },
-    { value: 'payment_issue', label: 'Escrow & Payment Inquiry' },
+    { value: 'payment_issue', label: 'Payments & Verification' },
     { value: 'seller_issue', label: 'Supplier Onboarding / Verification' },
     { value: 'product_issue', label: 'Product Specifications / RFQ' },
     { value: 'general', label: 'General Commercial Inquiry' },

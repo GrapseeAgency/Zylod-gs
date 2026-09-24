@@ -21,7 +21,6 @@ export function MyWalletPage() {
 
   const [walletData, setWalletData] = useState<{
     balance: number
-    escrowBalance: number
     totalDeposits: number
     totalWithdrawals: number
     recentTransactions: Array<{
@@ -34,7 +33,6 @@ export function MyWalletPage() {
     }>
   }>({
     balance: 0,
-    escrowBalance: 0,
     totalDeposits: 0,
     totalWithdrawals: 0,
     recentTransactions: [],
@@ -111,9 +109,9 @@ export function MyWalletPage() {
 
           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
             <div className="bg-white/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Escrow Held</span>
+              <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Total Outflow</span>
               <span className="text-sm font-bold text-amber-300 block mt-0.5">
-                {showBalance ? formatPrice(walletData.escrowBalance) : '••••••'}
+                {showBalance ? formatPrice(walletData.totalWithdrawals) : '••••••'}
               </span>
             </div>
             <div className="bg-white/5 rounded-2xl p-3 border border-white/5">

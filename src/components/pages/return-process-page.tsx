@@ -9,35 +9,38 @@ import { ArrowLeft, RotateCcw, Camera, ShieldCheck, Truck, Clock, CheckCircle2 }
 export function ReturnProcessPage() {
   const { navigate, goBack } = useNavigationStore()
 
+  // HONESTY NOTE: no automatic escrow freeze, SLA clocks, or instant refunds
+  // exist. Returns are reported to Zylod, reviewed by the team, and any refund
+  // goes back to the original payment method after approval.
   const steps = [
     {
       step: '1',
-      title: 'Inspect & Document Within 7 Days',
+      title: 'Inspect & Document',
       desc: 'Carefully inspect the delivered bulk shipment. Take high-resolution photos or video logs of any fabric defects, color mismatches, or packaging tears.',
       icon: Camera,
     },
     {
       step: '2',
-      title: 'Submit Online Claim with Proof',
-      desc: 'Go to My Orders > Order Details > Request Return. Select claim reason, enter affected quantity, and attach documentation.',
+      title: 'Report the Issue',
+      desc: 'Email support@zylod.com or open a return request from your order detail with your order number, affected quantity, and documentation.',
       icon: RotateCcw,
     },
     {
       step: '3',
-      title: 'Supplier Review & Escrow Pause',
-      desc: 'The supplier has 48 hours to accept, propose a partial credit refund, or counter. SafePay Escrow disbursement is frozen automatically.',
+      title: 'Review With the Supplier',
+      desc: 'The Zylod team reviews your claim with the supplier. Cases are decided by people and documented — nothing is auto-approved or auto-frozen.',
       icon: ShieldCheck,
     },
     {
       step: '4',
-      title: 'Reverse Logistics Pickup',
-      desc: 'Our logistics carrier (Steadfast/RedX) collects the packed parcel from your warehouse with automated return tracking.',
+      title: 'Return Logistics (If Approved)',
+      desc: 'If a return is approved, pickup or drop-off is arranged with tracking before you ship anything back.',
       icon: Truck,
     },
     {
       step: '5',
-      title: 'Instant Refund Disbursement',
-      desc: 'Upon warehouse verification, escrow funds are refunded immediately to your Zylod Wallet or original bank account in 3–5 days.',
+      title: 'Refund to Original Payment Method',
+      desc: 'Once the returned goods are verified, the approved refund is returned to your original payment method. Timing depends on your bank or mobile-money provider.',
       icon: CheckCircle2,
     },
   ]

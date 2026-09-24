@@ -149,7 +149,7 @@ export function OrderStatusSubscriptionsPage() {
             <div className="flex items-center justify-between pt-2 border-t border-gray-50">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
-                <span className="text-xs font-bold text-gray-800">Delivered (48h Escrow Inspection Window)</span>
+                <span className="text-xs font-bold text-gray-800">Delivered</span>
               </div>
               <Switch checked={stepDelivered} onCheckedChange={setStepDelivered} />
             </div>

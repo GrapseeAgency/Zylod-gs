@@ -93,7 +93,7 @@ export function CouponDetailPage() {
                 )}
                 <li className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  Applies once per transaction during SafePay escrow checkout.
+                  Applies once per transaction at checkout.
                 </li>
               </ul>
             </div>

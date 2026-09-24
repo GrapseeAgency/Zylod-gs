@@ -39,10 +39,6 @@ export function AdminReportsPage() {
   const [submittingAction, setSubmittingAction] = useState(false)
   const [actionSuccess, setActionSuccess] = useState('')
 
-  useEffect(() => {
-    fetchReports()
-  }, [statusFilter, reasonFilter])
-
   async function fetchReports() {
     setLoading(true)
     try {
@@ -55,6 +51,10 @@ export function AdminReportsPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    fetchReports()
+  }, [statusFilter, reasonFilter])
 
   async function handleExecuteAction(e: React.FormEvent) {
     e.preventDefault()
@@ -305,7 +305,7 @@ export function AdminReportsPage() {
                   >
                     <option value="warn_user">⚠️ Issue Official Compliance Warning</option>
                     <option value="suspend_store">🚫 Suspend Storefront & Delist Products</option>
-                    <option value="freeze_escrow">🔒 Freeze Escrow Payouts & Lock Orders</option>
+                    <option value="freeze_escrow">🔒 Mark Related Order Payment as Refunded</option>
                     <option value="ban_account">⛔ Permanent Account Termination</option>
                     <option value="dismiss">Dismiss Claim (Unsubstantiated / False Report)</option>
                   </select>

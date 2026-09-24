@@ -12,7 +12,6 @@ export function MaintenanceSchedulePage() {
 
   const schedules = [
     { title: 'Core PostgreSQL Database Vacuum & Indexing', start: 'Sunday, 02:00 AM BST', duration: '2 hours', impact: 'Zero downtime (Read replica failover)', status: 'Scheduled' },
-    { title: 'SafePay Escrow Smart Contract Telemetry Upgrade', start: 'July 14, 2026', duration: '45 mins', impact: 'Completed with zero dropped transactions', status: 'Completed' },
     { title: 'Logistics Courier Webhook API Gateway Patch', start: 'June 28, 2026', duration: '30 mins', impact: 'Completed with zero downtime', status: 'Completed' },
   ]
 

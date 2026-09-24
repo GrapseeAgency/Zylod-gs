@@ -29,15 +29,12 @@ export function PaymentTermsPage() {
     }).catch(console.error).finally(() => setLoading(false))
   }, [])
 
+  // HONESTY NOTE: only the two real payment routes are listed — no invented
+  // platform fees, daily limits, card rails, or SafePay escrow rows.
   const paymentMethods = [
-    { name: 'bKash', type: 'Mobile Banking', fee: '1.85%', limit: '৳1,00,000/day' },
-    { name: 'Nagad', type: 'Mobile Banking', fee: '1.5%', limit: '৳50,000/day' },
-    { name: 'Bank Transfer (BEFTN)', type: 'Bank', fee: '0%', limit: 'Unlimited' },
-    { name: 'NPSB / RTGS', type: 'Bank', fee: '0%', limit: 'Unlimited' },
-    { name: 'Zylod Wallet', type: 'Platform', fee: '0%', limit: 'Per balance' },
-    { name: 'SafePay Escrow', type: 'Platform', fee: '2%', limit: 'Per order' },
-    { name: 'Credit Card', type: 'Card', fee: '2.5%', limit: '৳5,00,000/txn' },
-    { name: 'Debit Card', type: 'Card', fee: '1%', limit: '৳2,00,000/txn' },
+    { name: 'bKash', type: 'Mobile Banking', limit: 'Send to the merchant number shown on your order', fee: 'Sender-side charges may apply' },
+    { name: 'Nagad', type: 'Mobile Banking', limit: 'Send to the merchant number shown on your order', fee: 'Sender-side charges may apply' },
+    { name: 'Bank Transfer', type: 'Bank', limit: 'Account details shown on your order', fee: 'Sender-side charges may apply' },
   ]
 
   return (
@@ -60,12 +57,12 @@ export function PaymentTermsPage() {
             <span className="font-bold text-sm">Flexible Wholesale Payment Options</span>
           </div>
           <p className="text-xs text-violet-100 leading-relaxed">
-            Pay via bKash, bank transfer, or SafePay escrow. All transactions are protected by our buyer guarantee.
+            Pay via bank transfer or mobile banking (bKash/Nagad) using the details shown on your order. Orders stay UNPAID until Zylod verifies the payment.
           </p>
           <div className="flex gap-4 pt-1">
-            <div><p className="text-xs font-black">8+</p><p className="text-xs text-violet-200">Methods</p></div>
-            <div><p className="text-xs font-black">100%</p><p className="text-xs text-violet-200">Secure</p></div>
-            <div><p className="text-xs font-black">SafePay</p><p className="text-xs text-violet-200">Protected</p></div>
+            <div><p className="text-xs font-black">2</p><p className="text-xs text-violet-200">Payment Routes</p></div>
+            <div><p className="text-xs font-black">100%</p><p className="text-xs text-violet-200">Verified</p></div>
+            <div><p className="text-xs font-black">0</p><p className="text-xs text-violet-200">Escrow Products</p></div>
           </div>
         </div>
 
@@ -101,8 +98,8 @@ export function PaymentTermsPage() {
                   <p className="text-xs font-bold text-gray-800">{pm.name}</p>
                   <p className="text-xs text-gray-500">{pm.type} · {pm.limit}</p>
                 </div>
-                <Badge className={`text-xs font-bold ${pm.fee === '0%' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-violet-50 text-violet-700 border-violet-200'}`}>
-                  {pm.fee} fee
+                <Badge className="text-xs font-bold bg-emerald-50 text-emerald-700 border-emerald-200">
+                  {pm.fee}
                 </Badge>
               </div>
             ))}
@@ -113,10 +110,10 @@ export function PaymentTermsPage() {
         <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-sm space-y-3 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-3 md:space-y-0">
           <h3 className="text-sm font-bold text-gray-900 md:col-span-2">Key Payment Rules</h3>
           {[
-            { icon: Shield, text: 'SafePay escrow holds funds until buyer confirms delivery' },
-            { icon: Clock, text: 'Supplier payouts released 48 hours after delivery confirmation' },
-            { icon: AlertCircle, text: 'Disputed payments held in escrow until resolution' },
-            { icon: CheckCircle2, text: 'Refunds processed within 5–7 business days' },
+            { icon: Shield, text: 'Orders stay UNPAID until your payment is verified by Zylod' },
+            { icon: Clock, text: 'Suppliers fulfil verified orders — payment verification comes first' },
+            { icon: AlertCircle, text: 'Reported problems are reviewed by the Zylod team and documented' },
+            { icon: CheckCircle2, text: 'Approved refunds are returned to your original payment method' },
           ].map(rule => (
             <div key={rule.text} className="flex items-start gap-3">
               <rule.icon className="w-4 h-4 text-violet-600 flex-shrink-0 mt-0.5" />

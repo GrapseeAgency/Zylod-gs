@@ -117,9 +117,9 @@ export function EarningsDashboardPage() {
               </span>
             </div>
             <div className="bg-white/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 uppercase font-bold block">In Escrow Transit</span>
+              <span className="text-[10px] text-slate-400 uppercase font-bold block">Total Orders</span>
               <span className="text-sm font-bold text-amber-300 block font-mono mt-0.5">
-                {formatPrice(data.pendingEscrow)}
+                {data.totalOrders}
               </span>
             </div>
           </div>
@@ -164,8 +164,8 @@ export function EarningsDashboardPage() {
               <span className="font-bold text-emerald-600 font-mono">{formatPrice(data.availablePayout)}</span>
             </div>
             <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 md:rounded-xl md:border md:border-slate-100 md:flex-col md:items-start md:gap-1">
-              <span className="text-slate-500 font-medium">Pending Buyer Quality Inspection</span>
-              <span className="font-bold text-amber-600 font-mono">{formatPrice(data.pendingEscrow)}</span>
+              <span className="text-slate-500 font-medium">Total Orders Recorded</span>
+              <span className="font-bold text-amber-600 font-mono">{data.totalOrders}</span>
             </div>
           </div>
         </div>
