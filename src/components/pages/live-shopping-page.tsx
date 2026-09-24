@@ -1,20 +1,15 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
-import { useAuthStore } from '@/store/auth-store'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  ArrowLeft, Radio, Play, Users, Eye,
-  Sparkles, MessageSquare, Star, ChevronRight
+  ArrowLeft, Radio, Play, Eye,
+  Sparkles, Star
 } from 'lucide-react'
 
 export function LiveShoppingPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
 
   const [streams, setStreams] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -68,8 +63,12 @@ export function LiveShoppingPage() {
               </div>
             ))
           ) : streams.length === 0 ? (
-            <div className="col-span-full text-center py-16 text-slate-400">
-              No live broadcast streams running at this moment.
+            <div className="col-span-full text-center py-16">
+              <Radio className="w-12 h-12 text-slate-700 mx-auto mb-3" />
+              <h3 className="text-sm font-bold text-slate-300">No live streams right now</h3>
+              <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+                No broadcast sessions have been scheduled yet. Check back once a supplier goes live.
+              </p>
             </div>
           ) : (
             streams.map(st => (
@@ -79,11 +78,17 @@ export function LiveShoppingPage() {
                 className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-lg hover:border-red-500 transition cursor-pointer group flex flex-col justify-between"
               >
                 <div className="relative aspect-[16/10] bg-slate-800 overflow-hidden">
-                  <img
-                    src={st.thumbnailUrl}
-                    alt={st.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
+                  {st.thumbnailUrl ? (
+                    <img
+                      src={st.thumbnailUrl}
+                      alt={st.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-600">
+                      <Radio className="w-8 h-8" />
+                    </div>
+                  )}
 
                   <div className="absolute top-3 left-3 flex items-center gap-2">
                     {st.isLive ? (
@@ -115,10 +120,17 @@ export function LiveShoppingPage() {
                   <p className="text-[11px] text-slate-400 line-clamp-2">{st.description}</p>
 
                   <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-300">{st.supplierName}</span>
-                    <span className="text-xs font-bold text-amber-400 flex items-center gap-1">
-                      <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> {st.supplierRating}
-                    </span>
+                    {st.supplierName ? (
+                      <span className="text-xs font-bold text-slate-300 truncate pr-2">{st.supplierName}</span>
+                    ) : (
+                      <span className="text-xs text-slate-500">Supplier unnamed</span>
+                    )}
+                    {/* Rating row hidden unless a real aggregate rating exists */}
+                    {st.supplierRating != null && (
+                      <span className="text-xs font-bold text-amber-400 flex items-center gap-1 shrink-0">
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> {Number(st.supplierRating).toFixed(1)}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

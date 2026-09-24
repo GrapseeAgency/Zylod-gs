@@ -21,7 +21,13 @@ export async function GET(
 
     const supplier = await db.supplierProfiles.findUnique({
       where: { id: stream.supplierId },
-      select: { id: true, companyName: true, ratingAvg: true, ratingCount: true },
+      select: {
+        id: true,
+        companyName: true,
+        ratingAvg: true,
+        ratingCount: true,
+        storeCustomization: { select: { logoUrl: true } },
+      },
     })
 
     // Fetch featured products if specified
@@ -45,8 +51,10 @@ export async function GET(
       data: {
         ...stream,
         supplierName: supplier?.companyName || null,
-        supplierLogo: null as string | null,
-        supplierRating: supplier?.ratingAvg ?? null,
+        supplierLogo: supplier?.storeCustomization?.logoUrl ?? null,
+        // Real aggregate from supplier reviews — null when the supplier has
+        // never been rated (no constant/fabricated rating is ever sent).
+        supplierRating: supplier && supplier.ratingCount > 0 ? supplier.ratingAvg : null,
         supplierRatingCount: supplier?.ratingCount ?? 0,
         featuredProducts: products,
         // REAL chat state: no persisted messages yet. Real-time chat is wired

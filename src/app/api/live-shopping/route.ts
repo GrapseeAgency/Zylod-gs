@@ -20,7 +20,13 @@ export async function GET(request: NextRequest) {
     const suppliers = supplierIds.length > 0
       ? await db.supplierProfiles.findMany({
           where: { id: { in: supplierIds } },
-          select: { id: true, companyName: true },
+          select: {
+            id: true,
+            companyName: true,
+            ratingAvg: true,
+            ratingCount: true,
+            storeCustomization: { select: { logoUrl: true } },
+          },
         })
       : []
     const suppMap = new Map(suppliers.map(s => [s.id, s]))
@@ -30,14 +36,21 @@ export async function GET(request: NextRequest) {
       return {
         id: s.id,
         supplierId: s.supplierId,
-        supplierName: supp?.companyName || 'Verified Factory',
-        supplierLogo: null as string | null,
-        supplierRating: 4.9,
+        // Unknown data is returned as null — the client renders an honest
+        // neutral state. No invented labels or constant ratings.
+        supplierName: supp?.companyName ?? null,
+        supplierLogo: supp?.storeCustomization?.logoUrl ?? null,
+        // Real aggregate from supplier reviews; null-equivalent (0 count)
+        // means the supplier has not been rated yet.
+        supplierRating: supp && supp.ratingCount > 0 ? supp.ratingAvg : null,
+        supplierRatingCount: supp?.ratingCount ?? 0,
         title: s.title,
         description: s.description,
         isLive: s.isLive,
         viewerCount: s.viewerCount,
-        thumbnailUrl: s.thumbnailUrl || 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80',
+        // Returned as-is (may be null) — clients render a neutral block,
+        // external placeholder imagery is never injected.
+        thumbnailUrl: s.thumbnailUrl,
         streamUrl: s.streamUrl,
         playbackUrl: s.playbackUrl,
         scheduledAt: s.scheduledAt.toISOString(),

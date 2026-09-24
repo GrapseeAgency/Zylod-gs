@@ -81,8 +81,6 @@ export async function GET(
         categorySlug: product.category?.slug,
         similarityScore: Math.round(priceSimilarity * 100),
         matchPercentage: Math.round(priceSimilarity * 100),
-        estimatedMargin: '30-35%',
-        aiInsight: 'Recommended based on your recent searches and industry trends.',
         bulkPrice: product.priceTiers[0]?.pricePerUnit || product.basePrice,
         avgRating: Math.round(avgRating * 10) / 10,
         totalReviews: product.reviews.length,

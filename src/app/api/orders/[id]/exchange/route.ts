@@ -53,6 +53,10 @@ export async function POST(
 
     const originalValue = item.unitPrice * item.quantity
 
+    // De-fake campaign: no invented financials. Any price difference of a
+    // real exchange must come from real replacement pricing once a proper
+    // exchanges workflow (table + pricing rules) exists — the previous
+    // hardcoded balanceDue (20%) / newValue (1.2x) figures were fabricated.
     return NextResponse.json({
       success: true,
       data: {
@@ -63,11 +67,8 @@ export async function POST(
         reason: reason || null,
         notes: notes || null,
         status: 'requested',
-        balanceDue: originalValue * 0.2,
         originalValue,
-        newValue: originalValue * 1.2,
         currency: 'BDT',
-        estimatedProcessingDays: '5-7 business days',
         createdAt: new Date().toISOString(),
       },
       message: 'Exchange request submitted successfully. You will be notified once it is processed.',

@@ -1,50 +1,112 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
-  ArrowLeft, Camera, X, Minus, Plus, CheckCircle2,
-  Package, ChevronRight, AlertCircle
+  ArrowLeft, Minus, Plus,
+  Package, ChevronRight, AlertCircle, RefreshCw, LogIn, Box
 } from 'lucide-react'
+
+interface OrderItem {
+  id: string
+  productId: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+  product: { id: string; name: string; thumbnailUrl: string | null; unit: string; slug: string } | null
+  variant: { id: string; variantName: string; variantValue: string } | null
+}
+
+interface SubOrder {
+  id: string
+  status: string
+  supplier: { companyName: string }
+  items: OrderItem[]
+}
+
+interface OrderData {
+  id: string
+  orderNumber: string
+  totalAmount: number
+  paymentStatus: string
+  placedAt: string
+  subOrders: SubOrder[]
+}
+
+const REASONS = [
+  { value: 'damaged', label: 'Damaged on arrival' },
+  { value: 'wrong', label: 'Wrong item received' },
+  { value: 'defect', label: 'Manufacturing defect' },
+  { value: 'specs', label: 'Not as specified in catalog' },
+]
 
 export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const pageParams = _pageParams || storeParams || {}
-  const orderId = pageParams.orderId || 'ORD-88291-B'
+  const orderId = pageParams.orderId || ''
 
-  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({ 'item-1': true })
-  const [quantities, setQuantities] = useState<Record<string, number>>({ 'item-1': 1, 'item-2': 1 })
-  const [reasons, setReasons] = useState<Record<string, string>>({ 'item-1': 'damaged' })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [notFound, setNotFound] = useState(false)
+  const [needsAuth, setNeedsAuth] = useState(false)
+  const [order, setOrder] = useState<OrderData | null>(null)
+
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({})
+  const [quantities, setQuantities] = useState<Record<string, number>>({})
+  const [reasons, setReasons] = useState<Record<string, string>>({})
   const [comments, setComments] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
-  const items = [
-    {
-      id: 'item-1',
-      name: 'DeWalt 20V MAX Cordless Drill / Driver Kit, Compact...',
-      sku: 'DW20V-COMP',
-      price: 129.99,
-      orderedQty: 2,
-      image: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=500&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'item-2',
-      name: 'Heavy Duty Shipping Boxes, 18×18×18 inches...',
-      sku: 'BOX-18HD-25',
-      price: 45.00,
-      orderedQty: 5,
-      unit: 'pack',
-      image: 'https://images.unsplash.com/photo-1586528116493-a029325540fa?w=500&auto=format&fit=crop&q=80',
-    },
-  ]
+  const fetchOrder = useCallback(async () => {
+    if (!orderId) {
+      setLoading(false)
+      return
+    }
+    setLoading(true)
+    setError(null)
+    setNotFound(false)
+    setNeedsAuth(false)
+    setSubmitError(null)
+    try {
+      const res = await fetch(`/api/orders/${orderId}`)
+      const data = await res.json().catch(() => null)
+      if (!res.ok) {
+        if (res.status === 404) setNotFound(true)
+        else if (res.status === 401) setNeedsAuth(true)
+        else setError(data?.error || `Failed to load order (${res.status})`)
+        setOrder(null)
+        return
+      }
+      setOrder(data?.data || null)
+      // start with nothing pre-selected — the buyer picks what to return
+      setSelectedItems({})
+      setQuantities({})
+      setReasons({})
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Network error while loading order')
+      setOrder(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [orderId])
+
+  useEffect(() => {
+    fetchOrder()
+  }, [fetchOrder])
+
+  const items = useMemo<OrderItem[]>(() => {
+    if (!order) return []
+    return order.subOrders.flatMap((so) => so.items || [])
+  }, [order])
 
   const toggleItem = (id: string) => {
     setSelectedItems((prev) => ({ ...prev, [id]: !prev[id] }))
+    setQuantities((prev) => ({ ...prev, [id]: prev[id] || 1 }))
   }
 
   const handleQtyChange = (id: string, delta: number, max: number) => {
@@ -54,20 +116,137 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
     }))
   }
 
-  const selectedCount = Object.keys(selectedItems).filter((k) => selectedItems[k]).length
+  const selectedIds = Object.keys(selectedItems).filter((k) => selectedItems[k])
+  const selectedCount = selectedIds.length
+  const selectedQty = selectedIds.reduce((acc, id) => acc + (quantities[id] || 1), 0)
   const totalRefund = items.reduce((acc, item) => {
     if (selectedItems[item.id]) {
-      return acc + item.price * (quantities[item.id] || 1)
+      return acc + item.unitPrice * (quantities[item.id] || 1)
     }
     return acc
   }, 0)
 
-  const handleContinue = () => {
+  const missingReason = selectedIds.some((id) => !reasons[id])
+
+  const handleContinue = async () => {
+    if (!orderId) return
+    if (missingReason) {
+      setSubmitError('Please choose a reason for every selected item.')
+      return
+    }
     setSubmitting(true)
-    setTimeout(() => {
-      setSubmitting(false)
+    setSubmitError(null)
+    try {
+      const res = await fetch(`/api/orders/${orderId}/return`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: selectedIds.map((id) => ({
+            itemId: id,
+            reason: reasons[id],
+            quantity: quantities[id] || 1,
+            comments: comments.trim() || undefined,
+          })),
+        }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok) {
+        if (res.status === 401) {
+          setNeedsAuth(true)
+          setSubmitError('Your session has expired. Please sign in again to submit this return.')
+        } else {
+          setSubmitError(data?.error || `Return request failed (${res.status})`)
+        }
+        return
+      }
+      // Real backend confirmation — navigate to the order's return view
       navigate('return-detail', { orderId })
-    }, 800)
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : 'Network error while submitting the return request')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  /* ─── No order id — honest state ─── */
+  if (!orderId) {
+    return (
+      <div className="min-h-screen bg-slate-50 pb-24 md:pb-10 text-slate-900">
+        <main className="px-4 py-16 max-w-lg mx-auto text-center">
+          <div className="w-20 h-20 mx-auto rounded-full bg-white border border-slate-200 flex items-center justify-center mb-4">
+            <Box className="h-9 w-9 text-gray-400" />
+          </div>
+          <h1 className="text-base font-black text-slate-900">No order selected</h1>
+          <p className="text-xs text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
+            Returns are started from a specific order. Open one of your delivered orders and choose
+            “Return”.
+          </p>
+          <Button
+            onClick={() => navigate('orders')}
+            className="mt-6 bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 px-6 rounded-2xl shadow-md"
+          >
+            View My Orders
+          </Button>
+        </main>
+      </div>
+    )
+  }
+
+  /* ─── Auth / not found / load error — honest states ─── */
+  if (notFound || needsAuth || error) {
+    return (
+      <div className="min-h-screen bg-slate-50 pb-24 md:pb-10 text-slate-900">
+        <header className="md:hidden sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+              <ArrowLeft className="h-5 w-5 text-primary" />
+            </button>
+            <h1 className="text-base font-bold text-primary">Return Request</h1>
+          </div>
+        </header>
+        <main className="px-4 py-16 max-w-lg mx-auto text-center">
+          <div className="w-20 h-20 mx-auto rounded-full bg-white border border-slate-200 flex items-center justify-center mb-4">
+            {needsAuth ? <LogIn className="h-9 w-9 text-gray-400" /> : <AlertCircle className="h-9 w-9 text-gray-400" />}
+          </div>
+          <h1 className="text-base font-black text-slate-900">
+            {notFound ? 'Order not found' : needsAuth ? 'Sign in required' : 'Couldn\u2019t load this order'}
+          </h1>
+          <p className="text-xs text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
+            {notFound
+              ? 'We couldn\u2019t find this order. It may belong to a different account.'
+              : needsAuth
+                ? 'Sign in with the buyer account that placed this order to request a return.'
+                : error}
+          </p>
+          <div className="mt-6 flex flex-col gap-2 max-w-xs mx-auto">
+            {needsAuth ? (
+              <Button
+                onClick={() => navigate('login')}
+                className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl shadow-md"
+              >
+                Sign In
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={fetchOrder}
+                className="w-full bg-white hover:bg-slate-50 text-slate-700 border-slate-200 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Try Again
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              onClick={goBack}
+              className="w-full bg-white hover:bg-slate-50 text-slate-700 border-slate-200 font-bold text-xs h-10 rounded-2xl"
+            >
+              Go Back
+            </Button>
+          </div>
+        </main>
+      </div>
+    )
   }
 
   return (
@@ -84,15 +263,20 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
 
       <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:max-w-2xl md:px-6 md:py-8 md:space-y-6">
         <h1 className="hidden md:block text-2xl font-bold text-primary">Return Request</h1>
-        {/* Progress Card */}
+
+        {/* Progress Card — real order identity */}
         <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-xs font-bold text-slate-900">Order #{orderId}</h2>
-              <p className="text-[10px] text-slate-400 mt-0.5">Delivered on Oct 24, 2023</p>
+              <h2 className="text-xs font-bold text-slate-900">Order #{order?.orderNumber}</h2>
+              <p className="text-[10px] text-slate-400 mt-0.5">
+                {order?.placedAt
+                  ? `Placed ${new Date(order.placedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                  : null}
+              </p>
             </div>
-            <span className="bg-slate-100 text-slate-600 text-[10px] font-black px-2.5 py-1 rounded-md">
-              Step 1 of 3
+            <span className="bg-slate-100 text-slate-600 text-[10px] font-black px-2.5 py-1 rounded-md capitalize">
+              {order?.paymentStatus || ''}
             </span>
           </div>
 
@@ -110,6 +294,8 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
           {items.map((item) => {
             const isSelected = !!selectedItems[item.id]
             const qty = quantities[item.id] || 1
+            const orderedQty = item.quantity
+            const image = item.product?.thumbnailUrl || null
 
             return (
               <div
@@ -127,23 +313,34 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
                     className="w-4 h-4 rounded text-primary accent-primary mt-1 shrink-0 cursor-pointer"
                   />
 
-                  <div className="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-slate-200">
+                    {image ? (
+                      <img src={image} alt={item.product?.name || 'Product'} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 w-full h-full">
+                        <Package className="h-5 w-5 text-gray-400" />
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xs font-bold text-slate-900 line-clamp-2 leading-snug">
-                      {item.name}
+                      {item.product?.name || 'Product'}
                     </h3>
-                    <p className="text-[10px] text-slate-400 mt-0.5">
-                      SKU: {item.sku}
-                    </p>
+                    {item.variant && (
+                      <p className="text-[10px] text-slate-400 mt-0.5">
+                        {item.variant.variantName}: {item.variant.variantValue}
+                      </p>
+                    )}
                     <div className="flex justify-between items-baseline mt-2">
                       <span className="text-xs font-black text-primary">
-                        {formatPrice(item.price)} <span className="text-[10px] font-normal text-slate-400">/ {item.unit || 'unit'}</span>
+                        {formatPrice(item.unitPrice)}{' '}
+                        <span className="text-[10px] font-normal text-slate-400">
+                          / {item.product?.unit || 'unit'}
+                        </span>
                       </span>
                       <span className="text-[10px] text-slate-500 font-medium">
-                        Qty: {item.orderedQty}
+                        Qty: {orderedQty}
                       </span>
                     </div>
                   </div>
@@ -158,14 +355,14 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
                         Reason for Return *
                       </label>
                       <select
-                        value={reasons[item.id] || 'damaged'}
+                        value={reasons[item.id] || ''}
                         onChange={(e) => setReasons((prev) => ({ ...prev, [item.id]: e.target.value }))}
                         className="w-full h-11 rounded-2xl bg-white border border-slate-200 text-xs font-medium px-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20"
                       >
-                        <option value="damaged">Damaged on arrival</option>
-                        <option value="wrong">Wrong item received</option>
-                        <option value="defect">Manufacturing defect</option>
-                        <option value="specs">Not as specified in catalog</option>
+                        <option value="">Select a reason…</option>
+                        {REASONS.map((r) => (
+                          <option key={r.value} value={r.value}>{r.label}</option>
+                        ))}
                       </select>
                     </div>
 
@@ -177,7 +374,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
                       <div className="flex items-center gap-3">
                         <div className="flex items-center border border-slate-200 rounded-xl bg-white p-1">
                           <button
-                            onClick={() => handleQtyChange(item.id, -1, item.orderedQty)}
+                            onClick={() => handleQtyChange(item.id, -1, orderedQty)}
                             className="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-600"
                           >
                             <Minus className="h-3 w-3" />
@@ -186,49 +383,13 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
                             {qty}
                           </span>
                           <button
-                            onClick={() => handleQtyChange(item.id, 1, item.orderedQty)}
+                            onClick={() => handleQtyChange(item.id, 1, orderedQty)}
                             className="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-600"
                           >
                             <Plus className="h-3 w-3" />
                           </button>
                         </div>
-                        <span className="text-xs text-slate-400">of {item.orderedQty} ordered</span>
-                      </div>
-                    </div>
-
-                    {/* Upload Evidence */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-xs font-semibold text-slate-800">
-                          Upload Evidence (Required) *
-                        </label>
-                        <span className="text-[10px] text-slate-400 font-medium">1/3 Photos</span>
-                      </div>
-                      <p className="text-[10px] text-slate-400">
-                        Please provide clear photos of the damage or incorrect item.
-                      </p>
-
-                      <div className="flex gap-2.5 pt-1">
-                        {/* Uploaded Thumbnail */}
-                        <div className="relative w-16 h-16 rounded-2xl bg-slate-200 border border-slate-300 overflow-hidden shrink-0">
-                          <img
-                            src="https://images.unsplash.com/photo-1504148455328-c376907d081c?w=200&auto=format&fit=crop&q=80"
-                            alt="Damage evidence"
-                            className="w-full h-full object-cover"
-                          />
-                          <button className="absolute top-1 right-1 w-4 h-4 bg-black/60 text-white rounded-full flex items-center justify-center">
-                            <X className="h-2.5 w-2.5" />
-                          </button>
-                        </div>
-
-                        {/* Add Button */}
-                        <button
-                          type="button"
-                          className="w-16 h-16 rounded-2xl border-2 border-dashed border-rose-200 bg-rose-50/30 hover:bg-rose-50/60 flex flex-col items-center justify-center gap-1 text-primary shrink-0 transition-colors"
-                        >
-                          <Camera className="h-4 w-4" />
-                          <span className="text-[9px] font-bold">Add</span>
-                        </button>
+                        <span className="text-xs text-slate-400">of {orderedQty} ordered</span>
                       </div>
                     </div>
 
@@ -251,29 +412,53 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
             )
           })}
         </div>
+
+        {/* Empty order items — honest */}
+        {items.length === 0 && (
+          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-2xs text-center">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-4">
+              <Package className="h-7 w-7 text-gray-400" />
+            </div>
+            <h2 className="text-sm font-black text-slate-900">Nothing to return</h2>
+            <p className="text-xs text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+              This order doesn&apos;t contain any line items, so there is nothing to return.
+            </p>
+          </div>
+        )}
       </main>
 
       {/* Sticky Bottom Bar */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white border-t border-slate-100 p-4 shadow-xl z-30">
-        <div className="max-w-lg md:max-w-2xl mx-auto space-y-2">
-          <div className="flex justify-between items-baseline text-xs">
-            <span className="text-slate-500">Items Selected: <strong>{selectedCount} item (Qty: 1)</strong></span>
-            <div className="text-right">
-              <span className="text-slate-400 text-[10px] block">Estimated Refund:</span>
-              <span className="text-sm font-black text-primary">{formatPrice(totalRefund)}</span>
-            </div>
-          </div>
+      {items.length > 0 && (
+        <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white border-t border-slate-100 p-4 shadow-xl z-30">
+          <div className="max-w-lg md:max-w-2xl mx-auto space-y-2">
+            {submitError && (
+              <p className="text-[11px] text-rose-600 bg-rose-50 border border-rose-100 rounded-xl p-2.5 leading-relaxed flex items-start gap-1.5">
+                <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                {submitError}
+              </p>
+            )}
 
-          <Button
-            onClick={handleContinue}
-            disabled={selectedCount === 0 || submitting}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs shadow-md flex items-center justify-center gap-2"
-          >
-            {submitting ? 'Processing Request...' : 'Continue to Shipping Method'}
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+            <div className="flex justify-between items-baseline text-xs">
+              <span className="text-slate-500">
+                Selected: <strong>{selectedCount}</strong> item{selectedCount === 1 ? '' : 's'} · Qty: <strong>{selectedQty}</strong>
+              </span>
+              <div className="text-right">
+                <span className="text-slate-400 text-[10px] block">Estimated Refund:</span>
+                <span className="text-sm font-black text-primary">{formatPrice(totalRefund)}</span>
+              </div>
+            </div>
+
+            <Button
+              onClick={handleContinue}
+              disabled={selectedCount === 0 || submitting || missingReason}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {submitting ? 'Submitting Request…' : 'Submit Return Request'}
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

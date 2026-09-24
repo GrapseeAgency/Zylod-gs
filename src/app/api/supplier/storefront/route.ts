@@ -97,23 +97,15 @@ export async function PATCH(request: NextRequest) {
       where: { userId: auth.user.id }
     })
 
+    // SECURITY + de-fake campaign: never fabricate a supplier profile (the old
+    // code auto-created one with dummy KYC — 'Wholesale Supplier',
+    // nid '0000000000', 'BRAC Bank'). Only real suppliers with a real profile
+    // may customize a storefront; everyone else gets an honest 403.
     if (!supplier) {
-      supplier = await db.supplierProfiles.create({
-        data: {
-          userId: auth.user.id,
-          companyName: 'Wholesale Supplier',
-          nidNumber: '0000000000',
-          nidFrontImageUrl: '',
-          nidBackImageUrl: '',
-          tradeLicenseNumber: '000000',
-          tradeLicenseImageUrl: '',
-          tinNumber: '000000',
-          bankAccountName: 'Wholesale Supplier',
-          bankAccountNumber: '00000000',
-          bankName: 'BRAC Bank',
-          branch: 'Main'
-        }
-      })
+      return NextResponse.json(
+        { error: 'Supplier profile required. Only registered suppliers can customize a storefront.' },
+        { status: 403 }
+      )
     }
 
     const custom = await db.sellerStoreCustomizations.upsert({
