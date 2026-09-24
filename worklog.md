@@ -924,3 +924,36 @@ Work Log:
 
 Stage Summary:
 - Product image rendering fixed end-to-end; owner local agent needs git pull + dev restart; main now at 7b8ca80 (tsconfig excludes c4cffd8 + image allowlist 7b8ca80)
+
+---
+Task ID: 34
+Agent: glm-main
+Task: cut fresh release APK for latest main (owner-ordered after 6b757f9->7b8ca80->merge drift)
+
+Work Log:
+- Pulled owner's local-agent commits: 4f49392 (zylodbd endpoints), e388420 (restore jugular ahead of zylodbd — free-plan TLD), 926d10d (provenance self-healing retry)
+- Merged sandbox system commits (conflict resolved take-theirs), pushed merge 2fc370b to main
+- CI android-build run 34743820664: success; downloaded artifact Zylod-debug-apk-2fc370b (45,130,071 B)
+- Created release v2.4.5-2fc370b (id 387819049), uploaded asset Zylod-v2.4.5-2fc370b-debug.apk (asset id 560745154)
+- Verified: direct download HTTP 200, 45,130,071 bytes; sha256 1e372a3c401cced1234ee9eebb8f61ee7eeb8945b69ca759fc9c9be882847097
+
+Stage Summary:
+- Live release: https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-2fc370b
+- Server requirement: owner pulls 2fc370b + rebuild + restart so served identity matches APK expectedCommit (gate OK)
+- Previous release v2.4.5-6b757f9 superseded
+
+---
+Task ID: 35
+Agent: glm-main
+Task: owner directive — launch comprehensive non-stop DE-FAKE cron (purge all demo/mock/fake data, wire real backend, payment security, push-after-every-change)
+
+Work Log:
+- Verified repo: origin/main 10 ahead (4533204 LAN-first endpoints, 926d10d provenance self-healing), local ahead 1 (sandbox UUID commit, file-mode/db noise), zylodbd.ngrok.dev endpoint present in build.gradle.kts
+- Owner rotated GitHub PAT; remote credential updated (token as username, never logged)
+- Committing ALL local work before rebase — nothing discarded: build.gradle.kts (zylodbd endpoint), next.config.ts (image allowlist), tsconfig.json (excludes), WebScreen.kt (+39), untracked ui components / MainActivity.kt / ios Home dirs
+- Created cron "Zylod De-Fake Campaign": kind webDevReview, fixed_rate 900s (every 15 min), priority 10, tz Asia/Dhaka
+- Cron payload = mandatory webDevReview text + mission addendum: DB purge to 0 rows, delete/disable seed scripts, de-mock every hardcoded flow (demo buy/address/login/signup), REAL backend errors only (no fake success), payment security (server-side price, payment verification, no client-trusted amounts), cache cleaning, agent-browser verification desktop+mobile, git push after every single change, worklog update each run
+
+Stage Summary:
+- Non-stop cleaning campaign LIVE (every 15 min, ≥1 week): sandbox resets are survivable — every completion is pushed to GitHub immediately
+- Goal state: empty DB, zero demo/mock execution paths, real-time Railway-ready backend wiring, unbuyable-without-payment enforcement, honest error surfaces
