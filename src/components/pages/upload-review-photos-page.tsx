@@ -24,26 +24,8 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
   const productId = pageParams.productId || ''
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [mediaList, setMediaList] = useState<MediaFile[]>([
-    {
-      id: 'm-1',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'm-2',
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1586528116493-a029325540fa?w=500&auto=format&fit=crop&q=80',
-      uploading: true,
-      progress: 65,
-    },
-    {
-      id: 'm-3',
-      type: 'video',
-      url: 'https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=500&auto=format&fit=crop&q=80',
-      duration: '0:15',
-    },
-  ])
+  const [mediaList, setMediaList] = useState<MediaFile[]>([])
+  const [uploadError, setUploadError] = useState('')
 
   const handleRemove = (id: string) => {
     setMediaList((prev) => prev.filter((m) => m.id !== id))
@@ -53,27 +35,70 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
     setMediaList([])
   }
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // REAL upload: files go to /api/uploads/review-media and the returned URL
+  // is an actual file served by the backend — never a session-local blob URL.
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
+    setUploadError('')
 
-    Array.from(files).forEach((file, idx) => {
-      const isVideo = file.type.startsWith('video')
-      const fakeUrl = URL.createObjectURL(file)
+    for (const file of Array.from(files)) {
+      const tempId = `upload-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
       setMediaList((prev) => [
         ...prev,
         {
-          id: `upload-${Date.now()}-${idx}`,
-          type: isVideo ? 'video' : 'image',
-          url: fakeUrl,
-          duration: isVideo ? '0:20' : undefined,
+          id: tempId,
+          type: file.type.startsWith('video') ? 'video' : 'image',
+          url: '',
+          uploading: true,
+          progress: 0,
         },
       ])
-    })
+
+      try {
+        const form = new FormData()
+        form.append('file', file)
+        if (productId) form.append('productId', productId)
+        const res = await fetch('/api/uploads/review-media', {
+          method: 'POST',
+          credentials: 'include',
+          body: form,
+        })
+        const data = await res.json().catch(() => null)
+        if (!res.ok || !data?.success) {
+          setUploadError(data?.error || `Upload failed (HTTP ${res.status}).`)
+          setMediaList((prev) => prev.filter((m) => m.id !== tempId))
+          continue
+        }
+        const url: string = data.data.url
+        setMediaList((prev) =>
+          prev.map((m) =>
+            m.id === tempId ? { ...m, url, uploading: false, progress: 100 } : m
+          )
+        )
+      } catch {
+        setUploadError('Network error during upload — check your connection and retry.')
+        setMediaList((prev) => prev.filter((m) => m.id !== tempId))
+      }
+    }
+
+    // allow re-selecting the same file
+    e.target.value = ''
   }
 
   const handleSubmit = () => {
-    // Proceed back to write review with updated photos
+    // Only fully uploaded media counts; half-uploaded items block submission
+    const pending = mediaList.some((m) => m.uploading || !m.url)
+    if (pending) {
+      setUploadError('Some files are still uploading. Wait for them to finish or remove them.')
+      return
+    }
+    // Hand the real uploaded URLs to the review flow
+    try {
+      sessionStorage.setItem('zylod-review-media', JSON.stringify(mediaList.map((m) => ({ type: m.type, url: m.url }))))
+    } catch {
+      // storage unavailable — media simply won't carry over, no fake fallback
+    }
     navigate('write-review', { productId })
   }
 
@@ -136,6 +161,17 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
 
         {/* Selected Media Section */}
         <div>
+          {uploadError && (
+            <div className="mb-3 bg-red-50 border border-red-200 rounded-2xl p-3" role="alert">
+              <p className="text-xs font-bold text-red-700">{uploadError}</p>
+            </div>
+          )}
+          {mediaList.length === 0 && !uploadError && (
+            <p className="text-[11px] text-slate-500 text-center py-6">
+              No media selected. Upload real photos or videos of the product you received — nothing is
+              pre-filled or faked.
+            </p>
+          )}
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-xs font-bold text-slate-900">
               Selected Media ({mediaList.length})

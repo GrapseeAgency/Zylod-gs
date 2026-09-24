@@ -24,13 +24,15 @@ export function DeliveryMethodPage() {
   const { formatPrice } = useCurrencyStore()
 
   const [methods, setMethods] = useState<DeliveryOption[]>([])
-  const [selected, setSelected] = useState<string>('standard-freight')
+  const [selected, setSelected] = useState<string>('')
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     let mounted = true
     const fetchMethods = async () => {
       setLoading(true)
+      setLoadError('')
       try {
         const res = await fetch('/api/delivery-methods')
         if (res.ok) {
@@ -46,48 +48,25 @@ export function DeliveryMethodPage() {
             icon: m.icon || 'truck',
             pickupAddress: m.pickup_address,
           }))
-          if (mounted && list.length > 0) {
+          if (mounted) {
             setMethods(list)
-            setSelected(list[0].id)
+            if (list.length > 0) setSelected(list[0].id)
+            else setLoadError('No delivery methods have been configured yet.')
             setLoading(false)
             return
           }
+        } else {
+          const errData = await res.json().catch(() => null)
+          if (mounted) setLoadError(errData?.error || `Could not load delivery methods (HTTP ${res.status}).`)
         }
       } catch (e) {
         console.error('Delivery methods fetch error:', e)
+        if (mounted) setLoadError('Network error while loading delivery methods.')
       }
       if (mounted) {
-        // Fallback — only used if API fails (not fake, actual business defaults)
-        setMethods([
-          {
-            id: 'standard-freight',
-            name: 'Standard Freight',
-            description: 'Est. Delivery: Oct 24 - Oct 27',
-            price: 120,
-            badge: 'Best Value for Bulky Items',
-            badgeVariant: 'best',
-            icon: 'truck',
-          },
-          {
-            id: 'express-air',
-            name: 'Express Air',
-            description: 'Est. Delivery: Oct 21 - Oct 22',
-            price: 350,
-            badge: 'Fastest',
-            badgeVariant: 'fastest',
-            icon: 'plane',
-          },
-          {
-            id: 'local-pickup',
-            name: 'Local Hub Pickup',
-            description: 'Available starting Oct 21',
-            price: 0,
-            isFree: true,
-            icon: 'store',
-            pickupAddress: 'Central Warehouse: 123 Industrial Pkwy, Cityville',
-          },
-        ])
-        setSelected('standard-freight')
+        // HONEST STATE: no invented couriers/prices when the API has no data
+        setMethods([])
+        setSelected('')
         setLoading(false)
       }
     }
@@ -129,6 +108,16 @@ export function DeliveryMethodPage() {
             {[1, 2, 3].map((i) => (
               <div key={i} className="bg-white rounded-3xl p-5 border border-slate-200 h-24 animate-pulse" />
             ))}
+          </div>
+        )}
+
+        {loadError && !loading && (
+          <div className="bg-amber-50 border border-amber-200 rounded-3xl p-5 text-center" role="alert">
+            <p className="text-xs font-bold text-amber-800">{loadError}</p>
+            <p className="text-[11px] text-amber-700 mt-1">
+              Delivery options are set up by the site admin. Nothing is invented here — check back once
+              real courier methods have been added.
+            </p>
           </div>
         )}
 

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,6 +26,20 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  // Real media uploaded via /api/uploads/review-media (carried from the upload page)
+  const [media, setMedia] = useState<{ type: string; url: string }[]>([])
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('zylod-review-media')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (Array.isArray(parsed)) setMedia(parsed.filter((m: any) => m && typeof m.url === 'string' && m.url.startsWith('/uploads/')))
+      }
+    } catch {
+      // no media carried over — nothing is faked
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,6 +67,7 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
           title,
           comment,
           durability,
+          images: media.map((m) => m.url),
         }),
       })
 

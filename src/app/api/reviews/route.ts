@@ -63,6 +63,25 @@ export async function POST(request: NextRequest) {
     const comment = typeof body.comment === 'string' ? body.comment.trim() : ''
     const durability = typeof body.durability === 'string' ? body.durability.trim() : ''
 
+    // Media: ONLY real files previously uploaded to this server are accepted.
+    // External URLs (unsplash, blob:, data:, absolute http links) are rejected
+    // so fake/broken imagery can never enter the reviews system.
+    let imagesJson: string | null = null
+    if (Array.isArray(body.images) && body.images.length > 0) {
+      const urls = body.images
+        .filter((u: unknown): u is string => typeof u === 'string')
+        .map((u: string) => u.trim())
+        .filter((u: string) => u.startsWith('/uploads/review-media/'))
+        .slice(0, 5)
+      if (urls.length !== body.images.length) {
+        return NextResponse.json(
+          { error: 'Review images must be uploaded through the media upload endpoint first' },
+          { status: 400 }
+        )
+      }
+      imagesJson = JSON.stringify(urls)
+    }
+
     if (!productId || productId === 'sample-product-id') {
       return NextResponse.json({ error: 'A real productId is required to review' }, { status: 400 })
     }
@@ -100,6 +119,7 @@ export async function POST(request: NextRequest) {
           buyerId,
           rating,
           comment: storedComment,
+          images: imagesJson,
           verifiedPurchase: Boolean(purchased),
         },
       })
