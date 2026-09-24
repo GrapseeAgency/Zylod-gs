@@ -1212,3 +1212,99 @@ Stage Summary:
   7. No disputes backend, no delivery-chat socket.io transport, no GET /api/returns/[id], no return-evidence upload, admin payment-verification queue UI still missing (API exists).
   8. Footer static contact copy (+880 1711-000000 / support@zylod.com) — owner must confirm real values.
   9. seller-profile "Add Product" misroute to supplier-products (pre-existing nav bug).
+---
+Task ID: 40-b
+Agent: general-purpose (de-fake task 40-b)
+Task: supplier-null fix chain, seller-profile Add Product nav fix, honest onboarding copy
+
+Work Log:
+- Read worklog Tasks 36-39 for conventions (honest '--' fallbacks, no fabricated names, TS strict + tsc/eslint gates, no git commands).
+- FIX 1 (API): src/app/api/orders/[id]/route.ts — subOrder supplier fallback { companyName: 'Supplier', slug: '', ratingAvg: 0, ratingCount: 0 } REMOVED; missing supplierProfiles row now returns `supplier: null` (map lookup undefined → null). No other response shape changes.
+- FIX 1 (consumers) — grepped all fetchers of GET /api/orders/[id] (11 in-scope pages + 2 out-of-scope, see remaining):
+  - order-detail-page.tsx: ApiSubOrder.supplier type was a duplicated non-null union → `{ companyName: string; slug: string; ratingAvg: number; ratingCount: number } | null`. Page does not render supplier name (verified: no other supplier refs), so type-only fix.
+  - return-request-page.tsx: SubOrder.supplier `{ companyName: string }` → `| null` (page never renders supplier name).
+  - order-invoice-page.tsx: ApiSubOrder.supplier → `| null` (page never renders supplier name).
+  - return-detail-page.tsx: SubOrder.supplier → `| null` AND render fallback `so.supplier?.companyName || 'Supplier'` → `|| '--'` (was fabricating the name "Supplier").
+  - track-order-page.tsx, delivery-proof-page.tsx: ALREADY null-safe (nullable types; `supplier?.companyName || '--'` renders + `|| null` conditional supplier tag) — verified, no changes needed.
+  - order-feedback-page.tsx: ALREADY null-safe (nullable type; supplierNames filtered by `typeof n === 'string' && n.length > 0`; "Supplier:" row only when a real name exists) — verified, no changes needed.
+  - order-confirmation-page.tsx, cancel-order-page.tsx: ALREADY nullable types, never render supplier name — verified, no changes needed.
+  - delivery-confirmation-page.tsx, exchange-request-page.tsx: their ApiSubOrder types don't include supplier and they never read it — verified, no changes needed.
+  - order-timeline-page.tsx NOT touched (being rewritten by another agent).
+- FIX 2: src/components/pages/seller-profile-page.tsx — both "Add Product" buttons (owner header ≈line 607 and owner empty-products state ≈line 1004) now navigate('add-product') instead of navigate('supplier-products') (which opened the supplier's product LISTING page). 'add-product' verified real in src/lib/page-chunks/chunk-seller.ts → seller-add-product-page, which POSTs to /api/supplier/products. Nothing else changed.
+- FIX 3: src/components/pages/welcome-page.tsx — all 3 onboarding slides rewritten, copy-only (visual design, illustrations, layout identical):
+  - Slide 1: 'Access millions of high-quality products from certified manufacturers worldwide with zero friction.' → 'Browse wholesale products from suppliers on Zylod and order direct — with zero friction.' (no counts, no "certified manufacturers worldwide").
+  - Slide 2: 'Every transaction is protected with escrow payments, verified suppliers, and end-to-end encryption.' (fake — no escrow exists) → 'Orders start unpaid and are only marked paid once your payment is verified — every status shown in real time.' (matches the real UNPAID→verified-webhook flow).
+  - Slide 3: 'From bulk orders to custom manufacturing, streamline your wholesale operations on one platform.' (custom manufacturing doesn't exist) → 'Add items to your cart, place orders at wholesale quantities, and track each shipment until it arrives.' (all real features).
+  - Rest of file audited: no other numbers/counts/ratings/stats present (only brand header, Next/Skip/Get Started buttons, decorative illustrations).
+
+Stage Summary:
+- VERIFY 1: npx tsc --noEmit → exit 0, 0 errors project-wide.
+- VERIFY 2: npx eslint on all 7 touched files → exit 0, 0 problems.
+- VERIFY 3: grep "companyName: 'Supplier'" src/app/api/orders/[id]/route.ts → 0 hits.
+- VERIFY 4: grep "navigate('supplier-products')" seller-profile-page.tsx → 0 hits (2 occurrences → navigate('add-product')).
+- VERIFY 5: grep -E "millions|Access millions" welcome-page.tsx → 0 hits.
+- VERIFY 6: every GET /api/orders/[id] consumer confirmed null-safe: 4 type fixes (order-detail, return-request, return-detail, order-invoice), 1 render fix (return-detail '--'), 7 already-safe verified untouched (track-order, delivery-proof, order-feedback, order-confirmation, cancel-order, delivery-confirmation, exchange-request).
+- Only 7 files modified; order-timeline-page.tsx untouched; no new APIs, no DB changes, no git commands.
+
+REMAINING FAKE/INCOMPLETE (adjacent, out of scope):
+- src/components/pages/generic-info-page.tsx line ≈4638: consumes GET /api/orders/[id] and still maps `supplierName: so.supplier?.companyName || 'Supplier'` — fabricated "Supplier" fallback; needs the same '--' treatment (file was outside this task's allowed list).
+- order-timeline-page.tsx: being rewritten by another agent; must handle supplier null in its new version.
+- order-detail-page.tsx / order-invoice-page.tsx define supplier in their types but never surface the supplier name — when they add it, use `supplier?.companyName || '--'`.
+- supplierProfiles rows with empty/whitespace companyName would render the real-but-empty name; consider `|| '--'` on all future renders (existing ones already do).
+- Onboarding slide 2's "zero friction" wording kept per task-approved tone; re-audit generic-info-page.tsx ~4,700 lines of info configs for similar aspirational copy (flagged by 39/39-b).
+---
+Task ID: 40-a
+Agent: general-purpose (de-fake round 5, order-timeline)
+Task: de-fake order-timeline-page onto real order API
+
+Work Log:
+- Read worklog.md Tasks 36/37/38-a/39 for conventions (skeleton loading, honest empties, real backend error text, no fake success, UNPAID-until-verified payment) and verified the real GET /api/orders/[id] response shape in src/app/api/orders/[id]/route.ts (orderNumber, paymentStatus, placedAt, payments[{method,amount,status,transactionId,paidAt}], subOrders[{supplier.companyName, status, trackingNumber, estimatedDelivery, tracking[{status,location,note,trackedAt}]}], 401/403/404/500 errors). Read Task-39-rewritten order-detail-page.tsx for the fetch/state/dark-mode pattern.
+- src/components/pages/order-timeline-page.tsx — REWRITTEN (was 100% fake). REMOVED: fake orderId fallback '88291', all 5 invented timeline events ('Out for Delivery' Oct 23 2023, 'Shipped from Hub', 'Procurement Complete', 'Payment Verified — Wire transfer confirmed. Funds secured in escrow.', 'Order Placed'), fake 'Oct 24 - Oct 26' expected delivery, unconditional fake 'In Transit' badge, fake 'Carrier: FastTrack Logistics • TRK-99281744', unused framer-motion import.
+- Data layer: orderId REQUIRED from pageParams (prop Record<string,string>, fallback storeParams from useNavigationStore, NO fake fallback). No orderId → honest "No order selected" state + "View My Orders" CTA (navigate('my-orders')). Fetch GET /api/orders/[id] with credentials:'include': loading → skeleton pulse blocks (header bar + delivery card + 4 timeline rows, never fake rows); 401 → "Sign in required" + Sign In (navigate('login')); 404 → "Order not found" + View My Orders; 403/other !res.ok/network → real json.error text (e.g. 'Not authorized to view this order') + Retry button. States mirror order-detail-page.
+- Timeline built EXCLUSIVELY from real API data via buildTimelineEvents(): (1) "Order placed" event with real orderNumber + placedAt (icon ShoppingCart) + real paymentStatus; (2) payment events for each real payments[] row — title `Payment <CapStatus>` from the raw real status (never invented copy), description with real method + real amount via formatPrice, real transactionId or "No transaction ID recorded", real paidAt; if payments[] empty → honest "Payment pending" event: "No payment recorded yet — orders remain UNPAID until verified payment." + real paymentStatus; (3) shipment/tracking events for each subOrder's real tracking[] rows — real status (capitalized), real location/note joined when non-null ("No location or note recorded" when both null), meta line `Supplier: <real companyName> — Tracking: <real number>` or "— No tracking number assigned yet" when null; subOrders with zero tracking rows get one honest `Shipment <real subOrder status>` / "No tracking updates recorded yet" event (real status, no timestamp) so a whole shipment is never silently hidden; icons chosen from real status text only (deliver→Home, ship/transit/dispatch→Truck, else Package), payments→ShieldCheck, pending→Clock.
+- Merge + sort by real timestamp DESCENDING (newest first; isLatest = newest event renders with filled primary icon circle); events with no timestamp (pending payments, untracked shipments) sort last and show '--' / "No timestamp recorded" — no timestamps invented. toTs() helper guards unparseable ISO → null.
+- Expected-delivery card: earliest non-null real estimatedDelivery via toLocaleDateString, else honest "To be scheduled by the supplier". Status badge derived ONLY from real subOrder statuses (all delivered → DELIVERED; some shipped → IN TRANSIT; some cancelled → CANCELLED; else PROCESSING) with matching light/dark tints. Carrier row replaced with real counts only ("N shipment(s) from M supplier(s)" / "No shipments recorded yet") — zero carrier invention; real trackingNumber is shown per shipment in the events.
+- Timestamps: real trackedAt/paidAt/placedAt via toLocaleTimeString + toLocaleDateString ('en-US', month/day/year + hour/minute). Design language kept: slate + rose/primary, rounded-3xl/2xl cards, text-[10px]/xs bold, mobile sticky header (back + real orderNumber + Help→help-center) + single-column desktop layout, Contact Support → navigate('help-center'). Dark-mode classes added throughout (dark:bg-slate-950/900/800, dark:border-slate-800, dark:text-*, dark:before:bg-slate-800) consistent with order-detail-page. 'use client' + named export OrderTimelinePage + export default kept; lazy-import maps (chunk-cart.ts / page-loader.ts) resolve to the same file/exports, only caller (track-order-page navigate('order-timeline',{orderId})) matches the required param.
+- No new API routes, no DB writes, no other files touched, no git commands.
+
+Verify (run from /home/z/my-project):
+- `npx tsc --noEmit` → exit 0 (0 errors project-wide).
+- `npx eslint src/components/pages/order-timeline-page.tsx` → exit 0 (0 errors, 0 warnings).
+- `grep -nE "unsplash|picsum|pexels|placeholder\.com|FastTrack|TRK-9928|Oct 2[0-6], 2023|88291|Wire transfer confirmed"` on the file → 0 hits; extra sweep for setTimeout|framer-motion|4242|escrow|fake order numbers → 0 hits.
+
+Stage Summary:
+- order-timeline-page now renders exclusively real GET /api/orders/[id] data: real order number in the header, real placed/payment/tracking events sorted newest-first, honest "Payment pending" / "No tracking number assigned yet" / "To be scheduled by the supplier" states wherever the backend has no value, real status badge and real shipment counts — every former fabricated element (fake order id, 5 invented events, escrow copy, date range, carrier+tracking number, forced In Transit badge) is gone. Skeleton/401/404/403/error states all honest with real backend error text.
+
+REMAINING FAKE/INCOMPLETE (adjacent, out of scope for 40-a):
+- src/app/api/orders/[id]/route.ts line ~121 still returns the server-side fallback supplier { companyName: 'Supplier' } when the supplier profile row is missing (flagged by 39-a/39) — my page renders it verbatim as "Supplier: Supplier"; needs API null + UI '--' pass.
+- /api/orders/[id] truncates trackingHistory to take:10 per subOrder — timeline can silently hide older tracking events; full-history endpoint needed.
+- Real tracking events only exist if something POSTs trackingHistory (supplier track flow) — fresh orders legitimately show "No tracking updates recorded yet"; a real carrier-integration/cron to generate tracking rows is still missing (no carrier data is faked to cover it).
+- generic-info-page.tsx 'order-timeline' info entry ("Full order history") is aspirational config copy, not wired to real data (out of file scope).
+---
+Task ID: 40
+Agent: glm-main (de-fake cron round 5) + subagents 40-a / 40-b
+Task: DE-FAKE round 5 — order-timeline rewrite (40-a), supplier-null chain + nav bug + honest onboarding copy (40-b), NEW admin payment-verification queue (feature), generic-info fallback fix.
+
+Work Log:
+- GIT: synced origin/main (already up to date at 3609d75). DB verified: 132 tables × 0 rows.
+- 40-a (subagent): order-timeline-page.tsx REWRITTEN (was 100% fake: '88291' fallback, 5 invented events incl. fake 'Payment Verified — wire transfer confirmed, funds secured in escrow', fake 'FastTrack Logistics TRK-99281744', fake 'Oct 24 - Oct 26'): now builds timeline EXCLUSIVELY from GET /api/orders/[id] real data — real 'Order placed' (orderNumber+placedAt), real payments[] events (raw method/status/amount/transactionId/paidAt; honest 'Payment pending — UNPAID until verified' when none), real subOrders[].tracking events (real status/location/note/trackedAt + real supplier/trackingNumber or 'No tracking number assigned yet'), sorted newest-first, honest ETA from real estimatedDelivery else 'To be scheduled by the supplier', status badge derived only from real subOrder statuses, skeleton/401/404/403/real-error+Retry states, dark-mode classes.
+- 40-b (subagent): (1) /api/orders/[id] no longer fabricates supplier {companyName:'Supplier'} when profile missing → returns supplier:null; consumers updated for null-safety — return-detail-page actually rendered the fake name and now renders '--'; order-detail/return-request/order-invoice types fixed; 7 other consumers verified already null-safe; order-timeline untouched (handled by 40-a, uses '--'). (2) seller-profile-page 'Add Product' misroute FIXED: both occurrences navigate('supplier-products') → navigate('add-product') (chunk-seller maps to real seller-add-product-page which POSTs /api/supplier/products). (3) welcome-page.tsx onboarding copy de-faked: 'Access millions of high-quality products from certified manufacturers worldwide' → honest 'Browse wholesale products from suppliers on Zylod and order direct'; fake 'escrow payments/verified suppliers/end-to-end encryption' claims → real UNPAID→verified-payment flow description; fake 'custom manufacturing' → real cart/wholesale/tracking features. Visuals unchanged.
+- MAIN (admin payments queue — NEW FEATURE, closes the loop on mandate D):
+  - src/app/api/admin/orders/route.ts CREATED: admin-only (requireUserType ['admin']) order list for the verification queue — filters paymentStatus (default unpaid)/search q (orderNumber|buyer email)/pagination (limit≤50); real Prisma include buyer (email, buyerProfile.fullName || supplierProfile.companyName) + payments + subOrders; derived order status mirrors campaign logic; 401 when not admin.
+  - src/components/pages/admin-payments-page.tsx CREATED: 'Payment Verification' queue — tabs 'Awaiting verification' (unpaid) / 'Verified & paid' (paid audit list), search, pagination, expandable verify form (transactionId, method bank_transfer|mobile_banking, amount PREFILLED FROM SERVER order.totalAmount, note) → POST /api/admin/orders/[id]/verify-payment; success panel ONLY on real 2xx (order genuinely marked paid server-side); real backend errors verbatim (400 amount mismatch, 409 already-paid / duplicate transactionId, 401 non-admin); honest empty states ('No orders awaiting verification — new orders appear here the moment buyers place them… payments become paid only after your verification or a valid webhook'); skeleton/401-admin-required states; explicit admin warning copy: confirm money arrived BEFORE recording, audit-logged.
+  - Wired: page-loader.ts + chunk-misc.ts registered 'admin-payments'; admin-dashboard QUICK_ADMIN_ACTIONS gains 'Payment Verification' (ShieldCheck) as the FIRST action card.
+- generic-info-page.tsx: last 'Supplier' name fallback → '--' (line 4638); cleaned 5 pre-existing lint warnings (unused eslint-disable directives, ternary-as-statement).
+- welcome-page.tsx styling detail: onboarding ship Image got `sizes` prop + relative parent (fixes next/image fill warnings seen in console).
+- VERIFY: npx tsc --noEmit → 0 errors project-wide; eslint on all touched files → 0 problems; grep companyName: 'Supplier' in orders/[id]/route.ts → 0 hits; grep navigate('supplier-products') in seller-profile → 0 hits; grep 'Access millions' in welcome-page → 0 hits; curl /api/admin/orders unauth → 401 ✓, /api/admin/dashboard unauth → 403 ✓; agent-browser QA (1280x800 + 375x812): onboarding honest copy all 3 slides ✓, home 'No products found' ✓ both widths, login wrong creds → real 'Invalid credentials' + lockout ✓, 0 fresh console errors after cache clear ✓.
+
+Stage Summary:
+- The admin side of the payment pipeline is now REAL and operable: orders can reach 'paid' ONLY via (1) HMAC webhook or (2) the new admin verification queue — both audit-logged, both server-amount-enforced. The last known fake page in the order chain (order-timeline) runs on the real API. The API no longer fabricates supplier identities; the onboarding no longer claims 'millions of products'. Pushed to origin/main immediately.
+- REMAINING FAKE/INCOMPLETE:
+  1. generic-info-page.tsx (~5,400 lines) still holds aspirational copy in many other info-page configs (only split-payment/installment-payment/timeline-adjacent fixed); a systematic copy sweep is needed.
+  2. trackingHistory take:10 truncation in /api/orders/[id] (full history only via /timeline) — acceptable but should paginate.
+  3. No disputes backend / GET /api/returns/[id] / return-evidence upload / delivery-chat socket.io transport — pages honestly state this.
+  4. Footer static contact copy (+880 1711-000000 / support@zylod.com) — owner must confirm real values.
+  5. Home quick-action strip backends (Photo/AI/Voice search) unverified; QR/Barcode verified honest (camera-unavailable).
+  6. Admin dashboard still shows some navigations to 'admin-users'/'admin-suppliers'/'admin-products'/'admin-analytics'/'admin-categories' pages whose implementations were not audited this round (they map to generic or misc pages) — audit pending.
+  7. Admin payments queue has no manual 'flag suspicious order' action yet (server logs suspicious attempts; UI surfacing of those logs pending).
+  8. No real admin account exists (DB empty by mandate) — queue verified via API-level 401/403 enforcement only; full admin-flow E2E requires the owner to create the first admin.

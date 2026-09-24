@@ -118,7 +118,7 @@ export async function GET(
                 ratingAvg: supplier.ratingAvg,
                 ratingCount: supplier.ratingCount,
               }
-            : { companyName: 'Supplier', slug: '', ratingAvg: 0, ratingCount: 0 },
+            : null,
           subtotal: so.subtotal,
           shippingCost: so.shippingCost,
           status: so.status,

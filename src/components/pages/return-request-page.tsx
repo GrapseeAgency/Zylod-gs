@@ -23,7 +23,7 @@ interface OrderItem {
 interface SubOrder {
   id: string
   status: string
-  supplier: { companyName: string }
+  supplier: { companyName: string } | null
   items: OrderItem[]
 }
 

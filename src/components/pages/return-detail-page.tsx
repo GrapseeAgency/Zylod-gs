@@ -22,7 +22,7 @@ interface OrderItem {
 interface SubOrder {
   id: string
   status: string
-  supplier: { companyName: string; ratingAvg?: number }
+  supplier: { companyName: string; ratingAvg?: number } | null
   subtotal: number
   trackingNumber: string | null
   items: OrderItem[]
@@ -251,7 +251,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                       <Check className="h-3.5 w-3.5" />
                     </div>
                     <span className="font-bold text-slate-900 truncate">
-                      {so.supplier?.companyName || 'Supplier'}
+                      {so.supplier?.companyName || '--'}
                     </span>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">

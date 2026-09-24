@@ -2464,7 +2464,7 @@ function SupplierProfilePage({ navigate }: { navigate: (page: string, params?: R
               {productList.map(p => (
                 <div key={p.id} className="p-2 rounded-lg border border-border bg-muted/30 cursor-pointer hover:bg-muted/60 transition-colors" onClick={() => navigate('product-detail', { productId: p.id })}>
                   {p.thumbnailUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
+                     
                     <img src={p.thumbnailUrl} alt={p.name} className="h-16 w-full object-cover rounded mb-1.5" />
                   ) : (
                     <div className="h-16 rounded bg-muted/50 flex items-center justify-center mb-1.5"><Package className="h-6 w-6 text-muted-foreground/50" /></div>
@@ -2921,7 +2921,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
       }
     }
     createIfNeeded()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [conversationId, supplierProfileId, supplierUserId, userId, userType])
 
   // Auto-scroll to bottom on new messages
@@ -3102,7 +3102,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
                         >
                           {m.attachmentUrl && m.attachmentType === 'image' && (
                             <div className="mb-1.5 overflow-hidden rounded-xl">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              { }
                               <img src={m.attachmentUrl} alt={m.attachmentName || 'attachment'} className="max-h-56 w-auto max-w-full object-cover" />
                             </div>
                           )}
@@ -3149,7 +3149,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
       {attachment && (
         <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-white border border-border rounded-2xl shadow-sm">
           {attachment.file.type.startsWith('image/') ? (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img src={attachment.preview} alt="preview" className="h-10 w-10 object-cover rounded-lg" />
           ) : (
             <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center"><Paperclip className="h-4 w-4 text-muted-foreground" /></div>
@@ -4635,13 +4635,17 @@ function ReturnRequestPage() {
   }, [orderId, token])
 
   const allItems = (order?.subOrders || []).flatMap((so: any) =>
-    (so.items || []).map((it: any) => ({ ...it, supplierName: so.supplier?.companyName || 'Supplier' }))
+    (so.items || []).map((it: any) => ({ ...it, supplierName: so.supplier?.companyName || '--' }))
   )
 
   const toggle = (id: string) => {
     setSelected(prev => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       return next
     })
   }

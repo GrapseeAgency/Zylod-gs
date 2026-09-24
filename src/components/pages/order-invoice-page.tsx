@@ -21,7 +21,7 @@ interface ApiItem {
 }
 interface ApiSubOrder {
   id: string
-  supplier: { companyName: string; slug: string; ratingAvg: number; ratingCount: number }
+  supplier: { companyName: string; slug: string; ratingAvg: number; ratingCount: number } | null
   subtotal: number
   shippingCost: number
   status: string

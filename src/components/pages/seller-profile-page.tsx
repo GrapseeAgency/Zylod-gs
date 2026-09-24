@@ -604,7 +604,7 @@ export function SellerProfilePage() {
                 {isOwner ? (
                   <>
                     <Button
-                      onClick={() => navigate('supplier-products')}
+                      onClick={() => navigate('add-product')}
                       className="h-9 px-4 rounded-xl text-xs font-bold bg-primary hover:bg-primary/90 text-white shadow-md flex items-center gap-1.5"
                     >
                       <Plus className="h-3.5 w-3.5" />
@@ -1001,7 +1001,7 @@ export function SellerProfilePage() {
                       <p className="text-sm font-bold text-slate-400">No products found</p>
                       {isOwner ? (
                         <Button
-                          onClick={() => navigate('supplier-products')}
+                          onClick={() => navigate('add-product')}
                           className="bg-primary text-white h-9 px-4 rounded-xl text-xs font-bold mt-2"
                         >
                           + Upload Products

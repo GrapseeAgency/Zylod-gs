@@ -18,23 +18,23 @@ interface Slide {
 const SLIDES: Slide[] = [
   {
     id: 1,
-    title: 'Source Global',
+    title: 'Source Wholesale',
     description:
-      'Access millions of high-quality products from certified manufacturers worldwide with zero friction.',
+      'Browse wholesale products from suppliers on Zylod and order direct — with zero friction.',
     illustration: 'ship',
   },
   {
     id: 2,
     title: 'Trade Securely',
     description:
-      'Every transaction is protected with escrow payments, verified suppliers, and end-to-end encryption.',
+      'Orders start unpaid and are only marked paid once your payment is verified — every status shown in real time.',
     illustration: 'shield',
   },
   {
     id: 3,
     title: 'Scale Faster',
     description:
-      'From bulk orders to custom manufacturing, streamline your wholesale operations on one platform.',
+      'Add items to your cart, place orders at wholesale quantities, and track each shipment until it arrives.',
     illustration: 'trending',
   },
 ]
@@ -48,12 +48,13 @@ function ShipIllustration() {
           initial={{ rotate: 0 }}
           animate={{ rotate: -6 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="w-full h-full rounded-2xl overflow-hidden shadow-xl"
+          className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl"
         >
           <Image
             src="/images/auth/onboarding-ship.png"
             alt="Cargo ship illustration"
             fill
+            sizes="(max-width: 768px) 80vw, 400px"
             className="object-cover"
             priority
           />

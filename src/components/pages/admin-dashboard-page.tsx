@@ -13,7 +13,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import {
   LayoutDashboard, DollarSign, Users, Clock, ShoppingCart, TrendingUp, Package,
   ChevronRight, AlertCircle, BarChart3, Server, Database, Wifi, AlertTriangle,
-  UserPlus, Star, MapPin, ArrowRight, ShieldAlert,
+  UserPlus, Star, MapPin, ArrowRight, ShieldAlert, ShieldCheck,
 } from 'lucide-react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
@@ -78,6 +78,7 @@ function timeAgo(iso: string): string {
 
 // ─── Static action nav (no data, just navigation targets) ─────
 const QUICK_ADMIN_ACTIONS = [
+  { title: 'Payment Verification', description: 'Verify bank/mobile transfers & mark orders paid', icon: ShieldCheck, page: 'admin-payments', badgeKey: 'paymentVerification' as string | null },
   { title: 'Manage Users', description: 'View & manage all platform users', icon: Users, page: 'admin-users', badgeKey: null as string | null },
   { title: 'Review Products', description: 'Approve & moderate products', icon: Package, page: 'admin-products', badgeKey: 'productApproval' as string | null },
   { title: 'Verify Suppliers', description: 'Review supplier applications', icon: TrendingUp, page: 'admin-suppliers', badgeKey: 'supplierVerification' as string | null },

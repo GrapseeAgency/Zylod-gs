@@ -26,7 +26,7 @@ interface ApiTracking { id: string; status: string; location: string | null; not
 interface ApiSubOrder {
   id: string
   supplierId: string
-  supplier: { companyName: string; slug: string; ratingAvg: number; ratingCount: number } | { companyName: string; slug: string; ratingAvg: number; ratingCount: number }
+  supplier: { companyName: string; slug: string; ratingAvg: number; ratingCount: number } | null
   subtotal: number
   shippingCost: number
   status: string
