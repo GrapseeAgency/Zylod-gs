@@ -338,11 +338,11 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   'gift-card': { name: 'Gift Card Redemption', description: 'Redeem a gift card', icon: <Gift className="h-8 w-8 text-white" />, sections: [
     { title: 'Redeem Gift Card', content: 'Enter your gift card code to add credit to your wallet.', icon: <Gift className="h-4 w-4" /> },
   ] },
-  'split-payment': { name: 'Split Payment', description: 'Split your payment across methods', icon: <Wallet className="h-8 w-8 text-white" />, sections: [
-    { title: 'Split Across Methods', content: 'Pay using a combination of wallet credit, cards, and bank transfer.', icon: <Wallet className="h-4 w-4" /> },
+  'split-payment': { name: 'Split Payment', description: 'Payment method options for your order', icon: <Wallet className="h-8 w-8 text-white" />, sections: [
+    { title: 'Not Available Yet', content: 'Splitting one order across multiple payment methods is not supported yet. Orders start UNPAID and are paid in full via verified bank transfer or mobile wallet.', icon: <Wallet className="h-4 w-4" /> },
   ] },
-  'installment-payment': { name: 'Installment Payment', description: 'Pay in installments', icon: <CalendarDays className="h-8 w-8 text-white" />, sections: [
-    { title: 'Flexible Payment', content: 'Eligible customers can split large orders into monthly installments.', icon: <CalendarDays className="h-4 w-4" /> },
+  'installment-payment': { name: 'Installment Plans', description: 'Financing options for your order', icon: <CalendarDays className="h-8 w-8 text-white" />, sections: [
+    { title: 'Not Available Yet', content: 'Zylod does not offer installment or financing plans yet. Orders are paid in full via verified bank transfer or mobile wallet before being marked paid.', icon: <CalendarDays className="h-4 w-4" /> },
   ] },
   'review-order': { name: 'Review Order', description: 'Final order review', icon: <FileText className="h-8 w-8 text-white" />, sections: [
     { title: 'Confirm Details', content: 'Verify items, quantities, addresses, and total before placing your order.', icon: <FileText className="h-4 w-4" /> },
