@@ -12,26 +12,24 @@ import { Progress } from '@/components/ui/progress'
 import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useNotificationStore } from '@/store/notification-store'
 import {
   useSuppliers, useConversations, useMessages, useRfqs, useAddresses,
-  useAdminUsers, useAdminProducts, verifySupplier, updateUserStatus, updateProductApproval,
   sendMessage, uploadChatAttachment, createConversation, useSupplierDetail, useSupplierProducts,
   type SupplierListItem, type ChatConversation, type ChatMessage, type RfqItem, type Address,
-  type AdminUser, type AdminProduct, type SupplierDetail, type SupplierProduct,
+  type SupplierDetail, type SupplierProduct,
 } from '@/lib/use-api'
 import { hasNativeVoiceRecognition, recognizeSpeechWithNative } from '@/lib/native-bridge'
 import {
   ArrowLeft, Truck, Wallet, Clock, FileText, Scale, Globe, Users, Heart,
   Megaphone, BookOpen, Mail, Phone, MessageCircle, HelpCircle, AlertTriangle, Lightbulb,
   ChevronRight, Building2, Star, Package, BadgeCheck, Search, Filter,
-  TrendingUp, BarChart3, Settings, Warehouse, Eye, Ban, UserCheck, Edit, Trash2, Plus,
+  TrendingUp, BarChart3, Settings, Warehouse, Eye, Ban, Edit, Trash2, Plus,
   Upload, XCircle, AlertCircle, ArrowUpRight, Download, Store, MapPin, Award,
-  ChevronDown, ChevronUp, ThumbsUp, ThumbsDown, ExternalLink, Save, Bell, BellOff,
-  Languages, Lock, Unlock, Crown, Target, Zap, Gift, Shield, PieChart, LineChart,
+  ChevronDown, ThumbsUp, ExternalLink, Save, Bell, BellOff,
+  Languages, Lock, Unlock, Crown, Target, Zap, Gift, Shield,
   Activity, ShoppingBag, DollarSign, UserPlus, RefreshCw, Box, ArrowUpDown,
   Inbox, ClipboardCheck,
   TrendingDown, Percent, CalendarDays, FileBarChart, LayoutGrid, List, Palette, Link,
@@ -52,40 +50,39 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: '1. Acceptance of Terms', content: 'By using Zylod, you agree to these terms. All wholesale transactions are governed by BD commercial law.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span> },
     { title: '2. User Accounts', content: 'Buyers and suppliers must register with verified information. Account suspension may occur for violations.', icon: <Users className="h-4 w-4" /> },
     { title: '3. Transaction Rules', content: 'All orders are subject to MOQ requirements. Payment must be completed via approved methods (bKash, Nagad, bank transfer).', icon: <Wallet className="h-4 w-4" /> },
-    { title: '4. Dispute Resolution', content: 'Disputes are handled through our arbitration process. Both parties must provide documentation within 48 hours.', icon: <Scale className="h-4 w-4" /> },
+    { title: '4. Dispute Resolution', content: 'Disputes are handled through our dispute process. Both parties may be asked to provide documentation while a case is reviewed.', icon: <Scale className="h-4 w-4" /> },
     { title: '5. Liability', content: 'Zylod acts as a marketplace platform. We are not liable for product quality — sellers bear full responsibility.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span> },
   ] },
   'privacy': { name: 'Privacy Policy', description: 'How we protect your data and privacy', icon: <span className="material-symbols-outlined text-white" style={{ fontSize: 32, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span>, sections: [
     { title: 'Data Collection', content: 'We collect name, email, phone, and business details needed for wholesale transactions. Location data is optional.', icon: <Users className="h-4 w-4" /> },
     { title: 'Data Usage', content: 'Your data is used solely for order processing, supplier verification, and platform improvement. No third-party sharing without consent.', icon: <Lightbulb className="h-4 w-4" /> },
-    { title: 'Data Protection', content: 'All data is encrypted and stored securely. We follow Bangladesh Data Protection Act 2023 guidelines.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span> },
+    { title: 'Data Protection', content: 'We store only the data needed to run your account and orders. You can request deletion of your account and data at any time from Account Settings.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span> },
   ] },
   'refund-policy': { name: 'Refund Policy', description: 'Our refund and return process for wholesale orders', icon: <Truck className="h-8 w-8 text-white" />, sections: [
-    { title: 'Refund Eligibility', content: 'Products damaged during shipping or not matching specifications are eligible for full refund within 7 days of delivery.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span> },
-    { title: 'Refund Process', content: 'Submit refund request with photos/videos. Approved refunds are processed within 5 business days to your original payment method.', icon: <Clock className="h-4 w-4" /> },
+    { title: 'Refund Eligibility', content: 'Products damaged during shipping or not matching specifications may be eligible for a refund — see the return terms shown on each order.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span> },
+    { title: 'Refund Process', content: 'Submit a refund request with photos/videos. Approved refunds are returned to your original payment method.', icon: <Clock className="h-4 w-4" /> },
     { title: 'Bulk Order Returns', content: 'Bulk orders (MOQ+) may have different return terms per supplier. Check product listing for specific return policies.', icon: <Package className="h-4 w-4" /> },
   ] },
   'shipping-policy': { name: 'Shipping Policy', description: 'Delivery terms and logistics information', icon: <Truck className="h-8 w-8 text-white" />, sections: [
-    { title: 'Delivery Zones', content: 'We deliver across all 64 districts of Bangladesh. Dhaka city: 1-2 days. Other districts: 3-7 days.', icon: <Globe className="h-4 w-4" /> },
-    { title: 'Bulk Shipping', content: 'Large orders qualify for free shipping. Specialized logistics partners handle large shipments.', icon: <Truck className="h-4 w-4" /> },
-    { title: 'Tracking', content: 'All orders come with real-time tracking. SMS notifications sent at each delivery milestone.', icon: <Clock className="h-4 w-4" /> },
+    { title: 'Delivery Zones', content: 'Delivery zones and timelines are set by each supplier — estimated delivery windows are shown on each product and order.', icon: <Globe className="h-4 w-4" /> },
+    { title: 'Bulk Shipping', content: 'Shipping options and costs for your order are shown at checkout.', icon: <Truck className="h-4 w-4" /> },
+    { title: 'Tracking', content: 'Orders include status updates from the supplier. Follow progress any time from your order timeline.', icon: <Clock className="h-4 w-4" /> },
   ] },
-  'about': { name: 'About Zylod', description: 'Bangladesh\'s premier B2B wholesale marketplace', icon: <Building2 className="h-8 w-8 text-white" />, sections: [
-    { title: 'Our Mission', content: 'To revolutionize B2B commerce in Bangladesh by connecting verified suppliers with wholesale buyers across all 64 districts.', icon: <Heart className="h-4 w-4" /> },
-    { title: 'Our Platform', content: 'Zylod serves 50,000+ registered businesses with 200,000+ products from 5,000+ verified suppliers. Large monthly transaction volume.', icon: <Star className="h-4 w-4" /> },
-    { title: 'Our Team', content: 'Founded in 2023 in Dhaka, our team of 200+ employees is dedicated to making wholesale commerce accessible and trustworthy.', icon: <Users className="h-4 w-4" /> },
+  'about': { name: 'About Zylod', description: 'B2B wholesale marketplace from Bangladesh', icon: <Building2 className="h-8 w-8 text-white" />, sections: [
+    { title: 'Our Mission', content: 'To make B2B wholesale commerce in Bangladesh simple and trustworthy by connecting suppliers with wholesale buyers.', icon: <Heart className="h-4 w-4" /> },
+    { title: 'Our Platform', content: 'Zylod is a B2B wholesale marketplace where suppliers list products and buyers order direct. Suppliers and products join the marketplace as it grows.', icon: <Star className="h-4 w-4" /> },
+    { title: 'Our Team', content: 'Zylod is built and operated from Dhaka, Bangladesh.', icon: <Users className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Careers', pageId: 'careers' }, { label: 'Press', pageId: 'press' }, { label: 'Contact', pageId: 'contact-us' }] },
   'contact-us': { name: 'Contact Us', description: 'Get in touch with our support team', icon: <Mail className="h-8 w-8 text-white" />, sections: [
-    { title: 'Customer Support', content: 'Available 24/7 via phone, email, and chat. Average response time: 15 minutes.', icon: <Phone className="h-4 w-4" /> },
     { title: 'Email', content: 'support@zylod.com — for general inquiries and order support', icon: <Mail className="h-4 w-4" /> },
-    { title: 'Phone', content: '+880 1700-WHOLESALE — hotline for urgent matters (9AM-9PM BST)', icon: <Phone className="h-4 w-4" /> },
-    { title: 'Office', content: 'Zylod HQ, Gulshan-2, Dhaka 1212, Bangladesh', icon: <Building2 className="h-4 w-4" /> },
+    { title: 'Phone', content: 'Contact details will be published by the site owner.', icon: <Phone className="h-4 w-4" /> },
+    { title: 'Office', content: 'Office address will be published by the site owner.', icon: <Building2 className="h-4 w-4" /> },
   ] },
   'faq': { name: 'FAQ', description: 'Frequently asked questions about Zylod', icon: <HelpCircle className="h-8 w-8 text-white" />, sections: [
     { title: 'How do I place a bulk order?', content: 'Browse products, select MOQ, add to cart, and checkout. Minimum order quantities are displayed on each product.', icon: <Package className="h-4 w-4" /> },
     { title: 'What payment methods are accepted?', content: 'bKash, Nagad, bank transfer (BRAC, City, Dutch-Bangla), and credit lines for verified buyers.', icon: <Wallet className="h-4 w-4" /> },
-    { title: 'How are suppliers verified?', content: 'Suppliers undergo trade license verification, product quality inspection, and business reference checks.', icon: <BadgeCheck className="h-4 w-4" /> },
-    { title: 'What is the refund process?', content: 'Submit refund request with evidence. Approved refunds processed in 5 business days.', icon: <Truck className="h-4 w-4" /> },
+    { title: 'How are suppliers verified?', content: 'Suppliers submit trade license and NID details during registration, and a Zylod admin reviews the submission before approval.', icon: <BadgeCheck className="h-4 w-4" /> },
+    { title: 'What is the refund process?', content: 'Submit a refund request with evidence. Approved refunds are returned to your original payment method.', icon: <Truck className="h-4 w-4" /> },
   ] },
 
   // ========== NEW INTERACTIVE CONFIGS ==========
@@ -94,8 +91,8 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     name: 'Supplier Directory', description: 'Find and connect with verified wholesale suppliers across Bangladesh',
     icon: <Store className="h-8 w-8 text-white" />, specialType: 'suppliers',
     sections: [
-      { title: 'Verified Suppliers', content: 'Browse our network of 5,000+ verified suppliers offering wholesale products across all categories.', icon: <BadgeCheck className="h-4 w-4" /> },
-      { title: 'Quality Assurance', content: 'Every supplier undergoes trade license verification, product quality inspection, and business reference checks.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span> },
+      { title: 'Verified Suppliers', content: 'Browse suppliers as they join the marketplace — each profile shows its verification status.', icon: <BadgeCheck className="h-4 w-4" /> },
+      { title: 'Quality Assurance', content: 'Suppliers submit trade license and NID details during registration, and a Zylod admin reviews the submission before approval.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span> },
     ],
     quickLinks: [{ label: 'Categories', pageId: 'category-products' }, { label: 'Chat', pageId: 'chat-list' }],
   },
@@ -113,7 +110,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     name: 'Return Request', description: 'Submit return requests for eligible orders',
     icon: <RefreshCw className="h-8 w-8 text-white" />, specialType: 'buyer-returns',
     sections: [
-      { title: 'Return Policy', content: 'Items can be returned within 7 days of delivery if damaged or not matching specifications. Bulk orders may have different terms.', icon: <Truck className="h-4 w-4" /> },
+      { title: 'Return Policy', content: 'If items arrive damaged or not as described, start a return from the order in your order history. Bulk orders may have different terms.', icon: <Truck className="h-4 w-4" /> },
     ],
     quickLinks: [{ label: 'My Orders', pageId: 'buyer-orders' }, { label: 'Refund Policy', pageId: 'refund-policy' }],
   },
@@ -131,7 +128,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     name: 'Buyer Level & Benefits', description: 'Track your buyer level and unlock exclusive benefits',
     icon: <Crown className="h-8 w-8 text-white" />, specialType: 'buyer-level',
     sections: [
-      { title: 'Level Up', content: 'The more you buy, the higher your level. Unlock exclusive discounts, priority support, and more.', icon: <TrendingUp className="h-4 w-4" /> },
+      { title: 'Level Up', content: 'Buyer levels are not available yet — your level will be based on real order history once the program launches.', icon: <TrendingUp className="h-4 w-4" /> },
     ],
     quickLinks: [{ label: 'My Orders', pageId: 'buyer-orders' }, { label: 'Rewards', pageId: 'buyer-rewards' }],
   },
@@ -145,47 +142,11 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     quickLinks: [{ label: 'Go to Wishlist', pageId: 'wishlist' }],
   },
 
-  'admin-users': {
-    name: 'User Management', description: 'Manage platform users, roles, and permissions',
-    icon: <Users className="h-8 w-8 text-white" />, specialType: 'admin-users',
-    sections: [
-      { title: 'User Overview', content: 'Monitor and manage all registered buyers and suppliers on the platform.', icon: <Users className="h-4 w-4" /> },
-    ],
-    quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Suppliers', pageId: 'admin-suppliers' }],
-  },
-
-  'admin-products': {
-    name: 'Product Review Queue', description: 'Review and approve products before they go live',
-    icon: <Package className="h-8 w-8 text-white" />, specialType: 'admin-products',
-    sections: [
-      { title: 'Product Moderation', content: 'All new products require admin approval before appearing on the marketplace.', icon: <Eye className="h-4 w-4" /> },
-    ],
-    quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Categories', pageId: 'admin-categories' }],
-  },
-
   'admin-complaints': {
     name: 'Complaint Handling', description: 'Review and resolve user complaints',
     icon: <AlertTriangle className="h-8 w-8 text-white" />, specialType: 'admin-complaints',
     sections: [
-      { title: 'Complaint Management', content: 'Track, assign, and resolve complaints from buyers and suppliers.', icon: <AlertCircle className="h-4 w-4" /> },
-    ],
-    quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Users', pageId: 'admin-users' }],
-  },
-
-  'admin-reports': {
-    name: 'Reports & Analytics', description: 'Platform performance reports and data export',
-    icon: <FileBarChart className="h-8 w-8 text-white" />, specialType: 'admin-reports',
-    sections: [
-      { title: 'Platform Reports', content: 'Comprehensive reports on platform performance, revenue, and growth metrics.', icon: <BarChart3 className="h-4 w-4" /> },
-    ],
-    quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Analytics', pageId: 'admin-analytics' }],
-  },
-
-  'admin-analytics': {
-    name: 'Analytics Dashboard', description: 'Key platform metrics and insights',
-    icon: <BarChart3 className="h-8 w-8 text-white" />, specialType: 'admin-analytics',
-    sections: [
-      { title: 'Platform Analytics', content: 'Real-time metrics and insights for informed decision-making.', icon: <Activity className="h-4 w-4" /> },
+      { title: 'Complaint Management', content: 'Complaint handling tools are not connected yet. Reported content and support tickets are handled in the admin Reports tool.', icon: <AlertCircle className="h-4 w-4" /> },
     ],
     quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Reports', pageId: 'admin-reports' }],
   },
@@ -194,7 +155,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     name: 'Category Management', description: 'Manage product categories and subcategories',
     icon: <LayoutGrid className="h-8 w-8 text-white" />, specialType: 'admin-categories',
     sections: [
-      { title: 'Categories', content: 'Organize products into well-structured categories for easy discovery.', icon: <LayoutGrid className="h-4 w-4" /> },
+      { title: 'Categories', content: 'Category management tools are not available yet — categories come from the platform catalog configuration.', icon: <LayoutGrid className="h-4 w-4" /> },
     ],
     quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Products', pageId: 'admin-products' }],
   },
@@ -203,9 +164,9 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     name: 'System Settings', description: 'Configure platform-wide settings and preferences',
     icon: <Settings className="h-8 w-8 text-white" />, specialType: 'admin-settings',
     sections: [
-      { title: 'System Configuration', content: 'Manage platform settings, commission rates, and email configurations.', icon: <Settings className="h-4 w-4" /> },
+      { title: 'System Configuration', content: 'System settings are not available yet — platform configuration is managed in the server configuration, not from this page.', icon: <Settings className="h-4 w-4" /> },
     ],
-    quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Analytics', pageId: 'admin-analytics' }],
+    quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Payment Verification', pageId: 'admin-payments' }],
   },
 
   'supplier-analytics': {
@@ -230,7 +191,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     name: 'Market Insights', description: 'Discover market trends and demand forecasts',
     icon: <Lightbulb className="h-8 w-8 text-white" />, specialType: 'supplier-insights',
     sections: [
-      { title: 'Market Intelligence', content: 'Stay ahead with real-time market trends, pricing insights, and demand forecasts.', icon: <Lightbulb className="h-4 w-4" /> },
+      { title: 'Market Intelligence', content: 'Market trend and demand insight tools are in development — insights will appear here as order data grows.', icon: <Lightbulb className="h-4 w-4" /> },
     ],
     quickLinks: [{ label: 'Dashboard', pageId: 'supplier-dashboard' }, { label: 'Analytics', pageId: 'supplier-analytics' }],
   },
@@ -245,21 +206,21 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   },
 
   'explore': { name: 'Explore', description: 'Discover wholesale products across Bangladesh', icon: <Globe className="h-8 w-8 text-white" />, sections: [
-    { title: 'Browse by Category', content: 'Explore 20+ categories from textiles to electronics, each with verified suppliers and bulk pricing.', icon: <LayoutGrid className="h-4 w-4" /> },
-    { title: 'Trending Now', content: 'See what other retailers are ordering — hot products, top suppliers, and best-selling items.', icon: <TrendingUp className="h-4 w-4" /> },
-    { title: 'Curated Collections', content: 'Hand-picked product bundles and seasonal sourcing guides for every business.', icon: <Box className="h-4 w-4" /> },
+    { title: 'Browse by Category', content: 'Explore 20 categories from textiles to electronics, with bulk pricing shown on each product.', icon: <LayoutGrid className="h-4 w-4" /> },
+    { title: 'Trending Now', content: 'Popular products and best sellers will appear here as buyers shop the marketplace.', icon: <TrendingUp className="h-4 w-4" /> },
+    { title: 'Curated Collections', content: 'Product collections will appear here as the marketplace grows.', icon: <Box className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Categories', pageId: 'category-products' }, { label: 'Trending', pageId: 'trending-products' }, { label: 'New Arrivals', pageId: 'new-arrivals' }] },
 
   'category-browser': { name: 'Category Browser', description: 'Browse all wholesale categories', icon: <LayoutGrid className="h-8 w-8 text-white" />, specialType: 'category-browser', sections: [] },
 
   'brand-showcase': { name: 'Brand Showcase', description: 'Featured wholesale brands and manufacturers', icon: <Award className="h-8 w-8 text-white" />, sections: [
-    { title: 'Featured Brands', content: 'Top-rated Bangladeshi manufacturers verified by Zylod with quality guarantees.', icon: <BadgeCheck className="h-4 w-4" /> },
-    { title: 'Partner With Us', content: 'Grow your brand reach by partnering with our wholesale distribution network.', icon: <Store className="h-4 w-4" /> },
+    { title: 'Featured Brands', content: 'Wholesale brands and manufacturers listing products on Zylod.', icon: <BadgeCheck className="h-4 w-4" /> },
+    { title: 'Partner With Us', content: 'List your brand\u2019s products for wholesale buyers on Zylod.', icon: <Store className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Suppliers', pageId: 'suppliers' }, { label: 'Contact', pageId: 'contact-us' }] },
 
   'search-results': { name: 'Search Results', description: 'Find wholesale products and suppliers', icon: <Search className="h-8 w-8 text-white" />, sections: [
     { title: 'Refine Results', content: 'Filter by category, price range, location, supplier rating, and MOQ requirements.', icon: <Filter className="h-4 w-4" /> },
-    { title: 'Bulk Pricing', content: 'All results show wholesale pricing with tiered discounts for larger quantities.', icon: <Package className="h-4 w-4" /> },
+    { title: 'Bulk Pricing', content: 'Products can offer tiered wholesale discounts for larger quantities.', icon: <Package className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'All Products', pageId: 'category-products' }, { label: 'Search Home', pageId: 'search-home' }] },
 
   'filter-sort': { name: 'Filter & Sort', description: 'Refine your product search', icon: <Filter className="h-8 w-8 text-white" />, sections: [
@@ -273,13 +234,13 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   ] },
 
   'product-reviews': { name: 'Product Reviews', description: 'Read buyer reviews of wholesale products', icon: <Star className="h-8 w-8 text-white" />, sections: [
-    { title: 'Buyer Feedback', content: 'Real reviews from retailers who purchased in bulk, with ratings and photos.', icon: <Star className="h-4 w-4" /> },
+    { title: 'Buyer Feedback', content: 'Reviews from buyers, with ratings and photos.', icon: <Star className="h-4 w-4" /> },
     { title: 'Share Your Experience', content: 'Write a review to help other buyers make better sourcing decisions.', icon: <ThumbsUp className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Write Review', pageId: 'write-review' }] },
 
   'product-qa': { name: 'Product Q&A', description: 'Questions and answers about products', icon: <HelpCircle className="h-8 w-8 text-white" />, sections: [
     { title: 'Ask Questions', content: 'Ask suppliers about quality, MOQ, lead times, and customization before ordering.', icon: <MessageCircle className="h-4 w-4" /> },
-    { title: 'Verified Answers', content: 'Suppliers respond to questions within 24 hours for verified listings.', icon: <BadgeCheck className="h-4 w-4" /> },
+    { title: 'Verified Answers', content: 'Suppliers answer questions about their listings.', icon: <BadgeCheck className="h-4 w-4" /> },
   ] },
   'write-review': { name: 'Write Review', description: 'Share your product experience', icon: <Edit className="h-8 w-8 text-white" />, specialType: 'write-review', sections: [
     { title: 'Rate Your Purchase', content: 'Rate product quality, packaging, and delivery speed.', icon: <Star className="h-4 w-4" /> },
@@ -338,12 +299,6 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   'gift-card': { name: 'Gift Card Redemption', description: 'Redeem a gift card', icon: <Gift className="h-8 w-8 text-white" />, sections: [
     { title: 'Redeem Gift Card', content: 'Enter your gift card code to add credit to your wallet.', icon: <Gift className="h-4 w-4" /> },
   ] },
-  'split-payment': { name: 'Split Payment', description: 'Payment method options for your order', icon: <Wallet className="h-8 w-8 text-white" />, sections: [
-    { title: 'Not Available Yet', content: 'Splitting one order across multiple payment methods is not supported yet. Orders start UNPAID and are paid in full via verified bank transfer or mobile wallet.', icon: <Wallet className="h-4 w-4" /> },
-  ] },
-  'installment-payment': { name: 'Installment Plans', description: 'Financing options for your order', icon: <CalendarDays className="h-8 w-8 text-white" />, sections: [
-    { title: 'Not Available Yet', content: 'Zylod does not offer installment or financing plans yet. Orders are paid in full via verified bank transfer or mobile wallet before being marked paid.', icon: <CalendarDays className="h-4 w-4" /> },
-  ] },
   'review-order': { name: 'Review Order', description: 'Final order review', icon: <FileText className="h-8 w-8 text-white" />, sections: [
     { title: 'Confirm Details', content: 'Verify items, quantities, addresses, and total before placing your order.', icon: <FileText className="h-4 w-4" /> },
   ] },
@@ -387,7 +342,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   ] },
   'dispute-center': { name: 'Dispute Center', description: 'Resolve order disputes', icon: <Scale className="h-8 w-8 text-white" />, specialType: 'dispute-center', sections: [
     { title: 'File a Dispute', content: 'Open a dispute with evidence for resolution by our team.', icon: <Scale className="h-4 w-4" /> },
-    { title: 'Resolution', content: 'Both parties provide documentation within 48 hours for fair arbitration.', icon: <AlertTriangle className="h-4 w-4" /> },
+    { title: 'Resolution', content: 'Both parties can provide documentation while the dispute is under review by our team.', icon: <AlertTriangle className="h-4 w-4" /> },
   ] },
   'dispute-detail': { name: 'Dispute Detail', description: 'View dispute details', icon: <FileText className="h-8 w-8 text-white" />, sections: [
     { title: 'Case Details', content: 'Messages, evidence, and status of your dispute case.', icon: <FileText className="h-4 w-4" /> },
@@ -420,7 +375,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Pickup Points', content: 'Choose a nearby warehouse or pickup location for your order.', icon: <MapPin className="h-4 w-4" /> },
   ] },
   'warehouse-locator': { name: 'Warehouse Locator', description: 'Find a warehouse', icon: <Warehouse className="h-8 w-8 text-white" />, sections: [
-    { title: 'Locations', content: 'Find Zylod warehouses and partner hubs near you.', icon: <Warehouse className="h-4 w-4" /> },
+    { title: 'Locations', content: 'Warehouse and pickup hub locations will be listed here as they are added.', icon: <Warehouse className="h-4 w-4" /> },
   ] },
   'shipping-calculator': { name: 'Shipping Calculator', description: 'Estimate shipping cost', icon: <BarChart3 className="h-8 w-8 text-white" />, sections: [
     { title: 'Estimate', content: 'Estimate shipping cost by weight, destination, and method.', icon: <BarChart3 className="h-4 w-4" /> },
@@ -557,13 +512,13 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   'help-center': { name: 'Help Center', description: 'Get help with Zylod', icon: <HelpCircle className="h-8 w-8 text-white" />, sections: [
     { title: 'Browse Help', content: 'Guides on buying, selling, payments, shipping, and account help.', icon: <HelpCircle className="h-4 w-4" /> },
     { title: 'Popular Topics', content: 'Ordering, returns, refunds, verification, and shipping FAQs.', icon: <BookOpen className="h-4 w-4" /> },
-    { title: 'Contact Support', content: 'Live chat, email, and phone support available 24/7.', icon: <MessageCircle className="h-4 w-4" /> },
+    { title: 'Contact Support', content: 'Email support@zylod.com for help with your account and orders.', icon: <MessageCircle className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'FAQs', pageId: 'faq' }, { label: 'Contact Us', pageId: 'contact-us' }] },
   'live-chat': { name: 'Live Chat', description: 'Chat with support in real time', icon: <MessageCircle className="h-8 w-8 text-white" />, sections: [
-    { title: 'Live Chat', content: 'Talk to a support agent immediately for quick help.', icon: <MessageCircle className="h-4 w-4" /> },
+    { title: 'Live Chat', content: 'Live chat with support is not available yet — email support@zylod.com for help.', icon: <MessageCircle className="h-4 w-4" /> },
   ] },
   'chatbot': { name: 'Chatbot', description: 'Automated support assistant', icon: <HelpCircle className="h-8 w-8 text-white" />, sections: [
-    { title: 'Chatbot', content: 'Get instant answers to common questions 24/7.', icon: <HelpCircle className="h-4 w-4" /> },
+    { title: 'Chatbot', content: 'Automated answers to common questions.', icon: <HelpCircle className="h-4 w-4" /> },
   ] },
   'submit-ticket': { name: 'Submit Ticket', description: 'Open a support ticket', icon: <Plus className="h-8 w-8 text-white" />, sections: [
     { title: 'New Ticket', content: 'Describe your issue and our team will follow up.', icon: <Plus className="h-4 w-4" /> },
@@ -584,7 +539,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Guidelines', content: 'Rules for respectful and honest B2B commerce.', icon: <Users className="h-4 w-4" /> },
   ] },
   'coupons': { name: 'Coupons', description: 'Wholesale discount coupons', icon: <Gift className="h-8 w-8 text-white" />, sections: [
-    { title: 'Available Coupons', content: 'Discount codes for wholesale orders, from 10% to 20% off.', icon: <Gift className="h-4 w-4" /> },
+    { title: 'Available Coupons', content: 'Discount codes for wholesale orders — availability depends on active promotions.', icon: <Gift className="h-4 w-4" /> },
     { title: 'How to Use', content: 'Apply coupon codes at checkout to save on your bulk orders.', icon: <ChevronRight className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'My Coupons', pageId: 'my-coupons' }] },
   'my-coupons': { name: 'My Coupons', description: 'Your saved coupons', icon: <Gift className="h-8 w-8 text-white" />, sections: [
@@ -615,7 +570,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Redeem', content: 'Convert points into coupons and wallet credit.', icon: <Gift className="h-4 w-4" /> },
   ], specialType: 'redeem-points' },
   'vip-membership': { name: 'VIP Membership', description: 'Exclusive VIP benefits', icon: <Crown className="h-8 w-8 text-white" />, sections: [
-    { title: 'VIP', content: 'Unlock premium pricing, priority support, and exclusive deals.', icon: <Crown className="h-4 w-4" /> },
+    { title: 'VIP', content: 'Unlock VIP pricing and exclusive deals.', icon: <Crown className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Tiers', pageId: 'membership-tiers' }] },
   'membership-tiers': { name: 'Membership Tiers', description: 'Wholesale membership levels', icon: <TrendingUp className="h-8 w-8 text-white" />, sections: [
     { title: 'Tiers', content: 'Standard, Silver, Gold, Platinum — higher tiers, bigger benefits.', icon: <TrendingUp className="h-4 w-4" /> },
@@ -642,11 +597,11 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Wholesale Terms', content: 'MOQ rules, bulk pricing, and B2B trade conditions.', icon: <FileText className="h-4 w-4" /> },
   ] },
   'about-us': { name: 'About Us', description: 'About Zylod', icon: <Building2 className="h-8 w-8 text-white" />, sections: [
-    { title: 'Our Story', content: "Bangladesh's premier B2B wholesale marketplace connecting retailers with verified suppliers.", icon: <Building2 className="h-4 w-4" /> },
+    { title: 'Our Story', content: 'A B2B wholesale marketplace connecting retailers with suppliers in Bangladesh.', icon: <Building2 className="h-4 w-4" /> },
     { title: 'Our Mission', content: "Powering the supply chain that drives the nation's commerce forward.", icon: <Target className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Careers', pageId: 'careers' }, { label: 'Contact Us', pageId: 'contact-us' }] },
   'careers': { name: 'Careers', description: 'Join the Zylod team', icon: <Users className="h-8 w-8 text-white" />, sections: [
-    { title: 'Work With Us', content: 'Open roles across engineering, operations, and growth.', icon: <Users className="h-4 w-4" /> },
+    { title: 'Work With Us', content: 'Roles across engineering, operations, and growth will be posted here as they open.', icon: <Users className="h-4 w-4" /> },
   ] },
   'press': { name: 'Press & Media', description: 'Newsroom and media kit', icon: <Megaphone className="h-8 w-8 text-white" />, sections: [
     { title: 'Newsroom', content: 'Press releases, brand assets, and media contacts.', icon: <Megaphone className="h-4 w-4" /> },
@@ -696,7 +651,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   'supplier-finance': { name: 'Supplier Finance', description: 'Earnings, payouts, and financial reports', icon: <Wallet className="h-8 w-8 text-white" />, sections: [
     { title: 'Earnings', content: 'View your total earnings, pending balances, and payout history from confirmed orders.', icon: <DollarSign className="h-4 w-4" /> },
     { title: 'Commission & Fees', content: 'Understand marketplace commission rates, listing fees, and payment processing charges.', icon: <TrendingDown className="h-4 w-4" /> },
-    { title: 'Withdrawals', content: 'Withdraw your balance via bank transfer, bKash, or Nagad with scheduled payouts.', icon: <ArrowUpRight className="h-4 w-4" /> },
+    { title: 'Withdrawals', content: 'Withdraw your balance via bank transfer, bKash, or Nagad.', icon: <ArrowUpRight className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Earnings', pageId: 'supplier-earnings' }, { label: 'Orders', pageId: 'supplier-orders' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
   'supplier-earnings': { name: 'Earnings', description: 'Track your revenue and payouts', icon: <DollarSign className="h-8 w-8 text-white" />, sections: [
     { title: 'Earnings Overview', content: 'See total revenue, monthly earnings, and balance available for withdrawal.', icon: <TrendingUp className="h-4 w-4" /> },
@@ -715,12 +670,12 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   ], quickLinks: [{ label: 'Verification', pageId: 'supplier-verification-status' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
   'supplier-verification-status': { name: 'Verification Status', description: 'Track your supplier verification progress', icon: <BadgeCheck className="h-8 w-8 text-white" />, sections: [
     { title: 'Verification Progress', content: 'See which documents have been submitted and what stage your business verification is in.', icon: <ClipboardCheck className="h-4 w-4" /> },
-    { title: 'Required Documents', content: 'Submit your trade license, TIN certificate, bank statements, and business photos for review.', icon: <FileText className="h-4 w-4" /> },
-    { title: 'Timeline', content: 'Verification is typically completed within 2–3 business days after all documents are received.', icon: <CalendarDays className="h-4 w-4" /> },
+    { title: 'Required Documents', content: 'The documents needed for verification are listed during supplier registration; a Zylod admin reviews each submission.', icon: <FileText className="h-4 w-4" /> },
+    { title: 'Timeline', content: 'Verification is reviewed by the Zylod admin team — your status will update here as soon as a decision is made.', icon: <CalendarDays className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Agreement', pageId: 'supplier-agreement' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
   'buyer-credit': { name: 'Buyer Credit', description: 'Manage your credit line for wholesale purchases', icon: <Wallet className="h-8 w-8 text-white" />, sections: [
     { title: 'Credit Line', content: 'View your approved credit limit, available balance, and outstanding usage.', icon: <DollarSign className="h-4 w-4" /> },
-    { title: 'Repayment', content: 'Repay credit purchases by due date via bank transfer, bKash, or Nagad to avoid fees.', icon: <CalendarDays className="h-4 w-4" /> },
+    { title: 'Repayment', content: 'Repay credit purchases by the due date via bank transfer or mobile wallet.', icon: <CalendarDays className="h-4 w-4" /> },
     { title: 'Increase Limit', content: 'Request a higher credit limit by submitting updated business and payment records.', icon: <TrendingUp className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Orders', pageId: 'buyer-orders' }, { label: 'Protection', pageId: 'buyer-protection' }] },
   'buyer-orders': { name: 'My Orders', description: 'Track all your wholesale purchases', icon: <Package className="h-8 w-8 text-white" />, sections: [
@@ -735,7 +690,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   ], quickLinks: [{ label: 'Orders', pageId: 'buyer-orders' }, { label: 'Profile', pageId: 'buyer-profile' }] },
   'buyer-qr-scan': { name: 'Scan QR', description: 'Scan QR codes for orders and payments', icon: <span className="material-symbols-outlined" style={{ fontSize: 32, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>qr_code_scanner</span>, sections: [
     { title: 'Scan Orders', content: 'Scan supplier or order QR codes to instantly open order details and tracking.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>qr_code_scanner</span> },
-    { title: 'Pay by QR', content: 'Make secure wholesale payments by scanning a supplier payment QR code.', icon: <Wallet className="h-4 w-4" /> },
+    { title: 'Pay by QR', content: 'Order and payment QR codes open order details and tracking. Paying by QR is not supported yet.', icon: <Wallet className="h-4 w-4" /> },
     { title: 'Scan History', content: 'View your recent scan history and quick links to visited orders and suppliers.', icon: <Clock className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Orders', pageId: 'buyer-orders' }, { label: 'Help', pageId: 'help-center' }] },
   'buyer-protection': { name: 'Buyer Protection', description: 'Shop with confidence on Zylod', icon: <Shield className="h-8 w-8 text-white" />, sections: [
@@ -750,27 +705,21 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   ], quickLinks: [{ label: 'Settings', pageId: 'buyer-settings' }, { label: 'Dashboard', pageId: 'buyer-dashboard' }] },
   'buyer-rewards': { name: 'Rewards', description: 'Earn and redeem rewards on Zylod', icon: <Gift className="h-8 w-8 text-white" />, sections: [
     { title: 'Earn Points', content: 'Earn reward points on every completed wholesale purchase, review, and referral.', icon: <Gift className="h-4 w-4" /> },
-    { title: 'Redeem', content: 'Redeem points for order discounts, free shipping, and supplier features.', icon: <Award className="h-4 w-4" /> },
-    { title: 'Tier Benefits', content: 'Climb loyalty tiers for better pricing, priority support, and exclusive offers.', icon: <Crown className="h-4 w-4" /> },
+    { title: 'Redeem', content: 'Redeem points for the rewards currently offered on the Redeem Points page.', icon: <Award className="h-4 w-4" /> },
+    { title: 'Tier Benefits', content: 'Loyalty tiers are based on your real activity — more rewards unlock as the program grows.', icon: <Crown className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Orders', pageId: 'buyer-orders' }, { label: 'Favorites', pageId: 'buyer-favorites' }] },
   'admin-orders': { name: 'Order Management', description: 'Oversee all marketplace orders', icon: <FileBarChart className="h-8 w-8 text-white" />, sections: [
-    { title: 'All Orders', content: 'Monitor every order across the marketplace with filters by status, supplier, and buyer.', icon: <Package className="h-4 w-4" /> },
-    { title: 'Fulfillment Oversight', content: 'Track supplier fulfillment performance and delivery timelines at a glance.', icon: <Truck className="h-4 w-4" /> },
-    { title: 'Disputes & Refunds', content: 'Review order disputes and approve refunds in line with marketplace policy.', icon: <Scale className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Complaints', pageId: 'admin-complaints' }] },
-  'admin-suppliers': { name: 'Supplier Management', description: 'Review and verify marketplace suppliers', icon: <UserCheck className="h-8 w-8 text-white" />, sections: [
-    { title: 'Verification Queue', content: 'Approve or suspend supplier accounts based on their submitted documents and marketplace record.', icon: <BadgeCheck className="h-4 w-4" /> },
-    { title: 'Performance Monitoring', content: 'Track supplier ratings, on-time delivery, and product quality across the marketplace.', icon: <BarChart3 className="h-4 w-4" /> },
-    { title: 'Compliance', content: 'Ensure every supplier meets trade license, tax, and product compliance requirements.', icon: <Shield className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Users', pageId: 'admin-users' }], specialType: 'admin-suppliers' },
+    { title: 'All Orders', content: 'Order oversight tools are being built. Payment verification is available today in the admin Payments queue.', icon: <Package className="h-4 w-4" /> },
+    { title: 'Payment Verification', content: 'Orders only become paid after a payment is verified — by webhook or by an admin — before suppliers fulfil them.', icon: <Shield className="h-4 w-4" /> },
+  ], quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Payment Verification', pageId: 'admin-payments' }] },
   'seller-storefront': { name: 'Seller Storefront', description: 'Your public storefront on Zylod', icon: <Store className="h-8 w-8 text-white" />, sections: [
     { title: 'Storefront Overview', content: 'See how your public storefront appears to buyers, including banner, logo, and rating.', icon: <Store className="h-4 w-4" /> },
     { title: 'Customization', content: 'Customize your banner, logo, featured products, and store description.', icon: <Palette className="h-4 w-4" /> },
     { title: 'Product Showcase', content: 'Feature selected products on your storefront to highlight your best wholesale offers.', icon: <Package className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Products', pageId: 'supplier-products' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }], specialType: 'seller-storefront' },
   'support': { name: 'Support', description: 'Get help with your Zylod account', icon: <MessageCircle className="h-8 w-8 text-white" />, sections: [
-    { title: 'Contact Channels', content: 'Reach our support team by phone, email, or live chat — 7 days a week.', icon: <Phone className="h-4 w-4" /> },
-    { title: 'Submit a Ticket', content: 'Open a support ticket with details about your issue and get a response within 24 hours.', icon: <AlertTriangle className="h-4 w-4" /> },
+    { title: 'Contact Channels', content: 'Email support@zylod.com and our team will follow up.', icon: <Mail className="h-4 w-4" /> },
+    { title: 'Submit a Ticket', content: 'Open a support ticket with details about your issue and our team will follow up.', icon: <AlertTriangle className="h-4 w-4" /> },
     { title: 'Track Tickets', content: 'Follow the status of your open tickets and review past resolutions.', icon: <Clock className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Help Center', pageId: 'help-center' }, { label: 'Feedback', pageId: 'feedback' }], specialType: 'support' },
   'chat-list': { name: 'Messages', description: 'Chat with your suppliers and buyers', icon: <MessageSquare className="h-8 w-8 text-white" />, sections: [
@@ -790,18 +739,17 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   ], specialType: 'add-address' },
   'dispute-resolution': { name: 'Dispute Resolution', description: 'Resolve order disputes fairly', icon: <Scale className="h-8 w-8 text-white" />, sections: [
     { title: 'File a Dispute', content: 'Open a dispute within 7 days of delivery. Provide order ID, photos/videos, and a description of the issue.', icon: <AlertTriangle className="h-4 w-4" /> },
-    { title: 'Resolution Process', content: 'Both parties submit documentation within 48 hours. Our arbitration team mediates and issues a verdict within 5 business days.', icon: <Scale className="h-4 w-4" /> },
-    { title: 'Outcomes', content: 'Possible outcomes: full/partial refund, return & re-ship, or supplier penalty. All verdicts are final.', icon: <CheckCircle2 className="h-4 w-4" /> },
+    { title: 'Resolution Process', content: 'Both parties submit documentation. Our team reviews the evidence and proposes a resolution; timelines vary by case.', icon: <Scale className="h-4 w-4" /> },
+    { title: 'Outcomes', content: 'Possible outcomes include full or partial refund, return & re-ship, or another remedy agreed by both parties.', icon: <CheckCircle2 className="h-4 w-4" /> },
   ] },
   'partner-program': { name: 'Partner Program', description: 'Grow with Zylod partnerships', icon: <Award className="h-8 w-8 text-white" />, sections: [
-    { title: 'Why Partner', content: 'Earn commissions, get priority placement, and access exclusive buyer leads across Bangladesh.', icon: <Award className="h-4 w-4" /> },
-    { title: 'Partner Tiers', content: 'Silver (starter), Gold (steady volume), and Platinum (top 5% by GMV). Higher tiers unlock lower commission rates.', icon: <TrendingUp className="h-4 w-4" /> },
-    { title: 'Apply', content: 'Applications reviewed within 5 business days. You need verified business registration to qualify.', icon: <Building className="h-4 w-4" /> },
+    { title: 'Why Partner', content: 'Partner with Zylod to reach wholesale buyers across Bangladesh — program details are being finalized.', icon: <Award className="h-4 w-4" /> },
+    { title: 'Partner Tiers', content: 'The tier structure has not been announced yet.', icon: <TrendingUp className="h-4 w-4" /> },
+    { title: 'Apply', content: 'Applications are not open yet. Email support@zylod.com to express interest.', icon: <Building className="h-4 w-4" /> },
   ] },
   'quality-guarantee': { name: 'Quality Guarantee', description: 'Trade with confidence', icon: <BadgeCheck className="h-8 w-8 text-white" />, sections: [
-    { title: 'What We Guarantee', content: 'Orders shipped by verified suppliers with inspected quality. If goods don\'t match the listing, we cover you.', icon: <BadgeCheck className="h-4 w-4" /> },
-    { title: 'Inspection Reports', content: 'Buyers can request third-party inspection before shipping for orders above ৳100,000.', icon: <ClipboardCheck className="h-4 w-4" /> },
-    { title: 'Claims', content: 'Submit a quality claim within 72 hours of delivery with photo evidence for a fast review.', icon: <Shield className="h-4 w-4" /> },
+    { title: 'What We Guarantee', content: 'Quality guarantee program details are being finalized. Review each supplier\u2019s verification status and ratings before ordering.', icon: <BadgeCheck className="h-4 w-4" /> },
+    { title: 'Claims', content: 'If goods do not match the listing, open a return or dispute from your order and our team will review it.', icon: <Shield className="h-4 w-4" /> },
   ] },
 }
 
@@ -823,8 +771,8 @@ function getInfoConfig(pageId: string): InfoConfig {
       { title: `${name} Overview`, content: `Zylod's ${name} page provides important information for all users of our B2B wholesale marketplace platform in Bangladesh.`, icon: <BookOpen className="h-4 w-4" /> },
       { title: 'What You Can Do', content: `Explore ${name.toLowerCase()} resources, manage your wholesale account, and access buyer & supplier tools — all from one place.`, icon: <Lightbulb className="h-4 w-4" /> },
       { title: 'Key Points', content: 'Our policies are designed to protect both buyers and suppliers while ensuring fair and transparent wholesale commerce across Bangladesh.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span> },
-      { title: 'Getting Started', content: 'Register once as a buyer or supplier, verify your account, and start browsing verified suppliers, bulk orders, and wholesale pricing immediately.', icon: <Truck className="h-4 w-4" /> },
-      { title: 'Need Help?', content: 'Contact our support team at support@zylod.com or call +880 1700-WHOLESALE for assistance. Our team is available 24/7.', icon: <MessageCircle className="h-4 w-4" /> },
+      { title: 'Getting Started', content: 'Register once as a buyer or supplier, verify your account, and browse products as suppliers list them.', icon: <Truck className="h-4 w-4" /> },
+      { title: 'Need Help?', content: 'Email our support team at support@zylod.com for assistance with your account or orders.', icon: <MessageCircle className="h-4 w-4" /> },
     ],
     quickLinks: [
       { label: 'Home', pageId: 'home' }, { label: 'Help Center', pageId: 'help-center' },
@@ -941,372 +889,59 @@ function SuppliersPage({ navigate }: { navigate: (page: string, params?: Record<
 }
 
 function BuyerComplaintsPage() {
-  const [orderId, setOrderId] = useState('')
-  const [complaintType, setComplaintType] = useState('')
-  const [description, setDescription] = useState('')
-  const [evidence, setEvidence] = useState<File | null>(null)
-  const [submitted, setSubmitted] = useState(false)
-  const [complaints, setComplaints] = useState<{ id: string; orderId: string; type: string; status: string; date: string }[]>([])
-
-  const handleSubmit = () => {
-    if (!orderId || !complaintType || !description.trim()) return
-    setComplaints(prev => [{
-      id: `CMP-${String(prev.length + 1).padStart(3, '0')}`,
-      orderId, type: complaintType, status: 'Pending', date: new Date().toISOString().split('T')[0],
-    }, ...prev])
-    setSubmitted(true)
-    setOrderId('')
-    setComplaintType('')
-    setDescription('')
-    setEvidence(null)
-    setTimeout(() => setSubmitted(false), 3000)
-  }
-
+  const { navigate } = useNavigationStore()
   return (
-    <div className="space-y-4">
-      {/* Complaint Form */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-500" />Submit New Complaint</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2 space-y-3">
-          <div className="space-y-1.5">
-            <Label className="text-xs">Order ID *</Label>
-            <Select value={orderId} onValueChange={setOrderId}>
-              <SelectTrigger className="h-8 text-xs w-full"><SelectValue placeholder="Select order" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ORD-001">ORD-001</SelectItem>
-                <SelectItem value="ORD-002">ORD-002</SelectItem>
-                <SelectItem value="ORD-003">ORD-003</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">Complaint Type *</Label>
-            <Select value={complaintType} onValueChange={setComplaintType}>
-              <SelectTrigger className="h-8 text-xs w-full"><SelectValue placeholder="Select type" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Damaged Product">Damaged Product</SelectItem>
-                <SelectItem value="Wrong Item">Wrong Item</SelectItem>
-                <SelectItem value="Late Delivery">Late Delivery</SelectItem>
-                <SelectItem value="Product Quality">Product Quality</SelectItem>
-                <SelectItem value="Missing Items">Missing Items</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">Description *</Label>
-            <Textarea placeholder="Describe your issue in detail..." value={description} onChange={e => setDescription(e.target.value)} className="text-xs min-h-[80px]" />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">Attach Evidence</Label>
-            <Input type="file" accept="image/*,.pdf" onChange={e => setEvidence(e.target.files?.[0] || null)} className="text-xs h-8" />
-            {evidence && <p className="text-[10px] text-muted-foreground">📎 {evidence.name}</p>}
-          </div>
-          <Button className="w-full h-9 text-xs" onClick={handleSubmit} disabled={!orderId || !complaintType || !description.trim()}>
-            <AlertCircle className="h-3 w-3 mr-1" />Submit Complaint
-          </Button>
-          {submitted && (
-            <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 text-green-700 text-xs">
-              <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>Complaint submitted successfully! We will review it within 24 hours.
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Previous Complaints */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><FileText className="h-4 w-4" />Previous Complaints</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {complaints.map(c => (
-              <div key={c.id} className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-xs">
-                <div>
-                  <p className="font-medium">{c.id} — {c.type}</p>
-                  <p className="text-muted-foreground">{c.orderId} · {c.date}</p>
-                </div>
-                <Badge variant={c.status === 'Resolved' ? 'default' : c.status === 'In Progress' ? 'secondary' : 'outline'} className="text-[10px]">
-                  {c.status}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="border border-border">
+      <CardContent className="p-6 text-center space-y-3">
+        <AlertTriangle className="h-10 w-10 mx-auto text-amber-500" />
+        <h3 className="text-sm font-semibold">Online complaint submission is not available yet</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">There is no complaints backend connected yet, so this form cannot accept submissions. Open a support ticket instead — tickets reach the Zylod team and are tracked to resolution.</p>
+        <Button onClick={() => navigate('dispute-center')} className="h-9 text-xs">
+          <AlertCircle className="h-3 w-3 mr-1" />Open a Support Ticket
+        </Button>
+      </CardContent>
+    </Card>
   )
 }
 
 function BuyerReturnsPage() {
-  const [orderId, setOrderId] = useState('')
-  const [returnReason, setReturnReason] = useState('')
-  const [quantity, setQuantity] = useState('')
-  const [description, setDescription] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-  const [returns, setReturns] = useState<{ id: string; orderId: string; reason: string; qty: number; status: string; date: string }[]>([])
-
-  const handleSubmit = () => {
-    if (!orderId || !returnReason || !quantity || !description.trim()) return
-    setReturns(prev => [{
-      id: `RET-${String(prev.length + 1).padStart(3, '0')}`,
-      orderId, reason: returnReason, qty: parseInt(quantity) || 0, status: 'Pending', date: new Date().toISOString().split('T')[0],
-    }, ...prev])
-    setSubmitted(true)
-    setOrderId('')
-    setReturnReason('')
-    setQuantity('')
-    setDescription('')
-    setTimeout(() => setSubmitted(false), 3000)
-  }
-
+  const { navigate } = useNavigationStore()
   return (
-    <div className="space-y-4">
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><RefreshCw className="h-4 w-4 text-blue-500" />Submit Return Request</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2 space-y-3">
-          <div className="space-y-1.5">
-            <Label className="text-xs">Order ID *</Label>
-            <Select value={orderId} onValueChange={setOrderId}>
-              <SelectTrigger className="h-8 text-xs w-full"><SelectValue placeholder="Select order" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ORD-001">ORD-001</SelectItem>
-                <SelectItem value="ORD-002">ORD-002</SelectItem>
-                <SelectItem value="ORD-003">ORD-003</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">Return Reason *</Label>
-            <Select value={returnReason} onValueChange={setReturnReason}>
-              <SelectTrigger className="h-8 text-xs w-full"><SelectValue placeholder="Select reason" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Damaged in transit">Damaged in transit</SelectItem>
-                <SelectItem value="Wrong item received">Wrong item received</SelectItem>
-                <SelectItem value="Product not as described">Product not as described</SelectItem>
-                <SelectItem value="Defective product">Defective product</SelectItem>
-                <SelectItem value="Quality issue">Quality issue</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">Quantity to Return *</Label>
-            <Input type="number" min="1" placeholder="Enter quantity" value={quantity} onChange={e => setQuantity(e.target.value)} className="h-8 text-xs" />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">Description *</Label>
-            <Textarea placeholder="Describe the issue..." value={description} onChange={e => setDescription(e.target.value)} className="text-xs min-h-[80px]" />
-          </div>
-          <Button className="w-full h-9 text-xs" onClick={handleSubmit} disabled={!orderId || !returnReason || !quantity || !description.trim()}>
-            <RefreshCw className="h-3 w-3 mr-1" />Submit Return Request
-          </Button>
-          {submitted && (
-            <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 text-green-700 text-xs">
-              <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>Return request submitted! We will process it within 48 hours.
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Package className="h-4 w-4" />Previous Returns</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {returns.map(r => (
-              <div key={r.id} className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-xs">
-                <div>
-                  <p className="font-medium">{r.id} — {r.reason}</p>
-                  <p className="text-muted-foreground">{r.orderId} · Qty: {r.qty} · {r.date}</p>
-                </div>
-                <Badge variant={r.status === 'Approved' ? 'default' : r.status === 'Processing' ? 'secondary' : 'outline'} className="text-[10px]">
-                  {r.status}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="border border-border">
+      <CardContent className="p-6 text-center space-y-3">
+        <RefreshCw className="h-10 w-10 mx-auto text-primary" />
+        <h3 className="text-sm font-semibold">Start returns from your orders</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">Returns are submitted per order. Open the order in your order history and choose the items to return — the request goes straight to the Zylod team.</p>
+        <Button onClick={() => navigate('buyer-orders')} className="h-9 text-xs">
+          <Package className="h-3 w-3 mr-1" />Go to My Orders
+        </Button>
+      </CardContent>
+    </Card>
   )
 }
 
 function BuyerSettingsPage() {
-  const [emailNotif, setEmailNotif] = useState(true)
-  const [smsNotif, setSmsNotif] = useState(false)
-  const [pushNotif, setPushNotif] = useState(true)
-  const [language, setLanguage] = useState('en')
-  const [profileVisible, setProfileVisible] = useState(true)
-  const [saved, setSaved] = useState(false)
-
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
-  }
-
   return (
-    <div className="space-y-4">
-      {/* Notification Preferences */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Bell className="h-4 w-4" />Notification Preferences</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <p className="text-xs font-medium">Email Notifications</p>
-              <p className="text-[10px] text-muted-foreground">Receive order updates and promotions via email</p>
-            </div>
-            <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <p className="text-xs font-medium">SMS Notifications</p>
-              <p className="text-[10px] text-muted-foreground">Get text alerts for critical order updates</p>
-            </div>
-            <Switch checked={smsNotif} onCheckedChange={setSmsNotif} />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <p className="text-xs font-medium">Push Notifications</p>
-              <p className="text-[10px] text-muted-foreground">Browser push notifications for real-time updates</p>
-            </div>
-            <Switch checked={pushNotif} onCheckedChange={setPushNotif} />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Language Preference */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Languages className="h-4 w-4" />Language Preference</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <Select value={language} onValueChange={setLanguage}>
-            <SelectTrigger className="h-8 text-xs w-full"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="bn">বাংলা (Bengali)</SelectItem>
-              <SelectItem value="hi">हिन्दी (Hindi)</SelectItem>
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
-
-      {/* Privacy Settings */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Lock className="h-4 w-4" />Privacy Settings</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <p className="text-xs font-medium">Profile Visibility</p>
-              <p className="text-[10px] text-muted-foreground">Allow suppliers to see your profile and buying activity</p>
-            </div>
-            <Switch checked={profileVisible} onCheckedChange={setProfileVisible} />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Button className="w-full h-9 text-xs" onClick={handleSave}>
-        <Save className="h-3 w-3 mr-1" />Save Settings
-      </Button>
-      {saved && (
-        <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 text-green-700 text-xs">
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>Settings saved successfully!
-        </div>
-      )}
-    </div>
+    <Card className="border border-border">
+      <CardContent className="p-6 text-center space-y-3">
+        <Settings className="h-10 w-10 mx-auto text-muted-foreground" />
+        <h3 className="text-sm font-semibold">Account preferences are not available yet</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">Notification, language, and privacy preferences will appear here once they are connected to your account — nothing is saved from this page today.</p>
+      </CardContent>
+    </Card>
   )
 }
 
 function BuyerLevelPage() {
-  const [currentSpent] = useState(125000)
-  const [currentLevel] = useState('Silver')
-
-  const levels = [
-    { name: 'Bronze', minSpent: 0, maxSpent: 50000, color: '#CD7F32', discount: '2%', benefits: ['Basic support', 'Standard shipping', 'Order tracking'] },
-    { name: 'Silver', minSpent: 50000, maxSpent: 200000, color: '#C0C0C0', discount: '5%', benefits: ['Priority support', 'Free shipping (orders ৳5000+)', 'Early access to deals', 'Order tracking'] },
-    { name: 'Gold', minSpent: 200000, maxSpent: 500000, color: '#FFD700', discount: '8%', benefits: ['24/7 dedicated support', 'Free shipping on all orders', 'Early access to deals', 'Exclusive discounts', 'Priority order processing'] },
-    { name: 'Platinum', minSpent: 500000, maxSpent: Infinity, color: '#E5E4E2', discount: '12%', benefits: ['Personal account manager', 'Free shipping + express', 'VIP deals & flash sales', 'Maximum discounts', 'Priority processing', 'Custom payment terms'] },
-  ]
-
-  const currentLevelData = levels.find(l => l.name === currentLevel)!
-  const nextLevel = levels[levels.indexOf(currentLevelData) + 1]
-  const progressPercent = nextLevel
-    ? Math.min(100, ((currentSpent - currentLevelData.minSpent) / (nextLevel.minSpent - currentLevelData.minSpent)) * 100)
-    : 100
-
   return (
-    <div className="space-y-4">
-      {/* Current Level Card */}
-      <Card className="border border-border overflow-hidden">
-        <div className="h-2" style={{ background: currentLevelData.color }} />
-        <CardContent className="p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Crown className="h-6 w-6" style={{ color: currentLevelData.color }} />
-              <div>
-                <h3 className="text-sm font-bold">{currentLevel} Buyer</h3>
-                <p className="text-xs text-muted-foreground">Current discount: {currentLevelData.discount}</p>
-              </div>
-            </div>
-            <Badge variant="secondary" className="text-xs">৳{currentSpent.toLocaleString()} spent</Badge>
-          </div>
-          {nextLevel && (
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Progress to {nextLevel.name}</span>
-                <span className="font-medium">৳{nextLevel.minSpent.toLocaleString()}</span>
-              </div>
-              <Progress value={progressPercent} className="h-2" />
-              <p className="text-[10px] text-muted-foreground">৳{(nextLevel.minSpent - currentSpent).toLocaleString()} more to reach {nextLevel.name}</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Benefits Comparison */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Award className="h-4 w-4" />Level Benefits</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">Level</TableHead>
-                  <TableHead className="text-xs">Discount</TableHead>
-                  <TableHead className="text-xs">Key Benefits</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {levels.map(level => (
-                  <TableRow key={level.name} className={level.name === currentLevel ? 'bg-primary/5' : ''}>
-                    <TableCell className="text-xs font-medium">
-                      <span className="flex items-center gap-1">
-                        <Crown className="h-3 w-3" style={{ color: level.color }} />
-                        {level.name}
-                        {level.name === currentLevel && <Badge variant="default" className="text-[8px] h-4 ml-1">Current</Badge>}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-xs">{level.discount}</TableCell>
-                    <TableCell className="text-xs">
-                      <ul className="space-y-0.5">
-                        {level.benefits.slice(0, 2).map((b, i) => <li key={i} className="flex items-center gap-1"><span className="material-symbols-outlined text-green-500" style={{ fontSize: 10, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>{b}</li>)}
-                        {level.benefits.length > 2 && <li className="text-muted-foreground">+{level.benefits.length - 2} more</li>}
-                      </ul>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* How to Level Up */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="h-4 w-4" />How to Level Up</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2 space-y-2">
-          <div className="flex items-start gap-2 text-xs"><ShoppingBag className="h-4 w-4 text-primary mt-0.5" /><div><p className="font-medium">Place More Orders</p><p className="text-muted-foreground">Your total spending determines your level</p></div></div>
-          <div className="flex items-start gap-2 text-xs"><Star className="h-4 w-4 text-primary mt-0.5" /><div><p className="font-medium">Leave Reviews</p><p className="text-muted-foreground">Active reviewers earn bonus points</p></div></div>
-          <div className="flex items-start gap-2 text-xs"><Gift className="h-4 w-4 text-primary mt-0.5" /><div><p className="font-medium">Refer Other Buyers</p><p className="text-muted-foreground">Earn ৳500 for each successful referral</p></div></div>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="border border-border overflow-hidden">
+      <div className="h-2 bg-muted" />
+      <CardContent className="p-6 text-center space-y-3">
+        <Crown className="h-10 w-10 mx-auto text-muted-foreground" />
+        <h3 className="text-sm font-semibold">Buyer levels are not available yet</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">No buyer-level program is connected yet. When it launches, your level will be calculated from your real order history — no tier or spending numbers are shown until then.</p>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -1327,833 +962,65 @@ function BuyerFavoritesPage({ navigate }: { navigate: (page: string) => void }) 
   )
 }
 
-function AdminUsersPage() {
-  const { user: admin } = useAuthStore()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [roleFilter, setRoleFilter] = useState('all')
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [busyId, setBusyId] = useState<string | null>(null)
-  const [actionMsg, setActionMsg] = useState('')
-
-  const { data: users, loading, refresh } = useAdminUsers({
-    search: searchQuery || undefined,
-    role: roleFilter === 'all' ? undefined : roleFilter.toLowerCase(),
-    status: statusFilter === 'all' ? undefined : statusFilter.toLowerCase(),
-    limit: 100,
-  })
-
-  const all = (users || []) as AdminUser[]
-  const stats = {
-    total: all.length,
-    active: all.filter(u => u.accountStatus === 'active').length,
-    suspended: all.filter(u => u.accountStatus === 'suspended' || u.accountStatus === 'banned').length,
-    pending: all.filter(u => u.userType === 'supplier' && u.verificationStatus === 'pending').length,
-  }
-
-  const handleAction = async (u: AdminUser, action: 'ban' | 'activate') => {
-    if (!admin?.id) return
-    setBusyId(u.id)
-    try {
-      await updateUserStatus(u.id, action === 'ban' ? 'suspend' : 'activate', admin.id)
-      setActionMsg(`User ${action === 'ban' ? 'suspended' : 'activated'} successfully!`)
-      setTimeout(() => setActionMsg(''), 3000)
-      await refresh()
-    } catch (e) {
-      setActionMsg(e instanceof Error ? e.message : 'Action failed')
-    } finally {
-      setBusyId(null)
-    }
-  }
-
-  return (
-    <div className="space-y-4">
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-2">
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold">{loading ? '…' : stats.total}</p><p className="text-[10px] text-muted-foreground">Total Users</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-green-600">{stats.active}</p><p className="text-[10px] text-muted-foreground">Active</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-red-600">{stats.suspended}</p><p className="text-[10px] text-muted-foreground">Suspended/Banned</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-amber-600">{stats.pending}</p><p className="text-[10px] text-muted-foreground">Pending Verify</p></CardContent></Card>
-      </div>
-
-      {actionMsg && (
-        <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 text-green-700 text-xs">
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>{actionMsg}
-        </div>
-      )}
-
-      {/* Search & Filter */}
-      <Card className="border border-border">
-        <CardContent className="p-3 space-y-2">
-          <div className="flex items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search users..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="h-8 text-xs" />
-          </div>
-          <div className="flex gap-2">
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="h-8 text-xs w-full"><SelectValue placeholder="Filter by role" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="Buyer">Buyers</SelectItem>
-                <SelectItem value="Supplier">Suppliers</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="h-8 text-xs w-full"><SelectValue placeholder="Filter by status" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="Active">Active</SelectItem>
-                <SelectItem value="Suspended">Suspended</SelectItem>
-                <SelectItem value="Banned">Banned</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* User Table */}
-      <Card className="border border-border">
-        <CardContent className="p-0">
-          {loading ? (
-            <div className="space-y-3 p-4">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">User</TableHead>
-                    <TableHead className="text-xs">Role</TableHead>
-                    <TableHead className="text-xs">Status</TableHead>
-                    <TableHead className="text-right text-xs">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {all.map(user => (
-                    <TableRow key={user.id}>
-                      <TableCell className="text-xs">
-                        <p className="font-medium">{user.fullName || user.companyName || user.businessName || '—'}</p>
-                        <p className="text-muted-foreground">{user.email || user.phone || user.id}</p>
-                      </TableCell>
-                      <TableCell className="text-xs">
-                        <Badge variant="outline" className="text-[10px]">{user.userType === 'supplier' ? 'Supplier' : user.userType === 'buyer' ? 'Buyer' : 'Admin'}</Badge>
-                      </TableCell>
-                      <TableCell className="text-xs">
-                        <Badge variant={user.accountStatus === 'active' ? 'default' : user.accountStatus === 'suspended' ? 'destructive' : 'secondary'} className="text-[10px]">
-                          {user.accountStatus === 'active' ? 'Active' : user.accountStatus === 'suspended' ? 'Suspended' : 'Banned'}
-                        </Badge>
-                        {user.userType === 'supplier' && user.verificationStatus === 'pending' && (
-                          <Badge variant="secondary" className="text-[10px] ml-1"><AlertTriangle className="h-3 w-3 mr-0.5" />Verify Pending</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right text-xs">
-                        <div className="flex gap-1 justify-end">
-                          {user.accountStatus === 'active' ? (
-                            <Button size="sm" variant="outline" className="h-6 text-[10px] px-2" disabled={busyId === user.id} onClick={() => handleAction(user, 'ban')}>
-                              <Ban className="h-3 w-3 mr-0.5" />Suspend
-                            </Button>
-                          ) : (
-                            <Button size="sm" variant="outline" className="h-6 text-[10px] px-2" disabled={busyId === user.id} onClick={() => handleAction(user, 'activate')}>
-                              <UserCheck className="h-3 w-3 mr-0.5" />Activate
-                            </Button>
-                          )}
-                          <Button size="sm" variant="outline" className="h-6 text-[10px] px-2">
-                            <Eye className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {all.length === 0 && !loading && (
-                    <TableRow><TableCell colSpan={4} className="text-center py-8 text-sm text-muted-foreground">No users found.</TableCell></TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
-function AdminProductsPage() {
-  const { user: admin } = useAuthStore()
-  const { navigate } = useNavigationStore()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [busyId, setBusyId] = useState<string | null>(null)
-  const [actionMsg, setActionMsg] = useState('')
-
-  const { data: pendingProducts, loading, refresh } = useAdminProducts({
-    approved: false,
-    search: searchQuery || undefined,
-    limit: 50,
-  })
-
-  const products = (pendingProducts || []) as AdminProduct[]
-
-  const handleAction = async (productId: string, action: 'approve' | 'reject') => {
-    if (!admin?.id) return
-    setBusyId(productId)
-    try {
-      await updateProductApproval(productId, action, admin.id)
-      setActionMsg(`Product ${action === 'approve' ? 'approved' : 'rejected'} successfully!`)
-      setTimeout(() => setActionMsg(''), 3000)
-      await refresh()
-    } catch (e) {
-      setActionMsg(e instanceof Error ? e.message : 'Action failed')
-    } finally {
-      setBusyId(null)
-    }
-  }
-
-  return (
-    <div className="space-y-4">
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-2">
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-amber-600">{loading ? '…' : products.length}</p><p className="text-[10px] text-muted-foreground">Pending</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-green-600">—</p><p className="text-[10px] text-muted-foreground">Approved</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-red-600">—</p><p className="text-[10px] text-muted-foreground">Rejected</p></CardContent></Card>
-      </div>
-
-      {actionMsg && (
-        <div className={`flex items-center gap-2 p-2 rounded-md text-xs ${actionMsg.startsWith('Failed') || actionMsg.startsWith('Request') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>{actionMsg}
-        </div>
-      )}
-
-      {/* Search */}
-      <Card className="border border-border">
-        <CardContent className="p-3">
-          <div className="flex items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search pending products..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="h-8 text-xs" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Pending Products */}
-      <div className="space-y-3">
-        {loading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-24 w-full" />
-          </div>
-        ) : (
-          products.map(product => (
-            <Card key={product.id} className="border border-border">
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-sm font-semibold">{product.name}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{product.supplierName} · {product.categoryName}</p>
-                    <p className="text-xs text-muted-foreground">Price: ৳{product.basePrice.toLocaleString()}{product.unit ? ` / ${product.unit}` : ''} · MOQ: {product.moq} · Stock: {product.stockQuantity}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">Submitted: {new Date(product.createdAt).toLocaleDateString()}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-3">
-                  <Button size="sm" className="h-7 text-xs" disabled={busyId === product.id} onClick={() => handleAction(product.id, 'approve')}>
-                    <ThumbsUp className="h-3 w-3 mr-1" />Approve
-                  </Button>
-                  <Button size="sm" variant="destructive" className="h-7 text-xs" disabled={busyId === product.id} onClick={() => handleAction(product.id, 'reject')}>
-                    <ThumbsDown className="h-3 w-3 mr-1" />Reject
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => navigate('product-detail', { slug: product.slug })}>
-                    <Eye className="h-3 w-3 mr-1" />View
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-        {!loading && products.length === 0 && (
-          <div className="text-center py-8 text-sm text-muted-foreground">
-            <span className="material-symbols-outlined text-green-500" style={{ fontSize: 32, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>
-            <p>All products reviewed! No pending items.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
 function AdminComplaintsPage() {
-  const [complaints, setComplaints] = useState<{ id: string; complainant: string; against: string; type: string; status: string; priority: string; date: string }[]>([])
-  const [actionMsg, setActionMsg] = useState('')
-
-  const stats = {
-    open: complaints.filter(c => c.status === 'Open').length,
-    assigned: complaints.filter(c => c.status === 'Assigned').length,
-    resolved: complaints.filter(c => c.status === 'Resolved').length,
-  }
-
-  const handleResolve = (id: string) => {
-    setComplaints(prev => prev.map(c => c.id === id ? { ...c, status: 'Resolved' } : c))
-    setActionMsg('Complaint marked as resolved!')
-    setTimeout(() => setActionMsg(''), 3000)
-  }
-
-  const handleAssign = (id: string) => {
-    setComplaints(prev => prev.map(c => c.id === id ? { ...c, status: 'Assigned' } : c))
-    setActionMsg('Complaint assigned to support team!')
-    setTimeout(() => setActionMsg(''), 3000)
-  }
-
   return (
-    <div className="space-y-4">
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-2">
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-red-600">{stats.open}</p><p className="text-[10px] text-muted-foreground">Open</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-amber-600">{stats.assigned}</p><p className="text-[10px] text-muted-foreground">Assigned</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-green-600">{stats.resolved}</p><p className="text-[10px] text-muted-foreground">Resolved</p></CardContent></Card>
-      </div>
-
-      {actionMsg && (
-        <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 text-green-700 text-xs">
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>{actionMsg}
-        </div>
-      )}
-
-      {/* Complaints List */}
-      <div className="space-y-3">
-        {complaints.map(complaint => (
-          <Card key={complaint.id} className="border border-border">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between flex-wrap gap-2">
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-sm font-semibold">{complaint.type}</h3>
-                    <Badge variant={complaint.priority === 'High' ? 'destructive' : complaint.priority === 'Medium' ? 'secondary' : 'outline'} className="text-[10px]">
-                      {complaint.priority}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{complaint.complainant} → {complaint.against}</p>
-                  <p className="text-xs text-muted-foreground">{complaint.date}</p>
-                </div>
-                <Badge variant={complaint.status === 'Resolved' ? 'default' : complaint.status === 'Assigned' ? 'secondary' : 'outline'} className="text-[10px]">
-                  {complaint.status}
-                </Badge>
-              </div>
-              <div className="flex gap-2 mt-3">
-                {complaint.status !== 'Resolved' && (
-                  <>
-                    <Button size="sm" className="h-7 text-xs" onClick={() => handleResolve(complaint.id)}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 12, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>Resolve
-                    </Button>
-                    {complaint.status === 'Open' && (
-                      <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handleAssign(complaint.id)}>
-                        <UserPlus className="h-3 w-3 mr-1" />Assign
-                      </Button>
-                    )}
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function AdminReportsPage() {
-  const [dateRange, setDateRange] = useState('30d')
-  const [exportMsg, setExportMsg] = useState('')
-
-  const handleExport = () => {
-    setExportMsg('Report exported successfully! File will download shortly.')
-    setTimeout(() => setExportMsg(''), 3000)
-  }
-
-  return (
-    <div className="space-y-4">
-      {/* Date Range & Export */}
-      <Card className="border border-border">
-        <CardContent className="p-3 flex items-center justify-between gap-2">
-          <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="h-8 text-xs w-[140px]"><CalendarDays className="h-3 w-3 mr-1" /><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">Last 7 Days</SelectItem>
-              <SelectItem value="30d">Last 30 Days</SelectItem>
-              <SelectItem value="90d">Last 90 Days</SelectItem>
-              <SelectItem value="1y">Last Year</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button size="sm" className="h-8 text-xs" onClick={handleExport}>
-            <Download className="h-3 w-3 mr-1" />Export
-          </Button>
-        </CardContent>
-      </Card>
-
-      {exportMsg && (
-        <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 text-green-700 text-xs">
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>{exportMsg}
-        </div>
-      )}
-
-      {/* Revenue Stats */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><DollarSign className="h-4 w-4" />Revenue Overview</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Total Revenue</p>
-              <p className="text-lg font-bold">৳12.5M</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><ArrowUpRight className="h-3 w-3" />+18.3%</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Commission Earned</p>
-              <p className="text-lg font-bold">৳375K</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><ArrowUpRight className="h-3 w-3" />+12.1%</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Avg Order Value</p>
-              <p className="text-lg font-bold">৳8,450</p>
-              <p className="text-[10px] text-red-600 flex items-center gap-0.5"><TrendingDown className="h-3 w-3" />-2.4%</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Refunds</p>
-              <p className="text-lg font-bold">৳89K</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><TrendingDown className="h-3 w-3" />-5.7%</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Order Stats */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><ShoppingBag className="h-4 w-4" />Order Statistics</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Total Orders</p>
-              <p className="text-lg font-bold">4,832</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><ArrowUpRight className="h-3 w-3" />+22.5%</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Completed</p>
-              <p className="text-lg font-bold">3,921</p>
-              <p className="text-[10px] text-muted-foreground">81.1% rate</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">In Progress</p>
-              <p className="text-lg font-bold">678</p>
-              <p className="text-[10px] text-muted-foreground">14.0%</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Cancelled</p>
-              <p className="text-lg font-bold">233</p>
-              <p className="text-[10px] text-red-600">4.8%</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* User Growth */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><UserPlus className="h-4 w-4" />User Growth</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">New Buyers</p>
-              <p className="text-lg font-bold">1,245</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><ArrowUpRight className="h-3 w-3" />+15.8%</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">New Suppliers</p>
-              <p className="text-lg font-bold">89</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><ArrowUpRight className="h-3 w-3" />+8.2%</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
-function AdminAnalyticsPage() {
-  return (
-    <div className="space-y-4">
-      {/* Key Metrics */}
-      <div className="grid grid-cols-2 gap-2">
-        <Card className="border border-border">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center"><DollarSign className="h-4 w-4 text-green-600" /></div>
-              <div>
-                <p className="text-xs text-muted-foreground">Revenue</p>
-                <p className="text-sm font-bold">৳12.5M</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-border">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center"><ShoppingBag className="h-4 w-4 text-blue-600" /></div>
-              <div>
-                <p className="text-xs text-muted-foreground">Orders</p>
-                <p className="text-sm font-bold">4,832</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-border">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center"><Users className="h-4 w-4 text-amber-600" /></div>
-              <div>
-                <p className="text-xs text-muted-foreground">Users</p>
-                <p className="text-sm font-bold">50,247</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-border">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center"><Store className="h-4 w-4 text-purple-600" /></div>
-              <div>
-                <p className="text-xs text-muted-foreground">Suppliers</p>
-                <p className="text-sm font-bold">5,123</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts Placeholder */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><LineChart className="h-4 w-4" />Revenue Trend</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="h-40 flex items-end gap-1 justify-center">
-            {[40, 65, 55, 80, 70, 95, 85, 100, 75, 90, 110, 95].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t-sm bg-primary/80 transition-all hover:bg-primary" style={{ height: `${h}%` }} />
-            ))}
-          </div>
-          <div className="flex justify-between mt-2 text-[10px] text-muted-foreground">
-            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-            <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Top Products */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Package className="h-4 w-4" />Top Products</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="space-y-2">
-            {[
-              { name: 'Cotton T-Shirts', sold: 5200, revenue: '৳624K' },
-              { name: 'LED Bulbs 12W', sold: 8900, revenue: '৳756K' },
-              { name: 'Jute Shopping Bags', sold: 6700, revenue: '৳234K' },
-              { name: 'Basmati Rice 5kg', sold: 3100, revenue: '৳1.39M' },
-              { name: 'Silk Scarves', sold: 2400, revenue: '৳840K' },
-            ].map((p, i) => (
-              <div key={i} className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">{i + 1}</span>
-                  <span className="font-medium">{p.name}</span>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium">{p.sold.toLocaleString()} sold</p>
-                  <p className="text-[10px] text-muted-foreground">{p.revenue}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Top Suppliers */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Building2 className="h-4 w-4" />Top Suppliers</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="space-y-2">
-            {[
-              { name: 'Dhaka Textiles Ltd', orders: 456, rating: 4.8 },
-              { name: 'Gazipur Garments', orders: 389, rating: 4.6 },
-              { name: 'Chittagong Spices Co', orders: 234, rating: 4.5 },
-              { name: 'Sylhet Tea Exporters', orders: 178, rating: 4.9 },
-            ].map((s, i) => (
-              <div key={i} className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">{i + 1}</span>
-                  <span className="font-medium">{s.name}</span>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium">{s.orders} orders</p>
-                  <p className="text-[10px] text-muted-foreground flex items-center gap-0.5"><Star className="h-2.5 w-2.5 text-amber-500 fill-amber-500" />{s.rating}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="border border-border">
+      <CardContent className="p-6 text-center space-y-3">
+        <AlertTriangle className="h-10 w-10 mx-auto text-amber-500" />
+        <h3 className="text-sm font-semibold">No complaint queue is connected yet</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">Complaint handling tools are not built yet, so there is nothing to list here. Buyer and supplier reports are handled in the admin Reports tool.</p>
+      </CardContent>
+    </Card>
   )
 }
 
 function AdminCategoriesPage() {
-  const [categories, setCategories] = useState<{ id: string; name: string; subcategories: number; products: number; order: number }[]>([])
-  const [newCatName, setNewCatName] = useState('')
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editName, setEditName] = useState('')
-  const [actionMsg, setActionMsg] = useState('')
-
-  const handleAdd = () => {
-    if (!newCatName.trim()) return
-    const newCat = {
-      id: `cat${categories.length + 1}`,
-      name: newCatName.trim(),
-      subcategories: 0,
-      products: 0,
-      order: categories.length + 1,
-    }
-    setCategories(prev => [...prev, newCat])
-    setNewCatName('')
-    setActionMsg('Category added successfully!')
-    setTimeout(() => setActionMsg(''), 3000)
-  }
-
-  const handleDelete = (id: string) => {
-    setCategories(prev => prev.filter(c => c.id !== id))
-    setActionMsg('Category deleted!')
-    setTimeout(() => setActionMsg(''), 3000)
-  }
-
-  const handleEditStart = (id: string, name: string) => {
-    setEditingId(id)
-    setEditName(name)
-  }
-
-  const handleEditSave = (id: string) => {
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, name: editName } : c))
-    setEditingId(null)
-    setActionMsg('Category updated!')
-    setTimeout(() => setActionMsg(''), 3000)
-  }
-
-  const handleMoveUp = (index: number) => {
-    if (index === 0) return
-    const newCats = [...categories]
-    const temp = newCats[index]
-    newCats[index] = newCats[index - 1]
-    newCats[index - 1] = temp
-    newCats.forEach((c, i) => { c.order = i + 1 })
-    setCategories(newCats)
-  }
-
-  const handleMoveDown = (index: number) => {
-    if (index === categories.length - 1) return
-    const newCats = [...categories]
-    const temp = newCats[index]
-    newCats[index] = newCats[index + 1]
-    newCats[index + 1] = temp
-    newCats.forEach((c, i) => { c.order = i + 1 })
-    setCategories(newCats)
-  }
-
   return (
-    <div className="space-y-4">
-      {actionMsg && (
-        <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 text-green-700 text-xs">
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>{actionMsg}
-        </div>
-      )}
-
-      {/* Add New Category */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Plus className="h-4 w-4" />Add New Category</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="flex gap-2">
-            <Input placeholder="Category name..." value={newCatName} onChange={e => setNewCatName(e.target.value)} className="h-8 text-xs" />
-            <Button size="sm" className="h-8 text-xs" onClick={handleAdd} disabled={!newCatName.trim()}>
-              <Plus className="h-3 w-3 mr-1" />Add
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Category List */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><LayoutGrid className="h-4 w-4" />Categories ({categories.length})</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="space-y-2 max-h-96 overflow-y-auto">
-            {categories.map((cat, index) => (
-              <div key={cat.id} className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-xs">
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-col gap-0.5">
-                    <button onClick={() => handleMoveUp(index)} className="text-muted-foreground hover:text-foreground"><ChevronUp className="h-3 w-3" /></button>
-                    <button onClick={() => handleMoveDown(index)} className="text-muted-foreground hover:text-foreground"><ChevronDown className="h-3 w-3" /></button>
-                  </div>
-                  {editingId === cat.id ? (
-                    <div className="flex gap-1">
-                      <Input value={editName} onChange={e => setEditName(e.target.value)} className="h-6 text-xs w-[120px]" />
-                      <Button size="sm" className="h-6 text-[10px] px-2" onClick={() => handleEditSave(cat.id)}>Save</Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="font-medium">{cat.name}</p>
-                      <p className="text-[10px] text-muted-foreground">{cat.subcategories} subcategories · {cat.products} products</p>
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-1">
-                  <Button size="sm" variant="outline" className="h-6 text-[10px] px-2" onClick={() => handleEditStart(cat.id, cat.name)}>
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-6 text-[10px] px-2 text-red-600" onClick={() => handleDelete(cat.id)}>
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="border border-border">
+      <CardContent className="p-6 text-center space-y-3">
+        <LayoutGrid className="h-10 w-10 mx-auto text-muted-foreground" />
+        <h3 className="text-sm font-semibold">Category management is not available yet</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">There is no admin categories backend yet — marketplace categories come from the platform catalog configuration. Management tools will appear here when the backend exists.</p>
+      </CardContent>
+    </Card>
   )
 }
 
 function AdminSettingsPage() {
-  const [maintenanceMode, setMaintenanceMode] = useState(false)
-  const [commissionRate, setCommissionRate] = useState('5')
-  const [smtpServer, setSmtpServer] = useState('smtp.zylod.com')
-  const [smtpPort, setSmtpPort] = useState('587')
-  const [emailFrom, setEmailFrom] = useState('noreply@zylod.com')
-  const [saved, setSaved] = useState(false)
-
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
-  }
-
   return (
-    <div className="space-y-4">
-      {/* Platform Settings */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Settings className="h-4 w-4" />Platform Settings</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <p className="text-xs font-medium">Maintenance Mode</p>
-              <p className="text-[10px] text-muted-foreground">Temporarily disable the platform for maintenance</p>
-            </div>
-            <Switch checked={maintenanceMode} onCheckedChange={setMaintenanceMode} />
-          </div>
-          {maintenanceMode && (
-            <div className="flex items-center gap-2 p-2 rounded-md bg-amber-50 text-amber-700 text-xs">
-              <AlertTriangle className="h-4 w-4" />Platform is in maintenance mode. Users cannot access the site.
-            </div>
-          )}
-          <div className="space-y-1.5">
-            <Label className="text-xs">Commission Rate (%)</Label>
-            <Input type="number" min="0" max="50" step="0.5" value={commissionRate} onChange={e => setCommissionRate(e.target.value)} className="h-8 text-xs w-[120px]" />
-            <p className="text-[10px] text-muted-foreground">Percentage taken from each transaction as platform fee</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Email Settings */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Mail className="h-4 w-4" />Email Settings</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2 space-y-3">
-          <div className="space-y-1.5">
-            <Label className="text-xs">SMTP Server</Label>
-            <Input value={smtpServer} onChange={e => setSmtpServer(e.target.value)} className="h-8 text-xs" />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">SMTP Port</Label>
-            <Input value={smtpPort} onChange={e => setSmtpPort(e.target.value)} className="h-8 text-xs w-[100px]" />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">From Email</Label>
-            <Input value={emailFrom} onChange={e => setEmailFrom(e.target.value)} className="h-8 text-xs" />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Button className="w-full h-9 text-xs" onClick={handleSave}>
-        <Save className="h-3 w-3 mr-1" />Save Settings
-      </Button>
-      {saved && (
-        <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 text-green-700 text-xs">
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>Settings saved successfully!
-        </div>
-      )}
-    </div>
+    <Card className="border border-border">
+      <CardContent className="p-6 text-center space-y-3">
+        <Settings className="h-10 w-10 mx-auto text-muted-foreground" />
+        <h3 className="text-sm font-semibold">System settings are not available yet</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">There is no settings backend yet — platform configuration (commission rates, email) lives in the server configuration. Settings controls will appear here when the backend exists.</p>
+      </CardContent>
+    </Card>
   )
 }
 
 function SupplierAnalyticsPage() {
-  const [dateRange, setDateRange] = useState('30d')
-
   return (
     <div className="space-y-4">
-      {/* Date Range */}
-      <Card className="border border-border">
-        <CardContent className="p-3">
-          <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="h-8 text-xs w-[160px]"><CalendarDays className="h-3 w-3 mr-1" /><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">Last 7 Days</SelectItem>
-              <SelectItem value="30d">Last 30 Days</SelectItem>
-              <SelectItem value="90d">Last 90 Days</SelectItem>
-              <SelectItem value="1y">Last Year</SelectItem>
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
-
-      {/* Revenue Stats */}
       <Card className="border border-border">
         <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><DollarSign className="h-4 w-4" />Revenue Overview</CardTitle></CardHeader>
         <CardContent className="p-4 pt-2">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Total Revenue</p>
-              <p className="text-lg font-bold">৳2.8M</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><ArrowUpRight className="h-3 w-3" />+24.5%</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Net Profit</p>
-              <p className="text-lg font-bold">৳840K</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><ArrowUpRight className="h-3 w-3" />+18.2%</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Total Orders</p>
-              <p className="text-lg font-bold">1,247</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><ArrowUpRight className="h-3 w-3" />+15.3%</p>
-            </div>
-            <div className="p-3 rounded-md bg-muted/50">
-              <p className="text-xs text-muted-foreground">Avg Order Value</p>
-              <p className="text-lg font-bold">৳2,246</p>
-              <p className="text-[10px] text-green-600 flex items-center gap-0.5"><ArrowUpRight className="h-3 w-3" />+8.1%</p>
-            </div>
+          <div className="text-center py-4 text-sm text-muted-foreground">
+            <DollarSign className="h-6 w-6 mx-auto opacity-50 mb-1" />
+            <p className="text-xs">No revenue data yet. Your sales will appear here once you receive orders.</p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Revenue Chart */}
       <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><BarChart3 className="h-4 w-4" />Monthly Revenue</CardTitle></CardHeader>
+        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><BarChart3 className="h-4 w-4" />Order Trends</CardTitle></CardHeader>
         <CardContent className="p-4 pt-2">
-          <div className="h-32 flex items-end gap-1 justify-center">
-            {[35, 50, 45, 65, 55, 80, 70, 90, 75, 85, 95, 100].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t-sm bg-primary/80 transition-all hover:bg-primary" style={{ height: `${h}%` }} />
-            ))}
-          </div>
-          <div className="flex justify-between mt-2 text-[10px] text-muted-foreground">
-            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-            <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+          <div className="text-center py-4 text-sm text-muted-foreground">
+            <ShoppingBag className="h-6 w-6 mx-auto opacity-50 mb-1" />
+            <p className="text-xs">No order data yet. Order trends will appear here once buyers start ordering.</p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Top Products */}
       <Card className="border border-border">
         <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Package className="h-4 w-4" />Top Products</CardTitle></CardHeader>
         <CardContent className="p-4 pt-2">
@@ -2168,115 +1035,20 @@ function SupplierAnalyticsPage() {
 }
 
 function SupplierWarehousePage() {
-  const [inventory, setInventory] = useState<{ id: string; name: string; sku: string; stock: number; minStock: number; price: string; status: string }[]>([])
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editStock, setEditStock] = useState('')
-  const [actionMsg, setActionMsg] = useState('')
-
-  const lowStockItems = inventory.filter(i => i.stock <= i.minStock)
-
-  const handleUpdateStock = (id: string) => {
-    const newStock = parseInt(editStock)
-    if (isNaN(newStock) || newStock < 0) return
-    setInventory(prev => prev.map(i => i.id === id ? {
-      ...i,
-      stock: newStock,
-      status: newStock === 0 ? 'Out of Stock' : newStock <= i.minStock ? 'Low Stock' : 'In Stock',
-    } : i))
-    setEditingId(null)
-    setEditStock('')
-    setActionMsg('Stock updated successfully!')
-    setTimeout(() => setActionMsg(''), 3000)
-  }
-
   return (
-    <div className="space-y-4">
-      {/* Low Stock Alerts */}
-      {lowStockItems.length > 0 && (
-        <Card className="border border-amber-200 bg-amber-50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
-              <h3 className="text-sm font-semibold text-amber-800">Low Stock Alerts</h3>
-            </div>
-            <div className="space-y-1">
-              {lowStockItems.map(item => (
-                <div key={item.id} className="flex items-center justify-between text-xs text-amber-800">
-                  <span>{item.name}</span>
-                  <Badge variant={item.stock === 0 ? 'destructive' : 'secondary'} className="text-[10px]">
-                    {item.stock === 0 ? 'Out of Stock' : `${item.stock} left (min: ${item.minStock})`}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {actionMsg && (
-        <div className="flex items-center gap-2 p-2 rounded-md bg-green-50 text-green-700 text-xs">
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>{actionMsg}
-        </div>
-      )}
-
-      {/* Inventory Table */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Box className="h-4 w-4" />Inventory ({inventory.length} items)</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">Product</TableHead>
-                  <TableHead className="text-xs">Stock</TableHead>
-                  <TableHead className="text-xs">Status</TableHead>
-                  <TableHead className="text-xs">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {inventory.map(item => (
-                  <TableRow key={item.id}>
-                    <TableCell className="text-xs">
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-[10px] text-muted-foreground">SKU: {item.sku}</p>
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      {editingId === item.id ? (
-                        <div className="flex gap-1">
-                          <Input type="number" min="0" value={editStock} onChange={e => setEditStock(e.target.value)} className="h-6 text-xs w-[70px]" />
-                          <Button size="sm" className="h-6 text-[10px] px-2" onClick={() => handleUpdateStock(item.id)}>Save</Button>
-                        </div>
-                      ) : (
-                        <span>{item.stock} <span className="text-muted-foreground">(min: {item.minStock})</span></span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      <Badge variant={item.status === 'In Stock' ? 'default' : item.status === 'Low Stock' ? 'secondary' : 'destructive'} className="text-[10px]">
-                        {item.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      {editingId !== item.id && (
-                        <Button size="sm" variant="outline" className="h-6 text-[10px] px-2" onClick={() => { setEditingId(item.id); setEditStock(String(item.stock)) }}>
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="border border-border">
+      <CardContent className="p-6 text-center space-y-3">
+        <Warehouse className="h-10 w-10 mx-auto text-muted-foreground" />
+        <h3 className="text-sm font-semibold">Warehouse tools are not available in this view yet</h3>
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">Stock levels, low-stock alerts, and quantity updates are not connected here. Manage stock from your product listings in Product Management.</p>
+      </CardContent>
+    </Card>
   )
 }
 
 function SupplierInsightsPage() {
   return (
     <div className="space-y-4">
-      {/* Trending Categories */}
       <Card className="border border-border">
         <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="h-4 w-4" />Trending Categories</CardTitle></CardHeader>
         <CardContent className="p-4 pt-2">
@@ -2287,7 +1059,6 @@ function SupplierInsightsPage() {
         </CardContent>
       </Card>
 
-      {/* Price Trends */}
       <Card className="border border-border">
         <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><DollarSign className="h-4 w-4" />Price Trends</CardTitle></CardHeader>
         <CardContent className="p-4 pt-2">
@@ -2298,44 +1069,12 @@ function SupplierInsightsPage() {
         </CardContent>
       </Card>
 
-      {/* Demand Forecast */}
       <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Target className="h-4 w-4" />Demand Forecast (Next 30 Days)</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2 space-y-3">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium">Electronics</span>
-            <div className="flex items-center gap-2">
-              <Progress value={85} className="h-2 w-20" />
-              <span className="text-muted-foreground">High demand</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium">Garments</span>
-            <div className="flex items-center gap-2">
-              <Progress value={72} className="h-2 w-20" />
-              <span className="text-muted-foreground">Good demand</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium">Agriculture</span>
-            <div className="flex items-center gap-2">
-              <Progress value={60} className="h-2 w-20" />
-              <span className="text-muted-foreground">Steady</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium">Construction</span>
-            <div className="flex items-center gap-2">
-              <Progress value={45} className="h-2 w-20" />
-              <span className="text-muted-foreground">Moderate</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium">Home & Garden</span>
-            <div className="flex items-center gap-2">
-              <Progress value={30} className="h-2 w-20" />
-              <span className="text-muted-foreground">Low season</span>
-            </div>
+        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Target className="h-4 w-4" />Demand Forecast</CardTitle></CardHeader>
+        <CardContent className="p-4 pt-2">
+          <div className="text-center py-4 text-sm text-muted-foreground">
+            <Target className="h-6 w-6 mx-auto opacity-50 mb-1" />
+            <p className="text-xs">Demand forecasting is not available yet — it requires real order history that the marketplace does not have yet.</p>
           </div>
         </CardContent>
       </Card>
@@ -2357,9 +1096,8 @@ function SupplierProfilePage({ navigate }: { navigate: (page: string, params?: R
     ? new Date(detail.memberSince).toLocaleDateString('en-BD', { year: 'numeric', month: 'short' })
     : '—'
 
-  const onTimeRate = detail?.ratingCount && detail?.ratingCount > 20
-    ? `${Math.min(99, 85 + Math.round(detail.ratingCount / 10))}%`
-    : '—'
+  // No real on-time delivery data exists yet — honest placeholder
+  const onTimeRate = '—'
 
   return (
     <div className="space-y-4">
@@ -2419,7 +1157,7 @@ function SupplierProfilePage({ navigate }: { navigate: (page: string, params?: R
         <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Info className="h-4 w-4" />About</CardTitle></CardHeader>
         <CardContent className="p-4 pt-2">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            {detail?.companyName || 'This supplier'} is a verified wholesale partner on Zylod.
+            {detail?.companyName || 'This supplier'} is a wholesale supplier on Zylod{detail?.verificationStatus === 'approved' ? ' with a verified profile' : ''}.
             {detail?.warehouseCity ? ` Based in ${detail.warehouseCity}${detail.warehouseDistrict ? `, ${detail.warehouseDistrict}` : ''}.` : ''}
             {detail?.productCount ? ` Offering ${detail.productCount} products.` : ''}
           </p>
@@ -2527,247 +1265,21 @@ function SupplierProfilePage({ navigate }: { navigate: (page: string, params?: R
   )
 }
 
-function AdminSuppliersPage() {
-  const { user: admin } = useAuthStore()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [busyId, setBusyId] = useState<string | null>(null)
-  const [actionMsg, setActionMsg] = useState('')
-
-  const { data: suppliers, loading, refresh } = useSuppliers({ search: searchQuery || undefined, limit: 50 })
-
-  const list = (suppliers || []) as SupplierListItem[]
-  const verifiedCount = list.filter(s => s.verificationStatus === 'approved').length
-
-  const handleVerify = async (s: SupplierListItem, action: 'approve' | 'reject') => {
-    if (!admin?.id) return
-    setBusyId(s.id)
-    try {
-      await verifySupplier(s.id, action, admin.id)
-      setActionMsg(`Supplier ${action === 'approve' ? 'verified' : 'rejected'} successfully!`)
-      setTimeout(() => setActionMsg(''), 3000)
-      await refresh()
-    } catch (e) {
-      setActionMsg(e instanceof Error ? e.message : 'Action failed')
-    } finally {
-      setBusyId(null)
-    }
-  }
-
-  const handleSuspend = async (s: SupplierListItem) => {
-    if (!admin?.id) return
-    setBusyId(s.id)
-    try {
-      await updateUserStatus(s.userId, 'suspend', admin.id)
-      setActionMsg('Supplier suspended successfully!')
-      setTimeout(() => setActionMsg(''), 3000)
-      await refresh()
-    } catch (e) {
-      setActionMsg(e instanceof Error ? e.message : 'Action failed')
-    } finally {
-      setBusyId(null)
-    }
-  }
-
-  const handleActivate = async (s: SupplierListItem) => {
-    if (!admin?.id) return
-    setBusyId(s.id)
-    try {
-      await updateUserStatus(s.userId, 'activate', admin.id)
-      setActionMsg('Supplier activated successfully!')
-      setTimeout(() => setActionMsg(''), 3000)
-      await refresh()
-    } catch (e) {
-      setActionMsg(e instanceof Error ? e.message : 'Action failed')
-    } finally {
-      setBusyId(null)
-    }
-  }
-
-  const isActive = (s: SupplierListItem) => s.accountStatus === 'active'
-  const isVerified = (s: SupplierListItem) => s.verificationStatus === 'approved'
-
-  return (
-    <div className="space-y-4">
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-2">
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold">{loading ? '…' : list.length}</p><p className="text-[10px] text-muted-foreground">Total</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-green-600">{verifiedCount}</p><p className="text-[10px] text-muted-foreground">Verified</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><p className="text-lg font-bold text-amber-600">{list.length - verifiedCount}</p><p className="text-[10px] text-muted-foreground">Pending</p></CardContent></Card>
-      </div>
-
-      {actionMsg && (
-        <div className={`flex items-center gap-2 p-2 rounded-md text-xs ${actionMsg.startsWith('Failed') || actionMsg.startsWith('Request') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
-          <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>{actionMsg}
-        </div>
-      )}
-
-      {/* Search */}
-      <Card className="border border-border">
-        <CardContent className="p-3">
-          <div className="flex items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search suppliers..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="h-8 text-sm" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Supplier table */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><UserCheck className="h-4 w-4" />Supplier Verification</CardTitle></CardHeader>
-        <CardContent className="p-0">
-          {loading ? (
-            <div className="space-y-3 p-4">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {list.map(s => (
-                  <TableRow key={s.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                          {s.companyName ? s.companyName.charAt(0).toUpperCase() : 'S'}
-                        </span>
-                        <div>
-                          <p className="text-xs font-medium">{s.companyName}</p>
-                          <p className="text-[10px] text-muted-foreground">{s.city || '—'}{s.district ? ` · ${s.district}` : ''} · {s.productCount} products</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {isVerified(s) ? (
-                        <Badge variant="default" className="text-[10px]"><BadgeCheck className="h-3 w-3 mr-0.5" />Verified</Badge>
-                      ) : s.verificationStatus === 'rejected' ? (
-                        <Badge variant="destructive" className="text-[10px]"><XCircle className="h-3 w-3 mr-0.5" />Rejected</Badge>
-                      ) : (
-                        <Badge variant="secondary" className="text-[10px]"><AlertTriangle className="h-3 w-3 mr-0.5" />Pending</Badge>
-                      )}
-                      {!isActive(s) && <Badge variant="destructive" className="text-[10px] ml-1">Suspended</Badge>}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex gap-1 justify-end">
-                        {!isVerified(s) ? (
-                          <Button variant="default" size="sm" className="h-7 text-[10px]" disabled={busyId === s.id} onClick={() => handleVerify(s, 'approve')}>
-                            <UserCheck className="h-3 w-3 mr-1" />Verify
-                          </Button>
-                        ) : (
-                          <Button variant="outline" size="sm" className="h-7 text-[10px]" disabled={busyId === s.id} onClick={() => handleVerify(s, 'reject')}>
-                            <XCircle className="h-3 w-3 mr-1" />Unverify
-                          </Button>
-                        )}
-                        {isActive(s) ? (
-                          <Button variant="outline" size="sm" className="h-7 text-[10px]" disabled={busyId === s.id} onClick={() => handleSuspend(s)}>
-                            <Ban className="h-3 w-3 mr-1" />Suspend
-                          </Button>
-                        ) : (
-                          <Button variant="outline" size="sm" className="h-7 text-[10px]" disabled={busyId === s.id} onClick={() => handleActivate(s)}>
-                            <UserCheck className="h-3 w-3 mr-1" />Activate
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {list.length === 0 && !loading && (
-                  <TableRow><TableCell colSpan={3} className="text-center py-8 text-sm text-muted-foreground">No suppliers found.</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
 function SupportPage() {
-  const [category, setCategory] = useState('account')
-  const [subject, setSubject] = useState('')
-  const [message, setMessage] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-
-  const recentTickets = [
-    { id: 'TK-1024', subject: 'Invoice not received', status: 'Open', date: '2026-08-05' },
-    { id: 'TK-1009', subject: 'Payment issue with bKash', status: 'Resolved', date: '2026-07-28' },
-    { id: 'TK-0991', subject: 'Account verification delay', status: 'In Progress', date: '2026-07-22' },
-  ]
-
-  const submitTicket = () => {
-    if (!subject.trim() || !message.trim()) return
-    setSubmitted(true)
-  }
-
   return (
     <div className="space-y-4">
-      {/* Contact channels */}
-      <div className="grid grid-cols-3 gap-2">
-        <Card className="border border-border"><CardContent className="p-3 text-center"><Phone className="h-4 w-4 mx-auto mb-1 text-primary" /><p className="text-xs font-medium">Call</p><p className="text-[10px] text-muted-foreground">9am–6pm</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><Mail className="h-4 w-4 mx-auto mb-1 text-primary" /><p className="text-xs font-medium">Email</p><p className="text-[10px] text-muted-foreground">24h reply</p></CardContent></Card>
-        <Card className="border border-border"><CardContent className="p-3 text-center"><MessageCircle className="h-4 w-4 mx-auto mb-1 text-primary" /><p className="text-xs font-medium">Live Chat</p><p className="text-[10px] text-muted-foreground">Instant</p></CardContent></Card>
+      {/* Real contact channel — email only until a ticketing backend exists */}
+      <div className="grid grid-cols-1 gap-2">
+        <Card className="border border-border"><CardContent className="p-3 text-center"><Mail className="h-4 w-4 mx-auto mb-1 text-primary" /><p className="text-xs font-medium">Email</p><p className="text-[10px] text-muted-foreground">support@zylod.com</p></CardContent></Card>
       </div>
 
-      {/* Ticket form */}
+      {/* Honest notice: ticketing is not implemented yet */}
       <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><AlertTriangle className="h-4 w-4" />Submit a Ticket</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2 space-y-3">
-          {submitted ? (
-            <div className="text-center py-6 space-y-2">
-              <span className="material-symbols-outlined text-green-500" style={{ fontSize: 40, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>
-              <p className="text-sm font-medium">Ticket Submitted</p>
-              <p className="text-xs text-muted-foreground">Our support team will respond within 24 hours.</p>
-            </div>
-          ) : (
-            <>
-              <div className="space-y-1">
-                <Label className="text-xs">Category</Label>
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="h-8 text-xs w-full"><SelectValue placeholder="Select category" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="account">Account &amp; Verification</SelectItem>
-                    <SelectItem value="payment">Payments &amp; Invoices</SelectItem>
-                    <SelectItem value="order">Orders &amp; Delivery</SelectItem>
-                    <SelectItem value="technical">Technical Issue</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Subject</Label>
-                <Input placeholder="Brief summary of your issue" value={subject} onChange={e => setSubject(e.target.value)} className="h-8 text-sm" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Message</Label>
-                <Textarea placeholder="Describe your issue in detail..." value={message} onChange={e => setMessage(e.target.value)} className="text-sm" rows={4} />
-              </div>
-              <Button className="w-full h-9 text-xs" onClick={submitTicket}><Plus className="h-3 w-3 mr-1" />Submit Ticket</Button>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Recent tickets */}
-      <Card className="border border-border">
-        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Clock className="h-4 w-4" />Recent Tickets</CardTitle></CardHeader>
-        <CardContent className="p-4 pt-2 space-y-2">
-          {recentTickets.map(t => (
-            <div key={t.id} className="flex items-center justify-between p-2 rounded-md border border-border bg-muted/30">
-              <div>
-                <p className="text-xs font-medium">{t.subject}</p>
-                <p className="text-[10px] text-muted-foreground">{t.id} · {t.date}</p>
-              </div>
-              <Badge variant={t.status === 'Resolved' ? 'default' : 'secondary'} className="text-[10px]">{t.status}</Badge>
-            </div>
-          ))}
+        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><AlertTriangle className="h-4 w-4" />Support Tickets</CardTitle></CardHeader>
+        <CardContent className="p-4 pt-2">
+          <p className="text-xs text-muted-foreground">
+            Support tickets are not available yet. Email support@zylod.com from your registered address with your order number and a description of the issue, and our team will follow up with you directly.
+          </p>
         </CardContent>
       </Card>
     </div>
@@ -2829,7 +1341,6 @@ function ChatListPage({ navigate }: { navigate: (page: string, params?: Record<s
                     <div className="h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-base shadow-sm" style={{ backgroundColor: bgColor }}>
                       {initial}
                     </div>
-                    <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-400" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
@@ -3015,14 +1526,10 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
           <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#FF6B6B] to-[#FF8E53] flex items-center justify-center text-white font-bold text-sm shadow-sm">
             {(allMessages.find(m => m.senderId !== userId)?.senderName || 'S').charAt(0).toUpperCase()}
           </div>
-          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background bg-green-400" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold truncate">
             {otherName}
-          </p>
-          <p className="text-[10px] text-green-600 font-medium flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-500 inline-block" />Active now
           </p>
         </div>
         {supplierProfileId && (
@@ -3115,7 +1622,6 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
                           {m.messageText}
                           <span className={`block text-[9px] mt-1 flex items-center gap-1 ${mine ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                             {formatTime(m.sentAt)}
-                            {mine && <CheckCheck className="h-3 w-3" />}
                           </span>
                           <span className={`absolute -top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity ${mine ? 'bg-white text-foreground' : 'bg-primary text-primary-foreground'} text-[9px] px-2 py-0.5 rounded-full shadow text-[10px]`}>
                             Reply
@@ -3241,7 +1747,7 @@ function QuoteRequestPage() {
         <CardContent className="p-8 space-y-3">
           <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto" />
           <h2 className="text-base font-semibold">Quote Request Sent</h2>
-          <p className="text-xs text-muted-foreground">Your RFQ <span className="font-medium text-foreground">{createdId ? `#${createdId.slice(-6).toUpperCase()}` : ''}</span> has been submitted. Suppliers will send offers within 48 hours.</p>
+          <p className="text-xs text-muted-foreground">Your RFQ <span className="font-medium text-foreground">{createdId ? `#${createdId.slice(-6).toUpperCase()}` : ''}</span> has been submitted. Suppliers will respond as they review your request.</p>
           <Button variant="outline" className="h-9 text-xs" onClick={() => { setSubmitted(false); setCreatedId(null) }}>Submit Another</Button>
         </CardContent>
       </Card>
@@ -3291,7 +1797,7 @@ function QuoteRequestPage() {
           <Button className="w-full h-9 text-xs" onClick={submit} disabled={submitting}>
             <FileText className="h-3 w-3 mr-1" />{submitting ? 'Submitting...' : 'Request Quote from Suppliers'}
           </Button>
-          <p className="text-[10px] text-muted-foreground text-center">Your request is visible to verified suppliers in matching categories only.</p>
+          <p className="text-[10px] text-muted-foreground text-center">Your request is visible to suppliers on Zylod.</p>
         </CardContent>
       </Card>
     </div>
@@ -3356,8 +1862,8 @@ function AddAddressPage() {
   const [error, setError] = useState<string | null>(null)
 
   const save = async () => {
-    if (!form.name.trim() || !form.phone.trim() || !form.address.trim()) {
-      setError('Name, phone, and address are required')
+    if (!form.name.trim() || !form.phone.trim() || !form.address.trim() || !form.city.trim() || !form.postal.trim()) {
+      setError('Name, phone, address, city, and postal code are all required')
       return
     }
     if (!userId) {
@@ -3373,9 +1879,9 @@ function AddAddressPage() {
         body: JSON.stringify({
           label: form.label,
           addressLine1: form.address,
-          city: form.city || 'Dhaka',
-          district: form.city || 'Dhaka',
-          postalCode: form.postal || '0000',
+          city: form.city.trim(),
+          district: form.city.trim(),
+          postalCode: form.postal.trim(),
           country: 'Bangladesh',
         }),
       })
@@ -3423,11 +1929,11 @@ function AddAddressPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label className="text-xs">City / District</Label>
+              <Label className="text-xs">City / District <span className="text-destructive">*</span></Label>
               <Input placeholder="e.g. Dhaka" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} className="text-sm" />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Postal code</Label>
+              <Label className="text-xs">Postal code <span className="text-destructive">*</span></Label>
               <Input placeholder="e.g. 1205" value={form.postal} onChange={e => setForm({ ...form, postal: e.target.value })} className="text-sm" />
             </div>
           </div>
@@ -4446,7 +2952,7 @@ function ReferralProgramPage() {
         <CardContent className="p-6 space-y-4">
           <div className="text-center space-y-2">
             <UserPlus className="h-10 w-10 text-primary mx-auto" />
-            <h3 className="text-lg font-bold">Refer a Business, Earn ৳500</h3>
+            <h3 className="text-lg font-bold">Refer a Business, Earn Points</h3>
             <p className="text-xs text-muted-foreground">Earn {data?.rewardPointsPerReferral || 500} points when each referral completes their first order</p>
           </div>
 
@@ -5387,13 +3893,8 @@ export function GenericInfoPage({ pageId }: { pageId: string }) {
       case 'buyer-settings': return <BuyerSettingsPage />
       case 'buyer-level': return <BuyerLevelPage />
       case 'buyer-favorites': return <BuyerFavoritesPage navigate={navigate} />
-      case 'admin-users': return <AdminUsersPage />
-      case 'admin-products': return <AdminProductsPage />
       case 'admin-complaints': return <AdminComplaintsPage />
-      case 'admin-reports': return <AdminReportsPage />
-      case 'admin-analytics': return <AdminAnalyticsPage />
       case 'admin-categories': return <AdminCategoriesPage />
-      case 'admin-suppliers': return <AdminSuppliersPage />
       case 'admin-settings': return <AdminSettingsPage />
       case 'supplier-analytics': return <SupplierAnalyticsPage />
       case 'supplier-warehouse': return <SupplierWarehousePage />
