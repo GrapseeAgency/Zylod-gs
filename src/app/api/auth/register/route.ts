@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       await db.buyerProfiles.create({
         data: {
           userId: user.id,
-          fullName: fullName || 'New Buyer',
+          fullName: fullName || '',
           businessName: businessName || null,
           businessType: businessType || 'individual',
           profileCompletionPct: 10,
@@ -108,17 +108,17 @@ export async function POST(request: NextRequest) {
       await db.supplierProfiles.create({
         data: {
           userId: user.id,
-          companyName: businessName || 'New Supplier',
-          nidNumber: nidNumber || 'PENDING',
-          nidFrontImageUrl: nidFrontImageUrl || '/placeholder/nid-front.jpg',
-          nidBackImageUrl: nidBackImageUrl || '/placeholder/nid-back.jpg',
-          tradeLicenseNumber: tradeLicenseNumber || 'PENDING',
-          tradeLicenseImageUrl: tradeLicenseImageUrl || '/placeholder/trade-license.jpg',
-          tinNumber: tinNumber || 'PENDING',
-          bankAccountName: bankAccountName || 'PENDING',
-          bankAccountNumber: bankAccountNumber || 'PENDING',
-          bankName: bankName || 'PENDING',
-          branch: branch || 'PENDING',
+          companyName: businessName || '',
+          nidNumber: nidNumber || '',
+          nidFrontImageUrl: nidFrontImageUrl || '',
+          nidBackImageUrl: nidBackImageUrl || '',
+          tradeLicenseNumber: tradeLicenseNumber || '',
+          tradeLicenseImageUrl: tradeLicenseImageUrl || '',
+          tinNumber: tinNumber || '',
+          bankAccountName: bankAccountName || '',
+          bankAccountNumber: bankAccountNumber || '',
+          bankName: bankName || '',
+          branch: branch || '',
           verificationStatus: 'pending',
         },
       })
