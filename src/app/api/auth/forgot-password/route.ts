@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import crypto from 'crypto'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
+  // Anti-abuse: password reset spamming is limited per IP
+  const rl = checkRateLimit(req, 'forgot-password', 5, 60_000)
+  if (!rl.ok) return rateLimitResponse(rl)
   try {
     const { email } = await req.json()
 

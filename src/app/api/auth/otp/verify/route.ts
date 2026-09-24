@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import crypto from 'crypto'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
+  // Brute-force guard: code guessing is limited per IP
+  const rl = checkRateLimit(request, 'otp-verify', 10, 60_000)
+  if (!rl.ok) return rateLimitResponse(rl)
   try {
     const body = await request.json()
     const { phoneOrEmail, code } = body

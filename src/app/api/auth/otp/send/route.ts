@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import crypto from 'crypto'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
+  // Anti-abuse: OTP sends are expensive and target real phones/emails
+  const rl = checkRateLimit(request, 'otp-send', 5, 60_000)
+  if (!rl.ok) return rateLimitResponse(rl)
   try {
     const body = await request.json()
     const { phoneOrEmail, purpose } = body

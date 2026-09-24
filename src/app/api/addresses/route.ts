@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 /**
  * REAL addresses API — no mock data, no fallbacks.
@@ -64,6 +65,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const rl = checkRateLimit(request, 'addresses-post', 20, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const auth = await requireUserType(request, ['buyer', 'supplier', 'admin'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })

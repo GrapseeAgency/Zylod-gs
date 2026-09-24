@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 /**
  * REAL newsletter subscription — persisted in `newsletterSubscribers`,
@@ -9,6 +10,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 export async function POST(request: NextRequest) {
   try {
+    const rl = checkRateLimit(request, 'newsletter-post', 5, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const body = await request.json().catch(() => null)
     const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : ''
     const source = typeof body?.source === 'string' ? body.source.trim().slice(0, 40) : 'footer'
