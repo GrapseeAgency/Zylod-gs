@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import {
-  ArrowLeft, Radio, Eye, Send, Heart,
-  ShoppingBag, Sparkles, Tag, Check
+  ArrowLeft, Radio, Eye, Send
 } from 'lucide-react'
 
 export function LiveShoppingDetailPage() {
@@ -20,8 +19,7 @@ export function LiveShoppingDetailPage() {
   const [stream, setStream] = useState<any>(null)
   const [messages, setMessages] = useState<any[]>([])
   const [inputMsg, setInputMsg] = useState('')
-  const [likes, setLikes] = useState(48)
-  const [claimedLiveVoucher, setClaimedLiveVoucher] = useState(false)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     if (!streamId) return
@@ -30,18 +28,17 @@ export function LiveShoppingDetailPage() {
       .then(data => {
         if (data.success && data.data) {
           setStream(data.data)
-          setMessages(data.data.mockLiveMessages || [])
+          // Real chat state only — the server never seeds fake messages
+          setMessages(data.data.liveMessages || [])
+        } else {
+          setLoadError(data.error || 'Live stream not found')
         }
       })
-      .catch(console.error)
+      .catch(err => {
+        console.error(err)
+        setLoadError('Could not reach the live stream service')
+      })
   }, [streamId])
-
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!inputMsg.trim()) return
-    setMessages(prev => [...prev, { sender: 'You', text: inputMsg.trim(), time: 'Just now' }])
-    setInputMsg('')
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-white">
@@ -52,60 +49,51 @@ export function LiveShoppingDetailPage() {
             <ArrowLeft className="w-5 h-5 text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
-            <Radio className="w-4 h-4 text-red-500 animate-pulse" />
-            <h1 className="font-bold text-sm sm:text-base truncate max-w-xs">{stream?.supplierName || 'Factory Broadcast'}</h1>
+            <Radio className={`w-4 h-4 ${stream?.isLive ? 'text-red-500 animate-pulse' : 'text-slate-500'}`} />
+            <h1 className="font-bold text-sm sm:text-base truncate max-w-xs">{stream?.supplierName || stream?.title || 'Live Stream'}</h1>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" /> LIVE
-          </span>
+          {stream?.isLive && (
+            <span className="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" /> LIVE
+            </span>
+          )}
           <span className="text-xs text-slate-400 flex items-center gap-1">
-            <Eye className="w-3.5 h-3.5" /> {stream?.viewerCount || 142}
+            <Eye className="w-3.5 h-3.5" /> {stream?.viewerCount ?? 0}
           </span>
         </div>
       </div>
 
       <div className="flex-1 px-4 py-4 max-w-3xl mx-auto w-full space-y-4 pb-24 md:pb-8 lg:max-w-6xl lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start lg:space-y-0 lg:px-6 lg:py-6">
         {/* Live Video Stage */}
-        <div className="relative aspect-video w-full rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl lg:col-span-2">
-          <img
-            src={stream?.thumbnailUrl || 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=800&q=80'}
-            alt="Live Factory Stream"
-            className="w-full h-full object-cover"
-          />
+        <div className="relative aspect-video w-full rounded-3xl overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl lg:col-span-2 flex items-center justify-center">
+          {stream?.thumbnailUrl ? (
+            <img
+              src={stream.thumbnailUrl}
+              alt="Live Factory Stream"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="text-center space-y-2">
+              <Radio className="w-10 h-10 text-slate-600 mx-auto" />
+              <p className="text-xs text-slate-500">No stream video yet</p>
+            </div>
+          )}
+
+          {loadError && (
+            <div className="absolute inset-x-4 top-4 bg-red-950/90 border border-red-800 rounded-2xl p-3">
+              <p className="text-[11px] font-bold text-red-300">{loadError}</p>
+            </div>
+          )}
 
           <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md rounded-2xl p-3 max-w-xs space-y-1">
-            <h3 className="text-xs font-bold text-white line-clamp-1">{stream?.title}</h3>
-            <p className="text-[10px] text-slate-300">Broadcasting live from Narayanganj Textile Mill #4</p>
+            <h3 className="text-xs font-bold text-white line-clamp-1">{stream?.title || 'Live Stream'}</h3>
+            {stream?.supplierName && (
+              <p className="text-[10px] text-slate-300">Hosted by {stream.supplierName}</p>
+            )}
           </div>
-
-          {/* Floating Live Voucher Pill */}
-          <div className="absolute bottom-4 left-4 bg-gradient-to-r from-red-600 to-amber-600 rounded-2xl p-2.5 flex items-center gap-2 shadow-xl">
-            <Tag className="w-4 h-4 text-white" />
-            <div>
-              <p className="text-[10px] font-bold text-white">Live Broadcast Perk: ৳300 Off</p>
-            </div>
-            <Button
-              size="sm"
-              disabled={claimedLiveVoucher}
-              onClick={() => {
-                setClaimedLiveVoucher(true)
-                alert('Live stream discount voucher collected!')
-              }}
-              className="h-7 px-3 text-[10px] font-bold bg-white hover:bg-slate-100 text-red-600 rounded-xl"
-            >
-              {claimedLiveVoucher ? 'Claimed ✓' : 'Claim'}
-            </Button>
-          </div>
-
-          <button
-            onClick={() => setLikes(prev => prev + 1)}
-            className="absolute bottom-4 right-4 w-11 h-11 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-pink-500 hover:scale-110 transition shadow-lg"
-          >
-            <Heart className="w-5 h-5 fill-pink-500" />
-          </button>
         </div>
 
         {/* Live Chat & Messages */}
@@ -113,25 +101,37 @@ export function LiveShoppingDetailPage() {
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Live Factory Floor Q&amp;A</h3>
 
           <div className="space-y-2 max-h-48 lg:max-h-[420px] overflow-y-auto pr-1">
-            {messages.map((m, i) => (
-              <div key={i} className="text-xs flex items-baseline gap-2">
-                <span className="font-bold text-amber-400">{m.sender}:</span>
-                <span className="text-slate-200">{m.text}</span>
-              </div>
-            ))}
+            {messages.length === 0 ? (
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                No messages yet. Live chat opens for everyone once the host starts broadcasting.
+              </p>
+            ) : (
+              messages.map((m, i) => (
+                <div key={i} className="text-xs flex items-baseline gap-2">
+                  <span className="font-bold text-amber-400">{m.sender}:</span>
+                  <span className="text-slate-200">{m.text}</span>
+                </div>
+              ))
+            )}
           </div>
 
-          <form onSubmit={handleSendMessage} className="flex gap-2 pt-2 border-t border-slate-800">
+          <div className="flex gap-2 pt-2 border-t border-slate-800">
             <Input
-              placeholder="Ask factory owner a question..."
+              placeholder="Chat opens when the stream is live"
               value={inputMsg}
               onChange={e => setInputMsg(e.target.value)}
-              className="bg-slate-950 border-slate-800 text-white text-xs"
+              disabled={!stream?.isLive}
+              className="bg-slate-950 border-slate-800 text-white text-xs disabled:opacity-50"
             />
-            <Button type="submit" size="sm" className="bg-red-600 hover:bg-red-700 text-white rounded-xl">
+            <Button
+              size="sm"
+              disabled={!stream?.isLive}
+              title={stream?.isLive ? 'Send message' : 'Real-time chat connects when the host is live'}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl disabled:opacity-50"
+            >
               <Send className="w-3.5 h-3.5" />
             </Button>
-          </form>
+          </div>
         </div>
       </div>
     </div>

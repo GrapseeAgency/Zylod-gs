@@ -21,7 +21,7 @@ export async function GET(
 
     const supplier = await db.supplierProfiles.findUnique({
       where: { id: stream.supplierId },
-      select: { id: true, companyName: true },
+      select: { id: true, companyName: true, ratingAvg: true, ratingCount: true },
     })
 
     // Fetch featured products if specified
@@ -44,15 +44,14 @@ export async function GET(
       success: true,
       data: {
         ...stream,
-        supplierName: supplier?.companyName || 'Verified Mill Stream',
+        supplierName: supplier?.companyName || null,
         supplierLogo: null as string | null,
-        supplierRating: 4.9,
+        supplierRating: supplier?.ratingAvg ?? null,
+        supplierRatingCount: supplier?.ratingCount ?? 0,
         featuredProducts: products,
-        mockLiveMessages: [
-          { sender: 'Apex Retail', text: 'What is the MOQ for 500 pcs?', time: '1m ago' },
-          { sender: 'Factory Host', text: 'MOQ is 100 pcs today with live voucher!', time: 'Just now' },
-          { sender: 'Dhaka Wholesale', text: 'Can we get Steadfast dispatch tomorrow?', time: 'Just now' },
-        ],
+        // REAL chat state: no persisted messages yet. Real-time chat is wired
+        // via socket.io when the host goes live — never seeded with fake rows.
+        liveMessages: [],
       },
     })
   } catch (error) {
