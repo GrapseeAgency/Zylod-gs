@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Award, Rocket, Shield, Users, Star, Sparkles } from 'lucide-react'
+import { ArrowLeft, Milestone } from 'lucide-react'
 
 export function CompanyMilestonesPage() {
   const { navigate, goBack } = useNavigationStore()
@@ -29,7 +29,7 @@ export function CompanyMilestonesPage() {
         </button>
         <div>
           <h1 className="font-bold text-gray-900 text-base">Zylod Journey & Milestones</h1>
-          <p className="text-xs text-gray-400">Our Growth from 2020 to Present</p>
+          <p className="text-xs text-gray-400">Real Milestones, Published As They Happen</p>
         </div>
       </div>
 
@@ -38,9 +38,20 @@ export function CompanyMilestonesPage() {
           <div className="space-y-3 animate-pulse">
             {[1, 2, 3].map(i => <div key={i} className="h-24 bg-gray-200 rounded-3xl" />)}
           </div>
+        ) : milestones.length === 0 ? (
+          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm text-center space-y-2">
+            <div className="w-14 h-14 rounded-3xl bg-blue-50 flex items-center justify-center mx-auto">
+              <Milestone className="w-7 h-7 text-blue-600" />
+            </div>
+            <h2 className="text-sm font-bold text-gray-900">No milestones published yet</h2>
+            <p className="text-xs text-gray-500 leading-relaxed max-w-sm mx-auto">
+              Milestones will be posted here as the platform grows — only real, verifiable ones.
+              Zylod does not invent dates or achievements to look established.
+            </p>
+          </div>
         ) : (
           <div className="space-y-4 relative before:absolute before:inset-0 before:left-4 before:w-0.5 before:bg-blue-100">
-            {milestones.map((m, idx) => (
+            {milestones.map(m => (
               <div key={m.id} className="relative flex items-start gap-4 pl-1">
                 <div className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-black flex items-center justify-center ring-4 ring-white z-10 shadow-sm flex-shrink-0">
                   {m.year.toString().slice(-2)}

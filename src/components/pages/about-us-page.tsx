@@ -5,8 +5,8 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
-  ArrowLeft, Building2, Target, Eye, Award, Users,
-  Globe, ShieldCheck, Sparkles, ChevronRight, TrendingUp
+  ArrowLeft, Target, Eye, Award, Users,
+  Sparkles, ChevronRight
 } from 'lucide-react'
 
 interface AboutData {
@@ -14,9 +14,6 @@ interface AboutData {
     verifiedSuppliers: number
     registeredBuyers: number
     activeProducts: number
-    totalOrders: number
-    pressReleases: number
-    yearsOperating: number
   }
   milestones: Array<{
     id: string
@@ -28,7 +25,6 @@ interface AboutData {
   }>
   companyInfo: {
     name: string
-    founded: number
     hq: string
     mission: string
     vision: string
@@ -59,7 +55,7 @@ export function AboutUsPage() {
         </button>
         <div>
           <h1 className="font-bold text-gray-900 text-base">About Zylod</h1>
-          <p className="text-xs text-gray-400">Bangladesh's Direct Mill B2B Network</p>
+          <p className="text-xs text-gray-400">B2B Wholesale Marketplace</p>
         </div>
       </div>
 
@@ -78,28 +74,31 @@ export function AboutUsPage() {
             {/* Hero Card */}
             <div className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 rounded-3xl p-6 text-white space-y-3">
               <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/30 text-xs font-semibold">
-                Founded {data.companyInfo.founded} · Dhaka, Bangladesh
+                {data.companyInfo.hq} · B2B Wholesale Marketplace
               </Badge>
               <h2 className="text-xl md:text-2xl font-black leading-tight">
-                Empowering South Asia’s Manufacturing Mills & Retailers
+                A Wholesale Marketplace Built for Real Businesses
               </h2>
               <p className="text-xs text-slate-300 leading-relaxed">
                 {data.companyInfo.mission}
               </p>
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
                 <div className="text-center">
-                  <p className="text-lg md:text-2xl font-black text-blue-400">{data.stats.verifiedSuppliers}+</p>
-                  <p className="text-[10px] text-slate-400">Verified Mills</p>
+                  <p className="text-lg md:text-2xl font-black text-blue-400">{data.stats.verifiedSuppliers.toLocaleString()}</p>
+                  <p className="text-[10px] text-slate-400">Verified Suppliers</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg md:text-2xl font-black text-emerald-400">{data.stats.registeredBuyers.toLocaleString()}+</p>
-                  <p className="text-[10px] text-slate-400">Active Buyers</p>
+                  <p className="text-lg md:text-2xl font-black text-emerald-400">{data.stats.registeredBuyers.toLocaleString()}</p>
+                  <p className="text-[10px] text-slate-400">Registered Buyers</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg md:text-2xl font-black text-amber-400">{data.stats.activeProducts.toLocaleString()}+</p>
-                  <p className="text-[10px] text-slate-400">Wholesale SKUs</p>
+                  <p className="text-lg md:text-2xl font-black text-amber-400">{data.stats.activeProducts.toLocaleString()}</p>
+                  <p className="text-[10px] text-slate-400">Live Products</p>
                 </div>
               </div>
+              <p className="text-[10px] text-slate-400 leading-relaxed">
+                These are live counts from our database. Zylod has just launched, so they start at zero — no demo or placeholder figures.
+              </p>
             </div>
 
             {/* Quick Nav Sub-pages */}
@@ -172,26 +171,34 @@ export function AboutUsPage() {
                   <Award className="w-5 h-5 text-indigo-600" />
                   <h3 className="text-sm font-bold text-gray-900">Journey & Milestones</h3>
                 </div>
-                <button
-                  onClick={() => navigate('company-milestones')}
-                  className="text-xs font-bold text-blue-600 hover:underline"
-                >
-                  View All
-                </button>
+                {data.milestones.length > 0 && (
+                  <button
+                    onClick={() => navigate('company-milestones')}
+                    className="text-xs font-bold text-blue-600 hover:underline"
+                  >
+                    View All
+                  </button>
+                )}
               </div>
-              <div className="space-y-4 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-blue-100">
-                {data.milestones.slice(0, 4).map(m => (
-                  <div key={m.id} className="relative flex items-start gap-3 pl-1">
-                    <div className="w-6 h-6 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center ring-4 ring-white z-10">
-                      {m.year.toString().slice(-2)}
+              {data.milestones.length === 0 ? (
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  No milestones published yet. Zylod only posts real milestones — they will appear here as the platform grows.
+                </p>
+              ) : (
+                <div className="space-y-4 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-blue-100">
+                  {data.milestones.slice(0, 4).map(m => (
+                    <div key={m.id} className="relative flex items-start gap-3 pl-1">
+                      <div className="w-6 h-6 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center ring-4 ring-white z-10">
+                        {m.year.toString().slice(-2)}
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-gray-900">{m.title} ({m.year})</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{m.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-gray-900">{m.title} ({m.year})</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{m.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Action buttons */}

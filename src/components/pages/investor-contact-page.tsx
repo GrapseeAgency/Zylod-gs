@@ -61,7 +61,9 @@ export function InvestorContactPage() {
             <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
             <h2 className="text-base font-bold text-gray-900">Inquiry Received</h2>
             <p className="text-xs text-gray-600">
-              Your inquiry reference is <strong>{refNo}</strong>. Our Head of Investor Relations will respond within 2 business days.
+              Your inquiry reference is <strong>{refNo}</strong>. It has been saved to our inbox for
+              review — we reply by email when action is needed. For anything urgent, email
+              support@zylod.com.
             </p>
             <Button onClick={() => navigate('investor-relations')} className="bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold">
               Back to Investor Portal

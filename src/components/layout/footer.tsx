@@ -116,7 +116,7 @@ export function Footer() {
               <img src="/zylod-logo.svg" alt="Zylod" className="h-10 w-auto" />
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Bangladesh&apos;s premier B2B wholesale marketplace. We connect retailers, SMEs, and businesses with verified manufacturers and direct suppliers for bulk trade with SafePay Escrow protection.
+              A B2B wholesale marketplace for Bangladesh. Suppliers list products, buyers order in bulk, and every order stays UNPAID until its payment is verified.
             </p>
             {/* Trust Badges */}
             <div className="space-y-3">
@@ -125,7 +125,7 @@ export function Footer() {
                   <BadgeCheck className="h-4 w-4 text-primary" />
                 </div>
                 <span className="text-sm font-medium text-foreground">
-                  Verified Suppliers Only
+                  Real verification status per supplier
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ export function Footer() {
                   <ShieldCheck className="h-4 w-4 text-primary" />
                 </div>
                 <span className="text-sm font-medium text-foreground">
-                  SafePay Escrow Protected
+                  Payments verified before orders confirmed
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -141,7 +141,7 @@ export function Footer() {
                   <Truck className="h-4 w-4 text-primary" />
                 </div>
                 <span className="text-sm font-medium text-foreground">
-                  64 Districts Freight Coverage
+                  Delivery terms set by each supplier
                 </span>
               </div>
             </div>
@@ -237,7 +237,7 @@ export function Footer() {
                 My Collections
               </FooterLink>
               <FooterLink onClick={() => navigate('escrow-protection-guide')}>
-                SafePay Escrow
+                How Payments Work
               </FooterLink>
               <FooterLink onClick={() => navigate('buyer-protection-policy')}>
                 Buyer Protection Guarantee

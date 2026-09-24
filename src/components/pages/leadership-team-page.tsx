@@ -4,37 +4,10 @@ import React from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Linkedin, Mail } from 'lucide-react'
+import { ArrowLeft, Users, Mail, Briefcase } from 'lucide-react'
 
 export function LeadershipTeamPage() {
   const { navigate, goBack } = useNavigationStore()
-
-  const leaders = [
-    {
-      name: 'Arafat Rahman',
-      role: 'Founder & Chief Executive Officer',
-      bio: 'Former supply chain tech lead with 10+ years engineering high-scale fintech and B2B logistics infrastructure across South Asia.',
-      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      name: 'Tanvir Hossain',
-      role: 'Co-Founder & Chief Technology Officer',
-      bio: 'Distributed systems architect specialized in high-concurrency order engines, transaction ledgers, and real-time video streaming.',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      name: 'Nusrat Jahan',
-      role: 'Head of Factory Acquisition & RMG Merchandising',
-      bio: '12+ years heading direct apparel sourcing across Narayanganj, Gazipur, and Chittagong export processing zones (EPZ).',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      name: 'Siam Chowdhury',
-      role: 'Head of Logistics & Freight Operations',
-      bio: 'Oversees 64-district freight distribution, courier API integration, and warehouse hub dispatch operations.',
-      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
-    },
-  ]
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -44,26 +17,57 @@ export function LeadershipTeamPage() {
         </button>
         <div>
           <h1 className="font-bold text-gray-900 text-base">Leadership Team</h1>
-          <p className="text-xs text-gray-400">Founders & Department Heads</p>
+          <p className="text-xs text-gray-400">About Zylod</p>
         </div>
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto lg:max-w-5xl w-full px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-8 pb-24 md:pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {leaders.map(l => (
-            <div key={l.name} className="bg-white rounded-3xl p-4.5 border border-gray-100 shadow-sm flex items-start gap-4">
-              <img
-                src={l.image}
-                alt={l.name}
-                className="w-16 h-16 rounded-2xl object-cover border border-gray-100 flex-shrink-0"
-              />
-              <div className="space-y-1">
-                <h3 className="text-sm font-bold text-gray-900">{l.name}</h3>
-                <p className="text-xs text-blue-600 font-semibold">{l.role}</p>
-                <p className="text-[11px] text-gray-500 leading-relaxed pt-0.5">{l.bio}</p>
-              </div>
+        {/* Honest empty-roster notice — Zylod publishes no fabricated people */}
+        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm text-center space-y-3">
+          <div className="w-14 h-14 rounded-3xl bg-blue-50 flex items-center justify-center mx-auto">
+            <Users className="w-7 h-7 text-blue-600" />
+          </div>
+          <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-bold uppercase">
+            Not Published Yet
+          </Badge>
+          <h2 className="text-base font-bold text-gray-900">No named team members published yet</h2>
+          <p className="text-xs text-gray-500 leading-relaxed max-w-md mx-auto">
+            Zylod has not published its leadership or team roster. When we do, every person listed
+            here will be a real member of the company with their actual role — no placeholder
+            profiles. Open roles will be posted on the careers page as they become available.
+          </p>
+        </div>
+
+        {/* Contact + Careers */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-2">
+            <div className="flex items-center gap-2 text-blue-600">
+              <Briefcase className="w-5 h-5" />
+              <h3 className="text-sm font-bold text-gray-900">Work With Us</h3>
             </div>
-          ))}
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Roles will be posted on the careers page as they open.
+            </p>
+            <Button onClick={() => navigate('careers-page')} variant="outline" className="w-full rounded-xl text-xs font-bold py-2.5">
+              View Careers Page
+            </Button>
+          </div>
+
+          <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-2">
+            <div className="flex items-center gap-2 text-emerald-600">
+              <Mail className="w-5 h-5" />
+              <h3 className="text-sm font-bold text-gray-900">Contact</h3>
+            </div>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Questions for the team? Reach us by email.
+            </p>
+            <a
+              href="mailto:support@zylod.com"
+              className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold py-2.5 transition"
+            >
+              support@zylod.com
+            </a>
+          </div>
         </div>
 
         <Button onClick={() => navigate('about-us')} className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold py-3 px-6">

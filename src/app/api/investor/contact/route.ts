@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Your investor inquiry has been received. Our IR team will respond within 2 business days.',
+      message: 'Your investor inquiry has been received and saved for review.',
       data: {
         inquiryId: submission.id,
         ref: `IR-${submission.id.slice(-8).toUpperCase()}`,

@@ -5,8 +5,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
-  ArrowLeft, TrendingUp, FileText, Download, ShieldCheck,
-  Building2, PieChart, ChevronRight, Mail, Calendar
+  ArrowLeft, Download, ChevronRight, Mail, Calendar
 } from 'lucide-react'
 
 interface InvestorDoc {
@@ -66,26 +65,28 @@ export function InvestorRelationsPage() {
         {/* Hero */}
         <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 rounded-3xl p-6 md:p-8 text-white space-y-3">
           <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-400/30 text-xs">
-            Shareholder & Investor Portal
+            Investor Relations
           </Badge>
           <h2 className="text-xl md:text-2xl font-black leading-tight">
-            Transparent Financial Disclosures & Market Leadership
+            Nothing Published Yet
           </h2>
           <p className="text-xs text-slate-300 leading-relaxed">
-            Zylod Wholesale operates under strict institutional corporate governance, certified audits, and transparent quarterly performance metrics.
+            Investor relations materials — audited financials, filings, funding information — have
+            not been released. They will appear on this page as they are published. In the meantime,
+            contact support@zylod.com.
           </p>
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
             <div className="text-center">
-              <p className="text-base md:text-xl font-black text-emerald-400">Series A</p>
-              <p className="text-[10px] text-slate-400">Growth Stage</p>
+              <p className="text-base md:text-xl font-black text-emerald-400">{docs.length.toLocaleString()}</p>
+              <p className="text-[10px] text-slate-400">Documents Published</p>
             </div>
             <div className="text-center">
-              <p className="text-base md:text-xl font-black text-teal-300">320% YoY</p>
-              <p className="text-[10px] text-slate-400">GMV Trajectory</p>
+              <p className="text-base md:text-xl font-black text-teal-300">None</p>
+              <p className="text-[10px] text-slate-400">Funding Rounds Announced</p>
             </div>
             <div className="text-center">
-              <p className="text-base md:text-xl font-black text-amber-300">Unqualified</p>
-              <p className="text-[10px] text-slate-400">Audit Opinion</p>
+              <p className="text-base md:text-xl font-black text-amber-300">None</p>
+              <p className="text-[10px] text-slate-400">Audited Financials Released</p>
             </div>
           </div>
         </div>
@@ -121,6 +122,15 @@ export function InvestorRelationsPage() {
             <div className="space-y-3 animate-pulse">
               {[1, 2, 3].map(i => <div key={i} className="h-24 bg-gray-200 rounded-3xl" />)}
             </div>
+          ) : docs.length === 0 ? (
+            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm text-center space-y-2">
+              <h4 className="text-sm font-bold text-gray-900">No investor documents published yet</h4>
+              <p className="text-xs text-gray-500 leading-relaxed max-w-md mx-auto">
+                Investor relations materials are not published yet. Nothing is listed here because
+                nothing has been released — reports and filings will appear on this page as they are
+                published. Contact support@zylod.com with any inquiry.
+              </p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {docs.map(doc => (
@@ -131,7 +141,7 @@ export function InvestorRelationsPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1">
                     <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-bold uppercase">
-                      {doc.docType.replace('_', ' ')} · {doc.fiscalYear || 'FY26'}
+                      {doc.docType.replace('_', ' ')}{doc.fiscalYear ? ` · ${doc.fiscalYear}` : ''}
                     </Badge>
                     <h4 className="text-sm font-bold text-gray-900 leading-snug">
                       {doc.title}

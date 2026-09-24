@@ -4,27 +4,27 @@ import React from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, ShieldCheck, Zap, Scale, HeartHandshake, Eye, Sparkles } from 'lucide-react'
+import { ArrowLeft, ShieldCheck, Zap, HeartHandshake, Eye } from 'lucide-react'
 
 export function CompanyValuesPage() {
   const { navigate, goBack } = useNavigationStore()
 
   const values = [
     {
-      title: 'Direct Factory Transparency',
-      desc: 'No ghost suppliers or inflated retail markups. Every factory is physically visited, trade verified, and priced at factory-gate rates.',
+      title: 'Real Verification, Always Visible',
+      desc: 'Every supplier profile on Zylod shows its real verification status, reviewed by a Zylod admin. If a profile is not verified yet, it says so — no inflated badges.',
       icon: Eye,
       color: 'text-blue-600 bg-blue-50',
     },
     {
-      title: 'Uncompromised Escrow Security',
-      desc: 'We treat merchant working capital with sacred fiduciary care. SafePay Escrow guarantees that suppliers get paid on time and buyers receive the exact quality ordered.',
+      title: 'Honest Numbers',
+      desc: 'Supplier, product, and order counts across this site are live database figures — including zeros while the marketplace is new. We never stage demo data or inflated stats.',
       icon: ShieldCheck,
       color: 'text-emerald-600 bg-emerald-50',
     },
     {
-      title: 'Speed & Operational Excellence',
-      desc: 'Wholesale retail runs on inventory turnover. Our 48-72h dispatch guarantee ensures shopkeepers never miss seasonal demand.',
+      title: 'Built for Bulk',
+      desc: 'Zylod is designed for wholesale trade — bulk quantities, negotiated quotes, and business documents — not retail impulse buys.',
       icon: Zap,
       color: 'text-amber-600 bg-amber-50',
     },

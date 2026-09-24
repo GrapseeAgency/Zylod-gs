@@ -26,6 +26,11 @@ export async function GET(request: NextRequest) {
       db.orders.count(),
     ])
 
+    // HONESTY NOTE (Task 43-c): stats and milestones are real DB counts/rows only.
+    // mission/vision/values are aspirational statements that assert NO false facts:
+    // no founding year, no "verified manufacturers" claim, no delivery or
+    // payment-protection guarantees —
+    // the marketplace is new (0 suppliers/products/orders) and the copy says so.
     return NextResponse.json({
       success: true,
       data: {
@@ -35,19 +40,17 @@ export async function GET(request: NextRequest) {
           activeProducts: productCount,
           totalOrders: orderCount,
           pressReleases: pressCount,
-          yearsOperating: new Date().getFullYear() - 2020,
         },
         milestones,
         companyInfo: {
           name: 'Zylod Wholesale',
-          founded: 2020,
-          hq: 'Dhaka, Bangladesh',
-          mission: 'Connecting Bangladesh\'s verified manufacturers directly with wholesale buyers through transparent, technology-driven commerce.',
-          vision: 'To be South Asia\'s most trusted B2B wholesale marketplace by 2027.',
+          hq: 'Bangladesh',
+          mission: 'To connect Bangladeshi manufacturers and wholesale buyers through transparent, technology-driven commerce. Zylod is brand new — real suppliers, products, and orders will appear here as businesses join.',
+          vision: 'To earn the trust of wholesale buyers and manufacturers across South Asia — one verified profile and one real order at a time.',
           values: [
-            { title: 'Transparency', desc: 'Every supplier is verified. Every price is real.' },
-            { title: 'Efficiency', desc: 'From factory floor to buyer warehouse in 72 hours.' },
-            { title: 'Trust', desc: 'SafePay escrow protects every transaction.' },
+            { title: 'Transparency', desc: 'Every supplier profile on Zylod shows its real verification status, reviewed by a Zylod admin. Profiles that are not verified yet say so.' },
+            { title: 'Efficiency', desc: 'Purpose-built tools for bulk trade — quote requests, negotiated pricing, and business checkout — instead of retail impulse buys.' },
+            { title: 'Trust', desc: 'We publish honest numbers, including zeros. Counts of suppliers, products, and orders on this site are live database figures, never demo data.' },
             { title: 'Scale', desc: 'Built for bulk orders, not retail.' },
           ],
         },
