@@ -20,7 +20,7 @@ export function BulkAddToCartPage() {
 
   const fetchWishlist = async () => {
     try {
-      // Mocked endpoint behavior based on instruction
+      // Real wishlist API — quantities default to each product's MOQ
       const res = await fetch('/api/wishlist')
       const json = await res.json()
       if (json.success && json.data) {

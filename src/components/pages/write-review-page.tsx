@@ -38,11 +38,17 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
     setError('')
 
     try {
+      if (!productId) {
+        setError('No product selected — you can only review a real product page.')
+        setSubmitting(false)
+        return
+      }
       const res = await fetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
-          productId: productId || 'sample-product-id',
+          productId,
           rating,
           title,
           comment,
@@ -50,14 +56,17 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
         }),
       })
 
-      if (res.ok) {
+      const data = await res.json().catch(() => null)
+      if (res.ok && data?.success) {
         setSubmitted(true)
+      } else if (res.status === 401) {
+        setError('You must be signed in as a buyer to submit a review.')
       } else {
-        // Fallback simulate success if backend table is mocking
-        setSubmitted(true)
+        // REAL backend error — shown verbatim, never masked as success
+        setError(data?.error || `Review failed (HTTP ${res.status}). Please try again.`)
       }
     } catch {
-      setSubmitted(true)
+      setError('Network error while submitting your review. Check your connection and retry.')
     } finally {
       setSubmitting(false)
     }

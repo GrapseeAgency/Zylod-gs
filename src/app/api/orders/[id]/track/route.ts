@@ -123,6 +123,12 @@ export async function POST(
       return NextResponse.json({ error: 'Only the assigned supplier can push tracking' }, { status: 403 })
     }
 
+    // SECURITY: only real sub-order statuses can be written
+    const VALID_STATUSES = ['pending', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled', 'returned']
+    if (status && !VALID_STATUSES.includes(status)) {
+      return NextResponse.json({ error: `Invalid status — must be one of: ${VALID_STATUSES.join(', ')}` }, { status: 400 })
+    }
+
     const tracking = await db.orderTracking.create({
       data: {
         subOrderId,
@@ -149,23 +155,14 @@ export async function POST(
       if (parentOrder) {
         await notifyOrderMilestone(parentOrder.buyerId, parentOrder.orderNumber, status, id)
         if (status === 'shipped' && subOrder.trackingNumber) {
-          await notifyDeliveryDispatch(parentOrder.buyerId, parentOrder.orderNumber, 'Steadfast Logistics', subOrder.trackingNumber, id)
+          await notifyDeliveryDispatch(parentOrder.buyerId, parentOrder.orderNumber, 'the supplier', subOrder.trackingNumber, id)
         }
       }
 
-      // If delivered, mark it delivered
-      if (status === 'delivered') {
-        const allSubOrders = await db.subOrders.findMany({
-          where: { orderId: id },
-          select: { status: true },
-        })
-        if (allSubOrders.every(so => so.status === 'delivered')) {
-          await db.orders.update({
-            where: { id },
-            data: { paymentStatus: 'paid' },
-          })
-        }
-      }
+      // SECURITY: delivery NEVER changes payment status. An order is 'paid'
+      // only when a verified payment (gateway/webhook/bank confirmation)
+      // records it — otherwise anyone marking items delivered would mint
+      // free purchases.
     }
 
     return NextResponse.json({ success: true, data: tracking }, { status: 201 })

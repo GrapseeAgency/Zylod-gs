@@ -429,7 +429,7 @@ function DesktopProductDetailPage() {
   // ─── Auto-advance tracking in dialog ───
   useEffect(() => {
     if (showOrderDialog && orderConfirmation) {
-      // Poll tracking every 15 seconds for demo
+      // Poll the real tracking API every 15 seconds while the dialog is open
       trackingIntervalRef.current = setInterval(() => {
         fetchTracking(orderConfirmation.orderId, orderConfirmation.orderNumber)
       }, 15000)
@@ -446,24 +446,6 @@ function DesktopProductDetailPage() {
       }
     }
   }, [showOrderDialog, orderConfirmation, fetchTracking])
-
-  // ─── Manual advance tracking (for demo) ───
-  const handleAdvanceTracking = useCallback(async () => {
-    if (!orderConfirmation) return
-    setTrackingLoading(true)
-    try {
-      await fetch(`/api/orders/${orderConfirmation.orderId}/track`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderNumber: orderConfirmation.orderNumber }),
-      })
-      await fetchTracking(orderConfirmation.orderId, orderConfirmation.orderNumber)
-    } catch {
-      // silently handle
-    } finally {
-      setTrackingLoading(false)
-    }
-  }, [orderConfirmation, fetchTracking])
 
   // ─── Loading State ───
   if (loading) {
@@ -1412,18 +1394,6 @@ function DesktopProductDetailPage() {
                     Live Tracking
                   </h4>
                   <div className="flex items-center gap-2">
-                    {trackingData && trackingData.canAdvance && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs text-[primary] hover:text-[primary]"
-                        onClick={handleAdvanceTracking}
-                        disabled={trackingLoading}
-                      >
-                        <RefreshCw className={`h-3 w-3 mr-1 ${trackingLoading ? 'animate-spin' : ''}`} />
-                        Advance
-                      </Button>
-                    )}
                     <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                     <span className="text-[10px] text-muted-foreground">Live</span>
                   </div>

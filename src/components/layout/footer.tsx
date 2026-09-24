@@ -43,17 +43,27 @@ export function Footer() {
   const { currentCurrency, setCurrency, formatPrice } = useCurrencyStore()
   const [email, setEmail] = useState('')
 
-  const handleSubscribe = () => {
+  const handleSubscribe = async () => {
     if (!email || !email.includes('@')) {
       toast.error('Please enter a valid email address')
       return
     }
-    // Store in localStorage for demo
-    const subs = JSON.parse(localStorage.getItem('zylod-newsletter') || '[]')
-    subs.push({ email, date: new Date().toISOString() })
-    localStorage.setItem('zylod-newsletter', JSON.stringify(subs))
-    toast.success('Successfully subscribed!')
-    setEmail('')
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'footer' }),
+      })
+      const data = await res.json().catch(() => null)
+      if (res.ok && data?.success) {
+        toast.success(data.data?.alreadySubscribed ? 'You are already subscribed.' : 'Successfully subscribed!')
+        setEmail('')
+      } else {
+        toast.error(data?.error || 'Subscription failed. Please try again later.')
+      }
+    } catch {
+      toast.error('Network error — could not reach the subscription service.')
+    }
   }
 
   const currencyInfo = CURRENCIES[currentCurrency]

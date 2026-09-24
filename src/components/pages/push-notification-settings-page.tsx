@@ -238,16 +238,14 @@ export function PushNotificationSettingsPage() {
                     } else if (typeof window !== 'undefined' && 'Notification' in window) {
                       const perm = await Notification.requestPermission()
                       if (perm === 'granted') {
-                        // Generate mock device token or VAPID token
-                        const fakeToken = 'web-token-' + Math.random().toString(36).slice(2, 12) + '-' + Date.now()
-                        const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-                        if (token) headers['Authorization'] = `Bearer ${token}`
-                        await fetch('/api/notifications/push-token', {
-                          method: 'POST',
-                          headers,
-                          body: JSON.stringify({ token: fakeToken, platform: 'web' }),
-                        })
-                        alert('Browser Web Push enabled! Live alerts will now deliver to your device.')
+                        // HONEST STATE: browser Web Push requires server VAPID keys and a
+                        // service worker. Without them, no subscription can be registered —
+                        // so we never fabricate a device token or promise delivery.
+                        alert(
+                          'Notifications allowed in the browser, but Zylod does not have web-push ' +
+                          '(VAPID) configured on the server yet, so no web subscription was registered. ' +
+                          'Use the Zylod Android app for real push alerts.'
+                        )
                       } else {
                         alert('Permission denied. Please enable notifications in your browser address bar.')
                       }
