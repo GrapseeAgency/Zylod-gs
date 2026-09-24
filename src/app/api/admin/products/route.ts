@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { requireUserType } from '@/lib/auth'
 
 /**
- * GET /api/admin/products — list products pending approval (or all if approved=true)
+ * GET /api/admin/products — list products pending approval (or all if approved=true). ADMIN ONLY.
  * Query params: page, limit, approved (true|false), search
  */
 export async function GET(request: NextRequest) {
+  const auth = await requireUserType(request, ['admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
+  }
   try {
     const { searchParams } = request.nextUrl
     const page = Math.max(1, Number(searchParams.get('page') || 1))
@@ -68,6 +73,10 @@ export async function GET(request: NextRequest) {
  * Body: { productId, action: 'approve' | 'reject', reason?: string }
  */
 export async function PATCH(request: NextRequest) {
+  const auth = await requireUserType(request, ['admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
+  }
   try {
     const body = await request.json()
     const { productId, action, reason } = body
@@ -88,7 +97,7 @@ export async function PATCH(request: NextRequest) {
     // Log the action
     await db.auditLogs.create({
       data: {
-        actorId: body.actorId || null,
+        actorId: auth.user.id,
         action: `product_${action}`,
         entityType: 'products',
         entityId: productId,

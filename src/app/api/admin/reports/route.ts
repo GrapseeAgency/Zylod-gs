@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { requireUserType } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
+  const auth = await requireUserType(request, ['admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
+  }
   try {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status') || 'all'

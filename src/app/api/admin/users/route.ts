@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { requireUserType } from '@/lib/auth'
 
 /**
- * GET /api/admin/users — list all users with profiles
+ * GET /api/admin/users — list all users with profiles (ADMIN ONLY)
  * Query params: page, limit, role (buyer|supplier|admin), status, search
  */
 export async function GET(request: NextRequest) {
+  const auth = await requireUserType(request, ['admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
+  }
   try {
     const { searchParams } = request.nextUrl
     const page = Math.max(1, Number(searchParams.get('page') || 1))
@@ -80,6 +85,10 @@ export async function GET(request: NextRequest) {
  * Body: { userId, action: 'suspend' | 'activate' | 'ban', reason?: string }
  */
 export async function PATCH(request: NextRequest) {
+  const auth = await requireUserType(request, ['admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
+  }
   try {
     const body = await request.json()
     const { userId, action, reason } = body
@@ -98,7 +107,7 @@ export async function PATCH(request: NextRequest) {
     // Log the action
     await db.auditLogs.create({
       data: {
-        actorId: body.actorId || null,
+        actorId: auth.user.id,
         action: `user_${action}`,
         entityType: 'users',
         entityId: userId,

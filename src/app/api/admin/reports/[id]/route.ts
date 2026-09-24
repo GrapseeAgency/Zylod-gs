@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { requireUserType } from '@/lib/auth'
 import { sendNotification } from '@/lib/notifications'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireUserType(request, ['admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
+  }
   try {
     const { id } = await params
     const report = await db.reportedUsers.findUnique({
@@ -81,6 +86,10 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireUserType(request, ['admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
+  }
   try {
     const { id } = await params
     const body = await request.json()

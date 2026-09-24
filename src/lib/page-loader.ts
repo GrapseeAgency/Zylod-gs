@@ -39,7 +39,7 @@ const REAL_PAGES = new Set([
   'upi-payment-setup', 'credit-debit-cards', 'add-card', 'payment-history',
   'payment-pending', 'payment-failed', 'refund-to-wallet', 'earnings-dashboard',
   'commission-history', 'invoice-management', 'credit-score', 'credit-limit',
-  'admin-dashboard', 'admin-payments', 'admin-reports', 'admin-moderation', 'supplier-dashboard', 'buyer-dashboard',
+  'admin-dashboard', 'admin-payments', 'admin-users', 'admin-products', 'admin-reports', 'admin-moderation', 'supplier-dashboard', 'buyer-dashboard',
   'explore', 'discover', 'trending-products', 'trending', 'flash-sale', 'flash-deals', 'daily-deals', 'new-arrivals',
   'clearance', 'clearance-sale', 'seasonal-offers', 'seasonal-sale', 'brand-showcase', 'category-browser',
   // Wishlist & Favorites (121-128 + sub-pages)
