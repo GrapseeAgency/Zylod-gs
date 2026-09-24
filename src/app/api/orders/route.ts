@@ -120,11 +120,14 @@ export async function POST(request: NextRequest) {
 
       const totalPrice = unitPrice * qty
 
-      if (!supplierGroups[item.supplierId]) {
-        supplierGroups[item.supplierId] = { items: [], subtotal: 0 }
+      // SECURITY: supplier grouping always uses the supplier recorded on the
+      // product row — never a client-sent supplierId (anti-manipulation).
+      const supplierId = product.supplierId
+      if (!supplierGroups[supplierId]) {
+        supplierGroups[supplierId] = { items: [], subtotal: 0 }
       }
-      supplierGroups[item.supplierId].items.push({ ...item, quantity: qty, unitPrice, totalPrice })
-      supplierGroups[item.supplierId].subtotal += totalPrice
+      supplierGroups[supplierId].items.push({ ...item, quantity: qty, unitPrice, totalPrice })
+      supplierGroups[supplierId].subtotal += totalPrice
       totalAmount += totalPrice
     }
 

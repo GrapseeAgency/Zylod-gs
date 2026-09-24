@@ -178,6 +178,9 @@ model addresses {
   id           String  @id @default(cuid())
   userId       String
   label        String
+  companyName  String?
+  contactName  String?
+  contactPhone String?
   addressLine1 String
   addressLine2 String?
   city         String
