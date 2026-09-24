@@ -993,3 +993,39 @@ REMAINING FAKE/INCOMPLETE (next runs):
 
 Stage Summary:
 - DB: 131 tables × 0 rows. Seeds deleted system-wide. Fake purchase flow ELIMINATED — orders now real, server-priced, UNPAID-until-verified-payment. Free-product exploit closed. All changes pushed to origin/main after every step.
+
+---
+Task ID: 37
+Agent: glm-main (de-fake cron run 2)
+Task: DE-FAKE round 2 — payment pipeline (webhook HMAC, admin verify), rate limiting, missing APIs, real uploads
+
+Work Log:
+- GIT: synced with origin/main (no upstream changes). DB verified 0 rows at start.
+- D. PAYMENT & ANTI-HACK (the campaign core):
+  - src/lib/rate-limit.ts CREATED: in-memory sliding-window limiter, x-forwarded-for aware, self-cleaning, standard 429 + Retry-After. Applied to: otp/send (5/min), otp/verify (10/min), forgot-password (5/min), orders POST (10/min), addresses POST (20/min), newsletter POST (5/min). login/register already had their own lockout limiters (untouched).
+  - /api/orders/[id]/payments/initiate CREATED: buyer-owned, amount ALWAYS from order.totalAmount in DB (never client), pending payments row, instructions ONLY from env (PAYMENT_BANK_NAME/ACCOUNT, PAYMENT_BKASH_MERCHANT, PAYMENT_NAGAD_MERCHANT). No env → honest 503 "cannot be paid right now" — never fake instructions.
+  - /api/payments/webhook CREATED — THE ONLY AUTOMATED PATH THAT SETS order.paymentStatus='paid': HMAC-SHA256 timing-safe signature verify (x-zylod-signature), amount mismatch vs DB total → 400 + SECURITY log, idempotent by transactionId, missing secret → 503, invalid signature → 401 + IP logged.
+  - /api/admin/orders/[id]/verify-payment CREATED: admin-only manual bank-transfer confirmation (real B2B world), amount cross-checked, transactionId dedup, [AUDIT] log with admin id.
+  - Verified live: webhook w/o secret → 503; upload unauth → 401; OTP 7th call in a minute → 429.
+- B. MISSING-API FIXES (pages calling nonexistent endpoints):
+  - /api/delivery-methods CREATED + deliveryMethods table (schema push, DB still 0). delivery-method-page: REMOVED invented fallback couriers ("Standard Freight ৳120 / Express Air ৳350 / Local Hub Pickup Cityville" on API fail) → honest empty/error banner; nothing invented.
+  - /api/uploads/review-media CREATED: real multipart upload, MIME+size validation (img ≤5MB, vid ≤50MB), writes actual bytes to public/uploads/review-media/<uuid>, returns real URL; UPLOAD_DIR env override for Railway volumes.
+  - upload-review-photos-page: REMOVED fake unsplash pre-filled media + URL.createObjectURL fake uploads (blob URLs die on reload) → real upload with per-file pending state, real errors, honest empty state; only fully-uploaded media can submit.
+  - write-review-page: reads carried media, sends images[] to API.
+  - reviews API: accepts images[] but ONLY /uploads/review-media/* paths — external/blob/data URLs rejected 400 (fake imagery cannot enter reviews).
+- CLEANUP: deleted src/lib/supabase.ts (ZERO consumers, dummy placeholder client) + removed @supabase/supabase-js dependency. Grep sweep for mock/dummy/fake/fixture across src: remaining hits are legit (prohibited-items policy text, report categories, honest comments).
+- NOTE: found stale tsconfig.tsbuildinfo masking type errors; removed — fresh tsc is the gate from now on. Fresh tsc exit 0; eslint clean on all touched files; agent-browser desktop pass (no runtime errors); DB 132 tables × 0 rows at end.
+
+REMAINING FAKE/INCOMPLETE (next runs):
+- Real payment gateway SDK integration (Stripe/bKash) sending signed webhooks — infra ready, needs owner's gateway credentials (env).
+- Admin UI to manage deliveryMethods (API only reads; admin CRUD next).
+- Admin UI for order payment verification (API exists).
+- Disputes model + API + real arbitration flow.
+- socket.io real-time (live chat, cart sync).
+- Web push VAPID keys + service worker.
+- Footer static contact copy (+880 1711-000000, support@zylod.com) — owner must confirm real values.
+- Zod validation layer across remaining APIs (manual validation currently).
+- CI: confirm android-build green on latest main.
+
+Stage Summary:
+- Payment security architecture COMPLETE end-to-end: order → server-priced UNPAID → payment can only become 'paid' via HMAC-verified webhook or audited admin confirmation. Rate limiting live on all sensitive endpoints. Two missing APIs built for real; all fake fallbacks (couriers, unsplash media, blob uploads, dummy supabase) removed. Pushed after every step (HEAD 37A→37B).
