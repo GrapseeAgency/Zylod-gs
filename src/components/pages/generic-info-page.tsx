@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -906,17 +906,87 @@ function BuyerComplaintsPage() {
 
 function BuyerReturnsPage() {
   const { navigate } = useNavigationStore()
+  const { user } = useAuthStore()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [needsAuth, setNeedsAuth] = useState(false)
+  const [returns, setReturns] = useState<Array<{
+    id: string; returnNumber: string; orderId: string; orderNumber: string | null
+    status: string; estimatedRefund: number; createdAt: string
+  }>>([])
+
+  const load = useCallback(async () => {
+    if (!user?.id) { setNeedsAuth(true); setLoading(false); return }
+    setLoading(true)
+    setError(null)
+    setNeedsAuth(false)
+    try {
+      const res = await fetch('/api/returns')
+      const json = await res.json().catch(() => null)
+      if (res.status === 401) { setNeedsAuth(true); setReturns([]) }
+      else if (!res.ok) setError(json?.error || `Failed to load returns (${res.status})`)
+      else setReturns(json?.data || [])
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Network error while loading returns')
+    } finally {
+      setLoading(false)
+    }
+  }, [user?.id])
+
+  useEffect(() => { load() }, [load])
+
+  const statusBadge: Record<string, string> = {
+    pending: 'bg-amber-100 text-amber-800',
+    approved: 'bg-emerald-100 text-emerald-800',
+    rejected: 'bg-rose-100 text-rose-800',
+    refunded: 'bg-emerald-100 text-emerald-800',
+  }
+
   return (
-    <Card className="border border-border">
-      <CardContent className="p-6 text-center space-y-3">
-        <RefreshCw className="h-10 w-10 mx-auto text-primary" />
-        <h3 className="text-sm font-semibold">Start returns from your orders</h3>
-        <p className="text-xs text-muted-foreground max-w-sm mx-auto">Returns are submitted per order. Open the order in your order history and choose the items to return — the request goes straight to the Zylod team.</p>
-        <Button onClick={() => navigate('buyer-orders')} className="h-9 text-xs">
-          <Package className="h-3 w-3 mr-1" />Go to My Orders
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <Card className="border border-border">
+        <CardContent className="p-4 space-y-3">
+          <h3 className="text-sm font-semibold">Your return requests</h3>
+          {loading && (
+            <div className="space-y-2">{[1, 2].map(i => <Skeleton key={i} className="h-14 w-full rounded-lg" />)}</div>
+          )}
+          {!loading && needsAuth && (
+            <div className="p-4 text-center space-y-2">
+              <p className="text-xs text-muted-foreground">Sign in to see your return requests.</p>
+              <Button onClick={() => navigate('login')} className="h-8 text-xs">Sign In</Button>
+            </div>
+          )}
+          {!loading && error && (
+            <div className="p-3 rounded-md border border-destructive/30 bg-destructive/5 text-xs text-destructive">{error}</div>
+          )}
+          {!loading && !needsAuth && !error && returns.length === 0 && (
+            <div className="p-4 text-center space-y-2">
+              <p className="text-xs text-muted-foreground">No return requests yet. Paid, delivered orders can start one from your order history.</p>
+              <Button onClick={() => navigate('buyer-orders')} className="h-8 text-xs"><Package className="h-3 w-3 mr-1" />Go to My Orders</Button>
+            </div>
+          )}
+          {!loading && !needsAuth && !error && returns.length > 0 && (
+            <div className="space-y-2">
+              {returns.map(r => (
+                <button key={r.id} className="w-full text-left flex items-center justify-between p-2.5 rounded-md border border-border bg-muted/30 hover:border-primary/50 transition-colors" onClick={() => navigate('return-detail', { orderId: r.orderId, returnId: r.id })}>
+                  <div>
+                    <p className="text-xs font-medium">{r.returnNumber}</p>
+                    <p className="text-[10px] text-muted-foreground">{r.orderNumber ? `Order ${r.orderNumber} · ` : ''}{new Date(r.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <Badge className={`text-[10px] ${statusBadge[r.status] || 'bg-secondary text-secondary-foreground'}`}>{r.status}</Badge>
+                </button>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      <Card className="border border-border">
+        <CardContent className="p-4 text-center">
+          <p className="text-xs text-muted-foreground">Returns are submitted per order. Open the order in your order history and choose the items to return — the request goes to the Zylod team for review.</p>
+          <Button onClick={() => navigate('buyer-orders')} className="h-9 text-xs mt-3"><Package className="h-3 w-3 mr-1" />Go to My Orders</Button>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

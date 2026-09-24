@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 /**
  * POST /api/support/chatbot/query
  * Quick AI response querying real database FAQs and policy articles.
  * Body: { query: string, language?: 'en' | 'bn' }
+ * Public endpoint — rate limited per IP (30 queries / 5 min) to prevent abuse.
  */
 export async function POST(request: NextRequest) {
   try {
+    const rl = checkRateLimit(request, 'chatbot-query', 30, 5 * 60 * 1000)
+    if (!rl.ok) {
+      return rateLimitResponse(rl)
+    }
     const body = await request.json()
     const query = String(body.query || '').trim()
     const language = body.language === 'bn' ? 'bn' : 'en'

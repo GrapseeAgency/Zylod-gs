@@ -2754,3 +2754,35 @@ model offlineSyncEvents {
   @@index([receivedAt])
   @@index([processedAt])
 }
+
+// ─── Return requests (buyer-initiated, admin-reviewed) ───
+model returnRequests {
+  id              String   @id @default(cuid())
+  returnNumber    String   @unique
+  orderId         String
+  buyerId         String
+  // status: pending | approved | rejected | refunded
+  status          String   @default("pending")
+  shippingMethod  String   @default("pickup")
+  estimatedRefund Float    @default(0)
+  resolutionNote  String?
+  resolvedById    String?
+  resolvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([buyerId])
+  @@index([orderId])
+  @@index([status])
+}
+
+model returnRequestItems {
+  id              String  @id @default(cuid())
+  returnRequestId String
+  orderItemId     String
+  reason          String
+  quantity        Int
+  comments        String?
+
+  @@index([returnRequestId])
+}

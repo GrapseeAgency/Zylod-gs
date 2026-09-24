@@ -22,7 +22,7 @@ const SEARCH_TOOLS = [
   { icon: Camera, label: 'Photo Search', desc: 'Find products by image', color: '#E53935' },
   { icon: QrCode, label: 'QR Scan', desc: 'Scan product QR code', color: '#1976D2' },
   { icon: ScanLine, label: 'Barcode Scan', desc: 'Scan product barcode', color: '#388E3C' },
-  { icon: Sparkles, label: 'AI Search', desc: 'Intelligent product search', color: '#6A1B9A' },
+  { icon: Sparkles, label: 'Advanced Search', desc: 'Filter by category, price, MOQ', color: '#6A1B9A' },
   { icon: FileText, label: 'RFQ', desc: 'Request for quotation', color: '#F57C00' },
   { icon: Mic, label: 'Voice Search', desc: 'Search by voice', color: '#00695C' },
 ]
@@ -32,7 +32,8 @@ const TOOL_PAGE: Record<string, string> = {
   'Photo Search': 'image-search',
   'QR Scan': 'barcode-scanner',
   'Barcode Scan': 'barcode-scanner',
-  'AI Search': 'search-home',
+  'Advanced Search': 'search-home',
+  'RFQ': 'quote-request',
   'Voice Search': 'voice-search',
 }
 

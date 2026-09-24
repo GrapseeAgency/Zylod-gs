@@ -1,40 +1,61 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
-  ArrowLeft, Check, Truck, Headphones,
-  Package, AlertCircle, RefreshCw, LogIn, Box, RotateCcw
+  ArrowLeft, Truck, Headphones,
+  Package, AlertCircle, RefreshCw, LogIn, Box, RotateCcw, Clock, CheckCircle2, XCircle
 } from 'lucide-react'
 
-interface OrderItem {
+interface ReturnItem {
   id: string
-  productId: string
+  orderItemId: string
+  reason: string
   quantity: number
-  unitPrice: number
-  totalPrice: number
-  product: { id: string; name: string; thumbnailUrl: string | null; unit: string; slug: string } | null
-  variant: { id: string; variantName: string; variantValue: string } | null
+  comments: string | null
 }
 
-interface SubOrder {
+interface ReturnRequest {
   id: string
+  returnNumber: string
+  orderId: string
+  orderNumber: string | null
   status: string
-  supplier: { companyName: string; ratingAvg?: number } | null
-  subtotal: number
-  trackingNumber: string | null
-  items: OrderItem[]
+  shippingMethod: string
+  estimatedRefund: number
+  resolutionNote: string | null
+  resolvedAt: string | null
+  createdAt: string
+  items: ReturnItem[]
 }
 
-interface OrderData {
-  id: string
-  orderNumber: string
-  totalAmount: number
-  paymentStatus: string
-  placedAt: string
-  subOrders: SubOrder[]
+const STATUS_META: Record<string, { label: string; className: string; icon: typeof Clock; note: string }> = {
+  pending: {
+    label: 'Pending review',
+    className: 'bg-amber-100 text-amber-800',
+    icon: Clock,
+    note: 'Your return request is waiting for review by the Zylod team. Nothing has been charged back or scheduled yet — you will see the decision here.',
+  },
+  approved: {
+    label: 'Approved',
+    className: 'bg-emerald-100 text-emerald-800',
+    icon: CheckCircle2,
+    note: 'The return was approved. Follow the pickup/return instructions given in the resolution note.',
+  },
+  rejected: {
+    label: 'Rejected',
+    className: 'bg-rose-100 text-rose-800',
+    icon: XCircle,
+    note: 'The return request was rejected. The reason from the review team is shown below.',
+  },
+  refunded: {
+    label: 'Refunded',
+    className: 'bg-emerald-100 text-emerald-800',
+    icon: CheckCircle2,
+    note: 'This return has been refunded to your original payment method.',
+  },
 }
 
 export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
@@ -48,9 +69,9 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
   const [error, setError] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [needsAuth, setNeedsAuth] = useState(false)
-  const [order, setOrder] = useState<OrderData | null>(null)
+  const [returns, setReturns] = useState<ReturnRequest[] | null>(null)
 
-  const fetchOrder = useCallback(async () => {
+  const fetchReturns = useCallback(async () => {
     if (!orderId) {
       setLoading(false)
       return
@@ -60,40 +81,29 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
     setNotFound(false)
     setNeedsAuth(false)
     try {
-      const res = await fetch(`/api/orders/${orderId}`)
+      const res = await fetch(`/api/returns?orderId=${encodeURIComponent(orderId)}`)
       const data = await res.json().catch(() => null)
       if (!res.ok) {
         if (res.status === 404) setNotFound(true)
         else if (res.status === 401) setNeedsAuth(true)
-        else setError(data?.error || `Failed to load return (${res.status})`)
-        setOrder(null)
+        else setError(data?.error || `Failed to load returns (${res.status})`)
+        setReturns(null)
         return
       }
-      setOrder(data?.data || null)
+      const list: ReturnRequest[] = data?.data || []
+      const filtered = returnId ? list.filter(r => r.id === returnId || r.returnNumber === returnId) : list
+      setReturns(filtered)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Network error while loading the return')
-      setOrder(null)
+      setReturns(null)
     } finally {
       setLoading(false)
     }
-  }, [orderId])
+  }, [orderId, returnId])
 
   useEffect(() => {
-    fetchOrder()
-  }, [fetchOrder])
-
-  /* Only sub-orders actually marked 'returned' by the real returns API are shown */
-  const returnedSubOrders = useMemo<SubOrder[]>(() => {
-    if (!order) return []
-    return order.subOrders.filter((so) => so.status === 'returned')
-  }, [order])
-
-  const returnedValue = useMemo(() => {
-    return returnedSubOrders.reduce(
-      (acc, so) => acc + (so.items || []).reduce((s, i) => s + i.totalPrice, 0),
-      0
-    )
-  }, [returnedSubOrders])
+    fetchReturns()
+  }, [fetchReturns])
 
   /* ─── No order reference — honest state ─── */
   if (!orderId) {
@@ -139,8 +149,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
           <div>
             <h1 className="text-lg font-black text-slate-900 tracking-tight">Return Details</h1>
             <p className="text-xs text-slate-400 font-mono mt-0.5">
-              Order #{order?.orderNumber || orderId.slice(-8).toUpperCase()}
-              {returnId ? ` · Ref ${returnId}` : ''}
+              Order #{orderId.slice(-8).toUpperCase()}
             </p>
           </div>
 
@@ -163,11 +172,11 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
               {needsAuth ? <LogIn className="h-7 w-7 text-gray-400" /> : <AlertCircle className="h-7 w-7 text-gray-400" />}
             </div>
             <h2 className="text-sm font-black text-slate-900">
-              {notFound ? 'Order not found' : needsAuth ? 'Sign in required' : 'Couldn\u2019t load this return'}
+              {notFound ? 'Return not found' : needsAuth ? 'Sign in required' : 'Couldn\u2019t load this return'}
             </h2>
             <p className="text-xs text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
               {notFound
-                ? 'We couldn\u2019t find this order. It may belong to a different account.'
+                ? 'We couldn\u2019t find this return request. It may belong to a different account.'
                 : needsAuth
                   ? 'Sign in with the buyer account that placed this order to view its return.'
                   : error}
@@ -183,7 +192,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
               ) : (
                 <Button
                   variant="outline"
-                  onClick={fetchOrder}
+                  onClick={fetchReturns}
                   className="bg-white hover:bg-slate-50 text-slate-700 border-slate-200 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
@@ -208,16 +217,16 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
           </div>
         )}
 
-        {/* No returned sub-orders — honest empty */}
-        {!loading && !error && !needsAuth && !notFound && order && returnedSubOrders.length === 0 && (
+        {/* No return requests for this order — honest empty */}
+        {!loading && !error && !needsAuth && !notFound && returns && returns.length === 0 && (
           <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-2xs text-center">
             <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-4">
               <RotateCcw className="h-9 w-9 text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900">No return found for this order</h2>
             <p className="text-xs text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
-              No items in order #{order.orderNumber} have been marked as returned yet. If you
-              recently submitted a return request, its status will appear here.
+              No return request has been submitted for this order yet. Paid, delivered orders can
+              start one.
             </p>
             <Button
               variant="outline"
@@ -229,83 +238,85 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
           </div>
         )}
 
-        {/* Returned items — real data */}
-        {!loading && !error && !needsAuth && !notFound && returnedSubOrders.length > 0 && (
-          <>
-            {/* Status card — real sub-order statuses from the backend */}
-            <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
-              <h2 className="text-xs font-black text-slate-900">Status</h2>
-
-              <div className="p-3 bg-rose-50/60 border border-rose-100 rounded-2xl flex items-center gap-2.5 text-xs text-slate-700">
-                <Truck className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-[11px]">
-                  Return recorded by the marketplace. The supplier will arrange pickup — track
-                  updates from your orders page.
-                </span>
-              </div>
-
-              {returnedSubOrders.map((so) => (
-                <div key={so.id} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
-                      <Check className="h-3.5 w-3.5" />
-                    </div>
-                    <span className="font-bold text-slate-900 truncate">
-                      {so.supplier?.companyName || '--'}
+        {/* Real return requests */}
+        {!loading && !error && !needsAuth && !notFound && returns && returns.length > 0 && (
+          returns.map((ret) => {
+            const meta = STATUS_META[ret.status] ?? {
+              label: ret.status,
+              className: 'bg-slate-100 text-slate-700',
+              icon: Clock,
+              note: 'Status updates will appear here as the Zylod team reviews this request.',
+            }
+            const MetaIcon = meta.icon
+            return (
+              <div key={ret.id} className="space-y-4">
+                {/* Status card — real backend status */}
+                <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xs font-black text-slate-900">Return {ret.returnNumber}</h2>
+                    <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${meta.className}`}>
+                      {meta.label}
                     </span>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
-                    {so.status}
-                  </span>
+
+                  <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-start gap-2.5 text-xs text-slate-700">
+                    <MetaIcon className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <span className="text-[11px]">{meta.note}</span>
+                  </div>
+
+                  {ret.resolutionNote && (
+                    <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Review note</p>
+                      <p className="text-[11px] text-slate-700 leading-relaxed">{ret.resolutionNote}</p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-500 flex items-center gap-1.5">
+                      <Truck className="h-3.5 w-3.5" />
+                      {ret.shippingMethod === 'dropoff' ? 'Drop-off' : 'Pickup'} (preferred)
+                    </span>
+                    <span className="text-[10px] text-slate-400">
+                      Submitted {new Date(ret.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Items in Return — real order items */}
-            <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-              <h2 className="text-xs font-bold text-slate-900">Items in Return</h2>
+                {/* Items in Return — real submitted items */}
+                <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
+                  <h2 className="text-xs font-bold text-slate-900">Items in Return</h2>
 
-              <div className="space-y-3 pt-1">
-                {returnedSubOrders.flatMap((so) =>
-                  (so.items || []).map((item) => {
-                    const image = item.product?.thumbnailUrl || null
-                    return (
-                      <div key={item.id} className="p-3 bg-slate-50/70 rounded-2xl border border-slate-100 flex gap-3 items-center">
-                        <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-200">
-                          {image ? (
-                            <img src={image} alt={item.product?.name || 'Product'} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 w-full h-full">
-                              <Package className="h-5 w-5 text-gray-400" />
-                            </div>
-                          )}
+                  <div className="space-y-3 pt-1">
+                    {ret.items.map((item) => (
+                      <div key={item.id} className="p-3 bg-slate-50/70 rounded-2xl border border-slate-100">
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="text-[11px] font-bold text-slate-700 break-all">
+                            Item #{item.orderItemId.slice(-8).toUpperCase()}
+                          </span>
+                          <span className="text-[10px] font-black text-slate-500 shrink-0">Qty: {item.quantity}</span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-xs font-bold text-slate-900 line-clamp-1">
-                            {item.product?.name || 'Product'}
-                          </h3>
-                          {item.variant && (
-                            <p className="text-[10px] text-slate-400 mt-0.5">
-                              {item.variant.variantName}: {item.variant.variantValue}
-                            </p>
-                          )}
-                          <div className="flex justify-between items-baseline mt-1">
-                            <span className="text-[11px] text-slate-500 font-medium">Qty: {item.quantity}</span>
-                            <span className="text-xs font-black text-slate-900">{formatPrice(item.totalPrice)}</span>
-                          </div>
-                        </div>
+                        <p className="text-[11px] text-slate-600 mt-1">
+                          <span className="font-semibold text-slate-500">Reason: </span>{item.reason}
+                        </p>
+                        {item.comments && (
+                          <p className="text-[10px] text-slate-400 mt-0.5">{item.comments}</p>
+                        )}
                       </div>
-                    )
-                  })
-                )}
+                    ))}
 
-                <div className="pt-3 border-t border-slate-100 flex justify-between items-baseline">
-                  <span className="text-xs font-bold text-slate-800">Returned items value</span>
-                  <span className="text-base font-black text-slate-900">{formatPrice(returnedValue)}</span>
+                    <div className="pt-3 border-t border-slate-100 flex justify-between items-baseline">
+                      <span className="text-xs font-bold text-slate-800">Estimated refund</span>
+                      <span className="text-base font-black text-slate-900">{formatPrice(ret.estimatedRefund)}</span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 leading-relaxed">
+                      Estimate based on the returned quantities. The final refunded amount is decided
+                      when the return is reviewed and approved.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </>
+            )
+          })
         )}
       </main>
     </div>

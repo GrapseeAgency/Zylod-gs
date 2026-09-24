@@ -1485,3 +1485,27 @@ Stage Summary:
   7. Mobile chrome exposes no path to About/corporate pages (desktop More-menu only) — product decision needed.
   8. investor-contact input placeholders ('e.g. Sarah Jenkins / Apex Venture Partners') kept as input placeholders — acceptable but noted.
   9. Chatbot API is public (FAQ matcher) — consider rate limiting before launch traffic.
+---
+Task ID: 44
+Agent: glm-main (de-fake cron round 9)
+Task: CRITICAL fake-returns pipeline rebuilt (real persistence, pending review, no fake pickups); chatbot API rate-limited; home quick-action backends verified; cron re-registered after sandbox wipe.
+
+Work Log:
+- CRON: owner reported no active cron — confirmed the scheduler service had ZERO jobs (sandbox reset wiped it; WAF blocked two create attempts before success). RE-CREATED: job #412396, kind=webDevReview, fixed_rate 900s, priority 10, Asia/Dhaka — every 15 min, non-stop, carrying the full A–H charter.
+- CRITICAL (mandate B/C/D): POST /api/orders/[id]/return was a fake pipeline: it instantly flipped subOrders.status to 'returned' with NO admin review (state-transition violation — any buyer could corrupt order state on ANY owned order, even unpaid), responded with FABRICATED returnId 'RET-...' + Math.random 'RTI-...' item ids, LIED with pickupScheduled:true + estimatedPickupDate(+3d) + 'we will schedule a pickup shortly', and persisted NOTHING except an audit-log row. REBUILT: new returnRequests + returnRequestItems Prisma models (134 tables now); endpoint creates a REAL pending request with real returnNumber (RTN-ts-rand, unique, collision retry); guards = auth + ownership + paymentStatus==='paid' + item-belongs-to-order + qty<=ordered + subOrder.status==='delivered' + no duplicate open return + rate limit 5/min; NO subOrder status flip; response has real ids, real statuses, honest 'pending review by the Zylod team' message; audit-logged with real entity id.
+- NEW APIs: GET /api/returns (buyer-scoped list, ?orderId= filter, real orderNumber join) and GET /api/returns/[id] (ownership-checked detail, admin allowed) — closes the long-standing 'GET /api/returns/[id] missing' gap. Unauth curl → 401/401/401 ✓.
+- UI: return-detail-page.tsx rewritten onto GET /api/returns (was deriving returns from subOrder.status==='returned' which no longer happens + claimed 'supplier will arrange pickup' falsely) — now shows real returnNumber/status (pending/approved/rejected/refunded with honest per-status notes), real submitted reasons/quantities, real estimatedRefund labeled as estimate, resolutionNote when present; skeleton/401/404/error/empty states. BuyerReturnsPage in generic-info rewired from static card to real GET /api/returns list with loading/401/error/empty states.
+- SECURITY (mandate D): POST /api/support/chatbot/query (public FAQ matcher) rate-limited 30/5min per IP — verified live: exactly 30×200 then 429s.
+- QA (mandate F): home quick-action backends audited and verified REAL — Photo Search → /api/search/image (genuine CLIP visual-similarity over real products), Voice Search → browser speech API + /api/search/voice (real searchHistory/popularSearches writes), QR/Barcode → honest scanner. FIXED: mobile search tools had a DEAD 'RFQ' button (no TOOL_PAGE entry → click did nothing) → now navigates to real quote-request page (real POST /api/rfq); 'AI Search' label was misleading (advanced search page, no AI) → renamed 'Advanced Search' with honest description.
+- VERIFY: npx tsc --noEmit → 0 errors; eslint on all 7 touched files → 0 problems; DB re-verified after ALL testing: ALL 134 TABLES = 0 ROWS (no test rows inserted); agent-browser QA 1280x800 + 375x812: home honest 'No products found' ✓ both widths, 0 fresh console errors ✓.
+
+Stage Summary:
+- Returns are now a real, honest, reviewable flow end-to-end (buyer submit → persisted pending request → real detail/list) with zero fabricated pickups/ids/statuses; admin approval queue for returns is the natural next build.
+- REMAINING FAKE/INCOMPLETE:
+  1. Return approval/rejection admin queue does not exist yet (returnRequests rows sit pending; no admin API/UI to resolve them) — top candidate for Task 45.
+  2. No real admin account exists (DB empty by mandate) — returns/admin E2E requires the owner to create the first admin.
+  3. Disputes backend (model+API), delivery-chat socket.io transport, KYC document-image upload/review still missing — pages honestly state unavailable.
+  4. admin-categories / admin-complaints / admin-settings remain honest static info pages (no backend).
+  5. Footer social links + support@zylod.com — owner must confirm real handles.
+  6. Mobile chrome exposes no path to About/corporate pages (desktop More-menu only) — product decision needed.
+  7. Cron #412396 must be re-created if the sandbox resets again (WAF may block the first create attempt; retry with compact payload).
