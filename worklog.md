@@ -957,3 +957,39 @@ Work Log:
 Stage Summary:
 - Non-stop cleaning campaign LIVE (every 15 min, ≥1 week): sandbox resets are survivable — every completion is pushed to GitHub immediately
 - Goal state: empty DB, zero demo/mock execution paths, real-time Railway-ready backend wiring, unbuyable-without-payment enforcement, honest error surfaces
+
+---
+Task ID: 36
+Agent: glm-main (de-fake cron run 1)
+Task: DE-FAKE CAMPAIGN round 1 — DB purge, seed elimination, real checkout/address/review/newsletter wiring, payment security
+
+Work Log:
+- GIT: rebased on origin/main, pushed 4 checkpoints (HEAD 0b93807→new). Nothing discarded.
+- A. DATABASE PURGE: created scripts/campaign-db-purge.mjs (count|purge, bun:sqlite). Purged 397 fake rows → 131 tables, 0 rows (verified twice incl. after QA). DELETED 10 seed scripts (prisma/seed*.ts, seed-sqlite.mjs, fix-product-images.ts, clean-single-product.ts); removed "db:seed" script + prisma.seed config from package.json — reseeding is now impossible via npm/bun scripts.
+- B. CODE DE-MOCK:
+  - checkout-page.tsx REWRITTEN real: all cart items, real /api/addresses, POST /api/orders, real order number + UNPAID status, real backend errors surfaced, 401→Sign In. REMOVED: fake "Industrial Grade LED" fallback product, fake "Warehouse 4B" address, fake "Visa 4242", fake shipping 150/tax 10%, setTimeout fake success, fake order #ZY-77402, unsplash fallback img.
+  - src/app/api/addresses (GET/POST) + [id] (PUT/DELETE) CREATED (missing API the UI was calling → 404). Session-owned, snake+camel contract, first-address-auto-default. Schema: addresses += companyName/contactName/contactPhone (db:push done).
+  - supplier/orders route: dummy "Rahim Ali/BuildMart/placeholder img" array → REAL subOrders Prisma query, supplier-scoped by profile, valid-status filter only, 401/404 real errors.
+  - live-shopping: API mockLiveMessages+fake 4.9 rating+'Verified Mill Stream' → liveMessages:[] + real ratingAvg/ratingCount; page: fake likes 48, viewer 142, always-LIVE badge, "Narayanganj Mill #4", fake ৳300 voucher alert, unsplash fallback ALL REMOVED → honest empties, LIVE only when isLive, chat disabled until host live.
+  - reviews: /api/reviews CREATED (POST: buyer auth, rating 1-5, verifiedPurchase from real order history, product ratingAvg/reviewCount recomputed; GET by productId). write-review page: REMOVED always-success fake (res.ok→submitted; else→submitted; catch→submitted!) + 'sample-product-id' fallback → real errors incl 401.
+  - newsletter: localStorage fake → newsletterSubscribers table + /api/newsletter API (dedup, validation); footer wired to real API with real error toasts.
+  - disputes page: hardcoded dsp_991/BuildMart/timeline → honest "not connected" empty state (no disputes backend exists yet).
+  - push settings: web branch fabricated 'web-token-<random>' + promised delivery → honest alert (VAPID not configured); Android native real device id kept.
+- D. PAYMENT SECURITY:
+  - orders POST: supplier grouping now uses product.supplierId from DB — client-sent supplierId IGNORED (anti-manipulation).
+  - track POST: CRITICAL FIX — marking all sub-orders 'delivered' NO LONGER sets order paymentStatus='paid' (was a free-products exploit). Status writes whitelisted; fake 'Steadfast Logistics' copy removed.
+  - product-detail: removed dead buyer "Advance" tracking button + handler (demo bypass).
+- F. QA: curl: products total 0, /api/addresses unauth 401, newsletter persists + dedup. agent-browser desktop 1366x900: home 200, "Join 0 verified suppliers" honest, no seeded product names; mobile 390x844 renders (onboarding ok). tsc --noEmit exit 0. eslint clean on all touched files. QA test row purged after.
+
+REMAINING FAKE/INCOMPLETE (next runs):
+- supabase.ts dummy-client silent-fail pattern — audit usages, fail loudly.
+- product-comparison "demo" default comment + related copy.
+- Disputes: needs real model + API + arbitration flow.
+- Real payment gateway (Stripe/bKash/Nagad) with webhook signature verification — orders currently can only be UNPAID; no capture path yet. THIS IS THE BIG ONE for "cannot buy without paying".
+- Web push VAPID keys + service worker; socket.io real-time (live chat, cart sync).
+- rate limiting on checkout/auth APIs; Zod validation layer.
+- footer static contact copy (+880 1711-000000) — owner should confirm real contacts.
+- CI: confirm android-build green on latest main.
+
+Stage Summary:
+- DB: 131 tables × 0 rows. Seeds deleted system-wide. Fake purchase flow ELIMINATED — orders now real, server-priced, UNPAID-until-verified-payment. Free-product exploit closed. All changes pushed to origin/main after every step.
