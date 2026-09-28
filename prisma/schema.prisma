@@ -13,7 +13,7 @@ datasource db {
 
 model users {
   id             String   @id @default(cuid())
-  // userType: buyer | supplier | admin
+  // userType: buyer | supplier | admin | driver
   userType       String
   email          String?  @unique
   phone          String?  @unique
@@ -101,6 +101,9 @@ model users {
   // Support & Help
   supportTickets     supportTickets[]
   contactSubmissions contactSubmissions[]
+
+  // Delivery (driver assignments)
+  deliveryAssignments deliveryAssignments[]
 
   @@index([userType])
   @@index([accountStatus])
@@ -545,6 +548,9 @@ model subOrders {
 
   // Order Tracking
   trackingHistory orderTracking[]
+
+  // Live Delivery
+  deliveryAssignments deliveryAssignments[]
 
   @@index([orderId])
   @@index([supplierId])
@@ -1116,6 +1122,25 @@ model orderTracking {
   @@index([subOrderId])
   @@index([trackedAt])
   @@index([driverSessionId])
+}
+
+// Driver assigned to a sub-order for live GPS delivery tracking.
+// A driver POSTs location pings only for sub-orders they are actively
+// assigned to; customers see the driver's position on the tracking map.
+model deliveryAssignments {
+  id          String    @id @default(cuid())
+  subOrderId  String    @unique
+  driverId    String
+  // status: active | completed | cancelled
+  status      String    @default("active")
+  assignedAt  DateTime  @default(now())
+  completedAt DateTime?
+
+  subOrder subOrders @relation(fields: [subOrderId], references: [id], onDelete: Cascade)
+  driver   users     @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@index([driverId])
+  @@index([status])
 }
 
 model warehouseLocations {

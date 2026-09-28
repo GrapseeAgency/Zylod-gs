@@ -29,7 +29,7 @@ export async function GET(
       include: {
         subOrders: {
           include: {
-            trackingHistory: { orderBy: { trackedAt: 'asc' } },
+            trackingHistory: { where: { status: { not: 'gps_ping' } }, orderBy: { trackedAt: 'asc' } },
           },
         },
       },

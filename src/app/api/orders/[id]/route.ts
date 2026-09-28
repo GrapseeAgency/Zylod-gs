@@ -14,7 +14,7 @@ type OrderWithIncludes = Prisma.ordersGetPayload<{
             variant: { select: { id: true, variantName: true, variantValue: true } }
           }
         }
-        trackingHistory: { orderBy: { trackedAt: 'desc' } }
+        trackingHistory: { where: { status: { not: 'gps_ping' } }, orderBy: { trackedAt: 'desc' } }
       }
     }
     payments: { orderBy: { paidAt: 'desc' } }
@@ -50,6 +50,7 @@ export async function GET(
               },
             },
             trackingHistory: {
+              where: { status: { not: 'gps_ping' } },
               orderBy: { trackedAt: 'desc' },
             },
           },

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
+import LiveDeliverySection from '@/components/maps/live-delivery-section'
 import {
   ArrowLeft, Truck, Package, Check, Copy,
   CheckCircle2, PackageSearch, AlertCircle, LogIn, XCircle
@@ -413,6 +414,13 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                   )
                 })}
               </div>
+
+              {/* Live delivery map — only while a shipment is in transit;
+                  honest "not active" note when no driver is assigned yet */}
+              <LiveDeliverySection
+                orderId={orderId}
+                orderInTransit={statuses.some((s) => s === 'shipped')}
+              />
 
               {/* Per-shipment tracking — real numbers only */}
               <div className="space-y-2.5 pt-1 border-t border-slate-100 dark:border-slate-800">

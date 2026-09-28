@@ -1,0 +1,13 @@
+{
+  "name": "delivery-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "socket.io broadcaster for live delivery tracking (driver GPS pings -> customer maps)",
+  "scripts": {
+    "dev": "bun --hot index.ts",
+    "start": "bun index.ts"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.3"
+  }
+}

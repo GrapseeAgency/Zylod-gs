@@ -80,7 +80,7 @@ export function InvestorContactPage() {
                     required
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Sarah Jenkins"
+                    placeholder="Your full name"
                     className="mt-1 text-xs rounded-xl"
                   />
                 </div>
@@ -91,7 +91,7 @@ export function InvestorContactPage() {
                     type="email"
                     value={formData.email}
                     onChange={e => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="e.g. s.jenkins@vcfund.com"
+                    placeholder="name@yourfund.com"
                     className="mt-1 text-xs rounded-xl"
                   />
                 </div>
@@ -100,7 +100,7 @@ export function InvestorContactPage() {
                   <Input
                     value={formData.company}
                     onChange={e => setFormData({ ...formData, company: e.target.value })}
-                    placeholder="e.g. Apex Venture Partners"
+                    placeholder="Your fund or organization"
                     className="mt-1 text-xs rounded-xl"
                   />
                 </div>

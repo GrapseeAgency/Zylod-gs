@@ -1509,3 +1509,40 @@ Stage Summary:
   5. Footer social links + support@zylod.com — owner must confirm real handles.
   6. Mobile chrome exposes no path to About/corporate pages (desktop More-menu only) — product decision needed.
   7. Cron #412396 must be re-created if the sandbox resets again (WAF may block the first create attempt; retry with compact payload).
+
+---
+Task ID: 45
+Agent: glm-main (de-fake cron round 10)
+Task: LIVE DELIVERY TRACKING (web) — driver GPS → backend → customer map with OSRM distance/ETA; MapLibre token-driven basemap; tile-licensing diligence (MAPS.md); investor-contact placeholder de-fake.
+
+Work Log:
+- GIT: synced origin/main (745bd0e; local duplicate of Task-44 commit reconciled — identical tree, hard-reset to origin). Cron registry found EMPTY (sandbox reset) → re-registered (see Stage Summary).
+- SCHEMA: NEW `deliveryAssignments` model (subOrderId unique, driverId, status active/completed/cancelled; relations on subOrders + users; userType comment now includes 'driver'). db:push OK → 135 tables, ALL 0 ROWS (verified before AND after QA).
+- ROUTING (src/lib/delivery-routing.ts): OSRM-compatible /route/v1/driving client — env OSRM_BASE_URL (default public demo, flagged NOT-for-production), 30s per-pair cache, haversine fallback; NEVER invents an ETA — failures return straight-line distance explicitly labeled + routingNote.
+- APIs (all auth-first, Zod-validated, rate-limited):
+  - POST /api/delivery/suborders/[subOrderId]/location — DRIVER-only ping (requireUserType driver + ACTIVE assignment for that driver+subOrder else 403; 120/min/driver; persists orderTracking row status 'gps_ping' grouped by driverSessionId=assignmentId; then socket broadcast).
+  - GET /api/delivery/orders/[orderId]/live — buyer-owner/admin/assigned-driver; per-leg latest ping, destination ONLY if shippingAddress.lat/lng exist (else honest note), OSRM route+ETA, stale-ping note (>5min), live:false+reason when no assignment.
+  - POST+GET /api/admin/deliveries/assignments — admin assigns driver↔subOrder (validates driver userType, active status, subOrder not delivered/cancelled; one active driver per subOrder via transaction; auditLogs entry).
+  - POST+GET /api/admin/deliveries/drivers — admin mints driver accounts (bcrypt 12 rounds, BD phone regex; registration never creates drivers).
+  - SECURITY SMOKE: all four endpoints → 401 unauth ✓ (auth checked before body validation).
+  - trackingHistory includes on /api/orders/[id], /track, /timeline now filter status != 'gps_ping' (pings are positions, not status events).
+- REALTIME: NEW mini-services/delivery-service (bun, socket.io port 3005 path '/', control /broadcast+/health on 127.0.0.1:3006 — separate server because socket.io at path '/' intercepts everything; loopback bind for control; 64KB body guard). Next API forwards persisted pings via src/lib/delivery-broadcast.ts (fire-and-forget; DB write always happens first).
+- FRONTEND: src/lib/map-style.ts — basemap ASSEMBLED from theme tokens (getComputedStyle CSS vars) over OpenFreeMap vector tiles: ground/water/green/buildings/roads(minor+major)/boundaries/place-labels, glyph+tile+attribution env-swappable. src/components/maps/live-delivery-map.tsx — MapLibre GL JS v6 (named exports; v6 dropped default export — fixed compile), pulsing driver marker, destination pin, route line (solid=road route, dashed=straight-line fallback), Live badge + ETA/distance chip (honest "No ETA"/"straight-line"), legend, dark/light token rebuild via MutationObserver, OSM/OpenFreeMap attribution control. src/hooks/use-live-delivery.ts — socket push (io('/?XTransformPort=3005') room per order) + 20s polling fallback + refresh. live-delivery-section.tsx — renders ONLY when a subOrder status==='shipped'; honest "not active" note when no driver assigned; error retry state.
+- WIRED into track-order-page.tsx between stepper and per-shipment events.
+- MAPS.md (root): library choice (MapLibre GL JS BSD-2, no key, style-as-code), RN app notes (PanelUI Map needs dev build + hasMapLibre; its CARTO default is NON-COMMERCIAL-ONLY → swap source to OpenFreeMap), tile licensing table (OpenFreeMap OK-for-launch incl. commercial w/ attribution; CARTO needs licence; OSM raster discouraged; MapTiler paid fallback), OSRM production warning + self-host runbook, env vars, ops runbook (create driver → assign → pings flow), Railway checklist.
+- DE-FAKE: investor-contact-page.tsx fabricated-flavored placeholders ("e.g. Sarah Jenkins"/"s.jenkins@vcfund.com"/"Apex Venture Partners") → neutral ("Your full name"/"name@yourfund.com"/"Your fund or organization").
+- VERIFY: npx tsc --noEmit → 0 errors; eslint on all 16 touched files → 0 problems; fake-token grep on new files → only honesty-doc comments; DB 135 tables × 0 rows (re-verified post-QA).
+- QA (mandate F): agent-browser desktop 1280×800 — home honest zero states, no console errors; mobile 375×812 — onboarding + home honest "No products found", bottom tabs OK; screenshots taken. SOCKET E2E PASSED through gateway: client io('/?XTransformPort=3005') → subscribe order:qa-order-1 → POST :3006/broadcast → delivery:ping RECEIVED (lat 23.81) — full push chain works. NOTE: gateway is Caddy on :81; port 3000 is Next direct (curls to :3000/?XTransformPort=… hit Next, not the mini service — browser uses the gateway origin so the client path is correct).
+- OPS: sandbox reaps tool-call-spawned processes between calls (bootstrap supervisor was killed during stale-server cleanup). Services must be restarted per QA session: `nohup bun run dev >> dev.log 2>&1 &` + `nohup bash -c 'cd mini-services/delivery-service && exec bun run dev' >> delivery-service.log 2>&1 &` (both verified working; restart at the start of each cron round before agent-browser QA).
+
+Stage Summary:
+- Live delivery tracking is real end-to-end and honest by construction: no driver assignment → no map (honest note); no ping → "waiting for driver location"; no address coords → no route claim; router down → straight-line labeled, no ETA. Nobody can push pings without a driver account + active admin assignment (401/403 verified); customers only see their own orders' deliveries.
+- REMAINING FAKE/INCOMPLETE:
+  1. Live-map E2E with REAL data requires the owner's first admin (create driver → assign to a shipped subOrder) — DB empty by mandate.
+  2. Socket room subscription is unauthenticated (anyone can join any order room). Pings alone leak only coords; harden with signed-room tokens before launch.
+  3. Return approval/rejection admin queue still missing (returnRequests rows sit pending) — top candidate for Task 46.
+  4. Disputes backend, delivery-chat socket.io transport, KYC image upload/review still missing (pages honest).
+  5. admin-categories / admin-complaints / admin-settings still static info pages.
+  6. Footer social links + support@zylod.com need owner confirmation; mobile chrome has no path to About pages (product decision).
+  7. OSRM default = public demo router — self-host/contract before production traffic (MAPS.md).
+  8. Cron re-registered this round (webDevReview 15min #<id>); re-create again if sandbox resets.
