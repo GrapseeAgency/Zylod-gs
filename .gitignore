@@ -76,3 +76,4 @@ checkout-payment-audit.md
 # (scripts/generate-bundle-identity.mjs). A committed snapshot is always
 # stale, so it must never be tracked (docs/PROVENANCE.md deployment chain).
 src/generated/bundle-identity.ts
+.zscripts/dev.pid

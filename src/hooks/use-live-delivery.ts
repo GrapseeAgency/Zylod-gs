@@ -6,11 +6,15 @@
  * Transport strategy (real-time only via socket.io, per project rules):
  *  1. REST: GET /api/delivery/orders/[orderId]/live gives the full snapshot
  *     (latest persisted ping, destination, OSRM route/ETA, honest notes).
- *  2. PUSH: subscribes to the delivery socket.io service room for this
- *     order; every driver ping triggers an immediate snapshot refresh so
- *     route/ETA stay consistent.
- *  3. FALLBACK: while the socket is disconnected the hook polls the REST
- *     snapshot every 20s — live data never depends on the push channel.
+ *  2. PUSH: fetches a short-lived signed room token from
+ *     GET /api/delivery/orders/[orderId]/room-token (same authorization as
+ *     the /live endpoint), then subscribes to the delivery socket.io room
+ *     with it; every driver ping triggers an immediate snapshot refresh so
+ *     route/ETA stay consistent. The token is refreshed ~8 min (it expires
+ *     after 10) and re-fetched on every socket reconnect.
+ *  3. FALLBACK: while the socket is disconnected OR the room join was
+ *     denied, the hook polls the REST snapshot every 20s — live data never
+ *     depends on the push channel and denied state is rendered honestly.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -68,6 +72,19 @@ export interface LiveDeliveryUnavailable {
 export type LiveDeliveryResponse = LiveDeliveryData | LiveDeliveryUnavailable
 
 const POLL_MS = 20_000
+// Room tokens expire after 10 min (DELIVERY_ROOM_TOKEN_TTL_SECONDS) —
+// re-subscribe with a fresh token before that.
+const ROOM_TOKEN_REFRESH_MS = 8 * 60 * 1000
+
+/**
+ * Push-channel authorization state:
+ *  - 'connecting' → socket up, token fetch / room join in flight;
+ *  - 'live'       → joined the signed room, push is active;
+ *  - 'denied'     → the server refused the join (missing/invalid/expired
+ *    token, not signed in, or token endpoint unreachable) — NO fake push
+ *    data; the 20s REST polling keeps the map honest instead.
+ */
+export type LiveFeedStatus = 'connecting' | 'live' | 'denied'
 
 export function useLiveDelivery(orderId: string, enabled = true) {
   const [data, setData] = useState<LiveDeliveryResponse | null>(null)
@@ -75,6 +92,7 @@ export function useLiveDelivery(orderId: string, enabled = true) {
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [socketConnected, setSocketConnected] = useState(false)
+  const [liveFeed, setLiveFeed] = useState<LiveFeedStatus>('connecting')
 
   const socketRef = useRef<Socket | null>(null)
   const mountedRef = useRef(true)
@@ -128,10 +146,39 @@ export function useLiveDelivery(orderId: string, enabled = true) {
     }
   }, [orderId, enabled, refresh])
 
-  // socket.io push channel
+  // Signed room token: same auth pattern as the /live snapshot fetch
+  // (credentials: 'include'); 401/403 → null → honest polling-only state.
+  const fetchRoomToken = useCallback(async (): Promise<string | null> => {
+    try {
+      const res = await fetch(
+        `/api/delivery/orders/${encodeURIComponent(orderId)}/room-token`,
+        { credentials: 'include' }
+      )
+      if (!mountedRef.current || !res.ok) return null
+      const json = (await res.json()) as { success?: boolean; token?: unknown }
+      return typeof json.token === 'string' && json.token.length > 0 ? json.token : null
+    } catch {
+      return null
+    }
+  }, [orderId])
+
+  // socket.io push channel (signed room tokens required by the server)
   useEffect(() => {
     if (!orderId || !enabled) return
     let disposed = false
+    let tokenTimer: ReturnType<typeof setInterval> | null = null
+
+    const subscribeWithToken = async () => {
+      const token = await fetchRoomToken()
+      if (disposed) return
+      if (!token) {
+        // No token → the server would (and must) refuse the join. Polling
+        // via the authed REST API keeps the data honest; no fake push.
+        setLiveFeed('denied')
+        return
+      }
+      socket.emit('subscribe', { orderId, token })
+    }
 
     const socket = io('/?XTransformPort=3005', {
       path: '/',
@@ -143,27 +190,40 @@ export function useLiveDelivery(orderId: string, enabled = true) {
     socket.on('connect', () => {
       if (disposed) return
       setSocketConnected(true)
-      socket.emit('subscribe', { orderId })
+      void subscribeWithToken()
     })
     socket.on('disconnect', () => {
       if (!disposed) setSocketConnected(false)
     })
-    socket.on('delivery:subscribed', () => {
-      if (!disposed) setSocketConnected(true)
+    socket.on('subscribe:ok', () => {
+      if (disposed) return
+      setSocketConnected(true)
+      setLiveFeed('live')
+    })
+    socket.on('subscribe:denied', () => {
+      if (disposed) return
+      setLiveFeed('denied')
     })
     // A fresh driver ping arrived → pull a full snapshot (route/ETA included)
     socket.on('delivery:ping', () => {
       if (!disposed) refresh()
     })
 
+    // Re-subscribe with a fresh token before the 10-min token expiry.
+    tokenTimer = setInterval(() => {
+      if (disposed || !socket.connected) return
+      void subscribeWithToken()
+    }, ROOM_TOKEN_REFRESH_MS)
+
     return () => {
       disposed = true
+      if (tokenTimer) clearInterval(tokenTimer)
       socket.removeAllListeners()
       socket.disconnect()
       socketRef.current = null
       setSocketConnected(false)
     }
-  }, [orderId, enabled, refresh])
+  }, [orderId, enabled, refresh, fetchRoomToken])
 
-  return { data, loading, error, lastUpdated, socketConnected, refresh }
+  return { data, loading, error, lastUpdated, socketConnected, liveFeed, refresh }
 }

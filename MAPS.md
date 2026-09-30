@@ -42,6 +42,12 @@ OSRM_BASE_URL=https://router.project-osrm.org   # ⚠ public DEMO — see below
 
 # Live delivery socket.io mini-service (mini-services/delivery-service)
 DELIVERY_SOCKET_URL=http://127.0.0.1:3006       # internal /broadcast endpoint
+
+# Delivery room auth (signed socket-room tokens) — set EXPLICITLY on Railway.
+# If unset, BOTH processes derive the same secret as
+# sha256("${AUTH_SECRET || DATABASE_URL}:delivery-rooms") — a dev-only default
+# that changes whenever the DB URL changes; pin a real random secret in prod.
+DELIVERY_ROOM_SECRET=<64-hex random string>
 ```
 
 ## Routing (distance / ETA)
@@ -72,6 +78,27 @@ customer (fallback) ──GET /api/delivery/orders/[orderId]/live every 20 s─�
 - `gps_ping` rows are filtered OUT of all customer-facing tracking-history endpoints
   (orders/[id], /track, /timeline) — they are positions, not status events.
 
+### Delivery room auth (signed-room tokens)
+
+Joining the live delivery socket room is authenticated — there is no anonymous join.
+The browser first calls `GET /api/delivery/orders/[orderId]/room-token` (same
+authorization as the `/live` snapshot: buyer-owner, admin, or driver with an ACTIVE
+assignment; 30 req/min rate limit) and gets a 10-minute token:
+`${payload}.${sig}` where `payload = base64url(JSON {r:"order:<id>", u, k, exp})` and
+`sig = base64url(HMAC-SHA256(payload, DELIVERY_ROOM_SECRET))`. The client emits
+`subscribe {orderId, token}`; the delivery service recomputes the HMAC
+(constant-time compare), checks `exp > now` and that the token's `r` matches the
+requested room, then joins. Failure emits `subscribe:denied {reason: invalid_token |
+token_expired | room_mismatch | invalid_request}` and the socket joins NOTHING — no
+room, no pings. Verified clients get `subscribe:ok {roomId}`, re-subscribe with a
+fresh token on reconnect and every ~8 min, and >10 subscribe attempts/min from one
+socket gets it disconnected (brute-force blunting). On denial the UI shows an honest
+"live feed unavailable" note and keeps polling the authed REST snapshot every 20 s.
+Both sides derive the secret identically — `src/lib/delivery-room-token.ts` (issuer)
+and `mini-services/delivery-service/index.ts` (verifier) share no imports, only the
+format + derivation. Set `DELIVERY_ROOM_SECRET` explicitly on Railway (same value
+for both services).
+
 ### Ops runbook (admin, all ADMIN-gated)
 
 1. **Create a driver account:** `POST /api/admin/deliveries/drivers` `{email, password(≥10), phone?}`.
@@ -84,6 +111,10 @@ customer (fallback) ──GET /api/delivery/orders/[orderId]/live every 20 s─�
 
 ### Production checklist (Railway)
 
+- [ ] Set `DELIVERY_ROOM_SECRET` explicitly (same value on the Next app and the
+      delivery service). The unset default derives it from
+      `${AUTH_SECRET || DATABASE_URL}:delivery-rooms` — fine for local dev, not for
+      production (it silently changes whenever the DB URL changes).
 - [ ] Deploy `mini-services/delivery-service` as its own service; set `DELIVERY_SOCKET_URL`
       to its internal URL; expose its 3005 via the gateway/proxy for browser sockets.
 - [ ] Self-host OSRM or contract a routing provider (`OSRM_BASE_URL`).

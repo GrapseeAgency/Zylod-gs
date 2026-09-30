@@ -6,6 +6,8 @@
  *  - while a sub-order is shipped but no driver is assigned yet → an honest
  *    "live tracking not active" note (no fake map, no fake pins);
  *  - with an active delivery → the real map (driver ping + route + ETA);
+ *  - if the signed-room join was denied → an honest note; the 20s polling
+ *    fallback keeps the map data real;
  *  - errors → what went wrong, with a retry.
  */
 
@@ -28,8 +30,16 @@ interface Props {
 }
 
 export default function LiveDeliverySection({ orderId, orderInTransit }: Props) {
-  const { data, loading, error, lastUpdated, socketConnected, refresh } =
+  const { data, loading, error, lastUpdated, socketConnected, liveFeed, refresh } =
     useLiveDelivery(orderId, orderInTransit)
+
+  // "Realtime" is only honest when the signed room join actually succeeded.
+  const realtime = socketConnected && liveFeed === 'live'
+  const badgeTitle = realtime
+    ? 'Connected to the live delivery channel — driver positions arrive instantly'
+    : liveFeed === 'denied'
+      ? 'Live push channel unavailable — refreshing every 20 seconds instead'
+      : 'Live channel offline — refreshing every 20 seconds instead'
 
   // Order not in transit → live tracking is simply not applicable; the
   // page's own progress stepper already tells the story. Render nothing.
@@ -102,18 +112,14 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
         <div className="flex items-center gap-2">
           <span
             className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
-              socketConnected
+              realtime
                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
                 : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
             }`}
-            title={
-              socketConnected
-                ? 'Connected to the live delivery channel — driver positions arrive instantly'
-                : 'Live channel offline — refreshing every 20 seconds instead'
-            }
+            title={badgeTitle}
           >
-            <span className={`h-1.5 w-1.5 rounded-full ${socketConnected ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-            {socketConnected ? 'Realtime' : 'Polling'}
+            <span className={`h-1.5 w-1.5 rounded-full ${realtime ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+            {realtime ? 'Realtime' : 'Polling'}
           </span>
           <button
             onClick={refresh}
@@ -127,6 +133,16 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
       </div>
 
       <LiveDeliveryMap data={data} />
+
+      {/* Honest note when the socket refused/auth could not grant the signed
+          room join — polling via the authed REST API keeps data real. */}
+      {liveFeed === 'denied' && (
+        <p className="text-[10.5px] leading-snug text-slate-500 dark:text-slate-400 flex items-start gap-1.5">
+          <AlertTriangle className="h-3 w-3 mt-0.5 shrink-0 text-amber-500" />
+          Live feed unavailable for this order — the driver&apos;s position is refreshing
+          every 20 seconds instead.
+        </p>
+      )}
 
       {/* Honest notes from the backend (stale ping, un-geocoded address, routing outage) */}
       {data.notes.length > 0 && (
