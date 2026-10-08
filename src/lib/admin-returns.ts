@@ -2,12 +2,18 @@
  * Shared helpers for the admin return-requests review queue
  * (GET /api/admin/returns + PATCH /api/admin/returns/[id]).
  *
- * returnRequests / returnRequestItems have PLAIN STRING FKs (no Prisma
- * relations by design), so order + buyer info is joined manually here.
+ * returnRequests / returnRequestItems / refunds have PLAIN STRING FKs (no
+ * Prisma relations by design), so order + buyer info is joined manually here.
  * Every serialized field is real DB data — null stays null. No fabricated
  * values anywhere.
+ *
+ * Refunds (Task 47): the refunds table is a REAL LEDGER of money that actually
+ * moved outside the system (bank/mobile/cash transfer with a real-world
+ * reference id). It does NOT move money and NEVER touches orders.paymentStatus
+ * — no real payment write-back rail exists, and flipping it would fake
+ * financial truth.
  */
-import type { returnRequests, returnRequestItems } from '@prisma/client'
+import type { returnRequests, returnRequestItems, refunds } from '@prisma/client'
 
 /** Legal return statuses (mirrors the schema comment). */
 export const RETURN_STATUSES = ['pending', 'approved', 'rejected', 'refunded'] as const
@@ -27,6 +33,20 @@ export interface AdminReturnBuyerInfo {
   email: string | null
 }
 
+export interface SerializedRefund {
+  id: string
+  amount: number
+  /** bank_transfer | mobile_banking | cash */
+  method: string
+  /** Real-world transaction id / UTR / TxnID from the actual transfer. */
+  reference: string
+  /** Today always 'processed' — records a transfer that really happened. */
+  status: string
+  processedById: string
+  note: string | null
+  createdAt: string
+}
+
 export interface SerializedAdminReturn {
   id: string
   returnNumber: string
@@ -34,6 +54,9 @@ export interface SerializedAdminReturn {
   status: string
   shippingMethod: string
   estimatedRefund: number
+  /** estimatedRefund − sum(refunds.amount) for this return, ≥ 0. */
+  refundTotal: number
+  refundRemaining: number
   resolutionNote: string | null
   resolvedById: string | null
   resolvedAt: string | null
@@ -46,6 +69,7 @@ export interface SerializedAdminReturn {
     quantity: number
     comments: string | null
   }[]
+  refunds: SerializedRefund[]
   order: AdminReturnOrderInfo | null
   buyer: AdminReturnBuyerInfo | null
 }
@@ -81,12 +105,26 @@ export function deriveOrderStatus(subStatuses: (string | null)[]): string {
           : 'processing'
 }
 
+const round2 = (n: number): number => Math.round(n * 100) / 100
+
 export function serializeAdminReturn(
   r: returnRequests,
   items: returnRequestItems[],
   order: AdminReturnOrderRow | null,
-  buyer: AdminReturnBuyerRow | null
+  buyer: AdminReturnBuyerRow | null,
+  refundRows: refunds[] = []
 ): SerializedAdminReturn {
+  const refundsSerialized: SerializedRefund[] = refundRows.map((f) => ({
+    id: f.id,
+    amount: f.amount,
+    method: f.method,
+    reference: f.reference,
+    status: f.status,
+    processedById: f.processedById,
+    note: f.note,
+    createdAt: f.createdAt.toISOString(),
+  }))
+  const refundTotal = round2(refundRows.reduce((sum, f) => sum + f.amount, 0))
   return {
     id: r.id,
     returnNumber: r.returnNumber,
@@ -94,6 +132,8 @@ export function serializeAdminReturn(
     status: r.status,
     shippingMethod: r.shippingMethod,
     estimatedRefund: r.estimatedRefund,
+    refundTotal,
+    refundRemaining: Math.max(0, round2(r.estimatedRefund - refundTotal)),
     resolutionNote: r.resolutionNote,
     resolvedById: r.resolvedById,
     resolvedAt: r.resolvedAt ? r.resolvedAt.toISOString() : null,
@@ -106,6 +146,7 @@ export function serializeAdminReturn(
       quantity: i.quantity,
       comments: i.comments,
     })),
+    refunds: refundsSerialized,
     order: order
       ? {
           orderNumber: order.orderNumber,

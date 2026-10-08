@@ -2811,3 +2811,32 @@ model returnRequestItems {
 
   @@index([returnRequestId])
 }
+
+// REAL REFUND LEDGER — documents money that actually moved OUTSIDE this system
+// (bank transfer / mobile banking / cash handed over). It does NOT move money.
+// A row is written only after the admin records a real-world transaction id
+// (UTR / TxnID); writing it also flips the parent returnRequests.status to
+// 'refunded' inside one transaction. orders.paymentStatus is deliberately
+// NEVER touched here: no real payment write-back rail exists, and flipping it
+// without one would fabricate financial truth.
+model refunds {
+  id              String   @id @default(cuid())
+  returnRequestId String
+  orderId         String
+  buyerId         String
+  amount          Float
+  // method: bank_transfer | mobile_banking | cash
+  method          String
+  // Real-world transaction id / UTR / TxnID from the actual transfer.
+  reference       String
+  // Today ONLY 'processed' is ever written — it records a completed transfer.
+  status          String   @default("processed")
+  processedById   String
+  note            String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([returnRequestId])
+  @@index([orderId])
+  @@index([buyerId])
+}

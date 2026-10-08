@@ -6,8 +6,20 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   ArrowLeft, Truck, Headphones,
-  Package, AlertCircle, RefreshCw, LogIn, Box, RotateCcw, Clock, CheckCircle2, XCircle
+  Package, AlertCircle, RefreshCw, LogIn, Box, RotateCcw, Clock, CheckCircle2, XCircle, Banknote
 } from 'lucide-react'
+
+interface RefundRecord {
+  id: string
+  amount: number
+  /** bank_transfer | mobile_banking | cash */
+  method: string
+  /** Real-world transaction id / UTR / TxnID from the actual transfer. */
+  reference: string
+  status: string
+  processedAt: string
+  note: string | null
+}
 
 interface ReturnItem {
   id: string
@@ -29,6 +41,7 @@ interface ReturnRequest {
   resolvedAt: string | null
   createdAt: string
   items: ReturnItem[]
+  refunds: RefundRecord[]
 }
 
 const STATUS_META: Record<string, { label: string; className: string; icon: typeof Clock; note: string }> = {
@@ -54,8 +67,16 @@ const STATUS_META: Record<string, { label: string; className: string; icon: type
     label: 'Refunded',
     className: 'bg-emerald-100 text-emerald-800',
     icon: CheckCircle2,
-    note: 'This return has been refunded to your original payment method.',
+    note: 'A refund has been recorded for this return — the actual transfer details are shown below. Zylod documents refunds that were sent manually (bank transfer / mobile banking / cash); it does not move money itself.',
   },
+}
+
+// Real refund method value → honest label
+function refundMethodLabel(method: string): string {
+  if (method === 'bank_transfer') return 'Bank transfer'
+  if (method === 'mobile_banking') return 'Mobile banking'
+  if (method === 'cash') return 'Cash'
+  return method // any other real value, verbatim
 }
 
 export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
@@ -282,6 +303,31 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                   </div>
                 </div>
 
+                {/* Refund issued — real ledger rows only, hidden honestly when none exist */}
+                {ret.refunds.length > 0 && (
+                  <div className="bg-white rounded-3xl p-5 border border-emerald-200 shadow-2xs space-y-3">
+                    <h2 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <Banknote className="h-3.5 w-3.5 text-emerald-600" /> Refund issued
+                    </h2>
+                    {ret.refunds.map((f) => (
+                      <div key={f.id} className="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-100 space-y-1">
+                        <div className="flex justify-between items-baseline gap-2">
+                          <span className="text-base font-black text-emerald-700 tabular-nums">{formatPrice(f.amount)}</span>
+                          <span className="text-[10px] text-slate-400 tabular-nums">{new Date(f.processedAt).toLocaleString()}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-600">
+                          <span className="font-semibold text-slate-500">Method: </span>{refundMethodLabel(f.method)}
+                        </p>
+                        <p className="text-[11px] text-slate-600 break-all">
+                          <span className="font-semibold text-slate-500">Reference: </span>
+                          <span className="font-mono">{f.reference}</span>
+                        </p>
+                        {f.note && <p className="text-[10px] text-slate-500 break-words">{f.note}</p>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Items in Return — real submitted items */}
                 <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
                   <h2 className="text-xs font-bold text-slate-900">Items in Return</h2>
@@ -308,6 +354,14 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                       <span className="text-xs font-bold text-slate-800">Estimated refund</span>
                       <span className="text-base font-black text-slate-900">{formatPrice(ret.estimatedRefund)}</span>
                     </div>
+                    {ret.refunds.length > 0 && (
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-xs font-bold text-emerald-700">Refunded so far</span>
+                        <span className="text-sm font-black text-emerald-700 tabular-nums">
+                          {formatPrice(ret.refunds.reduce((sum, f) => sum + f.amount, 0))}
+                        </span>
+                      </div>
+                    )}
                     <p className="text-[10px] text-slate-400 leading-relaxed">
                       Estimate based on the returned quantities. The final refunded amount is decided
                       when the return is reviewed and approved.

@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { useCurrencyStore } from '@/store/currency-store'
 import { useNotificationStore } from '@/store/notification-store'
 import {
   useSuppliers, useConversations, useMessages, useRfqs, useAddresses,
@@ -149,15 +150,6 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
       { title: 'Complaint Management', content: 'Complaint handling tools are not connected yet. Reported content and support tickets are handled in the admin Reports tool.', icon: <AlertCircle className="h-4 w-4" /> },
     ],
     quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Reports', pageId: 'admin-reports' }],
-  },
-
-  'admin-categories': {
-    name: 'Category Management', description: 'Manage product categories and subcategories',
-    icon: <LayoutGrid className="h-8 w-8 text-white" />, specialType: 'admin-categories',
-    sections: [
-      { title: 'Categories', content: 'Category management tools are not available yet — categories come from the platform catalog configuration.', icon: <LayoutGrid className="h-4 w-4" /> },
-    ],
-    quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Products', pageId: 'admin-products' }],
   },
 
   'admin-settings': {
@@ -907,12 +899,14 @@ function BuyerComplaintsPage() {
 function BuyerReturnsPage() {
   const { navigate } = useNavigationStore()
   const { user } = useAuthStore()
+  const { formatPrice } = useCurrencyStore()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [needsAuth, setNeedsAuth] = useState(false)
   const [returns, setReturns] = useState<Array<{
     id: string; returnNumber: string; orderId: string; orderNumber: string | null
     status: string; estimatedRefund: number; createdAt: string
+    refunds: Array<{ id: string; amount: number; method: string; reference: string; status: string; processedAt: string; note: string | null }>
   }>>([])
 
   const load = useCallback(async () => {
@@ -967,15 +961,21 @@ function BuyerReturnsPage() {
           )}
           {!loading && !needsAuth && !error && returns.length > 0 && (
             <div className="space-y-2">
-              {returns.map(r => (
-                <button key={r.id} className="w-full text-left flex items-center justify-between p-2.5 rounded-md border border-border bg-muted/30 hover:border-primary/50 transition-colors" onClick={() => navigate('return-detail', { orderId: r.orderId, returnId: r.id })}>
-                  <div>
-                    <p className="text-xs font-medium">{r.returnNumber}</p>
-                    <p className="text-[10px] text-muted-foreground">{r.orderNumber ? `Order ${r.orderNumber} · ` : ''}{new Date(r.createdAt).toLocaleDateString()}</p>
-                  </div>
-                  <Badge className={`text-[10px] ${statusBadge[r.status] || 'bg-secondary text-secondary-foreground'}`}>{r.status}</Badge>
-                </button>
-              ))}
+              {returns.map(r => {
+                const refundedTotal = (r.refunds ?? []).reduce((sum, f) => sum + f.amount, 0)
+                return (
+                  <button key={r.id} className="w-full text-left flex items-center justify-between p-2.5 rounded-md border border-border bg-muted/30 hover:border-primary/50 transition-colors" onClick={() => navigate('return-detail', { orderId: r.orderId, returnId: r.id })}>
+                    <div>
+                      <p className="text-xs font-medium">{r.returnNumber}</p>
+                      <p className="text-[10px] text-muted-foreground">{r.orderNumber ? `Order ${r.orderNumber} · ` : ''}{new Date(r.createdAt).toLocaleDateString()}</p>
+                      {refundedTotal > 0 && (
+                        <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400">{formatPrice(refundedTotal)} refunded</p>
+                      )}
+                    </div>
+                    <Badge className={`text-[10px] ${statusBadge[r.status] || 'bg-secondary text-secondary-foreground'}`}>{r.status}</Badge>
+                  </button>
+                )
+              })}
             </div>
           )}
         </CardContent>
@@ -1039,18 +1039,6 @@ function AdminComplaintsPage() {
         <AlertTriangle className="h-10 w-10 mx-auto text-amber-500" />
         <h3 className="text-sm font-semibold">No complaint queue is connected yet</h3>
         <p className="text-xs text-muted-foreground max-w-sm mx-auto">Complaint handling tools are not built yet, so there is nothing to list here. Buyer and supplier reports are handled in the admin Reports tool.</p>
-      </CardContent>
-    </Card>
-  )
-}
-
-function AdminCategoriesPage() {
-  return (
-    <Card className="border border-border">
-      <CardContent className="p-6 text-center space-y-3">
-        <LayoutGrid className="h-10 w-10 mx-auto text-muted-foreground" />
-        <h3 className="text-sm font-semibold">Category management is not available yet</h3>
-        <p className="text-xs text-muted-foreground max-w-sm mx-auto">There is no admin categories backend yet — marketplace categories come from the platform catalog configuration. Management tools will appear here when the backend exists.</p>
       </CardContent>
     </Card>
   )
@@ -3964,7 +3952,6 @@ export function GenericInfoPage({ pageId }: { pageId: string }) {
       case 'buyer-level': return <BuyerLevelPage />
       case 'buyer-favorites': return <BuyerFavoritesPage navigate={navigate} />
       case 'admin-complaints': return <AdminComplaintsPage />
-      case 'admin-categories': return <AdminCategoriesPage />
       case 'admin-settings': return <AdminSettingsPage />
       case 'supplier-analytics': return <SupplierAnalyticsPage />
       case 'supplier-warehouse': return <SupplierWarehousePage />

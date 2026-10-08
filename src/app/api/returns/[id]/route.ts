@@ -6,6 +6,8 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 /**
  * GET /api/returns/[id] — one real return request.
  * Visible to its buyer or an admin; everyone else gets 403/404.
+ * Refunds (Task 47): the response carries the real refunds[] ledger rows
+ * (money that actually moved outside the system) — empty when none exist.
  */
 export async function GET(
   request: NextRequest,
@@ -32,6 +34,11 @@ export async function GET(
     }
 
     const retItems = await db.returnRequestItems.findMany({ where: { returnRequestId: ret.id } })
+
+    const retRefunds = await db.refunds.findMany({
+      where: { returnRequestId: ret.id },
+      orderBy: { createdAt: 'desc' },
+    })
 
     const order = await db.orders.findUnique({
       where: { id: ret.orderId },
@@ -60,6 +67,15 @@ export async function GET(
           reason: i.reason,
           quantity: i.quantity,
           comments: i.comments,
+        })),
+        refunds: retRefunds.map(f => ({
+          id: f.id,
+          amount: f.amount,
+          method: f.method,
+          reference: f.reference,
+          status: f.status,
+          processedAt: f.createdAt.toISOString(),
+          note: f.note,
         })),
       },
     })

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
@@ -14,10 +15,23 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { toast } from 'sonner'
 import {
   RotateCcw, RefreshCw, AlertTriangle, CheckCircle2, XCircle, Package,
-  User, Wallet, Truck, ScrollText, Inbox,
+  User, Wallet, Truck, ScrollText, Inbox, Banknote,
 } from 'lucide-react'
 
-// ── Real API types (GET /api/admin/returns · PATCH /api/admin/returns/[id]) ──
+// ── Real API types (GET /api/admin/returns · PATCH · POST …/refund) ──
+interface ApiRefund {
+  id: string
+  amount: number
+  /** bank_transfer | mobile_banking | cash */
+  method: string
+  /** Real-world transaction id / UTR / TxnID from the actual transfer. */
+  reference: string
+  status: string
+  processedById: string
+  note: string | null
+  createdAt: string
+}
+
 interface ApiAdminReturnItem {
   id: string
   orderItemId: string
@@ -47,12 +61,16 @@ interface ApiAdminReturn {
   status: string
   shippingMethod: string
   estimatedRefund: number
+  /** Real sums from the refunds ledger — estimatedRefund − refundTotal = refundRemaining. */
+  refundTotal: number
+  refundRemaining: number
   resolutionNote: string | null
   resolvedById: string | null
   resolvedAt: string | null
   createdAt: string
   updatedAt: string
   items: ApiAdminReturnItem[]
+  refunds: ApiRefund[]
   order: ApiAdminReturnOrder | null
   buyer: ApiAdminReturnBuyer | null
 }
@@ -65,13 +83,14 @@ interface ApiReturnCounts {
   total: number
 }
 
-type ReturnTab = 'all' | 'pending' | 'approved' | 'rejected'
+type ReturnTab = 'all' | 'pending' | 'approved' | 'rejected' | 'refunded'
 
 const TAB_LABELS: Record<ReturnTab, string> = {
   all: 'All',
   pending: 'Pending',
   approved: 'Approved',
   rejected: 'Rejected',
+  refunded: 'Refunded',
 }
 
 const REFRESH_INTERVAL_MS = 30_000
@@ -96,6 +115,14 @@ const statusBadgeClass: Record<string, string> = {
   approved: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   rejected: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
   refunded: 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-950 dark:text-slate-300 dark:border-slate-800',
+}
+
+// Real refund method value → honest label
+function refundMethodLabel(method: string): string {
+  if (method === 'bank_transfer') return 'Bank transfer'
+  if (method === 'mobile_banking') return 'Mobile banking'
+  if (method === 'cash') return 'Cash'
+  return method // any other real value, verbatim
 }
 
 function formatTimestamp(iso: string): string {
@@ -132,10 +159,21 @@ export function AdminReturnsPage() {
   const [dialogError, setDialogError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  // Record-refund dialog state (POST /api/admin/returns/[id]/refund)
+  const [refundDialog, setRefundDialog] = useState<{ ret: ApiAdminReturn } | null>(null)
+  const [refundAmount, setRefundAmount] = useState('')
+  const [refundMethod, setRefundMethod] = useState('')
+  const [refundRef, setRefundRef] = useState('')
+  const [refundNote, setRefundNote] = useState('')
+  const [refundError, setRefundError] = useState('')
+  const [refundSubmitting, setRefundSubmitting] = useState(false)
+
   const inflightRef = useRef(false)
   const seqRef = useRef(0)
   const dialogOpenRef = useRef(false)
-  useEffect(() => { dialogOpenRef.current = dialog !== null }, [dialog])
+  useEffect(() => {
+    dialogOpenRef.current = dialog !== null || refundDialog !== null
+  }, [dialog, refundDialog])
 
   const loadReturns = useCallback(async (background = false) => {
     // A background refresh never fights a foreground load; a tab switch always wins.
@@ -201,6 +239,91 @@ export function AdminReturnsPage() {
     setNote('')
     setRefundInput('')
     setDialogError('')
+  }
+
+  const openRefundDialog = (ret: ApiAdminReturn) => {
+    setRefundDialog({ ret })
+    // Prefill with the row's REAL stored estimate — editable; validated
+    // client-side against the real remaining budget (estimate − refunded).
+    setRefundAmount(String(ret.estimatedRefund))
+    setRefundMethod('')
+    setRefundRef('')
+    setRefundNote('')
+    setRefundError('')
+  }
+
+  const closeRefundDialog = () => {
+    setRefundDialog(null)
+    setRefundAmount('')
+    setRefundMethod('')
+    setRefundRef('')
+    setRefundNote('')
+    setRefundError('')
+  }
+
+  const submitRefund = async () => {
+    if (!refundDialog) return
+    const { ret } = refundDialog
+    const raw = refundAmount.trim()
+    const amount = Number(raw)
+    const remaining = ret.refundRemaining
+
+    // Client-side mirror of the server's real guards (the server re-checks
+    // everything — these only avoid a doomed round trip).
+    if (raw.length === 0 || !Number.isFinite(amount) || amount <= 0) {
+      setRefundError('Refund amount must be a positive number.')
+      return
+    }
+    if (Math.round(amount * 100) / 100 > remaining) {
+      setRefundError(`Refund amount exceeds the remaining refund budget: ${formatPrice(remaining)} remains on ${ret.returnNumber}.`)
+      return
+    }
+    const trimmedRef = refundRef.trim()
+    if (trimmedRef.length < 4) {
+      setRefundError('A real transaction reference (at least 4 characters) is required — no reference, no refund record.')
+      return
+    }
+    if (!refundMethod) {
+      setRefundError('Select the transfer method that was actually used.')
+      return
+    }
+    const trimmedNote = refundNote.trim()
+
+    setRefundSubmitting(true)
+    setRefundError('')
+    try {
+      const res = await fetch(`/api/admin/returns/${ret.id}/refund`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          amount: Math.round(amount * 100) / 100,
+          method: refundMethod,
+          reference: trimmedRef,
+          ...(trimmedNote.length > 0 ? { note: trimmedNote } : {}),
+        }),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json?.success) {
+        // Real backend error, verbatim (409 conflict, 422 budget, 401 …)
+        const msg = json?.error || `Refund record failed (HTTP ${res.status})`
+        setRefundError(msg)
+        toast.error(msg)
+        return
+      }
+      // Real 2xx — apply the server-serialized row, toast, refresh counts.
+      const updated = json.return as ApiAdminReturn
+      setReturns((prev) => prev.map((r) => (r.id === updated.id ? updated : r)))
+      toast.success(json.message || `Refund recorded for ${updated.returnNumber}.`)
+      closeRefundDialog()
+      loadReturns(true)
+    } catch {
+      const msg = 'Network error while recording the refund. Check your connection and retry.'
+      setRefundError(msg)
+      toast.error(msg)
+    } finally {
+      setRefundSubmitting(false)
+    }
   }
 
   const submitDecision = async () => {
@@ -289,7 +412,7 @@ export function AdminReturnsPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Return Requests</h1>
-            <p className="text-[11px] text-slate-400">Review buyer return requests. Every approve/reject is a real, audit-logged decision — this queue cannot mark returns as refunded.</p>
+            <p className="text-[11px] text-slate-400">Approve/reject is audit-logged. Record a refund only after the money really moved — every record needs the real transfer reference.</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -415,6 +538,11 @@ export function AdminReturnsPage() {
                   <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider font-black text-slate-400">Estimated refund</p>
                     <p className="text-xs font-black text-primary tabular-nums">{formatPrice(r.estimatedRefund)}</p>
+                    {r.refundTotal > 0 && (
+                      <p className="text-[10px] text-slate-400 tabular-nums">
+                        {formatPrice(r.refundTotal)} refunded · {formatPrice(r.refundRemaining)} remaining
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
@@ -446,6 +574,29 @@ export function AdminReturnsPage() {
                 </div>
               </div>
 
+              {/* Refunds — real ledger rows (money that actually moved outside the system) */}
+              {r.refunds.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+                    <Banknote className="h-3 w-3" /> Refunds ({r.refunds.length})
+                  </p>
+                  <div className="rounded-xl border border-emerald-100 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/30 divide-y divide-emerald-100 dark:divide-emerald-900">
+                    {r.refunds.map((f) => (
+                      <div key={f.id} className="px-3 py-2 flex items-start justify-between gap-2 flex-wrap">
+                        <div className="min-w-0">
+                          <p className="text-xs font-black text-emerald-700 dark:text-emerald-400 tabular-nums">
+                            {formatPrice(f.amount)} <span className="font-bold">· {refundMethodLabel(f.method)}</span>
+                          </p>
+                          <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400 break-all">ref {f.reference}</p>
+                          {f.note && <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 break-words">&ldquo;{f.note}&rdquo;</p>}
+                        </div>
+                        <span className="text-[10px] text-slate-400 tabular-nums shrink-0">{formatTimestamp(f.createdAt)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Resolution (shown only when a real decision exists) */}
               {r.resolutionNote && (
                 <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
@@ -462,23 +613,35 @@ export function AdminReturnsPage() {
                 </p>
               )}
 
-              {/* Actions — only for genuinely pending rows */}
+              {/* Actions — only for genuinely actionable rows */}
               {r.status === 'pending' && (
                 <div className="flex gap-2 pt-1">
                   <Button
                     onClick={() => openDialog(r, 'approve')}
-                    disabled={submitting}
+                    disabled={submitting || refundSubmitting}
                     className="flex-1 min-h-11 rounded-xl text-xs font-bold gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
                   >
                     <CheckCircle2 className="h-3.5 w-3.5" /> Approve
                   </Button>
                   <Button
                     onClick={() => openDialog(r, 'reject')}
-                    disabled={submitting}
+                    disabled={submitting || refundSubmitting}
                     variant="outline"
                     className="flex-1 min-h-11 rounded-xl text-xs font-bold gap-1.5 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"
                   >
                     <XCircle className="h-3.5 w-3.5" /> Reject
+                  </Button>
+                </div>
+              )}
+              {r.status === 'approved' && (
+                <div className="flex gap-2 pt-1">
+                  <Button
+                    onClick={() => openRefundDialog(r)}
+                    disabled={submitting || refundSubmitting || r.refundRemaining <= 0}
+                    className="flex-1 min-h-11 rounded-xl text-xs font-bold gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    <Banknote className="h-3.5 w-3.5" />
+                    {r.refundRemaining <= 0 ? 'Refund budget used' : 'Record refund'}
                   </Button>
                 </div>
               )}
@@ -575,6 +738,103 @@ export function AdminReturnsPage() {
                     : dialog.action === 'approve'
                       ? 'Confirm approve'
                       : 'Confirm reject'}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Record-refund dialog (approved rows only — documents real money movement) */}
+      <Dialog open={refundDialog !== null} onOpenChange={(open) => { if (!open) closeRefundDialog() }}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          {refundDialog && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-sm font-black flex items-center gap-2">
+                  <Banknote className="h-4 w-4 text-emerald-600" /> Record refund — {refundDialog.ret.returnNumber}
+                </DialogTitle>
+                <DialogDescription className="text-xs text-slate-500">
+                  Only record a refund AFTER the money actually left — via bank transfer, mobile banking, or cash.
+                  This writes a real ledger row and marks the return refunded. It does not move money, and the order&rsquo;s
+                  payment status is never modified.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-3 py-1">
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400">
+                  Order {refundDialog.ret.order?.orderNumber ?? '—'} · estimate {formatPrice(refundDialog.ret.estimatedRefund)}
+                  {' '}· remaining <span className="font-bold tabular-nums">{formatPrice(refundDialog.ret.refundRemaining)}</span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="refund-record-amount" className="text-xs font-bold">Amount</Label>
+                  <Input
+                    id="refund-record-amount"
+                    inputMode="decimal"
+                    value={refundAmount}
+                    onChange={(e) => setRefundAmount(e.target.value)}
+                    className="h-10 rounded-xl text-xs"
+                  />
+                  <p className="text-[10px] text-slate-400">
+                    Prefilled with the stored estimate. Must be &gt; 0 and ≤ {formatPrice(refundDialog.ret.refundRemaining)} (estimate minus what is already refunded).
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold">Transfer method</Label>
+                  <Select value={refundMethod} onValueChange={setRefundMethod}>
+                    <SelectTrigger className="h-10 rounded-xl text-xs">
+                      <SelectValue placeholder="Select the method actually used" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="bank_transfer">Bank transfer</SelectItem>
+                      <SelectItem value="mobile_banking">Mobile banking</SelectItem>
+                      <SelectItem value="cash">Cash</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="refund-record-reference" className="text-xs font-bold">Transaction reference</Label>
+                  <Input
+                    id="refund-record-reference"
+                    value={refundRef}
+                    onChange={(e) => setRefundRef(e.target.value)}
+                    placeholder="e.g. UTR / TxnID from the transfer receipt"
+                    className="h-10 rounded-xl text-xs font-mono"
+                  />
+                  <p className="text-[10px] text-slate-400">Transaction ID / UTR from the real transfer — no reference, no refund record.</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="refund-record-note" className="text-xs font-bold">Note (optional)</Label>
+                  <Textarea
+                    id="refund-record-note"
+                    value={refundNote}
+                    onChange={(e) => setRefundNote(e.target.value)}
+                    placeholder="Optional context — e.g. which bank account received it…"
+                    className="min-h-[64px] rounded-xl text-xs"
+                  />
+                </div>
+
+                {refundError && (
+                  <div className="flex items-start gap-2 rounded-xl bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 px-3 py-2 text-[11px] text-red-600 dark:text-red-400 font-bold break-words">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" /> {refundError}
+                  </div>
+                )}
+              </div>
+
+              <DialogFooter className="gap-2">
+                <Button variant="outline" onClick={closeRefundDialog} disabled={refundSubmitting} className="min-h-11 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-700">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={submitRefund}
+                  disabled={refundSubmitting || refundRef.trim().length < 4 || !refundMethod}
+                  className="min-h-11 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {refundSubmitting ? 'Recording…' : 'Record refund'}
                 </Button>
               </DialogFooter>
             </>

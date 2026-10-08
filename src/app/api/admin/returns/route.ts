@@ -17,6 +17,10 @@ import { serializeAdminReturn } from '@/lib/admin-returns'
  *   private fields) + buyerProfiles.fullName for the display name; missing
  *   values stay honestly null.
  * - Counts per status are real groupBy/count aggregates on the same table.
+ * - Refunds (Task 47): per-return refunds[] come from the real refunds ledger
+ *   (money that actually moved outside the system) in ONE batch query;
+ *   refundTotal/refundRemaining are real sums, not estimates.
+ * - orders.paymentStatus is NEVER written by this rail — see the dataNotes.
  */
 
 const QuerySchema = z.object({
@@ -64,6 +68,22 @@ export async function GET(request: NextRequest) {
       const list = itemsByReturn.get(item.returnRequestId) ?? []
       list.push(item)
       itemsByReturn.set(item.returnRequestId, list)
+    }
+
+    // Real refund ledger rows for this page — ONE query, batched by plain FK.
+    // refunds[] are documents of money that actually moved outside the system;
+    // refundTotal/refundRemaining on each row are real sums.
+    const allRefunds = returnIds.length
+      ? await db.refunds.findMany({
+          where: { returnRequestId: { in: returnIds } },
+          orderBy: { createdAt: 'desc' },
+        })
+      : []
+    const refundsByReturn = new Map<string, typeof allRefunds>()
+    for (const refund of allRefunds) {
+      const list = refundsByReturn.get(refund.returnRequestId) ?? []
+      list.push(refund)
+      refundsByReturn.set(refund.returnRequestId, list)
     }
 
     // Real order context (orderNumber / paymentStatus / subOrder statuses).
@@ -122,14 +142,16 @@ export async function GET(request: NextRequest) {
             r,
             itemsByReturn.get(r.id) ?? [],
             orderById.get(r.orderId) ?? null,
-            buyerById.get(r.buyerId) ?? null
+            buyerById.get(r.buyerId) ?? null,
+            refundsByReturn.get(r.id) ?? []
           )
         ),
         counts: { ...counts, total },
         dataNotes: [
           'Order status is derived from sub-order statuses (orders has no status column) using the same derivation as /api/admin/orders.',
           'Buyer name comes from the buyer profile (users table has no name column); a missing profile or email is shown as null.',
-          'A "refunded" decision cannot be made from this queue — no real refund rail exists in the codebase yet.',
+          'Refunds are a real ledger of money that actually moved OUTSIDE this system (bank transfer / mobile banking / cash) — recording one requires a real transaction reference and flips the return to "refunded". This rail never moves money itself.',
+          'orders.paymentStatus is deliberately never modified by the refund rail — no real payment write-back exists, and flipping it without one would fake financial truth.',
         ],
       },
     })

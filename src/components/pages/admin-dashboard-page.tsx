@@ -13,7 +13,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import {
   LayoutDashboard, DollarSign, Users, Clock, ShoppingCart, TrendingUp, Package,
   ChevronRight, AlertCircle, BarChart3, Server, Database, Wifi, AlertTriangle,
-  UserPlus, Star, MapPin, ArrowRight, ShieldAlert, ShieldCheck, RotateCcw,
+  UserPlus, Star, MapPin, ArrowRight, ShieldAlert, ShieldCheck, RotateCcw, LayoutGrid,
 } from 'lucide-react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
@@ -83,6 +83,7 @@ const QUICK_ADMIN_ACTIONS = [
   { title: 'Review Products', description: 'Approve & moderate products', icon: Package, page: 'admin-products', badgeKey: 'productApproval' as string | null },
   { title: 'Verify Suppliers', description: 'Review supplier applications', icon: TrendingUp, page: 'admin-suppliers', badgeKey: 'supplierVerification' as string | null },
   { title: 'Review Returns', description: 'Approve or reject buyer return requests', icon: RotateCcw, page: 'admin-returns', badgeKey: null as string | null },
+  { title: 'Manage Categories', description: 'Create, edit & order marketplace categories', icon: LayoutGrid, page: 'admin-categories', badgeKey: null as string | null },
   { title: 'Trust & Safety Reports', description: 'Review buyer/seller fraud & violations', icon: ShieldAlert, page: 'admin-reports', badgeKey: null as string | null },
 ]
 

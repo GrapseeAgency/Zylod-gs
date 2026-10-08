@@ -7,6 +7,8 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
  * GET /api/returns — the authenticated buyer's return requests (newest first).
  * Optional filters: ?orderId=<id> — returns for one order only.
  * Every row is real DB data; no fabricated statuses or pickup promises.
+ * Refunds (Task 47): each row carries the real refunds[] ledger rows (money
+ * that actually moved outside the system) — empty array when nothing refunded.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -42,6 +44,21 @@ export async function GET(request: NextRequest) {
       itemsByReturn.set(item.returnRequestId, list)
     }
 
+    // Real refund ledger rows (one batched query) — only for THIS buyer's
+    // returns, so no other buyer's refund data can leak through this endpoint.
+    const allRefunds = returnIds.length
+      ? await db.refunds.findMany({
+          where: { returnRequestId: { in: returnIds }, buyerId: auth.user.id },
+          orderBy: { createdAt: 'desc' },
+        })
+      : []
+    const refundsByReturn = new Map<string, typeof allRefunds>()
+    for (const refund of allRefunds) {
+      const list = refundsByReturn.get(refund.returnRequestId) ?? []
+      list.push(refund)
+      refundsByReturn.set(refund.returnRequestId, list)
+    }
+
     // Attach minimal real order info for context (orderNumber only).
     const orderIds = [...new Set(returns.map(r => r.orderId))]
     const orders = orderIds.length
@@ -72,6 +89,15 @@ export async function GET(request: NextRequest) {
           reason: i.reason,
           quantity: i.quantity,
           comments: i.comments,
+        })),
+        refunds: (refundsByReturn.get(r.id) ?? []).map(f => ({
+          id: f.id,
+          amount: f.amount,
+          method: f.method,
+          reference: f.reference,
+          status: f.status,
+          processedAt: f.createdAt.toISOString(),
+          note: f.note,
         })),
       })),
     })

@@ -13,10 +13,14 @@ import { serializeAdminReturn } from '@/lib/admin-returns'
  * - Rejection REQUIRES a real note (min 3 chars) — the buyer sees it.
  * - Approving may set a REAL refundAmount decision (≥ 0) on estimatedRefund;
  *   omitting it keeps the buyer's original estimate.
- * - There is deliberately NO 'refunded' transition: no real refund rail exists
- *   in the codebase, so writing 'refunded' would fake financial truth → 422.
+ * - There is deliberately NO bare 'refunded' status flip here: refunds are
+ *   recorded via POST /api/admin/returns/[id]/refund, which writes the real
+ *   ledger row (with the actual transfer reference) inside one transaction
+ *   and THAT record flips the status. Flipping it from this endpoint without
+ *   a refund record would fake financial truth → 409.
  * - Every decision is audit-logged (action 'return_reviewed') with the
  *   authenticated admin's id as actor (never client-supplied).
+ * - orders.paymentStatus is never modified by this API (no payment rail).
  */
 
 const BodySchema = z.object({
@@ -56,15 +60,16 @@ export async function PATCH(
     }
     const { action, note, refundAmount } = parsed.data
 
-    // No refund rail exists yet — marking a return 'refunded' would fabricate
-    // financial truth, so it is refused honestly instead of silently succeeding.
+    // A bare 'refunded' status flip is no longer allowed — the real refunds
+    // rail records the ledger row (with the actual transfer reference) and
+    // THAT record flips the status inside one transaction.
     if (action === 'refunded') {
       return NextResponse.json(
         {
           error:
-            'Returns cannot be marked as refunded yet — no real refund rail is implemented in this codebase, so writing a "refunded" status would fake financial truth. Only approve or reject is available.',
+            "Returns cannot be marked as refunded with this endpoint — refunds are recorded via POST /api/admin/returns/[id]/refund, which writes the real refund ledger row (with the actual transfer reference) and flips the status itself. A bare status flip without a refund record would fake financial truth.",
         },
-        { status: 422 }
+        { status: 409 }
       )
     }
 
@@ -138,8 +143,13 @@ export async function PATCH(
       },
     })
 
-    // Serialize the updated row exactly like GET so the UI can replace state.
+    // Serialize the updated row exactly like GET so the UI can replace state
+    // (includes the real refunds ledger, if any, for refundTotal accuracy).
     const items = await db.returnRequestItems.findMany({ where: { returnRequestId: updated.id } })
+    const refunds = await db.refunds.findMany({
+      where: { returnRequestId: updated.id },
+      orderBy: { createdAt: 'desc' },
+    })
     const order = await db.orders.findUnique({
       where: { id: updated.orderId },
       select: {
@@ -161,7 +171,8 @@ export async function PATCH(
         order,
         buyerUser
           ? { id: buyerUser.id, email: buyerUser.email, fullName: buyerUser.buyerProfile?.fullName ?? null }
-          : null
+          : null,
+        refunds
       ),
       message:
         action === 'approve'
