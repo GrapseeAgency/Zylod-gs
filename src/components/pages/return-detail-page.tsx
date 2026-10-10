@@ -4,9 +4,10 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { EvidenceManager } from '@/components/pages/evidence-manager'
 import {
   ArrowLeft, Truck, Headphones,
-  Package, AlertCircle, RefreshCw, LogIn, Box, RotateCcw, Clock, CheckCircle2, XCircle, Banknote
+  Package, AlertCircle, RefreshCw, LogIn, Box, RotateCcw, Clock, CheckCircle2, XCircle, Banknote,
 } from 'lucide-react'
 
 interface RefundRecord {
@@ -367,6 +368,21 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                       when the return is reviewed and approved.
                     </p>
                   </div>
+                </div>
+                {/* Evidence photos — buyer-provided review evidence (upload/delete only while pending) */}
+                <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs">
+                  <EvidenceManager
+                    ownerType="return"
+                    ownerId={ret.id}
+                    canEdit={ret.status === 'pending'}
+                    lockedNote={
+                      ret.status === 'approved' || ret.status === 'refunded'
+                        ? 'Evidence is locked — the return request was approved, so the photos you submitted before the review decision are what the team saw.'
+                        : ret.status === 'rejected'
+                          ? 'Evidence is locked — the return request was rejected, so the photos you submitted before the review decision are what the team saw.'
+                          : 'Evidence is locked — photos can no longer be added or removed.'
+                    }
+                  />
                 </div>
               </div>
             )

@@ -2840,3 +2840,65 @@ model refunds {
   @@index([orderId])
   @@index([buyerId])
 }
+
+// BUYER COMPLAINTS / DISPUTES — a real reviewable complaint flow mirroring
+// returnRequests: the buyer files, an admin reviews with server-guarded
+// transitions, and the buyer sees the real resolution. Plain string FKs only
+// (no Prisma relations), same style as returnRequests/refunds.
+// status lifecycle — SERVER-GUARDED, NEVER client-set:
+//   open → in_review (admin start_review)
+//   open|in_review → resolved|rejected (admin resolve/reject; note required)
+//   open → withdrawn (owner withdraw; buyer can only withdraw while open)
+//   resolved | rejected are TERMINAL (no further transitions exist).
+model complaints {
+  id             String   @id @default(cuid())
+  buyerId        String
+  orderId        String?
+  subOrderId     String?
+  // category: order_issue | product_quality | delivery | payment | seller_behavior | other
+  category       String
+  title          String
+  description    String
+  // status: open | in_review | resolved | rejected | withdrawn
+  status         String   @default("open")
+  resolutionNote String?
+  resolvedById   String?
+  resolvedAt     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([buyerId, status])
+  @@index([status])
+  @@index([orderId])
+  @@index([subOrderId])
+}
+
+// BUYER EVIDENCE PHOTOS — buyer-provided photo evidence attached to a return
+// request or a complaint. The image bytes are stored directly in SQLite
+// (Prisma Bytes) so the app stays Railway-deployable with zero external
+// storage services. Photos are served ONLY to the buyer who uploaded them and
+// to Zylod admins (GET /api/attachments/[id] enforces this) — never public.
+// CHECK-constraint equivalent, enforced in code by every write path: exactly
+// one of returnRequestId / complaintId is set and it must match ownerType
+// ('return' → returnRequestId set, complaintId null; 'complaint' → vice versa).
+// Evidence locks at review time: return requests accept photos only while
+// 'pending' and complaints only while 'open' — admins review what the buyer
+// actually filed, and neither side can edit the record afterwards.
+model evidencePhotos {
+  id              String   @id @default(cuid())
+  // ownerType: 'return' | 'complaint'
+  ownerType       String
+  returnRequestId String?
+  complaintId     String?
+  // The uploading buyer — the ownership anchor for attachment reads/deletes.
+  buyerId         String
+  mimeType        String
+  sizeBytes       Int
+  data            Bytes
+  note            String?
+  createdAt       DateTime @default(now())
+
+  @@index([ownerType, returnRequestId])
+  @@index([ownerType, complaintId])
+  @@index([buyerId])
+}

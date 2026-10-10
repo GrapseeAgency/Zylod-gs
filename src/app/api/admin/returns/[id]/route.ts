@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { serializeAdminReturn } from '@/lib/admin-returns'
+import { listEvidence } from '@/lib/evidence'
 
 /**
  * PATCH /api/admin/returns/[id] — approve or reject a pending buyer return request (ADMIN ONLY).
@@ -172,7 +173,10 @@ export async function PATCH(
         buyerUser
           ? { id: buyerUser.id, email: buyerUser.email, fullName: buyerUser.buyerProfile?.fullName ?? null }
           : null,
-        refunds
+        refunds,
+        // The row's real evidence metadata so the queue UI can replace state
+        // without losing the evidence section (same shape as the list GET).
+        await listEvidence('return', updated.id)
       ),
       message:
         action === 'approve'

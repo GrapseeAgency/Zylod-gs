@@ -98,15 +98,6 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     quickLinks: [{ label: 'Categories', pageId: 'category-products' }, { label: 'Chat', pageId: 'chat-list' }],
   },
 
-  'buyer-complaints': {
-    name: 'Submit a Complaint', description: 'Report issues with orders, products, or suppliers',
-    icon: <AlertTriangle className="h-8 w-8 text-white" />, specialType: 'buyer-complaints',
-    sections: [
-      { title: 'Complaint Guidelines', content: 'Please provide detailed information and evidence to help us resolve your issue quickly.', icon: <AlertCircle className="h-4 w-4" /> },
-    ],
-    quickLinks: [{ label: 'My Orders', pageId: 'buyer-orders' }, { label: 'Support', pageId: 'support' }],
-  },
-
   'buyer-returns': {
     name: 'Return Request', description: 'Submit return requests for eligible orders',
     icon: <RefreshCw className="h-8 w-8 text-white" />, specialType: 'buyer-returns',
@@ -141,24 +132,6 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
       { title: 'Favorites', content: 'Your favorite items are saved in your wishlist for easy access later.', icon: <Heart className="h-4 w-4" /> },
     ],
     quickLinks: [{ label: 'Go to Wishlist', pageId: 'wishlist' }],
-  },
-
-  'admin-complaints': {
-    name: 'Complaint Handling', description: 'Review and resolve user complaints',
-    icon: <AlertTriangle className="h-8 w-8 text-white" />, specialType: 'admin-complaints',
-    sections: [
-      { title: 'Complaint Management', content: 'Complaint handling tools are not connected yet. Reported content and support tickets are handled in the admin Reports tool.', icon: <AlertCircle className="h-4 w-4" /> },
-    ],
-    quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Reports', pageId: 'admin-reports' }],
-  },
-
-  'admin-settings': {
-    name: 'System Settings', description: 'Configure platform-wide settings and preferences',
-    icon: <Settings className="h-8 w-8 text-white" />, specialType: 'admin-settings',
-    sections: [
-      { title: 'System Configuration', content: 'System settings are not available yet — platform configuration is managed in the server configuration, not from this page.', icon: <Settings className="h-4 w-4" /> },
-    ],
-    quickLinks: [{ label: 'Dashboard', pageId: 'admin-dashboard' }, { label: 'Payment Verification', pageId: 'admin-payments' }],
   },
 
   'supplier-analytics': {
@@ -331,10 +304,6 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   ] },
   'order-invoice-download': { name: 'Order Invoice Download', description: 'Download your invoice', icon: <Download className="h-8 w-8 text-white" />, sections: [
     { title: 'Download', content: 'Get your invoice as a file for your records.', icon: <Download className="h-4 w-4" /> },
-  ] },
-  'dispute-center': { name: 'Dispute Center', description: 'Resolve order disputes', icon: <Scale className="h-8 w-8 text-white" />, specialType: 'dispute-center', sections: [
-    { title: 'File a Dispute', content: 'Open a dispute with evidence for resolution by our team.', icon: <Scale className="h-4 w-4" /> },
-    { title: 'Resolution', content: 'Both parties can provide documentation while the dispute is under review by our team.', icon: <AlertTriangle className="h-4 w-4" /> },
   ] },
   'dispute-detail': { name: 'Dispute Detail', description: 'View dispute details', icon: <FileText className="h-8 w-8 text-white" />, sections: [
     { title: 'Case Details', content: 'Messages, evidence, and status of your dispute case.', icon: <FileText className="h-4 w-4" /> },
@@ -880,22 +849,6 @@ function SuppliersPage({ navigate }: { navigate: (page: string, params?: Record<
   )
 }
 
-function BuyerComplaintsPage() {
-  const { navigate } = useNavigationStore()
-  return (
-    <Card className="border border-border">
-      <CardContent className="p-6 text-center space-y-3">
-        <AlertTriangle className="h-10 w-10 mx-auto text-amber-500" />
-        <h3 className="text-sm font-semibold">Online complaint submission is not available yet</h3>
-        <p className="text-xs text-muted-foreground max-w-sm mx-auto">There is no complaints backend connected yet, so this form cannot accept submissions. Open a support ticket instead — tickets reach the Zylod team and are tracked to resolution.</p>
-        <Button onClick={() => navigate('dispute-center')} className="h-9 text-xs">
-          <AlertCircle className="h-3 w-3 mr-1" />Open a Support Ticket
-        </Button>
-      </CardContent>
-    </Card>
-  )
-}
-
 function BuyerReturnsPage() {
   const { navigate } = useNavigationStore()
   const { user } = useAuthStore()
@@ -1029,30 +982,6 @@ function BuyerFavoritesPage({ navigate }: { navigate: (page: string) => void }) 
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-function AdminComplaintsPage() {
-  return (
-    <Card className="border border-border">
-      <CardContent className="p-6 text-center space-y-3">
-        <AlertTriangle className="h-10 w-10 mx-auto text-amber-500" />
-        <h3 className="text-sm font-semibold">No complaint queue is connected yet</h3>
-        <p className="text-xs text-muted-foreground max-w-sm mx-auto">Complaint handling tools are not built yet, so there is nothing to list here. Buyer and supplier reports are handled in the admin Reports tool.</p>
-      </CardContent>
-    </Card>
-  )
-}
-
-function AdminSettingsPage() {
-  return (
-    <Card className="border border-border">
-      <CardContent className="p-6 text-center space-y-3">
-        <Settings className="h-10 w-10 mx-auto text-muted-foreground" />
-        <h3 className="text-sm font-semibold">System settings are not available yet</h3>
-        <p className="text-xs text-muted-foreground max-w-sm mx-auto">There is no settings backend yet — platform configuration (commission rates, email) lives in the server configuration. Settings controls will appear here when the backend exists.</p>
-      </CardContent>
-    </Card>
   )
 }
 
@@ -3329,122 +3258,6 @@ function ReturnRequestPage() {
 
 // ========== DISPUTE CENTER PAGE ==========
 
-function DisputeCenterPage() {
-  const { token } = useAuthStore()
-  const [tickets, setTickets] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [category, setCategory] = useState('order_issue')
-  const [subject, setSubject] = useState('')
-  const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState('medium')
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const load = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch('/api/support/tickets', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-      const json = await res.json()
-      if (json.success && Array.isArray(json.data)) setTickets(json.data)
-    } catch { /* ignore */ }
-    finally { setLoading(false) }
-  }
-
-  useEffect(() => { load() }, [token])
-
-  const submit = async () => {
-    setSubmitting(true)
-    setError(null)
-    try {
-      const res = await fetch('/api/support/tickets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ category, subject, description, priority }),
-      })
-      const json = await res.json()
-      if (!res.ok || !json.success) throw new Error(json.error || 'Failed to open ticket')
-      setSubject(''); setDescription('')
-      await load()
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to open ticket')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  const statusColor = (s: string) => s === 'open' ? 'bg-blue-500/10 text-blue-600' : s === 'resolved' || s === 'closed' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'
-
-  return (
-    <div className="space-y-4">
-      <Card className="border border-border">
-        <CardContent className="p-5 space-y-3">
-          <p className="font-semibold text-sm">Open a new dispute / support ticket</p>
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label>Category</Label>
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="order_issue">Order issue</SelectItem>
-                  <SelectItem value="payment_issue">Payment issue</SelectItem>
-                  <SelectItem value="account_issue">Account issue</SelectItem>
-                  <SelectItem value="product_issue">Product issue</SelectItem>
-                  <SelectItem value="seller_issue">Seller issue</SelectItem>
-                  <SelectItem value="general">General</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Priority</Label>
-              <Select value={priority} onValueChange={setPriority}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Subject</Label>
-            <Input placeholder="Short summary of the issue" value={subject} onChange={e => setSubject(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label>Description</Label>
-            <Textarea rows={4} placeholder="Describe the issue in detail (min 20 characters)..." value={description} onChange={e => setDescription(e.target.value)} />
-          </div>
-          {error && <p className="text-xs text-destructive">{error}</p>}
-          <Button className="w-full" disabled={submitting} onClick={submit}>
-            {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Submit Ticket
-          </Button>
-        </CardContent>
-      </Card>
-
-      <div className="space-y-2">
-        <p className="text-sm font-semibold">Your tickets ({tickets.length})</p>
-        {loading ? (
-          [1, 2].map(i => <Skeleton key={i} className="h-16 rounded-xl" />)
-        ) : tickets.length === 0 ? (
-          <Card className="border border-border"><CardContent className="p-6 text-center text-xs text-muted-foreground">No tickets yet.</CardContent></Card>
-        ) : (
-          tickets.map(t => (
-            <Card key={t.id} className="border border-border">
-              <CardContent className="p-4 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{t.subject}</p>
-                  <p className="text-xs text-muted-foreground truncate">{t.category.replace(/_/g, ' ')} · {new Date(t.createdAt).toLocaleDateString()}</p>
-                </div>
-                <Badge className={statusColor(t.status)}>{t.status}</Badge>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
-    </div>
-  )
-}
 
 // ========== VOICE SEARCH PAGE ==========
 
@@ -3946,13 +3759,10 @@ export function GenericInfoPage({ pageId }: { pageId: string }) {
   const renderSpecialContent = () => {
     switch (config.specialType) {
       case 'suppliers': return <SuppliersPage navigate={navigate} />
-      case 'buyer-complaints': return <BuyerComplaintsPage />
       case 'buyer-returns': return <BuyerReturnsPage />
       case 'buyer-settings': return <BuyerSettingsPage />
       case 'buyer-level': return <BuyerLevelPage />
       case 'buyer-favorites': return <BuyerFavoritesPage navigate={navigate} />
-      case 'admin-complaints': return <AdminComplaintsPage />
-      case 'admin-settings': return <AdminSettingsPage />
       case 'supplier-analytics': return <SupplierAnalyticsPage />
       case 'supplier-warehouse': return <SupplierWarehousePage />
       case 'supplier-insights': return <SupplierInsightsPage />
@@ -3976,7 +3786,6 @@ export function GenericInfoPage({ pageId }: { pageId: string }) {
       case 'referral-program': return <ReferralProgramPage />
       case 'write-review': return <WriteReviewPage />
       case 'return-request': return <ReturnRequestPage />
-      case 'dispute-center': return <DisputeCenterPage />
       case 'voice-search': return <VoiceSearchPage />
       case 'image-search': return <ImageSearchPage />
       case 'barcode-scanner': return <BarcodeScannerPage />

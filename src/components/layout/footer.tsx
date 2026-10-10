@@ -15,10 +15,6 @@ import {
 import {
   Mail,
   Phone,
-  MapPin,
-  Facebook,
-  Twitter,
-  Linkedin,
   Send,
   CreditCard,
   Users,
@@ -37,11 +33,20 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useState } from 'react'
+import { usePublicSettings } from '@/lib/use-public-settings'
 
 export function Footer() {
   const { navigate } = useNavigationStore()
   const { currentCurrency, setCurrency, formatPrice } = useCurrencyStore()
   const [email, setEmail] = useState('')
+
+  // Real, owner-published support contacts (Admin → System Settings).
+  // Nothing is fabricated here: while loading / on error / when the owner has
+  // not set support.email or support.phone, the contact column stays silent.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
+  const supportPhone = settings['support.phone'] ?? ''
+  const hasPublishedContact = Boolean(supportEmail || supportPhone)
 
   const handleSubscribe = async () => {
     if (!email || !email.includes('@')) {
@@ -144,36 +149,6 @@ export function Footer() {
                   Delivery terms set by each supplier
                 </span>
               </div>
-            </div>
-            {/* Social Icons */}
-            <div className="flex items-center gap-3 pt-2">
-              <a
-                href="https://facebook.com/zylod"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-9 w-9 rounded-full flex items-center justify-center bg-background border border-border transition-all hover:bg-primary hover:text-primary-foreground hover:border-primary text-muted-foreground"
-                aria-label="Facebook"
-              >
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a
-                href="https://twitter.com/zylod"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-9 w-9 rounded-full flex items-center justify-center bg-background border border-border transition-all hover:bg-primary hover:text-primary-foreground hover:border-primary text-muted-foreground"
-                aria-label="Twitter"
-              >
-                <Twitter className="h-4 w-4" />
-              </a>
-              <a
-                href="https://linkedin.com/company/zylod"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-9 w-9 rounded-full flex items-center justify-center bg-background border border-border transition-all hover:bg-primary hover:text-primary-foreground hover:border-primary text-muted-foreground"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="h-4 w-4" />
-              </a>
             </div>
           </div>
 
@@ -413,55 +388,42 @@ export function Footer() {
       {/* ─── Contact & Currency Row ─── */}
       <div className="container mx-auto px-4 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Contact Information */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-sm tracking-wider uppercase text-foreground flex items-center gap-2">
-              <Phone className="h-4 w-4 text-primary" />
-              CONTACT US
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-sm text-muted-foreground">
-                  support@zylod.com
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-sm text-muted-foreground">
-                  +880 1711-000000
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-sm text-muted-foreground">
-                  Gulshan-2, Dhaka 1212, Bangladesh
-                </span>
-              </div>
-              <div className="flex items-center gap-4 pt-1">
-                <a
-                  href="https://wa.me/8801700000000"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-green-600"
-                  aria-label="WhatsApp"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  WhatsApp
-                </a>
-                <a
-                  href="https://t.me/zylod"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-blue-500"
-                  aria-label="Telegram"
-                >
-                  <Send className="h-4 w-4" />
-                  Telegram
-                </a>
+          {/* Contact Information — REAL values only, published by the site owner
+              under Admin → System Settings and served by GET /api/settings/public.
+              While loading, on error, or when neither key is set, this column
+              renders nothing: honest absence, never a fabricated address/number. */}
+          {hasPublishedContact && (
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm tracking-wider uppercase text-foreground flex items-center gap-2">
+                <Phone className="h-4 w-4 text-primary" />
+                CONTACT US
+              </h3>
+              <div className="space-y-3">
+                {supportEmail && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-primary shrink-0" />
+                    <a
+                      href={`mailto:${supportEmail}`}
+                      className="text-sm text-muted-foreground transition-colors hover:text-primary break-all"
+                    >
+                      {supportEmail}
+                    </a>
+                  </div>
+                )}
+                {supportPhone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-primary shrink-0" />
+                    <a
+                      href={`tel:${supportPhone.replace(/[^\d+]/g, '')}`}
+                      className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      {supportPhone}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Currency Selector */}
           <div className="space-y-4">

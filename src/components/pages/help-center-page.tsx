@@ -9,6 +9,7 @@ import {
   FileText, ShieldCheck, AlertTriangle, MessageCircle, ChevronRight,
   Sparkles, ExternalLink, Activity
 } from 'lucide-react'
+import { usePublicSettings } from '@/lib/use-public-settings'
 
 interface FAQItem {
   id: string
@@ -31,6 +32,14 @@ export function HelpCenterPage() {
   const [popularFaqs, setPopularFaqs] = useState<FAQItem[]>([])
   const [status, setStatus] = useState<SystemStatus | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // Real support contacts published by the site owner (Admin → System
+  // Settings). Never fabricated: if nothing is published, the card says so
+  // honestly instead of showing an invented address or phone number.
+  const { settings: publicSettings, loading: contactsLoading, error: contactsError } = usePublicSettings()
+  const supportEmail = publicSettings['support.email'] ?? ''
+  const supportPhone = publicSettings['support.phone'] ?? ''
+  const hasPublishedContact = Boolean(supportEmail || supportPhone)
 
   async function fetchData() {
     setLoading(true)
@@ -127,6 +136,65 @@ export function HelpCenterPage() {
               <p className="text-xs text-gray-500">Human support rep</p>
             </div>
           </button>
+        </div>
+
+        {/* Real Support Contacts — only what the owner actually published */}
+        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-red-600" />
+              Reach the Team
+            </h2>
+            <span className="text-[11px] text-gray-400">Official channels</span>
+          </div>
+
+          <div className="pt-3 space-y-2.5">
+            {contactsLoading ? (
+              <div className="space-y-2.5">
+                {[1, 2].map(i => <Skeleton key={i} className="h-9 w-full rounded-xl" />)}
+              </div>
+            ) : hasPublishedContact ? (
+              <>
+                {supportEmail && (
+                  <a
+                    href={`mailto:${supportEmail}`}
+                    className="flex items-center gap-3 group"
+                  >
+                    <span className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition flex-shrink-0">
+                      <Mail className="w-4 h-4" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[11px] text-gray-400">Email</span>
+                      <span className="block text-xs font-semibold text-gray-800 group-hover:text-red-600 transition truncate">{supportEmail}</span>
+                    </span>
+                  </a>
+                )}
+                {supportPhone && (
+                  <a
+                    href={`tel:${supportPhone.replace(/[^\d+]/g, '')}`}
+                    className="flex items-center gap-3 group"
+                  >
+                    <span className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition flex-shrink-0">
+                      <Phone className="w-4 h-4" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[11px] text-gray-400">Phone</span>
+                      <span className="block text-xs font-semibold text-gray-800 group-hover:text-red-600 transition">{supportPhone}</span>
+                    </span>
+                  </a>
+                )}
+                <p className="text-[11px] text-gray-400 border-t border-gray-50 pt-2.5">
+                  Managed by site admins under Admin → System Settings.
+                </p>
+              </>
+            ) : (
+              <p className="text-xs text-gray-500 leading-relaxed">
+                {contactsError
+                  ? 'Support contacts could not be loaded right now — please try again later.'
+                  : 'No support contact published yet — the site owner has not configured one under Admin → System Settings.'}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Browse by Topic */}

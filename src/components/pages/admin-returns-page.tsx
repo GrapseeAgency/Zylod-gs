@@ -13,6 +13,7 @@ import {
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { toast } from 'sonner'
+import { EvidenceThumbs } from '@/components/pages/evidence-thumbs'
 import {
   RotateCcw, RefreshCw, AlertTriangle, CheckCircle2, XCircle, Package,
   User, Wallet, Truck, ScrollText, Inbox, Banknote,
@@ -54,6 +55,15 @@ interface ApiAdminReturnBuyer {
   email: string | null
 }
 
+/** Buyer-provided evidence photo metadata (bytes are served by /api/attachments/[id]). */
+interface ApiReturnEvidence {
+  id: string
+  mimeType: string
+  sizeBytes: number
+  note: string | null
+  url: string
+}
+
 interface ApiAdminReturn {
   id: string
   returnNumber: string
@@ -71,6 +81,8 @@ interface ApiAdminReturn {
   updatedAt: string
   items: ApiAdminReturnItem[]
   refunds: ApiRefund[]
+  /** Buyer-provided evidence photos — review only, never fabricated. */
+  evidence: ApiReturnEvidence[]
   order: ApiAdminReturnOrder | null
   buyer: ApiAdminReturnBuyer | null
 }
@@ -573,6 +585,9 @@ export function AdminReturnsPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Buyer evidence photos — review only, never fabricated (empty rows stay honestly empty) */}
+              <EvidenceThumbs photos={Array.isArray(r.evidence) ? r.evidence : []} label="Buyer evidence" />
 
               {/* Refunds — real ledger rows (money that actually moved outside the system) */}
               {r.refunds.length > 0 && (

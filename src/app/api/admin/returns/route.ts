@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { serializeAdminReturn } from '@/lib/admin-returns'
+import type { EvidencePhotoMeta } from '@/lib/evidence'
 
 /**
  * GET /api/admin/returns — admin review queue for buyer return requests.
@@ -20,6 +21,9 @@ import { serializeAdminReturn } from '@/lib/admin-returns'
  * - Refunds (Task 47): per-return refunds[] come from the real refunds ledger
  *   (money that actually moved outside the system) in ONE batch query;
  *   refundTotal/refundRemaining are real sums, not estimates.
+ * - Evidence (Task 49-b): per-return evidence[] metadata (id, mimeType,
+ *   sizeBytes, note) comes in ONE batch query — admins review the buyer's
+ *   actual photos; bytes are served by /api/attachments/[id].
  * - orders.paymentStatus is NEVER written by this rail — see the dataNotes.
  */
 
@@ -86,6 +90,33 @@ export async function GET(request: NextRequest) {
       refundsByReturn.set(refund.returnRequestId, list)
     }
 
+    // Real buyer evidence metadata for this page — ONE batch query over the
+    // plain FK. Metadata only (id/mimeType/sizeBytes/note) — the bytes stay
+    // behind the owner-or-admin /api/attachments/[id] gate.
+    const allEvidence = returnIds.length
+      ? await db.evidencePhotos.findMany({
+          where: { ownerType: 'return', returnRequestId: { in: returnIds } },
+          orderBy: { createdAt: 'asc' },
+          select: { id: true, returnRequestId: true, mimeType: true, sizeBytes: true, note: true, createdAt: true },
+        })
+      : []
+    const evidenceByReturn = new Map<string, EvidencePhotoMeta[]>()
+    for (const photo of allEvidence) {
+      // ownerType 'return' rows always carry returnRequestId (enforced by every
+      // write path) — the guard keeps types honest instead of asserting.
+      if (!photo.returnRequestId) continue
+      const list = evidenceByReturn.get(photo.returnRequestId) ?? []
+      list.push({
+        id: photo.id,
+        mimeType: photo.mimeType,
+        sizeBytes: photo.sizeBytes,
+        note: photo.note,
+        createdAt: photo.createdAt.toISOString(),
+        url: `/api/attachments/${photo.id}`,
+      })
+      evidenceByReturn.set(photo.returnRequestId, list)
+    }
+
     // Real order context (orderNumber / paymentStatus / subOrder statuses).
     const orderIds = [...new Set(returns.map((r) => r.orderId))]
     const orders = orderIds.length
@@ -143,7 +174,8 @@ export async function GET(request: NextRequest) {
             itemsByReturn.get(r.id) ?? [],
             orderById.get(r.orderId) ?? null,
             buyerById.get(r.buyerId) ?? null,
-            refundsByReturn.get(r.id) ?? []
+            refundsByReturn.get(r.id) ?? [],
+            evidenceByReturn.get(r.id) ?? []
           )
         ),
         counts: { ...counts, total },
@@ -152,6 +184,7 @@ export async function GET(request: NextRequest) {
           'Buyer name comes from the buyer profile (users table has no name column); a missing profile or email is shown as null.',
           'Refunds are a real ledger of money that actually moved OUTSIDE this system (bank transfer / mobile banking / cash) — recording one requires a real transaction reference and flips the return to "refunded". This rail never moves money itself.',
           'orders.paymentStatus is deliberately never modified by the refund rail — no real payment write-back exists, and flipping it without one would fake financial truth.',
+          'Evidence photos are buyer-provided: they can only be attached while a return request is pending and are locked from the review decision onwards. Bytes are served by /api/attachments/[id] to the uploading buyer and admins only.',
         ],
       },
     })

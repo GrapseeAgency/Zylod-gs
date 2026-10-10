@@ -14,6 +14,7 @@
  * financial truth.
  */
 import type { returnRequests, returnRequestItems, refunds } from '@prisma/client'
+import type { EvidencePhotoMeta } from '@/lib/evidence'
 
 /** Legal return statuses (mirrors the schema comment). */
 export const RETURN_STATUSES = ['pending', 'approved', 'rejected', 'refunded'] as const
@@ -70,6 +71,8 @@ export interface SerializedAdminReturn {
     comments: string | null
   }[]
   refunds: SerializedRefund[]
+  /** Buyer-provided evidence photos (metadata only — bytes live in /api/attachments/[id]). */
+  evidence: EvidencePhotoMeta[]
   order: AdminReturnOrderInfo | null
   buyer: AdminReturnBuyerInfo | null
 }
@@ -112,7 +115,8 @@ export function serializeAdminReturn(
   items: returnRequestItems[],
   order: AdminReturnOrderRow | null,
   buyer: AdminReturnBuyerRow | null,
-  refundRows: refunds[] = []
+  refundRows: refunds[] = [],
+  evidenceRows: EvidencePhotoMeta[] = []
 ): SerializedAdminReturn {
   const refundsSerialized: SerializedRefund[] = refundRows.map((f) => ({
     id: f.id,
@@ -147,6 +151,7 @@ export function serializeAdminReturn(
       comments: i.comments,
     })),
     refunds: refundsSerialized,
+    evidence: evidenceRows,
     order: order
       ? {
           orderNumber: order.orderNumber,

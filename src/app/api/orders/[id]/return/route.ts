@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { getSettingValue, RETURNS_WINDOW_DAYS_DEFAULT } from '@/lib/admin-settings'
 import type { returnRequests, returnRequestItems } from '@prisma/client'
 
 function generateReturnNumber(): string {
@@ -132,6 +133,43 @@ export async function POST(
           { status: 409 }
         )
       }
+    }
+
+    // ── Return-filing window — REAL admin setting 'returns.windowDays' ────
+    // The window is measured against the REAL delivery timestamp only.
+    // subOrders has NO deliveredAt column: orderTracking rows with status
+    // 'delivered' are the ONLY real delivery timestamps in this database, so
+    // the latest such event on this order's sub-orders is what the window is
+    // computed from.
+    // Honest fallbacks (deliberate):
+    // - With NO delivered tracking event we do NOT enforce the window — we
+    //   never invent a delivery date to reject a buyer with.
+    // - windowDays 0 disables the window entirely.
+    const windowValue = await getSettingValue('returns.windowDays')
+    const windowDays = typeof windowValue === 'number' ? windowValue : RETURNS_WINDOW_DAYS_DEFAULT
+    if (windowDays > 0) {
+      const orderSubOrders = await db.subOrders.findMany({
+        where: { orderId: id },
+        select: { id: true },
+      })
+      const latestDelivered = orderSubOrders.length
+        ? await db.orderTracking.findFirst({
+            where: { subOrderId: { in: orderSubOrders.map((s) => s.id) }, status: 'delivered' },
+            orderBy: { trackedAt: 'desc' },
+          })
+        : null
+      if (latestDelivered) {
+        const windowMs = windowDays * 24 * 60 * 60 * 1000
+        if (Date.now() - latestDelivered.trackedAt.getTime() > windowMs) {
+          return NextResponse.json(
+            {
+              error: `Return window expired — delivered ${latestDelivered.trackedAt.toISOString()}, window is ${windowDays} days`,
+            },
+            { status: 409 }
+          )
+        }
+      }
+      // No delivered tracking event → allow filing (honest fallback above).
     }
 
     // Real refund estimate: item total price prorated by returned quantity.

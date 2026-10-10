@@ -2,12 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { listEvidence } from '@/lib/evidence'
 
 /**
  * GET /api/returns/[id] — one real return request.
  * Visible to its buyer or an admin; everyone else gets 403/404.
  * Refunds (Task 47): the response carries the real refunds[] ledger rows
  * (money that actually moved outside the system) — empty when none exist.
+ * Evidence (Task 49-b): the response carries evidencePhotos metadata (id,
+ * mimeType, sizeBytes, note, createdAt, url) for THIS request — metadata
+ * only, never the bytes; bytes are served by /api/attachments/[id] which
+ * enforces the same owner-or-admin rule as this route.
  */
 export async function GET(
   request: NextRequest,
@@ -39,6 +44,9 @@ export async function GET(
       where: { returnRequestId: ret.id },
       orderBy: { createdAt: 'desc' },
     })
+
+    // Buyer-provided evidence photos (metadata only — never the bytes).
+    const evidencePhotos = await listEvidence('return', ret.id)
 
     const order = await db.orders.findUnique({
       where: { id: ret.orderId },
@@ -77,6 +85,7 @@ export async function GET(
           processedAt: f.createdAt.toISOString(),
           note: f.note,
         })),
+        evidencePhotos,
       },
     })
   } catch (error) {
