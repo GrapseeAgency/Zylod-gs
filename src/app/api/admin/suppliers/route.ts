@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 /**
  * GET /api/admin/suppliers — supplier KYC verification queue (ADMIN ONLY)
@@ -12,6 +14,10 @@ export async function GET(request: NextRequest) {
   if (!auth.authenticated || !auth.user) {
     return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
   }
+
+  const rl = checkRateLimit(request, 'admin-suppliers-list', 60, 60 * 1000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const { searchParams } = request.nextUrl
     const page = Math.max(1, Number(searchParams.get('page') || 1))
@@ -122,6 +128,10 @@ export async function PATCH(request: NextRequest) {
   if (!auth.authenticated || !auth.user) {
     return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
   }
+
+  const rl = checkRateLimit(request, 'admin-suppliers-write', 30, 5 * 60 * 1000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { supplierId, action, reason } = body
@@ -163,6 +173,18 @@ export async function PATCH(request: NextRequest) {
           newStatus: verificationStatus,
         }),
       },
+    })
+
+    // Real-time seller feed update (Task 51-b) — the KYC decision reaches the
+    // owning supplier's room the moment it is persisted. Fire-and-forget: the
+    // DB write above is the source of truth; the socket service being down
+    // never fails this request. The room id is the REAL supplierProfiles.id
+    // from the DB row — never a client-supplied value.
+    await broadcastToRoom(`seller:${supplier.id}`, 'moderation:decision', {
+      entityType: 'supplier',
+      entityId: supplier.id,
+      decision: verificationStatus,
+      reason: action === 'reject' ? String(reason).trim() : null,
     })
 
     return NextResponse.json({ success: true, data: { id: supplier.id, verificationStatus: supplier.verificationStatus, verifiedAt: supplier.verifiedAt } })

@@ -4,14 +4,18 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
+import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 export async function GET(request: NextRequest) {
   try {
-    // Require authentication
+    // Auth-first (Task 51-a mandate): authentication before rate limiting.
     const authResult = await requireUserType(request, ['buyer', 'admin'])
     if (!authResult.authenticated || !authResult.user) {
       return NextResponse.json({ error: authResult.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'orders-get', 60, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const searchParams = request.nextUrl.searchParams
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
@@ -92,15 +96,14 @@ class VariantStockError extends Error {
 
 export async function POST(request: NextRequest) {
   try {
-    // Checkout abuse guard: order creation is limited per IP
-    const rl = checkRateLimit(request, 'orders-post', 10, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
-    // Require buyer authentication
+    // Auth-first (Task 51-a mandate), then the checkout abuse guard.
     const authResult = await requireUserType(request, ['buyer'])
     if (!authResult.authenticated || !authResult.user) {
       return NextResponse.json({ error: authResult.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'orders-post', 10, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const buyerId = authResult.user.id // Use authenticated user's ID, not from body
 
@@ -206,6 +209,15 @@ export async function POST(request: NextRequest) {
         })
 
         // Create sub-orders for each supplier
+        // sellerFeed = what each affected seller is told in real time
+        // (order:new push) — order/sub-order ids and counts only, NEVER
+        // buyer PII; sellers refetch through their authenticated GET.
+        const sellerFeed: Array<{
+          supplierId: string
+          subOrderIds: string[]
+          itemCount: number
+          subtotal: number
+        }> = []
         for (const [supplierId, group] of Object.entries(supplierGroups)) {
           const subOrder = await tx.subOrders.create({
             data: {
@@ -214,6 +226,12 @@ export async function POST(request: NextRequest) {
               subtotal: group.subtotal,
               status: 'pending',
             },
+          })
+          sellerFeed.push({
+            supplierId,
+            subOrderIds: [subOrder.id],
+            itemCount: group.items.reduce((sum, i) => sum + i.quantity, 0),
+            subtotal: group.subtotal,
           })
 
           // Create order items
@@ -266,8 +284,21 @@ export async function POST(request: NextRequest) {
           await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
         }
 
-        return { order: newOrder, subOrdersCount: Object.keys(supplierGroups).length }
+        return { order: newOrder, sellerFeed }
       })
+
+      // Real-time (Task 51-a): every seller with a slice of this order gets a
+      // live order:new push on their seller:<supplierId> room — real persisted
+      // values only, no buyer PII (sellers refetch via authenticated GET).
+      for (const feed of order.sellerFeed) {
+        void broadcastToRoom(`seller:${feed.supplierId}`, 'order:new', {
+          orderId: order.order.id,
+          subOrderIds: feed.subOrderIds,
+          itemCount: feed.itemCount,
+          totalAmount: feed.subtotal,
+          createdAt: order.order.createdAt.toISOString(),
+        })
+      }
 
       return NextResponse.json({
         success: true,
@@ -276,7 +307,7 @@ export async function POST(request: NextRequest) {
           orderNumber: order.order.orderNumber,
           totalAmount: order.order.totalAmount,
           paymentStatus: order.order.paymentStatus,
-          subOrdersCount: order.subOrdersCount,
+          subOrdersCount: order.sellerFeed.length,
         },
       }, { status: 201 })
     } catch (txError) {

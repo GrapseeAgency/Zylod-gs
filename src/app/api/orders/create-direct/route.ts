@@ -5,6 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { notifyOrderMilestone } from '@/lib/notifications'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
+import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 /**
  * POST /api/orders/create-direct — Buy Now (single product, no cart).
@@ -51,14 +52,15 @@ class StockError extends Error {
 
 export async function POST(request: NextRequest) {
   try {
-    // Purchase abuse guard: direct order creation is limited per IP
-    const rl = checkRateLimit(request, 'orders-create-direct', 10, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
+    // Auth-first (Task 51-a mandate), then the purchase abuse guard.
     const authResult = await requireUserType(request, ['buyer'])
     if (!authResult.authenticated || !authResult.user) {
       return NextResponse.json({ error: authResult.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'orders-create-direct', 10, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const buyerId = authResult.user.id
 
     // NOTE: unitPrice / supplierId / totalAmount are deliberately NOT read
@@ -192,18 +194,28 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        return newOrder
+        return { order: newOrder, subOrder, supplierId }
       })
 
-      await notifyOrderMilestone(buyerId, order.orderNumber, 'confirmed', order.id)
+      await notifyOrderMilestone(buyerId, order.order.orderNumber, 'confirmed', order.order.id)
+
+      // Real-time (Task 51-a): the seller gets a live order:new push on their
+      // seller:<supplierId> room — real persisted values, no buyer PII.
+      void broadcastToRoom(`seller:${order.supplierId}`, 'order:new', {
+        orderId: order.order.id,
+        subOrderIds: [order.subOrder.id],
+        itemCount: qty,
+        totalAmount: order.order.totalAmount,
+        createdAt: order.order.createdAt.toISOString(),
+      })
 
       return NextResponse.json({
         success: true,
         data: {
-          orderId: order.id,
-          orderNumber: order.orderNumber,
-          totalAmount: order.totalAmount,
-          paymentStatus: order.paymentStatus,
+          orderId: order.order.id,
+          orderNumber: order.order.orderNumber,
+          totalAmount: order.order.totalAmount,
+          paymentStatus: order.order.paymentStatus,
         },
       }, { status: 201 })
     } catch (txError) {

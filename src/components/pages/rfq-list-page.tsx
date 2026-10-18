@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   XCircle,
   LogIn,
+  Plus,
 } from 'lucide-react'
 
 interface RfqRow {
@@ -24,14 +25,17 @@ interface RfqRow {
   quantity?: number
   targetPrice?: number | null
   createdAt: string
-  quotesCount?: number
+  /** The real API field name (GET /api/rfq returns `quoteCount`). */
+  quoteCount?: number
 }
 
+/** Real rfqRequests.status values (prisma/schema.prisma: open | quoted | awarded | closed | expired). */
 const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: typeof Clock }> = {
   open: { label: 'Open', color: '#C8102E', bg: '#FFF1F2', icon: Clock },
   quoted: { label: 'Quoted', color: '#1565C0', bg: '#E3F2FD', icon: FileText },
+  awarded: { label: 'Awarded', color: '#7C3AED', bg: '#F3E8FD', icon: CheckCircle2 },
   closed: { label: 'Closed', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  cancelled: { label: 'Cancelled', color: '#6B7280', bg: '#F3F4F6', icon: XCircle },
+  expired: { label: 'Expired', color: '#6B7280', bg: '#F3F4F6', icon: XCircle },
 }
 
 export function RfqListPage() {
@@ -94,6 +98,13 @@ export function RfqListPage() {
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
         </button>
+        <button
+          onClick={() => navigate('quote-request')}
+          className="p-2 -mr-1 rounded-full hover:bg-gray-100 transition-colors"
+          aria-label="New quote request"
+        >
+          <Plus className="h-5 w-5 text-[#C8102E]" />
+        </button>
       </header>
 
       <div className="max-w-md mx-auto px-4 pt-4 space-y-4 md:max-w-4xl md:px-6 md:py-6">
@@ -102,13 +113,22 @@ export function RfqListPage() {
             <h1 className="text-2xl font-black text-[#1A1A1A] tracking-tight">My Quote Requests</h1>
             <p className="text-xs text-[#6B7280] mt-1">Track RFQs and supplier responses in one place.</p>
           </div>
-          <button
-            onClick={() => navigate('help-center')}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-            aria-label="Help"
-          >
-            <HelpCircle className="h-5 w-5 text-[#6B7280]" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate('quote-request')}
+              className="inline-flex items-center gap-1.5 min-h-11 px-4 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
+            >
+              <Plus className="h-4 w-4" />
+              New RFQ
+            </button>
+            <button
+              onClick={() => navigate('help-center')}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Help"
+            >
+              <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+            </button>
+          </div>
         </div>
         <div className="text-center">
           <h1 className="text-xl font-black text-[#1A1A1A] tracking-tight">My Quote Requests</h1>
@@ -150,13 +170,14 @@ export function RfqListPage() {
             <FileText className="w-8 h-8 text-gray-400" />
             <p className="text-sm font-semibold text-[#1A1A1A]">No quote requests yet</p>
             <p className="text-xs text-[#6B7280] max-w-[260px]">
-              Open any product and tap &ldquo;Contact Supplier&rdquo; to request a custom bulk quote.
+              Start a new RFQ, or open any product and tap &ldquo;Request Quote&rdquo;.
             </p>
             <button
-              onClick={() => navigate('home')}
-              className="mt-1 px-6 py-2.5 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
+              onClick={() => navigate('quote-request')}
+              className="mt-1 inline-flex items-center gap-1.5 px-6 min-h-11 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
             >
-              Browse Products
+              <Plus className="h-4 w-4" />
+              New RFQ
             </button>
           </div>
         )}

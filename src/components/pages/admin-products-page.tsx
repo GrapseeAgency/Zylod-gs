@@ -7,10 +7,24 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   ShieldCheck, Search, RefreshCw, AlertTriangle, XCircle, CheckCircle2,
-  Clock, Check, Ban, ChevronDown, ChevronUp, Package, EyeOff
+  Clock, Check, Ban, ChevronDown, ChevronUp, Package, EyeOff, ImageIcon, Video
 } from 'lucide-react'
 
 // ── Real API types (GET /api/admin/products) ───────────────────────────
+interface ApiProductImage {
+  id: string
+  imageUrl: string
+  sortOrder: number
+}
+
+interface ApiProductVideo {
+  id: string
+  videoUrl: string
+  thumbnailUrl: string | null
+  title: string | null
+  sortOrder: number
+}
+
 interface ApiProduct {
   id: string
   name: string
@@ -23,6 +37,8 @@ interface ApiProduct {
   categoryName: string
   reviewCount: number
   createdAt: string
+  images: ApiProductImage[]
+  videos: ApiProductVideo[]
 }
 
 type ProductsTab = 'pending' | 'approved'
@@ -260,6 +276,8 @@ export function AdminProductsPage() {
         <div className="space-y-2">
           {products.map((p) => {
             const isRejectOpen = rejectId === p.id
+            const images = Array.isArray(p.images) ? p.images : []
+            const videos = Array.isArray(p.videos) ? p.videos : []
             return (
               <div key={p.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 {/* Row */}
@@ -341,6 +359,57 @@ export function AdminProductsPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Media review strip (Task 51-b) — approval is an INFORMED decision */}
+                {images.length > 0 || videos.length > 0 ? (
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 px-4 py-3">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <ImageIcon className="h-3.5 w-3.5 text-slate-400" />
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        Media review · {images.length} image{images.length === 1 ? '' : 's'} · {videos.length} video{videos.length === 1 ? '' : 's'}
+                      </span>
+                      {videos.length > 0 && (
+                        <span className="text-[10px] font-bold bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-400 rounded-lg px-2 py-0.5 flex items-center gap-1">
+                          <Video className="h-3 w-3" /> {videos.length} video preview{videos.length === 1 ? '' : 's'} below
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {images.map((img) => (
+                        <a
+                          key={img.id}
+                          href={img.imageUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Open full image in a new tab"
+                          className="block rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:ring-2 hover:ring-primary/40 transition min-h-11"
+                        >
+                          {/* Plain <img> — uploads are served publicly under /uploads, same tool as evidence-thumbs */}
+                          <img src={img.imageUrl} alt={`${p.name} image ${img.sortOrder + 1}`} loading="lazy" className="h-16 w-16 object-cover" />
+                        </a>
+                      ))}
+                      {videos.map((v) => (
+                        <video
+                          key={v.id}
+                          src={v.videoUrl}
+                          poster={v.thumbnailUrl ?? undefined}
+                          controls
+                          muted
+                          preload="metadata"
+                          title={v.title || `${p.name} video ${v.sortOrder + 1}`}
+                          className="h-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-black"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-amber-50/60 dark:bg-amber-950/20 px-4 py-2.5 flex items-center gap-2">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                    <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400">
+                      No images or videos were uploaded for this listing — reviewing it means approving blind media.
+                    </span>
+                  </div>
+                )}
 
                 {/* Real action error (verbatim from the backend) */}
                 {rowErrorId === p.id && rowError && (

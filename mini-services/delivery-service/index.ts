@@ -1,25 +1,43 @@
 /**
- * delivery-service — socket.io broadcaster for live delivery tracking.
+ * delivery-service — socket.io broadcaster for live delivery tracking AND the
+ * platform-wide real-time backbone (Task 51-a room generalization).
  * Port 3005 for socket.io (path '/'), port 3006 for the internal control
  * HTTP surface (/broadcast + /health). They must be separate servers because
  * socket.io attached at path '/' intercepts every request on its own server.
  *
- * Flow:
+ * Flows:
  *   driver phone ──POST /api/delivery/suborders/[id]/location──▶ Next.js API
  *   Next.js API (persists ping via Prisma) ──POST :3006/broadcast──▶ this service
  *   this service ──io.to(room).emit('delivery:ping')──▶ customer's map
+ *   Any Next.js API ──POST :3006/broadcast──▶ this service ──io.to(room).emit──▶
+ *   subscribed clients (inventory:updated / order:new / order:status … — the
+ *   full vocabulary lives in src/lib/realtime-broadcast.ts).
  *
- * ROOM AUTH (signed-room tokens — no unauthenticated join exists):
+ * ROOM VOCABULARY (subscribe handler, Task 51-a):
+ *   order:${orderId}      — token-gated
+ *   seller:${supplierId}  — token-gated (minted by GET /api/realtime/room-token)
+ *   admin:${adminUserId}  — token-gated (minted by GET /api/realtime/room-token)
+ *   product:${productId}  — PUBLIC, joins WITHOUT a token. This is deliberate
+ *     parity: product stock/availability is already public data rendered on
+ *     the PDP (/api/products/[id] is a public read), so the push channel
+ *     carries nothing a public PDP visitor could not already see. Events on
+ *     product rooms must only contain public fields (stockQuantity, delta…).
+ *   Room names must match /^(order|product|seller|admin):[A-Za-z0-9_-]+$/.
+ *
+ * TOKEN-GATED ROOM AUTH (signed-room tokens — no unauthenticated join):
  *   1. Browser asks Next.js: GET /api/delivery/orders/[orderId]/room-token
- *      (Next authorizes buyer-owner / admin / assigned-driver exactly like
- *      the /live endpoint and returns a 10-minute token).
- *   2. Client emits `subscribe` { orderId, token }.
+ *      (buyer-owner / admin / assigned-driver) or
+ *      GET /api/realtime/room-token?room=... (seller:/admin: rooms — Task 51-a).
+ *      Next authorizes and returns a 10-minute token.
+ *   2. Client emits `subscribe` { room, token } — or the legacy
+ *      { orderId, token } which maps to room `order:${orderId}` (identical
+ *      behaviour to the original handler).
  *   3. This service verifies: token = `${payload}.${sig}` with
  *      payload = base64url(JSON { r: roomId, u: userId, k: userType, exp })
  *      sig     = base64url(HMAC-SHA256(payload, secret)),
  *      constant-time signature compare, exp > now, claims.r === requested
  *      room. Failure → `subscribe:denied` { reason } and NO room is joined
- *      (the socket then receives no pings for that order). Success →
+ *      (the socket then receives no events for that room). Success →
  *      `subscribe:ok` { roomId }.
  *   Secret = DELIVERY_ROOM_SECRET, or — when unset —
  *   sha256(`${AUTH_SECRET || DATABASE_URL}:delivery-rooms`) hex, read from
@@ -28,7 +46,7 @@
  *
  * The service still holds no auth state and exposes no data of its own —
  * everything it emits was already permission-checked by the Next.js API
- * that forwarded it.
+ * that forwarded it (product rooms broadcast public-parity fields only).
  *
  * In the sandbox the gateway forwards `/?XTransformPort=3005` here; on
  * Railway, expose this service on its own domain or mount it behind the
@@ -43,6 +61,9 @@ import { Server } from 'socket.io'
 
 const PORT = 3005 // public socket.io (via gateway: /?XTransformPort=3005)
 const CONTROL_PORT = 3006 // internal, Next.js API only
+
+/** Room names accepted by the subscribe handler (Task 51-a vocabulary). */
+const ROOM_PATTERN = /^(order|product|seller|admin):[A-Za-z0-9_-]+$/
 
 /* ── Env: load the repo-root .env explicitly (bun does NOT auto-load it) ── */
 const ENV_KEYS = ['DELIVERY_ROOM_SECRET', 'AUTH_SECRET', 'DATABASE_URL'] as const
@@ -224,26 +245,55 @@ const io = new Server(
 io.on('connection', (socket) => {
   const joinedRooms = new Set<string>()
 
-  // Joining a room REQUIRES a valid signed token — there is no other path.
-  socket.on('subscribe', (data: { orderId?: string; token?: string }) => {
+  // Generalized room subscribe (Task 51-a).
+  //  - { room: 'product:<id>' }            → PUBLIC join, token NOT required
+  //    (parity: product stock is already public on the PDP).
+  //  - { room: 'order:|seller:|admin:<id>', token } → valid signed token bound
+  //    to that exact room (claims.r === room) is REQUIRED.
+  //  - Legacy { orderId, token }            → identical to the original
+  //    handler: room `order:${orderId}` with token verification.
+  // The per-socket subscribe rate limit is unchanged and applies to every path.
+  socket.on('subscribe', (data: { room?: string; orderId?: string; token?: string }) => {
     if (subscribeRateLimited(socket.id)) {
       console.warn(`delivery-service: subscribe rate limit exceeded by ${socket.id} — disconnecting`)
       socket.disconnect(true)
       return
     }
 
+    const rawRoom = typeof data?.room === 'string' ? data.room.trim() : ''
     const orderId = typeof data?.orderId === 'string' ? data.orderId.trim() : ''
     const token = typeof data?.token === 'string' ? data.token.trim() : ''
-    if (!orderId || !token) {
-      socket.emit('subscribe:denied', { reason: !orderId ? 'invalid_request' : 'invalid_token' })
+
+    let room: string
+    let requiresToken: boolean
+    if (rawRoom) {
+      if (!ROOM_PATTERN.test(rawRoom)) {
+        socket.emit('subscribe:denied', { reason: 'invalid_room' })
+        return
+      }
+      room = rawRoom
+      // product: rooms are public by design — a token is neither required
+      // nor checked (a stale/mismatched token must not fail a public join).
+      requiresToken = !room.startsWith('product:')
+    } else if (orderId) {
+      // Backward-compatible path — byte-for-byte the original behaviour.
+      room = `order:${orderId}`
+      requiresToken = true
+    } else {
+      socket.emit('subscribe:denied', { reason: 'invalid_request' })
       return
     }
 
-    const room = `order:${orderId}`
-    const result = verifyRoomToken(token, room)
-    if (result.ok === false) {
-      socket.emit('subscribe:denied', { reason: result.reason })
-      return
+    if (requiresToken) {
+      if (!token) {
+        socket.emit('subscribe:denied', { reason: 'invalid_token' })
+        return
+      }
+      const result = verifyRoomToken(token, room)
+      if (result.ok === false) {
+        socket.emit('subscribe:denied', { reason: result.reason })
+        return
+      }
     }
 
     socket.join(room)
@@ -251,10 +301,14 @@ io.on('connection', (socket) => {
     socket.emit('subscribe:ok', { roomId: room })
   })
 
-  socket.on('unsubscribe', (data: { orderId?: string }) => {
-    const orderId = typeof data?.orderId === 'string' ? data.orderId.trim() : ''
-    if (!orderId) return
-    const room = `order:${orderId}`
+  socket.on('unsubscribe', (data: { room?: string; orderId?: string }) => {
+    let room = ''
+    if (typeof data?.room === 'string' && ROOM_PATTERN.test(data.room.trim())) {
+      room = data.room.trim()
+    } else if (typeof data?.orderId === 'string' && data.orderId.trim()) {
+      room = `order:${data.orderId.trim()}`
+    }
+    if (!room) return
     socket.leave(room)
     joinedRooms.delete(room)
   })

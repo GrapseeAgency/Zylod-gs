@@ -1,9 +1,22 @@
 'use client';
 
+/**
+ * Cancel Order — REAL server-guarded cancellation.
+ *
+ * PATCHes { status:'cancelled', note } to /api/supplier/orders/[id]: the
+ * status is a REAL subOrders value and the note (reason + free text) is
+ * persisted in the auditLogs metadata — the platform's real audit trail.
+ * Navigation back happens ONLY after a real 200; every failure shows the
+ * server's verbatim error and stays on the page.
+ */
+
 import React, { useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+
+const REASONS = ['Out of stock', 'Price dispute', 'Buyer requested cancellation', 'Cannot fulfill MOQs', 'Other'] as const;
 
 export function SellerOrderCancellationPage() {
   const { pageParams, goBack } = useNavigationStore();
@@ -14,14 +27,23 @@ export function SellerOrderCancellationPage() {
   const handleCancel = async () => {
     setCancelling(true);
     try {
-      await fetch(`/api/supplier/orders/${pageParams?.orderId}`, {
+      const note = [reason, notes.trim()].filter(Boolean).join(' — ');
+      const res = await fetch(`/api/supplier/orders/${pageParams?.orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'Cancelled', cancellationReason: reason, cancellationNotes: notes })
+        credentials: 'include',
+        body: JSON.stringify({ status: 'cancelled', note }),
       });
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.success) {
+        toast.error(body?.error || `Cancellation failed (HTTP ${res.status})`);
+        return;
+      }
+      toast.success('Order cancelled — the buyer has been notified');
       goBack();
     } catch (err) {
-      console.error(err);
+      toast.error(err instanceof Error ? err.message : 'Network error while cancelling');
+    } finally {
       setCancelling(false);
     }
   };
@@ -48,7 +70,7 @@ export function SellerOrderCancellationPage() {
         <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
           <h2 className="font-semibold text-gray-900">Cancellation Reason</h2>
           <div className="space-y-3">
-            {['Out of stock', 'Price dispute', 'Buyer requested cancellation', 'Cannot fulfill MOQs', 'Other'].map((r) => (
+            {REASONS.map((r) => (
               <label key={r} className="flex items-center gap-3">
                 <input 
                   type="radio" 

@@ -1,0 +1,327 @@
+'use client'
+
+/**
+ * Admin Orders — fulfillment view (Task 51-b).
+ *
+ * Consumes GET /api/admin/orders with the additive params:
+ *   ?paymentStatus=all (see every order — the payments queue keeps its own
+ *   'unpaid' default) + ?status=<REAL subOrders.status value> + ?page/?limit.
+ *
+ * The `orders` table has NO status column — fulfillment state lives on
+ * subOrders (pending | confirmed | packed | shipped | delivered | cancelled |
+ * returned, straight from prisma/schema.prisma). The status tabs below are
+ * built from those real values and filter server-side via
+ * where.subOrders = { some: { status } } — nothing is filtered client-side
+ * so counts and pagination stay real.
+ *
+ * Read-only oversight: fulfillment moves happen seller-side
+ * (PATCH /api/supplier/orders/[id]) — this page makes decisions visible, it
+ * does not duplicate the controls.
+ */
+import React, { useCallback, useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useNavigationStore } from '@/store/navigation-store'
+import { useCurrencyStore } from '@/store/currency-store'
+import {
+  ShieldCheck, Search, RefreshCw, AlertTriangle, CheckCircle2, Package,
+  ShoppingBag, Truck, Boxes, ChevronDown, ChevronUp,
+} from 'lucide-react'
+
+// ── Real API types (GET /api/admin/orders) ─────────────────────────────
+interface ApiSubOrder {
+  id: string
+  status: string
+  supplierId: string
+  itemCount: number
+}
+
+interface ApiOrder {
+  id: string
+  orderNumber: string
+  totalAmount: number
+  paymentStatus: string
+  status: string
+  placedAt: string
+  buyer: { id: string; email: string | null; name: string | null; userType: string } | null
+  subOrderCount: number
+  itemCount: number
+  subOrders: ApiSubOrder[]
+}
+
+/** REAL subOrders.status values (prisma/schema.prisma) — no invented states. */
+const ORDER_STATUS_TABS: { key: string; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'pending', label: 'Pending' },
+  { key: 'confirmed', label: 'Confirmed' },
+  { key: 'packed', label: 'Packed' },
+  { key: 'shipped', label: 'Shipped' },
+  { key: 'delivered', label: 'Delivered' },
+  { key: 'cancelled', label: 'Cancelled' },
+  { key: 'returned', label: 'Returned' },
+]
+
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+
+const paymentStatusChip: Record<string, string> = {
+  unpaid: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
+  partial: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-900',
+  paid: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
+  refunded: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+}
+
+const subOrderStatusChip: Record<string, string> = {
+  pending: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
+  confirmed: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-900',
+  packed: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-400 dark:border-indigo-900',
+  shipped: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-400 dark:border-violet-900',
+  delivered: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
+  cancelled: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
+  returned: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+}
+
+function PaymentChip({ status }: { status: string }) {
+  const cls = paymentStatusChip[status] ?? paymentStatusChip.refunded
+  return <span className={`text-[10px] font-bold border rounded-lg px-2 py-1 uppercase tracking-wide ${cls}`}>{status}</span>
+}
+
+function SubOrderChip({ sub }: { sub: ApiSubOrder }) {
+  const cls = subOrderStatusChip[sub.status] ?? subOrderStatusChip.pending
+  return (
+    <span className={`text-[10px] font-bold border rounded-lg px-2 py-1 ${cls}`}>
+      {sub.status} · {sub.itemCount} item{sub.itemCount === 1 ? '' : 's'}
+    </span>
+  )
+}
+
+const PAGE_SIZE = 20
+
+export function AdminOrdersPage() {
+  const { navigate } = useNavigationStore()
+  const { formatPrice } = useCurrencyStore()
+
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [needsAuth, setNeedsAuth] = useState(false)
+  const [orders, setOrders] = useState<ApiOrder[]>([])
+  const [statusTab, setStatusTab] = useState('all')
+  const [q, setQ] = useState('')
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [total, setTotal] = useState(0)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  const loadOrders = useCallback(async (opts?: { status?: string; q?: string; page?: number }) => {
+    const useStatus = opts?.status ?? statusTab
+    const useQ = opts?.q ?? q
+    const usePage = opts?.page ?? page
+    setLoading(true)
+    setError('')
+    setNeedsAuth(false)
+    try {
+      const params = new URLSearchParams({
+        paymentStatus: 'all', // fulfillment view sees every order; the payments queue keeps its own 'unpaid' default
+        status: useStatus,
+        page: String(usePage),
+        limit: String(PAGE_SIZE),
+      })
+      if (useQ) params.set('q', useQ)
+      const res = await fetch(`/api/admin/orders?${params.toString()}`, { credentials: 'include' })
+      if (res.status === 401 || res.status === 403) { setNeedsAuth(true); setOrders([]); return }
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json?.success) {
+        setError(json?.error || `Failed to load orders (HTTP ${res.status})`)
+        setOrders([])
+        return
+      }
+      setOrders(Array.isArray(json.data?.orders) ? json.data.orders : [])
+      setTotalPages(json.data?.pagination?.totalPages || 0)
+      setTotal(json.data?.pagination?.total || 0)
+    } catch {
+      setError('Network error while loading orders. Check your connection and retry.')
+      setOrders([])
+    } finally {
+      setLoading(false)
+    }
+  }, [statusTab, q, page])
+
+  useEffect(() => { loadOrders() }, [loadOrders])
+
+  const switchStatus = (s: string) => {
+    setStatusTab(s)
+    setPage(1)
+    setExpandedId(null)
+    loadOrders({ status: s, page: 1 })
+  }
+
+  // ── Guard states ──────────────────────────────────────────────────────
+  if (needsAuth) {
+    return (
+      <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
+        <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
+        <h1 className="text-base font-black">Admin access required</h1>
+        <p className="text-xs text-slate-500 max-w-sm mx-auto">This fulfillment view is restricted to Zylod admins. Sign in with an admin account to audit orders across the platform.</p>
+        <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-[1280px] mx-auto space-y-4 px-4 py-4">
+      {/* Header */}
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950 border border-rose-100 dark:border-rose-900 flex items-center justify-center">
+            <ShoppingBag className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-lg md:text-xl font-black tracking-tight">Orders — Fulfillment View</h1>
+            <p className="text-[11px] text-slate-400">Every order on the platform with its real per-shipment status. Fulfillment moves happen seller-side; this is the admin oversight view.</p>
+          </div>
+        </div>
+        <Button variant="outline" onClick={() => loadOrders()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700">
+          <RefreshCw className="h-3.5 w-3.5" /> Refresh
+        </Button>
+      </div>
+
+      {/* Status tabs (REAL subOrders.status values) + search */}
+      <div className="flex flex-wrap items-center gap-2">
+        {ORDER_STATUS_TABS.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => switchStatus(t.key)}
+            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'}`}
+          >
+            {t.label}
+          </button>
+        ))}
+        <div className="relative flex-1 min-w-[200px] max-w-sm ml-auto">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+          <Input
+            value={q}
+            onChange={(e) => { setQ(e.target.value) }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { setPage(1); loadOrders({ q, page: 1 }) } }}
+            placeholder="Search order # or buyer email…"
+            className="h-9 pl-9 rounded-xl text-xs"
+          />
+        </div>
+      </div>
+
+      {/* States */}
+      {loading ? (
+        <div className="space-y-2">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+          ))}
+        </div>
+      ) : error ? (
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+          <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
+          <h2 className="text-sm font-black">Could not load orders</h2>
+          <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
+          <Button onClick={() => loadOrders()} variant="outline" className="h-10 px-5 rounded-xl text-xs font-bold gap-2">
+            <RefreshCw className="h-3.5 w-3.5" /> Retry
+          </Button>
+        </div>
+      ) : orders.length === 0 ? (
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+          {q ? (
+            <>
+              <Package className="h-10 w-10 text-slate-300 mx-auto" />
+              <h2 className="text-sm font-black">No orders match &quot;{q}&quot;</h2>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">Search matches the order number and the buyer&apos;s email. Try a different term or clear the search.</p>
+            </>
+          ) : statusTab !== 'all' ? (
+            <>
+              <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
+              <h2 className="text-sm font-black">No {statusTab} shipments</h2>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">No order currently has a shipment in the &quot;{statusTab}&quot; state. Sellers move shipments through pending → confirmed → packed → shipped → delivered; cancelled and returned are terminal.</p>
+            </>
+          ) : (
+            <>
+              <Package className="h-10 w-10 text-slate-300 mx-auto" />
+              <h2 className="text-sm font-black">No orders yet</h2>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">Orders appear here the moment buyers check out. Nothing has been ordered platform-wide yet.</p>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-2 max-h-[70vh] overflow-y-auto scrollbar-thin pr-1">
+          {orders.map((o) => {
+            const isExpanded = expandedId === o.id
+            const subOrders = Array.isArray(o.subOrders) ? o.subOrders : []
+            return (
+              <div key={o.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                {/* Row */}
+                <div className="p-4 flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2 min-w-[160px]">
+                    <ShoppingBag className="h-4 w-4 text-slate-400 shrink-0" />
+                    <span className="text-xs font-black">#{o.orderNumber}</span>
+                  </div>
+                  <div className="min-w-[150px] text-xs text-slate-500 dark:text-slate-400">
+                    <p className="font-bold text-slate-800 dark:text-slate-200 truncate">{o.buyer?.name || '—'}</p>
+                    <p className="truncate">{o.buyer?.email || 'no email on account'}</p>
+                  </div>
+                  <div className="text-right min-w-[110px] ml-auto">
+                    <p className="text-sm font-black text-primary">{formatPrice(o.totalAmount)}</p>
+                    <PaymentChip status={o.paymentStatus} />
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5 min-w-[130px]">
+                    <span className={chipClass}>{o.itemCount} item{o.itemCount === 1 ? '' : 's'}</span>
+                    <span className={chipClass}>{o.subOrderCount} shipment{o.subOrderCount === 1 ? '' : 's'}</span>
+                  </div>
+                  <div className="text-[10px] text-slate-400 min-w-[90px]">
+                    {new Date(o.placedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    <span className="block">placed</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setExpandedId(isExpanded ? null : o.id)}
+                    className="h-9 px-4 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700"
+                  >
+                    {isExpanded ? <><ChevronUp className="h-3.5 w-3.5" /> Hide shipments</> : <><ChevronDown className="h-3.5 w-3.5" /> Shipments</>}
+                  </Button>
+                </div>
+
+                {/* Per-subOrder status summary */}
+                {isExpanded && (
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Per-shipment status (real subOrders.status)</p>
+                    {subOrders.length === 0 ? (
+                      <p className="text-xs text-slate-500">This order has no shipments recorded — it may predate the split-order model.</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {subOrders.map((s) => (
+                          <span key={s.id} className="flex items-center gap-1.5">
+                            <SubOrderChip sub={s} />
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-[10px] text-slate-400 flex items-center gap-1.5 pt-1">
+                      <Boxes className="h-3 w-3" /> {o.subOrderCount} shipment{o.subOrderCount === 1 ? '' : 's'} · {o.itemCount} item{o.itemCount === 1 ? '' : 's'} across all shipments
+                      <Truck className="h-3 w-3 ml-2" /> status changes are made by the selling supplier and appear here after their next edit
+                    </p>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-2">
+              <span className="text-[11px] text-slate-400">{total} order{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <div className="flex gap-2">
+                <Button variant="outline" disabled={page <= 1} onClick={() => { const np = page - 1; setPage(np); loadOrders({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
+                <Button variant="outline" disabled={page >= totalPages} onClick={() => { const np = page + 1; setPage(np); loadOrders({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default AdminOrdersPage

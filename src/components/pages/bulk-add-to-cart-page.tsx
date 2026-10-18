@@ -3,7 +3,14 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, CheckSquare, Square, ShoppingCart, Info } from 'lucide-react'
+import { toast } from 'sonner'
 import { useNavigationStore } from '@/store/navigation-store'
+
+interface BulkResult {
+  productId?: string
+  status?: 'added' | 'merged' | 'rejected'
+  reason?: string
+}
 
 export function BulkAddToCartPage() {
   const { goBack, navigate } = useNavigationStore()
@@ -12,7 +19,7 @@ export function BulkAddToCartPage() {
   const [quantities, setQuantities] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const [success, setSuccess] = useState<{ added: number; merged: number; rejected: string[] } | null>(null)
 
   useEffect(() => {
     fetchWishlist()
@@ -74,13 +81,35 @@ export function BulkAddToCartPage() {
       const res = await fetch('/api/cart/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ items: selectedItems })
       })
-      
-      if (res.ok) {
-        setSuccess(true)
+      const json = await res.json().catch(() => null)
+      if (res.status === 401) {
+        toast.error(json?.error || 'Sign in to add items to your cart')
+        return
       }
+      if (!res.ok || !json?.success) {
+        toast.error(json?.error || `Bulk add failed (HTTP ${res.status})`)
+        return
+      }
+      // Real per-item outcomes from the API's results[] — never assume success.
+      const results: BulkResult[] = Array.isArray(json.data?.results) ? json.data.results : []
+      const added = results.filter((r) => r.status === 'added').length
+      const merged = results.filter((r) => r.status === 'merged').length
+      const rejected = results
+        .filter((r) => r.status === 'rejected')
+        .map((r) => r.reason || 'Rejected for an unspecified reason')
+      if (added + merged === 0) {
+        toast.error(rejected[0] || 'Nothing could be added to your cart')
+        return
+      }
+      if (rejected.length > 0) {
+        toast.warning(`${rejected.length} item(s) could not be added`, { description: rejected[0] })
+      }
+      setSuccess({ added, merged, rejected })
     } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Network error while adding to cart')
       console.error('Failed to add to cart', error)
     } finally {
       setAdding(false)
@@ -104,7 +133,20 @@ export function BulkAddToCartPage() {
         </motion.div>
         <div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Added to Cart!</h2>
-          <p className="text-sm text-gray-500">Successfully added {selectedIds.size} items to your cart.</p>
+          <p className="text-sm text-gray-500">
+            {success.added} item(s) added, {success.merged} merged into existing lines
+            {success.rejected.length > 0 ? `, ${success.rejected.length} rejected` : ''}.
+          </p>
+          {success.rejected.length > 0 && (
+            <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-left max-w-sm mx-auto">
+              <p className="text-xs font-semibold text-amber-800 mb-1">Not added:</p>
+              <ul className="text-xs text-amber-700 list-disc list-inside space-y-0.5">
+                {success.rejected.slice(0, 5).map((reason, i) => (
+                  <li key={i}>{reason}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
         <div className="w-full space-y-3 pt-4 md:max-w-xs md:mx-auto">
           <button 

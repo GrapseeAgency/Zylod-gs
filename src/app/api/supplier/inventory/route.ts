@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { z } from 'zod'
 
 /**
@@ -13,6 +14,11 @@ import { z } from 'zod'
  *      Product- and variant-level updates may be mixed. Every id is verified
  *      for ownership through products.supplierId (or admin) — no blind writes.
  *      Returns the real before/after quantity for every applied update.
+ *
+ *      After the write succeeds, each updated product also gets a real-time
+ *      `inventory:updated` push into its PUBLIC product:<productId> socket
+ *      room (payload = only the real before/after computed here — PDP stock
+ *      widgets and the seller inventory page live-apply it; Task 51-a).
  */
 
 const READ_LIMIT = { limit: 60, windowMs: 60_000 }
@@ -84,6 +90,10 @@ export async function GET(request: NextRequest) {
         isApproved: true,
         updatedAt: true,
         category: { select: { name: true } },
+        // Supplier attribution (admin ?all=true audit — who owns which stock).
+        supplier: {
+          select: { id: true, companyName: true, verificationStatus: true },
+        },
         variants: {
           orderBy: { variantName: 'asc' },
           select: {
@@ -148,6 +158,7 @@ export async function PATCH(request: NextRequest) {
 
     const isAdmin = auth.user.userType === 'admin'
     let profileId: string | null = null
+    const variantProductIds = new Map<string, string>()
     if (!isAdmin) {
       const profile = await db.supplierProfiles.findUnique({
         where: { userId: auth.user.id },
@@ -186,7 +197,7 @@ export async function PATCH(request: NextRequest) {
       } else if (u.variantId) {
         const variant = await db.productVariants.findUnique({
           where: { id: u.variantId },
-          select: { id: true, stockQuantity: true, product: { select: { supplierId: true } } },
+          select: { id: true, stockQuantity: true, productId: true, product: { select: { supplierId: true } } },
         })
         if (!variant || (!isAdmin && variant.product.supplierId !== profileId)) {
           return NextResponse.json(
@@ -194,16 +205,20 @@ export async function PATCH(request: NextRequest) {
             { status: 404 }
           )
         }
+        variantProductIds.set(variant.id, variant.productId)
         resolved.push({ key: 'variantId', id: variant.id, before: variant.stockQuantity })
       }
     }
 
     // Apply ALL updates instantly in one transaction — the real-time stock edit.
     const results = await db.$transaction(async (tx) => {
-      const applied: Array<
-        | { productId: string; before: number; after: number }
-        | { variantId: string; before: number; after: number }
-      > = []
+      const applied: Array<{
+        productId?: string
+        variantId?: string
+        before: number
+        after: number
+        updatedAt: Date
+      }> = []
       for (const [index, u] of updates.entries()) {
         const r = resolved[index]
         const target =
@@ -214,16 +229,18 @@ export async function PATCH(request: NextRequest) {
           const row = await tx.products.update({
             where: { id: r.id },
             data: { stockQuantity: target },
-            select: { stockQuantity: true },
+            select: { stockQuantity: true, updatedAt: true },
           })
-          applied.push({ productId: r.id, before: r.before, after: row.stockQuantity })
+          applied.push({ productId: r.id, before: r.before, after: row.stockQuantity, updatedAt: row.updatedAt })
         } else {
           const row = await tx.productVariants.update({
             where: { id: r.id },
             data: { stockQuantity: target },
             select: { stockQuantity: true },
           })
-          applied.push({ variantId: r.id, before: r.before, after: row.stockQuantity })
+          // productVariants has no updatedAt column — the write timestamp is
+          // the honest "when this value became true" for the broadcast payload.
+          applied.push({ variantId: r.id, before: r.before, after: row.stockQuantity, updatedAt: new Date() })
         }
       }
       return applied
@@ -234,14 +251,34 @@ export async function PATCH(request: NextRequest) {
         actorId: auth.user.id,
         action: 'inventory_updated',
         entityType: 'products',
-        entityId: results.length === 1 && 'productId' in results[0] ? results[0].productId : null,
+        entityId: results.length === 1 && results[0].productId ? results[0].productId : null,
         metadata: JSON.stringify({
           actorType: isAdmin ? 'admin' : 'supplier',
           supplierId: profileId,
-          updates: results,
+          updates: results.map((r) => ({
+            ...(r.productId ? { productId: r.productId } : { variantId: r.variantId }),
+            before: r.before,
+            after: r.after,
+            updatedAt: r.updatedAt.toISOString(),
+          })),
         }),
       },
     })
+
+    // Real-time (Task 51-a): each updated product pushes its REAL persisted
+    // before/after into the public product room. Only public-parity fields
+    // are included (product/variant id, absolute stock, delta, write time).
+    for (const r of results) {
+      const productId = r.productId ?? variantProductIds.get(r.variantId ?? '')
+      if (!productId) continue
+      void broadcastToRoom(`product:${productId}`, 'inventory:updated', {
+        productId,
+        ...(r.variantId ? { variantId: r.variantId } : {}),
+        stockQuantity: r.after,
+        delta: r.after - r.before,
+        updatedAt: r.updatedAt.toISOString(),
+      })
+    }
 
     return NextResponse.json({
       success: true,

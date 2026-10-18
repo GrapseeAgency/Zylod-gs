@@ -16,6 +16,7 @@ import { useCartStore, CartItemData } from '@/store/cart-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useToast } from '@/hooks/use-toast'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room'
 import { MobileProductDetailPage } from '@/components/mobile/mobile-product-detail-page'
 import { ProductQRCodeDialog } from '@/components/shared/product-qr-code'
 import { ProductShareDialog } from '@/components/shared/product-share-dialog'
@@ -260,6 +261,51 @@ function DesktopProductDetailPage() {
   useEffect(() => {
     setQuantity(moq)
   }, [moq])
+
+  // ─── Real-time stock (Task 51-a): PUBLIC product room — no token needed.
+  // Only the fields carried by the event payload are applied (stockQuantity is
+  // the server's absolute persisted after-value; delta is informational —
+  // applying both would double-count). Malformed events are ignored silently.
+  const [liveStockAt, setLiveStockAt] = useState<number | null>(null)
+  const liveHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleRealtimeEvent = useCallback(
+    (msg: RealtimeRoomMessage) => {
+      if (msg.event !== 'inventory:updated') return
+      const d = msg.data as Record<string, unknown> | null
+      if (!d || typeof d !== 'object' || Array.isArray(d)) return
+      if (typeof d.productId !== 'string' || d.productId !== productId) return
+      const stock = d.stockQuantity
+      if (typeof stock !== 'number' || !Number.isFinite(stock) || stock < 0) return
+      const variantId =
+        typeof d.variantId === 'string' && d.variantId.length > 0 ? d.variantId : null
+      setProduct((prev) => {
+        if (!prev) return prev
+        if (variantId) {
+          return {
+            ...prev,
+            variants: prev.variants.map((v) =>
+              v.id === variantId ? { ...v, stockQuantity: stock } : v
+            ),
+          }
+        }
+        return { ...prev, stockQuantity: stock }
+      })
+      setLiveStockAt(Date.now())
+      if (liveHideTimerRef.current) clearTimeout(liveHideTimerRef.current)
+      liveHideTimerRef.current = setTimeout(() => setLiveStockAt(null), 4_000)
+    },
+    [productId]
+  )
+
+  useRealtimeRoom(productId ? `product:${productId}` : '', { onEvent: handleRealtimeEvent })
+
+  useEffect(
+    () => () => {
+      if (liveHideTimerRef.current) clearTimeout(liveHideTimerRef.current)
+    },
+    []
+  )
 
   // ─── Sticky Buy Now Bar: Show when main buy button is scrolled past ───
   useEffect(() => {
@@ -663,11 +709,19 @@ function DesktopProductDetailPage() {
                     {currentVariantStock > 0 ? `In Stock: ${currentVariantStock.toLocaleString()} ${unit} available` : 'Out of Stock'}
                   </span>
                 </div>
-                {stockStatus.urgency && (
-                  <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-xs animate-pulse">
-                    <AlertCircle className="h-3 w-3 mr-1" /> Only {currentVariantStock} left!
-                  </Badge>
-                )}
+                <div className="flex items-center gap-2">
+                  {liveStockAt !== null && (
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
+                      <span className="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                      Live • stock updated
+                    </Badge>
+                  )}
+                  {stockStatus.urgency && (
+                    <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-xs animate-pulse">
+                      <AlertCircle className="h-3 w-3 mr-1" /> Only {currentVariantStock} left!
+                    </Badge>
+                  )}
+                </div>
               </div>
               {/* Stock progress bar */}
               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">

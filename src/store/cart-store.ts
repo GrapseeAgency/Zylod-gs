@@ -20,6 +20,10 @@ export interface CartItemData {
   supplierSlug: string
   unit: string
   priceTiers: { minQty: number; maxQty: number | null; pricePerUnit: number }[]
+  /** products.basePrice — lets qty changes re-resolve BELOW the first tier back to base (canonical rule step 3). Optional: lines added before this field existed fall back to unitPrice. */
+  basePrice?: number | null
+  /** productVariants.priceOverride for the selected variant — when set, the variant is priced individually and tiers do NOT apply (canonical rule step 1). */
+  variantPriceOverride?: number | null
 }
 
 interface CartState {
@@ -40,19 +44,84 @@ interface CartState {
   syncWithApi: (buyerId: string) => Promise<void>
 }
 
-function calculatePrice(item: CartItemData, quantity: number): number {
-  let applicablePrice = item.unitPrice
-  
-  if (item.priceTiers && item.priceTiers.length > 0) {
-    for (const tier of item.priceTiers) {
+/** Tier/variant shape both the products API and CartItemData carry. */
+export interface ClientPriceTier {
+  minQty: number
+  maxQty: number | null
+  pricePerUnit: number
+}
+
+export interface ClientPriceInput {
+  /** products.basePrice (optional for legacy lines). */
+  basePrice?: number | null
+  /** productVariants.priceOverride for the selected variant, if any. */
+  variantPriceOverride?: number | null
+  priceTiers: ClientPriceTier[]
+  quantity: number
+  /** Price the line was added with — last-resort fallback for legacy lines. */
+  fallbackUnitPrice?: number
+}
+
+/**
+ * ─── Canonical wholesale unit price, client-side mirror ───
+ *
+ * The single source of truth is `resolveUnitPrice` in src/lib/wholesale-pricing.ts
+ * (campaign Task 50-b). GENUINE BLOCKER on importing it directly: it is async and
+ * takes a Prisma.TransactionClient — it queries products/priceTiers in the DB —
+ * while this helper runs in the browser. wholesale-pricing.ts is read+import-only
+ * this round, so its pure decision core cannot be extracted there. The exact rule
+ * is therefore replicated 1:1 here and shared by every buyer surface (cart store,
+ * search results, bulk order form); if a pure helper ever lands in
+ * wholesale-pricing.ts, DELETE this and import it instead.
+ *
+ * For a line with quantity `q`:
+ *  1. variant with priceOverride != null → unitPrice = priceOverride.
+ *     Variants are priced individually — price tiers DO NOT apply.
+ *  2. else the tier where minQty ≤ q AND (maxQty == null OR q ≤ maxQty)
+ *     → unitPrice = tier.pricePerUnit (tiers are ordered by minQty; the FIRST
+ *     covering tier is taken, same as resolveUnitPrice's Array.find).
+ *  3. else unitPrice = basePrice. Lines that predate the optional basePrice
+ *     field fall back to the unitPrice they were added with (the resolved
+ *     price at add time) — never a fabricated number.
+ *
+ * Server truth still wins: GET /api/cart re-prices every line via the real
+ * resolveUnitPrice; this mirror only keeps LOCAL surfaces honest between syncs.
+ */
+export function resolveClientUnitPrice({
+  basePrice,
+  variantPriceOverride,
+  priceTiers,
+  quantity,
+  fallbackUnitPrice = 0,
+}: ClientPriceInput): number {
+  // Rule 1 — variant priced individually, tiers do not apply.
+  if (variantPriceOverride != null) {
+    return variantPriceOverride
+  }
+
+  // Rule 2 — the tier where minQty ≤ q AND (maxQty == null OR q ≤ maxQty).
+  if (priceTiers && priceTiers.length > 0) {
+    for (const tier of priceTiers) {
       if (quantity >= tier.minQty && (tier.maxQty === null || quantity <= tier.maxQty)) {
-        applicablePrice = tier.pricePerUnit
-        break
+        return tier.pricePerUnit
       }
     }
   }
-  
-  return applicablePrice * quantity
+
+  // Rule 3 — no matching tier → base price (fallback: price at add time).
+  return basePrice ?? fallbackUnitPrice
+}
+
+function calculatePrice(item: CartItemData, quantity: number): number {
+  return (
+    resolveClientUnitPrice({
+      basePrice: item.basePrice,
+      variantPriceOverride: item.variantPriceOverride,
+      priceTiers: item.priceTiers,
+      quantity,
+      fallbackUnitPrice: item.unitPrice,
+    }) * quantity
+  )
 }
 
 export const useCartStore = create<CartState>()(
@@ -177,6 +246,9 @@ export const useCartStore = create<CartState>()(
                   totalPrice: typeof item.totalPrice === 'number' ? item.totalPrice : item.quantity * (item.product?.basePrice || 0),
                   moq: item.product?.moq || 1,
                   maxOrderQty: item.product?.maxOrderQty ?? null,
+                  // Canonical-rule inputs for honest local re-pricing on qty change.
+                  basePrice: typeof item.product?.basePrice === 'number' ? item.product.basePrice : null,
+                  variantPriceOverride: typeof item.variant?.priceOverride === 'number' ? item.variant.priceOverride : null,
                   supplierId: item.supplierId || s.supplierId,
                   supplierName: s.supplierName || '',
                   supplierSlug: '',

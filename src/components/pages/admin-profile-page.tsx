@@ -1,66 +1,72 @@
 'use client'
 
+/**
+ * Admin Profile / Command Center — rewired in Task 51-b.
+ *
+ * Every data surface here now talks to a REAL endpoint with the platform's
+ * cookie transport (credentials:'include') and shows real error states:
+ *   - Overview KPIs   → GET /api/admin/dashboard (real platformOverview +
+ *                       pendingApprovals shape — the old mapping read fields
+ *                       this API has never returned)
+ *   - Complaints tab  → GET /api/admin/complaints (real queue since Task 48)
+ *                       with a link into the full admin-complaints page
+ *   - Ping            → GET /api (a real public route; the old ping hit
+ *                       /api/health which has never existed → 404)
+ *
+ * DELETED as dead-ends that faked success against endpoints that DO NOT EXIST
+ * anywhere in src/app/api: the KYC "approve/reject" merchant queue (it called
+ * /api/admin/users/[id]/approve and /api/admin/users/[id]/reject), the staff
+ * roster (/api/admin/staff), and the announcement broadcaster
+ * (/api/admin/announcements). Real KYC review lives on the admin-suppliers
+ * page (PATCH /api/admin/suppliers); the silent "// Graceful" catches are gone.
+ */
 import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   ArrowLeft, Shield, Users, DollarSign, AlertTriangle, Activity,
-  CheckCircle2, Clock, Settings, Edit3, BarChart3, Layers, Boxes,
-  ShieldCheck, ShieldAlert, Loader2, Check, ChevronRight, X,
-  RefreshCw, Zap, FileText, Truck, Star, Globe, TrendingUp,
-  TrendingDown, MessageSquare, Archive, Bell, Lock, Eye,
-  Megaphone, Building2, Hash, Download, Search, Filter,
-  Calendar, Wrench, Cpu, Radio, Package, HardHat, Award,
-  Camera, ChevronDown, ChevronUp, Ban, UserCheck, Landmark,
-  CreditCard, Scale, Receipt, MapPin, Database, Server,
-  ShoppingBag, Plus, Send
+  Settings, BarChart3, Building2, Scale, Server,
+  ShieldCheck, Loader2, RefreshCw, TrendingUp, Lock,
+  Megaphone, CreditCard, ChevronRight, Inbox, Store,
 } from 'lucide-react'
 
-// ─── TYPE DEFINITIONS ─────────────────────────────────────────────────────────
-interface MerchantPending {
-  id: string
-  businessName: string
-  ownerName: string
-  email: string
-  type: string
-  submittedAt: string
-  kycStatus: string
-}
-
-interface DisputeCase {
-  id: string
-  caseNumber: string
-  orderId: string
-  amount: number
-  openedAt: string
-  status: string
-  buyerName?: string
-  sellerName?: string
-}
-
-interface StaffMember {
-  id: string
-  fullName: string
-  role: string
-  email: string
-  status: string
-  lastLogin?: string
-}
-
+// ─── TYPE DEFINITIONS (real API shapes) ───────────────────────────────────────
 interface AdminStats {
   totalUsers?: number
   totalSellers?: number
-  totalBuyers?: number
   totalOrders?: number
   totalRevenue?: number
   pendingKyc?: number
-  openDisputes?: number
-  todayOrders?: number
+  pendingProducts?: number
+}
+
+interface ComplaintSummary {
+  id: string
+  title: string
+  status: string
+  categoryLabel: string
+  buyerName: string | null
+  createdAt: string
+}
+
+interface ComplaintCounts {
+  open: number
+  in_review: number
+  resolved: number
+  rejected: number
+  withdrawn: number
+  total: number
+}
+
+const complaintStatusChip: Record<string, string> = {
+  open: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  in_review: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  resolved: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+  rejected: 'bg-red-500/20 text-red-400 border-red-500/30',
+  withdrawn: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
 }
 
 // ─── STAT CARD ────────────────────────────────────────────────────────────────
@@ -69,14 +75,12 @@ function AdminStatCard({
   value,
   label,
   sub,
-  trend,
   urgent,
 }: {
   icon: React.ElementType
   value: string
   label: string
   sub?: string
-  trend?: { value: string; up: boolean }
   urgent?: boolean
 }) {
   return (
@@ -88,12 +92,6 @@ function AdminStatCard({
         <div className={`text-2xl font-black font-mono leading-none ${urgent ? 'text-rose-300' : 'text-white'}`}>
           {value}
         </div>
-        {trend && (
-          <div className={`flex items-center gap-1 mt-0.5 text-[10px] font-bold ${trend.up ? 'text-emerald-400' : 'text-rose-400'}`}>
-            {trend.up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-            {trend.value}
-          </div>
-        )}
         <span className={`text-[11px] font-bold uppercase tracking-wider block mt-1 ${urgent ? 'text-rose-400' : 'text-slate-400'}`}>{label}</span>
         {sub && <span className="text-[10px] text-slate-500 block">{sub}</span>}
       </div>
@@ -104,172 +102,105 @@ function AdminStatCard({
 // ─── MAIN ADMIN PROFILE PAGE ──────────────────────────────────────────────────
 export function AdminProfilePage() {
   const { navigate } = useNavigationStore()
-  const { user, token, logout } = useAuthStore()
+  const { user, logout } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
-  // Active tab
+  // Active tab — the dead Staff Roster / KYC-queue / Broadcast tabs are gone.
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'merchants' | 'disputes' | 'finance' | 'staff' | 'platform' | 'announcements' | 'settings'
+    'overview' | 'complaints' | 'finance' | 'platform' | 'settings'
   >('overview')
 
-  // Data
+  // Data (real endpoints)
   const [stats, setStats] = useState<AdminStats>({})
-  const [pendingMerchants, setPendingMerchants] = useState<MerchantPending[]>([])
-  const [disputes, setDisputes] = useState<DisputeCase[]>([])
-  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([])
+  const [statsError, setStatsError] = useState('')
+  const [statsNeedsAuth, setStatsNeedsAuth] = useState(false)
+  const [complaints, setComplaints] = useState<ComplaintSummary[]>([])
+  const [complaintCounts, setComplaintCounts] = useState<ComplaintCounts | null>(null)
+  const [complaintsError, setComplaintsError] = useState('')
+  const [complaintsLoading, setComplaintsLoading] = useState(false)
 
   // UI state
-  const [merchantSearch, setMerchantSearch] = useState('')
-  const [approvingId, setApprovingId] = useState<string | null>(null)
-  const [rejectingId, setRejectingId] = useState<string | null>(null)
-  const [announcementText, setAnnouncementText] = useState('')
-  const [publishingAnnouncement, setPublishingAnnouncement] = useState(false)
-  const [announcementPublished, setAnnouncementPublished] = useState(false)
   const [serverPing, setServerPing] = useState<number | null>(null)
   const [pingLoading, setPingLoading] = useState(false)
 
-  // ─── FETCH FUNCTIONS ──────────────────────────────────────────────────────
+  // ─── FETCH: platform KPIs (GET /api/admin/dashboard — real shape) ────────
   const fetchStats = useCallback(async () => {
-    if (!token) return
+    setStatsError('')
+    setStatsNeedsAuth(false)
     try {
-      const res = await fetch('/api/admin/dashboard', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (res.ok) {
-        const json = await res.json()
-        setStats(json.stats || json.data || {})
+      const res = await fetch('/api/admin/dashboard', { credentials: 'include' })
+      if (res.status === 401 || res.status === 403) {
+        setStatsNeedsAuth(true)
+        setStats({})
+        return
       }
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json?.success) {
+        setStatsError(json?.error || `Failed to load platform stats (HTTP ${res.status})`)
+        setStats({})
+        return
+      }
+      const d = json.data ?? {}
+      setStats({
+        totalUsers: d.platformOverview?.totalUsers,
+        totalSellers: d.platformOverview?.activeSuppliers,
+        totalOrders: d.platformOverview?.totalOrders,
+        totalRevenue: d.platformOverview?.totalRevenueBDT,
+        pendingKyc: d.pendingApprovals?.supplierVerification,
+        pendingProducts: d.pendingApprovals?.productApproval,
+      })
     } catch {
-      // Graceful
+      setStatsError('Network error while loading platform stats. Check your connection and retry.')
+      setStats({})
     }
-  }, [token])
+  }, [])
 
-  const fetchPendingMerchants = useCallback(async () => {
-    if (!token) return
+  // ─── FETCH: real complaints queue (GET /api/admin/complaints) ────────────
+  const fetchComplaints = useCallback(async () => {
+    setComplaintsLoading(true)
+    setComplaintsError('')
     try {
-      const params = new URLSearchParams({
-        status: 'pending',
-        limit: '20',
-        ...(merchantSearch ? { q: merchantSearch } : {}),
-      })
-      const res = await fetch(`/api/admin/users?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (res.ok) {
-        const json = await res.json()
-        if (Array.isArray(json.data)) setPendingMerchants(json.data)
+      const res = await fetch('/api/admin/complaints?status=all&take=100', { credentials: 'include' })
+      if (res.status === 401 || res.status === 403) {
+        setComplaintsError(json401Message(res.status))
+        setComplaints([])
+        setComplaintCounts(null)
+        return
       }
-    } catch {
-      // Graceful
-    }
-  }, [token, merchantSearch])
-
-  const fetchDisputes = useCallback(async () => {
-    if (!token) return
-    try {
-      const res = await fetch('/api/admin/disputes?status=open&limit=20', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (res.ok) {
-        const json = await res.json()
-        if (Array.isArray(json.data)) setDisputes(json.data)
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json?.success) {
+        setComplaintsError(json?.error || `Failed to load complaints (HTTP ${res.status})`)
+        setComplaints([])
+        setComplaintCounts(null)
+        return
       }
+      const all = Array.isArray(json.data?.complaints) ? json.data.complaints : []
+      setComplaintCounts(json.data?.counts ?? null)
+      // Most recent five for the compact card — the full queue lives on admin-complaints.
+      setComplaints(all.slice(0, 5))
     } catch {
-      // Graceful
+      setComplaintsError('Network error while loading complaints. Check your connection and retry.')
+      setComplaints([])
+      setComplaintCounts(null)
+    } finally {
+      setComplaintsLoading(false)
     }
-  }, [token])
-
-  const fetchStaff = useCallback(async () => {
-    if (!token) return
-    try {
-      const res = await fetch('/api/admin/staff?limit=20', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (res.ok) {
-        const json = await res.json()
-        if (Array.isArray(json.data)) setStaffMembers(json.data)
-      }
-    } catch {
-      // Graceful
-    }
-  }, [token])
+  }, [])
 
   useEffect(() => {
     fetchStats()
-  }, [fetchStats])
+    fetchComplaints()
+  }, [fetchStats, fetchComplaints])
 
-  useEffect(() => {
-    if (activeTab === 'merchants') fetchPendingMerchants()
-    if (activeTab === 'disputes') fetchDisputes()
-    if (activeTab === 'staff') fetchStaff()
-  }, [activeTab, fetchPendingMerchants, fetchDisputes, fetchStaff])
-
-  // ─── MERCHANT KYC ACTIONS ──────────────────────────────────────────────────
-  const approveMerchant = async (id: string) => {
-    setApprovingId(id)
-    try {
-      if (token) {
-        await fetch(`/api/admin/users/${id}/approve`, {
-          method: 'PATCH',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'approve' }),
-        })
-        setPendingMerchants((prev) => prev.filter((m) => m.id !== id))
-      }
-    } catch {
-      // Graceful
-    } finally {
-      setApprovingId(null)
-    }
-  }
-
-  const rejectMerchant = async (id: string) => {
-    setRejectingId(id)
-    try {
-      if (token) {
-        await fetch(`/api/admin/users/${id}/reject`, {
-          method: 'PATCH',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'reject', reason: 'KYC documents insufficient' }),
-        })
-        setPendingMerchants((prev) => prev.filter((m) => m.id !== id))
-      }
-    } catch {
-      // Graceful
-    } finally {
-      setRejectingId(null)
-    }
-  }
-
-  // ─── ANNOUNCEMENT PUBLISH ──────────────────────────────────────────────────
-  const publishAnnouncement = async () => {
-    if (!announcementText.trim()) return
-    setPublishingAnnouncement(true)
-    try {
-      if (token) {
-        await fetch('/api/admin/announcements', {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: announcementText, scope: 'all' }),
-        })
-      }
-      setAnnouncementPublished(true)
-      setAnnouncementText('')
-      setTimeout(() => setAnnouncementPublished(false), 3000)
-    } catch {
-      // Graceful
-    } finally {
-      setPublishingAnnouncement(false)
-    }
-  }
-
-  // ─── PING SERVER ──────────────────────────────────────────────────────────
+  // ─── PING SERVER (real endpoint: GET /api) ────────────────────────────────
   const pingServer = async () => {
     setPingLoading(true)
     const start = performance.now()
     try {
-      await fetch('/api/health')
-      setServerPing(Math.round(performance.now() - start))
+      const res = await fetch('/api', { cache: 'no-store' })
+      // Measure against the REAL status — a 4xx/5xx is not a healthy ping.
+      if (res.ok) setServerPing(Math.round(performance.now() - start))
+      else setServerPing(-1)
     } catch {
       setServerPing(-1)
     } finally {
@@ -296,7 +227,7 @@ export function AdminProfilePage() {
         <div className="flex items-center gap-2">
           <button
             onClick={pingServer}
-            className="h-8 px-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1.5"
+            className="h-9 px-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1.5"
           >
             {pingLoading ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -311,7 +242,7 @@ export function AdminProfilePage() {
           </button>
           <button
             onClick={() => navigate('account-settings')}
-            className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white"
+            className="min-h-11 min-w-11 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white"
             title="Settings"
           >
             <Settings className="h-4 w-4" />
@@ -331,7 +262,7 @@ export function AdminProfilePage() {
           <div className="flex items-center gap-2">
             <button
               onClick={pingServer}
-              className="h-8 px-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1.5"
+              className="h-9 px-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1.5"
             >
               {pingLoading ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -346,7 +277,7 @@ export function AdminProfilePage() {
             </button>
             <button
               onClick={() => navigate('account-settings')}
-              className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white"
+              className="min-h-11 min-w-11 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white"
               title="Settings"
             >
               <Settings className="h-4 w-4" />
@@ -376,27 +307,24 @@ export function AdminProfilePage() {
                   </h1>
                   <span className="text-[10px] font-black text-rose-300 bg-rose-500/20 border border-rose-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <Shield className="h-3 w-3" />
-                    Super Admin
+                    Admin
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">{user?.email || 'admin@zylod.com'}</p>
-                <p className="text-[11px] font-mono text-slate-500 mt-0.5">Admin Session Active</p>
+                <p className="text-xs text-slate-400 mt-0.5">{user?.email || 'Not signed in'}</p>
+                <p className="text-[11px] font-mono text-slate-500 mt-0.5">{user ? 'Admin Session Active' : 'Sign in to load live platform data'}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ─── TAB NAVIGATION (CLEAN ICONS, NO EMOJIS) ──────────────────── */}
+        {/* ─── TAB NAVIGATION ──────────────────────────────────────────── */}
         <div className="sticky top-[57px] md:top-[60px] z-30 bg-slate-950/95 backdrop-blur-md border-b border-slate-800">
           <div className="flex items-center gap-1 overflow-x-auto no-scrollbar px-3 py-2">
             {[
               { key: 'overview', label: 'Overview', icon: BarChart3 },
-              { key: 'merchants', label: 'KYC Queue', icon: Building2 },
-              { key: 'disputes', label: 'Disputes', icon: Scale },
+              { key: 'complaints', label: 'Complaints', icon: Scale },
               { key: 'finance', label: 'Finance', icon: DollarSign },
-              { key: 'staff', label: 'Staff Roster', icon: Users },
               { key: 'platform', label: 'System Health', icon: Server },
-              { key: 'announcements', label: 'Broadcast', icon: Megaphone },
               { key: 'settings', label: 'Security', icon: Settings },
             ].map((tab) => {
               const Icon = tab.icon
@@ -434,332 +362,275 @@ export function AdminProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'overview' && (
                 <>
-                  {/* Platform KPI Grid */}
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-                    <AdminStatCard
-                      icon={Users}
-                      value={stats.totalUsers !== undefined ? String(stats.totalUsers) : 'Active'}
-                      label="Registered Users"
-                    />
-                    <AdminStatCard
-                      icon={DollarSign}
-                      value={stats.totalRevenue !== undefined ? formatPrice(stats.totalRevenue) : 'Managed'}
-                      label="Gross Volume"
-                    />
-                    <AdminStatCard
-                      icon={Building2}
-                      value={stats.totalSellers !== undefined ? String(stats.totalSellers) : 'Active'}
-                      label="Sellers"
-                    />
-                    <AdminStatCard
-                      icon={ShoppingBag}
-                      value={stats.totalOrders !== undefined ? String(stats.totalOrders) : 'Live'}
-                      label="Platform Orders"
-                    />
-                    <AdminStatCard
-                      icon={ShieldAlert}
-                      value={stats.pendingKyc !== undefined ? String(stats.pendingKyc) : '0'}
-                      label="Pending KYC"
-                      urgent={Number(stats.pendingKyc) > 0}
-                    />
-                    <AdminStatCard
-                      icon={Scale}
-                      value={stats.openDisputes !== undefined ? String(stats.openDisputes) : '0'}
-                      label="Open Disputes"
-                      urgent={Number(stats.openDisputes) > 0}
-                    />
-                  </div>
-
-                  {/* Platform Health Radar */}
-                  <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-sm font-black text-white flex items-center gap-2">
-                        <Activity className="h-4 w-4 text-emerald-400" />
-                        Infrastructure Health
-                      </h2>
-                      <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        Operational
-                      </span>
+                  {statsNeedsAuth ? (
+                    <div className="bg-slate-900 rounded-3xl p-10 border border-slate-800 text-center space-y-3">
+                      <Lock className="h-10 w-10 text-amber-400 mx-auto" />
+                      <h2 className="text-sm font-black text-white">Admin access required</h2>
+                      <p className="text-xs text-slate-400 max-w-sm mx-auto">Platform stats come from the admin dashboard API. Sign in with an admin account to load live numbers.</p>
+                      <Button onClick={() => navigate('login')} className="h-11 px-5 rounded-xl text-xs font-bold">Sign In</Button>
                     </div>
-
-                    <div className="space-y-3">
-                      {[
-                        { label: 'API Gateway', latency: serverPing ? `${serverPing}ms` : '<50ms', pct: 100 },
-                        { label: 'PostgreSQL Database', latency: '<10ms', pct: 100 },
-                        { label: 'Media & File Storage', latency: '<25ms', pct: 100 },
-                      ].map(({ label, latency, pct }) => (
-                        <div key={label} className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="text-slate-300">{label}</span>
-                            <span className="text-slate-400 font-mono">{latency}</span>
-                          </div>
-                          <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
-                          </div>
-                        </div>
-                      ))}
+                  ) : statsError ? (
+                    <div className="bg-slate-900 rounded-3xl p-8 border border-red-900/60 text-center space-y-3">
+                      <AlertTriangle className="h-8 w-8 text-red-400 mx-auto" />
+                      <h2 className="text-sm font-black text-white">Could not load platform stats</h2>
+                      <p className="text-xs text-red-400 break-words">{statsError}</p>
+                      <Button onClick={fetchStats} variant="outline" className="h-10 px-5 rounded-xl text-xs font-bold gap-2 border-slate-700 bg-slate-800 text-slate-200">
+                        <RefreshCw className="h-3.5 w-3.5" /> Retry
+                      </Button>
                     </div>
-                  </div>
-                </>
-              )}
-
-              {/* ═══════════════════════════════════════════════════════════
-                  TAB 2: MERCHANT APPROVAL QUEUE
-              ═══════════════════════════════════════════════════════════ */}
-              {activeTab === 'merchants' && (
-                <>
-                  <div className="relative">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
-                    <Input
-                      value={merchantSearch}
-                      onChange={(e) => setMerchantSearch(e.target.value)}
-                      placeholder="Search pending merchants..."
-                      className="h-12 pl-10 rounded-2xl bg-slate-900 border-slate-700 text-xs font-semibold text-slate-200 placeholder:text-slate-500"
-                    />
-                  </div>
-
-                  {pendingMerchants.length > 0 ? (
+                  ) : (
                     <>
-                    <div className="space-y-3 md:hidden">
-                      {pendingMerchants.map((merchant) => (
-                        <div key={merchant.id} className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-4">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="text-sm font-black text-white">{merchant.businessName}</h3>
-                              <p className="text-[11px] text-slate-400">{merchant.ownerName} • {merchant.email}</p>
-                            </div>
-                            <span className="text-[10px] font-black text-amber-400 bg-amber-500/20 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                              Pending KYC
-                            </span>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              onClick={() => approveMerchant(merchant.id)}
-                              disabled={approvingId === merchant.id}
-                              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-10 rounded-xl text-xs flex items-center justify-center gap-1.5"
-                            >
-                              {approvingId === merchant.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Check className="h-4 w-4" /> Approve KYC</>}
-                            </Button>
-                            <Button
-                              onClick={() => rejectMerchant(merchant.id)}
-                              disabled={rejectingId === merchant.id}
-                              variant="outline"
-                              className="flex-1 border-rose-700 text-rose-400 bg-rose-950/40 hover:bg-rose-950 font-bold h-10 rounded-xl text-xs flex items-center justify-center gap-1.5"
-                            >
-                              {rejectingId === merchant.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <><X className="h-4 w-4" /> Reject</>}
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                      {/* Platform KPI Grid — real dashboard aggregates */}
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                        <AdminStatCard
+                          icon={Users}
+                          value={stats.totalUsers !== undefined ? String(stats.totalUsers) : '—'}
+                          label="Registered Users"
+                        />
+                        <AdminStatCard
+                          icon={DollarSign}
+                          value={stats.totalRevenue !== undefined ? formatPrice(stats.totalRevenue) : '—'}
+                          label="Paid Gross Volume"
+                        />
+                        <AdminStatCard
+                          icon={Building2}
+                          value={stats.totalSellers !== undefined ? String(stats.totalSellers) : '—'}
+                          label="Active Sellers"
+                        />
+                        <AdminStatCard
+                          icon={Store}
+                          value={stats.totalOrders !== undefined ? String(stats.totalOrders) : '—'}
+                          label="Platform Orders"
+                        />
+                        <AdminStatCard
+                          icon={ShieldCheck}
+                          value={stats.pendingKyc !== undefined ? String(stats.pendingKyc) : '—'}
+                          label="Pending KYC"
+                          sub={stats.pendingProducts !== undefined ? `${stats.pendingProducts} products awaiting review` : undefined}
+                          urgent={Number(stats.pendingKyc) > 0}
+                        />
+                        <AdminStatCard
+                          icon={Scale}
+                          value={complaintCounts ? String(complaintCounts.open) : '—'}
+                          label="Open Complaints"
+                          urgent={(complaintCounts?.open ?? 0) > 0}
+                        />
+                      </div>
 
-                    {/* Desktop: KYC queue table */}
-                    <div className="hidden md:block bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="bg-slate-800/60 text-left">
-                            <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-slate-400">Business</th>
-                            <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-slate-400">Owner</th>
-                            <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-slate-400">Email</th>
-                            <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-slate-400">Type</th>
-                            <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-slate-400">Status</th>
-                            <th className="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-800">
-                          {pendingMerchants.map((merchant) => (
-                            <tr key={merchant.id} className="hover:bg-slate-800/40">
-                              <td className="px-4 py-3 font-bold text-white">{merchant.businessName}</td>
-                              <td className="px-4 py-3 text-slate-300 text-xs">{merchant.ownerName}</td>
-                              <td className="px-4 py-3 text-slate-400 text-xs">{merchant.email}</td>
-                              <td className="px-4 py-3 text-slate-300 text-xs">{merchant.type}</td>
-                              <td className="px-4 py-3">
-                                <span className="text-[10px] font-black text-amber-400 bg-amber-500/20 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                                  Pending KYC
-                                </span>
-                              </td>
-                              <td className="px-4 py-3">
-                                <div className="flex justify-end gap-2">
-                                  <Button
-                                    onClick={() => approveMerchant(merchant.id)}
-                                    disabled={approvingId === merchant.id}
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-8 px-3 rounded-lg text-xs flex items-center gap-1.5"
-                                  >
-                                    {approvingId === merchant.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><Check className="h-3.5 w-3.5" /> Approve</>}
-                                  </Button>
-                                  <Button
-                                    onClick={() => rejectMerchant(merchant.id)}
-                                    disabled={rejectingId === merchant.id}
-                                    variant="outline"
-                                    className="border-rose-700 text-rose-400 bg-rose-950/40 hover:bg-rose-950 font-bold h-8 px-3 rounded-lg text-xs flex items-center gap-1.5"
-                                  >
-                                    {rejectingId === merchant.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <><X className="h-3.5 w-3.5" /> Reject</>}
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
+                      {/* Real quick links into the working admin surfaces */}
+                      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-3">
+                        <h2 className="text-sm font-black text-white flex items-center gap-2">
+                          <Activity className="h-4 w-4 text-emerald-400" />
+                          Jump into the queues
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {[
+                            { label: 'Product moderation', desc: 'Approve or reject supplier listings — with media review', page: 'admin-products' as const },
+                            { label: 'KYC verification', desc: 'Approve / reject seller verification with audit trail', page: 'admin-suppliers' as const },
+                            { label: 'Payment verification', desc: 'Verify real bank / mobile transfers', page: 'admin-payments' as const },
+                            { label: 'Inventory audit', desc: 'Read-only stock oversight across suppliers', page: 'admin-inventory' as const },
+                            { label: 'Orders fulfillment', desc: 'Every order with real per-shipment status', page: 'admin-orders' as const },
+                            { label: 'Complaints queue', desc: 'Buyer complaints with evidence review', page: 'admin-complaints' as const },
+                          ].map((item) => (
+                            <button
+                              key={item.page}
+                              onClick={() => navigate(item.page)}
+                              className="min-h-11 flex items-center justify-between gap-2 rounded-xl bg-slate-800/60 border border-slate-700 px-4 py-2.5 text-left hover:bg-slate-800 transition"
+                            >
+                              <span>
+                                <span className="text-xs font-black text-white block">{item.label}</span>
+                                <span className="text-[10px] text-slate-400">{item.desc}</span>
+                              </span>
+                              <ChevronRight className="h-4 w-4 text-slate-500 shrink-0" />
+                            </button>
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
+                        </div>
+                      </div>
+
+                      {/* Real health reading — no fabricated service rows */}
+                      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-sm font-black text-white flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-emerald-400" />
+                            Infrastructure Health
+                          </h2>
+                          {serverPing !== null && (
+                            <span className={`text-[10px] font-bold flex items-center gap-1 ${serverPing < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${serverPing < 0 ? 'bg-red-500' : 'bg-emerald-500 animate-pulse'}`} />
+                              {serverPing < 0 ? 'API unreachable' : 'Operational'}
+                            </span>
+                          )}
+                        </div>
+                        <div className="space-y-3">
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-300">API round-trip (GET /api)</span>
+                              <span className="text-slate-400 font-mono">{serverPing === null ? 'Press Ping to measure' : serverPing < 0 ? 'failed' : `${serverPing}ms`}</span>
+                            </div>
+                            <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full ${serverPing === null ? 'bg-slate-600' : serverPing < 0 ? 'bg-red-500' : 'bg-emerald-500'}`}
+                                style={{ width: serverPing === null ? '8%' : serverPing < 0 ? '100%' : '100%' }}
+                              />
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-slate-500">
+                            The only number shown here is one this page actually measured. No invented service latencies.
+                          </p>
+                        </div>
+                      </div>
                     </>
-                  ) : (
-                    <div className="bg-slate-900 rounded-3xl p-12 border border-slate-800 text-center space-y-3">
-                      <UserCheck className="h-12 w-12 text-slate-600 mx-auto" />
-                      <h3 className="text-sm font-bold text-slate-400">
-                        No pending KYC applications
-                      </h3>
-                      <p className="text-xs text-slate-500">All merchant verification requests are up to date.</p>
-                    </div>
                   )}
                 </>
               )}
 
               {/* ═══════════════════════════════════════════════════════════
-                  TAB 3: DISPUTES
+                  TAB 2: COMPLAINTS (real queue since Task 48)
               ═══════════════════════════════════════════════════════════ */}
-              {activeTab === 'disputes' && (
+              {activeTab === 'complaints' && (
                 <>
-                  {disputes.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {disputes.map((dispute) => (
-                        <div key={dispute.id} className="bg-slate-900 rounded-3xl p-5 border border-rose-800/40 space-y-3">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <span className="text-[10px] font-mono text-rose-400 font-bold">CASE #{dispute.caseNumber}</span>
-                              <h3 className="text-sm font-black text-white mt-0.5">Order #{dispute.orderId}</h3>
-                            </div>
-                            <span className="text-lg font-black text-white font-mono">{formatPrice(dispute.amount)}</span>
-                          </div>
+                  {/* Real counts */}
+                  {complaintCounts && (
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                      {([
+                        ['open', complaintCounts.open],
+                        ['in_review', complaintCounts.in_review],
+                        ['resolved', complaintCounts.resolved],
+                        ['rejected', complaintCounts.rejected],
+                        ['withdrawn', complaintCounts.withdrawn],
+                        ['total', complaintCounts.total],
+                      ] as const).map(([key, value]) => (
+                        <div key={key} className="bg-slate-900 rounded-2xl border border-slate-800 p-3 text-center">
+                          <p className="text-lg font-black font-mono text-white">{value}</p>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{key.replace('_', ' ')}</p>
                         </div>
                       ))}
                     </div>
+                  )}
+
+                  {complaintsLoading ? (
+                    <div className="space-y-2">
+                      {[0, 1, 2].map((i) => (
+                        <div key={i} className="h-16 bg-slate-900 rounded-2xl border border-slate-800 animate-pulse" />
+                      ))}
+                    </div>
+                  ) : complaintsError ? (
+                    <div className="bg-slate-900 rounded-3xl p-8 border border-red-900/60 text-center space-y-3">
+                      <AlertTriangle className="h-8 w-8 text-red-400 mx-auto" />
+                      <h2 className="text-sm font-black text-white">Could not load complaints</h2>
+                      <p className="text-xs text-red-400 break-words">{complaintsError}</p>
+                      <Button onClick={fetchComplaints} variant="outline" className="h-10 px-5 rounded-xl text-xs font-bold gap-2 border-slate-700 bg-slate-800 text-slate-200">
+                        <RefreshCw className="h-3.5 w-3.5" /> Retry
+                      </Button>
+                    </div>
+                  ) : complaints.length > 0 ? (
+                    <div className="space-y-2">
+                      {complaints.map((c) => (
+                        <div key={c.id} className="bg-slate-900 rounded-2xl p-4 border border-slate-800 flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-xs font-black text-white truncate">{c.title}</p>
+                            <p className="text-[10px] text-slate-400 mt-0.5">
+                              {c.categoryLabel} · {c.buyerName || 'buyer name unavailable'} · {new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </p>
+                          </div>
+                          <span className={`text-[10px] font-bold border px-2 py-1 rounded-full whitespace-nowrap ${complaintStatusChip[c.status] ?? complaintStatusChip.withdrawn}`}>
+                            {c.status.replace('_', ' ')}
+                          </span>
+                        </div>
+                      ))}
+                      <Button
+                        onClick={() => navigate('admin-complaints')}
+                        className="w-full min-h-11 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2"
+                      >
+                        <Megaphone className="h-4 w-4" /> Open the full complaints queue
+                      </Button>
+                    </div>
                   ) : (
                     <div className="bg-slate-900 rounded-3xl p-12 border border-slate-800 text-center space-y-3">
-                      <Scale className="h-12 w-12 text-slate-600 mx-auto" />
-                      <h3 className="text-sm font-bold text-slate-400">No open disputes</h3>
-                      <p className="text-xs text-slate-500">All Trade Assurance arbitration claims are resolved.</p>
+                      <Inbox className="h-12 w-12 text-slate-600 mx-auto" />
+                      <h3 className="text-sm font-bold text-slate-400">No complaints filed yet</h3>
+                      <p className="text-xs text-slate-500">Buyer complaints appear here the moment they are filed. The counts above are live from the complaints table.</p>
+                      <Button
+                        onClick={() => navigate('admin-complaints')}
+                        variant="outline"
+                        className="min-h-11 px-5 rounded-xl text-xs font-bold border-slate-700 bg-slate-800 text-slate-200"
+                      >
+                        Go to complaints queue
+                      </Button>
                     </div>
                   )}
                 </>
               )}
 
               {/* ═══════════════════════════════════════════════════════════
-                  TAB 4: FINANCE
+                  TAB 3: FINANCE — honest: real queue links, no invented rates
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'finance' && (
-                <>
-                  <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-4">
-                    <h2 className="text-sm font-black text-white flex items-center gap-2">
-                      <DollarSign className="h-4 w-4 text-primary" />
-                      Platform Commission &amp; Settlement
-                    </h2>
-                    <div className="space-y-3 text-xs">
-                      {[
-                        { label: 'Standard Wholesale Commission', value: '2.5%' },
-                        { label: 'Payment Processing Fee', value: '1.8%' },
-                        { label: 'Payment Verification Reviews', value: 'Admin queue' },
-                      ].map(({ label, value }) => (
-                        <div key={label} className="flex justify-between py-2 border-b border-slate-800 last:border-0">
-                          <span className="text-slate-300">{label}</span>
-                          <span className="font-bold text-white font-mono">{value}</span>
-                        </div>
-                      ))}
+                <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-4">
+                  <h2 className="text-sm font-black text-white flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-primary" />
+                    Money on the platform
+                  </h2>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between py-2 border-b border-slate-800">
+                      <span className="text-slate-300">Paid gross volume</span>
+                      <span className="font-bold text-white font-mono">{stats.totalRevenue !== undefined ? formatPrice(stats.totalRevenue) : '—'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-slate-800">
+                      <span className="text-slate-300">Orders awaiting payment verification</span>
+                      <span className="font-bold text-white font-mono">See unpaid queue</span>
                     </div>
                   </div>
-                </>
+                  <p className="text-[10px] text-slate-500">
+                    Commission / settlement rates are not configured anywhere in the platform yet — no percentage is shown here because none exists to show.
+                  </p>
+                  <Button
+                    onClick={() => navigate('admin-payments')}
+                    className="w-full min-h-11 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2"
+                  >
+                    <CreditCard className="h-4 w-4" /> Open payment verification queue
+                  </Button>
+                </div>
               )}
 
               {/* ═══════════════════════════════════════════════════════════
-                  TAB 5: STAFF ROSTER
-              ═══════════════════════════════════════════════════════════ */}
-              {activeTab === 'staff' && (
-                <>
-                  <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-3">
-                    <h2 className="text-sm font-black text-white flex items-center gap-2">
-                      <Users className="h-4 w-4 text-primary" />
-                      Platform Staff Members
-                    </h2>
-                    {staffMembers.length > 0 ? (
-                      <div className="space-y-2">
-                        {staffMembers.map((s) => (
-                          <div key={s.id} className="p-3 bg-slate-800/60 rounded-xl flex justify-between items-center">
-                            <div>
-                              <span className="text-xs font-bold text-white block">{s.fullName}</span>
-                              <span className="text-[10px] text-slate-400">{s.role}</span>
-                            </div>
-                            <span className="text-[10px] font-bold text-emerald-400">Active</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-slate-400 py-4 text-center">Manage staff accounts from the main system administration panel.</p>
-                    )}
-                  </div>
-                </>
-              )}
-
-              {/* ═══════════════════════════════════════════════════════════
-                  TAB 6: PLATFORM SETTINGS
+                  TAB 4: SYSTEM HEALTH — real measured data only
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'platform' && (
-                <>
-                  <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-3">
-                    <h2 className="text-sm font-black text-white flex items-center gap-2">
-                      <Server className="h-4 w-4 text-primary" />
-                      Server &amp; Maintenance Controls
-                    </h2>
-                    <div className="space-y-2 text-xs">
-                      <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                        <span className="text-slate-300">Platform Maintenance Mode</span>
-                        <Switch className="data-[state=checked]:bg-primary" />
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                        <span className="text-slate-300">Automated Database Backups</span>
-                        <span className="text-emerald-400 font-bold">Enabled (Daily)</span>
-                      </div>
+                <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-3">
+                  <h2 className="text-sm font-black text-white flex items-center gap-2">
+                    <Server className="h-4 w-4 text-primary" />
+                    System Health
+                  </h2>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                      <span className="text-slate-300">API round-trip (GET /api)</span>
+                      <span className="font-bold text-white font-mono">
+                        {serverPing === null ? 'Press Ping to measure' : serverPing < 0 ? 'Failed' : `${serverPing}ms`}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                      <span className="text-slate-300">Realtime socket service</span>
+                      <span className="text-slate-400 font-mono">loopback :3006 — degrades to polling when down</span>
                     </div>
                   </div>
-                </>
+                  <Button
+                    onClick={pingServer}
+                    disabled={pingLoading}
+                    variant="outline"
+                    className="w-full min-h-11 rounded-xl text-xs font-bold border-slate-700 bg-slate-800 text-slate-200 gap-2"
+                  >
+                    {pingLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
+                    {pingLoading ? 'Measuring…' : 'Measure API latency now'}
+                  </Button>
+                  <p className="text-[10px] text-slate-500">
+                    Maintenance mode is not a platform capability yet — no switch is shown here because none is wired to a real endpoint.
+                  </p>
+                </div>
               )}
 
               {/* ═══════════════════════════════════════════════════════════
-                  TAB 7: ANNOUNCEMENTS
-              ═══════════════════════════════════════════════════════════ */}
-              {activeTab === 'announcements' && (
-                <>
-                  <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-4">
-                    <h2 className="text-sm font-black text-white flex items-center gap-2">
-                      <Megaphone className="h-4 w-4 text-primary" />
-                      System Announcement Broadcaster
-                    </h2>
-                    <textarea
-                      rows={4}
-                      value={announcementText}
-                      onChange={(e) => setAnnouncementText(e.target.value)}
-                      placeholder="Enter announcement text to broadcast to users..."
-                      className="w-full rounded-2xl bg-slate-800 border border-slate-700 px-4 py-3 text-xs font-semibold text-slate-200 placeholder:text-slate-500 resize-none focus:outline-none focus:border-primary"
-                    />
-                    <Button
-                      onClick={publishAnnouncement}
-                      disabled={publishingAnnouncement || !announcementText.trim()}
-                      className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-xl text-xs flex items-center justify-center gap-2"
-                    >
-                      {publishingAnnouncement ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : announcementPublished ? (
-                        <><Check className="h-4 w-4" /> Announcement Sent!</>
-                      ) : (
-                        <><Send className="h-4 w-4" /> Send Announcement</>
-                      )}
-                    </Button>
-                  </div>
-                </>
-              )}
-
-              {/* ═══════════════════════════════════════════════════════════
-                  TAB 8: SECURITY
+                  TAB 5: SECURITY
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'settings' && (
                 <>
@@ -772,18 +643,22 @@ export function AdminProfilePage() {
                       <Button
                         onClick={() => navigate('reset-password')}
                         variant="outline"
-                        className="w-full justify-start border-slate-700 bg-slate-800 text-slate-200 text-xs h-10 rounded-xl"
+                        className="w-full min-h-11 justify-start border-slate-700 bg-slate-800 text-slate-200 text-xs rounded-xl"
                       >
                         Change Admin Password
                       </Button>
                       <Button
                         onClick={() => { logout?.(); navigate('login') }}
-                        className="w-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold h-10 rounded-xl"
+                        className="w-full min-h-11 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl"
                       >
                         Sign Out Admin Session
                       </Button>
                     </div>
                   </div>
+                  <p className="text-[10px] text-slate-500 flex items-center gap-1.5">
+                    <TrendingUp className="h-3 w-3" />
+                    Every moderation write you perform elsewhere is audit-logged with your admin session id.
+                  </p>
                 </>
               )}
             </motion.div>
@@ -792,4 +667,11 @@ export function AdminProfilePage() {
       </main>
     </div>
   )
+}
+
+/** Honest message for auth failures — the real HTTP status, never a silent skip. */
+function json401Message(status: number): string {
+  return status === 403
+    ? 'Admin access required (403) — your account is not an admin.'
+    : 'Admin authentication required (401) — sign in with an admin account.'
 }

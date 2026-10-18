@@ -8,7 +8,7 @@
  * newQuantity}]} with ownership verified server-side. Optimistic updates roll
  * back on failure — success is never faked.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, AlertTriangle, Box, Package, RefreshCw, Plus, Minus,
@@ -17,6 +17,7 @@ import {
 import { toast } from 'sonner';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useAuthStore } from '@/store/auth-store';
+import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room';
 
 interface ApiVariant {
   id: string;
@@ -134,6 +135,50 @@ export function InventoryManagementPage() {
   useEffect(() => {
     fetchInventory();
   }, [fetchInventory]);
+
+  // ─── Real-time (Task 51-a): live-apply cross-session stock truth ───
+  // Product rooms are PUBLIC (no token). The socket service allows 10
+  // subscribes/min per socket, so the hook (and this list) caps at 8 rooms —
+  // rows beyond that still stay fresh through the Refresh button / refetch.
+  // Only real event payload fields are applied; the rollback-safe optimistic
+  // pattern below is untouched (this handler is a separate truth channel).
+  const liveRooms = useMemo(
+    () => items.slice(0, 8).map((p) => `product:${p.id}`),
+    [items]
+  );
+
+  const handleLiveInventory = useCallback((msg: RealtimeRoomMessage) => {
+    if (msg.event !== 'inventory:updated') return;
+    const d = msg.data as Record<string, unknown> | null;
+    if (!d || typeof d !== 'object' || Array.isArray(d)) return;
+    if (typeof d.productId !== 'string' || d.productId.length === 0) return;
+    const stock = d.stockQuantity;
+    if (typeof stock !== 'number' || !Number.isFinite(stock) || stock < 0) return;
+    const variantId = typeof d.variantId === 'string' && d.variantId.length > 0 ? d.variantId : null;
+    setItems((prev) =>
+      variantId
+        ? prev.map((p) =>
+            p.id === d.productId
+              ? { ...p, variants: p.variants.map((v) => (v.id === variantId ? { ...v, stockQuantity: stock } : v)) }
+              : p
+          )
+        : prev.map((p) => (p.id === d.productId ? { ...p, stockQuantity: stock } : p))
+    );
+  }, []);
+
+  useRealtimeRoom(needsAuth ? [] : liveRooms, { onEvent: handleLiveInventory });
+
+  // Keep the summary chips consistent with the rows they summarize while live
+  // events mutate stock (formula mirrors GET /api/supplier/inventory exactly).
+  useEffect(() => {
+    setSummary({
+      totalSkus: items.length,
+      totalVariantSkus: items.reduce((acc, p) => acc + p.variants.length, 0),
+      lowStockCount: items.filter((p) => p.stockQuantity > 0 && p.stockQuantity <= LOW_STOCK_THRESHOLD).length,
+      outOfStockCount: items.filter((p) => p.stockQuantity <= 0).length,
+      totalInventoryUnits: items.reduce((acc, p) => acc + p.stockQuantity, 0),
+    });
+  }, [items]);
 
   /**
    * One real PATCH per adjust. Optimistic local update is applied immediately

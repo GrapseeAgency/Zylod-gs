@@ -59,6 +59,7 @@ export async function GET(request: NextRequest) {
           : null,
         supplierProfile: user.supplierProfile
           ? {
+              id: user.supplierProfile.id,
               companyName: user.supplierProfile.companyName,
               contactPersonName: user.supplierProfile.bankAccountName,
               verificationStatus: user.supplierProfile.verificationStatus,
