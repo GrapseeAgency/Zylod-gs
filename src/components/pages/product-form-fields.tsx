@@ -439,27 +439,29 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             </select>
           </div>
           <div className="space-y-1">
-            <label htmlFor="pf-moq" className="text-sm font-medium text-gray-700">MOQ (minimum order)</label>
+            <label htmlFor="pf-moq" className="text-sm font-medium text-gray-700">
+              MOQ (minimum order){form.unit === 'kg' ? ' — kg' : ''}
+            </label>
             <input
               id="pf-moq"
               type="number"
-              min="1"
-              step="1"
+              min={form.unit === 'kg' ? '0.1' : '1'}
+              step={form.unit === 'kg' ? '0.5' : '1'}
               value={form.moq}
               onChange={(e) => onFormChange({ moq: e.target.value })}
               required
               className={inputClass}
-              placeholder="e.g., 50"
+              placeholder={form.unit === 'kg' ? 'e.g., 10' : 'e.g., 50'}
             />
             {serverIssues.moq?.[0] && <FieldError message={serverIssues.moq[0]} />}
           </div>
           <div className="space-y-1">
-            <label htmlFor="pf-max-order" className="text-sm font-medium text-gray-700">Max order qty <span className="text-gray-400">(optional)</span></label>
+            <label htmlFor="pf-max-order" className="text-sm font-medium text-gray-700">Max order qty{form.unit === 'kg' ? ' (kg)' : ''} <span className="text-gray-400">(optional)</span></label>
             <input
               id="pf-max-order"
               type="number"
-              min="1"
-              step="1"
+              min={form.unit === 'kg' ? '0.1' : '1'}
+              step={form.unit === 'kg' ? '0.5' : '1'}
               value={form.maxOrderQty}
               onChange={(e) => onFormChange({ maxOrderQty: e.target.value })}
               className={inputClass}
@@ -467,17 +469,17 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             />
           </div>
           <div className="space-y-1 col-span-2">
-            <label htmlFor="pf-stock" className="text-sm font-medium text-gray-700">Stock quantity</label>
+            <label htmlFor="pf-stock" className="text-sm font-medium text-gray-700">Stock quantity{form.unit === 'kg' ? ' (kg)' : ''}</label>
             <input
               id="pf-stock"
               type="number"
               min="0"
-              step="1"
+              step={form.unit === 'kg' ? '0.5' : '1'}
               value={form.stockQuantity}
               onChange={(e) => onFormChange({ stockQuantity: e.target.value })}
               required
               className={inputClass}
-              placeholder="e.g., 1200"
+              placeholder={form.unit === 'kg' ? 'e.g., 250.5' : 'e.g., 1200'}
             />
             {serverIssues.stockQuantity?.[0] && <FieldError message={serverIssues.stockQuantity[0]} />}
           </div>
@@ -512,8 +514,8 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                   <div>
                     <input
                       type="number"
-                      min="1"
-                      step="1"
+                      min={form.unit === 'kg' ? '0.1' : '1'}
+                      step={form.unit === 'kg' ? '0.5' : '1'}
                       aria-label={`Tier ${index + 1} minimum quantity`}
                       placeholder="Min"
                       value={tier.minQty}
@@ -529,8 +531,8 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                   <div>
                     <input
                       type="number"
-                      min="1"
-                      step="1"
+                      min={form.unit === 'kg' ? '0.1' : '1'}
+                      step={form.unit === 'kg' ? '0.5' : '1'}
                       aria-label={`Tier ${index + 1} maximum quantity`}
                       placeholder="Max (empty = open)"
                       value={tier.maxQty}
@@ -636,7 +638,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                   <input
                     type="number"
                     min="0"
-                    step="1"
+                    step={form.unit === 'kg' ? '0.5' : '1'}
                     aria-label={`Variant ${index + 1} stock`}
                     placeholder="Stock"
                     value={variant.stockQuantity}

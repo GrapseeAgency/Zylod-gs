@@ -6,6 +6,7 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { notifyOrderMilestone } from '@/lib/notifications'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { roundQty } from '@/lib/product-contract'
 
 /**
  * POST /api/orders/create-direct — Buy Now (single product, no cart).
@@ -32,8 +33,7 @@ const createDirectSchema = z.object({
   productId: z.string().min(1, 'productId is required'),
   quantity: z.coerce
     .number()
-    .int('Quantity must be a whole number')
-    .min(1, 'Quantity must be at least 1')
+    .positive('Quantity must be greater than 0')
     .max(10000, 'Quantity exceeds the per-line limit of 10000'),
   variantId: z.string().min(1).optional().nullable(),
   shippingAddressId: z.string().min(1).optional().nullable(),
@@ -72,7 +72,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    const { productId, quantity: qty, variantId, shippingAddressId } = parsed.data
+    const { productId, quantity: rawQty, variantId, shippingAddressId } = parsed.data
+    // Unit-bearing decimal (kg: 2.5 valid) — normalize to 2 dp.
+    const qty = roundQty(rawQty)
 
     // Validate shipping address belongs to this buyer
     if (shippingAddressId) {

@@ -268,7 +268,8 @@ export function QuoteRequestPage() {
     if (!form.description.trim()) errors.description = 'Describe what you need — suppliers quote from this.'
     if (form.quantity.trim()) {
       const q = Number(form.quantity)
-      if (!Number.isInteger(q) || q < 1) errors.quantity = 'Quantity must be a whole number of at least 1.'
+      // Unit-bearing decimal: a 12.5 kg RFQ is perfectly valid.
+      if (!Number.isFinite(q) || q <= 0) errors.quantity = 'Quantity must be a positive number.'
     }
     if (form.targetPrice.trim()) {
       const p = Number(form.targetPrice)
@@ -600,11 +601,12 @@ export function QuoteRequestPage() {
               <Input
                 id="rfq-quantity"
                 type="number"
-                inputMode="numeric"
-                min={1}
+                inputMode="decimal"
+                min={0.1}
+                step="any"
                 value={form.quantity}
                 onChange={(e) => setField({ quantity: e.target.value })}
-                placeholder="How many units"
+                placeholder={form.unit === 'kg' ? 'e.g., 12.5 kg' : 'How many units'}
                 className="h-11 bg-slate-50 border-slate-200 rounded-xl text-sm font-bold"
               />
               {fieldErrors.quantity ? <p className="text-[11px] font-bold text-primary">{fieldErrors.quantity}</p> : null}

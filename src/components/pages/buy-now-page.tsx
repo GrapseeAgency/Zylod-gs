@@ -87,7 +87,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
       const p: ProductData = data?.data
       setProduct(p || null)
       const moq = p?.moq || 1
-      const paramQty = parseInt(pageParams.quantity || '', 10)
+      const paramQty = Math.round(parseFloat(pageParams.quantity || '') * 100) / 100
       const initial = isNaN(paramQty) || paramQty < moq ? moq : paramQty
       setQuantity(p?.stockQuantity && p.stockQuantity > 0 ? Math.min(initial, p.stockQuantity) : initial)
     } catch (e) {
@@ -137,7 +137,9 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   const handleQtyChange = (delta: number) => {
     setQuantity((prev) => {
       const base = prev ?? moq
-      let next = base + delta
+      // kg lines move in 0.5 kg steps; discrete units in whole-unit steps.
+      const step = product?.unit === 'kg' ? 0.5 : 1
+      let next = Math.round((base + delta * step) * 100) / 100
       if (next < moq) next = moq
       if (stock > 0 && next > stock) next = stock
       return next

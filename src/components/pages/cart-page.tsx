@@ -63,14 +63,18 @@ export function CartPage() {
   )
 
   const handleQtyChange = (item: CartItemData, delta: number) => {
-    const step = delta < 0 ? -Math.max(1, Math.round(item.moq / 5)) : Math.max(1, Math.round(item.moq / 5))
-    const newQty = Math.max(item.moq || 1, item.quantity + step)
+    // kg lines step in 0.5 kg; discrete units keep the MOQ-derived integer step.
+    const stepSize = item.unit === 'kg' ? 0.5 : Math.max(1, Math.round(item.moq / 5))
+    const step = delta < 0 ? -stepSize : stepSize
+    const newQty = Math.max(item.moq || 1, Math.round((item.quantity + step) * 100) / 100)
     updateQuantity(item.id, newQty)
   }
 
   const handleQtyInput = (item: CartItemData, value: string) => {
-    const parsed = parseInt(value.replace(/[^0-9]/g, ''), 10)
-    if (!isNaN(parsed)) updateQuantity(item.id, Math.max(item.moq || 1, parsed))
+    // Unit-bearing decimal input: keep digits and ONE dot ("2.5 kg" is valid).
+    const cleaned = value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
+    const parsed = parseFloat(cleaned)
+    if (!isNaN(parsed)) updateQuantity(item.id, Math.max(item.moq || 1, Math.round(parsed * 100) / 100))
   }
 
   const handleRemove = (item: CartItemData) => {
@@ -225,7 +229,7 @@ export function CartPage() {
                           <input
                             value={item.quantity}
                             onChange={(e) => handleQtyInput(item, e.target.value)}
-                            inputMode="numeric"
+                            inputMode="decimal"
                             className="w-12 text-center text-xs font-bold tabular-nums bg-transparent outline-none"
                             aria-label="Quantity"
                           />

@@ -27,9 +27,9 @@ const csvRowSchema = z.object({
   name: z.string().trim().min(1, 'name is required').max(200),
   categoryId: z.string().trim().min(1, 'categoryId is required'),
   unit: z.enum(UNITS, { message: 'unit must be one of: pcs, dozen, kg, carton, box, set' }),
-  moq: z.coerce.number().int('moq must be a whole number').min(1, 'moq must be at least 1'),
+  moq: z.coerce.number().positive('moq must be greater than 0'),
   basePrice: z.coerce.number().min(0, 'basePrice cannot be negative'),
-  stockQuantity: z.coerce.number().int('stockQuantity must be a whole number').min(0, 'stockQuantity cannot be negative'),
+  stockQuantity: z.coerce.number().min(0, 'stockQuantity cannot be negative'),
 })
 
 interface RowError {

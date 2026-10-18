@@ -339,12 +339,12 @@ model products {
   brand        String?
   // unit: pcs | dozen | kg | carton | box | set
   unit         String   @default("pcs")
-  moq          Int      @default(1)
-  maxOrderQty  Int?
+  moq          Float    @default(1)
+  maxOrderQty  Float?
   basePrice    Float
   // currency default BDT
   currency     String   @default("BDT")
-  stockQuantity Int
+  stockQuantity Float
   isActive       Boolean  @default(true)
   isApproved     Boolean  @default(false)
   isCustomizable Boolean  @default(false)
@@ -352,7 +352,7 @@ model products {
   isClearance    Boolean  @default(false)
   isSeasonal     Boolean  @default(false)
   thumbnailUrl   String?
-  soldCount      Int      @default(0)
+  soldCount      Float    @default(0)
   ratingAvg      Float    @default(0)
   reviewCount    Int      @default(0)
   createdAt      DateTime @default(now())
@@ -440,8 +440,8 @@ model productQas {
 model productPriceTiers {
   id          String @id @default(cuid())
   productId   String
-  minQty      Int
-  maxQty      Int?
+  minQty      Float
+  maxQty      Float?
   pricePerUnit Float
 
   product products @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -455,7 +455,7 @@ model productVariants {
   variantName   String
   variantValue  String
   sku           String?
-  stockQuantity Int
+  stockQuantity Float
   priceOverride Float?
 
   product   products   @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -485,7 +485,7 @@ model cartItems {
   cartId    String
   productId String
   variantId String?
-  quantity  Int
+  quantity  Float
   supplierId String
   addedAt   DateTime @default(now())
 
@@ -560,7 +560,7 @@ model orderItems {
   subOrderId String
   productId  String
   variantId  String?
-  quantity   Int
+  quantity   Float
   unitPrice  Float
   totalPrice Float
 
@@ -729,7 +729,7 @@ model savedForLater {
   userId    String
   productId String
   variantId String?
-  quantity  Int      @default(1)
+  quantity  Float    @default(1)
   movedFrom String   @default("cart") // cart | wishlist
   createdAt DateTime @default(now())
 
@@ -882,9 +882,9 @@ model flashDeals {
   discountPercent Float
   startAt        DateTime
   endAt          DateTime
-  totalStock     Int
-  soldCount      Int      @default(0)
-  maxPerBuyer    Int?
+  totalStock     Float
+  soldCount      Float    @default(0)
+  maxPerBuyer    Float?
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
 
@@ -1169,7 +1169,7 @@ model rfqRequests {
   title        String
   description  String
   categorySlug String?
-  quantity     Int?
+  quantity     Float?
   // unit: pcs | dozen | kg | carton | box | set
   unit         String   @default("pcs")
   targetPrice  Float?
@@ -1195,7 +1195,7 @@ model rfqItems {
   rfqId         String
   productName   String
   specifications String?
-  quantity      Int
+  quantity      Float
   // unit: pcs | dozen | kg | carton | box | set
   unit          String @default("pcs")
   targetPrice   Float?
@@ -1234,7 +1234,7 @@ model sampleOrders {
   buyerId          String
   supplierId       String
   productId        String
-  quantity         Int      @default(1)
+  quantity         Float    @default(1)
   // status: requested | shipped | delivered | cancelled
   status           String   @default("requested")
   samplePrice      Float    @default(0)
@@ -2318,8 +2318,8 @@ model groupBuyCampaigns {
   id               String   @id @default(cuid())
   productId        String
   title            String
-  targetQty        Int
-  currentQty       Int      @default(0)
+  targetQty        Float
+  currentQty       Float    @default(0)
   discountedPrice  Float
   originalPrice    Float
   minParticipants  Int      @default(2)
@@ -2339,7 +2339,7 @@ model groupBuyParticipants {
   id         String   @id @default(cuid())
   campaignId String
   userId     String
-  quantity   Int      @default(1)
+  quantity   Float    @default(1)
   // status: joined | paid | refunded
   status     String   @default("joined")
   createdAt  DateTime @default(now())
@@ -2803,7 +2803,7 @@ model returnRequestItems {
   returnRequestId String
   orderItemId     String
   reason          String
-  quantity        Int
+  quantity        Float
   comments        String?
 
   @@index([returnRequestId])

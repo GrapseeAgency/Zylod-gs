@@ -94,8 +94,8 @@ export async function resolveUnitPrice(
     throw new PricingError('PRODUCT_NOT_FOUND', `Product ${productId} not found`)
   }
 
-  if (!Number.isInteger(quantity) || quantity < 1) {
-    throw new PricingError('INVALID_QUANTITY', 'Quantity must be a positive whole number', {
+  if (!Number.isFinite(quantity) || quantity <= 0) {
+    throw new PricingError('INVALID_QUANTITY', 'Quantity must be a positive number', {
       quantity,
     })
   }

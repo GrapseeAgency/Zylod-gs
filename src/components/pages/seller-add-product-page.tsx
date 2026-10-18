@@ -34,11 +34,11 @@ import {
   type CategoryOption,
 } from '@/components/pages/product-form-fields';
 
-function optionalInt(value: string): number | null {
+function optionalQty(value: string): number | null {
   const t = value.trim();
   if (t === '') return null;
   const n = Number(t);
-  return Number.isInteger(n) && n > 0 ? n : NaN; // NaN → surfaced by the Zod check
+  return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : NaN; // NaN → surfaced by the Zod check
 }
 
 export function SellerAddProductPage() {
@@ -85,8 +85,8 @@ export function SellerAddProductPage() {
   };
 
   const buildPayload = () => {
-    const moq = optionalInt(form.moq);
-    const maxOrderQty = optionalInt(form.maxOrderQty);
+    const moq = optionalQty(form.moq);
+    const maxOrderQty = optionalQty(form.maxOrderQty);
     const stockQuantity = form.stockQuantity.trim() === '' ? NaN : Number(form.stockQuantity);
     const readyImages = images.filter((img) => img.status === 'ready');
 

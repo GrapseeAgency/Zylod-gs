@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { roundQty } from '@/lib/product-contract'
 
 /**
  * GET /api/rfq — list RFQ requests for the authenticated user
@@ -94,19 +95,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'title and description are required' }, { status: 400 })
     }
 
+    // Unit-bearing decimals (kg: 12.5 kg inquiry is valid) — 2 dp normalization.
+    const safeQuantity =
+      quantity != null && Number.isFinite(Number(quantity)) && Number(quantity) > 0
+        ? roundQty(Number(quantity))
+        : null
+    const safeItems = Array.isArray(items)
+      ? items.map((item: { productName: string; specifications?: string; quantity: number; unit?: string; targetPrice?: number }) => ({
+          ...item,
+          quantity:
+            item.quantity != null && Number.isFinite(Number(item.quantity)) && Number(item.quantity) > 0
+              ? roundQty(Number(item.quantity))
+              : 1,
+        }))
+      : undefined
+
     const rfq = await db.rfqRequests.create({
       data: {
         buyerId,
         title,
         description,
         categorySlug: categorySlug || null,
-        quantity: quantity || null,
+        quantity: safeQuantity,
         unit: unit || 'pcs',
         targetPrice: targetPrice || null,
         deliveryCity: deliveryCity || null,
         deadline: deadline ? new Date(deadline) : null,
-        items: items
-          ? { create: items.map((item: { productName: string; specifications?: string; quantity: number; unit?: string; targetPrice?: number }) => ({
+        items: safeItems
+          ? { create: safeItems.map((item: { productName: string; specifications?: string; quantity: number; unit?: string; targetPrice?: number }) => ({
               productName: item.productName,
               specifications: item.specifications || null,
               quantity: item.quantity,

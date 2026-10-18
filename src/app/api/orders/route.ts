@@ -5,6 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { roundQty } from '@/lib/product-contract'
 
 export async function GET(request: NextRequest) {
   try {
@@ -72,8 +73,7 @@ const orderItemSchema = z.object({
   variantId: z.string().min(1).optional().nullable(),
   quantity: z.coerce
     .number()
-    .int('Quantity must be a whole number')
-    .min(1, 'Quantity must be at least 1')
+    .positive('Quantity must be greater than 0')
     .max(10000, 'Quantity exceeds the per-line limit of 10000'),
 })
 
@@ -115,6 +115,10 @@ export async function POST(request: NextRequest) {
       )
     }
     const { shippingAddressId, couponCode, items } = parsed.data
+    // Unit-bearing decimals: normalize to 2 dp so float drift never reaches DB rows.
+    for (const item of items) {
+      item.quantity = roundQty(item.quantity)
+    }
 
     // Validate shipping address belongs to this buyer
     if (shippingAddressId) {

@@ -41,11 +41,10 @@ export const PRODUCT_UNIT_LABELS: Record<ProductUnit, string> = {
 }
 
 export const priceTierSchema = z.object({
-  minQty: z.number().int().min(1, 'Minimum quantity must be at least 1'),
+  minQty: z.number().positive('Minimum quantity must be greater than 0'),
   maxQty: z
     .number()
-    .int()
-    .min(1, 'Maximum quantity must be at least 1')
+    .positive('Maximum quantity must be greater than 0')
     .nullable()
     .optional(),
   pricePerUnit: z.number().positive('Tier price must be greater than 0'),
@@ -65,7 +64,7 @@ export const productVariantSchema = z.object({
   variantName: z.string().trim().min(1, 'Variant name is required (e.g. "Color")'),
   variantValue: z.string().trim().min(1, 'Variant value is required (e.g. "Red")'),
   sku: z.string().trim().max(100).optional(),
-  stockQuantity: z.number().int().min(0, 'Variant stock cannot be negative'),
+  stockQuantity: z.number().min(0, 'Variant stock cannot be negative'),
   priceOverride: z
     .number()
     .positive('Price override must be greater than 0')
@@ -85,11 +84,11 @@ export const productPayloadSchema = z
     brand: z.string().trim().max(100).optional(),
     sku: z.string().trim().max(100).optional(),
     unit: z.enum(PRODUCT_UNITS, { message: 'Unit must be one of: pcs, dozen, kg, carton, box, set' }),
-    moq: z.number().int().min(1, 'MOQ must be at least 1'),
-    maxOrderQty: z.number().int().min(1).nullable().optional(),
+    moq: z.number().positive('MOQ must be greater than 0'),
+    maxOrderQty: z.number().positive().nullable().optional(),
     basePrice: z.number().positive('Base price must be greater than 0'),
     currency: z.literal('BDT').default('BDT'),
-    stockQuantity: z.number().int().min(0, 'Stock cannot be negative'),
+    stockQuantity: z.number().min(0, 'Stock cannot be negative'),
     isCustomizable: z.boolean().optional(),
     thumbnailUrl: z.string().nullable().optional(),
     images: z.array(productImageSchema),
@@ -170,6 +169,15 @@ export function resolveTierUnitPrice(
     (t) => quantity >= t.minQty && (t.maxQty == null || quantity <= t.maxQty)
   )
   return covering ? covering.pricePerUnit : basePrice
+}
+
+/**
+ * Quantities are unit-bearing decimals (kg: 2.5 kg is a valid order line).
+ * Round every stored/served quantity to 2 decimal places to avoid
+ * float drift (0.30000000000000004) leaking into DB rows and API payloads.
+ */
+export function roundQty(n: number): number {
+  return Math.round(n * 100) / 100
 }
 
 /** Build a URL-safe slug from a product name (products.slug is required, non-unique in schema). */

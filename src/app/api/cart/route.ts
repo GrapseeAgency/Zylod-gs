@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest, requireUserType } from '@/lib/auth'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
+import { roundQty } from '@/lib/product-contract'
 
 export async function GET(request: NextRequest) {
   try {
@@ -158,10 +159,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'productId, quantity are required' }, { status: 400 })
     }
 
-    // Validate quantity is positive integer
-    const safeQuantity = Math.max(1, Math.min(10000, Math.floor(Number(quantity))))
-    if (isNaN(safeQuantity)) {
+    // Validate quantity: unit-bearing decimal (kg: 2.5 is valid), 2 dp max.
+    const safeQuantity = roundQty(Number(quantity))
+    if (!Number.isFinite(safeQuantity) || safeQuantity <= 0) {
       return NextResponse.json({ error: 'Invalid quantity' }, { status: 400 })
+    }
+    if (safeQuantity > 10000) {
+      return NextResponse.json({ error: 'Quantity exceeds the 10,000 per-line limit' }, { status: 400 })
     }
 
     // Verify product exists and is active
@@ -179,16 +183,21 @@ export async function POST(request: NextRequest) {
     const supplierId = product.supplierId
 
     // Check stock (variant stock is checked against the variant row when set)
+    let availableStock: number
     if (variantId) {
       const variant = await db.productVariants.findUnique({ where: { id: variantId } })
       if (!variant || variant.productId !== productId) {
         return NextResponse.json({ error: 'Invalid variant for this product' }, { status: 400 })
       }
-      if (safeQuantity > variant.stockQuantity) {
-        return NextResponse.json({ error: 'Quantity exceeds available stock', stockAvailable: variant.stockQuantity }, { status: 400 })
+      availableStock = variant.stockQuantity
+      if (safeQuantity > availableStock) {
+        return NextResponse.json({ error: 'Quantity exceeds available stock', stockAvailable: availableStock }, { status: 400 })
       }
-    } else if (safeQuantity > product.stockQuantity) {
-      return NextResponse.json({ error: 'Quantity exceeds available stock', stockAvailable: product.stockQuantity }, { status: 400 })
+    } else {
+      availableStock = product.stockQuantity
+      if (safeQuantity > availableStock) {
+        return NextResponse.json({ error: 'Quantity exceeds available stock', stockAvailable: availableStock }, { status: 400 })
+      }
     }
 
     // MOQ kept in force on the cart add path
@@ -220,10 +229,18 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingItem) {
-      // Update quantity
+      // Update quantity — merged line re-checks stock so repeated adds can
+      // never push a line past real availability.
+      const newQty = roundQty(existingItem.quantity + safeQuantity)
+      if (newQty > availableStock) {
+        return NextResponse.json(
+          { error: 'Quantity exceeds available stock', stockAvailable: availableStock },
+          { status: 400 }
+        )
+      }
       const updated = await db.cartItems.update({
         where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + safeQuantity },
+        data: { quantity: newQty },
       })
       return NextResponse.json({ success: true, data: updated })
     }

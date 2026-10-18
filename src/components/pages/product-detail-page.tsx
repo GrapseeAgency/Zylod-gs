@@ -258,6 +258,8 @@ function DesktopProductDetailPage() {
 
   // Sync quantity with MOQ when product changes
   const moq = product?.moq || 1
+  // kg products order in 1-kg increments (min-clamped to MOQ); discrete units step by MOQ.
+  const qtyStep = product?.unit === 'kg' ? 1 : moq
   useEffect(() => {
     setQuantity(moq)
   }, [moq])
@@ -832,19 +834,22 @@ function DesktopProductDetailPage() {
                   variant="ghost"
                   size="icon"
                   className="h-10 w-10 rounded-none hover:bg-[primary]/10"
-                  onClick={() => setQuantity(Math.max(moq, quantity - moq))}
+                  onClick={() => setQuantity(Math.max(moq, Math.round((quantity - qtyStep) * 100) / 100))}
                   disabled={quantity <= moq}
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
                 <input
                   type="number"
+                  inputMode="decimal"
+                  step={product?.unit === 'kg' ? 0.5 : 1}
                   value={quantity}
                   onChange={(e) => {
-                    const val = parseInt(e.target.value)
+                    // Unit-bearing decimal: kg orders accept 2.5, 0.5 … (2 dp max).
+                    const val = Math.round(parseFloat(e.target.value) * 100) / 100
                     if (isNaN(val) || val < moq) {
-                      setQuantity(val || 0)
-                      setQuantityError(true)
+                      setQuantity(isNaN(val) ? 0 : val)
+                      setQuantityError(isNaN(val) || val < moq)
                     } else {
                       setQuantity(val)
                       setQuantityError(false)
@@ -863,7 +868,7 @@ function DesktopProductDetailPage() {
                   variant="ghost"
                   size="icon"
                   className="h-10 w-10 rounded-none hover:bg-[primary]/10"
-                  onClick={() => setQuantity(quantity + moq)}
+                  onClick={() => setQuantity(Math.round((quantity + qtyStep) * 100) / 100)}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>

@@ -56,11 +56,11 @@ interface ApiProduct {
   priceTiers: Array<{ minQty: number; maxQty: number | null; pricePerUnit: number }>;
 }
 
-function optionalInt(value: string): number | null {
+function optionalQty(value: string): number | null {
   const t = value.trim();
   if (t === '') return null;
   const n = Number(t);
-  return Number.isInteger(n) && n > 0 ? n : NaN; // NaN → surfaced by the Zod check
+  return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : NaN; // NaN → surfaced by the Zod check
 }
 
 export function SellerEditProductPage() {
@@ -205,8 +205,8 @@ export function SellerEditProductPage() {
   }, [fetchProduct]);
 
   const buildPayload = () => {
-    const moq = optionalInt(form.moq);
-    const maxOrderQty = optionalInt(form.maxOrderQty);
+    const moq = optionalQty(form.moq);
+    const maxOrderQty = optionalQty(form.maxOrderQty);
     const readyImages = images.filter((img) => img.status === 'ready');
     return {
       name: form.name.trim(),

@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
+import { roundQty } from '@/lib/product-contract'
 
 /**
  * REBUILT bulk add-to-cart (Task 51-d) — the wholesale bulk line merger.
@@ -57,8 +58,7 @@ const bulkBodySchema = z.object({
           variantId: z.string().min(1).nullish(),
           quantity: z
             .number({ message: 'quantity must be a number' })
-            .int('quantity must be a whole number')
-            .min(1, 'quantity must be at least 1')
+            .positive('quantity must be greater than 0')
             .max(10000, 'quantity must be at most 10000'),
           // Sent by bulk-add-to-cart-page.tsx (wishlist bulk add). Accepted so
           // the real caller works unchanged; never trusted — cart lines are
@@ -117,6 +117,10 @@ export async function POST(request: NextRequest) {
     )
   }
   const items: BulkItem[] = parsed.data.items
+  // Unit-bearing decimals (kg: 2.5 kg line is valid) — 2 dp normalization.
+  for (const item of items) {
+    item.quantity = roundQty(item.quantity)
+  }
 
   try {
     // ─── ONE TRANSACTION: cart resolution + every line check/write ───

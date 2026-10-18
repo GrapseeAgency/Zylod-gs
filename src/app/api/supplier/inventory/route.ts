@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { roundQty } from '@/lib/product-contract'
 import { z } from 'zod'
 
 /**
@@ -29,8 +30,8 @@ const stockUpdateSchema = z
   .object({
     productId: z.string().min(1).optional(),
     variantId: z.string().min(1).optional(),
-    newQuantity: z.number().int().min(0, 'Quantity cannot be negative').optional(),
-    delta: z.number().int().optional(),
+    newQuantity: z.number().min(0, 'Quantity cannot be negative').optional(),
+    delta: z.number().optional(),
   })
   .refine((u) => Boolean(u.productId) !== Boolean(u.variantId), {
     message: 'Exactly one of productId or variantId is required per update',
@@ -221,10 +222,11 @@ export async function PATCH(request: NextRequest) {
       }> = []
       for (const [index, u] of updates.entries()) {
         const r = resolved[index]
-        const target =
+        const target = roundQty(
           u.newQuantity !== undefined
             ? u.newQuantity
             : Math.max(0, r.before + (u.delta ?? 0))
+        )
         if (r.key === 'productId') {
           const row = await tx.products.update({
             where: { id: r.id },
