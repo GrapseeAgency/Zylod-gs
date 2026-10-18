@@ -23,6 +23,15 @@ export async function GET(request: NextRequest) {
       select: { id: true, companyName: true, verificationStatus: true, ratingAvg: true },
     })
 
+    // Task 50-b scoping fix: products/subOrders are keyed by supplierProfiles.id
+    // (the canonical FK — the seller CRUD writes profile.id). Query with the
+    // same OR-convention as /api/supplier/products + /inventory so legacy
+    // user-keyed rows still count, but profile-keyed rows are never missed.
+    const supplierScopeIds = [
+      ...(supplierProfile ? [supplierProfile.id] : []),
+      supplierId,
+    ]
+
     const [
       productsCount,
       lowStockProducts,
@@ -34,15 +43,20 @@ export async function GET(request: NextRequest) {
       buyerRegionsRaw,
       quoteCount,
       messageCount,
+      paidSubOrderAgg,
+      pendingSubOrderAgg,
+      paidMonthAgg,
+      totalOrdersCount,
+      pendingOrdersCountReal,
     ] = await Promise.all([
-      db.products.count({ where: { supplierId } }),
+      db.products.count({ where: { supplierId: { in: supplierScopeIds } } }),
       db.products.findMany({
-        where: { supplierId, stockQuantity: { lte: 10 } },
+        where: { supplierId: { in: supplierScopeIds }, stockQuantity: { lte: 10 } },
         select: { id: true, name: true, stockQuantity: true, moq: true },
         take: 10,
       }),
       db.subOrders.findMany({
-        where: { supplierId },
+        where: { supplierId: { in: supplierScopeIds } },
         orderBy: { createdAt: 'desc' },
         take: 10,
         include: {
@@ -55,13 +69,13 @@ export async function GET(request: NextRequest) {
         },
       }),
       db.products.findMany({
-        where: { supplierId },
+        where: { supplierId: { in: supplierScopeIds } },
         orderBy: { soldCount: 'desc' },
         take: 5,
         select: { id: true, name: true, basePrice: true, stockQuantity: true, soldCount: true, categoryId: true, category: { select: { name: true } } },
       }),
       db.products.findMany({
-        where: { supplierId },
+        where: { supplierId: { in: supplierScopeIds } },
         orderBy: { soldCount: 'desc' },
         take: 5,
         select: {
@@ -76,7 +90,7 @@ export async function GET(request: NextRequest) {
         },
       }),
       db.subOrders.findMany({
-        where: { supplierId, createdAt: { gte: sixMonthsAgo } },
+        where: { supplierId: { in: supplierScopeIds }, createdAt: { gte: sixMonthsAgo }, status: { notIn: ['cancelled', 'returned'] }, order: { paymentStatus: 'paid' } },
         select: { createdAt: true, subtotal: true, shippingCost: true },
       }),
       db.sellerVerificationDocuments.findMany({
@@ -84,7 +98,7 @@ export async function GET(request: NextRequest) {
         select: { id: true, documentType: true, status: true, uploadedAt: true },
       }),
       db.subOrders.findMany({
-        where: { supplierId },
+        where: { supplierId: { in: supplierScopeIds } },
         select: {
           order: {
             select: {
@@ -95,15 +109,33 @@ export async function GET(request: NextRequest) {
         },
         take: 200,
       }),
-      db.quoteRequests.count({ where: { supplierId } }),
-      db.messages.count({ where: { conversation: { supplierId } } }),
+      db.quoteRequests.count({ where: { supplierId: { in: supplierScopeIds } } }),
+      db.messages.count({ where: { conversation: { supplierId: { in: supplierScopeIds } } } }),
+      /* Revenue truth: 'paid' only — consistent with /api/supplier/analytics.
+         Booked-but-unpaid volume is reported separately as pendingPaymentBDT
+         so the seller sees both numbers honestly. */
+      db.subOrders.aggregate({
+        where: { supplierId: { in: supplierScopeIds }, status: { notIn: ['cancelled', 'returned'] }, order: { paymentStatus: 'paid' } },
+        _sum: { subtotal: true, shippingCost: true },
+      }),
+      db.subOrders.aggregate({
+        where: { supplierId: { in: supplierScopeIds }, status: { notIn: ['cancelled', 'returned'] }, order: { paymentStatus: { not: 'paid' } } },
+        _sum: { subtotal: true, shippingCost: true },
+      }),
+      db.subOrders.aggregate({
+        where: { supplierId: { in: supplierScopeIds }, status: { notIn: ['cancelled', 'returned'] }, order: { paymentStatus: 'paid' }, createdAt: { gte: new Date(now.getFullYear(), now.getMonth(), 1) } },
+        _sum: { subtotal: true, shippingCost: true },
+      }),
+      db.subOrders.count({ where: { supplierId: { in: supplierScopeIds }, status: { notIn: ['cancelled', 'returned'] } } }),
+      db.subOrders.count({ where: { supplierId: { in: supplierScopeIds }, status: 'pending' } }),
     ])
 
-    const totalRevenueBDT = allSubOrders.reduce((sum, so) => sum + (so.subtotal || 0) + (so.shippingCost || 0), 0)
-    const pendingOrdersCount = allSubOrders.filter((so) => so.status === 'pending').length
-    const thisMonthRevenue = allSubOrders
-      .filter((so) => so.createdAt >= new Date(now.getFullYear(), now.getMonth(), 1))
-      .reduce((sum, so) => sum + (so.subtotal || 0) + (so.shippingCost || 0), 0)
+    /* Aggregates over ALL subOrders (the recent take:10 list is display-only).
+       Old code derived totals from that 10-row page — totals silently capped. */
+    const totalRevenueBDT = (paidSubOrderAgg._sum.subtotal || 0) + (paidSubOrderAgg._sum.shippingCost || 0)
+    const pendingPaymentBDT = (pendingSubOrderAgg._sum.subtotal || 0) + (pendingSubOrderAgg._sum.shippingCost || 0)
+    const thisMonthRevenue = (paidMonthAgg._sum.subtotal || 0) + (paidMonthAgg._sum.shippingCost || 0)
+    const pendingOrdersCount = pendingOrdersCountReal
 
     const productPerf = productPerformance.map((p) => {
       const revenue = p.orderItems.reduce((sum, oi) => sum + oi.totalPrice, 0)
@@ -165,10 +197,11 @@ export async function GET(request: NextRequest) {
       data: {
         stats: {
           totalProducts: productsCount,
-          totalOrders: allSubOrders.length,
+          totalOrders: totalOrdersCount,
           pendingOrders: pendingOrdersCount,
           lowStockCount: lowStockProducts.length,
           totalRevenueBDT,
+          pendingPaymentBDT,
           thisMonthRevenue,
           totalBuyers: buyerSet.size,
         },
@@ -176,7 +209,6 @@ export async function GET(request: NextRequest) {
           companyName: supplierProfile?.companyName || 'Your Store',
           verificationStatus: supplierProfile?.verificationStatus || 'pending',
           ratingAvg: supplierProfile?.ratingAvg || 0,
-          city: 'Bangladesh',
         },
         recentSubOrders: allSubOrders.slice(0, 8).map((so) => ({
           id: so.id,

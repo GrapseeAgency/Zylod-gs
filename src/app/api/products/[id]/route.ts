@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { authenticateRequest } from '@/lib/auth'
 
 function mapReview(review: {
   id: string
@@ -42,6 +43,9 @@ export async function GET(
         supplier: {
           select: {
             id: true,
+            // userId lets the buyer open a REAL chat conversation with this
+            // supplier (conversations.supplierId references users.id).
+            userId: true,
             companyName: true,
             ratingAvg: true,
             ratingCount: true,
@@ -52,6 +56,7 @@ export async function GET(
         images: { orderBy: { sortOrder: 'asc' } },
         priceTiers: { orderBy: { minQty: 'asc' } },
         variants: true,
+        videos: { orderBy: { sortOrder: 'asc' } },
         reviews: {
           where: { replyToId: null }, // top-level reviews only
           take: 10,
@@ -82,6 +87,29 @@ export async function GET(
 
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    }
+
+    // ─── MODERATION GATE ───
+    // Hidden or unapproved products are 404 for everyone EXCEPT the owning
+    // supplier (viewing their own listing) and admins. Unauthenticated
+    // callers get the same 404 — no existence leak.
+    if (!product.isActive || !product.isApproved) {
+      const auth = await authenticateRequest(request)
+      let allowed = false
+      if (auth.authenticated && auth.user) {
+        if (auth.user.userType === 'admin') {
+          allowed = true
+        } else {
+          const profile = await db.supplierProfiles.findFirst({
+            where: { userId: auth.user.id },
+            select: { id: true },
+          })
+          allowed = profile?.id === product.supplierId
+        }
+      }
+      if (!allowed) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+      }
     }
 
     // Serialize reviews (parse images JSON, map replies)

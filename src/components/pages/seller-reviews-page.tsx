@@ -2,20 +2,49 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
-import { Star, AlertCircle, MessageSquare } from 'lucide-react';
+import { Star, AlertCircle, MessageSquare, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+interface SellerReview {
+  id: string;
+  rating: number;
+  comment: string | null;
+  verifiedPurchase: boolean;
+  createdAt: string;
+  productName: string;
+  buyerName: string;
+}
 
 export function SellerReviewsPage() {
   const { navigate, goBack } = useNavigationStore();
-  const [data, setData] = useState<any>(null);
+  const [reviews, setReviews] = useState<SellerReview[]>([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const load = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/supplier/reviews');
+      const json = await res.json();
+      if (res.ok && json.success && json.data) {
+        setReviews(json.data.reviews || []);
+        setAverageRating(json.data.averageRating ?? 0);
+        setTotalReviews(json.data.totalReviews ?? 0);
+      } else {
+        setError(json.error || 'Could not load reviews');
+      }
+    } catch {
+      setError('Could not reach the reviews service');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch('/api/supplier/reviews')
-      .then(res => res.json())
-      .then(d => {
-        setData(d);
-        setLoading(false);
-      });
+    load();
   }, []);
 
   return (
@@ -31,34 +60,68 @@ export function SellerReviewsPage() {
             <div className="h-20 bg-gray-200 rounded"></div>
             <div className="h-32 bg-gray-200 rounded"></div>
           </div>
+        ) : error ? (
+          <div className="bg-white p-6 rounded shadow text-center">
+            <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-600 mb-3">{error}</p>
+            <Button variant="outline" size="sm" onClick={load}>
+              <RefreshCw className="w-4 h-4 mr-1" /> Retry
+            </Button>
+          </div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
             <div className="bg-white p-4 rounded shadow">
               <h2 className="text-lg font-bold">Rating Overview</h2>
               <div className="flex items-center space-x-2 mt-2">
                 <Star className="text-yellow-500" />
-                <span className="text-2xl font-bold">{data?.averageRating || '4.5'}</span>
-                <span className="text-gray-500">({data?.totalReviews || 0} reviews)</span>
+                {/* Real average from the supplier's own reviews — no
+                    fabricated default when there are none. */}
+                <span className="text-2xl font-bold">
+                  {totalReviews > 0 ? averageRating.toFixed(1) : '—'}
+                </span>
+                <span className="text-gray-500">({totalReviews} review{totalReviews !== 1 ? 's' : ''})</span>
               </div>
             </div>
             <div className="space-y-4">
-              {data?.reviews?.map((review: any) => (
-                <div key={review.id} className="bg-white p-4 rounded shadow">
-                  <div className="flex justify-between">
-                    <span className="font-bold">{review.buyerName}</span>
-                    <span className="text-sm text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <p className="mt-2">{review.comment}</p>
-                  <div className="mt-4 flex space-x-2">
-                    <button onClick={() => navigate('seller-review-reply', { id: review.id })} className="flex items-center text-primary text-sm font-semibold">
-                      <MessageSquare className="w-4 h-4 mr-1" /> Reply
-                    </button>
-                    <button className="flex items-center text-gray-500 text-sm font-semibold">
-                      <AlertCircle className="w-4 h-4 mr-1" /> Report
-                    </button>
-                  </div>
+              {reviews.length === 0 ? (
+                <div className="bg-white p-8 rounded shadow text-center">
+                  <Star className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                  <h3 className="text-sm font-bold text-gray-700">No reviews yet</h3>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Buyer reviews for your products will appear here once buyers start reviewing.
+                  </p>
                 </div>
-              ))}
+              ) : (
+                reviews.map((review) => (
+                  <div key={review.id} className="bg-white p-4 rounded shadow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="font-bold">{review.buyerName}</span>
+                        <p className="text-xs text-gray-500">{review.productName}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-200'}`} />
+                          ))}
+                        </span>
+                        <span className="text-sm text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    {review.comment && <p className="mt-2 text-sm text-gray-700">{review.comment}</p>}
+                    {review.verifiedPurchase && (
+                      <span className="inline-block mt-2 text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded">
+                        Verified purchase
+                      </span>
+                    )}
+                    <div className="mt-4 flex space-x-2">
+                      <button onClick={() => navigate('seller-review-reply', { id: review.id })} className="flex items-center text-primary text-sm font-semibold">
+                        <MessageSquare className="w-4 h-4 mr-1" /> Reply
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </motion.div>
         )}

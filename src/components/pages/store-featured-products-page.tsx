@@ -51,8 +51,15 @@ export function StoreFeaturedProductsPage() {
         const prodData = await prodRes.json()
         const storeData = await storeRes.json()
 
-        if (prodData.success && Array.isArray(prodData.data)) {
-          setProducts(prodData.data)
+        // GET /api/supplier/products now paginates: {success, data:{items,total,…}}
+        // (Task 50-a rewrite). Legacy flat-array shape kept as fallback.
+        const items = Array.isArray(prodData.data)
+          ? prodData.data
+          : Array.isArray(prodData.data?.items)
+            ? prodData.data.items
+            : []
+        if (prodData.success) {
+          setProducts(items)
         }
 
         if (storeData.success && storeData.data?.featuredProductIds) {

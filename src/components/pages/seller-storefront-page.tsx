@@ -8,11 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface StorefrontData {
+  id?: string;
   companyName?: string;
   verificationStatus?: string;
   ratingAvg?: number;
   ratingCount?: number;
-  storeCustomization?: { bannerUrl?: string | null; logoUrl?: string | null } | null;
+  storeCustomization?: { bannerUrl?: string | null; logoUrl?: string | null; theme?: string; layout?: string } | null;
   products?: Array<{
     id: string;
     name: string;
@@ -21,6 +22,7 @@ interface StorefrontData {
     moq: number;
     thumbnailUrl?: string | null;
   }>;
+  _count?: { products?: number; supplierReviews?: number };
 }
 
 /** Initials circle from the store's real company name (up to 2 letters). */
@@ -42,15 +44,22 @@ function StoreInitials({ name, className }: { name: string; className: string })
 }
 
 export const SellerStorefrontPage = () => {
-  const { goBack, navigate } = useNavigationStore();
+  const { goBack, navigate, pageParams } = useNavigationStore();
   const [data, setData] = useState<StorefrontData | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Viewing a specific supplier's storefront (e.g. via "Visit store" on a
+  // product page) vs. the signed-in supplier's own storefront.
+  const viewedSupplierId = pageParams.supplierId || '';
+
   useEffect(() => {
     const fetchStore = async () => {
       try {
-        const res = await fetch('/api/supplier/storefront');
+        const url = viewedSupplierId
+          ? `/api/supplier/storefront?supplierId=${encodeURIComponent(viewedSupplierId)}`
+          : '/api/supplier/storefront';
+        const res = await fetch(url);
         const json = await res.json();
         if (res.ok && json.success && json.data) {
           setData(json.data);
@@ -66,9 +75,10 @@ export const SellerStorefrontPage = () => {
       }
     };
     fetchStore();
-  }, []);
+  }, [viewedSupplierId]);
 
   const companyName = data?.companyName ?? '';
+  const productCount = data?.products?.length ?? 0;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-8">
@@ -79,8 +89,9 @@ export const SellerStorefrontPage = () => {
         ) : data?.storeCustomization?.bannerUrl ? (
           <img src={data.storeCustomization.bannerUrl} alt="Store Banner" className="w-full h-full object-cover" />
         ) : !error ? (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
+          <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 gap-1">
             <ImageOff className="w-8 h-8" />
+            <span className="text-[11px]">No banner set yet</span>
           </div>
         ) : null}
         <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
@@ -88,9 +99,12 @@ export const SellerStorefrontPage = () => {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex gap-2">
-            <button className="p-2 bg-black/50 text-white rounded-full backdrop-blur-sm" onClick={() => navigate('store-banner-editor')}>
-              <Edit className="w-5 h-5" />
-            </button>
+            {/* Edit only makes sense on the signed-in supplier's OWN storefront */}
+            {!viewedSupplierId && (
+              <button className="p-2 bg-black/50 text-white rounded-full backdrop-blur-sm" onClick={() => navigate('store-banner-editor')}>
+                <Edit className="w-5 h-5" />
+              </button>
+            )}
             <button className="p-2 bg-black/50 text-white rounded-full backdrop-blur-sm">
               <Share2 className="w-5 h-5" />
             </button>
@@ -134,6 +148,9 @@ export const SellerStorefrontPage = () => {
                   {data?.verificationStatus === 'approved' && (
                     <span className="flex items-center gap-1 text-green-600">Verified</span>
                   )}
+                  {typeof data?._count?.products === 'number' && (
+                    <span>{data._count.products} product{data._count.products !== 1 ? 's' : ''}</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -174,15 +191,19 @@ export const SellerStorefrontPage = () => {
                 <div className="grid grid-cols-2 gap-3">
                   {loading ? (
                     [1, 2, 3, 4].map(i => <Skeleton key={i} className="aspect-[3/4] rounded-xl" />)
-                  ) : (data?.products?.length ?? 0) === 0 ? (
+                  ) : productCount === 0 ? (
                     <div className="col-span-full text-center py-10">
                       <Package className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
                       <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No products listed yet</h3>
-                      <p className="text-xs text-gray-500 mt-1">This store has not published any active products.</p>
+                      <p className="text-xs text-gray-500 mt-1">This store has not published any approved products.</p>
                     </div>
                   ) : (
                     data?.products?.map((prod) => (
-                      <div key={prod.id} className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
+                      <div
+                        key={prod.id}
+                        onClick={() => navigate('product-detail', { productId: prod.id })}
+                        className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer"
+                      >
                         <div className="w-full aspect-square bg-gray-100 dark:bg-gray-700">
                           {prod.thumbnailUrl ? (
                             <img src={prod.thumbnailUrl} alt={prod.name} className="w-full aspect-square object-cover" />
@@ -203,11 +224,19 @@ export const SellerStorefrontPage = () => {
                 </div>
               </TabsContent>
               <TabsContent value="featured" className="mt-0 outline-none">
-                <div className="text-center py-10">
-                  <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <h3 className="text-gray-500 font-medium mb-4">Set up featured collections</h3>
-                  <Button onClick={() => navigate('store-featured-products')}>Manage Featured Products</Button>
-                </div>
+                {viewedSupplierId ? (
+                  <div className="text-center py-10">
+                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <h3 className="text-gray-500 font-medium mb-1">No featured collection published</h3>
+                    <p className="text-xs text-gray-400">This store has not set up featured products yet.</p>
+                  </div>
+                ) : (
+                  <div className="text-center py-10">
+                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <h3 className="text-gray-500 font-medium mb-4">Set up featured collections</h3>
+                    <Button onClick={() => navigate('store-featured-products')}>Manage Featured Products</Button>
+                  </div>
+                )}
               </TabsContent>
             </div>
           </Tabs>

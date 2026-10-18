@@ -2,20 +2,45 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
-import { Plus, Tag } from 'lucide-react';
+import { Plus, Tag, AlertCircle } from 'lucide-react';
+
+interface PromotionRow {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  usageCount: number;
+  discountValue: number;
+}
 
 export function SellerPromotionsPage() {
   const { navigate, goBack } = useNavigationStore();
-  const [promotions, setPromotions] = useState<any[]>([]);
+  const [promotions, setPromotions] = useState<PromotionRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const load = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/supplier/promotions');
+      const json = await res.json();
+      if (res.ok && json.success && Array.isArray(json.data)) {
+        setPromotions(json.data);
+      } else {
+        setError(json.error || 'Could not load promotions');
+        setPromotions([]);
+      }
+    } catch {
+      setError('Could not reach the promotions service');
+      setPromotions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch('/api/supplier/promotions')
-      .then(res => res.json())
-      .then(d => {
-        setPromotions(d?.promotions || []);
-        setLoading(false);
-      });
+    load();
   }, []);
 
   return (
@@ -35,25 +60,36 @@ export function SellerPromotionsPage() {
             <div className="h-24 bg-gray-200 rounded"></div>
             <div className="h-24 bg-gray-200 rounded"></div>
           </div>
+        ) : error ? (
+          <div className="bg-white p-6 rounded text-center shadow">
+            <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-600">{error}</p>
+          </div>
+        ) : promotions.length === 0 ? (
+          <div className="bg-white p-8 rounded text-center shadow">
+            <Tag className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-gray-700">No promotions yet</h3>
+            <p className="text-xs text-gray-500 mt-1">Create your first promotion to offer wholesale discounts.</p>
+          </div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             {promotions.map(promo => (
               <div key={promo.id} className="bg-white p-4 rounded shadow">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-bold text-lg">{promo.title}</h3>
+                    <h3 className="font-bold text-lg">{promo.name}</h3>
                     <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded mt-1">{promo.status}</span>
                   </div>
                   <Tag className="text-primary" />
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-gray-500">Redemptions</p>
-                    <p className="font-bold">{promo.redemptions || 0}</p>
+                    <p className="text-gray-500">Type</p>
+                    <p className="font-bold">{promo.type}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500">Revenue</p>
-                    <p className="font-bold">৳{promo.revenue || 0}</p>
+                    <p className="text-gray-500">Redemptions</p>
+                    <p className="font-bold">{promo.usageCount}</p>
                   </div>
                 </div>
                 <button onClick={() => navigate('promotion-analytics', { id: promo.id })} className="mt-4 w-full py-2 bg-gray-100 text-center rounded font-semibold text-gray-700">

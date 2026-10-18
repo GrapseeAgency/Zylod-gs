@@ -1,75 +1,191 @@
 'use client';
 
-import React, { useState } from 'react';
+/**
+ * Seller add-product page (Task 50-a) — REAL product creation against the
+ * canonical contract. Fields map 1:1 to prisma `products` (+ child tables);
+ * the old payload {title, unitType:'piece', pricingTiers[].price …} never
+ * matched the API and every submit died as 400/500. Now:
+ *  - payload = productPayloadSchema (name/categoryId/unit/moq/basePrice/…)
+ *  - client-side Zod validation mirrors the server (one shared contract lib)
+ *  - images/videos upload to /api/uploads/product-media and the returned URLs
+ *    are submitted in the contract
+ *  - every API error is surfaced verbatim; navigation happens ONLY on real 201
+ *  - new products land in the moderation queue (isApproved=false) — the page
+ *    says so honestly after creation.
+ */
+import React, { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Upload, Plus, Trash2, Save } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Save } from 'lucide-react';
+import { toast } from 'sonner';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { productPayloadSchema } from '@/lib/product-contract';
+import {
+  ProductFormFields,
+  EMPTY_PRODUCT_FORM,
+  emptyTier,
+  flattenApiCategories,
+  type ApiCategoryRow,
+  type ProductFormState,
+  type TierRow,
+  type VariantRow,
+  type MediaImage,
+  type MediaVideo,
+  type CategoryOption,
+} from '@/components/pages/product-form-fields';
+
+function optionalInt(value: string): number | null {
+  const t = value.trim();
+  if (t === '') return null;
+  const n = Number(t);
+  return Number.isInteger(n) && n > 0 ? n : NaN; // NaN → surfaced by the Zod check
+}
 
 export function SellerAddProductPage() {
   const { goBack, navigate } = useNavigationStore();
+  const token = useAuthStore((s) => s.token);
+
+  const [form, setForm] = useState<ProductFormState>(EMPTY_PRODUCT_FORM);
+  const [tiers, setTiers] = useState<TierRow[]>([{ minQty: '', maxQty: '', pricePerUnit: '' }]);
+  const [variants, setVariants] = useState<VariantRow[]>([]);
+  const [images, setImages] = useState<MediaImage[]>([]);
+  const [videos, setVideos] = useState<MediaVideo[]>([]);
+
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    category: '',
-    brand: '',
-    hsCode: '',
-    basePrice: '',
-    unitType: 'piece',
-    moq: '',
-    sampleAvailable: false,
-    samplePrice: '',
-    description: '',
-    weight: '',
-    leadTimeDays: '',
-  });
+  const [error, setError] = useState('');
+  const [serverIssues, setServerIssues] = useState<Record<string, string[]>>({});
 
-  const [pricingTiers, setPricingTiers] = useState([
-    { minQty: 100, maxQty: 499, price: '' }
-  ]);
+  const fetchCategories = useCallback(async () => {
+    setCategoriesLoading(true);
+    try {
+      const res = await fetch('/api/categories');
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success && Array.isArray(json.data)) {
+        setCategories(flattenApiCategories(json.data as ApiCategoryRow[]));
+      } else {
+        // Honest: leave the list empty; the select explains it.
+        setCategories([]);
+      }
+    } catch {
+      setCategories([]);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }));
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  const handleFormChange = (patch: Partial<ProductFormState>) => {
+    setForm((prev) => ({ ...prev, ...patch }));
+    setError('');
   };
 
-  const handleTierChange = (index: number, field: string, value: string) => {
-    const newTiers = [...pricingTiers];
-    newTiers[index] = { ...newTiers[index], [field]: value };
-    setPricingTiers(newTiers);
-  };
+  const buildPayload = () => {
+    const moq = optionalInt(form.moq);
+    const maxOrderQty = optionalInt(form.maxOrderQty);
+    const stockQuantity = form.stockQuantity.trim() === '' ? NaN : Number(form.stockQuantity);
+    const readyImages = images.filter((img) => img.status === 'ready');
 
-  const addTier = () => {
-    setPricingTiers([...pricingTiers, { minQty: 0, maxQty: 0, price: '' }]);
-  };
-
-  const removeTier = (index: number) => {
-    setPricingTiers(pricingTiers.filter((_, i) => i !== index));
+    return {
+      name: form.name.trim(),
+      categoryId: form.categoryId,
+      description: form.description.trim(),
+      ...(form.brand.trim() ? { brand: form.brand.trim() } : {}),
+      ...(form.sku.trim() ? { sku: form.sku.trim() } : {}),
+      unit: form.unit,
+      moq,
+      ...(maxOrderQty !== null ? { maxOrderQty } : { maxOrderQty: null }),
+      basePrice: form.basePrice.trim() === '' ? NaN : Number(form.basePrice),
+      currency: 'BDT' as const,
+      stockQuantity,
+      isCustomizable: form.isCustomizable,
+      thumbnailUrl: readyImages.length > 0 ? readyImages[0].url : null,
+      images: readyImages.map((img, index) => ({ imageUrl: img.url, sortOrder: index })),
+      videos: videos
+        .filter((v) => v.status === 'ready')
+        .map((v) => ({ url: v.url, ...(v.title.trim() ? { title: v.title.trim() } : {}) })),
+      variants: variants
+        .filter((v) => v.variantName.trim() && v.variantValue.trim())
+        .map((v) => ({
+          variantName: v.variantName.trim(),
+          variantValue: v.variantValue.trim(),
+          ...(v.sku.trim() ? { sku: v.sku.trim() } : {}),
+          stockQuantity: v.stockQuantity.trim() === '' ? NaN : Number(v.stockQuantity),
+          ...(v.priceOverride.trim() ? { priceOverride: Number(v.priceOverride) } : { priceOverride: null }),
+        })),
+      priceTiers: tiers
+        .filter((t) => t.minQty.trim() !== '' || t.pricePerUnit.trim() !== '')
+        .map((t) => ({
+          minQty: t.minQty.trim() === '' ? NaN : Number(t.minQty),
+          ...(t.maxQty.trim() !== '' ? { maxQty: Number(t.maxQty) } : { maxQty: null }),
+          pricePerUnit: t.pricePerUnit.trim() === '' ? NaN : Number(t.pricePerUnit),
+        })),
+    };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+
+    const uploadingCount =
+      images.filter((i) => i.status === 'uploading').length + videos.filter((v) => v.status === 'uploading').length;
+    if (uploadingCount > 0) {
+      toast.error('Wait for all uploads to finish before publishing.');
+      return;
+    }
+
+    // Client-side validation with the SAME contract the server enforces.
+    const payload = buildPayload();
+    const parsed = productPayloadSchema.safeParse(payload);
+    if (!parsed.success) {
+      const flattened = parsed.error.flatten();
+      const firstFieldIssue = Object.values(flattened.fieldErrors)[0]?.[0];
+      const message = flattened.formErrors[0] ?? firstFieldIssue ?? 'Please fix the highlighted fields.';
+      setError(message);
+      setServerIssues(flattened.fieldErrors as Record<string, string[]>);
+      toast.error(message);
+      return;
+    }
+
     setLoading(true);
+    setError('');
+    setServerIssues({});
     try {
-      const response = await fetch('/api/supplier/products', {
+      const res = await fetch('/api/supplier/products', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, pricingTiers }),
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+        body: JSON.stringify(parsed.data),
       });
-      if (response.ok) {
-        navigate('ProductListingsManager');
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        // Real backend error verbatim (401 auth, 403 no profile, 400 Zod, 429 limit).
+        const message = json?.error || `Product creation failed (HTTP ${res.status})`;
+        setError(message);
+        if (json?.issues) setServerIssues(json.issues as Record<string, string[]>);
+        toast.error(message);
+        return; // never navigate on failure
       }
-    } catch (error) {
-      console.error('Failed to create product', error);
+      toast.success(json.message || 'Product created');
+      navigate('product-listings-manager');
+    } catch {
+      const message = 'Network error while creating the product. Check your connection and retry.';
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -77,7 +193,7 @@ export function SellerAddProductPage() {
     >
       <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-2 hover:bg-gray-100 rounded-full">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
           <h1 className="text-lg font-bold text-gray-900">Add New Product</h1>
@@ -86,177 +202,57 @@ export function SellerAddProductPage() {
 
       <div className="p-4 max-w-3xl mx-auto space-y-6 md:p-6 md:pt-6">
         <h1 className="hidden md:block text-2xl font-bold text-gray-900">Add New Product</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-4">
-            <h2 className="font-semibold text-gray-900">Basic Information</h2>
-            
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Product Title</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="e.g., Premium Cotton T-Shirt"
-              />
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">Category ID</label>
-                <input
-                  type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">Brand</label>
-                <input
-                  type="text"
-                  name="brand"
-                  value={formData.brand}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">HS Code</label>
-              <input
-                type="text"
-                name="hsCode"
-                value={formData.hsCode}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-4">
-            <h2 className="font-semibold text-gray-900">Pricing & Inventory</h2>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">Base Price</label>
-                <input
-                  type="number"
-                  name="basePrice"
-                  value={formData.basePrice}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">Unit Type</label>
-                <select
-                  name="unitType"
-                  value={formData.unitType}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        {error && (
+          <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 flex items-start gap-2" role="alert">
+            <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
+            <div className="text-sm text-red-700">
+              {error}
+              {(error.includes('Authentication') || error.includes('sign in')) && (
+                <button
+                  type="button"
+                  onClick={() => navigate('login')}
+                  className="block mt-2 min-h-11 px-4 bg-red-600 text-white rounded-lg text-sm font-medium"
                 >
-                  <option value="piece">Piece</option>
-                  <option value="kg">Kg</option>
-                  <option value="meter">Meter</option>
-                  <option value="carton">Carton</option>
-                  <option value="set">Set</option>
-                </select>
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">MOQ</label>
-                <input
-                  type="number"
-                  name="moq"
-                  value={formData.moq}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div className="pt-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-gray-900">Tiered Wholesale Pricing</h3>
-                <button type="button" onClick={addTier} className="text-primary text-sm font-medium flex items-center gap-1">
-                  <Plus className="w-4 h-4" /> Add Tier
+                  Sign in
                 </button>
-              </div>
-              
-              <div className="space-y-3">
-                {pricingTiers.map((tier, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      placeholder="Min"
-                      value={tier.minQty}
-                      onChange={(e) => handleTierChange(index, 'minQty', e.target.value)}
-                      className="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
-                    />
-                    <span className="text-gray-500">-</span>
-                    <input
-                      type="number"
-                      placeholder="Max"
-                      value={tier.maxQty}
-                      onChange={(e) => handleTierChange(index, 'maxQty', e.target.value)}
-                      className="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Price"
-                      value={tier.price}
-                      onChange={(e) => handleTierChange(index, 'price', e.target.value)}
-                      className="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
-                    />
-                    <button type="button" onClick={() => removeTier(index)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+              )}
             </div>
           </div>
+        )}
 
-          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-4">
-            <h2 className="font-semibold text-gray-900">Media & Description</h2>
-            
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
-              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm font-medium text-gray-700">Upload Product Images</p>
-              <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Specifications / Description</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </div>
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <ProductFormFields
+            form={form}
+            onFormChange={handleFormChange}
+            tiers={tiers}
+            onTiersChange={setTiers}
+            variants={variants}
+            onVariantsChange={setVariants}
+            images={images}
+            onImagesChange={setImages}
+            videos={videos}
+            onVideosChange={setVideos}
+            categories={categories}
+            categoriesLoading={categoriesLoading}
+            serverIssues={serverIssues}
+          />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
+            className="w-full min-h-11 bg-primary text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-60"
           >
-            {loading ? 'Saving...' : (
+            {loading ? 'Publishing…' : (
               <>
                 <Save className="w-5 h-5" />
                 Publish Product
               </>
             )}
           </button>
+          <p className="text-xs text-gray-500 text-center -mt-2">
+            New listings go to the moderation queue — an admin approves them before buyers can see them.
+          </p>
         </form>
       </div>
     </motion.div>

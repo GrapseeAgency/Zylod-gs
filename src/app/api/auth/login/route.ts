@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
-import { createSession, getClientIP } from '@/lib/auth'
+import { createSession, getClientIP, setAuthCookie } from '@/lib/auth'
 
 /* ─── Rate limiting (in-memory) ─── */
 const loginAttempts = new Map<string, { count: number; lastAttempt: number; lockedUntil: number | null }>()
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
       isPhoneVerified: user.isPhoneVerified,
     })
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       token,
       requires2FA: false,
@@ -180,6 +180,10 @@ export async function POST(request: NextRequest) {
         requires2FA: false,
       },
     })
+    // Set the session cookie so credentials:'include' UI fetches authenticate
+    // (browsers cannot send the Bearer token stored in localStorage).
+    setAuthCookie(response, token)
+    return response
   } catch (error) {
     console.error('Login error:', error)
     auditLog('LOGIN_ERROR', null, ip, { error: String(error) })

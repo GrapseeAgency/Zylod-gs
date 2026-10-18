@@ -1,39 +1,73 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { authenticateRequest } from '@/lib/auth'
+import { requireUserType } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { z } from 'zod'
+
+/**
+ * GET  /api/supplier/inventory — the session supplier's REAL stock levels with
+ *      variants nested ({items:[{id,name,unit,stockQuantity,moq,variants:[…]}]}).
+ *      Admins may pass ?all=true to audit every supplier's stock.
+ * PATCH /api/supplier/inventory — REAL-TIME stock edits, applied instantly in a
+ *      single transaction: {updates:[{productId?|variantId?, newQuantity?|delta?}]}.
+ *      Product- and variant-level updates may be mixed. Every id is verified
+ *      for ownership through products.supplierId (or admin) — no blind writes.
+ *      Returns the real before/after quantity for every applied update.
+ */
+
+const READ_LIMIT = { limit: 60, windowMs: 60_000 }
+const WRITE_LIMIT = { limit: 60, windowMs: 60_000 }
+const MAX_UPDATES_PER_REQUEST = 50
+
+const stockUpdateSchema = z
+  .object({
+    productId: z.string().min(1).optional(),
+    variantId: z.string().min(1).optional(),
+    newQuantity: z.number().int().min(0, 'Quantity cannot be negative').optional(),
+    delta: z.number().int().optional(),
+  })
+  .refine((u) => Boolean(u.productId) !== Boolean(u.variantId), {
+    message: 'Exactly one of productId or variantId is required per update',
+  })
+  .refine((u) => (u.newQuantity !== undefined) !== (u.delta !== undefined), {
+    message: 'Exactly one of newQuantity (set to value) or delta (relative change) is required per update',
+  })
 
 export async function GET(request: NextRequest) {
-  const auth = await authenticateRequest(request)
+  const auth = await requireUserType(request, ['supplier', 'admin'])
   if (!auth.authenticated || !auth.user) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    return NextResponse.json(
+      { error: auth.error || 'Authentication required' },
+      { status: 401 }
+    )
   }
+
+  const rl = checkRateLimit(request, 'supplier-inventory', READ_LIMIT.limit, READ_LIMIT.windowMs)
+  if (!rl.ok) return rateLimitResponse(rl)
 
   try {
     const { searchParams } = new URL(request.url)
-    const filter = searchParams.get('filter')
-    const search = searchParams.get('search')
+    const all = searchParams.get('all') === 'true' && auth.user.userType === 'admin'
 
-    let supplier = await db.supplierProfiles.findFirst({
-      where: { userId: auth.user.id }
-    })
-
-    const supplierId = supplier ? supplier.id : auth.user.id
-
-    const where: any = {
-      OR: [
-        { supplierId: supplierId },
-        { supplierId: auth.user.id }
-      ]
-    }
-
-    if (filter === 'low_stock') {
-      where.stockQuantity = { gt: 0, lte: 20 }
-    } else if (filter === 'out_of_stock') {
-      where.stockQuantity = { lte: 0 }
-    }
-
-    if (search) {
-      where.name = { contains: search }
+    const where: { supplierId?: string } = {}
+    if (all) {
+      // Admin stock audit across all suppliers.
+    } else {
+      const profile = await db.supplierProfiles.findUnique({
+        where: { userId: auth.user.id },
+        select: { id: true },
+      })
+      if (!profile) {
+        // Honest empty result — without a supplier profile this user owns no stock.
+        return NextResponse.json({
+          success: true,
+          data: {
+            items: [],
+            summary: { totalSkus: 0, totalVariantSkus: 0, lowStockCount: 0, outOfStockCount: 0, totalInventoryUnits: 0 },
+          },
+        })
+      }
+      where.supplierId = profile.id
     }
 
     const products = await db.products.findMany({
@@ -41,83 +75,181 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         name: true,
-        slug: true,
-        basePrice: true,
-        stockQuantity: true,
+        sku: true,
         unit: true,
+        stockQuantity: true,
         moq: true,
         thumbnailUrl: true,
         isActive: true,
+        isApproved: true,
+        updatedAt: true,
         category: { select: { name: true } },
-        updatedAt: true
+        variants: {
+          orderBy: { variantName: 'asc' },
+          select: {
+            id: true,
+            variantName: true,
+            variantValue: true,
+            sku: true,
+            stockQuantity: true,
+            priceOverride: true,
+          },
+        },
       },
-      orderBy: { stockQuantity: 'asc' }
+      orderBy: { stockQuantity: 'asc' },
     })
 
-    const totalSkus = products.length
-    const lowStockCount = products.filter(p => p.stockQuantity > 0 && p.stockQuantity <= 20).length
-    const outOfStockCount = products.filter(p => p.stockQuantity <= 0).length
-    const totalInventoryUnits = products.reduce((acc, p) => acc + p.stockQuantity, 0)
+    // Real summary from the actual rows (products + variant SKUs counted separately).
+    const summary = {
+      totalSkus: products.length,
+      totalVariantSkus: products.reduce((acc, p) => acc + p.variants.length, 0),
+      lowStockCount: products.filter((p) => p.stockQuantity > 0 && p.stockQuantity <= 20).length,
+      outOfStockCount: products.filter((p) => p.stockQuantity <= 0).length,
+      totalInventoryUnits: products.reduce((acc, p) => acc + p.stockQuantity, 0),
+    }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        items: products,
-        summary: {
-          totalSkus,
-          lowStockCount,
-          outOfStockCount,
-          totalInventoryUnits
-        }
-      }
-    })
+    return NextResponse.json({ success: true, data: { items: products, summary } })
   } catch (error) {
     console.error('Supplier inventory GET error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to load inventory' }, { status: 500 })
   }
 }
 
 export async function PATCH(request: NextRequest) {
-  const auth = await authenticateRequest(request)
+  const auth = await requireUserType(request, ['supplier', 'admin'])
   if (!auth.authenticated || !auth.user) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    return NextResponse.json(
+      { error: auth.error || 'Authentication required' },
+      { status: 401 }
+    )
   }
 
-  try {
-    const body = await request.json()
-    const { updates } = body
+  const rl = checkRateLimit(request, 'supplier-inventory-write', WRITE_LIMIT.limit, WRITE_LIMIT.windowMs)
+  if (!rl.ok) return rateLimitResponse(rl)
 
-    if (!Array.isArray(updates) || updates.length === 0) {
-      return NextResponse.json({ error: 'updates array is required' }, { status: 400 })
+  try {
+    const body = await request.json().catch(() => null)
+    const parsedBody = z.object({ updates: z.array(stockUpdateSchema).min(1, 'updates array is required') }).safeParse(body)
+    if (!parsedBody.success) {
+      const flattened = parsedBody.error.flatten()
+      const firstFieldIssue = Object.values(flattened.fieldErrors)[0]?.[0]
+      return NextResponse.json(
+        { error: flattened.formErrors[0] ?? firstFieldIssue ?? 'Invalid updates payload', issues: flattened.fieldErrors },
+        { status: 400 }
+      )
+    }
+    const updates = parsedBody.data.updates
+    if (updates.length > MAX_UPDATES_PER_REQUEST) {
+      return NextResponse.json(
+        { error: `Too many updates in one request (${updates.length}) — the limit is ${MAX_UPDATES_PER_REQUEST}` },
+        { status: 400 }
+      )
     }
 
-    const results = await Promise.all(
-      updates.map(async (u: any) => {
-        const { productId, newQuantity, delta } = u
-        if (!productId) return null
-
-        if (newQuantity !== undefined) {
-          return db.products.update({
-            where: { id: productId },
-            data: { stockQuantity: Math.max(0, parseInt(newQuantity)) }
-          })
-        } else if (delta !== undefined) {
-          return db.products.update({
-            where: { id: productId },
-            data: { stockQuantity: { increment: parseInt(delta) } }
-          })
-        }
-        return null
+    const isAdmin = auth.user.userType === 'admin'
+    let profileId: string | null = null
+    if (!isAdmin) {
+      const profile = await db.supplierProfiles.findUnique({
+        where: { userId: auth.user.id },
+        select: { id: true },
       })
-    )
+      if (!profile) {
+        return NextResponse.json(
+          { error: 'Complete seller registration before managing inventory' },
+          { status: 403 }
+        )
+      }
+      profileId = profile.id
+    }
+
+    // Resolve + authorize every target FIRST (outside the tx, read-only), so a
+    // bad id fails the whole request before anything is written.
+    const resolved: Array<{
+      key: 'productId' | 'variantId'
+      id: string
+      before: number
+    }> = []
+
+    for (const [index, u] of updates.entries()) {
+      if (u.productId) {
+        const product = await db.products.findUnique({
+          where: { id: u.productId },
+          select: { id: true, stockQuantity: true, supplierId: true },
+        })
+        if (!product || (!isAdmin && product.supplierId !== profileId)) {
+          return NextResponse.json(
+            { error: `Update ${index + 1}: product not found in your inventory` },
+            { status: 404 }
+          )
+        }
+        resolved.push({ key: 'productId', id: product.id, before: product.stockQuantity })
+      } else if (u.variantId) {
+        const variant = await db.productVariants.findUnique({
+          where: { id: u.variantId },
+          select: { id: true, stockQuantity: true, product: { select: { supplierId: true } } },
+        })
+        if (!variant || (!isAdmin && variant.product.supplierId !== profileId)) {
+          return NextResponse.json(
+            { error: `Update ${index + 1}: variant not found in your inventory` },
+            { status: 404 }
+          )
+        }
+        resolved.push({ key: 'variantId', id: variant.id, before: variant.stockQuantity })
+      }
+    }
+
+    // Apply ALL updates instantly in one transaction — the real-time stock edit.
+    const results = await db.$transaction(async (tx) => {
+      const applied: Array<
+        | { productId: string; before: number; after: number }
+        | { variantId: string; before: number; after: number }
+      > = []
+      for (const [index, u] of updates.entries()) {
+        const r = resolved[index]
+        const target =
+          u.newQuantity !== undefined
+            ? u.newQuantity
+            : Math.max(0, r.before + (u.delta ?? 0))
+        if (r.key === 'productId') {
+          const row = await tx.products.update({
+            where: { id: r.id },
+            data: { stockQuantity: target },
+            select: { stockQuantity: true },
+          })
+          applied.push({ productId: r.id, before: r.before, after: row.stockQuantity })
+        } else {
+          const row = await tx.productVariants.update({
+            where: { id: r.id },
+            data: { stockQuantity: target },
+            select: { stockQuantity: true },
+          })
+          applied.push({ variantId: r.id, before: r.before, after: row.stockQuantity })
+        }
+      }
+      return applied
+    })
+
+    await db.auditLogs.create({
+      data: {
+        actorId: auth.user.id,
+        action: 'inventory_updated',
+        entityType: 'products',
+        entityId: results.length === 1 && 'productId' in results[0] ? results[0].productId : null,
+        metadata: JSON.stringify({
+          actorType: isAdmin ? 'admin' : 'supplier',
+          supplierId: profileId,
+          updates: results,
+        }),
+      },
+    })
 
     return NextResponse.json({
       success: true,
-      message: 'Inventory updated successfully',
-      data: results.filter(Boolean)
+      data: { results },
+      message: `Stock updated for ${results.length} ${results.length === 1 ? 'item' : 'items'}`,
     })
   } catch (error) {
     console.error('Supplier inventory PATCH error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to update inventory' }, { status: 500 })
   }
 }

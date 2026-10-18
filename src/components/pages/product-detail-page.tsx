@@ -105,10 +105,19 @@ interface ProductImage {
 
 interface ProductVariant {
   id: string
-  name: string
-  value: string
-  priceAdjustment: number
+  variantName: string
+  variantValue: string
+  sku: string | null
   stockQuantity: number
+  priceOverride: number | null
+}
+
+interface ProductVideo {
+  id: string
+  videoUrl: string
+  thumbnailUrl: string | null
+  title: string | null
+  sortOrder: number
 }
 
 interface ReviewData {
@@ -138,10 +147,11 @@ interface ProductData {
   categoryId: string
   supplierId: string
   category: { id: string; name: string; slug: string; parentId: string | null }
-  supplier: { id: string; companyName: string; slug: string; city: string; ratingAvg: number; ratingCount: number; verificationStatus: string; description: string | null }
+  supplier: { id: string; userId: string; companyName: string; ratingAvg: number; ratingCount: number; verificationStatus: string }
   priceTiers: PriceTier[]
   images: ProductImage[]
   variants: ProductVariant[]
+  videos: ProductVideo[]
   reviews: ReviewData[]
   createdAt: string
 }
@@ -309,9 +319,18 @@ function DesktopProductDetailPage() {
     return product?.stockQuantity || 0
   }, [product, selectedVariantId])
 
-  // Calculate applicable price
+  // Calculate applicable price — CANONICAL WHOLESALE PRICING RULE:
+  // a variant with priceOverride is priced individually (tiers do NOT
+  // apply); otherwise the tier matching the current quantity applies;
+  // otherwise the product's base price.
   const getApplicablePrice = () => {
     if (!product) return 0
+    const selectedVariant = selectedVariantId && product.variants
+      ? product.variants.find(v => v.id === selectedVariantId)
+      : null
+    if (selectedVariant && selectedVariant.priceOverride != null) {
+      return selectedVariant.priceOverride
+    }
     let price = product.basePrice
     if (product.priceTiers && product.priceTiers.length > 0) {
       for (const tier of product.priceTiers) {
@@ -320,10 +339,6 @@ function DesktopProductDetailPage() {
           break
         }
       }
-    }
-    if (selectedVariantId && product.variants) {
-      const variant = product.variants.find(v => v.id === selectedVariantId)
-      if (variant) price += variant.priceAdjustment
     }
     return price
   }
@@ -350,8 +365,8 @@ function DesktopProductDetailPage() {
       productSlug: product.slug,
       productImage: product.thumbnailUrl,
       variantId: selectedVariantId,
-      variantName: selectedVariant?.name || null,
-      variantValue: selectedVariant?.value || null,
+      variantName: selectedVariant?.variantName || null,
+      variantValue: selectedVariant?.variantValue || null,
       quantity,
       unitPrice: applicablePrice,
       totalPrice,
@@ -359,7 +374,8 @@ function DesktopProductDetailPage() {
       maxOrderQty: product.maxOrderQty,
       supplierId: product.supplier.id,
       supplierName: product.supplier.companyName,
-      supplierSlug: product.supplier.slug || '',
+      // supplierProfiles has no slug column — honest empty, never invented.
+      supplierSlug: '',
       unit: product.unit,
       priceTiers: product.priceTiers?.map(t => ({
         minQty: t.minQty,
@@ -371,6 +387,39 @@ function DesktopProductDetailPage() {
     toast({ title: 'Added to Cart', description: `${quantity} ${unit} of ${productName} added` })
     setTimeout(() => setAddedToCart(false), 2000)
   }
+
+  // ─── Real chat: create (or reuse) a conversation via the chat API, then
+  // navigate to it with the REAL conversation id. Never fabricates one. ───
+  const [chatLoading, setChatLoading] = useState(false)
+  const handleChatWithSupplier = useCallback(async () => {
+    if (!product?.supplier) return
+    setChatLoading(true)
+    try {
+      const res = await fetch('/api/chat/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          supplierId: product.supplier.userId,
+          productId: product.id,
+        }),
+      })
+      if (res.status === 401) {
+        toast({ title: 'Sign in required', description: 'Sign in to chat with this supplier.' })
+        navigate('login')
+        return
+      }
+      const data = await res.json()
+      if (res.ok && data.success && data.data?.id) {
+        navigate('chat-detail', { conversationId: data.data.id })
+      } else {
+        toast({ title: 'Chat unavailable', description: data.error || 'Could not start the conversation. Please try again.', variant: 'destructive' })
+      }
+    } catch {
+      toast({ title: 'Chat unavailable', description: 'Could not reach the chat service. Please try again.', variant: 'destructive' })
+    } finally {
+      setChatLoading(false)
+    }
+  }, [product, navigate, toast])
 
   // ─── Fetch Tracking Data ───
   const fetchTracking = useCallback(async (orderId: string, orderNumber: string) => {
@@ -550,6 +599,28 @@ function DesktopProductDetailPage() {
               ))}
             </div>
           )}
+
+          {/* ─── Product Videos (only when the supplier uploaded real ones) ─── */}
+          {product?.videos && product.videos.length > 0 && (
+            <div className="pt-2 space-y-2">
+              <h3 className="text-sm font-semibold">Product Videos</h3>
+              <div className={`grid gap-3 ${product.videos.length > 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
+                {product.videos.map((video) => (
+                  <div key={video.id} className="space-y-1">
+                    <video
+                      controls
+                      preload="metadata"
+                      poster={video.thumbnailUrl || undefined}
+                      src={video.videoUrl}
+                      className="w-full aspect-video bg-muted rounded-xl object-cover"
+                      aria-label={video.title || `Product video for ${productName}`}
+                    />
+                    {video.title && <p className="text-xs text-muted-foreground">{video.title}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ─── Product Info ─── */}
@@ -558,9 +629,12 @@ function DesktopProductDetailPage() {
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <h1 className="text-2xl font-bold leading-tight">{productName}</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                by {productSupplier?.companyName || product?.supplier?.companyName || 'Unknown Supplier'}
-              </p>
+              <button
+                onClick={() => navigate('seller-storefront', { supplierId: product?.supplierId || productSupplier?.id || '' })}
+                className="text-sm text-muted-foreground mt-1 hover:text-[primary] transition-colors"
+              >
+                Visit store: by {productSupplier?.companyName || product?.supplier?.companyName || 'Unknown Supplier'}
+              </button>
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <ProductQRCodeDialog productId={product?.id || ''} productName={productName} />
@@ -628,12 +702,14 @@ function DesktopProductDetailPage() {
                     variant={selectedVariantId === variant.id ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedVariantId(variant.id)}
+                    disabled={variant.stockQuantity === 0}
                     className={`text-sm ${selectedVariantId === variant.id ? 'bg-[primary] hover:bg-[#C62828]' : 'hover:border-[primary] hover:text-[primary]'}`}
                   >
-                    {variant.name}: {variant.value}
-                    {variant.priceAdjustment !== 0 && (
-                      <span className="ml-1 text-xs">(+{formatPrice(variant.priceAdjustment)})</span>
+                    {variant.variantName}: {variant.variantValue}
+                    {variant.priceOverride != null && (
+                      <span className="ml-1 text-xs">({formatPrice(variant.priceOverride)})</span>
                     )}
+                    {variant.stockQuantity === 0 && <span className="ml-1 text-[10px]">(Out of stock)</span>}
                   </Button>
                 ))}
               </div>
@@ -818,19 +894,20 @@ function DesktopProductDetailPage() {
                         <span className="material-symbols-outlined mr-0.5" style={{ fontSize: 12, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span> Verified
                       </Badge>
                     )}
-                    <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                      ID: SUP-{(productSupplier?.id || product?.supplierId || '8491').slice(-6).toUpperCase()}
-                    </span>
+                    {(productSupplier?.id || product?.supplierId) && (
+                      <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                        ID: SUP-{(productSupplier?.id || product?.supplierId).slice(-6).toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground mt-1">
                     <span className="flex items-center gap-1">
                       <Star className="h-3 w-3 fill-[primary] text-[primary]" />
                       {productSupplier?.ratingAvg?.toFixed(1) || '0.0'}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      {productSupplier?.city || product?.supplier?.city || 'Bangladesh'}
-                    </span>
+                    {/* No city field exists on supplierProfiles — the old
+                        'Bangladesh' fallback fabricated a location. Removed
+                        rather than invented. */}
                   </div>
                 </div>
                 <div className="flex flex-col gap-1 shrink-0">
@@ -838,12 +915,25 @@ function DesktopProductDetailPage() {
                     variant="outline"
                     size="sm"
                     className="hover:border-[primary] hover:text-[primary]"
+                    onClick={handleChatWithSupplier}
+                    disabled={chatLoading}
+                  >
+                    {chatLoading ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <MessageSquare className="h-4 w-4 mr-1" />
+                    )}
+                    Chat
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-[11px] text-muted-foreground hover:text-red-600 h-7 px-2"
                     onClick={() => {
-                      toast({ title: 'Opening Chat', description: `Starting conversation with ${productSupplier?.companyName || product?.supplier?.companyName || 'Supplier'}` })
-                      navigate('chat-detail', { conversationId: product?.supplierId || '' })
+                      navigate('seller-storefront', { supplierId: productSupplier?.id || product?.supplierId || '' })
                     }}
                   >
-                    <MessageSquare className="h-4 w-4 mr-1" /> Chat
+                    <Store className="h-3.5 w-3.5 mr-1" /> Visit store
                   </Button>
                   <Button
                     variant="ghost"
@@ -1613,12 +1703,10 @@ function DesktopProductDetailPage() {
                 size="lg"
                 className="h-12 w-12 p-0 shrink-0"
                 title="Message supplier"
-                onClick={() => {
-                  toast({ title: 'Opening Chat', description: `Starting conversation with ${productSupplier?.companyName || product?.supplier?.companyName || 'Supplier'}` })
-                  navigate('chat-detail', { conversationId: product?.supplierId || '' })
-                }}
+                onClick={handleChatWithSupplier}
+                disabled={chatLoading}
               >
-                <MessageSquare className="h-5 w-5" />
+                {chatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessageSquare className="h-5 w-5" />}
               </Button>
               <Button
                 className="h-12 px-8 text-base font-bold text-white shrink-0"

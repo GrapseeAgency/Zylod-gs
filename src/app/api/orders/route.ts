@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
 
 export async function GET(request: NextRequest) {
   try {
@@ -60,6 +62,34 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/* ─── Body schema: the client never sends prices — only what it wants to buy ─── */
+const orderItemSchema = z.object({
+  productId: z.string().min(1, 'productId is required'),
+  variantId: z.string().min(1).optional().nullable(),
+  quantity: z.coerce
+    .number()
+    .int('Quantity must be a whole number')
+    .min(1, 'Quantity must be at least 1')
+    .max(10000, 'Quantity exceeds the per-line limit of 10000'),
+})
+
+const createOrderSchema = z.object({
+  shippingAddressId: z.string().min(1).optional().nullable(),
+  couponCode: z.string().min(1).optional().nullable(),
+  items: z.array(orderItemSchema).min(1, 'At least one item is required').max(50, 'Too many items per order'),
+})
+
+/** Thrown inside the transaction when a variant has insufficient stock —
+ *  carries the REAL remaining stock so the 409 states the truth. */
+class VariantStockError extends Error {
+  available: number
+  constructor(message: string, available: number) {
+    super(message)
+    this.name = 'VariantStockError'
+    this.available = available
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Checkout abuse guard: order creation is limited per IP
@@ -73,12 +103,15 @@ export async function POST(request: NextRequest) {
     }
 
     const buyerId = authResult.user.id // Use authenticated user's ID, not from body
-    const body = await request.json()
-    const { shippingAddressId, items, couponCode } = body
 
-    if (!items || items.length === 0) {
-      return NextResponse.json({ error: 'Items are required' }, { status: 400 })
+    const parsed = createOrderSchema.safeParse(await request.json().catch(() => null))
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message || 'Invalid request body' },
+        { status: 400 }
+      )
     }
+    const { shippingAddressId, couponCode, items } = parsed.data
 
     // Validate shipping address belongs to this buyer
     if (shippingAddressId) {
@@ -93,128 +126,174 @@ export async function POST(request: NextRequest) {
     // Generate order number
     const orderNumber = 'ORD-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
 
-    // Calculate total and group by supplier
-    const supplierGroups: Record<string, { items: typeof items; subtotal: number }> = {}
-    let totalAmount = 0
+    try {
+      // Atomic creation — pricing, stock and the order itself all resolve
+      // inside ONE transaction, so nothing is ever half-written.
+      const order = await db.$transaction(async (tx) => {
+        // Group items by the supplier recorded on each PRODUCT row (never a
+        // client-sent supplierId — anti-manipulation) and price every line
+        // with the canonical wholesale pricing rule.
+        const supplierGroups: Record<
+          string,
+          { items: Array<{ productId: string; variantId: string | null; quantity: number; unitPrice: number; totalPrice: number }>; subtotal: number }
+        > = {}
+        let totalAmount = 0
 
-    for (const item of items) {
-      // Validate quantity
-      const qty = Math.max(1, Math.floor(Number(item.quantity)))
-      if (isNaN(qty) || qty > 10000) {
-        return NextResponse.json({ error: `Invalid quantity for product ${item.productId}` }, { status: 400 })
-      }
+        for (const item of items) {
+          const product = await tx.products.findUnique({ where: { id: item.productId } })
+          if (!product || !product.isActive || !product.isApproved) {
+            throw new PricingError('PRODUCT_NOT_FOUND', `Product ${item.productId} not available`)
+          }
 
-      const product = await db.products.findUnique({ where: { id: item.productId } })
-      if (!product || !product.isActive || !product.isApproved) {
-        return NextResponse.json({ error: `Product ${item.productId} not available` }, { status: 404 })
-      }
+          // Fail fast on product-level stock before pricing (variant-level
+          // stock is guarded atomically at decrement time below).
+          if (item.quantity > product.stockQuantity) {
+            throw new VariantStockError(
+              `Insufficient stock for ${product.name}`,
+              product.stockQuantity
+            )
+          }
 
-      // Check stock
-      if (qty > product.stockQuantity) {
-        return NextResponse.json({ error: `Insufficient stock for ${product.name}`, available: product.stockQuantity }, { status: 400 })
-      }
+          let variantRef: { id: string; productId: string; priceOverride: number | null } | null = null
+          if (item.variantId) {
+            const variant = await tx.productVariants.findUnique({ where: { id: item.variantId } })
+            if (!variant || variant.productId !== item.productId) {
+              throw new PricingError('VARIANT_MISMATCH', 'Invalid variant for this product')
+            }
+            variantRef = { id: variant.id, productId: variant.productId, priceOverride: variant.priceOverride }
+          }
 
-      // Check MOQ
-      if (qty < product.moq) {
-        return NextResponse.json({ error: `Minimum order for ${product.name} is ${product.moq}` }, { status: 400 })
-      }
+          // SERVER TRUTH: the recorded unitPrice always comes from the
+          // pricing rule (variant priceOverride → matching tier → basePrice).
+          // MOQ and maxOrderQty are enforced here too (PricingError 422).
+          const resolved = await resolveUnitPrice(tx, item.productId, item.quantity, variantRef)
 
-      const unitPrice = item.variantId
-        ? (await db.productVariants.findUnique({ where: { id: item.variantId } }))?.priceOverride || product.basePrice
-        : product.basePrice
+          const totalPrice = resolved.unitPrice * item.quantity
 
-      const totalPrice = unitPrice * qty
+          const supplierId = product.supplierId
+          if (!supplierGroups[supplierId]) {
+            supplierGroups[supplierId] = { items: [], subtotal: 0 }
+          }
+          supplierGroups[supplierId].items.push({
+            productId: item.productId,
+            variantId: item.variantId || null,
+            quantity: item.quantity,
+            unitPrice: resolved.unitPrice,
+            totalPrice,
+          })
+          supplierGroups[supplierId].subtotal += totalPrice
+          totalAmount += totalPrice
+        }
 
-      // SECURITY: supplier grouping always uses the supplier recorded on the
-      // product row — never a client-sent supplierId (anti-manipulation).
-      const supplierId = product.supplierId
-      if (!supplierGroups[supplierId]) {
-        supplierGroups[supplierId] = { items: [], subtotal: 0 }
-      }
-      supplierGroups[supplierId].items.push({ ...item, quantity: qty, unitPrice, totalPrice })
-      supplierGroups[supplierId].subtotal += totalPrice
-      totalAmount += totalPrice
-    }
+        // Apply coupon if provided
+        if (couponCode) {
+          const coupon = await tx.coupons.findUnique({ where: { code: couponCode } })
+          if (coupon && coupon.isActive && new Date() >= coupon.validFrom && new Date() <= coupon.validUntil) {
+            const discount = totalAmount * (coupon.discountPercent / 100)
+            const maxDiscount = coupon.maxDiscount || discount
+            totalAmount -= Math.min(discount, maxDiscount)
+          }
+        }
 
-    // Apply coupon if provided
-    if (couponCode) {
-      const coupon = await db.coupons.findUnique({ where: { code: couponCode } })
-      if (coupon && coupon.isActive && new Date() >= coupon.validFrom && new Date() <= coupon.validUntil) {
-        const discount = totalAmount * (coupon.discountPercent / 100)
-        const maxDiscount = coupon.maxDiscount || discount
-        totalAmount -= Math.min(discount, maxDiscount)
-      }
-    }
-
-    // Use transaction for atomic order creation
-    const order = await db.$transaction(async (tx) => {
-      const newOrder = await tx.orders.create({
-        data: {
-          buyerId,
-          orderNumber,
-          totalAmount,
-          paymentStatus: 'unpaid',
-          shippingAddressId: shippingAddressId || null,
-        },
-      })
-
-      // Create sub-orders for each supplier
-      for (const [supplierId, group] of Object.entries(supplierGroups)) {
-        const subOrder = await tx.subOrders.create({
+        const newOrder = await tx.orders.create({
           data: {
-            orderId: newOrder.id,
-            supplierId,
-            subtotal: group.subtotal,
-            status: 'pending',
+            buyerId,
+            orderNumber,
+            totalAmount,
+            paymentStatus: 'unpaid',
+            shippingAddressId: shippingAddressId || null,
           },
         })
 
-        // Create order items
-        for (const item of group.items) {
-          await tx.orderItems.create({
+        // Create sub-orders for each supplier
+        for (const [supplierId, group] of Object.entries(supplierGroups)) {
+          const subOrder = await tx.subOrders.create({
             data: {
-              subOrderId: subOrder.id,
-              productId: item.productId,
-              variantId: item.variantId || null,
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              totalPrice: item.totalPrice,
+              orderId: newOrder.id,
+              supplierId,
+              subtotal: group.subtotal,
+              status: 'pending',
             },
           })
+
+          // Create order items
+          for (const item of group.items) {
+            await tx.orderItems.create({
+              data: {
+                subOrderId: subOrder.id,
+                productId: item.productId,
+                variantId: item.variantId,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                totalPrice: item.totalPrice,
+              },
+            })
+
+            // VARIANT STOCK: decrement the exact variant that was bought,
+            // guarded by a conditional update so oversell is impossible.
+            // The whole transaction rolls back on failure.
+            if (item.variantId) {
+              const decremented = await tx.productVariants.updateMany({
+                where: { id: item.variantId, stockQuantity: { gte: item.quantity } },
+                data: { stockQuantity: { decrement: item.quantity } },
+              })
+              if (decremented.count === 0) {
+                const current = await tx.productVariants.findUnique({
+                  where: { id: item.variantId },
+                  select: { variantName: true, variantValue: true, stockQuantity: true },
+                })
+                throw new VariantStockError(
+                  `Insufficient stock for ${current?.variantName ?? 'variant'} ${current?.variantValue ?? ''}`.trim(),
+                  current?.stockQuantity ?? 0
+                )
+              }
+            }
+
+            // Product-level stock decrement + soldCount (existing behaviour kept)
+            await tx.products.update({
+              where: { id: item.productId },
+              data: {
+                stockQuantity: { decrement: item.quantity },
+                soldCount: { increment: item.quantity },
+              },
+            })
+          }
         }
+
+        // Clear cart
+        const cart = await tx.carts.findFirst({ where: { buyerId } })
+        if (cart) {
+          await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
+        }
+
+        return { order: newOrder, subOrdersCount: Object.keys(supplierGroups).length }
+      })
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          orderId: order.order.id,
+          orderNumber: order.order.orderNumber,
+          totalAmount: order.order.totalAmount,
+          paymentStatus: order.order.paymentStatus,
+          subOrdersCount: order.subOrdersCount,
+        },
+      }, { status: 201 })
+    } catch (txError) {
+      if (txError instanceof VariantStockError) {
+        return NextResponse.json(
+          { error: txError.message, available: txError.available },
+          { status: 409 }
+        )
       }
-
-      // Decrease stock for each product
-      for (const item of items) {
-        const qty = Math.max(1, Math.floor(Number(item.quantity)))
-        await tx.products.update({
-          where: { id: item.productId },
-          data: {
-            stockQuantity: { decrement: qty },
-            soldCount: { increment: qty },
-          },
-        })
+      if (txError instanceof PricingError) {
+        return NextResponse.json(
+          { error: txError.message, code: txError.code, ...txError.details },
+          { status: txError.status }
+        )
       }
-
-      // Clear cart
-      const cart = await tx.carts.findFirst({ where: { buyerId } })
-      if (cart) {
-        await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
-      }
-
-      return newOrder
-    })
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        totalAmount: order.totalAmount,
-        paymentStatus: order.paymentStatus,
-        subOrdersCount: Object.keys(supplierGroups).length,
-      },
-    }, { status: 201 })
+      throw txError
+    }
   } catch (error) {
     console.error('Order POST error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -1,40 +1,83 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
-import { ArrowLeft, Camera, UploadCloud, FileText, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Camera, UploadCloud, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+/* Uploads a real KYC document via POST /api/supplier/verification (multipart).
+ * Only document types the sellerVerificationDocuments model actually supports
+ * are offered, and server errors are surfaced verbatim — never a fake
+ * "Upload Successful". */
+
+const DOC_TYPES = [
+  { value: 'trade_license', label: 'Trade License' },
+  { value: 'tin_certificate', label: 'TIN Certificate' },
+  { value: 'nid_front', label: 'NID (Front)' },
+  { value: 'nid_back', label: 'NID (Back)' },
+  { value: 'bank_statement', label: 'Bank Statement' },
+  { value: 'utility_bill', label: 'Utility Bill' },
+] as const;
+
+const MAX_MB = 5;
+const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp'];
+
 export const SellerVerificationUploadPage = () => {
-  const { goBack } = useNavigationStore();
-  const [docType, setDocType] = useState('trade_license');
+  const { goBack, pageParams } = useNavigationStore();
+  const [docType, setDocType] = useState<string>('trade_license');
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  // Deep-link support: the Verification Hub passes ?docType=<type>
+  useEffect(() => {
+    if (pageParams.docType && DOC_TYPES.some((t) => t.value === pageParams.docType)) {
+      setDocType(pageParams.docType);
+    }
+  }, [pageParams.docType]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError('');
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
     }
   };
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file) {
+      setError('Choose a document image first.');
+      return;
+    }
+    if (file.size > MAX_MB * 1024 * 1024) {
+      setError(`File too large (max ${MAX_MB}MB).`);
+      return;
+    }
+    if (!ACCEPTED.includes(file.type)) {
+      setError('Only JPG, PNG, or WebP images are accepted.');
+      return;
+    }
     setUploading(true);
+    setError('');
     try {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('type', docType);
-      
+
       const res = await fetch('/api/supplier/verification', {
         method: 'POST',
-        body: formData
+        body: formData,
       });
-      
-      if (res.ok) setSuccess(true);
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.success) {
+        setSuccess(true);
+      } else {
+        setError(json.error || `Upload failed (${res.status}). Please try again.`);
+      }
     } catch (e) {
       console.error(e);
+      setError('Could not reach the upload service. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -46,8 +89,8 @@ export const SellerVerificationUploadPage = () => {
         <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
           <CheckCircle className="w-10 h-10" />
         </div>
-        <h2 className="text-2xl font-bold mb-2">Upload Successful</h2>
-        <p className="text-gray-500 mb-8">Your document is now under review. We will notify you once verified.</p>
+        <h2 className="text-2xl font-bold mb-2">Document submitted</h2>
+        <p className="text-gray-500 mb-8">Your document is now pending review. We will notify you once it is verified.</p>
         <Button className="w-full" onClick={goBack}>Back to Verification Hub</Button>
       </div>
     );
@@ -71,11 +114,9 @@ export const SellerVerificationUploadPage = () => {
               <SelectValue placeholder="Select document type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="trade_license">Trade License</SelectItem>
-              <SelectItem value="tax_tin">Tax TIN Certificate</SelectItem>
-              <SelectItem value="nid_front">NID (Front)</SelectItem>
-              <SelectItem value="nid_back">NID (Back)</SelectItem>
-              <SelectItem value="fire_safety">Fire Safety License</SelectItem>
+              {DOC_TYPES.map((t) => (
+                <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -84,7 +125,7 @@ export const SellerVerificationUploadPage = () => {
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Upload File</label>
           
           <div className="relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 p-8 flex flex-col items-center justify-center text-center">
-            <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange} accept="image/*,.pdf" />
+            <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange} accept="image/jpeg,image/png,image/webp" />
             
             {file ? (
               <div className="flex flex-col items-center gap-3">
@@ -100,12 +141,19 @@ export const SellerVerificationUploadPage = () => {
                   <UploadCloud className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm text-gray-900 dark:text-white">Drag & drop or tap to browse</p>
-                  <p className="text-xs text-gray-500 mt-1">Supports JPG, PNG, PDF (Max 5MB)</p>
+                  <p className="font-medium text-sm text-gray-900 dark:text-white">Drag &amp; drop or tap to browse</p>
+                  <p className="text-xs text-gray-500 mt-1">Supports JPG, PNG, WebP (Max {MAX_MB}MB)</p>
                 </div>
               </div>
             )}
           </div>
+
+          {error && (
+            <p className="flex items-start gap-1.5 text-xs text-red-600">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              {error}
+            </p>
+          )}
           
           <div className="flex justify-center mt-4">
             <Button variant="outline" className="w-full flex gap-2 h-12">
@@ -117,7 +165,7 @@ export const SellerVerificationUploadPage = () => {
 
       <div className="p-4 bg-white dark:bg-gray-800 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <Button className="w-full h-12 text-lg" disabled={!file || uploading} onClick={handleUpload}>
-          {uploading ? 'Uploading...' : 'Submit Document'}
+          {uploading ? 'Uploading…' : 'Submit Document'}
         </Button>
       </div>
     </div>

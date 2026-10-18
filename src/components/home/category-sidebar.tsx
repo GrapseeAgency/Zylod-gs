@@ -191,7 +191,10 @@ export function CategorySidebar() {
           <Sparkles className="h-8 w-8 mx-auto mb-2 text-primary" />
           <p className="text-xs font-bold mb-1 text-foreground">New Supplier?</p>
           <p className="text-[11px] text-gray-500 mb-3">
-            {supplierCount !== null ? `Join ${supplierCount} verified suppliers on Zylod` : 'Register your business on Zylod'}
+            {/* supplierCount is a raw per-category seller count (any
+                verification status) — the old 'verified' adjective was a claim
+                the data does not make. */}
+            {supplierCount !== null ? `Join ${supplierCount} suppliers on Zylod` : 'Register your business on Zylod'}
           </p>
           <Button
             size="sm"

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
-import { createSession, getClientIP } from '@/lib/auth'
+import { createSession, getClientIP, setAuthCookie } from '@/lib/auth'
 
 /* ─── Rate limiting for registration ─── */
 const registerAttempts = new Map<string, { count: number; lastAttempt: number }>()
@@ -39,6 +39,35 @@ export async function POST(request: NextRequest) {
 
     if (!['buyer', 'supplier', 'admin'].includes(userType)) {
       return NextResponse.json({ error: 'Invalid userType. Must be buyer, supplier, or admin' }, { status: 400 })
+    }
+
+    /* ─── Admin bootstrap gate (privilege-escalation guard) ───
+     * Open registration must never mint administrators. An admin account can
+     * only be created while the platform has ZERO admins (first-admin
+     * bootstrap), or — after that — only by presenting ADMIN_BOOTSTRAP_SECRET
+     * from the environment. Every denial is audit-logged. */
+    if (userType === 'admin') {
+      const adminCount = await db.users.count({ where: { userType: 'admin' } })
+      const bootstrapSecret = process.env.ADMIN_BOOTSTRAP_SECRET
+      const secretProvided =
+        typeof body.adminBootstrapSecret === 'string' ? body.adminBootstrapSecret : undefined
+      const secretValid =
+        !!bootstrapSecret && !!secretProvided && secretProvided === bootstrapSecret
+      if (adminCount > 0 && !secretValid) {
+        console.log(
+          `[AUTH_AUDIT] ADMIN_REGISTER_DENIED | ip=${ip} | reason=${adminCount > 0 ? 'admins_exist' : 'no_secret_configured'}`
+        )
+        return NextResponse.json(
+          {
+            error:
+              adminCount > 0
+                ? 'Admin registration is closed. Ask an existing administrator to provision staff accounts.'
+                : 'Admin bootstrap requires ADMIN_BOOTSTRAP_SECRET to be configured on the server.',
+            code: 'ADMIN_REGISTRATION_CLOSED',
+          },
+          { status: 403 }
+        )
+      }
     }
 
     if (!['phone_otp', 'google', 'email'].includes(authProvider)) {
@@ -134,7 +163,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`[AUTH_AUDIT] REGISTER_SUCCESS | user=${user.id} | ip=${ip} | type=${userType}`)
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       token,
       user: {
@@ -150,6 +179,10 @@ export async function POST(request: NextRequest) {
         businessName: businessName || null,
       },
     }, { status: 201 })
+    // Session cookie so the freshly-registered user is signed in for
+    // credentials:'include' UI fetches.
+    setAuthCookie(response, token)
+    return response
   } catch (error) {
     console.error('Register error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

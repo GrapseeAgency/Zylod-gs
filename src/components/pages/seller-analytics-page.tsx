@@ -12,11 +12,12 @@ interface AnalyticsData {
   overview: {
     gmv: number;
     totalOrders: number;
+    unitsSold: number;
     aov: number;
-    conversionRate: number;
-    pageViews: number;
+    conversionRate: number | null;
+    pageViews: number | null;
   };
-  salesPerformance: { date: string; bdt: number; previousBdt: number }[];
+  salesPerformance: { date: string; bdt: number }[];
   trafficSources: { source: string; percentage: number }[];
   topProducts: { id: string; name: string; unitsSold: number; revenue: number }[];
 }
@@ -26,6 +27,7 @@ export function SellerAnalyticsPage() {
   const goBack = useNavigationStore((state) => state.goBack);
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [timeRange, setTimeRange] = useState('7D');
 
   useEffect(() => {
@@ -33,11 +35,18 @@ export function SellerAnalyticsPage() {
       try {
         setLoading(true);
         const res = await fetch('/api/supplier/analytics');
-        if (!res.ok) throw new Error('Failed to fetch analytics');
         const json = await res.json();
-        setData(json);
+        if (res.ok && json.success && json.data) {
+          setData(json.data);
+          setError('');
+        } else {
+          setError(json.error || 'Failed to fetch analytics');
+          setData(null);
+        }
       } catch (error) {
         console.error(error);
+        setError('Could not reach the analytics service');
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -70,9 +79,15 @@ export function SellerAnalyticsPage() {
         </Tabs>
 
         {loading || !data ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          error ? (
+            <div className="text-center py-14">
+              <p className="text-sm text-gray-600">{error}</p>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          )
         ) : (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-3">
@@ -112,9 +127,43 @@ export function SellerAnalyticsPage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-xs text-gray-500 font-medium uppercase">Conv. Rate</p>
+                      <p className="text-xs text-gray-500 font-medium uppercase">Units Sold</p>
                       <h3 className="text-lg font-bold text-gray-900 mt-1">
-                        {data.overview.conversionRate}%
+                        {data.overview.unitsSold.toLocaleString()}
+                      </h3>
+                    </div>
+                    <div className="p-2 bg-green-50 rounded-lg">
+                      <Activity className="h-4 w-4 text-green-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium uppercase">Avg. Order Value</p>
+                      <h3 className="text-lg font-bold text-gray-900 mt-1">
+                        ৳{data.overview.aov.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                      </h3>
+                    </div>
+                    <div className="p-2 bg-amber-50 rounded-lg">
+                      <TrendingUp className="h-4 w-4 text-amber-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-xs text-gray-500 font-medium uppercase">Conv. Rate</p>
+                      <h3 className="text-lg font-bold mt-1">
+                        {/* Not tracked yet — the API returns null and the UI
+                            says so instead of showing an invented rate. */}
+                        {data.overview.conversionRate != null ? `${data.overview.conversionRate}%` : <span className="text-sm text-gray-400 font-medium">Not available yet</span>}
                       </h3>
                     </div>
                     <div className="p-2 bg-green-50 rounded-lg">
@@ -129,8 +178,8 @@ export function SellerAnalyticsPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="text-xs text-gray-500 font-medium uppercase">Views</p>
-                      <h3 className="text-lg font-bold text-gray-900 mt-1">
-                        {data.overview.pageViews.toLocaleString()}
+                      <h3 className="text-lg font-bold mt-1">
+                        {data.overview.pageViews != null ? data.overview.pageViews.toLocaleString() : <span className="text-sm text-gray-400 font-medium">Not available yet</span>}
                       </h3>
                     </div>
                     <div className="p-2 bg-purple-50 rounded-lg">
@@ -147,25 +196,31 @@ export function SellerAnalyticsPage() {
                 <CardDescription>Where your buyers are coming from</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {data.trafficSources.map((source, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <MousePointerClick className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm font-medium">{source.source}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary rounded-full" 
-                            style={{ width: `${source.percentage}%` }}
-                          />
+                {data.trafficSources.length === 0 ? (
+                  <p className="text-sm text-gray-400 py-3 text-center">
+                    Traffic-source tracking is not available yet.
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {data.trafficSources.map((source, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <MousePointerClick className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm font-medium">{source.source}</span>
                         </div>
-                        <span className="text-sm font-semibold w-8 text-right">{source.percentage}%</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-primary rounded-full" 
+                              style={{ width: `${source.percentage}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-semibold w-8 text-right">{source.percentage}%</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -179,22 +234,28 @@ export function SellerAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {data.topProducts.map((product, index) => (
-                    <div key={product.id} className="flex items-center gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                      <div className="h-12 w-12 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 font-bold">
-                        #{index + 1}
+                {data.topProducts.length === 0 ? (
+                  <p className="text-sm text-gray-400 py-3 text-center">
+                    No sales yet — your top products will appear here once paid orders come in.
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {data.topProducts.map((product, index) => (
+                      <div key={product.id} className="flex items-center gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                        <div className="h-12 w-12 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 font-bold">
+                          #{index + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-gray-900 truncate">{product.name}</h4>
+                          <p className="text-xs text-gray-500">{product.unitsSold} units sold</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-bold text-gray-900">৳{product.revenue.toLocaleString()}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-gray-900 truncate">{product.name}</h4>
-                        <p className="text-xs text-gray-500">{product.unitsSold} units sold</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold text-gray-900">৳{product.revenue.toLocaleString()}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

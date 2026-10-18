@@ -2,20 +2,46 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, AlertCircle, Inbox } from 'lucide-react';
+
+interface QueryRow {
+  id: string;
+  buyerName: string;
+  subject: string;
+  lastMessage: string;
+  productName: string | null;
+  status: string;
+  createdAt: string;
+}
 
 export function CustomerQueriesPage() {
   const { navigate, goBack } = useNavigationStore();
-  const [queries, setQueries] = useState<any[]>([]);
+  const [queries, setQueries] = useState<QueryRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const load = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/supplier/queries');
+      const json = await res.json();
+      if (res.ok && json.success && Array.isArray(json.data)) {
+        setQueries(json.data);
+      } else {
+        setError(json.error || 'Could not load customer queries');
+        setQueries([]);
+      }
+    } catch {
+      setError('Could not reach the queries service');
+      setQueries([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch('/api/supplier/queries')
-      .then(res => res.json())
-      .then(d => {
-        setQueries(d?.queries || []);
-        setLoading(false);
-      });
+    load();
   }, []);
 
   return (
@@ -34,6 +60,17 @@ export function CustomerQueriesPage() {
           <div className="space-y-4 animate-pulse">
             <div className="h-20 bg-gray-200 rounded"></div>
           </div>
+        ) : error ? (
+          <div className="bg-white p-6 rounded text-center shadow">
+            <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-600">{error}</p>
+          </div>
+        ) : queries.length === 0 ? (
+          <div className="bg-white p-8 rounded text-center shadow">
+            <Inbox className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-gray-700">No customer queries yet</h3>
+            <p className="text-xs text-gray-500 mt-1">Buyer questions about your products will appear here.</p>
+          </div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             <div className="space-y-4 md:hidden">
@@ -47,7 +84,7 @@ export function CustomerQueriesPage() {
                       <h3 className="font-bold">{q.buyerName}</h3>
                       <span className="text-xs text-gray-500">{new Date(q.createdAt).toLocaleDateString()}</span>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1 truncate">{q.lastMessage}</p>
+                    <p className="text-sm text-gray-600 mt-1 truncate">{q.subject}: {q.lastMessage}</p>
                   </div>
                 </div>
               ))}
@@ -65,7 +102,7 @@ export function CustomerQueriesPage() {
                   {queries.map(q => (
                     <tr key={q.id} onClick={() => navigate('customer-query-detail', { id: q.id })} className="border-t cursor-pointer hover:bg-red-50/30">
                       <td className="px-4 py-3 font-bold">{q.buyerName}</td>
-                      <td className="px-4 py-3 text-gray-600 max-w-md truncate">{q.lastMessage}</td>
+                      <td className="px-4 py-3 text-gray-600 max-w-md truncate">{q.subject}: {q.lastMessage}</td>
                       <td className="px-4 py-3 text-xs text-gray-500">{new Date(q.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}

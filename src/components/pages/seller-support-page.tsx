@@ -2,20 +2,45 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
-import { LifeBuoy, PlusCircle } from 'lucide-react';
+import { LifeBuoy, PlusCircle, AlertCircle, TicketCheck } from 'lucide-react';
+
+interface TicketRow {
+  id: string;
+  subject: string;
+  status: string;
+  category: string;
+  createdAt: string;
+  messageCount: number;
+}
 
 export function SellerSupportPage() {
   const { navigate, goBack } = useNavigationStore();
-  const [tickets, setTickets] = useState<any[]>([]);
+  const [tickets, setTickets] = useState<TicketRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const load = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/supplier/support');
+      const json = await res.json();
+      if (res.ok && json.success && Array.isArray(json.data)) {
+        setTickets(json.data);
+      } else {
+        setError(json.error || 'Could not load support tickets');
+        setTickets([]);
+      }
+    } catch {
+      setError('Could not reach the support service');
+      setTickets([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch('/api/supplier/support')
-      .then(res => res.json())
-      .then(d => {
-        setTickets(d?.tickets || []);
-        setLoading(false);
-      });
+    load();
   }, []);
 
   return (
@@ -43,6 +68,17 @@ export function SellerSupportPage() {
           <div className="space-y-4 animate-pulse">
             <div className="h-20 bg-gray-200 rounded"></div>
           </div>
+        ) : error ? (
+          <div className="bg-white p-6 rounded text-center shadow">
+            <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-600">{error}</p>
+          </div>
+        ) : tickets.length === 0 ? (
+          <div className="bg-white p-8 rounded text-center shadow">
+            <TicketCheck className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-gray-700">No support tickets yet</h3>
+            <p className="text-xs text-gray-500 mt-1">Open a ticket and the Zylod support team will follow up.</p>
+          </div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             {tickets.map(ticket => (
@@ -51,7 +87,7 @@ export function SellerSupportPage() {
                   <span className="font-bold">{ticket.subject}</span>
                   <span className="text-xs bg-gray-100 px-2 py-1 rounded">{ticket.status}</span>
                 </div>
-                <p className="text-sm text-gray-500">Ticket #{ticket.id} • {new Date(ticket.createdAt).toLocaleDateString()}</p>
+                <p className="text-sm text-gray-500">{ticket.category} • {ticket.messageCount} message{ticket.messageCount !== 1 ? 's' : ''} • {new Date(ticket.createdAt).toLocaleDateString()}</p>
               </div>
             ))}
           </motion.div>

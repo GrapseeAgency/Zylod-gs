@@ -7,37 +7,29 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const supplierId = searchParams.get('supplierId')
 
-    let targetSupplierId = supplierId
+    let targetSupplierId: string | null = supplierId
 
     if (!targetSupplierId) {
       const auth = await authenticateRequest(request)
       if (auth.authenticated && auth.user) {
+        // With a session and no explicit supplierId → the caller's OWN storefront.
         const profile = await db.supplierProfiles.findFirst({
-          where: { userId: auth.user.id }
+          where: { userId: auth.user.id },
+          select: { id: true },
         })
-        targetSupplierId = profile ? profile.id : auth.user.id
+        targetSupplierId = profile ? profile.id : null
       }
     }
 
+    // HONEST 404 — no session (or session without a supplier profile) and no
+    // explicit supplierId means there is nothing to show. The old
+    // "first supplier in the DB" fallback is gone: guests must never be
+    // served an arbitrary supplier's store as if it were theirs.
     if (!targetSupplierId) {
-      const firstSupplier = await db.supplierProfiles.findFirst({
-        include: {
-          storeCustomization: true,
-          products: {
-            where: { isActive: true },
-            take: 12,
-            include: { priceTiers: true }
-          },
-          supplierReviews: { take: 5, include: { buyer: { select: { email: true, phone: true } } } },
-          _count: { select: { products: true, supplierReviews: true } }
-        }
-      })
-
-      if (firstSupplier) {
-        return NextResponse.json({ success: true, data: firstSupplier })
-      }
-
-      return NextResponse.json({ error: 'Supplier not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: supplierId ? 'Supplier not found' : 'No storefront specified — pass ?supplierId= to view a store' },
+        { status: 404 }
+      )
     }
 
     const supplier = await db.supplierProfiles.findFirst({
@@ -50,11 +42,16 @@ export async function GET(request: NextRequest) {
       include: {
         storeCustomization: true,
         products: {
-          where: { isActive: true },
+          // Public read: only APPROVED and active listings are visible on a
+          // storefront — pending/rejected moderation items stay private.
+          where: { isActive: true, isApproved: true },
           take: 24,
           include: { priceTiers: true }
         },
-        supplierReviews: { take: 10, include: { buyer: { select: { email: true, phone: true } } } },
+        supplierReviews: {
+          take: 10,
+          include: { buyer: { select: { buyerProfile: { select: { fullName: true, businessName: true } } } } }
+        },
         _count: { select: { products: true, supplierReviews: true } }
       }
     })
@@ -63,9 +60,38 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Supplier not found' }, { status: 404 })
     }
 
+    /* PUBLIC PROJECTION — this endpoint serves guests. The old code returned
+       the raw supplierProfiles row, leaking KYC data (NID, trade license,
+       TIN, bank details, rejection internals) AND reviewer emails/phones via
+       supplierReviews.buyer. Only public storefront fields may leave here. */
+    const publicData = {
+      id: supplier.id,
+      companyName: supplier.companyName,
+      verificationStatus: supplier.verificationStatus,
+      ratingAvg: supplier.ratingAvg,
+      ratingCount: supplier.ratingCount,
+      memberSince: supplier.createdAt,
+      storeCustomization: supplier.storeCustomization,
+      products: supplier.products,
+      reviews: (supplier.supplierReviews || []).map((r) => ({
+        id: r.id,
+        rating: r.rating,
+        comment: r.comment,
+        createdAt: r.createdAt,
+        // Display name only — never the reviewer's email or phone.
+        buyerName:
+          r.buyer?.buyerProfile?.businessName ||
+          r.buyer?.buyerProfile?.fullName ||
+          'Verified buyer',
+      })),
+      counts: supplier._count,
+      // Kept as _count for the storefront page's existing consumption.
+      _count: supplier._count,
+    }
+
     return NextResponse.json({
       success: true,
-      data: supplier
+      data: publicData
     })
   } catch (error) {
     console.error('Storefront GET error:', error)

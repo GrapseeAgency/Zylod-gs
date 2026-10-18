@@ -163,15 +163,20 @@ export const useCartStore = create<CartState>()(
                   productId: item.productId,
                   productName: item.product?.name || '',
                   productSlug: item.product?.slug || '',
-                  productImage: item.product?.images?.[0]?.url || item.product?.thumbnailUrl || null,
+                  // products API image rows carry `imageUrl` (not `url`) —
+                  // reading `.url` here silently broke merged-item thumbnails.
+                  productImage: item.product?.images?.[0]?.imageUrl || item.product?.thumbnailUrl || null,
                   variantId: item.variantId,
                   variantName: item.variant?.variantName || null,
                   variantValue: item.variant?.variantValue || null,
                   quantity: item.quantity,
-                  unitPrice: item.product?.basePrice || 0,
-                  totalPrice: item.quantity * (item.product?.basePrice || 0),
+                  // Server truth: the cart API resolves each line's price via
+                  // the canonical pricing rule — never trust a client-side
+                  // recomputation from basePrice.
+                  unitPrice: typeof item.unitPrice === 'number' ? item.unitPrice : (item.product?.basePrice || 0),
+                  totalPrice: typeof item.totalPrice === 'number' ? item.totalPrice : item.quantity * (item.product?.basePrice || 0),
                   moq: item.product?.moq || 1,
-                  maxOrderQty: null,
+                  maxOrderQty: item.product?.maxOrderQty ?? null,
                   supplierId: item.supplierId || s.supplierId,
                   supplierName: s.supplierName || '',
                   supplierSlug: '',

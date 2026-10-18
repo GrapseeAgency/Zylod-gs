@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 
 /* ─── Session Token Management ─── */
@@ -120,6 +120,39 @@ export function extractToken(request: NextRequest): string | null {
   if (token) return token
 
   return null
+}
+
+/* ─── Session cookie helpers ───
+ * The API accepts the session token via Bearer header OR the auth-token
+ * cookie. Browsers can only authenticate automatically through the cookie,
+ * so login/register MUST set it and logout MUST clear it — otherwise every
+ * credentials:'include' fetch in the UI is anonymous no matter what the
+ * client stores in localStorage. Mirrors SESSION_DURATION_HOURS (7 days). */
+export const AUTH_COOKIE_NAME = 'auth-token'
+const AUTH_COOKIE_MAX_AGE = 24 * 7 * 60 * 60 // 7 days, in seconds
+
+export function setAuthCookie(response: NextResponse, token: string): void {
+  response.cookies.set({
+    name: AUTH_COOKIE_NAME,
+    value: token,
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: AUTH_COOKIE_MAX_AGE,
+  })
+}
+
+export function clearAuthCookie(response: NextResponse): void {
+  response.cookies.set({
+    name: AUTH_COOKIE_NAME,
+    value: '',
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 0,
+  })
 }
 
 /* ─── Authenticate a request (main middleware) ─── */

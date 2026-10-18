@@ -1,19 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { db } from '@/lib/db'
-import { authenticateRequest } from '@/lib/auth'
+import { requireUserType } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
+
+/* Ownership scoping (Task 50-b): every method resolves the session's
+ * supplierProfile and only touches tickets where supplierId matches. A
+ * foreign or unknown id gets the same 404 — no existence leak. */
+
+const messageSchema = z.object({
+  message: z.string().trim().min(1, 'Message cannot be empty').max(4000),
+})
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUserType(request, ['supplier', 'admin'])
+    if (!auth.authenticated || !auth.user) {
+      return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
+    }
+    const profile = await resolveSupplierProfile(auth.user)
+    if (!profile) {
+      return NextResponse.json(SUPPLIER_PROFILE_REQUIRED, { status: 403 })
+    }
+
     const { id } = await params
-    const ticket = await db.sellerSupportTickets.findUnique({
-      where: { id },
+    const ticket = await db.sellerSupportTickets.findFirst({
+      where: { id, supplierId: profile.id },
       include: {
         messages: { orderBy: { createdAt: 'asc' } },
-        supplier: { select: { companyName: true } }
-      }
+        supplier: { select: { companyName: true } },
+      },
     })
     if (!ticket) {
       return NextResponse.json({ error: 'Ticket not found' }, { status: 404 })
@@ -29,16 +49,34 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = await authenticateRequest(request)
-  if (!auth.authenticated || !auth.user) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
-  }
   try {
+    const rl = checkRateLimit(request, 'supplier-support-message', 30, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
+    const auth = await requireUserType(request, ['supplier', 'admin'])
+    if (!auth.authenticated || !auth.user) {
+      return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
+    }
+    const profile = await resolveSupplierProfile(auth.user)
+    if (!profile) {
+      return NextResponse.json(SUPPLIER_PROFILE_REQUIRED, { status: 403 })
+    }
+
+    const parsed = messageSchema.safeParse(await request.json().catch(() => null))
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message || 'Invalid message' },
+        { status: 400 }
+      )
+    }
+
     const { id } = await params
-    const body = await request.json()
-    const { message } = body
-    if (!message?.trim()) {
-      return NextResponse.json({ error: 'Message cannot be empty' }, { status: 400 })
+    const ticket = await db.sellerSupportTickets.findFirst({
+      where: { id, supplierId: profile.id },
+      select: { id: true },
+    })
+    if (!ticket) {
+      return NextResponse.json({ error: 'Ticket not found' }, { status: 404 })
     }
 
     const newMsg = await db.sellerSupportMessages.create({
@@ -46,11 +84,11 @@ export async function POST(
         ticketId: id,
         senderId: auth.user.id,
         senderRole: 'supplier',
-        message: message.trim()
-      }
+        message: parsed.data.message,
+      },
     })
 
-    return NextResponse.json({ success: true, data: newMsg, message: 'Message sent' })
+    return NextResponse.json({ success: true, data: newMsg, message: 'Message sent' }, { status: 201 })
   } catch (error) {
     console.error('Support message POST error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
