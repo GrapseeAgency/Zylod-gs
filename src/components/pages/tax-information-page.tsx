@@ -18,13 +18,15 @@ export function TaxInformationPage() {
 
   const [taxId, setTaxId] = useState('')
   const [vatNumber, setVatNumber] = useState('')
-  const [businessEntityType, setBusinessEntityType] = useState('Private Enterprise')
+  const [businessEntityType, setBusinessEntityType] = useState('')
   const [taxJurisdiction, setTaxJurisdiction] = useState('Bangladesh (NBR)')
   const [documents, setDocuments] = useState<Array<{ id: string; name: string; date: string }>>([])
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
+  const [notSupported, setNotSupported] = useState(false)
 
   useEffect(() => {
     async function loadTax() {
@@ -57,25 +59,36 @@ export function TaxInformationPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
+    setSaveError('')
+    setNotSupported(false)
     try {
-      if (token) {
-        await fetch('/api/profile/tax', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            taxId,
-            vatNumber,
-            businessEntityType,
-          }),
-        })
+      // Real contract: PATCH /api/profile/tax persists taxId/vatNumber for
+      // suppliers. Buyers honestly get 501 (no tax storage exists for them).
+      const body: Record<string, string> = {}
+      if (taxId.trim()) body.taxId = taxId.trim()
+      if (vatNumber.trim()) body.vatNumber = vatNumber.trim()
+      const res = await fetch('/api/profile/tax', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      })
+      const json = await res.json().catch(() => null)
+      if (res.status === 501) {
+        setNotSupported(true)
+        setSaveError(json?.error || 'Not implemented yet — requires backend support')
+        return
       }
+      if (!res.ok || !json?.success) {
+        setSaveError(json?.error || `Saving your tax information failed (HTTP ${res.status}).`)
+        return
+      }
+      if (typeof json.data?.taxId === 'string') setTaxId(json.data.taxId)
+      if (typeof json.data?.vatNumber === 'string') setVatNumber(json.data.vatNumber)
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch {
-      // Handled
+      setSaveError('Network error while saving your tax information. Check your connection and retry.')
     } finally {
       setSaving(false)
     }
@@ -175,6 +188,17 @@ export function TaxInformationPage() {
               Your verified BIN and e-TIN are automatically rendered on all standard wholesale B2B commercial invoices generated on Zylod for corporate audit compliance.
             </p>
           </div>
+
+          {/* Real save error / honest limitation — verbatim from the server */}
+          {saveError && (
+            <div className={`rounded-3xl px-4 py-3 border flex items-start gap-2 ${notSupported ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200'}`}>
+              <AlertCircle className={`h-4 w-4 shrink-0 mt-0.5 ${notSupported ? 'text-amber-500' : 'text-red-500'}`} />
+              <p className={`text-xs font-bold ${notSupported ? 'text-amber-700' : 'text-red-600'}`}>
+                {saveError}
+                {notSupported && ' — tax profile storage is only available for supplier accounts on this platform today.'}
+              </p>
+            </div>
+          )}
 
           {/* Save Button */}
           <Button

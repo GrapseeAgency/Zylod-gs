@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { useRealtimeRoom } from '@/hooks/use-realtime-room'
+import { toast } from 'sonner'
 import {
   ArrowLeft,
   HelpCircle,
@@ -15,73 +17,289 @@ import {
   XCircle,
   LogIn,
   Plus,
+  ChevronDown,
+  Truck,
+  MessageSquareText,
+  RadioTower,
 } from 'lucide-react'
 
-interface RfqRow {
+/* ── Real API types (GET /api/rfq · GET /api/rfq/[id] · PATCH /api/rfq/[id]/quotes/[quoteId]) ── */
+
+interface RfqItem {
+  id: string
+  productName: string
+  specifications: string | null
+  quantity: number
+  unit: string
+  targetPrice: number | null
+}
+
+/** List rows (GET /api/rfq?role=buyer). Quotes on rows are a take-5 preview —
+ * the FULL quote list always comes from GET /api/rfq/[id] on expand. */
+interface RfqListItem {
   id: string
   title?: string
-  subject?: string
   status: string
-  quantity?: number
+  description?: string
+  categorySlug?: string | null
+  quantity?: number | null
+  unit?: string
   targetPrice?: number | null
-  createdAt: string
-  /** The real API field name (GET /api/rfq returns `quoteCount`). */
+  deliveryCity?: string | null
+  deadline?: string | null
   quoteCount?: number
+  createdAt: string
+  items?: RfqItem[]
+}
+
+/** Detail quote (GET /api/rfq/[id]) — supplier is display-name-only by the
+ * buyer privacy rule (supplierProfiles.companyName; never email/phone/address). */
+interface RfqQuote {
+  id: string
+  rfqId?: string
+  supplierId?: string
+  pricePerUnit: number
+  totalPrice: number
+  deliveryDays: number | null
+  message: string | null
+  status: string
+  createdAt: string
+  supplier: { displayName: string | null }
+}
+
+interface RfqDetail extends RfqListItem {
+  quotes: RfqQuote[]
+  buyerName?: string | null
 }
 
 /** Real rfqRequests.status values (prisma/schema.prisma: open | quoted | awarded | closed | expired). */
-const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: typeof Clock }> = {
-  open: { label: 'Open', color: '#C8102E', bg: '#FFF1F2', icon: Clock },
-  quoted: { label: 'Quoted', color: '#1565C0', bg: '#E3F2FD', icon: FileText },
-  awarded: { label: 'Awarded', color: '#7C3AED', bg: '#F3E8FD', icon: CheckCircle2 },
-  closed: { label: 'Closed', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  expired: { label: 'Expired', color: '#6B7280', bg: '#F3F4F6', icon: XCircle },
+const STATUS_META: Record<string, { color: string; bg: string; border: string; icon: typeof Clock }> = {
+  open: { color: '#C8102E', bg: '#FFF1F2', border: '#FECDD3', icon: Clock },
+  quoted: { color: '#1565C0', bg: '#E3F2FD', border: '#BBDEFB', icon: FileText },
+  awarded: { color: '#7C3AED', bg: '#F3E8FD', border: '#DDD6FE', icon: CheckCircle2 },
+  closed: { color: '#059669', bg: '#ECFDF5', border: '#A7F3D0', icon: CheckCircle2 },
+  expired: { color: '#6B7280', bg: '#F3F4F6', border: '#E5E7EB', icon: XCircle },
+}
+
+/** Real rfqQuotes.status values (prisma/schema.prisma: pending | accepted | rejected). */
+const QUOTE_STATUS_META: Record<string, { color: string; bg: string }> = {
+  pending: { color: '#B45309', bg: '#FFFBEB' },
+  accepted: { color: '#047857', bg: '#ECFDF5' },
+  rejected: { color: '#6B7280', bg: '#F3F4F6' },
+}
+
+type AwardAction = 'accept' | 'reject'
+
+function formatBDT(value: number): string {
+  return `৳${value.toLocaleString('en-US', { maximumFractionDigits: 2 })}`
+}
+
+function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime()) ? '—' : d.toLocaleDateString()
 }
 
 export function RfqListPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token, isAuthenticated } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
 
-  const [rfqs, setRfqs] = useState<RfqRow[]>([])
+  const [rfqs, setRfqs] = useState<RfqListItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [needsAuth, setNeedsAuth] = useState(false)
 
-  useEffect(() => {
-    let cancelled = false
+  // Expandable detail — one RFQ open at a time; quotes always refetched on expand.
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [detail, setDetail] = useState<RfqDetail | null>(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const [detailError, setDetailError] = useState<string | null>(null)
 
-    const load = async () => {
-      if (!isAuthenticated || !token) {
-        setNeedsAuth(true)
-        setIsLoading(false)
-        return
-      }
-      try {
-        const res = await fetch('/api/rfq?role=buyer&limit=30', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        const json = await res.json()
-        if (!cancelled && res.ok && (json.success || Array.isArray(json.data))) {
-          setRfqs(json.data)
-        } else if (!cancelled && res.status === 401) {
-          setNeedsAuth(true)
-        } else if (!cancelled) {
-          setLoadError('Could not load your quote requests.')
-        }
-      } catch {
-        if (!cancelled) setLoadError('Network error. Please try again.')
-      } finally {
-        if (!cancelled) setIsLoading(false)
-      }
+  // Award rail: arm-to-confirm (first tap arms, second tap within 4s executes).
+  const [armed, setArmed] = useState<{ quoteId: string; action: AwardAction } | null>(null)
+  const [actingQuoteId, setActingQuoteId] = useState<string | null>(null)
+
+  // Latest loaders for the realtime onEvent callback (no resubscribe churn).
+  const refreshRef = useRef<() => void>(() => {})
+
+  /* ── List loader — cookie session, real res.ok, verbatim errors ── */
+  const loadList = useCallback(async () => {
+    if (!isAuthenticated) {
+      setNeedsAuth(true)
+      setIsLoading(false)
+      return
     }
+    try {
+      const res = await fetch('/api/rfq?role=buyer&limit=30', { credentials: 'include' })
+      const json = await res.json().catch(() => null)
+      if (res.ok && json?.success && Array.isArray(json.data)) {
+        setRfqs(json.data)
+        setLoadError(null)
+      } else if (res.status === 401) {
+        setNeedsAuth(true)
+      } else {
+        setLoadError(
+          typeof json?.error === 'string' && json.error
+            ? json.error
+            : `Could not load your quote requests (HTTP ${res.status}).`
+        )
+      }
+    } catch {
+      setLoadError('Network error. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [isAuthenticated])
 
-    load()
-    return () => { cancelled = true }
-  }, [isAuthenticated, token])
+  /* ── Detail loader — GET /api/rfq/[id] (full quote list) ── */
+  const loadDetail = useCallback(async (rfqId: string) => {
+    setDetailLoading(true)
+    setDetailError(null)
+    try {
+      const res = await fetch(`/api/rfq/${rfqId}`, { credentials: 'include' })
+      const json = await res.json().catch(() => null)
+      if (res.ok && json?.success && json.data) {
+        setDetail(json.data)
+      } else if (res.status === 401) {
+        setNeedsAuth(true)
+        setDetailError('Authentication required')
+      } else {
+        setDetailError(
+          typeof json?.error === 'string' && json.error
+            ? json.error
+            : `Could not load the quotes (HTTP ${res.status}).`
+        )
+      }
+    } catch {
+      setDetailError('Network error. Please try again.')
+    } finally {
+      setDetailLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void loadList()
+  }, [loadList])
+
+  const toggleExpand = (rfqId: string) => {
+    if (expandedId === rfqId) {
+      setExpandedId(null)
+      setDetail(null)
+      setDetailError(null)
+      setArmed(null)
+      return
+    }
+    setExpandedId(rfqId)
+    setDetail(null)
+    setDetailError(null)
+    setArmed(null)
+    void loadDetail(rfqId)
+  }
+
+  /* ── Award rail action — PATCH, confirm-on-second-tap, verbatim errors ── */
+  const executeAction = async (quoteId: string, action: AwardAction) => {
+    if (!expandedId) return
+    setActingQuoteId(quoteId)
+    setArmed(null)
+    try {
+      const res = await fetch(`/api/rfq/${expandedId}/quotes/${quoteId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ action }),
+      })
+      const json = await res.json().catch(() => null)
+      if (res.ok && json?.success && json.data) {
+        // Toast reflects ONLY the real server outcome (quote.status + rfqStatus).
+        toast.success(
+          `Quote ${json.data.quote.status} — RFQ is now "${json.data.rfqStatus}".`,
+        )
+        // Contract: after any action refetch BOTH the list and the open detail.
+        await Promise.all([loadList(), loadDetail(expandedId)])
+      } else if (res.status === 401) {
+        setNeedsAuth(true)
+        toast.error('Authentication required')
+      } else {
+        toast.error(
+          typeof json?.error === 'string' && json.error
+            ? json.error
+            : `Could not ${action} the quote (HTTP ${res.status}).`
+        )
+      }
+    } catch {
+      toast.error('Network error. Please try again.')
+    } finally {
+      setActingQuoteId(null)
+    }
+  }
+
+  // Arm timeout: a confirmation that is never completed resets itself.
+  useEffect(() => {
+    if (!armed) return
+    const t = setTimeout(() => setArmed(null), 4_000)
+    return () => clearTimeout(t)
+  }, [armed])
+
+  const refreshAll = useCallback(() => {
+    void loadList()
+    if (expandedId) void loadDetail(expandedId)
+  }, [loadList, loadDetail, expandedId])
+  refreshRef.current = refreshAll
+
+  /* ── Live: join rfq:<expandedId> via the shared hook ──
+   * Token comes from GET /api/realtime/room-token?room=rfq:<id> (rfq rooms are
+   * token-gated: buyer-owner / quoting suppliers / admin). If the token request
+   * fails or the room is denied, the hook reports denied and this page degrades
+   * honestly to refetch-on-action — a live connection is never faked. */
+  const { connected, denied } = useRealtimeRoom(expandedId ? [`rfq:${expandedId}`] : [], {
+    onEvent: (message) => {
+      if (message.event === 'rfq:new-quote') {
+        // A seller's new quote landed on the open RFQ — toast + refetch it.
+        toast.message('New quote received', {
+          description: 'A supplier responded to this request.',
+        })
+        refreshRef.current()
+      } else if (message.event === 'rfq:quote-accepted' || message.event === 'rfq:quote-rejected') {
+        // Another tab/device decided a quote — resync silently.
+        refreshRef.current()
+      }
+    },
+  })
+
+  /* ── Sign-in gate ── */
+  if (!isAuthenticated || needsAuth) {
+    return (
+      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl border border-[#E0E0E0] p-8 flex flex-col items-center gap-3 text-center shadow-sm max-w-sm w-full">
+          <LogIn className="w-8 h-8 text-[#C8102E]" />
+          <p className="text-sm font-semibold text-[#1A1A1A]">Sign in to view your quote requests</p>
+          <p className="text-xs text-[#6B7280] max-w-[260px]">
+            Your RFQ history and supplier quotes are tied to your account.
+          </p>
+          <button
+            onClick={() => navigate('login')}
+            className="mt-1 px-6 min-h-11 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  /* ── Honest reason when the award rail is unavailable ──
+   * Mirrors the API contract verbatim (PATCH guards). */
+  const awardBlockReason = (rfqStatus: string, quoteStatus: string): string | null => {
+    if (quoteStatus !== 'pending') return `Quote already ${quoteStatus}`
+    if (rfqStatus !== 'open' && rfqStatus !== 'quoted') {
+      return `Cannot accept quotes on an RFQ with status "${rfqStatus}"`
+    }
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-[calc(64px+env(safe-area-inset-bottom)+24px)]">
-      {/* ─── Top Nav Bar ─── */}
+      {/* ─── Top Nav Bar (mobile) ─── */}
       <header className="md:hidden sticky top-0 z-40 bg-white border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
@@ -91,20 +309,22 @@ export function RfqListPage() {
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
         </button>
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
-        <button
-          onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
-          aria-label="Help"
-        >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
-        </button>
-        <button
-          onClick={() => navigate('quote-request')}
-          className="p-2 -mr-1 rounded-full hover:bg-gray-100 transition-colors"
-          aria-label="New quote request"
-        >
-          <Plus className="h-5 w-5 text-[#C8102E]" />
-        </button>
+        <div className="flex items-center">
+          <button
+            onClick={() => navigate('help-center')}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Help"
+          >
+            <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          </button>
+          <button
+            onClick={() => navigate('quote-request')}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="New quote request"
+          >
+            <Plus className="h-5 w-5 text-[#C8102E]" />
+          </button>
+        </div>
       </header>
 
       <div className="max-w-md mx-auto px-4 pt-4 space-y-4 md:max-w-4xl md:px-6 md:py-6">
@@ -135,37 +355,26 @@ export function RfqListPage() {
           <p className="text-xs text-[#6B7280] mt-1">Track RFQs and supplier responses in one place.</p>
         </div>
 
-        {/* ─── Sign-in Gate ─── */}
-        {needsAuth && (
-          <div className="bg-white rounded-2xl border border-[#E0E0E0] p-8 flex flex-col items-center gap-3 text-center shadow-sm">
-            <LogIn className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm font-semibold text-[#1A1A1A]">Sign in to view your quote requests</p>
-            <p className="text-xs text-[#6B7280] max-w-[260px]">
-              Your RFQ history and supplier quotes are tied to your account.
-            </p>
-            <button
-              onClick={() => navigate('login')}
-              className="mt-1 px-6 py-2.5 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
-            >
-              Sign In
-            </button>
-          </div>
-        )}
-
         {/* ─── Loading / Error States ─── */}
-        {isLoading && !needsAuth && (
+        {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
             <p className="text-sm text-[#6B7280]">Loading requests...</p>
           </div>
         )}
-        {!isLoading && loadError && !needsAuth && (
-          <div className="flex flex-col items-center gap-3 py-14">
+        {!isLoading && loadError && (
+          <div className="flex flex-col items-center gap-3 py-8">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
             <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <button
+              onClick={() => { setIsLoading(true); setLoadError(null); void loadList() }}
+              className="mt-1 px-6 min-h-11 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
+            >
+              Retry
+            </button>
           </div>
         )}
-        {!isLoading && !loadError && !needsAuth && rfqs.length === 0 && (
+        {!isLoading && !loadError && rfqs.length === 0 && (
           <div className="bg-white rounded-2xl border border-[#E0E0E0] p-8 flex flex-col items-center gap-3 text-center shadow-sm">
             <FileText className="w-8 h-8 text-gray-400" />
             <p className="text-sm font-semibold text-[#1A1A1A]">No quote requests yet</p>
@@ -182,39 +391,250 @@ export function RfqListPage() {
           </div>
         )}
 
-        {/* ─── RFQ Cards ─── */}
+        {/* ─── RFQ Cards (expandable) ─── */}
         <div className="space-y-3">
           {rfqs.map((rfq, idx) => {
             const meta = STATUS_META[rfq.status] || STATUS_META.open
             const StatusIcon = meta.icon
+            const isExpanded = expandedId === rfq.id
+            const awarded = rfq.status === 'awarded'
             return (
               <motion.div
                 key={rfq.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.04, 0.3) }}
-                className="bg-white rounded-2xl border border-[#E0E0E0] p-4 shadow-sm"
+                className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${
+                  awarded ? 'border-[#DDD6FE] ring-1 ring-[#DDD6FE]' : 'border-[#E0E0E0]'
+                }`}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-bold text-sm text-[#1A1A1A] leading-snug line-clamp-2 flex-1">
-                    {rfq.title || rfq.subject || 'Quote Request'}
-                  </h3>
-                  <span
-                    className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
-                    style={{ color: meta.color, backgroundColor: meta.bg }}
-                  >
-                    <StatusIcon className="h-3 w-3" />
-                    {meta.label}
-                  </span>
-                </div>
+                {/* Row header — 44px+ target, aria-expanded */}
+                <button
+                  onClick={() => toggleExpand(rfq.id)}
+                  aria-expanded={isExpanded}
+                  className="w-full text-left p-4 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-bold text-sm text-[#1A1A1A] leading-snug line-clamp-2 flex-1">
+                      {rfq.title || 'Quote Request'}
+                    </h3>
+                    <span
+                      className={`shrink-0 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                        awarded ? 'ring-1' : ''
+                      }`}
+                      style={{ color: meta.color, backgroundColor: meta.bg, borderColor: meta.border }}
+                    >
+                      <StatusIcon className="h-3 w-3" />
+                      {rfq.status}
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 shrink-0 text-[#9CA3AF] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    />
+                  </div>
 
-                <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100">
-                  <span>
-                    {typeof rfq.quantity === 'number' ? `${rfq.quantity.toLocaleString()} units` : 'Custom quantity'}
-                    {rfq.targetPrice ? ` · target ${rfq.targetPrice}` : ''}
-                  </span>
-                  <span>{new Date(rfq.createdAt).toLocaleDateString()}</span>
-                </div>
+                  <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100">
+                    <span>
+                      {typeof rfq.quantity === 'number'
+                        ? `${rfq.quantity.toLocaleString()} ${rfq.unit || 'units'}`
+                        : 'Custom quantity'}
+                      {typeof rfq.targetPrice === 'number' ? ` · target ${formatBDT(rfq.targetPrice)}` : ''}
+                      {typeof rfq.quoteCount === 'number' ? ` · ${rfq.quoteCount} quote${rfq.quoteCount === 1 ? '' : 's'}` : ''}
+                    </span>
+                    <span>{formatDate(rfq.createdAt)}</span>
+                  </div>
+                </button>
+
+                {/* ─── Expanded detail ─── */}
+                <AnimatePresence initial={false}>
+                  {isExpanded && (
+                    <motion.div
+                      key="detail"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: 'easeOut' }}
+                    >
+                      <div className="px-4 pb-4 pt-1 border-t border-gray-100 space-y-4">
+                        {/* Description */}
+                        {rfq.description && (
+                          <p className="text-xs text-[#4B5563] leading-relaxed whitespace-pre-line">
+                            {rfq.description}
+                          </p>
+                        )}
+
+                        {/* Meta */}
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#6B7280]">
+                          {rfq.deliveryCity && <span>Deliver to: {rfq.deliveryCity}</span>}
+                          {rfq.deadline && <span>Deadline: {formatDate(rfq.deadline)}</span>}
+                          {rfq.categorySlug && <span>Category: {rfq.categorySlug}</span>}
+                        </div>
+
+                        {/* Items */}
+                        {rfq.items && rfq.items.length > 0 && (
+                          <div className="space-y-1.5">
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF]">Items</p>
+                            {rfq.items.map((item) => (
+                              <div
+                                key={item.id}
+                                className="flex items-start justify-between gap-3 text-xs bg-[#F8F9FA] rounded-lg px-3 py-2"
+                              >
+                                <div className="min-w-0">
+                                  <p className="font-semibold text-[#1A1A1A] truncate">{item.productName}</p>
+                                  {item.specifications && (
+                                    <p className="text-[11px] text-[#6B7280] mt-0.5 whitespace-pre-line">{item.specifications}</p>
+                                  )}
+                                </div>
+                                <div className="shrink-0 text-right text-[#4B5563]">
+                                  <p>{item.quantity.toLocaleString()} {item.unit}</p>
+                                  {typeof item.targetPrice === 'number' && (
+                                    <p className="text-[11px] text-[#6B7280]">target {formatBDT(item.targetPrice)}</p>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* ─── Quote rail ─── */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF]">
+                              Quotes{typeof detail?.quoteCount === 'number' ? ` (${detail.quoteCount})` : ''}
+                            </p>
+                            {/* Live indicator — only claims a live connection that actually exists */}
+                            {isExpanded && (connected || denied) && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#6B7280]">
+                                <RadioTower className={`h-3 w-3 ${denied ? 'text-gray-400' : 'text-emerald-600'}`} />
+                                {denied ? 'Live unavailable' : connected ? 'Live' : ''}
+                              </span>
+                            )}
+                          </div>
+
+                          {detailLoading && (
+                            <div className="flex items-center gap-2 py-6 justify-center">
+                              <Loader2 className="w-4 h-4 text-[#C8102E] animate-spin" />
+                              <p className="text-xs text-[#6B7280]">Loading quotes...</p>
+                            </div>
+                          )}
+
+                          {!detailLoading && detailError && (
+                            <div className="flex items-center gap-2 text-xs text-[#B45309] bg-amber-50 rounded-lg px-3 py-2">
+                              <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                              <span>{detailError}</span>
+                            </div>
+                          )}
+
+                          {!detailLoading && !detailError && detail && detail.quotes.length === 0 && (
+                            <div className="bg-[#F8F9FA] rounded-lg px-3 py-4 text-center">
+                              <p className="text-xs font-semibold text-[#1A1A1A]">No quotes yet — sellers see this RFQ in their inbox.</p>
+                            </div>
+                          )}
+
+                          {!detailLoading && !detailError && detail && detail.quotes.length > 0 && (
+                            <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+                              {detail.quotes.map((quote) => {
+                                const qMeta = QUOTE_STATUS_META[quote.status] || QUOTE_STATUS_META.pending
+                                const blockReason = awardBlockReason(detail.status, quote.status)
+                                const isActing = actingQuoteId === quote.id
+                                const isArmed = armed?.quoteId === quote.id
+                                return (
+                                  <div
+                                    key={quote.id}
+                                    className="border border-[#E0E0E0] rounded-xl p-3 space-y-2"
+                                  >
+                                    <div className="flex items-start justify-between gap-2">
+                                      <p className="text-xs font-bold text-[#1A1A1A] truncate">
+                                        {quote.supplier?.displayName || 'Supplier'}
+                                      </p>
+                                      <span
+                                        className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                        style={{ color: qMeta.color, backgroundColor: qMeta.bg }}
+                                      >
+                                        {quote.status}
+                                      </span>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-[#4B5563]">
+                                      <span className="font-semibold text-[#1A1A1A]">
+                                        {formatBDT(quote.pricePerUnit)} <span className="font-normal text-[#6B7280]">/ unit</span>
+                                      </span>
+                                      <span>
+                                        {formatBDT(quote.totalPrice)} <span className="text-[#6B7280]">total</span>
+                                      </span>
+                                      <span className="inline-flex items-center gap-1">
+                                        <Truck className="h-3 w-3 text-[#9CA3AF]" />
+                                        {typeof quote.deliveryDays === 'number' ? `${quote.deliveryDays} day${quote.deliveryDays === 1 ? '' : 's'}` : 'Delivery time not given'}
+                                      </span>
+                                      <span>{formatDate(quote.createdAt)}</span>
+                                    </div>
+
+                                    {quote.message && (
+                                      <div className="flex gap-1.5 text-[11px] text-[#4B5563] bg-[#F8F9FA] rounded-lg px-2.5 py-1.5">
+                                        <MessageSquareText className="h-3 w-3 shrink-0 mt-0.5 text-[#9CA3AF]" />
+                                        <span className="whitespace-pre-line">{quote.message}</span>
+                                      </div>
+                                    )}
+
+                                    {/* Award rail — Accept/Reject ONLY while pending AND rfq open|quoted */}
+                                    {!blockReason ? (
+                                      <div className="flex items-center gap-2 pt-1">
+                                        <button
+                                          onClick={() =>
+                                            isArmed && armed?.action === 'accept'
+                                              ? void executeAction(quote.id, 'accept')
+                                              : setArmed({ quoteId: quote.id, action: 'accept' })
+                                          }
+                                          disabled={isActing}
+                                          className={`flex-1 min-h-11 rounded-lg text-xs font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+                                            isArmed && armed?.action === 'accept'
+                                              ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                                              : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                          }`}
+                                          aria-label={isArmed && armed?.action === 'accept' ? 'Confirm accept quote' : 'Accept quote'}
+                                        >
+                                          {isActing ? (
+                                            <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+                                          ) : isArmed && armed?.action === 'accept' ? (
+                                            'Confirm accept'
+                                          ) : (
+                                            'Accept'
+                                          )}
+                                        </button>
+                                        <button
+                                          onClick={() =>
+                                            isArmed && armed?.action === 'reject'
+                                              ? void executeAction(quote.id, 'reject')
+                                              : setArmed({ quoteId: quote.id, action: 'reject' })
+                                          }
+                                          disabled={isActing}
+                                          className={`flex-1 min-h-11 rounded-lg text-xs font-bold border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+                                            isArmed && armed?.action === 'reject'
+                                              ? 'bg-[#C8102E] text-white border-[#C8102E] hover:bg-[#A50D24]'
+                                              : 'bg-white text-[#C8102E] border-[#FECDD3] hover:bg-[#FFF1F2]'
+                                          }`}
+                                          aria-label={isArmed && armed?.action === 'reject' ? 'Confirm reject quote' : 'Reject quote'}
+                                        >
+                                          {isArmed && armed?.action === 'reject' ? 'Confirm reject' : 'Reject'}
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <p className="text-[11px] text-[#6B7280] pt-0.5">{blockReason}</p>
+                                    )}
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Row data fallback while detail loads keeps meta honest */}
+                        {!detailLoading && !detailError && !detail && (
+                          <p className="text-[11px] text-[#6B7280]">Quotes will load here.</p>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             )
           })}

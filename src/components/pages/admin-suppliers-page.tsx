@@ -6,11 +6,23 @@ import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import {
   ShieldCheck, Search, RefreshCw, AlertTriangle, XCircle, CheckCircle2,
-  Clock, Check, Ban, ChevronDown, ChevronUp, Building2, FileWarning, Eye
+  Clock, Check, Ban, ChevronDown, ChevronUp, Building2, FileWarning, Eye, FileText
 } from 'lucide-react'
 
 // ── Real API types (GET /api/admin/suppliers) ──────────────────────────
 // Empty-string KYC fields mean the supplier genuinely did not provide the value.
+interface ApiDocument {
+  id: string
+  documentType: string
+  fileName: string
+  fileUrl: string | null
+  fileSize: string | null
+  status: string
+  rejectionReason: string | null
+  uploadedAt: string
+  reviewedAt: string | null
+}
+
 interface ApiSupplier {
   id: string
   userId: string
@@ -36,6 +48,7 @@ interface ApiSupplier {
   registeredAt: string
   kycSubmittedAt: string
   updatedAt: string
+  documents?: ApiDocument[]
 }
 
 type SupplierTab = 'pending' | 'under_review' | 'approved' | 'rejected'
@@ -61,6 +74,103 @@ const KYC_FIELDS: { key: keyof ApiSupplier; label: string }[] = [
 
 function kycProvidedCount(s: ApiSupplier): number {
   return KYC_FIELDS.filter(f => typeof s[f.key] === 'string' && (s[f.key] as string).trim().length > 0).length
+}
+
+// Real documentType values written by POST /api/supplier/verification
+const DOC_TYPE_LABELS: Record<string, string> = {
+  nid_front: 'NID (front)',
+  nid_back: 'NID (back)',
+  trade_license: 'Trade license',
+  tin_certificate: 'TIN certificate',
+  bank_statement: 'Bank statement',
+  utility_bill: 'Utility bill',
+}
+
+const DOC_STATUS_STYLES: Record<string, string> = {
+  pending: 'text-amber-600 bg-amber-50 border-amber-200',
+  under_review: 'text-sky-600 bg-sky-50 border-sky-200',
+  verified: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+  rejected: 'text-red-600 bg-red-50 border-red-200',
+}
+
+function isImageUrl(url: string): boolean {
+  const clean = url.split('?')[0].toLowerCase()
+  return /\.(jpe?g|png|webp|gif)$/.test(clean)
+}
+
+function fmtBytes(size: string | null): string {
+  if (!size) return ''
+  const n = Number(size)
+  if (!Number.isFinite(n) || n < 0) return ''
+  if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`
+  if (n >= 1024) return `${Math.round(n / 1024)} KB`
+  return `${n} B`
+}
+
+/**
+ * Real verification-document media strip (Task 52-c): admins approve/reject
+ * KYC with eyes on the docs the supplier actually uploaded — thumbnails for
+ * images, file chips for anything else, honest absence when there is nothing.
+ */
+function VerificationDocuments({ documents }: { documents: ApiDocument[] | undefined }) {
+  const docs = Array.isArray(documents) ? documents : []
+  return (
+    <div className="space-y-2">
+      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Verification documents</p>
+      {docs.length === 0 ? (
+        <p className="text-[11px] text-slate-400 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+          No documents uploaded yet — this supplier has not submitted any verification files. Approving now means approving without document evidence.
+        </p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {docs.map((doc) => {
+            const label = DOC_TYPE_LABELS[doc.documentType] || doc.documentType
+            const statusStyle = DOC_STATUS_STYLES[doc.status] || 'text-slate-500 bg-slate-50 border-slate-200'
+            const size = fmtBytes(doc.fileSize)
+            return (
+              <div key={doc.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-2 w-[128px] space-y-1.5">
+                {doc.fileUrl ? (
+                  isImageUrl(doc.fileUrl) ? (
+                    <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" title={`Open ${label} full size`}>
+                      <img
+                        src={doc.fileUrl}
+                        alt={`${label} document uploaded by the supplier`}
+                        loading="lazy"
+                        className="h-16 w-full object-cover rounded-lg border border-slate-100 dark:border-slate-800"
+                      />
+                    </a>
+                  ) : (
+                    <a
+                      href={doc.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="h-16 w-full rounded-lg border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center gap-1 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      <FileText className="h-5 w-5" />
+                      <span className="text-[9px] font-bold">Open file</span>
+                    </a>
+                  )
+                ) : (
+                  <div className="h-16 w-full rounded-lg border border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center gap-1 text-slate-300">
+                    <FileWarning className="h-5 w-5" />
+                    <span className="text-[9px] font-bold">No file</span>
+                  </div>
+                )}
+                <p className="text-[10px] font-black text-slate-700 dark:text-slate-300 truncate">{label}</p>
+                <div className="flex items-center justify-between gap-1">
+                  <span className={`text-[9px] font-bold border rounded-md px-1.5 py-0.5 ${statusStyle}`}>{doc.status}</span>
+                  {size && <span className="text-[9px] text-slate-400">{size}</span>}
+                </div>
+                {doc.status === 'rejected' && doc.rejectionReason && (
+                  <p className="text-[9px] text-red-500 leading-snug">{doc.rejectionReason}</p>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export function AdminSuppliersPage() {
@@ -449,6 +559,8 @@ export function AdminSuppliersPage() {
                       <span>KYC submitted: <b>{fmtDate(s.kycSubmittedAt)}</b></span>
                       {s.verifiedAt && <span>Last decision: <b>{fmtDate(s.verifiedAt)}</b></span>}
                     </div>
+                    {/* Real uploaded verification documents (Task 52-c media strip) */}
+                    <VerificationDocuments documents={s.documents} />
                     {/* Real rejection reason recorded by an admin */}
                     {s.verificationStatus === 'rejected' && (
                       <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-xl px-3 py-2">
@@ -457,7 +569,7 @@ export function AdminSuppliersPage() {
                       </div>
                     )}
                     <p className="text-[10px] text-slate-400 leading-relaxed">
-                      Approving verifies this supplier&apos;s identity based on the KYC data above. Fields marked &quot;Not provided&quot; were never submitted — the supplier registered without them. Every decision is audit-logged with your admin account.
+                      Approving verifies this supplier&apos;s identity based on the KYC data and uploaded documents above. Fields marked &quot;Not provided&quot; were never submitted, and a missing documents strip means no verification files exist — approving without them is a blind approval. Every decision is audit-logged with your admin account.
                     </p>
                   </div>
                 )}

@@ -9,7 +9,7 @@ import { useAuthStore } from '@/store/auth-store'
 import {
   ArrowLeft, Building2, ShieldCheck, CheckCircle2,
   Edit3, Check, Loader2, Landmark, MapPin, Phone,
-  Mail, FileText, Globe, Factory, Upload, Award
+  Mail, FileText, Globe, Factory, Upload, Award, AlertCircle
 } from 'lucide-react'
 
 export function BusinessProfilePage() {
@@ -20,13 +20,15 @@ export function BusinessProfilePage() {
   const [tradeLicenseNumber, setTradeLicenseNumber] = useState('')
   const [industryCategory, setIndustryCategory] = useState('Wholesale & Manufacturing')
   const [streetAddress, setStreetAddress] = useState('')
-  const [city, setCity] = useState('Dhaka')
-  const [postalCode, setPostalCode] = useState('1208')
+  const [city, setCity] = useState('')
+  const [postalCode, setPostalCode] = useState('')
   const [documents, setDocuments] = useState<Array<{ id: string; name: string; status: string }>>([])
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
+  const [notPersisted, setNotPersisted] = useState<string[]>([])
 
   useEffect(() => {
     async function loadBiz() {
@@ -44,9 +46,11 @@ export function BusinessProfilePage() {
             setLegalEntityName(json.data.legalEntityName || user?.fullName || '')
             setTradeLicenseNumber(json.data.tradeLicenseNumber || '')
             setIndustryCategory(json.data.industryCategory || 'Wholesale & Manufacturing')
-            setStreetAddress(json.data.streetAddress || '')
-            setCity(json.data.city || 'Dhaka')
-            setPostalCode(json.data.postalCode || '1208')
+            // The schema has NO address columns — the API returns null here.
+            // Previous defaults ('Dhaka', '1208') were fabricated; empty is honest.
+            setStreetAddress('')
+            setCity('')
+            setPostalCode('')
             if (Array.isArray(json.data.documents)) {
               setDocuments(json.data.documents)
             }
@@ -64,28 +68,36 @@ export function BusinessProfilePage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
+    setSaveError('')
+    setNotPersisted([])
     try {
-      if (token) {
-        await fetch('/api/profile/business', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            legalEntityName,
-            tradeLicenseNumber,
-            industryCategory,
-            streetAddress,
-            city,
-            postalCode,
-          }),
-        })
+      const res = await fetch('/api/profile/business', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          legalEntityName,
+          tradeLicenseNumber,
+          industryCategory,
+          streetAddress,
+          city,
+          postalCode,
+        }),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json?.success) {
+        setSaveError(json?.error || `Saving your business profile failed (HTTP ${res.status}).`)
+        return
       }
+      // The server reports fields it accepted but could NOT store (the schema
+      // has no address columns) so nothing pretends to be persisted.
+      if (Array.isArray(json.notPersisted)) setNotPersisted(json.notPersisted)
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch {
-      // Handled
+      setSaveError('Network error while saving your business profile. Check your connection and retry.')
     } finally {
       setSaving(false)
     }
@@ -185,12 +197,16 @@ export function BusinessProfilePage() {
             </div>
           </div>
 
-          {/* Registered Address */}
+          {/* Registered Address — honestly labelled: no backend storage exists yet */}
           <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <MapPin className="h-4 w-4 text-primary" />
               Registered Commercial Address
             </h2>
+            <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+              Address fields are not implemented yet — the platform has no storage for them, so what you
+              type here is not saved. Only the business name, trade license, and category persist.
+            </p>
 
             <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
               <div className="md:col-span-2">
@@ -249,6 +265,22 @@ export function BusinessProfilePage() {
               <p className="text-xs text-slate-400 py-2">Trade License verified through Zylod Merchant KYC.</p>
             )}
           </div>
+
+          {/* Real save error / honest not-persisted note — verbatim from the server */}
+          {saveError && (
+            <div className="bg-red-50 border border-red-200 rounded-3xl px-4 py-3 flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-xs font-bold text-red-600">{saveError}</p>
+            </div>
+          )}
+          {notPersisted.length > 0 && (
+            <div className="bg-amber-50 border border-amber-200 rounded-3xl px-4 py-3 flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+              <p className="text-xs font-bold text-amber-700">
+                Not saved (no backend storage yet): {notPersisted.join(', ')}.
+              </p>
+            </div>
+          )}
 
           {/* Save Button */}
           <Button

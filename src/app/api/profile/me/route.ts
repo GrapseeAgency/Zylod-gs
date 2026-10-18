@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
           select: {
             orders: true,
             reviews: true,
-            quoteRequests: true,
+            rfqRequests: true,
           },
         },
       },
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
         stats: {
           totalOrders: user._count.orders,
           totalReviews: user._count.reviews,
-          totalQuoteRequests: user._count.quoteRequests,
+          totalQuoteRequests: user._count.rfqRequests,
         },
         createdAt: user.createdAt,
       },

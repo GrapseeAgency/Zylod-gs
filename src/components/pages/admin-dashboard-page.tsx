@@ -14,7 +14,7 @@ import {
   LayoutDashboard, DollarSign, Users, Clock, ShoppingCart, TrendingUp, Package,
   ChevronRight, AlertCircle, BarChart3, Server, Database, Wifi, AlertTriangle,
   UserPlus, Star, MapPin, ArrowRight, ShieldAlert, ShieldCheck, RotateCcw, LayoutGrid, Settings,
-  ClipboardList, Warehouse,
+  ClipboardList, Warehouse, MessageSquareQuote,
 } from 'lucide-react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
@@ -84,6 +84,7 @@ const QUICK_ADMIN_ACTIONS = [
   { title: 'Review Products', description: 'Approve & moderate products, inspect media', icon: Package, page: 'admin-products', badgeKey: 'productApproval' as string | null },
   { title: 'Orders Overview', description: 'Every order by status, buyer & fulfillment state', icon: ClipboardList, page: 'admin-orders', badgeKey: null as string | null },
   { title: 'Inventory Audit', description: 'Read-only stock oversight across suppliers', icon: Warehouse, page: 'admin-inventory', badgeKey: null as string | null },
+  { title: 'RFQ Oversight', description: 'Every quote request, its quotes & closures', icon: MessageSquareQuote, page: 'admin-rfq', badgeKey: null as string | null },
   { title: 'Verify Suppliers', description: 'Review supplier applications', icon: TrendingUp, page: 'admin-suppliers', badgeKey: 'supplierVerification' as string | null },
   { title: 'Review Returns', description: 'Approve or reject buyer return requests', icon: RotateCcw, page: 'admin-returns', badgeKey: null as string | null },
   { title: 'Manage Categories', description: 'Create, edit & order marketplace categories', icon: LayoutGrid, page: 'admin-categories', badgeKey: null as string | null },

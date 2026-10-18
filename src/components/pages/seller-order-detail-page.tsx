@@ -141,7 +141,7 @@ export function SellerOrderDetailPage() {
 
       {/* Action Bottom Bar */}
       <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white border-t border-gray-200 p-4 pb-safe flex gap-3">
-        {order.status === 'Pending' && (
+        {order.status === 'pending' && (
           <>
             <button 
               className="flex-1 py-3 px-4 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl"
@@ -154,12 +154,12 @@ export function SellerOrderDetailPage() {
             </button>
           </>
         )}
-        {order.status === 'Processing' && (
+        {order.status === 'processing' && (
           <button 
             className="w-full py-3 px-4 bg-[#C8102E] text-white font-medium rounded-xl shadow-sm"
             onClick={() => navigate('seller-order-fulfillment', { orderId: order.id })}
           >
-            Fulfill Order (Book Courier)
+            Fulfill Order
           </button>
         )}
       </div>

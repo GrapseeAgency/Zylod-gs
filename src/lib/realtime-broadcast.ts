@@ -18,6 +18,10 @@
  *                           (supplier owns supplierId, or admin)
  *   admin:${adminUserId}  — token-gated via GET /api/realtime/room-token
  *                           (userType === 'admin', own id only)
+ *   rfq:${rfqId}          — token-gated via GET /api/realtime/room-token
+ *                           (Task 52-a: rfq buyer-owner, admin, or a supplier
+ *                           with a quote on the RFQ — quotes carry supplier
+ *                           pricing, so rfq rooms are NOT public)
  *
  * EVENT VOCABULARY (producers → consumers):
  *   inventory:updated    — PATCH /api/supplier/inventory → PDP stock widgets,
@@ -29,6 +33,14 @@
  *                          (buyer tracking + admin watch)
  *   moderation:decision  — PATCH /api/admin/products + /api/admin/suppliers →
  *                          seller feed + admin feed
+ *   rfq:new-quote        — POST /api/supplier/rfqs/[id]/quote (Task 52-a)
+ *                          → rfq room (buyer live quote feed)
+ *   rfq:quote-accepted   — PATCH /api/rfq/[id]/quotes/[quoteId] (Task 52-b)
+ *                          → rfq room + seller room
+ *   rfq:quote-rejected   — PATCH /api/rfq/[id]/quotes/[quoteId] (Task 52-b)
+ *                          → rfq room + seller room
+ *   rfq:status           — PATCH /api/admin/rfqs/[id] → rfq:<rfqId> room
+ *                          (buyers/suppliers watching the RFQ see the closure)
  *
  * Producers MUST only broadcast REAL, already-persisted state — never
  * optimistic payloads (if the DB write failed, nothing is broadcast).
@@ -37,8 +49,10 @@
 const CONTROL_URL =
   process.env.DELIVERY_SOCKET_URL || 'http://127.0.0.1:3006'
 
-/** Room names must match this exactly; the socket service rejects others. */
-export const REALTIME_ROOM_PATTERN = /^(order|product|seller|admin):[A-Za-z0-9_-]+$/
+/** Room names must match this exactly; the socket service rejects others.
+ *  Task 52-a added the `rfq` prefix (token-gated — see vocabulary above); the
+ *  socket service re-derives this pattern locally (no shared import). */
+export const REALTIME_ROOM_PATTERN = /^(order|product|seller|admin|rfq):[A-Za-z0-9_-]+$/
 
 export function isValidRealtimeRoom(room: string): boolean {
   return REALTIME_ROOM_PATTERN.test(room)

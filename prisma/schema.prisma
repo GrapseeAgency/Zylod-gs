@@ -52,8 +52,7 @@ model users {
   conversations      conversations[]
   conversations2     conversations[] @relation("SupplierConversations")
   messages           messages[]
-  quoteRequests      quoteRequests[]
-  quoteRequests2     quoteRequests[] @relation("SupplierQuotes")
+  userSettings       userSettings?
   reviews            reviews[]
   supplierReviews    supplierReviews[]
   productQas         productQas[]
@@ -368,7 +367,6 @@ model products {
   orderItems    orderItems[]
   reviews       reviews[]
   wishlists     wishlists[]
-  quoteRequests quoteRequests[]
   conversations conversations[]
   savedForLater savedForLater[]
   collectionItems collectionItems[]
@@ -598,29 +596,28 @@ model payments {
 }
 
 // ============================================================
-// Negotiation
+// User Settings (per-user preferences — replaces echo-only APIs)
 // ============================================================
 
-model quoteRequests {
-  id           String   @id @default(cuid())
-  buyerId      String
-  supplierId   String
-  productId    String?
-  requestedQty Int
-  message      String
-  quotedPrice  Float?
-  // status: pending | quoted | accepted | rejected | expired
-  status       String   @default("pending")
-  validUntil   DateTime?
-  createdAt    DateTime @default(now())
+model userSettings {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  // theme: system | light | dark
+  theme             String   @default("system")
+  // language: bn | en
+  language          String   @default("bn")
+  // privacy
+  profileVisibility String   @default("public") // public | buyers | private
+  showEmail         Boolean  @default(false)
+  showPhone         Boolean  @default(false)
+  // linked accounts — JSON string [{ provider, handle, linkedAt }]
+  linkedAccounts    String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  buyer    users     @relation(fields: [buyerId], references: [id])
-  supplier users     @relation("SupplierQuotes", fields: [supplierId], references: [id])
-  product  products? @relation(fields: [productId], references: [id])
+  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([buyerId])
-  @@index([supplierId])
-  @@index([status])
+  @@index([userId])
 }
 
 // ============================================================

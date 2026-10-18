@@ -1,16 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { authenticateRequest } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
+/**
+ * PUT    /api/profile/addresses/[id] — update ONE of the signed-in user's own addresses.
+ * DELETE /api/profile/addresses/[id] — delete ONE of the signed-in user's own addresses.
+ *
+ * SECURITY (Task 52-c audit fix): this route previously had NO authentication
+ * at all — anyone who learned an address id could update or delete any other
+ * user's address. Both verbs now authenticate first (401), and a foreign or
+ * unknown id returns the SAME 404 so address ids cannot be probed.
+ */
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await authenticateRequest(request)
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
+  }
+
+  const rl = checkRateLimit(request, 'profile-addresses-write', 30, 60 * 1000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const { id } = await params
-    const body = await request.json()
+    const body = await request.json().catch(() => null)
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    }
 
     const address = await db.addresses.findUnique({ where: { id } })
-    if (!address) {
+    if (!address || address.userId !== auth.user.id) {
+      // Same 404 for unknown AND foreign addresses — no existence leak.
       return NextResponse.json({ error: 'Address not found' }, { status: 404 })
     }
 
@@ -34,6 +57,10 @@ export async function PUT(
     if (body.lng) updateData.lng = body.lng
     if (body.isDefault) updateData.isDefault = body.isDefault
 
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ error: 'No editable address fields were provided' }, { status: 400 })
+    }
+
     const updated = await db.addresses.update({
       where: { id },
       data: updateData,
@@ -50,11 +77,20 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await authenticateRequest(request)
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
+  }
+
+  const rl = checkRateLimit(request, 'profile-addresses-write', 30, 60 * 1000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const { id } = await params
 
     const address = await db.addresses.findUnique({ where: { id } })
-    if (!address) {
+    if (!address || address.userId !== auth.user.id) {
+      // Same 404 for unknown AND foreign addresses — no existence leak.
       return NextResponse.json({ error: 'Address not found' }, { status: 404 })
     }
 

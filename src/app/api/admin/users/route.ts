@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
           createdAt: true, isEmailVerified: true, isPhoneVerified: true,
           buyerProfile: { select: { fullName: true, businessName: true, businessType: true, profileCompletionPct: true } },
           supplierProfile: { select: { id: true, companyName: true, verificationStatus: true, ratingAvg: true } },
-          _count: { select: { orders: true, reviews: true, quoteRequests: true } },
+          _count: { select: { orders: true, reviews: true, rfqRequests: true } },
         },
       }),
       db.users.count({ where }),
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       ratingAvg: u.supplierProfile?.ratingAvg || 0,
       orderCount: u._count.orders,
       reviewCount: u._count.reviews,
-      quoteRequestCount: u._count.quoteRequests,
+      quoteRequestCount: u._count.rfqRequests,
     }))
 
     return NextResponse.json({

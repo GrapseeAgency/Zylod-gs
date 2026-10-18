@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
 import { requireUserType, authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { issueDeliveryRoomToken } from '@/lib/delivery-room-token'
@@ -26,6 +27,13 @@ import { REALTIME_ROOM_PATTERN } from '@/lib/realtime-broadcast'
  *                          (mismatch → 403); admin may mint for any.
  *   room=admin:<id>      → requireUserType(['admin']); the id must equal the
  *                          session user id (403 otherwise).
+ *   room=rfq:<id>        → TOKEN-GATED like seller:/admin: (Task 52-a — RFQ
+ *                          quotes carry supplier pricing, so rfq rooms are
+ *                          NOT public). Authorized callers: (a) the RFQ's
+ *                          buyer-owner, (b) an admin, or (c) a supplier whose
+ *                          supplierProfiles.id has an rfqQuotes row on THIS
+ *                          rfq (i.e. you already quoted it). Everyone else →
+ *                          403.
  *
  * Read-only: no DB writes (tokens are stateless and self-verifying).
  */
@@ -51,7 +59,7 @@ export async function GET(request: NextRequest) {
     const room = (request.nextUrl.searchParams.get('room') || '').trim()
     if (!room || !REALTIME_ROOM_PATTERN.test(room)) {
       return NextResponse.json(
-        { error: 'room query parameter must match room:<id> with prefixes order|product|seller|admin' },
+        { error: 'room query parameter must match room:<id> with prefixes order|product|seller|admin|rfq' },
         { status: 400 }
       )
     }
@@ -114,6 +122,56 @@ export async function GET(request: NextRequest) {
         userType: sellerAuth.user.userType,
       })
       return NextResponse.json({ success: true, token, roomId: `seller:${scopedId}`, expiresIn })
+    }
+
+    // rfq: rooms (Task 52-a) — quotes carry supplier pricing, so the room is
+    // token-gated to: the RFQ's buyer-owner, an admin, or a supplier who has
+    // already quoted on this RFQ (rfqQuotes row with their supplierProfile id).
+    if (prefix === 'rfq') {
+      // Any session type may qualify (buyer / admin / supplier) — the checks
+      // below decide; 401 already happened above via authenticateRequest.
+      const rfq = await db.rfqRequests.findUnique({
+        where: { id: targetId },
+        select: { id: true, buyerId: true },
+      })
+      if (!rfq) {
+        // Same 404 shape as the order/product prefixes — no existence games.
+        return NextResponse.json(
+          { error: 'RFQ request not found for this room.' },
+          { status: 404 }
+        )
+      }
+
+      let authorized = false
+      if (auth.user.id === rfq.buyerId) {
+        authorized = true // (a) the RFQ's buyer-owner
+      } else if (auth.user.userType === 'admin') {
+        authorized = true // (b) admin — trusted role
+      } else if (auth.user.userType === 'supplier') {
+        // (c) a supplier with an rfqQuotes row on THIS rfq
+        const profile = await resolveSupplierProfile(auth.user)
+        if (profile) {
+          const ownQuote = await db.rfqQuotes.findFirst({
+            where: { rfqId: rfq.id, supplierId: profile.id },
+            select: { id: true },
+          })
+          authorized = ownQuote !== null
+        }
+      }
+
+      if (!authorized) {
+        return NextResponse.json(
+          { error: 'You are not authorized to join this RFQ room. Only the RFQ buyer, an admin, or a supplier who quoted on it may listen.' },
+          { status: 403 }
+        )
+      }
+
+      const { token, expiresIn } = issueDeliveryRoomToken({
+        roomId: room,
+        userId: auth.user.id,
+        userType: auth.user.userType,
+      })
+      return NextResponse.json({ success: true, token, roomId: room, expiresIn })
     }
 
     // prefix === 'admin' (the pattern allows nothing else)

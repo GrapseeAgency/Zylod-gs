@@ -109,7 +109,9 @@ export async function GET(request: NextRequest) {
         },
         take: 200,
       }),
-      db.quoteRequests.count({ where: { supplierId: { in: supplierScopeIds } } }),
+      /* RFQ truth: rfqRequests is the real chain (quoteRequests model was dead
+         and purged in Task 52). Count = RFQs this supplier has quoted on. */
+      db.rfqRequests.count({ where: { quotes: { some: { supplierId: { in: supplierScopeIds } } } } }),
       db.messages.count({ where: { conversation: { supplierId: { in: supplierScopeIds } } } }),
       /* Revenue truth: 'paid' only — consistent with /api/supplier/analytics.
          Booked-but-unpaid volume is reported separately as pendingPaymentBDT

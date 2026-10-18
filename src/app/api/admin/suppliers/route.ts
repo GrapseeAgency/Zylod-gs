@@ -71,6 +71,23 @@ export async function GET(request: NextRequest) {
               createdAt: true,
             },
           },
+          // Real KYC evidence (Task 52-c): the documents this supplier actually
+          // uploaded, so admins approve/reject with eyes on the docs — the
+          // same informed-moderation standard admin/products got in 51-b.
+          verificationDocuments: {
+            orderBy: { uploadedAt: 'desc' },
+            select: {
+              id: true,
+              documentType: true,
+              fileName: true,
+              fileUrl: true,
+              fileSize: true,
+              status: true,
+              rejectionReason: true,
+              uploadedAt: true,
+              reviewedAt: true,
+            },
+          },
           _count: { select: { products: true } },
         },
       }),
@@ -102,6 +119,17 @@ export async function GET(request: NextRequest) {
       registeredAt: s.user.createdAt,
       kycSubmittedAt: s.createdAt,
       updatedAt: s.updatedAt,
+      documents: s.verificationDocuments.map(d => ({
+        id: d.id,
+        documentType: d.documentType,
+        fileName: d.fileName,
+        fileUrl: d.fileUrl,
+        fileSize: d.fileSize,
+        status: d.status,
+        rejectionReason: d.rejectionReason,
+        uploadedAt: d.uploadedAt,
+        reviewedAt: d.reviewedAt,
+      })),
     }))
 
     return NextResponse.json({

@@ -13,22 +13,27 @@
  *   subscribed clients (inventory:updated / order:new / order:status … — the
  *   full vocabulary lives in src/lib/realtime-broadcast.ts).
  *
- * ROOM VOCABULARY (subscribe handler, Task 51-a):
+ * ROOM VOCABULARY (subscribe handler, Task 51-a; rfq added Task 52-a):
  *   order:${orderId}      — token-gated
  *   seller:${supplierId}  — token-gated (minted by GET /api/realtime/room-token)
  *   admin:${adminUserId}  — token-gated (minted by GET /api/realtime/room-token)
+ *   rfq:${rfqId}          — TOKEN-GATED (minted by GET /api/realtime/room-token;
+ *     Task 52-a: rfq buyer-owner / admin / a supplier with a quote on the RFQ).
+ *     Quotes carry supplier pricing — rfq rooms are deliberately NOT public,
+ *     unlike product rooms.
  *   product:${productId}  — PUBLIC, joins WITHOUT a token. This is deliberate
  *     parity: product stock/availability is already public data rendered on
  *     the PDP (/api/products/[id] is a public read), so the push channel
  *     carries nothing a public PDP visitor could not already see. Events on
  *     product rooms must only contain public fields (stockQuantity, delta…).
- *   Room names must match /^(order|product|seller|admin):[A-Za-z0-9_-]+$/.
+ *   Room names must match /^(order|product|seller|admin|rfq):[A-Za-z0-9_-]+$.
  *
  * TOKEN-GATED ROOM AUTH (signed-room tokens — no unauthenticated join):
  *   1. Browser asks Next.js: GET /api/delivery/orders/[orderId]/room-token
  *      (buyer-owner / admin / assigned-driver) or
- *      GET /api/realtime/room-token?room=... (seller:/admin: rooms — Task 51-a).
- *      Next authorizes and returns a 10-minute token.
+ *      GET /api/realtime/room-token?room=... (seller:/admin:/rfq: rooms —
+ *      Task 51-a; rfq added Task 52-a). Next authorizes and returns a
+ *      10-minute token.
  *   2. Client emits `subscribe` { room, token } — or the legacy
  *      { orderId, token } which maps to room `order:${orderId}` (identical
  *      behaviour to the original handler).
@@ -62,11 +67,16 @@ import { Server } from 'socket.io'
 const PORT = 3005 // public socket.io (via gateway: /?XTransformPort=3005)
 const CONTROL_PORT = 3006 // internal, Next.js API only
 
-/** Room names accepted by the subscribe handler (Task 51-a vocabulary). */
-const ROOM_PATTERN = /^(order|product|seller|admin):[A-Za-z0-9_-]+$/
+/** Room names accepted by the subscribe handler (Task 51-a; rfq: Task 52-a). */
+const ROOM_PATTERN = /^(order|product|seller|admin|rfq):[A-Za-z0-9_-]+$/
 
 /* ── Env: load the repo-root .env explicitly (bun does NOT auto-load it) ── */
-const ENV_KEYS = ['DELIVERY_ROOM_SECRET', 'AUTH_SECRET', 'DATABASE_URL'] as const
+const ENV_KEYS = [
+  'DELIVERY_ROOM_SECRET',
+  'AUTH_SECRET',
+  'DATABASE_URL',
+  'SOCKET_ALLOWED_ORIGINS', // Task 52-a — see the CORS block below
+] as const
 
 function loadRepoRootEnv(): void {
   const candidates = [fileURLToPath(new URL('../../.env', import.meta.url)), '.env']
@@ -226,6 +236,25 @@ const controlServer = createServer((req, res) => {
   res.end(JSON.stringify({ error: 'Not found' }))
 })
 
+/* ── CORS (Task 52-a): env-driven allowlist instead of a hardcoded '*' ──
+ * DEPLOY NOTE: on Railway you MUST set SOCKET_ALLOWED_ORIGINS to a comma-
+ * separated list of origins allowed to open a socket (e.g.
+ * "https://zylod.com,https://www.zylod.com"). The default stays '*' so the
+ * sandbox preview (the gateway proxies same-origin) and local dev keep
+ * working — but '*' must not ship to production. A request with no Origin
+ * header (non-browser client) is always allowed.
+ */
+const ALLOWED_ORIGINS: string[] = (process.env.SOCKET_ALLOWED_ORIGINS || '*')
+  .split(',')
+  .map((o) => o.trim())
+  .filter((o) => o.length > 0)
+
+function originOk(origin: string | undefined): boolean {
+  if (!origin) return true // non-browser client (no Origin header)
+  if (ALLOWED_ORIGINS.includes('*')) return true
+  return ALLOWED_ORIGINS.includes(origin)
+}
+
 /* ── Public socket.io server (gateway forwards /?XTransformPort=3005) ── */
 const io = new Server(
   createServer((req, res) => {
@@ -236,7 +265,13 @@ const io = new Server(
   {
     // DO NOT change the path — the gateway routes '/' on this port to socket.io
     path: '/',
-    cors: { origin: '*', methods: ['GET', 'POST'] },
+    cors: {
+      origin: (origin, callback) => {
+        if (originOk(origin)) callback(null, true)
+        else callback(new Error('Origin not allowed by SOCKET_ALLOWED_ORIGINS'))
+      },
+      methods: ['GET', 'POST'],
+    },
     pingTimeout: 60_000,
     pingInterval: 25_000,
   }
@@ -245,11 +280,12 @@ const io = new Server(
 io.on('connection', (socket) => {
   const joinedRooms = new Set<string>()
 
-  // Generalized room subscribe (Task 51-a).
+  // Generalized room subscribe (Task 51-a; rfq: Task 52-a).
   //  - { room: 'product:<id>' }            → PUBLIC join, token NOT required
   //    (parity: product stock is already public on the PDP).
-  //  - { room: 'order:|seller:|admin:<id>', token } → valid signed token bound
-  //    to that exact room (claims.r === room) is REQUIRED.
+  //  - { room: 'order:|seller:|admin:|rfq:<id>', token } → valid signed token
+  //    bound to that exact room (claims.r === room) is REQUIRED. rfq rooms
+  //    are token-gated because quotes carry supplier pricing.
   //  - Legacy { orderId, token }            → identical to the original
   //    handler: room `order:${orderId}` with token verification.
   // The per-socket subscribe rate limit is unchanged and applies to every path.

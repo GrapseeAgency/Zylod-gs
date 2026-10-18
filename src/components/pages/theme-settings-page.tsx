@@ -1,92 +1,111 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { useNavigationStore } from '@/store/navigation-store'
-import { useAuthStore } from '@/store/auth-store'
 import { useTheme } from 'next-themes'
 import {
   ArrowLeft, Sun, Moon, Laptop2, Eye, Activity,
-  Sparkles, Check, Loader2, Layers, Sliders, Shield
+  Check, Loader2, Layers, Sliders, AlertCircle
 } from 'lucide-react'
 
+type ThemeMode = 'light' | 'dark' | 'system'
+
+/**
+ * Real theme settings, persisted on the userSettings row via
+ * GET/PATCH /api/profile/theme (cookies, credentials:'include').
+ * - `configured: false` means the account still runs the platform default.
+ * - Selection PATCHes immediately — no optimistic writes: the UI applies the
+ *   choice only after the server confirms, and reverts + shows the verbatim
+ *   error when the write fails.
+ * - The old 'obsidian' option is gone: the backend only persists
+ *   system|light|dark, and a mode that cannot survive a reload is not a theme.
+ * - High-contrast / compact-density / reduce-motion have NO backend backing —
+ *   they are shown honestly as not implemented instead of fake toggles.
+ */
 export function ThemeSettingsPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
   const { setTheme: setAppliedTheme } = useTheme()
 
-  // 'obsidian' is a pure-black variant of dark — next-themes gets 'dark'
-  const applyTheme = (mode: string) => setAppliedTheme(mode === 'light' ? 'light' : mode === 'system' ? 'system' : 'dark')
+  const [themeMode, setThemeMode] = useState<ThemeMode>('system')
+  const [configured, setConfigured] = useState(false)
 
-  const [themeMode, setThemeMode] = useState<'light' | 'dark' | 'obsidian' | 'system'>('light')
-  const [highContrast, setHighContrast] = useState(false)
-  const [compactDensity, setCompactDensity] = useState(false)
-  const [reduceMotion, setReduceMotion] = useState(false)
-
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+  const [needsAuth, setNeedsAuth] = useState(false)
+  const [savingMode, setSavingMode] = useState<ThemeMode | null>(null)
+  const [saveError, setSaveError] = useState('')
+  const serverThemeRef = useRef<ThemeMode>('system')
 
   useEffect(() => {
     async function loadTheme() {
-      if (!token) return
+      setLoading(true)
+      setLoadError('')
+      setNeedsAuth(false)
       try {
-        const res = await fetch('/api/profile/theme', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        if (res.ok) {
-          const json = await res.json()
-          if (json.data) {
-            if (json.data.mode) {
-              setThemeMode(json.data.mode)
-              applyTheme(json.data.mode)
-            }
-            if (Array.isArray(json.data.accessibility)) {
-              const hc = json.data.accessibility.find((a: any) => a.id === 'high-contrast')
-              const rm = json.data.accessibility.find((a: any) => a.id === 'reduce-motion')
-              if (hc) setHighContrast(Boolean(hc.enabled))
-              if (rm) setReduceMotion(Boolean(rm.enabled))
-            }
-          }
+        const res = await fetch('/api/profile/theme', { credentials: 'include' })
+        if (res.status === 401 || res.status === 403) {
+          setNeedsAuth(true)
+          return
         }
+        const json = await res.json().catch(() => null)
+        if (!res.ok || !json?.success) {
+          setLoadError(json?.error || `Failed to load your saved theme (HTTP ${res.status}).`)
+          return
+        }
+        const mode: ThemeMode = json.data?.theme === 'dark' ? 'dark' : json.data?.theme === 'light' ? 'light' : 'system'
+        serverThemeRef.current = mode
+        setThemeMode(mode)
+        setConfigured(Boolean(json.data?.configured))
       } catch {
-        // Graceful
+        setLoadError('Network error while loading your saved theme. Check your connection and retry.')
+      } finally {
+        setLoading(false)
       }
     }
     loadTheme()
-  }, [token])
+  }, [])
 
-  const handleSave = async () => {
-    setSaving(true)
+  const selectTheme = async (mode: ThemeMode) => {
+    if (savingMode) return
+    setSaveError('')
+    setSavingMode(mode)
     try {
-      if (token) {
-        await fetch('/api/profile/theme', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            data: {
-              mode: themeMode,
-              accessibility: [
-                { id: 'high-contrast', label: 'High Contrast', enabled: highContrast },
-                { id: 'compact-density', label: 'Compact Grid Density', enabled: compactDensity },
-                { id: 'reduce-motion', label: 'Reduce Motion', enabled: reduceMotion },
-              ],
-            },
-          }),
-        })
+      const res = await fetch('/api/profile/theme', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ theme: mode }),
+      })
+      const json = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) {
+        setNeedsAuth(true)
+        setSaveError(json?.error || 'Your session ended — sign in to save your theme.')
+        return
       }
-      setSaved(true)
-      setTimeout(() => setSaved(false), 2500)
+      if (!res.ok || !json?.success) {
+        setSaveError(json?.error || `Saving your theme failed (HTTP ${res.status}).`)
+        return
+      }
+      // Server confirmed — only now apply and keep the state.
+      const confirmed: ThemeMode = json.data?.theme === 'dark' ? 'dark' : json.data?.theme === 'light' ? 'light' : 'system'
+      serverThemeRef.current = confirmed
+      setThemeMode(confirmed)
+      setConfigured(true)
+      setAppliedTheme(confirmed)
     } catch {
-      // Graceful
+      setSaveError('Network error while saving your theme. Check your connection and retry.')
     } finally {
-      setSaving(false)
+      setSavingMode(null)
     }
   }
+
+  const options: { key: ThemeMode; label: string; desc: string; icon: React.ElementType }[] = [
+    { key: 'light', label: 'Crisp White', desc: 'Standard daytime mode', icon: Sun },
+    { key: 'dark', label: 'Charcoal Dark', desc: 'Low-light comfort', icon: Moon },
+    { key: 'system', label: 'System Sync', desc: 'Matches device settings', icon: Laptop2 },
+  ]
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-10">
@@ -110,117 +129,136 @@ export function ThemeSettingsPage() {
             <div>
               <h1 className="text-base font-black">Display &amp; Appearance</h1>
               <p className="text-xs text-slate-300">
-                Personalize your workspace palette, contrast levels, and data density.
+                Your choice is saved to your account the moment you tap it.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Theme Mode Selector */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
-            Color Theme
-          </h2>
-          <div className="grid grid-cols-2 gap-2.5">
-            {[
-              { key: 'light', label: 'Crisp White', desc: 'Standard daytime mode', icon: Sun },
-              { key: 'dark', label: 'Charcoal Dark', desc: 'Low-light comfort', icon: Moon },
-              { key: 'obsidian', label: 'OLED Obsidian', desc: 'True pure black', icon: Layers },
-              { key: 'system', label: 'System Sync', desc: 'Matches device settings', icon: Laptop2 },
-            ].map(({ key, label, desc, icon: Icon }) => {
-              const isSelected = themeMode === key
-              return (
-                <button
-                  key={key}
-                  onClick={() => {
-                    setThemeMode(key as any)
-                    applyTheme(key)
-                  }}
-                  className={`p-3.5 rounded-2xl border text-left space-y-1.5 transition-all ${
-                    isSelected
-                      ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                      : 'border-slate-200 bg-white hover:bg-slate-50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <Icon className={`h-4 w-4 ${isSelected ? 'text-primary' : 'text-slate-500'}`} />
-                    {isSelected && <Check className="h-3.5 w-3.5 text-primary stroke-[3]" />}
+        {needsAuth ? (
+          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-2xs text-center space-y-3">
+            <AlertCircle className="h-8 w-8 text-amber-500 mx-auto" />
+            <h2 className="text-sm font-black">Sign in to manage your saved theme</h2>
+            <p className="text-xs text-slate-500">Theme preferences are stored on your account.</p>
+            <Button onClick={() => navigate('login')} className="h-11 px-6 rounded-xl text-xs font-bold">Sign In</Button>
+          </div>
+        ) : (
+          <>
+            {/* Real load error */}
+            {loadError && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+                <p className="text-xs font-bold text-red-600">{loadError}</p>
+              </div>
+            )}
+
+            {/* Theme Mode Selector */}
+            <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Color Theme</h2>
+                {!loading && (
+                  <span className="text-[10px] font-bold text-slate-400">
+                    {configured ? 'Customized for your account' : 'Platform default — not customized yet'}
+                  </span>
+                )}
+              </div>
+              {loading ? (
+                <div className="flex items-center justify-center py-8 text-slate-400">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span className="text-xs font-bold ml-2">Loading your saved theme…</span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2.5">
+                  {options.map(({ key, label, desc, icon: Icon }) => {
+                    const isSelected = themeMode === key
+                    const isSaving = savingMode === key
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => selectTheme(key)}
+                        disabled={savingMode !== null}
+                        className={`p-3.5 rounded-2xl border text-left space-y-1.5 transition-all disabled:opacity-70 ${
+                          isSelected
+                            ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
+                            : 'border-slate-200 bg-white hover:bg-slate-50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <Icon className={`h-4 w-4 ${isSelected ? 'text-primary' : 'text-slate-500'}`} />
+                          {isSaving ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                          ) : (
+                            isSelected && <Check className="h-3.5 w-3.5 text-primary stroke-[3]" />
+                          )}
+                        </div>
+                        <div>
+                          <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900'}`}>{label}</span>
+                          <span className="text-[10px] text-slate-400 block">{desc}</span>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+              {/* Real save error — verbatim from the server */}
+              {saveError && (
+                <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-2 flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+                  <p className="text-xs font-bold text-red-600">{saveError}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Accessibility & Density — honestly not implemented (no backend storage) */}
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
+              <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
+                <Sliders className="h-4 w-4 text-primary" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Catalog Ergonomics &amp; Motion</span>
+              </div>
+
+              <div className="divide-y divide-slate-50">
+                <div className="p-4 flex items-center justify-between opacity-60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary shrink-0">
+                      <Eye className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-900">High Contrast Mode</h3>
+                      <p className="text-[11px] text-slate-400">Not implemented yet — requires backend support</p>
+                    </div>
                   </div>
-                  <div>
-                    <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900'}`}>{label}</span>
-                    <span className="text-[10px] text-slate-400 block">{desc}</span>
+                  <Switch checked={false} disabled aria-label="High Contrast Mode (not implemented)" />
+                </div>
+
+                <div className="p-4 flex items-center justify-between opacity-60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary shrink-0">
+                      <Layers className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-900">Compact Density Grid</h3>
+                      <p className="text-[11px] text-slate-400">Not implemented yet — requires backend support</p>
+                    </div>
                   </div>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Accessibility & Density */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-          <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
-            <Sliders className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Catalog Ergonomics &amp; Motion</span>
-          </div>
-
-          <div className="divide-y divide-slate-50">
-            <div className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary shrink-0">
-                  <Eye className="h-4 w-4" />
+                  <Switch checked={false} disabled aria-label="Compact Density Grid (not implemented)" />
                 </div>
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900">High Contrast Mode</h3>
-                  <p className="text-[11px] text-slate-400">Enhance border contrast and typography weight</p>
+
+                <div className="p-4 flex items-center justify-between opacity-60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary shrink-0">
+                      <Activity className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-900">Reduce Motion</h3>
+                      <p className="text-[11px] text-slate-400">Not implemented yet — requires backend support</p>
+                    </div>
+                  </div>
+                  <Switch checked={false} disabled aria-label="Reduce Motion (not implemented)" />
                 </div>
               </div>
-              <Switch checked={highContrast} onCheckedChange={setHighContrast} className="data-[state=checked]:bg-primary" />
             </div>
-
-            <div className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary shrink-0">
-                  <Layers className="h-4 w-4" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900">Compact Density Grid</h3>
-                  <p className="text-[11px] text-slate-400">Fits more wholesale items &amp; SKU rows per screen</p>
-                </div>
-              </div>
-              <Switch checked={compactDensity} onCheckedChange={setCompactDensity} className="data-[state=checked]:bg-primary" />
-            </div>
-
-            <div className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary shrink-0">
-                  <Activity className="h-4 w-4" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900">Reduce Motion</h3>
-                  <p className="text-[11px] text-slate-400">Minimize animations and micro-transitions</p>
-                </div>
-              </div>
-              <Switch checked={reduceMotion} onCheckedChange={setReduceMotion} className="data-[state=checked]:bg-primary" />
-            </div>
-          </div>
-        </div>
-
-        {/* Save Button */}
-        <Button
-          onClick={handleSave}
-          disabled={saving}
-          className={`w-full font-bold h-12 rounded-2xl text-xs shadow-md flex items-center justify-center gap-2 ${
-            saved ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-primary hover:bg-primary/90'
-          } text-white`}
-        >
-          {saving ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : saved ? (
-            <><Check className="h-4 w-4" /> Theme Preferences Saved!</>
-          ) : (
-            'Save Theme Settings'
-          )}
-        </Button>
+          </>
+        )}
       </main>
     </div>
   )

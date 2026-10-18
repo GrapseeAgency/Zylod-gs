@@ -162,7 +162,7 @@ export function AccountSettingsPage() {
 
   // Privacy toggles
   const [profilePublic, setProfilePublic] = useState(true)
-  const [allowMessages, setAllowMessages] = useState(true)
+  const [privacyError, setPrivacyError] = useState('')
 
   // Appearance — initialized from the active next-themes value
   const { theme: activeTheme, setTheme: setAppliedTheme } = useTheme()
@@ -243,25 +243,29 @@ export function AccountSettingsPage() {
   }
 
   // ─── SAVE PRIVACY PREFERENCES ──────────────────────────────────────────────
+  // Real contract: PATCH /api/profile/privacy persists profileVisibility on
+  // the userSettings row. The old "allow messages" toggle had no backend
+  // backing (it saved nothing) and is shown honestly as not implemented.
   const savePrivacy = async () => {
     setSavingPrivacy(true)
+    setPrivacyError('')
     try {
-      if (token) {
-        await fetch('/api/profile/privacy', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({
-            data: {
-              profilePublic,
-              allowMessages,
-            },
-          }),
-        })
+      const res = await fetch('/api/profile/privacy', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ profileVisibility: profilePublic ? 'public' : 'private' }),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json?.success) {
+        setPrivacyError(json?.error || `Saving your privacy settings failed (HTTP ${res.status}).`)
+        return
       }
+      setProfilePublic(json.data?.profileVisibility !== 'private')
       setSavedPrivacy(true)
       setTimeout(() => setSavedPrivacy(false), 2500)
     } catch {
-      // Graceful
+      setPrivacyError('Network error while saving your privacy settings. Check your connection and retry.')
     } finally {
       setSavingPrivacy(false)
     }
@@ -457,14 +461,22 @@ export function AccountSettingsPage() {
                       checked={profilePublic}
                       onChange={setProfilePublic}
                     />
+                    {/* Honest limitation: no messaging-gate setting exists on the backend. */}
                     <ToggleRow
                       icon={Mail}
                       label="Direct Messaging Inquiries"
-                      sub="Allow buyers or suppliers to initiate chats"
-                      checked={allowMessages}
-                      onChange={setAllowMessages}
+                      sub="Not implemented yet — requires backend support"
+                      checked={false}
+                      onChange={() => {}}
+                      disabled
                     />
                   </div>
+
+                  {privacyError && (
+                    <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3">
+                      <p className="text-xs font-bold text-red-600">{privacyError}</p>
+                    </div>
+                  )}
 
                   <Button
                     onClick={savePrivacy}

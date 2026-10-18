@@ -1,63 +1,74 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { auditSettingsChange } from '@/lib/user-settings'
 
-const SUPPORTED_LANGUAGES = [
-  { id: 'en', name: 'English', nativeName: 'English', country: 'United States', region: 'Global' },
-  { id: 'bn', name: 'Bengali', nativeName: 'বাংলা', country: 'Bangladesh', region: 'National' },
-  { id: 'es', name: 'Spanish', nativeName: 'Español', country: 'Spain', region: 'Europe / LATAM' },
-  { id: 'fr', name: 'French', nativeName: 'Français', country: 'France', region: 'Europe / Africa' },
-  { id: 'ar', name: 'Arabic', nativeName: 'العربية', country: 'United Arab Emirates', region: 'Middle East' },
-]
+/**
+ * GET   /api/profile/language — the signed-in user's persisted interface language.
+ *       Unset → { language: 'bn', configured: false } (default, no row created).
+ * PATCH /api/profile/language — Zod-validated upsert of { language }.
+ *       Only 'bn' | 'en' are backed by the platform today. Body schema is
+ *       .strict() — unknown fields are rejected with the verbatim Zod message.
+ *       Every change is audit-logged.
+ */
+const languageSchema = z.object({ language: z.enum(['bn', 'en']) }).strict()
 
 export async function GET(request: NextRequest) {
   const auth = await authenticateRequest(request)
-  let selectedId = 'en'
-
-  if (auth.authenticated && auth.user) {
-    try {
-      const prefs = await db.notificationPreferences.findUnique({
-        where: { userId: auth.user.id },
-      })
-      if (prefs && (prefs as any).language) {
-        selectedId = (prefs as any).language
-      }
-    } catch {}
-  }
-
-  return NextResponse.json({
-    success: true,
-    data: {
-      selectedId,
-      languages: SUPPORTED_LANGUAGES,
-    },
-  })
-}
-
-export async function PUT(request: NextRequest) {
-  const auth = await authenticateRequest(request)
   if (!auth.authenticated || !auth.user) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
   }
+
+  const rl = checkRateLimit(request, 'profile-language', 30, 60 * 1000)
+  if (!rl.ok) return rateLimitResponse(rl)
 
   try {
-    const body = await request.json()
-    const selectedId = body.selectedId || 'en'
-
-    await db.notificationPreferences.upsert({
+    const settings = await db.userSettings.findUnique({
       where: { userId: auth.user.id },
-      create: { userId: auth.user.id },
-      update: {},
+      select: { language: true },
     })
-
     return NextResponse.json({
       success: true,
-      data: {
-        selectedId,
-        languages: SUPPORTED_LANGUAGES,
-      },
+      data: { language: settings?.language ?? 'bn', configured: Boolean(settings) },
     })
-  } catch {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+  } catch (error) {
+    console.error('Profile language GET error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  const auth = await authenticateRequest(request)
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
+  }
+
+  const rl = checkRateLimit(request, 'profile-language', 30, 60 * 1000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
+  try {
+    const parsed = languageSchema.safeParse(await request.json().catch(() => null))
+    if (!parsed.success) {
+      const first = parsed.error.issues[0]
+      return NextResponse.json(
+        { error: first ? `${first.path.join('.') || 'body'}: ${first.message}` : 'Invalid request body' },
+        { status: 400 }
+      )
+    }
+
+    const row = await db.userSettings.upsert({
+      where: { userId: auth.user.id },
+      create: { userId: auth.user.id, language: parsed.data.language },
+      update: { language: parsed.data.language },
+    })
+
+    await auditSettingsChange(auth.user.id, row.id, ['language'], { language: parsed.data.language })
+
+    return NextResponse.json({ success: true, data: { language: row.language, configured: true } })
+  } catch (error) {
+    console.error('Profile language PATCH error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
