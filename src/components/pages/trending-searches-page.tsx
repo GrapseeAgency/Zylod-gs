@@ -38,8 +38,6 @@ export function TrendingSearchesPage() {
   const [tab, setTab] = useState<'products' | 'categories'>('products')
   const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month'>('week')
 
-  useEffect(() => { fetchTrending() }, [timeRange])
-
   async function fetchTrending() {
     setLoadingProducts(true)
     setLoadingCategories(true)
@@ -54,6 +52,9 @@ export function TrendingSearchesPage() {
     setLoadingProducts(false)
     setLoadingCategories(false)
   }
+
+  useEffect(() => { fetchTrending() }, [timeRange])
+
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

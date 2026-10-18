@@ -28,8 +28,6 @@ export function SavedSearchesPage() {
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => { fetchSaved() }, [])
-
   async function fetchSaved() {
     setLoading(true)
     try {
@@ -41,6 +39,9 @@ export function SavedSearchesPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => { fetchSaved() }, [])
+
 
   async function deleteSearch(id: string) {
     setDeleting(id)

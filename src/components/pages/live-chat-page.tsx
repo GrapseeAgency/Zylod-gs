@@ -32,16 +32,14 @@ export function LiveChatPage() {
   const [sending, setSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    initChatSession()
-  }, [])
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  function scrollToBottom() {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  async function loadMessages(sessionId: string) {
+    try {
+      const res = await fetch(`/api/support/chat/sessions/${sessionId}/messages`)
+      if (res.ok) {
+        const json = await res.json()
+        setMessages(json.data || [])
+      }
+    } catch {}
   }
 
   async function initChatSession() {
@@ -75,15 +73,20 @@ export function LiveChatPage() {
     setLoading(false)
   }
 
-  async function loadMessages(sessionId: string) {
-    try {
-      const res = await fetch(`/api/support/chat/sessions/${sessionId}/messages`)
-      if (res.ok) {
-        const json = await res.json()
-        setMessages(json.data || [])
-      }
-    } catch {}
+  useEffect(() => {
+    initChatSession()
+  }, [])
+
+  function scrollToBottom() {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+
+
 
   async function handleSendMessage(e: React.FormEvent) {
     e.preventDefault()

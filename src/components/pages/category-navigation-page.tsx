@@ -36,8 +36,6 @@ export function CategoryNavigationPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => { fetchCategories() }, [])
-
   async function fetchCategories() {
     setLoading(true)
     try {
@@ -50,6 +48,9 @@ export function CategoryNavigationPage() {
     setLoading(false)
   }
 
+  useEffect(() => { fetchCategories() }, [])
+
+  
   const filtered = query.trim()
     ? categories.filter(c => c.name.toLowerCase().includes(query.toLowerCase()))
     : categories

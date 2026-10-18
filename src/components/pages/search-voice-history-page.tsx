@@ -17,10 +17,6 @@ export function SearchVoiceHistoryPage() {
   const [items, setItems] = useState<VoiceHistoryItem[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchHistory()
-  }, [])
-
   async function fetchHistory() {
     setLoading(true)
     try {
@@ -32,6 +28,11 @@ export function SearchVoiceHistoryPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    fetchHistory()
+  }, [])
+
 
   async function deleteVoiceItem(term: string) {
     setItems(prev => prev.filter(i => i.query !== term))

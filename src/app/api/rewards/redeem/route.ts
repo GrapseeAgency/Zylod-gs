@@ -52,8 +52,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let createdCoupon: any = null
+    let createdCoupon: { id: string; code?: string; discountValue?: number } | null = null
 
     if (rewardType === 'voucher') {
       const code = `POINTS-${cashValueBDT}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`

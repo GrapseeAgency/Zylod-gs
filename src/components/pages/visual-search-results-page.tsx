@@ -26,11 +26,6 @@ export function VisualSearchResultsPage() {
   const [products, setProducts] = useState<VisualProduct[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (imageUrl || searchQuery) fetchResults()
-    else setLoading(false)
-  }, [imageUrl, searchQuery])
-
   async function fetchResults() {
     setLoading(true)
     try {
@@ -45,6 +40,12 @@ export function VisualSearchResultsPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (imageUrl || searchQuery) fetchResults()
+    else setLoading(false)
+  }, [imageUrl, searchQuery])
+
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

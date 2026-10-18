@@ -52,8 +52,6 @@ export function SearchHistoryPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'text' | 'voice' | 'image' | 'barcode'>('all')
 
-  useEffect(() => { fetchHistory() }, [])
-
   async function fetchHistory() {
     setLoading(true)
     try {
@@ -65,6 +63,9 @@ export function SearchHistoryPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => { fetchHistory() }, [])
+
 
   async function deleteItem(query: string) {
     setHistory(prev => prev.filter(h => h.query !== query))

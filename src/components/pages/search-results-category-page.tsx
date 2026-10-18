@@ -32,10 +32,6 @@ export function SearchResultsCategoryPage() {
   const [products, setProducts] = useState<ProductItem[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchData()
-  }, [categorySlug])
-
   async function fetchData() {
     setLoading(true)
     try {
@@ -54,6 +50,11 @@ export function SearchResultsCategoryPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [categorySlug])
+
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

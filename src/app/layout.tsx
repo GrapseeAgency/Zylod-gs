@@ -26,6 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* App Router: the root layout <head> IS the document head — the
+            no-page-custom-font _document.js guidance does not apply. This
+            Material Symbols icon font is global by design. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
           rel="stylesheet"

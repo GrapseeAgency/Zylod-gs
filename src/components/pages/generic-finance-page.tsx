@@ -239,7 +239,7 @@ function TopUpPanel({ token, formatPrice, onDone }: { token: string | null; form
       window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`)
       onDone()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [])
 
   // bKash goes direct; the rest + cards go through the SSLCommerz checkout

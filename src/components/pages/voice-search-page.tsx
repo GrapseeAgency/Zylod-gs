@@ -31,16 +31,6 @@ export function VoiceSearchPage() {
     'Minimum order 50 units',
   ]
 
-  useEffect(() => {
-    const SpeechRecognitionAPI = (typeof window !== 'undefined' && ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition))
-    if (!SpeechRecognitionAPI && !hasNativeVoiceRecognition()) {
-      setState('unsupported')
-      return
-    }
-
-    fetchVoiceHistory()
-  }, [])
-
   async function fetchVoiceHistory() {
     setLoadingHistory(true)
     try {
@@ -52,6 +42,17 @@ export function VoiceSearchPage() {
     } catch {}
     setLoadingHistory(false)
   }
+
+  useEffect(() => {
+    const SpeechRecognitionAPI = (typeof window !== 'undefined' && ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition))
+    if (!SpeechRecognitionAPI && !hasNativeVoiceRecognition()) {
+      setState('unsupported')
+      return
+    }
+
+    fetchVoiceHistory()
+  }, [])
+
 
   function startListening() {
     // Native Android shell — the WebView does not implement the Web Speech API.

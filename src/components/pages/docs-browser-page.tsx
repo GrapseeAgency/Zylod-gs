@@ -47,16 +47,6 @@ export function DocsBrowserPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [feedbackSent, setFeedbackSent] = useState(false)
 
-  useEffect(() => {
-    fetchTableOfContents()
-  }, [])
-
-  useEffect(() => {
-    if (activeSlug) {
-      fetchArticle(activeSlug)
-    }
-  }, [activeSlug])
-
   async function fetchTableOfContents() {
     setLoading(true)
     try {
@@ -81,6 +71,18 @@ export function DocsBrowserPage() {
     } catch {}
     setArticleLoading(false)
   }
+
+  useEffect(() => {
+    fetchTableOfContents()
+  }, [])
+
+  useEffect(() => {
+    if (activeSlug) {
+      fetchArticle(activeSlug)
+    }
+  }, [activeSlug])
+
+
 
   async function handleFeedback(helpful: boolean) {
     if (feedbackSent || !activeArticle) return

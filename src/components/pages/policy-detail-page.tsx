@@ -30,10 +30,6 @@ export function PolicyDetailPage() {
   const [language, setLanguage] = useState<'en' | 'bn'>('en')
   const [feedbackSent, setFeedbackSent] = useState(false)
 
-  useEffect(() => {
-    fetchArticle()
-  }, [slug])
-
   async function fetchArticle() {
     setLoading(true)
     try {
@@ -45,6 +41,11 @@ export function PolicyDetailPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    fetchArticle()
+  }, [slug])
+
 
   async function handleFeedback(helpful: boolean) {
     if (feedbackSent || !article) return

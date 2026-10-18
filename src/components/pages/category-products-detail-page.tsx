@@ -41,8 +41,6 @@ export function CategoryProductsDetailPage() {
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 12
 
-  useEffect(() => { fetchProducts() }, [categorySlug, sortBy, page])
-
   async function fetchProducts() {
     setLoading(true)
     try {
@@ -70,6 +68,9 @@ export function CategoryProductsDetailPage() {
     setLoading(false)
   }
 
+  useEffect(() => { fetchProducts() }, [categorySlug, sortBy, page])
+
+  
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
   return (

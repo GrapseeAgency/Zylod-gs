@@ -133,7 +133,7 @@ export function GenericDealsPage({ pageId }: GenericDealsPageProps) {
                 >
                   <div className="relative aspect-square bg-muted overflow-hidden">
                     {product.thumbnailUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-3xl">🔥</div>

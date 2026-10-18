@@ -52,19 +52,6 @@ export function SearchSuggestionsPage() {
   const inputRef = useRef<HTMLInputElement>(null)
   const debouncedQuery = useDebounce(query, 200)
 
-  useEffect(() => {
-    inputRef.current?.focus()
-    fetchHistory()
-  }, [])
-
-  useEffect(() => {
-    if (debouncedQuery.trim().length > 0) {
-      fetchSuggestions(debouncedQuery)
-    } else {
-      setSuggestions(null)
-    }
-  }, [debouncedQuery])
-
   async function fetchHistory() {
     try {
       const res = await fetch('/api/search/history')
@@ -74,6 +61,11 @@ export function SearchSuggestionsPage() {
       }
     } catch {}
   }
+
+  useEffect(() => {
+    inputRef.current?.focus()
+    fetchHistory()
+  }, [])
 
   async function fetchSuggestions(q: string) {
     setLoading(true)
@@ -86,6 +78,16 @@ export function SearchSuggestionsPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (debouncedQuery.trim().length > 0) {
+      fetchSuggestions(debouncedQuery)
+    } else {
+      setSuggestions(null)
+    }
+  }, [debouncedQuery])
+
+
 
   function handleSearch(q: string) {
     if (!q.trim()) return

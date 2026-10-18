@@ -42,10 +42,6 @@ export function FeedbackSuggestionsPage() {
     { value: 'general_feedback', label: 'General Experience' },
   ]
 
-  useEffect(() => {
-    fetchFeedback()
-  }, [typeFilter])
-
   async function fetchFeedback() {
     setLoading(true)
     try {
@@ -58,6 +54,11 @@ export function FeedbackSuggestionsPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    fetchFeedback()
+  }, [typeFilter])
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

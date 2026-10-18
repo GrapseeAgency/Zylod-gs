@@ -29,8 +29,6 @@ export function CategoryTreePage() {
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<Category | null>(null)
 
-  useEffect(() => { fetchTree() }, [])
-
   async function fetchTree() {
     setLoading(true)
     try {
@@ -43,6 +41,9 @@ export function CategoryTreePage() {
     setLoading(false)
   }
 
+  useEffect(() => { fetchTree() }, [])
+
+  
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="sticky top-0 z-20 bg-white border-b border-gray-100 flex items-center gap-3 px-4 md:px-6 py-3">

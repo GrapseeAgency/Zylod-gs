@@ -23,8 +23,6 @@ export function PopularSearchesPage() {
   const [activeTab, setActiveTab] = useState<'trending' | 'most-searched' | 'category'>('trending')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
-  useEffect(() => { fetchPopular() }, [])
-
   async function fetchPopular() {
     setLoading(true)
     try {
@@ -36,6 +34,9 @@ export function PopularSearchesPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => { fetchPopular() }, [])
+
 
   const categories = Array.from(new Set(searches.map(s => s.category).filter(Boolean))) as string[]
 

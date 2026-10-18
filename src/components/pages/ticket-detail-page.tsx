@@ -44,14 +44,6 @@ export function TicketDetailPage() {
   const [rated, setRated] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    if (ticketId) {
-      fetchTicket()
-    } else {
-      setLoading(false)
-    }
-  }, [ticketId])
-
   async function fetchTicket() {
     setLoading(true)
     try {
@@ -67,6 +59,15 @@ export function TicketDetailPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (ticketId) {
+      fetchTicket()
+    } else {
+      setLoading(false)
+    }
+  }, [ticketId])
+
 
   async function handleSendReply(e: React.FormEvent) {
     e.preventDefault()

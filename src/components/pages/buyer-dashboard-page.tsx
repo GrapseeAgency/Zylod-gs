@@ -343,7 +343,7 @@ export default function BuyerDashboardPage() {
                   onClick={() => navigate('product-detail', { productId: item.productId })}
                 >
                   {item.thumbnailUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
+                     
                     <img src={item.thumbnailUrl} alt={item.name} className="h-10 w-10 rounded-lg object-cover shrink-0" />
                   ) : (
                     <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center shrink-0"><Heart className="h-5 w-5 text-primary" /></div>

@@ -27,8 +27,6 @@ export function SearchResultsSupplierPage() {
   const [total, setTotal] = useState(0)
   const [sortBy, setSortBy] = useState('ratingAvg')
 
-  useEffect(() => { fetchSuppliers() }, [query, sortBy])
-
   async function fetchSuppliers() {
     setLoading(true)
     try {
@@ -42,6 +40,9 @@ export function SearchResultsSupplierPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => { fetchSuppliers() }, [query, sortBy])
+
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

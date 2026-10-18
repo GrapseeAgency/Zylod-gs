@@ -47,11 +47,10 @@ export function CartPage() {
     setSelectedIds(allSelected ? new Set() : new Set(items.map((i) => i.id)))
   }
 
-  /* ─── Selected items drive the summary ─── */
-  const selectedItems = useMemo(
-    () => items.filter((i) => isSelected(i.id)),
-    [items, selectedIds]
-  )
+  /* ─── Selected items drive the summary ───
+     No manual useMemo: the React Compiler memoizes this automatically, and
+     isSelected's closure (selectedIds + items) is exactly the dependency set. */
+  const selectedItems = items.filter((i) => isSelected(i.id))
 
   /* Tier-accurate line totals come straight from the store */
   const subtotal = useMemo(

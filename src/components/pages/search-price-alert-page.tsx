@@ -28,8 +28,6 @@ export function SearchPriceAlertPage() {
   const [newPrice, setNewPrice] = useState('')
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => { fetchAlerts() }, [])
-
   async function fetchAlerts() {
     setLoading(true)
     try {
@@ -41,6 +39,9 @@ export function SearchPriceAlertPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => { fetchAlerts() }, [])
+
 
   async function saveAlert() {
     if (!newQuery.trim() || !newPrice) return

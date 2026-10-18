@@ -126,7 +126,7 @@ export function useApi<T>(url: string | null, deps: unknown[] = [], opts: { poll
     } finally {
       if (mountedRef.current) setLoading(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [url, ...deps])
 
   useEffect(() => {
@@ -137,7 +137,7 @@ export function useApi<T>(url: string | null, deps: unknown[] = [], opts: { poll
       return () => { mountedRef.current = false; clearInterval(id) }
     }
     return () => { mountedRef.current = false }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [run])
 
   return { data, loading, error, refresh: () => run() }

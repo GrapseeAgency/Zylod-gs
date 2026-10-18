@@ -38,8 +38,6 @@ export function SearchFiltersPage() {
     { label: 'FDA Approved', value: 'fda' },
   ]
 
-  useEffect(() => { fetchProducts() }, [filters])
-
   async function fetchProducts() {
     setLoading(true)
     const params = new URLSearchParams()
@@ -58,6 +56,9 @@ export function SearchFiltersPage() {
     } catch {}
     setLoading(false)
   }
+
+  useEffect(() => { fetchProducts() }, [filters])
+
 
   function applyFilter(key: keyof ActiveFilters, value: string) {
     setFilters(f => ({ ...f, [key]: value }))

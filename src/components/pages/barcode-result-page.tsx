@@ -29,11 +29,6 @@ export function BarcodeResultPage() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
 
-  useEffect(() => {
-    if (code) fetchProduct()
-    else { setLoading(false); setNotFound(true) }
-  }, [code])
-
   async function fetchProduct() {
     setLoading(true)
     try {
@@ -46,6 +41,11 @@ export function BarcodeResultPage() {
     } catch { setNotFound(true) }
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (code) fetchProduct()
+    else { setLoading(false); setNotFound(true) }
+  }, [code])
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
