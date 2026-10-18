@@ -2144,3 +2144,66 @@ Stage Summary:
 - KG/DECIMAL IS REAL ON EVERY SIDE: seller defines kg products with fractional MOQ/stock/tiers/variants → buyer orders 2.5/5.5 kg with tier pricing → order records decimals → seller live-edits stock by 0.5 kg → RFQs quote per-kg → admin sees it all. One policy note banked: MOQ applies to each incoming cart add (canonical rule documented in cart/bulk), merged lines still stock-checked.
 - NEXT (one-by-one per owner): bulk-order-form migration to the repaired bulk endpoint; Railway env checklist (SOCKET_ALLOWED_ORIGINS, ADMIN_BOOTSTRAP_SECRET); bundle-unit depth (bundleSize semantics); seller video upload depth at product launch; quote→order conversion.
 - REMAINING FAKE/INCOMPLETE: none found this round in the kg slice; decimal displays in some list cards use toLocaleString (renders 2.5 correctly) — spot-checked.
+
+---
+Task ID: 55-a
+Agent: full-stack-developer (session died mid-verify with transport error; code landed; orchestrator reconstructed + completed ALL verification)
+Task: Migrate bulk-order-form-page to the real POST /api/cart/bulk contract.
+
+Work Log:
+- Code landed on disk before the session died (411 lines changed in bulk-order-form-page.tsx + cart-store.ts helper). Orchestrator verified personally.
+- The page now searches the real catalog (product rows with unit/MOQ/tier hints, e.g. "৳83/kg · MOQ 2.5 kg — Save 5% at 25+ kg"), builds multi-product lines with decimal quantities (kg-aware copy "Decimals allowed for kg lines"), and submits to POST /api/cart/bulk with credentials. Server's verbatim per-item outcomes are rendered ("1 added, 0 merged, 0 rejected") plus the real cart state ("Cart now: 1 line · ৳1,575"), verbatim errors, honest auth gate, min-h-11 targets.
+
+Stage Summary:
+- The bulk door now goes through the repaired Task 51 endpoint end-to-end from THIS page too; no local/fake submit path remains. UI E2E: added 3.5 bundles → server message verbatim → DB cartItems {quantity: 3.5} → ৳1,575 = 3.5 × 450 exact.
+
+---
+Task ID: 55-b
+Agent: full-stack-developer (session died mid-verify with transport error; code landed; orchestrator reconstructed + completed ALL verification)
+Task: Accepted-quote → real order conversion (RFQ chain → orders chain) + RFQ product link.
+
+Work Log:
+- Code landed on disk before the session died. Orchestrator read every line and verified personally.
+- NEW POST /api/rfq/[id]/convert-order: authenticateRequest 401-first → 20/min 'rfq-buyer-convert' → owner-only no-leak 404 → Zod strict {shippingAddressId?} (validated against the buyer's addresses like orders POST) → guards: awarded-only 409, exactly-one-accepted-quote 409, convertedOrderId-null 409 (`already been converted to order <num>`), live-product 409 for freeform RFQs (honest limitation, documented), stock 409 with REAL {available}. ONE transaction: order (unpaid) + ONE subOrder (supplierId = quote.supplierId, server truth) + ONE orderItem (quantity = roundQty(rfq.quantity ?? Σ items ?? 1), unitPrice = THE NEGOTIATED quote.pricePerUnit — pricing rule deliberately NOT re-applied, NO MOQ re-check: the deal was negotiated) + guarded stock decrement/soldCount increment + rfq.convertedOrderId/Number stamped in the same tx + auditLogs 'rfq_converted_to_order' with real before/after. After commit: fire-and-forget 'rfq:converted' to rfq:<id> AND 'order:new' to seller:<supplierId> byte-compatible with orders POST's sellerFeed.
+- src/app/api/rfq/route.ts (additive): optional productId — Zod type check then REAL active+approved existence check (truthful 400s); GET now returns productId + conversion state for the UI.
+- rfq-list-page: 'Convert to order' button on awarded+accepted+unconverted RFQs → confirm dialog states the negotiated-price semantics verbatim → POST → toast + refetch; converted RFQs show 'Order placed · ORD-…' chip. quote-request-page: optional marketplace-product link (search/select) feeding productId.
+- Schema (orchestrator, pre-dispatch): rfqRequests.productId String? (+ products? onDelete SetNull + index), convertedOrderId String?, convertedOrderNumber String? (+ index).
+
+Stage Summary:
+- The RFQ chain now ENDS IN A REAL ORDER: file (optionally about a product) → quote → accept → convert, with the negotiated price recorded server-side, stock reserved atomically, one-order-per-quote idempotency, full audit + live broadcasts. Seller sees it via the existing orders surface (order:new).
+
+---
+Task ID: 55-c
+Agent: full-stack-developer (session died mid-verify with transport error; code landed; orchestrator reconstructed + completed ALL verification)
+Task: Bundle-unit storefront depth (bundleSize kom-dam display) + real seller video upload at product launch.
+
+Work Log:
+- Code landed on disk before the session died. Orchestrator read every line and verified personally.
+- product-contract.ts: PRODUCT_UNITS + 'bundle'; bundleSizeSchema (positive ≤100000, roundQty 2dp, null = plain units); payload wiring through supplier product routes.
+- Seller forms (add + edit + product-form-fields): unit dropdown gains Bundle; optional 'Bundle size (units per bundle)' decimal input; Task 54 kg steps preserved.
+- PDP (desktop + mobile): '1 bundle = N pcs' chip; tier-aware effective per-unit kom-dam line under the price; Product Videos section rendering real <video controls> rows ordered by sortOrder.
+- NEW POST /api/upload/video: requireUserType(['supplier']) 401-first → 10/min → FormData 'video' + optional title ≤140 → mimetype allowlist video/mp4|webm|quicktime else 415 (received type spelled out) → zero-byte 400 → size cap env VIDEO_MAX_MB (default 50) else 413 with REAL bytes → STREAMED to public/uploads/videos/<server-generated>.<ext> (client filename NEVER trusted). NEW POST/DELETE /api/supplier/products/[id]/videos(/[videoId]): supplier-profile 403, product ownership no-leak 404, Zod strict (videoUrl must be /uploads/videos/ or https://), cap 5 → 409, auditLogs attach/detach, DELETE unlinks local file with honest fileUnlinked (ENOENT tolerated, row deletion is truth).
+- ORCHESTRATOR FIXES during verification: PDP effective-price label said "≈ ৳9 / bundle" — the effective price is per BASE unit, corrected to "/ pc" (and chip "1 bundle = 50 pcs") in BOTH desktop and mobile PDP.
+
+Stage Summary:
+- Bundles and videos are real on every side: seller defines a bundle-of-50 with factory video → public PDP shows the bundle chip, tier-aware per-pc kom-dam line and a PLAYING video → cap/ownership/size guards all truthful. Uploads live in gitignored public/uploads (Railway note: ephemeral FS — swap to object storage when deploying if persistence is needed).
+
+---
+Task ID: 55
+Agent: orchestrator (Z.ai Code)
+Task: WHOLESALE THREE-SLICE ROUND — owner directive ("continue kor na jeta bolchi setao kor and aro kichu complete kor mane shob kichu"): bulk-form migration, quote→order conversion, bundle units + video upload — each complete end-to-end with proof.
+
+Work Log:
+- Proof-first opening: git log clean at 1a5ddad, worktree clean, DB 138×0, live 401s on shipped routes — all shown verbatim before starting.
+- Schema pre-dispatch (all migration-free, DB empty): products.bundleSize Float?, rfqRequests.productId/convertedOrderId/convertedOrderNumber + relations/indexes; unit comment +bundle. db:push OK, client regenerated, 138×0 preserved.
+- Dispatched 3 parallel agents (55-a/b/c) — ALL THREE sessions died with transport errors ("context deadline exceeded"), but ALL code landed. Orchestrator reconstructed per banked protocol: read every new/changed file (all routes contract-perfect: 401-first, rate limits, Zod strict, no-leak 404s, transactions, audit, broadcasts), then personally verified: pre-created shared temp admin to avoid first-admin window races.
+- tsc --noEmit (6GB heap): 0 errors whole project. eslint: 0/0 on all 18 touched files (whole repo stays clean). Stray agent file tsconfig.task55.json found + deleted.
+- E2E (/home/z/.qa/t55-e2e.mjs, real HTTP + real registrations, FINAL RUN 42/42 ✅): 401 matrix 5/5 (convert/upload/attach/bulk/rfq-bogus-product all 401 verbatim before validation) → admin approves via PATCH /api/admin/products {productId,action:'approve'} → bundle product (bundleSize 50 @450, tier 10+@425) + kg product public → REAL ffmpeg mp4 (4,586B) upload → 201 /uploads/videos/ → text/plain → 415 → attach ×5 → 6th 409 cap verbatim → buyer attach → 403 (no supplier profile) → DELETE → fileUnlinked true + file REALLY gone from disk → public GET exposes bundleSize 50 + 4 videos → BULK: 2.5+3+15 kg same product → per-item outcomes [added, merged→5.5, merged→20.5, bogus rejected w/ reason] → ONE cart line 20.5kg @ tier 239.5 = ৳4,909.75 exact (totalItems = line count semantics confirmed from route source, not guessed) → CONVERT CHAIN: RFQ(productId, 25.5kg) → quote 232.5/kg (server total 5,928.75) → convert-before-award 409 → accept → convert 201 ORD-… totalAmount 5928.75 → DB order/subOrder(order pending)/orderItem {25.5, 232.5, 5928.75} NEGOTIATED price → product stock 174.5, soldCount 25.5 → rfq stamped convertedOrderId/Number → auditLogs row → re-convert 409 verbatim w/ order number → freeform convert 409 honest limitation → oversell convert 409 {available:174.5} → bogus productId RFQ 400 truthful. Script iterations were honest: run-1 failures were MY script's wrong expectations (approve path, block-scoped buyerTok, results key at top level, cartItems has no unitPrice column — pricing lives in the rule), each fixed against route source, never against wishes.
+- LIVE BROWSER QA (gateway :81, desktop 1280×800 + mobile 375×812) caught TWO REAL BUGS + verified everything: (1) client useRealtimeRoom ROOM_PATTERN lacked 'rfq:' → EVERY rfq live event (new-quote/quote-accepted/converted) was silently dropped in ALL UIs since Task 52 — socket layer was proven with raw scripts while the UI hook was dead; console warning exposed it; one-line pattern fix; verified 0 warnings + clean console after fresh reload. (2) PDP kom-dam label "/ bundle" → "/ pc" (both PDPs). Verified in UI: PDP bundle chip + video PLAYING (real uploaded mp4, scrubber live) + tier-aware "≈ ৳8.50 / pc — you pay per bundle of 50"; rfq-list expand → 'Convert to order' → dialog (negotiated-price semantics verbatim) → 'Place order' → 'Order placed · ORD-MVEG0CJHLYRS' chip + toast + DB {orders:1, orderItems:1, rfqConverted:1}; bulk-order-form catalog search → Add → qty 3.5 → 'Add 1 line to cart' → verbatim "1 added, 0 merged, 0 rejected" + "Cart now: 1 line · ৳1,575" + DB {quantity:3.5}; zero console errors on every page both viewports (mobile first-visit onboarding carousel is expected UX).
+- CLEANUP: pattern sweep (t55%/t55b% users cascade + product children + categories) + orphan sweep → whole DB 0 rows, uploaded test files unlinked, temp admin deleted (first-admin window re-opens for the owner), PRAGMA wal_checkpoint(TRUNCATE) via node:sqlite.
+- PUSHED: 1a5ddad..1121847 on GitHub (owner-provided PAT, never stored in tracked files). 22 files, +1670/−177, 4 new route files.
+
+Stage Summary:
+- THREE complete slices shipped and mutually connected: bulk-buying door → real cart; RFQ deal → REAL order at the negotiated price; bundles + videos sellable and rendered beautifully. Plus two live-path bugs fixed that no API test would have caught (client rfq room pattern; per-unit label).
+- NEXT (one-by-one): Railway env checklist (SOCKET_ALLOWED_ORIGINS, ADMIN_BOOTSTRAP_SECRET, VIDEO_MAX_MB); quote→order→payment next leg (paymentStatus unpaid → verification flow); seller video step polish (thumbnail capture); admin-suppliers media verdict; bundle cart-line labels already done — verify bundle products in wishlist/buy-now paths for consistency.
+- REMAINING FAKE/INCOMPLETE: none found in these slices; external-URL videos can't play if the host is fictional (expected — honest media, not a bug); uploads are ephemeral on Railway until object storage is wired.
