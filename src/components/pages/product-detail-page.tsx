@@ -136,6 +136,7 @@ interface ProductData {
   description: string | null
   brand: string | null
   unit: string
+  bundleSize: number | null
   basePrice: number
   moq: number
   maxOrderQty: number | null
@@ -167,6 +168,24 @@ function getStockStatus(stock: number, maxStock: number) {
   return { label: 'In Stock', color: 'text-green-600', bg: 'bg-green-50', barColor: 'bg-green-500', urgency: false }
 }
 
+/* ─── Task 55-c bundle display helpers ───
+   Quantities are unit-bearing decimals — format with toLocaleString, never
+   parseInt the decimals away (e.g. 2.5 stays 2.5). */
+function formatQty(n: number): string {
+  return n.toLocaleString('en-US', { maximumFractionDigits: 2 })
+}
+
+/**
+ * Money with visible decimals: formatPrice rounds BDT to whole takas, which
+ * would turn a real ≈৳8.5/pc into ৳9. Integer amounts keep formatPrice;
+ * fractional amounts show 2dp with the currency symbol.
+ */
+function formatMoneyPrecise(amountBDT: number, formatPrice: (n: number) => string, currencySymbol: string): string {
+  const rounded = Math.round(amountBDT * 100) / 100
+  if (Number.isInteger(rounded)) return formatPrice(rounded)
+  return `${currencySymbol}${rounded.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
 /* ─── Main Component ─── */
 
 /* ─── Mobile redirect wrapper ─── */
@@ -192,7 +211,7 @@ export function ProductDetailPage() {
 function DesktopProductDetailPage() {
   const { navigate, pageParams } = useNavigationStore()
   const { addItem } = useCartStore()
-  const { formatPrice, currentCurrency } = useCurrencyStore()
+  const { formatPrice, getCurrencyInfo } = useCurrencyStore()
   const { toast } = useToast()
 
   // State
@@ -396,6 +415,13 @@ function DesktopProductDetailPage() {
   const basePrice = product?.basePrice || 0
   const savingsPercent = basePrice > 0 ? Math.round(((basePrice - applicablePrice) / basePrice) * 100) : 0
   const unit = product?.unit || 'pcs'
+  // Task 55-c bundle semantics: bundleSize > 1 ⇒ the price is PER BUNDLE and
+  // the effective per-unit kom-dam price is displayed next to it. Pricing
+  // math itself does NOT change — display depth only.
+  const bundleSize = product?.bundleSize ?? null
+  const isBundle = bundleSize != null && bundleSize > 1
+  const priceUnitLabel = isBundle ? 'bundle' : unit
+  const effectivePerUnit = isBundle && bundleSize ? applicablePrice / bundleSize : applicablePrice
   const maxStock = product?.stockQuantity || 0
   const stockStatus = getStockStatus(currentVariantStock, maxStock)
   const deliveryDays = currentVariantStock === 0 ? 21 : currentVariantStock < maxStock * 0.2 ? 10 : 5
@@ -425,6 +451,8 @@ function DesktopProductDetailPage() {
       // supplierProfiles has no slug column — honest empty, never invented.
       supplierSlug: '',
       unit: product.unit,
+      // Task 55-c: bundle display depth for the cart line label.
+      bundleSize: product.bundleSize ?? null,
       priceTiers: product.priceTiers?.map(t => ({
         minQty: t.minQty,
         maxQty: t.maxQty,
@@ -658,6 +686,7 @@ function DesktopProductDetailPage() {
                     <video
                       controls
                       preload="metadata"
+                      playsInline
                       poster={video.thumbnailUrl || undefined}
                       src={video.videoUrl}
                       className="w-full aspect-video bg-muted rounded-xl object-cover"
@@ -694,6 +723,13 @@ function DesktopProductDetailPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="text-xs">{productCategory}</Badge>
             {productBrand && <Badge variant="outline" className="text-xs">{productBrand}</Badge>}
+            {/* Task 55-c: wholesale bundle chip — 1 purchasable bundle = N base units */}
+            {isBundle && (
+              <Badge variant="outline" className="text-xs border-primary/40 text-primary bg-primary/5">
+                <Package className="h-3 w-3 mr-1" />
+                1 bundle = {formatQty(bundleSize ?? 0)} {unit === 'bundle' ? 'pcs' : unit}
+              </Badge>
+            )}
             <div className="flex items-center gap-1 text-sm">
               <Star className="h-4 w-4 fill-[primary] text-[primary]" />
               <span className="font-medium">{productRating.toFixed(1)}</span>
@@ -776,7 +812,9 @@ function DesktopProductDetailPage() {
           {product?.priceTiers && product.priceTiers.length > 0 && (
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-2 px-4 pt-4">
-                <CardTitle className="text-sm font-semibold">Price Tiers (per {unit})</CardTitle>
+                <CardTitle className="text-sm font-semibold">
+                  Price Tiers (per {priceUnitLabel})
+                </CardTitle>
                 <CardDescription className="text-xs">Buy more, save more — wholesale pricing</CardDescription>
               </CardHeader>
               <CardContent className="px-4 pb-4">
@@ -788,10 +826,10 @@ function DesktopProductDetailPage() {
                         isActive ? 'bg-[primary]/10 border border-[primary]/30 font-medium' : 'bg-gray-50'
                       }`}>
                         <span className={isActive ? 'text-[primary]' : 'text-muted-foreground'}>
-                          {tier.minQty} - {tier.maxQty ?? '∞'} {unit}
+                          {formatQty(tier.minQty)} - {tier.maxQty === null ? '∞' : formatQty(tier.maxQty)} {isBundle ? 'bundles' : unit}
                         </span>
                         <span className={`font-semibold ${isActive ? 'text-[primary]' : 'text-foreground'}`}>
-                          {formatPrice(tier.pricePerUnit)}/{unit}
+                          {formatPrice(tier.pricePerUnit)}/{priceUnitLabel}
                         </span>
                       </div>
                     )
@@ -805,7 +843,7 @@ function DesktopProductDetailPage() {
           <div className="p-4 rounded-xl bg-gradient-to-r from-[primary]/5 to-[primary]/10 border border-[primary]/20">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Your price per {unit}</p>
+                <p className="text-xs text-muted-foreground mb-1">Your price per {priceUnitLabel}</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-[primary]">{formatPrice(applicablePrice)}</span>
                   {savingsPercent > 0 && (
@@ -814,9 +852,17 @@ function DesktopProductDetailPage() {
                     </Badge>
                   )}
                 </div>
+                {/* Task 55-c: effective per-unit kom-dam line (display depth only).
+                    The effective price is per BASE unit inside the bundle, so the
+                    label must be the base unit — for unit 'bundle' that is 'pc'. */}
+                {isBundle && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    ≈ {formatMoneyPrecise(effectivePerUnit, formatPrice, getCurrencyInfo().symbol)} / {unit === 'bundle' ? 'pc' : unit} — you pay per bundle of {formatQty(bundleSize ?? 0)}
+                  </p>
+                )}
               </div>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground mb-1">Total ({quantity} {unit})</p>
+                <p className="text-xs text-muted-foreground mb-1">Total ({quantity} {priceUnitLabel}{quantity === 1 ? '' : 's'})</p>
                 <p className="text-xl font-bold text-foreground">{formatPrice(totalPrice)}</p>
               </div>
             </div>

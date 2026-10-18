@@ -197,6 +197,8 @@ export async function PATCH(
             brand: payload.brand || null,
             sku: payload.sku || null,
             unit: payload.unit,
+            // Task 55-c: bundle semantics (null = plain single units).
+            bundleSize: payload.bundleSize ?? null,
             moq: payload.moq,
             maxOrderQty: payload.maxOrderQty ?? null,
             basePrice: payload.basePrice,

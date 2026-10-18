@@ -77,3 +77,6 @@ checkout-payment-audit.md
 # stale, so it must never be tracked (docs/PROVENANCE.md deployment chain).
 src/generated/bundle-identity.ts
 .zscripts/dev.pid
+
+# User-uploaded media (ephemeral runtime storage)
+public/uploads/

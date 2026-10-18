@@ -20,6 +20,8 @@ import {
   ProductFormFields,
   emptyTier,
   flattenApiCategories,
+  parseBundleSize,
+  uploadAndAttachVideo,
   type ApiCategoryRow,
   type ProductFormState,
   type TierRow,
@@ -37,6 +39,7 @@ interface ApiProduct {
   brand: string | null;
   sku: string | null;
   unit: string;
+  bundleSize: number | null;
   moq: number;
   maxOrderQty: number | null;
   basePrice: number;
@@ -45,7 +48,7 @@ interface ApiProduct {
   isActive: boolean;
   isApproved: boolean;
   images: Array<{ imageUrl: string; sortOrder: number }>;
-  videos: Array<{ videoUrl: string; title: string | null; sortOrder: number }>;
+  videos: Array<{ id: string; videoUrl: string; title: string | null; sortOrder: number }>;
   variants: Array<{
     variantName: string;
     variantValue: string;
@@ -81,6 +84,7 @@ export function SellerEditProductPage() {
     sku: '',
     description: '',
     unit: 'pcs',
+    bundleSize: '',
     moq: '',
     maxOrderQty: '',
     basePrice: '',
@@ -98,6 +102,12 @@ export function SellerEditProductPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [serverIssues, setServerIssues] = useState<Record<string, string[]>>({});
+  /**
+   * Task 55-c honest partial success: the product update SUCCEEDED but a
+   * video upload/attach failed afterwards — surfaced verbatim, never faked.
+   */
+  const [videoAttachErrors, setVideoAttachErrors] = useState<string[] | null>(null);
+  const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
 
   const fetchCategories = useCallback(async () => {
     setCategoriesLoading(true);
@@ -153,6 +163,7 @@ export function SellerEditProductPage() {
         sku: p.sku ?? '',
         description: p.description ?? '',
         unit: (p.unit as ProductFormState['unit']) || 'pcs',
+        bundleSize: p.bundleSize == null ? '' : String(p.bundleSize),
         moq: String(p.moq ?? ''),
         maxOrderQty: p.maxOrderQty == null ? '' : String(p.maxOrderQty),
         basePrice: String(p.basePrice ?? ''),
@@ -187,7 +198,13 @@ export function SellerEditProductPage() {
         (p.videos ?? [])
           .slice()
           .sort((a, b) => a.sortOrder - b.sortOrder)
-          .map((v) => ({ url: v.videoUrl, title: v.title ?? '', fileName: 'video', status: 'ready' as const }))
+          .map((v) => ({
+            url: v.videoUrl,
+            title: v.title ?? '',
+            fileName: 'video',
+            status: 'ready' as const,
+            remoteId: v.id,
+          }))
       );
     } catch {
       setFetchError('Network error while loading the product. Check your connection and retry.');
@@ -207,6 +224,7 @@ export function SellerEditProductPage() {
   const buildPayload = () => {
     const moq = optionalQty(form.moq);
     const maxOrderQty = optionalQty(form.maxOrderQty);
+    const bundleSize = parseBundleSize(form.bundleSize);
     const readyImages = images.filter((img) => img.status === 'ready');
     return {
       name: form.name.trim(),
@@ -215,6 +233,7 @@ export function SellerEditProductPage() {
       ...(form.brand.trim() ? { brand: form.brand.trim() } : {}),
       ...(form.sku.trim() ? { sku: form.sku.trim() } : {}),
       unit: form.unit,
+      bundleSize,
       moq,
       ...(maxOrderQty !== null ? { maxOrderQty } : { maxOrderQty: null }),
       basePrice: form.basePrice.trim() === '' ? NaN : Number(form.basePrice),
@@ -223,8 +242,10 @@ export function SellerEditProductPage() {
       isCustomizable: form.isCustomizable,
       thumbnailUrl: readyImages.length > 0 ? readyImages[0].url : null,
       images: readyImages.map((img, index) => ({ imageUrl: img.url, sortOrder: index })),
+      // Existing video rows survive the PATCH full-replace via the payload;
+      // picked-file rows attach via /api/upload/video right AFTER the PATCH.
       videos: videos
-        .filter((v) => v.status === 'ready')
+        .filter((v) => v.url !== '' && v.status === 'ready')
         .map((v) => ({ url: v.url, ...(v.title.trim() ? { title: v.title.trim() } : {}) })),
       variants: variants
         .filter((v) => v.variantName.trim() && v.variantValue.trim())
@@ -246,14 +267,76 @@ export function SellerEditProductPage() {
     };
   };
 
+  /** Task 55-c: upload+attach every picked video file to this product. */
+  const attachPendingVideos = async (pid: string): Promise<string[]> => {
+    const pending = videos.filter((v) => v.file && v.status !== 'error');
+    const failures: string[] = [];
+    for (let i = 0; i < pending.length; i++) {
+      const v = pending[i];
+      const result = await uploadAndAttachVideo(pid, v.file as File, v.title, i, token);
+      if (!result.ok && result.error) failures.push(`${v.fileName}: ${result.error}`);
+    }
+    return failures;
+  };
+
+  /** Task 55-c: real DELETE for hydrated rows; pending (never-uploaded) rows just drop locally. */
+  const handleVideoRowDelete = async (video: MediaVideo, index: number) => {
+    if (!video.remoteId || !productId) {
+      setVideos((prev) => prev.filter((_, i) => i !== index));
+      return;
+    }
+    if (deletingVideoId) return;
+    setDeletingVideoId(video.remoteId);
+    setError('');
+    try {
+      const res = await fetch(`/api/supplier/products/${productId}/videos/${video.remoteId}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        credentials: 'include',
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        const message = json?.error || `Video removal failed (HTTP ${res.status})`;
+        setError(message);
+        toast.error(message);
+        return;
+      }
+      toast.success('Video removed from the product');
+      // Re-hydrate from the server (row deleted + file unlinked there) but
+      // keep any picked-but-not-yet-attached files in the form.
+      const pendingFiles = videos.filter((v) => v.file);
+      await fetchProduct();
+      if (pendingFiles.length > 0) {
+        setVideos((prev) => [...prev.filter((v) => v.file), ...pendingFiles]);
+      }
+    } catch {
+      const message = 'Network error while removing the video. Check your connection and retry.';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setDeletingVideoId(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading || !productId) return;
 
-    const uploadingCount =
-      images.filter((i) => i.status === 'uploading').length + videos.filter((v) => v.status === 'uploading').length;
+    const uploadingCount = images.filter((i) => i.status === 'uploading').length;
     if (uploadingCount > 0) {
-      toast.error('Wait for all uploads to finish before saving.');
+      toast.error('Wait for all image uploads to finish before saving.');
+      return;
+    }
+
+    const bundleSizeNumber = Number(form.bundleSize);
+    if (
+      form.unit !== 'pcs' &&
+      form.bundleSize.trim() !== '' &&
+      (!Number.isFinite(bundleSizeNumber) || bundleSizeNumber <= 1)
+    ) {
+      const message = 'Bundle size must be greater than 1 (units per bundle) — or leave it empty for single units.';
+      setError(message);
+      toast.error(message);
       return;
     }
 
@@ -272,6 +355,7 @@ export function SellerEditProductPage() {
     setLoading(true);
     setError('');
     setServerIssues({});
+    setVideoAttachErrors(null);
     try {
       const res = await fetch(`/api/supplier/products/${productId}`, {
         method: 'PATCH',
@@ -290,6 +374,17 @@ export function SellerEditProductPage() {
         toast.error(message);
         return; // never navigate on failure
       }
+
+      // Task 55-c two-step video attach — AFTER the PATCH succeeded. A
+      // failure here never un-updates the product: surface it verbatim.
+      const failures = await attachPendingVideos(productId);
+      if (failures.length > 0) {
+        setVideoAttachErrors(failures);
+        toast.success('Product updated');
+        toast.error('Video upload/attach failed — the product update was saved.');
+        return; // stay on the page with the honest partial-success panel
+      }
+
       toast.success(json.message || 'Product updated');
       setModeration((prev) => (prev ? { ...prev, isActive: form.isActive } : prev));
       goBack();
@@ -398,6 +493,22 @@ export function SellerEditProductPage() {
           </div>
         )}
 
+        {videoAttachErrors && (
+          <div className="space-y-2" role="alert">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-sm text-emerald-800">
+              ✓ Product updated and saved.
+            </div>
+            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-700">
+              <p className="font-medium">Video upload/attach failed — the product update WAS saved:</p>
+              <ul className="list-disc ml-5 mt-1 space-y-0.5">
+                {videoAttachErrors.map((f, i) => (
+                  <li key={i}>{f}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <ProductFormFields
             form={form}
@@ -417,6 +528,7 @@ export function SellerEditProductPage() {
             categoriesLoading={categoriesLoading}
             showIsActive
             serverIssues={serverIssues}
+            onVideoRowDelete={handleVideoRowDelete}
           />
 
           <button

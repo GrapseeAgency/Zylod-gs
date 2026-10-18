@@ -15,7 +15,12 @@
  *   products.images            → productImages    { imageUrl, sortOrder }
  *   products.videos            → productVideos    { videoUrl, title?, sortOrder }
  *   products.variants          → productVariants  { variantName, variantValue, sku?, stockQuantity, priceOverride? }
- *   products.unit              → EXACTLY 'pcs' | 'dozen' | 'kg' | 'carton' | 'box' | 'set'
+ *   products.unit              → EXACTLY 'pcs' | 'dozen' | 'kg' | 'carton' | 'box' | 'set' | 'bundle'
+ *   products.bundleSize        → Float? — how many base units ONE purchasable bundle contains
+ *                                 (e.g. bundleSize 50 + unit pcs = "bundle of 50 pcs"; per-unit
+ *                                 kom-dam price = price / bundleSize). Null/undefined = plain
+ *                                 single units. DISPLAY DEPTH ONLY — the price stays PER BUNDLE;
+ *                                 tiers/moq/stock/quantity keep their existing semantics.
  *   products.currency          → 'BDT' (schema default; wholesale marketplace is BDT-only)
  *
  * Tier rules (enforced here and mirrored server-side):
@@ -25,8 +30,8 @@
  */
 import { z } from 'zod'
 
-/** The exact unit values stored in products.unit (schema comment, line ~341). */
-export const PRODUCT_UNITS = ['pcs', 'dozen', 'kg', 'carton', 'box', 'set'] as const
+/** The exact unit values stored in products.unit (schema comment). */
+export const PRODUCT_UNITS = ['pcs', 'dozen', 'kg', 'carton', 'box', 'set', 'bundle'] as const
 
 export type ProductUnit = (typeof PRODUCT_UNITS)[number]
 
@@ -38,7 +43,21 @@ export const PRODUCT_UNIT_LABELS: Record<ProductUnit, string> = {
   carton: 'Carton',
   box: 'Box',
   set: 'Set',
+  bundle: 'Bundle (units per bundle)',
 }
+
+/**
+ * Bundle size (Task 55-c): optional positive decimal ≤ 100,000, normalized to
+ * 2 decimal places via roundQty so float drift never reaches the DB. When the
+ * seller leaves it empty the payload carries null — plain single units.
+ */
+export const bundleSizeSchema = z
+  .number()
+  .positive('Bundle size must be greater than 0')
+  .max(100000, 'Bundle size cannot exceed 100,000')
+  .nullable()
+  .optional()
+  .transform((v) => (v == null ? null : roundQty(v)))
 
 export const priceTierSchema = z.object({
   minQty: z.number().positive('Minimum quantity must be greater than 0'),
@@ -83,7 +102,8 @@ export const productPayloadSchema = z
       .max(10000, 'Description must be 10,000 characters or fewer'),
     brand: z.string().trim().max(100).optional(),
     sku: z.string().trim().max(100).optional(),
-    unit: z.enum(PRODUCT_UNITS, { message: 'Unit must be one of: pcs, dozen, kg, carton, box, set' }),
+    unit: z.enum(PRODUCT_UNITS, { message: 'Unit must be one of: pcs, dozen, kg, carton, box, set, bundle' }),
+    bundleSize: bundleSizeSchema,
     moq: z.number().positive('MOQ must be greater than 0'),
     maxOrderQty: z.number().positive().nullable().optional(),
     basePrice: z.number().positive('Base price must be greater than 0'),

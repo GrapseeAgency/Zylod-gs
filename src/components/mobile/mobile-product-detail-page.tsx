@@ -30,10 +30,22 @@ function MaterialIcon({ name, className = '', size = 18, fill = false }: { name:
   )
 }
 
+/* ─── Task 55-c bundle display helpers (decimal-safe, never parseInt) ─── */
+function formatQty(n: number): string {
+  return n.toLocaleString('en-US', { maximumFractionDigits: 2 })
+}
+
+/** Money with visible decimals: formatPrice rounds BDT to whole takas — a real ≈৳8.5/pc must not become ৳9. */
+function formatMoneyPrecise(amountBDT: number, formatPrice: (n: number) => string, currencySymbol: string): string {
+  const rounded = Math.round(amountBDT * 100) / 100
+  if (Number.isInteger(rounded)) return formatPrice(rounded)
+  return `${currencySymbol}${rounded.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
 /* ─── Types matching GET /api/products/[id] ─── */
 interface ApiProduct {
   id: string; name: string; slug: string; description: string | null; brand: string | null
-  unit: string; basePrice: number; moq: number; maxOrderQty: number | null
+  unit: string; bundleSize: number | null; basePrice: number; moq: number; maxOrderQty: number | null
   stockQuantity: number; thumbnailUrl: string | null; ratingAvg: number; reviewCount: number
   soldCount: number; isCustomizable: boolean; createdAt: string
   category: { id: string; name: string; slug: string; parentId: string | null }
@@ -41,6 +53,7 @@ interface ApiProduct {
   images: { id: string; imageUrl: string; sortOrder: number }[]
   priceTiers: { id: string; minQty: number; maxQty: number | null; pricePerUnit: number }[]
   variants: { id: string; variantName: string; variantValue: string; stockQuantity: number; priceOverride: number | null }[]
+  videos: { id: string; videoUrl: string; thumbnailUrl: string | null; title: string | null; sortOrder: number }[]
   reviews: {
     id: string; rating: number; comment: string | null; images: string[]; verifiedPurchase: boolean; createdAt: string
     buyer: { id: string; buyerProfile: { fullName: string | null } | null }
@@ -56,7 +69,7 @@ type TabId = 'details' | 'specifications' | 'shipping' | 'reviews'
 export function MobileProductDetailPage() {
   const { pageParams, goBack, navigate } = useNavigationStore()
   const { addItem, getItemCount } = useCartStore()
-  const { formatPrice } = useCurrencyStore()
+  const { formatPrice, getCurrencyInfo } = useCurrencyStore()
   const { toggleItem, isInWishlist } = useWishlistStore()
 
   const [activeTab, setActiveTab] = useState<TabId>('details')
@@ -113,6 +126,13 @@ export function MobileProductDetailPage() {
   const isWishlisted = product ? isInWishlist(product.id) : false
   const cartItemCount = getItemCount()
 
+  // Task 55-c bundle semantics (display depth only — price stays per bundle).
+  const bundleSize = product?.bundleSize ?? null
+  const isBundle = bundleSize != null && bundleSize > 1
+  const priceUnitLabel = isBundle ? 'bundle' : (product?.unit || 'pcs')
+  const currentPrice = activeTier?.pricePerUnit || product?.basePrice || 0
+  const effectivePerUnit = isBundle && bundleSize ? currentPrice / bundleSize : currentPrice
+
   const handleAddToCart = useCallback(() => {
     if (!product) return
     // Was this product already in the cart?
@@ -135,6 +155,7 @@ export function MobileProductDetailPage() {
       supplierName: product.supplier.companyName,
       supplierSlug: product.supplier.companyName.toLowerCase().replace(/\s+/g, '-'),
       unit: product.unit,
+      bundleSize: product.bundleSize ?? null,
       priceTiers: product.priceTiers?.map(t => ({ minQty: t.minQty, maxQty: t.maxQty, pricePerUnit: t.pricePerUnit })) || [],
     }
     addItem(item)
@@ -292,6 +313,24 @@ export function MobileProductDetailPage() {
           <span className="text-xs text-muted-foreground">{product.soldCount >= 1000 ? `${(product.soldCount / 1000).toFixed(1)}k` : product.soldCount} sold</span>
         </div>
 
+        {/* Task 55-c: main price + bundle semantics (the mobile page previously had no main price row) */}
+        <div className="mt-3">
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            <span className="text-xl font-bold text-[#E53935]">{formatPrice(currentPrice)}</span>
+            <span className="text-xs text-muted-foreground">/ {priceUnitLabel}</span>
+            {isBundle && (
+              <span className="text-[10px] font-medium text-[#E53935] bg-[#E53935]/5 border border-[#E53935]/30 rounded px-1.5 py-0.5">
+                1 bundle = {formatQty(bundleSize ?? 0)} {product.unit === 'bundle' ? 'pcs' : product.unit}
+              </span>
+            )}
+          </div>
+          {isBundle && (
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              ≈ {formatMoneyPrecise(effectivePerUnit, formatPrice, getCurrencyInfo().symbol)} / {product.unit === 'bundle' ? 'pc' : product.unit} — you pay per bundle of {formatQty(bundleSize ?? 0)}
+            </p>
+          )}
+        </div>
+
         {/* Tiered Pricing */}
         {product.priceTiers && product.priceTiers.length > 0 && (
           <div className="mt-4">
@@ -301,7 +340,7 @@ export function MobileProductDetailPage() {
                 <thead>
                   <tr className="bg-gray-50 text-muted-foreground">
                     <th className="text-left px-3 py-2 font-medium">Quantity</th>
-                    <th className="text-right px-3 py-2 font-medium">Price / {product.unit}</th>
+                    <th className="text-right px-3 py-2 font-medium">Price / {priceUnitLabel}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -313,7 +352,7 @@ export function MobileProductDetailPage() {
                     return (
                       <tr key={i} className={`border-t border-gray-100 ${isActive ? 'bg-[#E53935]/5' : 'bg-white'}`}>
                         <td className="px-3 py-2.5 text-foreground">
-                          {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} {product.unit}
+                          {formatQty(tier.minQty)}{tier.maxQty === null ? '+' : `-${formatQty(tier.maxQty)}`} {isBundle ? 'bundles' : product.unit}
                         </td>
                         <td className="px-3 py-2.5 text-right">
                           <span className="font-semibold text-foreground">{formatPrice(tier.pricePerUnit)}</span>
@@ -328,6 +367,29 @@ export function MobileProductDetailPage() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Product Videos (only when the supplier uploaded real ones) ─── */}
+        {product.videos && product.videos.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Product Videos</h3>
+            <div className="space-y-3">
+              {product.videos.map((video) => (
+                <div key={video.id}>
+                  <video
+                    controls
+                    preload="metadata"
+                    playsInline
+                    poster={video.thumbnailUrl || undefined}
+                    src={video.videoUrl}
+                    className="w-full aspect-video bg-gray-100 rounded-lg"
+                    aria-label={video.title || `Product video for ${product.name}`}
+                  />
+                  {video.title && <p className="text-[11px] text-muted-foreground mt-1">{video.title}</p>}
+                </div>
+              ))}
             </div>
           </div>
         )}

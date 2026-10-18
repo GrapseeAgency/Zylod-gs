@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { roundQty } from '@/lib/product-contract'
@@ -57,6 +58,11 @@ export async function GET(request: NextRequest) {
       deliveryCity: r.deliveryCity,
       deadline: r.deadline,
       status: r.status,
+      // Task 55-b (additive): product link + conversion state so the buyer UI
+      // can show the 'Order placed' chip and gate 'Convert to order'.
+      productId: r.productId,
+      convertedOrderId: r.convertedOrderId,
+      convertedOrderNumber: r.convertedOrderNumber,
       items: r.items,
       quotes: r.quotes,
       quoteCount: r._count.quotes,
@@ -77,9 +83,18 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/rfq — create a new RFQ request
- * Body: { title, description, categorySlug?, quantity?, unit?, targetPrice?, deliveryCity?, deadline?, items? }
+ * Body: { title, description, categorySlug?, productId?, quantity?, unit?, targetPrice?, deliveryCity?, deadline?, items? }
  * buyerId is taken from auth token.
+ *
+ * Task 55-b (ADDITIVE): optional productId links the RFQ to a marketplace
+ * product. It must reference an ACTIVE + APPROVED product (the same live
+ * visibility rule the public catalog and the order path use) — anything else
+ * is a 400 with a truthful message, because a linked-but-dead product would
+ * make the eventual quote→order conversion impossible. When absent, the RFQ
+ * behaves exactly as before (freeform request; such RFQs are honestly NOT
+ * convertible to orders later — there is no SKU to buy).
  */
+const productIdSchema = z.string().min(1).optional().nullable()
 export async function POST(request: NextRequest) {
   try {
     const auth = await authenticateRequest(request)
@@ -93,6 +108,27 @@ export async function POST(request: NextRequest) {
 
     if (!title || !description) {
       return NextResponse.json({ error: 'title and description are required' }, { status: 400 })
+    }
+
+    // Optional product link (Task 55-b) — Zod type check, then a REAL
+    // active+approved existence check. Truthful 400s; nothing else changes.
+    const parsedProductId = productIdSchema.safeParse(body.productId)
+    if (!parsedProductId.success) {
+      return NextResponse.json({ error: 'productId must be a non-empty string' }, { status: 400 })
+    }
+    let safeProductId: string | null = null
+    if (parsedProductId.data) {
+      const linked = await db.products.findUnique({ where: { id: parsedProductId.data } })
+      if (!linked) {
+        return NextResponse.json({ error: 'The linked product does not exist' }, { status: 400 })
+      }
+      if (!linked.isActive || !linked.isApproved) {
+        return NextResponse.json(
+          { error: 'The linked product is not an active, approved marketplace product' },
+          { status: 400 }
+        )
+      }
+      safeProductId = linked.id
     }
 
     // Unit-bearing decimals (kg: 12.5 kg inquiry is valid) — 2 dp normalization.
@@ -116,6 +152,7 @@ export async function POST(request: NextRequest) {
         title,
         description,
         categorySlug: categorySlug || null,
+        productId: safeProductId,
         quantity: safeQuantity,
         unit: unit || 'pcs',
         targetPrice: targetPrice || null,

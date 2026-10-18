@@ -25,6 +25,8 @@ import {
   EMPTY_PRODUCT_FORM,
   emptyTier,
   flattenApiCategories,
+  parseBundleSize,
+  uploadAndAttachVideo,
   type ApiCategoryRow,
   type ProductFormState,
   type TierRow,
@@ -56,6 +58,12 @@ export function SellerAddProductPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [serverIssues, setServerIssues] = useState<Record<string, string[]>>({});
+  /**
+   * Task 55-c honest partial success: the product row EXISTS but one or more
+   * video uploads/attaches failed after creation. The page must say exactly
+   * that — never navigate away as if everything succeeded.
+   */
+  const [createdWithVideoErrors, setCreatedWithVideoErrors] = useState<{ productId: string; failures: string[] } | null>(null);
 
   const fetchCategories = useCallback(async () => {
     setCategoriesLoading(true);
@@ -87,6 +95,7 @@ export function SellerAddProductPage() {
   const buildPayload = () => {
     const moq = optionalQty(form.moq);
     const maxOrderQty = optionalQty(form.maxOrderQty);
+    const bundleSize = parseBundleSize(form.bundleSize);
     const stockQuantity = form.stockQuantity.trim() === '' ? NaN : Number(form.stockQuantity);
     const readyImages = images.filter((img) => img.status === 'ready');
 
@@ -97,6 +106,7 @@ export function SellerAddProductPage() {
       ...(form.brand.trim() ? { brand: form.brand.trim() } : {}),
       ...(form.sku.trim() ? { sku: form.sku.trim() } : {}),
       unit: form.unit,
+      bundleSize,
       moq,
       ...(maxOrderQty !== null ? { maxOrderQty } : { maxOrderQty: null }),
       basePrice: form.basePrice.trim() === '' ? NaN : Number(form.basePrice),
@@ -105,8 +115,10 @@ export function SellerAddProductPage() {
       isCustomizable: form.isCustomizable,
       thumbnailUrl: readyImages.length > 0 ? readyImages[0].url : null,
       images: readyImages.map((img, index) => ({ imageUrl: img.url, sortOrder: index })),
+      // Task 55-c: only rows that already carry an uploaded URL go in the
+      // payload; picked-file rows attach via /api/upload/video after create.
       videos: videos
-        .filter((v) => v.status === 'ready')
+        .filter((v) => v.url !== '' && v.status === 'ready')
         .map((v) => ({ url: v.url, ...(v.title.trim() ? { title: v.title.trim() } : {}) })),
       variants: variants
         .filter((v) => v.variantName.trim() && v.variantValue.trim())
@@ -127,14 +139,37 @@ export function SellerAddProductPage() {
     };
   };
 
+  /** Task 55-c: upload+attach every picked video file to the just-created product. */
+  const attachPendingVideos = async (productId: string): Promise<string[]> => {
+    const pending = videos.filter((v) => v.file && v.status !== 'error');
+    const failures: string[] = [];
+    for (let i = 0; i < pending.length; i++) {
+      const v = pending[i];
+      const result = await uploadAndAttachVideo(productId, v.file as File, v.title, i, token);
+      if (!result.ok && result.error) failures.push(`${v.fileName}: ${result.error}`);
+    }
+    return failures;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
 
-    const uploadingCount =
-      images.filter((i) => i.status === 'uploading').length + videos.filter((v) => v.status === 'uploading').length;
+    const uploadingCount = images.filter((i) => i.status === 'uploading').length;
     if (uploadingCount > 0) {
-      toast.error('Wait for all uploads to finish before publishing.');
+      toast.error('Wait for all image uploads to finish before publishing.');
+      return;
+    }
+
+    const bundleSizeNumber = Number(form.bundleSize);
+    if (
+      form.unit !== 'pcs' &&
+      form.bundleSize.trim() !== '' &&
+      (!Number.isFinite(bundleSizeNumber) || bundleSizeNumber <= 1)
+    ) {
+      const message = 'Bundle size must be greater than 1 (units per bundle) — or leave it empty for single units.';
+      setError(message);
+      toast.error(message);
       return;
     }
 
@@ -154,6 +189,7 @@ export function SellerAddProductPage() {
     setLoading(true);
     setError('');
     setServerIssues({});
+    setCreatedWithVideoErrors(null);
     try {
       const res = await fetch('/api/supplier/products', {
         method: 'POST',
@@ -173,6 +209,18 @@ export function SellerAddProductPage() {
         toast.error(message);
         return; // never navigate on failure
       }
+      const productId: string = json.data?.id ?? '';
+
+      // Task 55-c two-step video attach — AFTER the product exists. A failure
+      // here never un-creates the product: surface exactly what happened.
+      const failures = productId ? await attachPendingVideos(productId) : [];
+      if (failures.length > 0) {
+        setCreatedWithVideoErrors({ productId, failures });
+        toast.success('Product created');
+        toast.error('Video upload/attach failed — the product still exists.');
+        return; // stay on the page with the honest partial-success panel
+      }
+
       toast.success(json.message || 'Product created');
       navigate('product-listings-manager');
     } catch {
@@ -218,6 +266,30 @@ export function SellerAddProductPage() {
                 </button>
               )}
             </div>
+          </div>
+        )}
+
+        {createdWithVideoErrors && (
+          <div className="space-y-2" role="alert">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-sm text-emerald-800">
+              ✓ Product created — it is pending admin review before buyers can see it.
+            </div>
+            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-700">
+              <p className="font-medium">Video upload/attach failed — the product STILL EXISTS:</p>
+              <ul className="list-disc ml-5 mt-1 space-y-0.5">
+                {createdWithVideoErrors.failures.map((f, i) => (
+                  <li key={i}>{f}</li>
+                ))}
+              </ul>
+              <p className="mt-1">You can attach the video from the edit page of this listing.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('product-listings-manager')}
+              className="min-h-11 px-4 bg-primary text-white rounded-lg text-sm font-medium"
+            >
+              Go to my listings
+            </button>
           </div>
         )}
 

@@ -94,6 +94,19 @@ export function CartPage() {
     })
   }
 
+  /* Task 55-c: bundle line label ONLY — '× N bundles (N×B pcs)' when the line
+     carries bundleSize > 1. Display depth only: totals/pricing unchanged. */
+  const formatLineQty = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 2 })
+  const lineQtyLabel = (item: CartItemData) => {
+    const b = item.bundleSize ?? null
+    if (b != null && b > 1) {
+      const baseUnit = item.unit === 'bundle' ? 'pcs' : item.unit || 'units'
+      const totalBase = Math.round(item.quantity * b * 100) / 100
+      return `× ${formatLineQty(item.quantity)} bundle${item.quantity === 1 ? '' : 's'} (${formatLineQty(totalBase)} ${baseUnit})`
+    }
+    return `${item.quantity} ${item.unit || 'units'}`
+  }
+
   /* ─── Empty state ─── */
   if (items.length === 0) {
     return (
@@ -245,7 +258,7 @@ export function CartPage() {
                         {/* Line total — tier priced */}
                         <div className="text-right">
                           <div className="text-sm font-black">{formatPrice(item.totalPrice)}</div>
-                          <div className="text-[10px] text-muted-foreground">{item.quantity} {item.unit || 'units'}</div>
+                          <div className="text-[10px] text-muted-foreground">{lineQtyLabel(item)}</div>
                         </div>
                       </div>
 

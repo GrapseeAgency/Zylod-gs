@@ -5,19 +5,21 @@
  *
  * Wired to the REAL RFQ system:
  *   - POST /api/rfq  (src/app/api/rfq/route.ts)
- *     Body: { title*, description*, categorySlug?, quantity?, unit?,
+ *     Body: { title*, description*, categorySlug?, productId?, quantity?, unit?,
  *             targetPrice?, deliveryCity?, deadline?, items?: [
  *               { productName*, specifications?, quantity*, unit?, targetPrice? } ] }
  *     201 → { success: true, data: rfq } (rfq.id is the real request id)
  *     401 → { error: 'Authentication required' }
- *     400 → { error: 'title and description are required' }
+ *     400 → { error: 'title and description are required' | productId problems }
  *   - product context: GET /api/products/[id]
- *   - product picker:  GET /api/products?search=&limit=
+ *   - product picker:  GET /api/products?search=&limit=  (public list/search)
  *
- * The RFQ API does NOT take a productId — product context is carried as a real
- * items[] entry (productName/quantity/unit/targetPrice) plus prefilled fields.
- * The productId arrives as a navigation-store param (product-detail-page.tsx
- * navigates here with { productId }).
+ * Task 55-b: an attached product's REAL id is now sent as `productId` — the
+ * RFQ becomes linked to a live marketplace product, which is exactly what
+ * lets an accepted quote later be converted into a real order (convert-order
+ * route). Freeform RFQs (no product) stay fully supported — they honestly
+ * cannot be converted later. When no product is attached the flow is byte-
+ * identical to before.
  */
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
@@ -317,7 +319,11 @@ export function QuoteRequestPage() {
     if (form.deliveryCity.trim()) body.deliveryCity = form.deliveryCity.trim()
     if (form.deadline) body.deadline = form.deadline
     if (product) {
-      // The RFQ API carries product context as a real line item.
+      // Task 55-b: LINK the RFQ to the marketplace product — this is what makes
+      // an accepted quote convertible into a real order later. The id is the
+      // real catalog id (param or picker), never invented.
+      body.productId = product.id
+      // Product context also stays a real line item (existing behaviour kept).
       body.items = [
         {
           productName: product.name,
@@ -486,10 +492,11 @@ export function QuoteRequestPage() {
           <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Package className="h-4 w-4 text-primary" />
-              <p className="text-xs font-bold text-slate-800">Attach a product (optional)</p>
+              <p className="text-xs font-bold text-slate-800">Link a marketplace product (optional)</p>
             </div>
             <p className="text-[11px] text-slate-500">
-              Pick something from the catalog to quote against — or skip it and describe what you need below.
+              Pick something from the catalog to quote against — a linked product lets you convert an
+              accepted quote straight into a real order. Or skip it and describe what you need below.
             </p>
             {!pickerOpen ? (
               <Button variant="outline" className="w-full min-h-11 text-xs font-bold rounded-xl border-slate-200" onClick={openPicker}>

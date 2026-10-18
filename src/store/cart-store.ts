@@ -24,6 +24,8 @@ export interface CartItemData {
   basePrice?: number | null
   /** productVariants.priceOverride for the selected variant — when set, the variant is priced individually and tiers do NOT apply (canonical rule step 1). */
   variantPriceOverride?: number | null
+  /** products.bundleSize — Task 55-c bundle display depth ONLY (the price stays per bundle; pricing math is unchanged). Optional: legacy lines predate it. */
+  bundleSize?: number | null
 }
 
 interface CartState {
@@ -249,6 +251,8 @@ export const useCartStore = create<CartState>()(
                   // Canonical-rule inputs for honest local re-pricing on qty change.
                   basePrice: typeof item.product?.basePrice === 'number' ? item.product.basePrice : null,
                   variantPriceOverride: typeof item.variant?.priceOverride === 'number' ? item.variant.priceOverride : null,
+                  // Task 55-c: bundle display depth (null = plain single units).
+                  bundleSize: typeof item.product?.bundleSize === 'number' ? item.product.bundleSize : null,
                   supplierId: item.supplierId || s.supplierId,
                   supplierName: s.supplierName || '',
                   supplierSlug: '',

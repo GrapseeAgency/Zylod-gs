@@ -12,7 +12,7 @@
  *
  * Room rules (server-enforced, mirrored here for honest UX):
  *   product:<id>            — PUBLIC: joins without a token.
- *   order:|seller:|admin:<id> — TOKEN-GATED: the hook first fetches
+ *   order:|seller:|admin:|rfq:<id> — TOKEN-GATED: the hook first fetches
  *     GET /api/realtime/room-token?room=<room> with credentials:'include'
  *     (order rooms use the delivery room-token endpoint — pass getToken to
  *     override for those). If no token can be obtained, the room is honestly
@@ -58,7 +58,10 @@ export interface UseRealtimeRoomResult {
 /** Server allows 10 subscribes/min/socket — keep headroom below it. */
 const MAX_ROOMS = 8
 const ROOM_TOKEN_REFRESH_MS = 8 * 60 * 1000
-const ROOM_PATTERN = /^(order|product|seller|admin):[A-Za-z0-9_-]+$/
+// rfq rooms are TOKEN-GATED on the server (Task 52) — the client pattern must
+// accept them or every rfq live event (new-quote/quote-accepted/converted) is
+// silently dropped in the UI (caught live in Task 55 browser QA).
+const ROOM_PATTERN = /^(order|product|seller|admin|rfq):[A-Za-z0-9_-]+$/
 
 function roomsNeedToken(room: string): boolean {
   return !room.startsWith('product:')

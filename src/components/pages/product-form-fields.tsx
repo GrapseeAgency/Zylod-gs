@@ -19,6 +19,14 @@ import { toast } from 'sonner';
 import { ImagePlus, Loader2, Plus, Trash2, Video as VideoIcon, X } from 'lucide-react';
 import { PRODUCT_UNITS, PRODUCT_UNIT_LABELS, type ProductUnit } from '@/lib/product-contract';
 
+/**
+ * Video upload limits mirror POST /api/upload/video (server authority):
+ * mp4 / webm / quicktime, VIDEO_MAX_MB default 50. The client pre-check is a
+ * convenience — a server-side rejection is always surfaced verbatim.
+ */
+const VIDEO_ACCEPT = ['video/mp4', 'video/webm', 'video/quicktime'] as const;
+const VIDEO_MAX_MB_DEFAULT = 50;
+
 export interface CategoryOption {
   id: string;
   name: string;
@@ -32,6 +40,8 @@ export interface ProductFormState {
   sku: string;
   description: string;
   unit: ProductUnit;
+  /** '' = plain single units (products.bundleSize null). Decimal, > 1. */
+  bundleSize: string;
   moq: string;
   maxOrderQty: string;
   basePrice: string;
@@ -68,6 +78,10 @@ export interface MediaVideo {
   fileName: string;
   status: 'uploading' | 'ready' | 'error';
   error?: string;
+  /** Picked-but-not-yet-attached file (Task 55-c two-step: upload+attach after the product write). */
+  file?: File;
+  /** Real productVideos.id — present on rows hydrated by the edit page (enables API delete). */
+  remoteId?: string;
 }
 
 export interface ProductFormFieldsProps {
@@ -87,6 +101,13 @@ export interface ProductFormFieldsProps {
   showIsActive?: boolean;
   /** Server-side issues keyed by field (from a 400 response) merged into inline errors. */
   serverIssues?: Record<string, string[]>;
+  /**
+   * Edit page only — when provided, a video row's remove button calls this
+   * instead of filtering locally, so the edit page can run the real DELETE
+   * /api/supplier/products/[id]/videos/[videoId] (row + backing file) and
+   * re-hydrate. Rows with a pending `file` are removed locally.
+   */
+  onVideoRowDelete?: (video: MediaVideo, index: number) => void;
 }
 
 export const EMPTY_PRODUCT_FORM: ProductFormState = {
@@ -96,6 +117,7 @@ export const EMPTY_PRODUCT_FORM: ProductFormState = {
   sku: '',
   description: '',
   unit: 'pcs',
+  bundleSize: '',
   moq: '',
   maxOrderQty: '',
   basePrice: '',
@@ -103,6 +125,14 @@ export const EMPTY_PRODUCT_FORM: ProductFormState = {
   isCustomizable: false,
   isActive: true,
 };
+
+/** Parse the bundle-size input: '' → null (plain units); garbage → NaN (surfaced by Zod). */
+export function parseBundleSize(value: string): number | null {
+  const t = value.trim();
+  if (t === '') return null;
+  const n = Number(t);
+  return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : NaN;
+}
 
 /** Real GET /api/categories row (root categories with nested children). */
 export interface ApiCategoryRow {
@@ -203,6 +233,59 @@ async function uploadProductMedia(file: File): Promise<string> {
   return String(json.url);
 }
 
+/**
+ * Task 55-c two-step video attach — used by the add page (after product
+ * create) and the edit page (after PATCH):
+ *   1. POST /api/upload/video (multipart 'video' + optional 'title')
+ *   2. POST /api/supplier/products/[id]/videos { videoUrl, title, sortOrder }
+ * Every server error is returned verbatim — callers surface honest partial
+ * failure (the product exists even when this fails; never fake success).
+ */
+export async function uploadAndAttachVideo(
+  productId: string,
+  file: File,
+  title: string,
+  sortOrder: number,
+  token?: string | null
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const form = new FormData();
+    form.append('video', file);
+    if (title.trim()) form.append('title', title.trim());
+    const upRes = await fetch('/api/upload/video', {
+      method: 'POST',
+      body: form,
+      credentials: 'include',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+    const upJson = await upRes.json().catch(() => null);
+    if (!upRes.ok || !upJson?.videoUrl) {
+      return { ok: false, error: upJson?.error || `Video upload failed (HTTP ${upRes.status})` };
+    }
+
+    const attachRes = await fetch(`/api/supplier/products/${productId}/videos`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        videoUrl: upJson.videoUrl,
+        ...(title.trim() ? { title: title.trim() } : upJson.title ? { title: String(upJson.title) } : {}),
+        sortOrder,
+      }),
+    });
+    const attachJson = await attachRes.json().catch(() => null);
+    if (!attachRes.ok) {
+      return { ok: false, error: attachJson?.error || `Video attach failed (HTTP ${attachRes.status})` };
+    }
+    return { ok: true };
+  } catch {
+    return { ok: false, error: 'Network error while uploading the video. Check your connection and retry.' };
+  }
+}
+
 export function ProductFormFields(props: ProductFormFieldsProps) {
   const {
     form,
@@ -219,6 +302,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
     categoriesLoading,
     showIsActive = false,
     serverIssues = {},
+    onVideoRowDelete,
   } = props;
 
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -226,6 +310,26 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
 
   const basePriceNumber = Number(form.basePrice);
   const { rowErrors: tierErrors, global: tierGlobalError } = computeTierErrors(tiers, basePriceNumber);
+
+  // Task 55-c bundle semantics: the optional bundle-size input appears for
+  // every multi-unit type (anything but plain 'pcs'). Selecting 'bundle'
+  // prefills the wholesale default (50); switching back to 'pcs' clears it.
+  const showBundleSizeInput = form.unit !== 'pcs';
+  const bundleSizeNumber = Number(form.bundleSize);
+  const bundleSizeError =
+    form.bundleSize.trim() !== '' && (!Number.isFinite(bundleSizeNumber) || bundleSizeNumber <= 1)
+      ? 'Bundle size must be greater than 1 (units per bundle)'
+      : undefined;
+
+  const handleUnitChange = (nextUnit: ProductUnit) => {
+    if (nextUnit === 'pcs') {
+      onFormChange({ unit: nextUnit, bundleSize: '' });
+    } else if (nextUnit === 'bundle' && form.bundleSize.trim() === '') {
+      onFormChange({ unit: nextUnit, bundleSize: '50' });
+    } else {
+      onFormChange({ unit: nextUnit });
+    }
+  };
 
   const handleImagesSelected = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -260,37 +364,31 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
     if (imageInputRef.current) imageInputRef.current.value = '';
   };
 
-  const handleVideoSelected = async (files: FileList | null) => {
+  /**
+   * Task 55-c: videos are NO LONGER uploaded on pick. The file is held in
+   * form state and uploaded+attached right AFTER the product write succeeds
+   * (POST /api/upload/video → POST /api/supplier/products/[id]/videos), so a
+   * mid-upload failure can never orphan a product or fake success.
+   */
+  const handleVideoSelected = (files: FileList | null) => {
     const file = files?.[0];
     if (!file) return;
-    if (!['video/mp4', 'video/webm'].includes(file.type)) {
-      toast.error(`${file.name}: only MP4 or WebM videos are accepted`);
+    if (!(VIDEO_ACCEPT as readonly string[]).includes(file.type)) {
+      toast.error(`${file.name}: only MP4, WebM, or QuickTime (MOV) videos are accepted`);
       return;
     }
-    if (file.size > 50 * 1024 * 1024) {
-      toast.error(`${file.name}: ${(file.size / 1024 / 1024).toFixed(1)}MB exceeds the 50MB video limit`);
+    if (file.size > VIDEO_MAX_MB_DEFAULT * 1024 * 1024) {
+      toast.error(`${file.name}: ${(file.size / 1024 / 1024).toFixed(1)}MB exceeds the ${VIDEO_MAX_MB_DEFAULT}MB video limit`);
       return;
     }
-    const placeholder: MediaVideo = { url: '', title: '', fileName: file.name, status: 'uploading' };
-    onVideosChange((current) => [...current, placeholder]);
-    try {
-      const url = await uploadProductMedia(file);
-      onVideosChange((current) =>
-        current.map((v) => (v === placeholder ? { ...placeholder, url, status: 'ready' as const } : v))
-      );
-      toast.success('Video uploaded');
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Upload failed';
-      toast.error(`${file.name}: ${message}`);
-      onVideosChange((current) =>
-        current.map((v) => (v === placeholder ? { ...placeholder, status: 'error' as const, error: message } : v))
-      );
-    }
+    onVideosChange((current) => [
+      ...current,
+      { url: '', title: '', fileName: file.name, status: 'ready' as const, file },
+    ]);
     if (videoInputRef.current) videoInputRef.current.value = '';
   };
 
-  const uploadingCount =
-    images.filter((i) => i.status === 'uploading').length + videos.filter((v) => v.status === 'uploading').length;
+  const uploadingCount = images.filter((i) => i.status === 'uploading').length;
 
   return (
     <div className="space-y-6">
@@ -430,7 +528,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             <select
               id="pf-unit"
               value={form.unit}
-              onChange={(e) => onFormChange({ unit: e.target.value as ProductUnit })}
+              onChange={(e) => handleUnitChange(e.target.value as ProductUnit)}
               className={inputClass}
             >
               {PRODUCT_UNITS.map((u) => (
@@ -438,6 +536,27 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               ))}
             </select>
           </div>
+          {showBundleSizeInput && (
+            <div className="space-y-1">
+              <label htmlFor="pf-bundle-size" className="text-sm font-medium text-gray-700">
+                Bundle size{form.unit === 'kg' ? ' (kg)' : ''} <span className="text-gray-400">(units per bundle, optional)</span>
+              </label>
+              <input
+                id="pf-bundle-size"
+                type="number"
+                min="1.5"
+                step="0.5"
+                value={form.bundleSize}
+                onChange={(e) => onFormChange({ bundleSize: e.target.value })}
+                className={inputClass}
+                placeholder={form.unit === 'bundle' ? 'e.g., 50' : 'Leave empty to sell single units'}
+              />
+              <FieldError message={bundleSizeError} />
+              <p className="text-[11px] text-gray-500">
+                Buyers pay per bundle — e.g. 50 pcs per bundle at ৳450 shows ≈ ৳9/pc on the product page.
+              </p>
+            </div>
+          )}
           <div className="space-y-1">
             <label htmlFor="pf-moq" className="text-sm font-medium text-gray-700">
               MOQ (minimum order){form.unit === 'kg' ? ' — kg' : ''}
@@ -744,7 +863,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             <input
               ref={videoInputRef}
               type="file"
-              accept="video/mp4,video/webm"
+              accept="video/mp4,video/webm,video/quicktime"
               className="sr-only"
               id="pf-video-input"
               onChange={(e) => handleVideoSelected(e.target.files)}
@@ -756,18 +875,22 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             >
               <VideoIcon className="w-4 h-4" /> Add video
             </button>
-            <span className="text-xs text-gray-500">MP4 or WebM up to 50MB</span>
+            <span className="text-xs text-gray-500">
+              MP4, WebM, or MOV up to {VIDEO_MAX_MB_DEFAULT}MB — uploads and attaches right after you publish (max 5 per product)
+            </span>
           </div>
 
           {videos.length === 0 ? (
-            <p className="text-xs text-gray-500">No videos uploaded yet.</p>
+            <p className="text-xs text-gray-500">No videos added yet.</p>
           ) : (
             <div className="space-y-3">
               {videos.map((video, index) => (
                 <div key={`${video.fileName}-${index}`} className="flex items-start gap-3 bg-gray-50 p-2 rounded-lg">
                   <div className="w-28 h-16 bg-gray-200 rounded overflow-hidden flex items-center justify-center shrink-0">
-                    {video.status === 'ready' ? (
+                    {video.status === 'ready' && video.url ? (
                       <video src={video.url} controls className="w-full h-full object-cover" preload="metadata" />
+                    ) : video.file ? (
+                      <VideoIcon className="w-5 h-5 text-gray-500" aria-label={`Selected video ${video.fileName}`} />
                     ) : video.status === 'uploading' ? (
                       <Loader2 className="w-5 h-5 text-gray-400 animate-spin" aria-label={`Uploading ${video.fileName}`} />
                     ) : (
@@ -779,6 +902,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                       type="text"
                       aria-label={`Video ${index + 1} title`}
                       placeholder="Video title (optional)"
+                      maxLength={140}
                       value={video.title}
                       onChange={(e) => {
                         const next = [...videos];
@@ -788,12 +912,21 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                       className={`${inputClass} min-h-0 py-1.5`}
                     />
                     <p className="text-[11px] text-gray-500 truncate">{video.fileName}</p>
+                    {video.file && (
+                      <p className="text-[10px] text-amber-600">Ready — uploads and attaches when you publish/save</p>
+                    )}
                     {video.error && <p className="text-[10px] text-red-600">{video.error}</p>}
                   </div>
                   <button
                     type="button"
                     aria-label={`Remove video ${index + 1}`}
-                    onClick={() => onVideosChange(videos.filter((_, i) => i !== index))}
+                    onClick={() => {
+                      if (onVideoRowDelete) {
+                        onVideoRowDelete(video, index);
+                        return;
+                      }
+                      onVideosChange(videos.filter((_, i) => i !== index));
+                    }}
                     className="min-h-11 min-w-11 p-2 text-red-500 hover:bg-red-50 rounded-lg flex items-center justify-center"
                   >
                     <Trash2 className="w-4 h-4" />

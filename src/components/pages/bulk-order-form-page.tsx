@@ -3,18 +3,37 @@
 /**
  * Bulk Order Form — REAL wholesale bulk builder (id: 'bulk-order-form').
  *
- * Replaces the old static gloves card (invented product, invented size
- * matrix, invented tier prices). Every product, variant, tier, and stock
- * number here comes from the real APIs:
+ * Every product, variant, tier, and stock number here comes from the real
+ * APIs:
  *   - GET /api/products?search=&category=&page=&limit=  (approved+active only;
  *     NOTE the route's filter param is `category` with a category SLUG — there
  *     is no `categoryId` param on this route)
  *   - GET /api/categories
- * Pricing uses the canonical rule (variant priceOverride → covering tier →
- * basePrice) via resolveClientUnitPrice from the cart store; submit goes
- * through the REAL cart flow: auth preflight on GET /api/cart, then one
- * addItem per line (each line syncs to POST /api/cart for signed-in buyers),
- * then one syncWithApi reconciliation. No invented endpoints.
+ *
+ * Pricing preview uses the canonical client rule (variant priceOverride →
+ * covering tier → basePrice) via resolveClientUnitPrice from the cart store.
+ *
+ * SUBMIT (Task 55-a migration): ONE POST /api/cart/bulk with
+ * credentials:'include' — the repaired transactional bulk endpoint (Task
+ * 51-d), not the old optimistic addItem-per-line flow. Quantities leave the
+ * client as NUMBERS (kg decimals are legal, normalized to 2 dp — no
+ * parseInt/string stripping anywhere in the submit path). The endpoint is
+ * buyer-only (401 first), rate-limited, re-checks MOQ / maxOrderQty / stock
+ * on the MERGED line server-side, merges duplicate (productId, variantId)
+ * lines with +=, and re-prices every cart line with the canonical resolver.
+ *
+ * The response carries REAL per-item outcomes at the TOP level
+ * (`results: [{ productId, variantId, status: 'added' | 'merged' |
+ * 'rejected', quantity, previousQuantity?, reason?, details? }]` plus a
+ * verbatim `message` like "2 added, 1 merged, 1 rejected"). They are rendered
+ * honestly per line: added / merged (previous → new) / rejected with the
+ * server's own reason. Rejected rows stay in the builder for fixing; rows the
+ * server accepted are removed. Toasts fire on real 2xx only; 400/401/4xx
+ * surface the verbatim server error; a real 401 raises the sign-in gate
+ * (navigate('login') — the same pattern other buyer pages use). After a
+ * 2xx with accepted lines the header cart badge is refreshed via
+ * syncWithApi(user.id) — the same cart-store mechanism every other
+ * cart-touching page relies on.
  */
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
@@ -30,7 +49,17 @@ import { useCartStore, resolveClientUnitPrice, type ClientPriceTier } from '@/st
 import {
   Search, ShoppingCart, Package, Plus, Trash2, Tag,
   Loader2, AlertTriangle, LogIn, RotateCcw, LayoutGrid, Layers,
+  CheckCircle2, XCircle, Combine,
 } from 'lucide-react'
+
+/* ─── Server limit mirrored from the bulk contract (Zod .max(50)) ─── */
+const BULK_MAX_ITEMS = 50
+
+/** 2-dp normalizer — mirrors roundQty from the bulk endpoint (float drift
+ * from decimal typing must never reach the wire or the DB). */
+function roundQty2(q: number): number {
+  return Math.round(q * 100) / 100
+}
 
 /* ─── Real API shapes ─── */
 
@@ -95,8 +124,34 @@ interface CategoryOption {
 interface BuildRow {
   key: string
   product: CatalogProduct
-  quantity: number
+  /** Raw decimal-safe text of the quantity input (kg lines accept "2.5").
+   * The numeric value is parsed on demand — never parseInt-stripped. */
+  qtyText: string
   variantId: string | null
+}
+
+/* ─── Real per-item outcome shapes from POST /api/cart/bulk (top-level
+ * `results` in the response — see src/app/api/cart/bulk/route.ts) ─── */
+
+interface BulkResultRaw {
+  productId?: string
+  variantId?: string | null
+  status?: 'added' | 'merged' | 'rejected'
+  quantity?: number
+  previousQuantity?: number
+  reason?: string
+}
+
+interface OutcomeView {
+  key: string
+  productId: string
+  name: string
+  unit: string
+  variantLabel: string | null
+  status: 'added' | 'merged' | 'rejected'
+  quantity: number
+  previousQuantity?: number
+  reason?: string
 }
 
 function bestTierOf(tiers: ClientPriceTier[]): ClientPriceTier | null {
@@ -107,8 +162,8 @@ function bestTierOf(tiers: ClientPriceTier[]): ClientPriceTier | null {
 export function BulkOrderFormPage() {
   const { navigate } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
-  const { addItem, syncWithApi } = useCartStore()
-  const { token, user } = useAuthStore()
+  const { syncWithApi } = useCartStore()
+  const { user } = useAuthStore()
 
   /* ─── Catalog discovery state ─── */
   const [searchInput, setSearchInput] = useState('')
@@ -128,6 +183,7 @@ export function BulkOrderFormPage() {
   const [submitting, setSubmitting] = useState(false)
   const [authGate, setAuthGate] = useState<{ message: string } | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [outcomes, setOutcomes] = useState<OutcomeView[] | null>(null)
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -196,12 +252,16 @@ export function BulkOrderFormPage() {
         toast.info('Already in your bulk list', { description: product.name })
         return prev
       }
+      if (prev.length >= BULK_MAX_ITEMS) {
+        toast.error(`Bulk list is limited to ${BULK_MAX_ITEMS} lines per request`)
+        return prev
+      }
       return [
         ...prev,
         {
           key,
           product,
-          quantity: product.moq,
+          qtyText: String(product.moq),
           variantId: null,
         },
       ]
@@ -213,9 +273,27 @@ export function BulkOrderFormPage() {
     setRows((prev) => prev.filter((r) => r.key !== key))
   }, [])
 
-  const setRowQuantity = useCallback((key: string, quantity: number) => {
+  /** Decimal-safe quantity typing: keep digits and ONE dot ("2.5" stays
+   * "2.5") — mirrors the cart-page handleQtyInput pattern from the kg round.
+   * No parseInt, no Math.floor. */
+  const setRowQtyText = useCallback((key: string, value: string) => {
+    const cleaned = value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
+    setRows((prev) => prev.map((r) => (r.key === key ? { ...r, qtyText: cleaned } : r)))
+  }, [])
+
+  /** On blur: normalize the text to a real 2-dp quantity (≥ MOQ) or reset to
+   * the product MOQ when nothing usable was typed. */
+  const normalizeRowQty = useCallback((key: string) => {
     setRows((prev) =>
-      prev.map((r) => (r.key === key ? { ...r, quantity: Number.isFinite(quantity) ? Math.max(1, Math.floor(quantity)) : 1 } : r))
+      prev.map((r) => {
+        if (r.key !== key) return r
+        const parsed = parseFloat(r.qtyText)
+        if (!Number.isFinite(parsed) || parsed <= 0) {
+          return { ...r, qtyText: String(r.product.moq) }
+        }
+        const clamped = Math.max(roundQty2(parsed), r.product.moq)
+        return { ...r, qtyText: String(clamped) }
+      })
     )
   }, [])
 
@@ -223,18 +301,27 @@ export function BulkOrderFormPage() {
     setRows((prev) => prev.map((r) => (r.key === key ? { ...r, variantId } : r)))
   }, [])
 
+  /** Numeric quantity of a row, parsed from its decimal-safe text. */
+  const rowQuantity = useCallback((row: BuildRow): number => {
+    return parseFloat(row.qtyText)
+  }, [])
+
   /* ─── Canonical pricing per row ─── */
 
-  const rowPrice = useCallback((row: BuildRow) => {
-    const variant = row.variantId ? row.product.variants.find((v) => v.id === row.variantId) : null
-    const unitPrice = resolveClientUnitPrice({
-      basePrice: row.product.basePrice,
-      variantPriceOverride: variant?.priceOverride ?? null,
-      priceTiers: row.product.priceTiers,
-      quantity: row.quantity,
-    })
-    return { unitPrice, totalPrice: unitPrice * row.quantity }
-  }, [])
+  const rowPrice = useCallback(
+    (row: BuildRow) => {
+      const quantity = rowQuantity(row)
+      const variant = row.variantId ? row.product.variants.find((v) => v.id === row.variantId) : null
+      const unitPrice = resolveClientUnitPrice({
+        basePrice: row.product.basePrice,
+        variantPriceOverride: variant?.priceOverride ?? null,
+        priceTiers: row.product.priceTiers,
+        quantity: Number.isFinite(quantity) ? quantity : 0,
+      })
+      return { unitPrice, totalPrice: unitPrice * quantity }
+    },
+    [rowQuantity]
+  )
 
   const rowLimit = useCallback((row: BuildRow) => {
     if (row.variantId) {
@@ -244,42 +331,52 @@ export function BulkOrderFormPage() {
     return row.product.stockQuantity
   }, [])
 
-  const rowError = useCallback((row: BuildRow): string | null => {
-    const { product, quantity } = row
-    if (product.maxOrderQty != null && product.moq > product.maxOrderQty) {
-      return `Unorderable: MOQ (${product.moq}) is above the max order quantity (${product.maxOrderQty}).`
-    }
-    if (quantity < product.moq) {
-      return `Below MOQ — minimum ${product.moq} ${product.unit}.`
-    }
-    if (product.maxOrderQty != null && quantity > product.maxOrderQty) {
-      return `Above the max order quantity (${product.maxOrderQty} ${product.unit}).`
-    }
-    const stock = rowLimit(row)
-    if (quantity > stock) {
-      return `Only ${stock.toLocaleString()} ${product.unit} in stock${row.variantId ? ' for this variant' : ''}.`
-    }
-    return null
-  }, [rowLimit])
+  const rowError = useCallback(
+    (row: BuildRow): string | null => {
+      const { product } = row
+      const quantity = rowQuantity(row)
+      if (!Number.isFinite(quantity) || quantity <= 0) {
+        return 'Enter a quantity.'
+      }
+      if (product.maxOrderQty != null && product.moq > product.maxOrderQty) {
+        return `Unorderable: MOQ (${product.moq}) is above the max order quantity (${product.maxOrderQty}).`
+      }
+      if (quantity < product.moq) {
+        return `Below MOQ — minimum ${product.moq} ${product.unit}.`
+      }
+      if (product.maxOrderQty != null && quantity > product.maxOrderQty) {
+        return `Above the max order quantity (${product.maxOrderQty} ${product.unit}).`
+      }
+      const stock = rowLimit(row)
+      if (quantity > stock) {
+        return `Only ${stock.toLocaleString()} ${product.unit} in stock${row.variantId ? ' for this variant' : ''}.`
+      }
+      return null
+    },
+    [rowQuantity, rowLimit]
+  )
 
   const { grandTotal, totalUnits, allValid } = useMemo(() => {
     let grandTotal = 0
     let totalUnits = 0
     let allValid = rows.length > 0
     for (const row of rows) {
-      const { totalPrice } = rowPrice(row)
-      grandTotal += totalPrice
-      totalUnits += row.quantity
+      const quantity = rowQuantity(row)
+      if (Number.isFinite(quantity)) {
+        totalUnits += quantity
+        grandTotal += rowPrice(row).totalPrice
+      }
       if (rowError(row)) allValid = false
     }
     return { grandTotal, totalUnits, allValid }
-  }, [rows, rowPrice, rowError])
+  }, [rows, rowPrice, rowError, rowQuantity])
 
-  /* ─── Submit via the REAL cart flow ─── */
+  /* ─── Submit: ONE real POST /api/cart/bulk ─── */
 
   const handleSubmit = useCallback(async () => {
     if (submitting || rows.length === 0) return
     setSubmitError(null)
+    setOutcomes(null)
 
     const invalid = rows.filter((r) => rowError(r))
     if (invalid.length > 0) {
@@ -291,69 +388,104 @@ export function BulkOrderFormPage() {
 
     setSubmitting(true)
     try {
-      // Auth preflight — the cart API is buyer-only. Surface the REAL 401.
-      const preflight = await fetch('/api/cart', {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        credentials: 'include',
-      })
-      if (preflight.status === 401) {
-        const body = await preflight.json().catch(() => null)
-        setAuthGate({ message: body?.error || 'Authentication required' })
-        setSubmitting(false)
-        return
+      // Quantities leave as NUMBERS (kg decimals legal, 2 dp) — the server
+      // re-validates MOQ/max/stock on the MERGED line and re-prices.
+      const payload = {
+        items: rows.map((row) => ({
+          productId: row.product.id,
+          variantId: row.variantId ?? null,
+          quantity: roundQty2(rowQuantity(row)),
+        })),
       }
-      if (!preflight.ok) {
-        const body = await preflight.json().catch(() => null)
-        setSubmitError(body?.error || `Cart service error (HTTP ${preflight.status}).`)
-        setSubmitting(false)
+
+      const res = await fetch('/api/cart/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      })
+      const body = await res.json().catch(() => null)
+
+      // Real 401 → sign-in gate (same navigate('login') pattern as other
+      // buyer pages). The verbatim server reason is shown.
+      if (res.status === 401) {
+        setAuthGate({ message: body?.error || 'Authentication required' })
         return
       }
 
-      // Real cart flow: one addItem per line (signed-in buyers get a server
-      // POST /api/cart per line from the store's background sync — the same
-      // path the product page uses), then ONE reconciliation sync.
-      for (const row of rows) {
-        const variant = row.variantId ? row.product.variants.find((v) => v.id === row.variantId) : null
-        const { unitPrice, totalPrice } = rowPrice(row)
-        addItem({
-          id: `cart-${row.product.id}-${row.variantId || 'default'}-${Date.now()}`,
-          productId: row.product.id,
-          productName: row.product.name,
-          productSlug: row.product.slug,
-          productImage: row.product.imageUrl,
-          variantId: row.variantId,
-          variantName: variant?.variantName || null,
-          variantValue: variant?.variantValue || null,
-          quantity: row.quantity,
-          unitPrice,
-          totalPrice,
-          moq: row.product.moq,
-          maxOrderQty: row.product.maxOrderQty,
-          supplierId: row.product.supplierId,
-          supplierName: row.product.supplierName,
-          // supplierProfiles has no slug column — honest empty, never invented.
-          supplierSlug: '',
-          unit: row.product.unit,
-          priceTiers: row.product.priceTiers,
-          basePrice: row.product.basePrice,
-          variantPriceOverride: variant?.priceOverride ?? null,
+      // Verbatim server errors on failure (400 Zod / 429 / 5xx / 409-class).
+      if (!res.ok || !body?.success) {
+        const fieldErrors = body?.fieldErrors as Record<string, string[]> | undefined
+        const flat = fieldErrors
+          ? Object.entries(fieldErrors)
+              .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join('; ') : String(msgs)}`)
+              .join(' — ')
+          : ''
+        setSubmitError(
+          [body?.error || `Bulk add failed (HTTP ${res.status}).`, flat].filter(Boolean).join(' — ')
+        )
+        return
+      }
+
+      // 2xx — REAL per-item outcomes (top-level results[] of the bulk
+      // contract). Never assume success for any line.
+      const rawResults: BulkResultRaw[] = Array.isArray(body.results) ? body.results : []
+      const views: OutcomeView[] = rawResults.map((r) => {
+        const row = rows.find(
+          (rr) => rr.product.id === r.productId && (rr.variantId ?? null) === (r.variantId ?? null)
+        )
+        const variant = row?.variantId ? row.product.variants.find((v) => v.id === row.variantId) : null
+        return {
+          key: `${r.productId ?? '?'}::${r.variantId ?? ''}`,
+          productId: r.productId ?? '?',
+          name: row?.product.name || r.productId || 'Unknown product',
+          unit: row?.product.unit || '',
+          variantLabel: variant ? `${variant.variantName}: ${variant.variantValue}` : null,
+          status: r.status === 'added' || r.status === 'merged' || r.status === 'rejected' ? r.status : 'rejected',
+          quantity: typeof r.quantity === 'number' ? r.quantity : 0,
+          previousQuantity: r.previousQuantity,
+          reason: r.reason,
+        }
+      })
+      setOutcomes(views)
+
+      const rejectedViews = views.filter((v) => v.status === 'rejected')
+      const acceptedViews = views.filter((v) => v.status !== 'rejected')
+
+      // Rows the server accepted leave the builder; rejected rows stay so
+      // the buyer can fix exactly what failed.
+      const rejectedRowKeys = new Set(rejectedViews.map((v) => `${v.productId}::base`))
+      setRows((prev) => prev.filter((r) => rejectedRowKeys.has(r.key)))
+
+      // Refresh the header cart badge/count from server truth — the same
+      // cart-store sync mechanism every other cart-touching page uses.
+      if (acceptedViews.length > 0 && user?.id) {
+        await syncWithApi(user.id)
+      }
+
+      // Toast on real 2xx only. The title is the server's own verbatim
+      // summary ("X added, Y merged, Z rejected").
+      if (rejectedViews.length === 0) {
+        const totalItems = typeof body?.data?.totalItems === 'number' ? body.data.totalItems : undefined
+        const totalAmount = typeof body?.data?.totalAmount === 'number' ? body.data.totalAmount : undefined
+        toast.success(body?.message || 'Bulk order added to cart', {
+          description:
+            totalItems != null && totalAmount != null
+              ? `Cart now: ${totalItems} line${totalItems === 1 ? '' : 's'} · ${formatPrice(totalAmount)}`
+              : undefined,
+        })
+        navigate('cart')
+      } else {
+        toast.warning(`${rejectedViews.length} of ${views.length} line(s) rejected`, {
+          description: rejectedViews[0]?.reason || body?.message,
         })
       }
-
-      // One cart sync so the header badge and totals reflect server truth.
-      if (user?.id) await syncWithApi(user.id)
-
-      toast.success('Bulk order added to cart', {
-        description: `${rows.length} line${rows.length === 1 ? '' : 's'} · ${totalUnits.toLocaleString()} units · ${formatPrice(grandTotal)}`,
-      })
-      setRows([])
-      navigate('cart')
     } catch {
-      setSubmitError('Could not reach the cart service. Check your connection and try again.')
+      setSubmitError('Could not reach the bulk cart service. Check your connection and try again.')
     } finally {
       setSubmitting(false)
     }
-  }, [submitting, rows, rowError, rowPrice, totalUnits, grandTotal, formatPrice, token, user?.id, addItem, syncWithApi, navigate])
+  }, [submitting, rows, rowError, rowQuantity, user?.id, syncWithApi, navigate, formatPrice])
 
   const bestTier = (p: CatalogProduct) => bestTierOf(p.priceTiers)
   const tierSavings = (p: CatalogProduct) => {
@@ -376,7 +508,7 @@ export function BulkOrderFormPage() {
             Bulk Order Builder
           </h1>
           <p className="text-[11px] md:text-xs text-slate-500 mt-0.5">
-            Mix products into one wholesale order — every line shows unit, MOQ, and volume-tier savings.
+            Mix products into one wholesale order — every line shows unit, MOQ, and volume-tier savings. Decimals allowed for kg lines.
           </p>
         </div>
       </header>
@@ -540,13 +672,13 @@ export function BulkOrderFormPage() {
             </span>
           </div>
 
-          {/* Auth gate — the REAL 401 from GET /api/cart */}
+          {/* Auth gate — the REAL 401 from POST /api/cart/bulk */}
           {authGate && (
             <div className="rounded-xl border border-primary/30 bg-red-50 p-4 text-center space-y-2">
               <LogIn className="h-6 w-6 mx-auto text-primary" />
               <p className="text-xs font-bold text-slate-800">Sign in to add to your cart</p>
               <p className="text-[11px] text-slate-600">
-                The cart API answered: &ldquo;{authGate.message}&rdquo; — cart persistence requires a buyer account.
+                The bulk cart API answered: &ldquo;{authGate.message}&rdquo; — cart persistence requires a buyer account.
               </p>
               <Button
                 className="w-full min-h-11 text-xs font-bold rounded-xl"
@@ -567,6 +699,68 @@ export function BulkOrderFormPage() {
             <div className="rounded-xl border border-primary/30 bg-red-50 p-3 flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
               <p className="text-[11px] text-slate-700">{submitError}</p>
+            </div>
+          )}
+
+          {/* Per-item server outcomes — the REAL results[] of the last bulk
+              submit, rendered honestly per line. */}
+          {outcomes && outcomes.length > 0 && (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                  Server outcomes — last submit
+                </p>
+                <button
+                  className="text-[11px] font-semibold text-slate-500 hover:text-primary min-h-11 px-2"
+                  onClick={() => setOutcomes(null)}
+                >
+                  Dismiss
+                </button>
+              </div>
+              <ul className="space-y-1.5 max-h-48 overflow-y-auto scrollbar-thin">
+                {outcomes.map((o) => (
+                  <li key={o.key} className="flex items-start gap-2 text-[11px] leading-snug">
+                    {o.status === 'added' ? (
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                    ) : o.status === 'merged' ? (
+                      <Combine className="h-3.5 w-3.5 text-amber-600 mt-0.5 shrink-0" />
+                    ) : (
+                      <XCircle className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-bold text-slate-800 line-clamp-1">{o.name}</p>
+                      {o.status === 'added' && (
+                        <p className="text-slate-600">
+                          Added to cart — {o.quantity.toLocaleString()} {o.unit}
+                          {o.variantLabel ? ` · ${o.variantLabel}` : ''}
+                        </p>
+                      )}
+                      {o.status === 'merged' && (
+                        <p className="text-slate-600">
+                          Merged into your existing cart line —{' '}
+                          {(o.previousQuantity ?? 0).toLocaleString()} → {o.quantity.toLocaleString()} {o.unit}
+                          {o.variantLabel ? ` · ${o.variantLabel}` : ''}
+                        </p>
+                      )}
+                      {o.status === 'rejected' && (
+                        <p className="text-primary">
+                          Rejected — {o.reason || 'no reason given'}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              {outcomes.some((o) => o.status !== 'rejected') && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full min-h-11 text-xs font-semibold text-primary border-primary"
+                  onClick={() => navigate('cart')}
+                >
+                  <ShoppingCart className="h-3.5 w-3.5 mr-1.5" /> View cart
+                </Button>
+              )}
             </div>
           )}
 
@@ -641,12 +835,14 @@ export function BulkOrderFormPage() {
                         </label>
                         <Input
                           id={`qty-${row.key}`}
-                          type="number"
-                          inputMode="numeric"
-                          min={row.product.moq}
-                          max={row.product.maxOrderQty ?? rowLimit(row)}
-                          value={row.quantity}
-                          onChange={(e) => setRowQuantity(row.key, parseInt(e.target.value, 10))}
+                          type="text"
+                          inputMode="decimal"
+                          autoComplete="off"
+                          placeholder={String(row.product.moq)}
+                          value={row.qtyText}
+                          onChange={(e) => setRowQtyText(row.key, e.target.value)}
+                          onBlur={() => normalizeRowQty(row.key)}
+                          aria-label={`Quantity in ${row.product.unit} for ${row.product.name}`}
                           className="h-11 mt-0.5 text-sm font-bold rounded-xl bg-slate-50 border-slate-200"
                         />
                       </div>
@@ -662,8 +858,11 @@ export function BulkOrderFormPage() {
                     {row.product.priceTiers.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {row.product.priceTiers.slice(0, 3).map((t, i) => {
+                          const quantity = rowQuantity(row)
                           const active =
-                            row.quantity >= t.minQty && (t.maxQty == null || row.quantity <= t.maxQty)
+                            Number.isFinite(quantity) &&
+                            quantity >= t.minQty &&
+                            (t.maxQty == null || quantity <= t.maxQty)
                           return (
                             <span
                               key={`${row.key}-tier-${i}`}
@@ -701,7 +900,7 @@ export function BulkOrderFormPage() {
           {/* Totals */}
           <div className="pt-3 border-t border-slate-100 space-y-1.5">
             <div className="flex justify-between text-xs text-slate-500 font-medium">
-              <span>Total units</span>
+              <span>Total quantity</span>
               <span className="font-bold text-slate-800">{totalUnits.toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-baseline">

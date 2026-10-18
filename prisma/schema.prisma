@@ -337,8 +337,12 @@ model products {
   sku          String?
   description  String
   brand        String?
-  // unit: pcs | dozen | kg | carton | box | set
+  // unit: pcs | dozen | kg | carton | box | set | bundle
   unit         String   @default("pcs")
+  // Wholesale bundles: how many base units ONE purchasable bundle contains
+  // (e.g. bundleSize 50 + unit pcs = "bundle of 50 pcs"). Per-unit kom-dam
+  // price shown to buyers = price / bundleSize. Null/1 = plain single units.
+  bundleSize   Float?
   moq          Float    @default(1)
   maxOrderQty  Float?
   basePrice    Float
@@ -370,6 +374,7 @@ model products {
   conversations conversations[]
   savedForLater savedForLater[]
   collectionItems collectionItems[]
+  rfqRequests   rfqRequests[]
 
 
   // Product Enhancement
@@ -1169,6 +1174,9 @@ model rfqRequests {
   title        String
   description  String
   categorySlug String?
+  // Optional product link: set when the RFQ is filed about a specific
+  // marketplace product — required for accepted-quote → order conversion.
+  productId    String?
   quantity     Float?
   // unit: pcs | dozen | kg | carton | box | set
   unit         String   @default("pcs")
@@ -1177,17 +1185,24 @@ model rfqRequests {
   deadline     DateTime?
   // status: open | quoted | awarded | closed | expired
   status       String   @default("open")
+  // Set when the buyer converts the accepted quote into a real order
+  // (one order per accepted quote — idempotency + guard for re-conversion).
+  convertedOrderId     String?
+  convertedOrderNumber String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  buyer  users       @relation(fields: [buyerId], references: [id], onDelete: Cascade)
-  items  rfqItems[]
-  quotes rfqQuotes[]
+  buyer   users      @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  product products?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  items   rfqItems[]
+  quotes  rfqQuotes[]
 
   @@index([buyerId])
   @@index([categorySlug])
   @@index([status])
   @@index([deadline])
+  @@index([productId])
+  @@index([convertedOrderId])
 }
 
 model rfqItems {
