@@ -2625,3 +2625,22 @@ Work Log:
 Stage Summary:
 - The SafePay story is now true end to end: verified money is HELD per supplier at the moment of verification (all four payment paths), RELEASED when their shipment is delivered, REFUND-MARKED on cancellation — and the buyer can SEE it on the wallet page.
 - REMAINING FAKE/INCOMPLETE: none in these slices. Queued: seller payout on release (a real walletTransactions credit to the SELLER's wallet when their escrow releases — the rails now exist end to end, the seller-side credit is the natural next slice); delivery-driver escrow view; escrow rows for the RFQ converted-order path (if RFQ orders accept manual payments they get holds automatically via the same verify routes — no separate work needed, verified by reading).
+
+---
+Task ID: 72
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: SELLER PAYOUT ON ESCROW RELEASE — the natural next slice Task 71 queued. Until now a delivered order released the BUYER's escrow hold but the SELLER's earned money vanished into nothing: no wallet credit, no ledger row, no notification. The money visibly lands now.
+
+Work Log:
+- Proof-first opening: HEAD 05c61eb (Task 71 pushed), cron list EMPTY (no-cron order holds), DB 139×0, dev 200.
+- supplier/orders/[id] PATCH delivered branch (inside the SAME transaction): read the supplier's still-held escrow rows → flip them 'released' (Task 71 semantics preserved) → sum the REAL released amounts → resolve the supplier's userId → find-or-create the SELLER's wallet → balance += releasedTotal → walletTransactions row type 'payout' (POSITIVE amount, balanceAfter truth, description "Escrow released for order <num>", relatedEntityId = orderId). Idempotent by construction: a re-delivered PATCH finds zero 'held' rows and credits nothing twice.
+- Seller notification: after commit, "Escrow Released: <orderNumber>" — amount + order verbatim in the body, relatedEntityId = orderId (the seller's Task 64/68-c deep-link lands on the order). 
+- 🐞 TS narrowing: a closure-assigned variable read after the transaction narrows to never — read through an explicit typed local (documented in-code).
+- t71-e2e extended: delivered → SELLER WALLET credited 300 + payout ledger row (+300, balanceAfter 300, tied to the order) + seller notification "Escrow Released" with the order deep-link. t71 now 21/21 PASS on wiped DB.
+- BROWSER QA (gateway :81, real UI login as the SELLER): wallet page shows balance ৳300, the new In Escrow tile, and the "Escrow released for order … +৳300" transaction row. Console clean.
+- tsc 0 whole project; eslint 0 on touched files. DB wiped 139×0 before commit.
+
+Stage Summary:
+- The wholesale money loop is closed end to end: buyer pays → verified → HELD per supplier → delivered → RELEASED → seller wallet credited with a real payout row → seller notified. Every hop has a ledger row and a notification; nothing vanishes.
+- REMAINING FAKE/INCOMPLETE: none in these slices. Queued: seller WITHDRAWAL already existed (the withdraw route) — so the full seller money story is now top-up-free: earn → withdraw; a seller "Earnings" summary card could read walletTransactions type 'payout' aggregates (the finance/earnings API already aggregates escrow — verify before building); RFQ converted orders ride the same verify paths so their escrow/payout works automatically.

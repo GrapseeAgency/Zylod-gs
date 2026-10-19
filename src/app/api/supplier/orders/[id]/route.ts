@@ -5,7 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
 import { notifyOrderMilestone, notifyDeliveryDispatch } from '@/lib/notifications'
-import { releaseEscrowInTx } from '@/lib/escrow'
+import { sendNotification } from '@/lib/notifications'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 /**
@@ -236,6 +236,9 @@ export async function PATCH(
     if (status !== undefined) data.status = status
     if (trackingNumber !== undefined) data.trackingNumber = trackingNumber
 
+    // Task 72: filled inside the transaction when a delivery releases escrow.
+    let sellerPayout: { userId: string; amount: number; orderNumber: string } | null = null
+
     // Real before/after — per-subOrder updates return the persisted rows
     // (unlike updateMany), so the audit log and broadcast carry true values.
     const before = targets.map((t) => ({
@@ -261,8 +264,43 @@ export async function PATCH(
       }
       // Task 71: DELIVERED releases this supplier's held escrow (the seller
       // has earned it). Idempotent — non-'held' rows are never re-flipped.
+      // Task 72: the released amount is CREDITED to the seller's own wallet
+      // as a real 'payout' ledger row — the money visibly lands.
       if (status === 'delivered') {
-        await releaseEscrowInTx(tx, order.id, supplierScope ?? undefined)
+        const releasedRows = await tx.escrowAccounts.findMany({
+          where: { orderId: order.id, supplierId: supplierScope ?? undefined, status: 'held' },
+          select: { id: true, amount: true },
+        })
+        if (releasedRows.length > 0) {
+          await tx.escrowAccounts.updateMany({
+            where: { id: { in: releasedRows.map((r) => r.id) } },
+            data: { status: 'released', releasedAt: new Date() },
+          })
+          const releasedTotal = releasedRows.reduce((sum, r) => sum + r.amount, 0)
+          const profile = await tx.supplierProfiles.findFirst({
+            where: { id: supplierScope ?? undefined },
+            select: { userId: true },
+          })
+          if (profile) {
+            let sellerWallet = await tx.wallets.findFirst({ where: { userId: profile.userId } })
+            if (!sellerWallet) {
+              sellerWallet = await tx.wallets.create({ data: { userId: profile.userId, balance: 0, currency: 'BDT' } })
+            }
+            const newBalance = sellerWallet.balance + releasedTotal
+            await tx.wallets.update({ where: { id: sellerWallet.id }, data: { balance: newBalance } })
+            await tx.walletTransactions.create({
+              data: {
+                walletId: sellerWallet.id,
+                type: 'payout',
+                amount: releasedTotal,
+                balanceAfter: newBalance,
+                description: `Escrow released for order ${order.orderNumber}`,
+                relatedEntityId: order.id,
+              },
+            })
+            sellerPayout = { userId: profile.userId, amount: releasedTotal, orderNumber: order.orderNumber }
+          }
+        }
       }
       return rows
     })
@@ -295,6 +333,20 @@ export async function PATCH(
     // the buyer's notification deep-link lands on the shipment's order view.
     if (status !== undefined) {
       await notifyOrderMilestone(order.buyerId, order.orderNumber, status, order.id, targets.length === 1 ? targets[0].id : undefined)
+    }
+
+    // Task 72: the seller learns their money landed — a REAL notification row
+    // (bell + list) fired after the payout transaction committed.
+    // (Read through an explicit local: TS cannot see the closure assignment.)
+    const payout = sellerPayout as { userId: string; amount: number; orderNumber: string } | null
+    if (payout) {
+      void sendNotification({
+        userId: payout.userId,
+        type: 'payment',
+        title: `Escrow Released: ${payout.orderNumber}`,
+        body: `৳${payout.amount.toLocaleString()} from order ${payout.orderNumber} has been released from SafePay escrow and credited to your wallet balance.`,
+        relatedEntityId: order.id,
+      })
     }
     // Task 66: shipping with a waybill on THIS path (the normal seller flow)
     // also dispatches the courier-in-transit push — previously only the

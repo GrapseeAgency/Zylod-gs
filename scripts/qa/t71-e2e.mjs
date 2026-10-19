@@ -127,6 +127,18 @@ const main = async () => {
   const countA = await db.escrowAccounts.count({ where: { orderId: orderIdA } })
   ok(countA === 1, 'still exactly ONE escrow row for the order (idempotent)')
 
+  // Task 72: the released money lands in the SELLER's wallet as a real
+  // 'payout' ledger row, and the seller gets the notification.
+  const sellerProfile = await db.supplierProfiles.findFirst({ where: { companyName: { startsWith: 'QA71' } } })
+  const sellerWallet = await db.wallets.findFirst({ where: { userId: sellerProfile.userId } })
+  ok(sellerWallet?.balance === 300, 'SELLER WALLET credited with the released 300', `${sellerWallet?.balance}`)
+  const payoutTx = await db.walletTransactions.findFirst({ where: { walletId: sellerWallet.id, type: 'payout' } })
+  ok(payoutTx?.amount === 300 && payoutTx?.balanceAfter === 300 && payoutTx?.relatedEntityId === orderIdA, "payout ledger row: type 'payout', +300, balanceAfter 300, tied to the order")
+  await sleep(300)
+  const sellerNotifs = await seller('GET', '/api/notifications?limit=50')
+  const payoutNotif = (sellerNotifs.json?.data ?? []).find((n) => /Escrow Released/.test(n.title ?? ''))
+  ok(Boolean(payoutNotif) && payoutNotif?.relatedId === orderIdA, 'seller notification: Escrow Released with the order deep-link', payoutNotif?.title)
+
   section('C) HOLD on wallet-pay + REFUND on force-cancel')
   await buyer('POST', '/api/wallet/topup', { amount: 1000, method: 'bKash' })
   const orderB = await buyer('POST', '/api/orders', { items: [{ productId, quantity: 2 }], payWithWallet: true })
