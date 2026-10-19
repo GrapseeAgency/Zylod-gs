@@ -130,9 +130,13 @@ export function NotificationsPage() {
       case 'promotion':
         return { page: 'product-detail', params: { productId: notif.relatedId } }
       case 'system':
-        // Task 75: a support reply carries the ticket id — land on the thread.
+        // Task 75/76: a support reply carries the thread id — land on the
+        // filer's OWN registry: buyers open the buyer ticket thread, sellers
+        // the seller thread (the buyer page 404s for sellers and vice versa).
         return notif.relatedId
-          ? { page: 'ticket-detail', params: { id: notif.relatedId } }
+          ? (user?.userType === 'supplier'
+            ? { page: 'seller-ticket-detail', params: { id: notif.relatedId } }
+            : { page: 'ticket-detail', params: { id: notif.relatedId } })
           : { page: 'notification-detail', params: { id: notif.id } }
       default:
         return { page: 'notification-detail', params: { id: notif.id } }

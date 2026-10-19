@@ -172,6 +172,10 @@ const main = async () => {
   const sellerNotifs = await seller('GET', '/api/notifications?limit=50')
   const sNotif = (sellerNotifs.json?.data ?? []).find((n) => /Support replied: QA75 seller payout/.test(n.title ?? ''))
   ok(Boolean(sNotif) && sNotif?.relatedId === sellerTicketId, 'seller got the Support-replied notification with the thread deep-link')
+  // Task 76-b: the deep-link TARGET is the seller's OWN thread page — the
+  // data behind it must load for the seller (the old stub page fetched nothing).
+  const sellerThread = await seller('GET', `/api/supplier/support/${sellerTicketId}`)
+  ok(sellerThread.status === 200 && (sellerThread.json?.data?.messages ?? []).some((m) => m.senderRole === 'admin'), 'seller CAN load their thread (seller-ticket-detail data path)')
 
   const resolve = await admin('PATCH', `/api/supplier/support/${sellerTicketId}`, { status: 'resolved' })
   ok(resolve.status === 200 && resolve.json?.data?.status === 'resolved', 'admin resolves the seller thread')

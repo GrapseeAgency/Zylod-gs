@@ -2741,3 +2741,21 @@ Work Log:
 Stage Summary:
 - Both support registries (buyer + seller) now have their responder, their notifications, their lifecycle, and their admin surface — one page, two modes, no-leak verified on every crossing.
 - REMAINING FAKE/INCOMPLETE: none in these slices. Queued: none new from support; next round re-audits the remaining page families (returns/RFQ surfaces were verified in earlier rounds).
+
+---
+Task ID: 76-b
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: 🐞 SELLER TICKET DETAIL WAS A 22-LINE STUB — found by the Task 76 follow-through: seller-support-page navigated to 'seller-ticket-detail', a file containing a fake input that submitted NOTHING and a hardcoded "Hello, how can I help?" bubble. The seller's own thread page never loaded any data. Plus the deep-link routing hole: my Task 75 'system' mapping sent SELLERS to the BUYER ticket page (which 404s for them).
+
+Work Log:
+- seller-ticket-detail-page rebuilt REAL: GET /api/supplier/support/[id] (owner-scoped) → the thread renders with sender-role tags (Zylod Support vs You), status chip, honest loading/needsAuth/error states, reply box → POST (seller role), refresh control, scroll-to-bottom.
+- Deep-link routing fixed in BOTH notification surfaces: type 'system' with relatedId routes by the CURRENT USER's type — supplier → seller-ticket-detail {id}, everyone else → ticket-detail {id} (the buyer page 404s for sellers and vice versa).
+- Sweeps this round: all 115 UI-called API endpoints resolve to real routes (one exchange "MISS" was my own path-literal false alarm — the route exists under [id]); unregistered-page sweep clean (the generic-* files are registered under many aliases).
+- t75-e2e extended: seller CAN load their thread (the seller-ticket-detail data path) — 32/32 PASS on wiped DB.
+- BROWSER QA (gateway :81, real UI login as the SELLER): notification "Support replied: QA75 seller payout question" → click → lands on seller-ticket-detail with the REAL thread (admin reply + Zylod Support tag visible, no stub content). Console clean.
+- tsc 0 whole project; eslint 0 on touched files. DB wiped 139×0 before commit.
+
+Stage Summary:
+- The seller support loop is now genuinely closed at the UI layer too: file → admin replies → seller notified → seller opens THEIR OWN real thread page → replies back. No stubs, no wrong-registry deep-links.
+- REMAINING FAKE/INCOMPLETE: none in these slices. The endpoint + page-registry sweeps are clean platform-wide.

@@ -28,7 +28,7 @@ interface NotificationDetail {
 
 export function NotificationDetailPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, user } = useAuthStore()
 
   const notificationId = pageParams?.id || ''
   const [notification, setNotification] = useState<NotificationDetail | null>(null)
@@ -137,9 +137,14 @@ export function NotificationDetailPage() {
         }
         break
       case 'system':
-        // Task 75: a support reply carries the ticket id — land on the thread.
+        // Task 75/76: a support reply carries the thread id — land on the
+        // filer's OWN registry (buyer page 404s for sellers, vice versa).
         if (notification.relatedId) {
-          navigate('ticket-detail', { id: notification.relatedId })
+          if (user?.userType === 'supplier') {
+            navigate('seller-ticket-detail', { id: notification.relatedId })
+          } else {
+            navigate('ticket-detail', { id: notification.relatedId })
+          }
         } else {
           navigate('notifications')
         }
