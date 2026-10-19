@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { Search, Download, Package, Calendar, Radio } from 'lucide-react';
+import { Search, Download, Package, Calendar, Radio, Wallet, ChevronDown, ChevronUp, Check, X, Hourglass } from 'lucide-react';
 import { format } from 'date-fns';
 import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room';
 
@@ -62,6 +62,24 @@ interface SupplierOrderRow {
   items: { name: string; imageUrl: string | null; quantity: number; price: number; unit: string | null }[];
 }
 
+/** Real row shape of GET /api/seller/payments (Task 56-b). */
+interface SellerPaymentRow {
+  id: string;
+  orderId: string;
+  orderNumber: string;
+  orderTotal: number;
+  orderPaymentStatus: string;
+  method: string;
+  amount: number;
+  status: string;
+  transactionId: string | null;
+  brand: string | null;
+  submittedAt: string | null;
+  paidAt: string | null;
+  itemCount: number;
+  itemSummary: string[];
+}
+
 export function SellerOrderManagementPage() {
   const { navigate } = useNavigationStore();
   const [orders, setOrders] = useState<SupplierOrderRow[]>([]);
@@ -71,6 +89,14 @@ export function SellerOrderManagementPage() {
   const [activeTab, setActiveTab] = useState('pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [sellerRoom, setSellerRoom] = useState<string | null>(null);
+
+  // ── Payment-verification inbox (Task 56-b manual leg) ──────────────────
+  const [payments, setPayments] = useState<SellerPaymentRow[]>([]);
+  const [paymentsLoading, setPaymentsLoading] = useState(true);
+  const [paymentsError, setPaymentsError] = useState<string | null>(null);
+  const [paymentsOpen, setPaymentsOpen] = useState(true);
+  const [verifyNotes, setVerifyNotes] = useState<Record<string, string>>({});
+  const [verifyingId, setVerifyingId] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async (tab: string) => {
     setLoading(true);
@@ -119,10 +145,88 @@ export function SellerOrderManagementPage() {
     };
   }, []);
 
+  const fetchPayments = useCallback(async () => {
+    setPaymentsLoading(true);
+    setPaymentsError(null);
+    try {
+      const res = await fetch('/api/seller/payments?status=pending', { credentials: 'include' });
+      if (res.status === 401) {
+        setPaymentsError('Sign in to see payment requests.');
+        setPayments([]);
+        return;
+      }
+      if (res.status === 403) {
+        // No supplier profile — the section hides itself (nothing to verify).
+        setPayments([]);
+        return;
+      }
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.success) {
+        setPaymentsError(body?.error || `Failed to load payment requests (HTTP ${res.status})`);
+        setPayments([]);
+        return;
+      }
+      setPayments(Array.isArray(body.data) ? body.data : []);
+    } catch {
+      setPaymentsError('Network error while loading payment requests');
+      setPayments([]);
+    } finally {
+      setPaymentsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchPayments();
+  }, [fetchPayments]);
+
   const activeTabRef = useRef(activeTab);
   useEffect(() => {
     activeTabRef.current = activeTab;
   }, [activeTab]);
+
+  const verifyPayment = useCallback(
+    async (paymentId: string, action: 'verify' | 'reject') => {
+      setVerifyingId(paymentId);
+      try {
+        const note = (verifyNotes[paymentId] || '').trim();
+        const res = await fetch(`/api/seller/payments/${encodeURIComponent(paymentId)}/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(note ? { action, note } : { action }),
+        });
+        const body = await res.json().catch(() => null);
+        if (!res.ok) {
+          toast.error(body?.error || `Could not ${action} the payment (HTTP ${res.status})`);
+          return;
+        }
+        const d = body?.data;
+        toast.success(
+          action === 'verify'
+            ? `Payment verified — order is now ${d?.orderPaymentStatus ?? 'updated'}`
+            : 'Payment rejected — the submission was marked failed',
+          {
+            description:
+              action === 'verify' && d
+                ? `৳${d.amountPaid} recorded against an order total of ৳${d.orderTotal}.`
+                : undefined,
+          }
+        );
+        setVerifyNotes((prev) => {
+          const next = { ...prev };
+          delete next[paymentId];
+          return next;
+        });
+        void fetchPayments();
+        void fetchOrders(activeTabRef.current);
+      } catch {
+        toast.error('Network error while verifying the payment');
+      } finally {
+        setVerifyingId(null);
+      }
+    },
+    [verifyNotes, fetchPayments, fetchOrders]
+  );
 
   const onLiveEvent = useCallback(
     (message: RealtimeRoomMessage) => {
@@ -130,8 +234,15 @@ export function SellerOrderManagementPage() {
         toast('New order received', { description: 'The list below has been refreshed.' });
         void fetchOrders(activeTabRef.current);
       }
+      if (message.event === 'payment:submitted') {
+        toast('New payment request received', { description: 'A buyer submitted a payment reference — verify it below.' });
+        void fetchPayments();
+      }
+      if (message.event === 'payment:verified' || message.event === 'payment:rejected') {
+        void fetchPayments();
+      }
     },
-    [fetchOrders]
+    [fetchOrders, fetchPayments]
   );
 
   const { connected } = useRealtimeRoom(sellerRoom ? [sellerRoom] : [], {
@@ -261,6 +372,90 @@ export function SellerOrderManagementPage() {
       </div>
 
       <div className="p-4 space-y-4">
+        {/* ── Payment requests (Task 56-b) — real pending submissions ── */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <button
+            onClick={() => setPaymentsOpen((o) => !o)}
+            className="min-h-11 w-full px-4 py-3 flex items-center justify-between text-left"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+              <Wallet className="w-4 h-4 text-[#C8102E]" />
+              Payment requests
+              {payments.length > 0 && (
+                <span className="text-xs bg-[#C8102E] text-white px-2 py-0.5 rounded-full font-medium">{payments.length} pending</span>
+              )}
+            </span>
+            {paymentsOpen ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+          </button>
+
+          {paymentsOpen && (
+            <div className="px-4 pb-4 space-y-3">
+              {paymentsError && (
+                <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-lg p-3">{paymentsError}</div>
+              )}
+              {paymentsLoading ? (
+                <div className="h-16 bg-gray-100 rounded-lg animate-pulse" />
+              ) : payments.length === 0 && !paymentsError ? (
+                <p className="text-xs text-gray-400 py-2">No pending payment submissions right now.</p>
+              ) : (
+                payments.map((p) => (
+                  <div key={p.id} className="border border-gray-100 rounded-lg p-3 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900">#{p.orderNumber}</p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {p.itemCount > 0 ? `${p.itemSummary.join(', ')}${p.itemCount > p.itemSummary.length ? '…' : ''}` : 'Items on order'}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-bold text-[#C8102E]">৳{p.amount?.toLocaleString()}</p>
+                        <p className="text-[10px] text-gray-400">of ৳{p.orderTotal?.toLocaleString()}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                      <span className="px-2 py-0.5 rounded bg-gray-50 border border-gray-200 capitalize">
+                        {p.method}{p.brand ? ` · ${p.brand}` : ''}
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-gray-50 border border-gray-200 font-mono">{p.transactionId || '--'}</span>
+                      {p.submittedAt && (
+                        <span className="text-gray-400 flex items-center gap-1">
+                          <Hourglass className="w-3 h-3" /> {format(new Date(p.submittedAt), 'MMM dd, HH:mm')}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        type="text"
+                        value={verifyNotes[p.id] || ''}
+                        onChange={(e) => setVerifyNotes((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                        placeholder="Verification note (optional)"
+                        className="flex-1 min-h-11 px-3 bg-white border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#C8102E] focus:border-transparent"
+                        maxLength={500}
+                      />
+                      <div className="grid grid-cols-2 gap-2 sm:w-56">
+                        <button
+                          disabled={verifyingId === p.id}
+                          onClick={() => void verifyPayment(p.id, 'reject')}
+                          className="min-h-11 py-2 px-3 bg-white border border-red-300 text-red-700 text-xs font-medium rounded-lg disabled:opacity-50 flex items-center justify-center gap-1"
+                        >
+                          <X className="w-3.5 h-3.5" /> Reject
+                        </button>
+                        <button
+                          disabled={verifyingId === p.id}
+                          onClick={() => void verifyPayment(p.id, 'verify')}
+                          className="min-h-11 py-2 px-3 bg-emerald-600 text-white text-xs font-medium rounded-lg disabled:opacity-50 flex items-center justify-center gap-1"
+                        >
+                          <Check className="w-3.5 h-3.5" /> {verifyingId === p.id ? 'Saving…' : 'Verify'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+
         <div className="relative">
           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input

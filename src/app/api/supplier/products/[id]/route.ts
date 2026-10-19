@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { productPayloadSchema } from '@/lib/product-contract'
+import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { z } from 'zod'
 
 /**
@@ -277,6 +278,21 @@ export async function PATCH(
         }),
       },
     })
+
+    // Real-time (Task 56-c): when the full-replace edit actually CHANGED the
+    // product-level stock, push the canonical `product:stock` availability
+    // event into the public product room from the REAL persisted after-row.
+    // Identical before/after stock (or a stock-less isActive toggle) is a
+    // no-op — nothing is broadcast. soldCount is not written by this route.
+    if (existing.stockQuantity !== updated.stockQuantity) {
+      void broadcastToRoom(`product:${id}`, 'product:stock', {
+        productId: id,
+        stockQuantity: updated.stockQuantity,
+        unit: updated.unit,
+        bundleSize: updated.bundleSize,
+        inStock: updated.stockQuantity > 0,
+      })
+    }
 
     return NextResponse.json({
       success: true,

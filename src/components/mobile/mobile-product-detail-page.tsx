@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -12,10 +12,11 @@ import { useCartStore, type CartItemData } from '@/store/cart-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useWishlistStore } from '@/store/wishlist-store'
 import { toast } from 'sonner'
+import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room'
 import {
   ChevronLeft, Share2, ShoppingCart, Heart, Star, Truck, Store, MapPin,
   Circle, Clock, Package, Navigation, Minus, Plus, ChevronRight, QrCode,
-  MessageCircle, CheckCircle2,
+  MessageCircle, CheckCircle2, AlertCircle,
 } from 'lucide-react'
 
 /* ─── Material Symbols Helper ─── */
@@ -63,6 +64,12 @@ interface ApiProduct {
 
 /* ─── Tab Types ─── */
 type TabId = 'details' | 'specifications' | 'shipping' | 'reviews'
+
+/* Task 56-c: products has NO per-product low-stock threshold column (schema
+   check — the only stockAlert* model is the buyer-side watchlist), so the
+   urgent 'Only X left' threshold is the platform constant (same value the
+   desktop PDP uses). */
+const LOW_STOCK_THRESHOLD = 5
 
 /* ─── Component ─── */
 
@@ -112,6 +119,55 @@ export function MobileProductDetailPage() {
       }
     })()
   }, [productId])
+
+  // ─── Real-time live stock (Task 56-c): PUBLIC product room — no token,
+  // joined only while this page is mounted (the hook connects on mount,
+  // disconnects on unmount). The canonical 'product:stock' event carries the
+  // server's persisted after-values; only validated payloads are applied and
+  // malformed ones are ignored silently. A down socket degrades gracefully:
+  // the Live badge hides and the HTTP-fetched stock simply stays on screen —
+  // no console errors, no crash.
+  const [liveStockAt, setLiveStockAt] = useState<number | null>(null)
+  const liveHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleRealtimeEvent = useCallback(
+    (msg: RealtimeRoomMessage) => {
+      if (msg.event !== 'product:stock') return
+      const d = msg.data as Record<string, unknown> | null
+      if (!d || typeof d !== 'object' || Array.isArray(d)) return
+      if (typeof d.productId !== 'string' || d.productId !== productId) return
+      // Variant-level edits don't move the product-level stock this page
+      // shows (the mobile PDP has no variant selector) — ignore them.
+      if (typeof d.variantId === 'string' && d.variantId.length > 0) return
+      const stock = d.stockQuantity
+      if (typeof stock !== 'number' || !Number.isFinite(stock) || stock < 0) return
+      const soldCount =
+        typeof d.soldCount === 'number' && Number.isFinite(d.soldCount) && d.soldCount >= 0
+          ? d.soldCount
+          : null
+      setProduct((prev) =>
+        prev ? { ...prev, stockQuantity: stock, ...(soldCount != null ? { soldCount } : {}) } : prev
+      )
+      setLiveStockAt(Date.now())
+      if (liveHideTimerRef.current) clearTimeout(liveHideTimerRef.current)
+      liveHideTimerRef.current = setTimeout(() => setLiveStockAt(null), 4_000)
+    },
+    [productId]
+  )
+
+  // `connected` drives the subtle Live pulse badge; false (socket down /
+  // connecting) simply hides it — static stock remains, nothing breaks.
+  const { connected: liveConnected } = useRealtimeRoom(
+    productId ? `product:${productId}` : '',
+    { onEvent: handleRealtimeEvent }
+  )
+
+  useEffect(
+    () => () => {
+      if (liveHideTimerRef.current) clearTimeout(liveHideTimerRef.current)
+    },
+    []
+  )
 
   // Determine the active price tier
   const activeTier = useMemo(() => {
@@ -331,6 +387,36 @@ export function MobileProductDetailPage() {
           )}
         </div>
 
+        {/* Task 56-c: live stock status strip — always visible, non-intrusive.
+            Live pulse while the socket is connected, an 'Updated live' flash
+            right after a push, an urgent amber 'Only X left' at/below the
+            low-stock threshold and a red 'Out of stock' chip at zero. */}
+        <div className="mt-3 flex items-center gap-2 flex-wrap" aria-live="polite">
+          {liveConnected && liveStockAt === null && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+              <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+              Live
+            </span>
+          )}
+          {liveStockAt !== null && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+              <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+              Stock updated live
+            </span>
+          )}
+          {product.stockQuantity <= 0 ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700">
+              <Package className="w-3 h-3" />
+              Out of stock
+            </span>
+          ) : product.stockQuantity <= LOW_STOCK_THRESHOLD ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 animate-pulse">
+              <AlertCircle className="w-3 h-3" />
+              Only {formatQty(product.stockQuantity)} {product.unit} left
+            </span>
+          ) : null}
+        </div>
+
         {/* Tiered Pricing */}
         {product.priceTiers && product.priceTiers.length > 0 && (
           <div className="mt-4">
@@ -458,8 +544,24 @@ export function MobileProductDetailPage() {
                 <p className="text-sm text-muted-foreground leading-relaxed">{product.description || 'No description available.'}</p>
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">In Stock</p>
-                    <p className="text-sm font-semibold text-foreground mt-0.5">{product.stockQuantity.toLocaleString()} {product.unit}</p>
+                    <p className={`text-[10px] uppercase tracking-wide ${product.stockQuantity <= 0 ? 'text-red-600' : 'text-muted-foreground'}`}>
+                      {product.stockQuantity <= 0 ? 'Out of Stock' : 'In Stock'}
+                    </p>
+                    <p className={`text-sm font-semibold mt-0.5 ${
+                      product.stockQuantity <= 0
+                        ? 'text-red-600'
+                        : product.stockQuantity <= LOW_STOCK_THRESHOLD
+                          ? 'text-amber-600'
+                          : 'text-foreground'
+                    }`}>
+                      {formatQty(product.stockQuantity)} {product.unit}
+                    </p>
+                    {liveStockAt !== null && product.stockQuantity > 0 && (
+                      <p className="text-[10px] text-emerald-600 mt-1 flex items-center gap-1">
+                        <span className="inline-block h-1 w-1 animate-pulse rounded-full bg-emerald-500" />
+                        Updated live
+                      </p>
+                    )}
                   </div>
                   <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Min. Order</p>

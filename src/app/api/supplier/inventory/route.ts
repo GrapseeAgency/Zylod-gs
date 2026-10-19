@@ -19,7 +19,10 @@ import { z } from 'zod'
  *      After the write succeeds, each updated product also gets a real-time
  *      `inventory:updated` push into its PUBLIC product:<productId> socket
  *      room (payload = only the real before/after computed here — PDP stock
- *      widgets and the seller inventory page live-apply it; Task 51-a).
+ *      widgets and the seller inventory page live-apply it; Task 51-a),
+ *      plus the canonical `product:stock` availability event (Task 56-c:
+ *      {productId, stockQuantity, unit, bundleSize, inStock} — the payload
+ *      the PDP live-stock UI consumes; variant-level edits carry variantId).
  */
 
 const READ_LIMIT = { limit: 60, windowMs: 60_000 }
@@ -175,18 +178,21 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Resolve + authorize every target FIRST (outside the tx, read-only), so a
-    // bad id fails the whole request before anything is written.
+    // bad id fails the whole request before anything is written. unit/bundleSize
+    // ride along for the canonical product:stock broadcast (Task 56-c).
     const resolved: Array<{
       key: 'productId' | 'variantId'
       id: string
       before: number
+      unit: string
+      bundleSize: number | null
     }> = []
 
     for (const [index, u] of updates.entries()) {
       if (u.productId) {
         const product = await db.products.findUnique({
           where: { id: u.productId },
-          select: { id: true, stockQuantity: true, supplierId: true },
+          select: { id: true, stockQuantity: true, supplierId: true, unit: true, bundleSize: true },
         })
         if (!product || (!isAdmin && product.supplierId !== profileId)) {
           return NextResponse.json(
@@ -194,11 +200,16 @@ export async function PATCH(request: NextRequest) {
             { status: 404 }
           )
         }
-        resolved.push({ key: 'productId', id: product.id, before: product.stockQuantity })
+        resolved.push({ key: 'productId', id: product.id, before: product.stockQuantity, unit: product.unit, bundleSize: product.bundleSize })
       } else if (u.variantId) {
         const variant = await db.productVariants.findUnique({
           where: { id: u.variantId },
-          select: { id: true, stockQuantity: true, productId: true, product: { select: { supplierId: true } } },
+          select: {
+            id: true,
+            stockQuantity: true,
+            productId: true,
+            product: { select: { supplierId: true, unit: true, bundleSize: true } },
+          },
         })
         if (!variant || (!isAdmin && variant.product.supplierId !== profileId)) {
           return NextResponse.json(
@@ -207,7 +218,7 @@ export async function PATCH(request: NextRequest) {
           )
         }
         variantProductIds.set(variant.id, variant.productId)
-        resolved.push({ key: 'variantId', id: variant.id, before: variant.stockQuantity })
+        resolved.push({ key: 'variantId', id: variant.id, before: variant.stockQuantity, unit: variant.product.unit, bundleSize: variant.product.bundleSize })
       }
     }
 
@@ -270,15 +281,31 @@ export async function PATCH(request: NextRequest) {
     // Real-time (Task 51-a): each updated product pushes its REAL persisted
     // before/after into the public product room. Only public-parity fields
     // are included (product/variant id, absolute stock, delta, write time).
+    // Task 56-c: the same loop also emits the canonical `product:stock`
+    // availability event ({productId, stockQuantity, unit, bundleSize,
+    // inStock}) from the same REAL persisted after-value — variant edits
+    // carry variantId and the variant's own stock. soldCount is untouched
+    // here, so it is not part of this payload.
     for (const r of results) {
       const productId = r.productId ?? variantProductIds.get(r.variantId ?? '')
       if (!productId) continue
+      const target = resolved.find((x) => (x.key === 'variantId' ? x.id === r.variantId : x.id === r.productId))
+      const unit = target?.unit ?? 'pcs'
+      const bundleSize = target?.bundleSize ?? null
       void broadcastToRoom(`product:${productId}`, 'inventory:updated', {
         productId,
         ...(r.variantId ? { variantId: r.variantId } : {}),
         stockQuantity: r.after,
         delta: r.after - r.before,
         updatedAt: r.updatedAt.toISOString(),
+      })
+      void broadcastToRoom(`product:${productId}`, 'product:stock', {
+        productId,
+        ...(r.variantId ? { variantId: r.variantId } : {}),
+        stockQuantity: r.after,
+        unit,
+        bundleSize,
+        inStock: r.after > 0,
       })
     }
 

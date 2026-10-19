@@ -2,12 +2,18 @@
 
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useAuthStore } from '@/store/auth-store'
+import { toast } from 'sonner'
 import {
   ArrowLeft, HelpCircle, Check, Package, Truck, Home,
-  Download, AlertTriangle, MapPin, CreditCard, FileText, RefreshCw, XCircle
+  Download, AlertTriangle, MapPin, CreditCard, FileText, RefreshCw, XCircle,
+  Wallet, Hourglass
 } from 'lucide-react'
 
 // ── Real API types (GET /api/orders/[id]) ──────────────────────────────
@@ -41,6 +47,7 @@ interface ApiPayment { id: string; method: string; amount: number; status: strin
 interface ApiOrderDetail {
   id: string
   orderNumber: string
+  buyerId: string
   totalAmount: number
   paymentStatus: string
   placedAt: string
@@ -52,6 +59,24 @@ interface ApiOrderDetail {
   payments: ApiPayment[]
   subOrders: ApiSubOrder[]
 }
+
+// ── Manual payment submission (Task 56-b) ────────────────────────────
+// Method dropdown entries map to the REAL payments.method enum
+// (prisma/schema.prisma: cod | bank_transfer | card | mobile_banking | wallet).
+// bKash/Nagad/Rocket are mobile_banking + a brand — the brand rides in the
+// submit payload exactly as POST /api/orders/[id]/payment-submit stores it.
+const PAYMENT_METHOD_OPTIONS: { value: string; brand?: string; label: string }[] = [
+  { value: 'mobile_banking', brand: 'bKash', label: 'bKash (mobile banking)' },
+  { value: 'mobile_banking', brand: 'Nagad', label: 'Nagad (mobile banking)' },
+  { value: 'mobile_banking', brand: 'Rocket', label: 'Rocket (mobile banking)' },
+  { value: 'bank_transfer', label: 'Bank transfer' },
+  { value: 'cod', label: 'Cash on Delivery' },
+  { value: 'wallet', label: 'Wallet' },
+  { value: 'card', label: 'Card' },
+]
+
+const TRXID_PATTERN = /^[A-Za-z0-9\-_]{6,64}$/
+const SENDER_PATTERN = /^\+?[0-9]{6,20}$/
 
 /** Derive the display status purely from real sub-order statuses (mirror of backend logic). */
 function deriveStatus(subOrders: ApiSubOrder[]): 'processing' | 'shipped' | 'delivered' | 'cancelled' {
@@ -84,6 +109,15 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const [notFound, setNotFound] = useState(false)
   const [order, setOrder] = useState<ApiOrderDetail | null>(null)
 
+  // ── Submit-payment dialog state (Task 56-b) ──────────────────────────
+  const [payDialogOpen, setPayDialogOpen] = useState(false)
+  const [payMethodIdx, setPayMethodIdx] = useState(0)
+  const [payTrxId, setPayTrxId] = useState('')
+  const [paySender, setPaySender] = useState('')
+  const [payNote, setPayNote] = useState('')
+  const [paySubmitting, setPaySubmitting] = useState(false)
+  const [payError, setPayError] = useState('')
+
   const loadOrder = useCallback(async () => {
     if (!orderId) { setLoading(false); return }
     setLoading(true)
@@ -110,6 +144,63 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   }, [orderId])
 
   useEffect(() => { loadOrder() }, [loadOrder])
+
+  const openPayDialog = () => {
+    setPayMethodIdx(0)
+    setPayTrxId('')
+    setPaySender('')
+    setPayNote('')
+    setPayError('')
+    setPayDialogOpen(true)
+  }
+
+  const submitPayment = async () => {
+    if (!order) return
+    const trimmedTrx = payTrxId.trim()
+    if (!TRXID_PATTERN.test(trimmedTrx)) {
+      setPayError('Transaction ID must be 6-64 characters (letters, numbers, dash or underscore).')
+      return
+    }
+    const trimmedSender = paySender.trim()
+    if (trimmedSender && !SENDER_PATTERN.test(trimmedSender)) {
+      setPayError('Sender number must be 6-20 digits, optionally starting with +.')
+      return
+    }
+    const method = PAYMENT_METHOD_OPTIONS[payMethodIdx]
+    setPaySubmitting(true)
+    setPayError('')
+    try {
+      const body: Record<string, unknown> = {
+        method: method.value,
+        transactionId: trimmedTrx,
+      }
+      if (method.brand) body.brand = method.brand
+      if (trimmedSender) body.senderNumber = trimmedSender
+      if (payNote.trim()) body.note = payNote.trim()
+      // On a PARTIAL order the buyer pays the remaining due, not the full total.
+      if (order.paymentStatus === 'partial') body.amount = remainingDue
+      const res = await fetch(`/api/orders/${encodeURIComponent(order.id)}/payment-submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) {
+        setPayError(json?.error || `Submission failed (HTTP ${res.status})`)
+        return
+      }
+      toast.success('Payment submitted for verification', {
+        description: `Reference ${trimmedTrx} — the seller will verify it shortly.`,
+      })
+      setPayDialogOpen(false)
+      loadOrder()
+    } catch {
+      setPayError('Network error while submitting your payment. Check your connection and retry.')
+    } finally {
+      setPaySubmitting(false)
+    }
+  }
 
   // ── Honest empty / guard states ───────────────────────────────────────
   if (!loading && !orderId) {
@@ -195,6 +286,15 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   if (!order) return null
 
   // ── Real derived values ───────────────────────────────────────────────
+  const isBuyerOwner = !!user && user.id === order.buyerId
+  // Honest remaining due: total minus what verification has actually accepted.
+  const verifiedPaid = order.payments
+    .filter((p) => p.status === 'success')
+    .reduce((sum, p) => sum + (typeof p.amount === 'number' ? p.amount : 0), 0)
+  const remainingDue = Math.max(0, order.totalAmount - verifiedPaid)
+  const canSubmitPayment =
+    isBuyerOwner && (order.paymentStatus === 'unpaid' || order.paymentStatus === 'partial')
+  const hasPendingVerification = order.payments.some((p) => p.status === 'pending')
   const status = deriveStatus(order.subOrders)
   const subtotal = order.subOrders.reduce((sum, so) => sum + (typeof so.subtotal === 'number' ? so.subtotal : 0), 0)
   const shipping = order.subOrders.reduce((sum, so) => sum + (typeof so.shippingCost === 'number' ? so.shippingCost : 0), 0)
@@ -260,6 +360,11 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
             }`}>
               {paymentStatusLabel}
             </span>
+            {hasPendingVerification && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400">
+                <Hourglass className="h-3 w-3" /> Payment verification pending
+              </span>
+            )}
           </div>
 
           <p className="text-xs text-slate-500">
@@ -377,6 +482,24 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
             </div>
           </div>
 
+          {/* Manual payment submission (Task 56-b) — buyer's own open orders */}
+          {canSubmitPayment && (
+            <div className="pt-3">
+              <Button
+                onClick={openPayDialog}
+                className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-2xl text-xs gap-2"
+              >
+                <Wallet className="h-4 w-4" />
+                {order.paymentStatus === 'partial'
+                  ? `Submit payment for remaining ${formatPrice(remainingDue)}`
+                  : 'Submit payment'}
+              </Button>
+              <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+                Paid outside the app? Send money to the seller&apos;s bKash / bank, then submit the transaction reference here. The seller verifies it before the order is marked paid.
+              </p>
+            </div>
+          )}
+
           {/* Real payment records */}
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
             {order.payments.length === 0 ? (
@@ -391,7 +514,9 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
                   </span>
                   <span className="text-right">
                     <span className="font-bold text-slate-900 dark:text-slate-100 block">{formatPrice(p.amount)}</span>
-                    <span className="text-[10px] uppercase text-slate-400">{p.status || '--'}</span>
+                    <span className={`text-[10px] uppercase ${p.status === 'pending' ? 'text-sky-600 dark:text-sky-400 font-bold' : 'text-slate-400'}`}>
+                      {p.status === 'pending' ? 'verification pending' : (p.status || '--')}
+                    </span>
                   </span>
                 </div>
               ))
@@ -484,6 +609,93 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
           </div>
         </div>
       </main>
+
+      {/* Submit-payment dialog (Task 56-b manual leg) */}
+      <Dialog open={payDialogOpen} onOpenChange={(open) => { if (!paySubmitting) { setPayDialogOpen(open); if (!open) setPayError('') } }}>
+        <DialogContent className="max-w-md rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-black">Submit payment for order #{order?.orderNumber || '--'}</DialogTitle>
+            <DialogDescription className="text-xs">
+              Record how you paid outside the app. The seller verifies the reference before the order is marked paid — false references are rejected and audited.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-3 flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-500">
+                {order?.paymentStatus === 'partial' ? 'Remaining due' : 'Order total'}
+              </span>
+              <span className="text-lg font-black text-primary">{formatPrice(order?.paymentStatus === 'partial' ? remainingDue : (order?.totalAmount ?? 0))}</span>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Method *</label>
+              <select
+                value={payMethodIdx}
+                onChange={(e) => setPayMethodIdx(Number(e.target.value))}
+                className="h-10 w-full rounded-xl border border-input bg-white dark:bg-slate-900 px-3 text-xs font-bold"
+              >
+                {PAYMENT_METHOD_OPTIONS.map((m, idx) => (
+                  <option key={`${m.value}-${m.brand ?? ''}`} value={idx}>{m.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Transaction / reference ID *</label>
+              <Input
+                value={payTrxId}
+                onChange={(e) => setPayTrxId(e.target.value)}
+                placeholder="e.g. bKash TrxID or bank reference (6-64)"
+                className="h-10 rounded-xl text-xs"
+                maxLength={64}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Sender number (optional)</label>
+                <Input
+                  value={paySender}
+                  onChange={(e) => setPaySender(e.target.value)}
+                  placeholder="01XXXXXXXXX"
+                  className="h-10 rounded-xl text-xs"
+                  maxLength={21}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Note (optional)</label>
+                <Input
+                  value={payNote}
+                  onChange={(e) => setPayNote(e.target.value)}
+                  placeholder="e.g. paid from 017… via bKash app"
+                  className="h-10 rounded-xl text-xs"
+                  maxLength={500}
+                />
+              </div>
+            </div>
+
+            {payError && (
+              <div className="flex items-start gap-2 text-xs text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-xl px-3 py-2">
+                <XCircle className="h-4 w-4 shrink-0 mt-0.5" /> {payError}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => { setPayDialogOpen(false); setPayError('') }} disabled={paySubmitting} className="h-10 px-4 rounded-xl text-xs font-bold">
+              Cancel
+            </Button>
+            <Button
+              onClick={submitPayment}
+              disabled={paySubmitting || !payTrxId.trim()}
+              className="h-10 px-5 rounded-xl text-xs font-bold bg-primary hover:bg-primary/90 text-white"
+            >
+              {paySubmitting ? 'Submitting…' : 'Submit payment'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

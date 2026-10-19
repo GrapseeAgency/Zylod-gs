@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         // with the canonical wholesale pricing rule.
         const supplierGroups: Record<
           string,
-          { items: Array<{ productId: string; variantId: string | null; quantity: number; unitPrice: number; totalPrice: number }>; subtotal: number }
+          { items: Array<{ productId: string; variantId: string | null; quantity: number; unitPrice: number; totalPrice: number; unit: string; bundleSize: number | null }>; subtotal: number }
         > = {}
         let totalAmount = 0
 
@@ -187,6 +187,9 @@ export async function POST(request: NextRequest) {
             quantity: item.quantity,
             unitPrice: resolved.unitPrice,
             totalPrice,
+            // unit/bundleSize ride along for the product:stock broadcast
+            unit: product.unit,
+            bundleSize: product.bundleSize,
           })
           supplierGroups[supplierId].subtotal += totalPrice
           totalAmount += totalPrice
@@ -216,12 +219,19 @@ export async function POST(request: NextRequest) {
         // sellerFeed = what each affected seller is told in real time
         // (order:new push) — order/sub-order ids and counts only, NEVER
         // buyer PII; sellers refetch through their authenticated GET.
+        // stockFeed = what PDP watchers of each bought product are told
+        // (product:stock push, Task 56-c) — the REAL post-decrement
+        // stock/soldCount read back from the same transaction.
         const sellerFeed: Array<{
           supplierId: string
           subOrderIds: string[]
           itemCount: number
           subtotal: number
         }> = []
+        const stockFeed = new Map<
+          string,
+          { stockQuantity: number; unit: string; bundleSize: number | null; soldCount: number }
+        >()
         for (const [supplierId, group] of Object.entries(supplierGroups)) {
           const subOrder = await tx.subOrders.create({
             data: {
@@ -271,13 +281,25 @@ export async function POST(request: NextRequest) {
               }
             }
 
-            // Product-level stock decrement + soldCount (existing behaviour kept)
-            await tx.products.update({
+            // Product-level stock decrement + soldCount (existing behaviour kept).
+            // The update returns the REAL persisted after-values so the
+            // product:stock broadcast after commit carries server truth
+            // (never the pre-read row — another concurrent order could have
+            // decremented between the findUnique and this write). Reads are
+            // sequential, so the last write per product wins the map entry.
+            const updatedProduct = await tx.products.update({
               where: { id: item.productId },
               data: {
                 stockQuantity: { decrement: item.quantity },
                 soldCount: { increment: item.quantity },
               },
+              select: { stockQuantity: true, soldCount: true },
+            })
+            stockFeed.set(item.productId, {
+              stockQuantity: updatedProduct.stockQuantity,
+              unit: item.unit,
+              bundleSize: item.bundleSize,
+              soldCount: updatedProduct.soldCount,
             })
           }
         }
@@ -288,7 +310,7 @@ export async function POST(request: NextRequest) {
           await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
         }
 
-        return { order: newOrder, sellerFeed }
+        return { order: newOrder, sellerFeed, stockFeed }
       })
 
       // Real-time (Task 51-a): every seller with a slice of this order gets a
@@ -301,6 +323,22 @@ export async function POST(request: NextRequest) {
           itemCount: feed.itemCount,
           totalAmount: feed.subtotal,
           createdAt: order.order.createdAt.toISOString(),
+        })
+      }
+
+      // Real-time (Task 56-c): every bought product's PUBLIC PDP room gets the
+      // canonical product:stock availability event — the REAL post-decrement
+      // stock/soldCount read back inside the transaction (fire-and-forget,
+      // same doctrine as order:new; all fields are public-parity: stock,
+      // unit, bundleSize, soldCount are rendered on the public PDP anyway).
+      for (const [productId, s] of order.stockFeed) {
+        void broadcastToRoom(`product:${productId}`, 'product:stock', {
+          productId,
+          stockQuantity: s.stockQuantity,
+          unit: s.unit,
+          bundleSize: s.bundleSize,
+          soldCount: s.soldCount,
+          inStock: s.stockQuantity > 0,
         })
       }
 

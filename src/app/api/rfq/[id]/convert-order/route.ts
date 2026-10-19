@@ -174,7 +174,7 @@ export async function POST(
     const orderNumber = 'ORD-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
     const totalAmount = roundQty(quote.pricePerUnit * quantity)
 
-    const { order, subOrder } = await db.$transaction(async (tx) => {
+    const { order, subOrder, stockAfter } = await db.$transaction(async (tx) => {
       const newOrder = await tx.orders.create({
         data: {
           buyerId,
@@ -229,6 +229,13 @@ export async function POST(
         )
       }
 
+      // Read back the REAL persisted after-values (Task 56-c) so the
+      // product:stock PDP broadcast after commit carries server truth.
+      const stockAfter = await tx.products.findUnique({
+        where: { id: product.id },
+        select: { stockQuantity: true, soldCount: true, unit: true, bundleSize: true },
+      })
+
       // The conversion stamp lands in the SAME transaction as the order —
       // re-conversion is impossible even under concurrent double-clicks.
       await tx.rfqRequests.update({
@@ -250,13 +257,15 @@ export async function POST(
         },
       })
 
-      return { order: newOrder, subOrder: newSubOrder }
+      return { order: newOrder, subOrder: newSubOrder, stockAfter }
     })
 
     // 8) Fire-and-forget broadcasts of REAL persisted state — the socket
     //    service being down NEVER fails the request (designed degradation).
     //    The seller payload is byte-compatible with orders POST's 'order:new'
     //    so the seller live feed treats this exactly like any other order.
+    //    Task 56-c: the product's PUBLIC PDP room also gets the canonical
+    //    product:stock availability event from the post-decrement row.
     void Promise.allSettled([
       broadcastToRoom(`rfq:${id}`, 'rfq:converted', {
         rfqId: id,
@@ -271,6 +280,18 @@ export async function POST(
         totalAmount,
         createdAt: order.createdAt.toISOString(),
       }),
+      ...(stockAfter
+        ? [
+            broadcastToRoom(`product:${product.id}`, 'product:stock', {
+              productId: product.id,
+              stockQuantity: stockAfter.stockQuantity,
+              unit: stockAfter.unit,
+              bundleSize: stockAfter.bundleSize,
+              soldCount: stockAfter.soldCount,
+              inStock: stockAfter.stockQuantity > 0,
+            }),
+          ]
+        : []),
     ])
 
     return NextResponse.json(

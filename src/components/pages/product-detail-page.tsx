@@ -158,12 +158,16 @@ interface ProductData {
   createdAt: string
 }
 
-/* ─── Helper: Stock Status ─── */
+/* ─── Helper: Stock Status ───
+    Task 56-c: products has NO per-product low-stock threshold column
+    (schema check — the only stockAlert* model is the buyer-side watchlist),
+    so the urgent 'Only X left' threshold is this platform constant. */
+const LOW_STOCK_THRESHOLD = 5
 
 function getStockStatus(stock: number, maxStock: number) {
-  const ratio = stock / maxStock
+  const ratio = maxStock > 0 ? stock / maxStock : 0
   if (stock === 0) return { label: 'Out of Stock', color: 'text-red-600', bg: 'bg-red-50', barColor: 'bg-red-500', urgency: false }
-  if (ratio < 0.2) return { label: `Only ${stock} left!`, color: 'text-amber-600', bg: 'bg-amber-50', barColor: 'bg-amber-500', urgency: true }
+  if (stock <= LOW_STOCK_THRESHOLD || ratio < 0.2) return { label: `Only ${formatQty(stock)} left!`, color: 'text-amber-600', bg: 'bg-amber-50', barColor: 'bg-amber-500', urgency: true }
   if (ratio < 0.5) return { label: 'Low Stock', color: 'text-yellow-600', bg: 'bg-yellow-50', barColor: 'bg-yellow-500', urgency: false }
   return { label: 'In Stock', color: 'text-green-600', bg: 'bg-green-50', barColor: 'bg-green-500', urgency: false }
 }
@@ -283,16 +287,24 @@ function DesktopProductDetailPage() {
     setQuantity(moq)
   }, [moq])
 
-  // ─── Real-time stock (Task 51-a): PUBLIC product room — no token needed.
-  // Only the fields carried by the event payload are applied (stockQuantity is
-  // the server's absolute persisted after-value; delta is informational —
-  // applying both would double-count). Malformed events are ignored silently.
+  // ─── Real-time stock (Task 51-a + Task 56-c): PUBLIC product room — no
+  // token needed, joined only while this page is mounted (the hook connects
+  // on mount and disconnects on unmount). Two events update the stock card:
+  //   inventory:updated — seller inventory quick-edits (absolute after + delta)
+  //   product:stock     — canonical availability event {productId,
+  //                       stockQuantity, unit, bundleSize, inStock, soldCount?}
+  //                       from inventory edits, product edits, orders and RFQ
+  //                       conversions
+  // Only the payload's absolute fields are applied (stockQuantity is the
+  // server's persisted after-value; applying delta too would double-count).
+  // Malformed payloads are ignored silently; a down socket just means the
+  // static HTTP-fetched stock stays on screen — never an error, never a crash.
   const [liveStockAt, setLiveStockAt] = useState<number | null>(null)
   const liveHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const handleRealtimeEvent = useCallback(
     (msg: RealtimeRoomMessage) => {
-      if (msg.event !== 'inventory:updated') return
+      if (msg.event !== 'inventory:updated' && msg.event !== 'product:stock') return
       const d = msg.data as Record<string, unknown> | null
       if (!d || typeof d !== 'object' || Array.isArray(d)) return
       if (typeof d.productId !== 'string' || d.productId !== productId) return
@@ -319,7 +331,12 @@ function DesktopProductDetailPage() {
     [productId]
   )
 
-  useRealtimeRoom(productId ? `product:${productId}` : '', { onEvent: handleRealtimeEvent })
+  // `connected` drives the persistent Live badge; false (socket down /
+  // connecting) simply hides it and leaves the last known stock on screen.
+  const { connected: liveConnected } = useRealtimeRoom(
+    productId ? `product:${productId}` : '',
+    { onEvent: handleRealtimeEvent }
+  )
 
   useEffect(
     () => () => {
@@ -744,10 +761,16 @@ function DesktopProductDetailPage() {
                 <div className="flex items-center gap-2">
                   <div className={`h-2.5 w-2.5 rounded-full ${stockStatus.barColor}`} />
                   <span className={`font-medium text-sm ${stockStatus.color}`}>
-                    {currentVariantStock > 0 ? `In Stock: ${currentVariantStock.toLocaleString()} ${unit} available` : 'Out of Stock'}
+                    {currentVariantStock > 0 ? `In Stock: ${formatQty(currentVariantStock)} ${unit} available` : 'Out of Stock'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
+                  {liveConnected && liveStockAt === null && (
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
+                      <span className="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                      Live
+                    </Badge>
+                  )}
                   {liveStockAt !== null && (
                     <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
                       <span className="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
@@ -756,20 +779,20 @@ function DesktopProductDetailPage() {
                   )}
                   {stockStatus.urgency && (
                     <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-xs animate-pulse">
-                      <AlertCircle className="h-3 w-3 mr-1" /> Only {currentVariantStock} left!
+                      <AlertCircle className="h-3 w-3 mr-1" /> Only {formatQty(currentVariantStock)} {unit} left!
                     </Badge>
                   )}
                 </div>
               </div>
-              {/* Stock progress bar */}
+              {/* Stock progress bar (maxStock 0 → 0%, never NaN) */}
               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${stockStatus.barColor}`}
-                  style={{ width: `${Math.min(100, (currentVariantStock / maxStock) * 100)}%` }}
+                  style={{ width: `${maxStock > 0 ? Math.min(100, (currentVariantStock / maxStock) * 100) : 0}%` }}
                 />
               </div>
               <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-                <span>{Math.round((currentVariantStock / maxStock) * 100)}% available</span>
+                <span>{maxStock > 0 ? `${Math.round((currentVariantStock / maxStock) * 100)}% available` : '0% available'}</span>
                 <div className="flex items-center gap-1">
                   <Truck className="h-3 w-3" />
                   <span>Est. delivery: {deliveryDays} business days</span>
@@ -1105,7 +1128,7 @@ function DesktopProductDetailPage() {
                 </div>
                 <div>
                   <span className="text-muted-foreground">Stock</span>
-                  <p className="font-medium">{currentVariantStock.toLocaleString()} {unit}</p>
+                  <p className={`font-medium ${currentVariantStock === 0 ? 'text-red-600' : ''}`}>{formatQty(currentVariantStock)} {unit}</p>
                 </div>
                 {productBrand && (
                   <div>

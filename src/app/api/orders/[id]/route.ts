@@ -82,6 +82,7 @@ export async function GET(
     const data = {
       id: order.id,
       orderNumber: order.orderNumber,
+      buyerId: order.buyerId,
       totalAmount: order.totalAmount,
       paymentStatus: order.paymentStatus,
       placedAt: order.placedAt.toISOString(),

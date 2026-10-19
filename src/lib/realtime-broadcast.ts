@@ -26,6 +26,14 @@
  * EVENT VOCABULARY (producers → consumers):
  *   inventory:updated    — PATCH /api/supplier/inventory → PDP stock widgets,
  *                          seller inventory page (cross-session live edits)
+ *   product:stock        — PATCH /api/supplier/inventory + PATCH
+ *                          /api/supplier/products/[id] (stock actually
+ *                          changed) + POST /api/orders + POST
+ *                          /api/rfq/[id]/convert-order (Task 56-c) →
+ *                          product:<productId> PUBLIC room; canonical
+ *                          availability payload {productId, stockQuantity,
+ *                          unit, bundleSize, inStock, soldCount?} consumed
+ *                          by the PDP live-stock UI (desktop + mobile)
  *   order:new            — POST /api/orders + /api/orders/create-direct →
  *                          seller live order feed (minimal, non-PII payload;
  *                          sellers refetch via authenticated GET)
