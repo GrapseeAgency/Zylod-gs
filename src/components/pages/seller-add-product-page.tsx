@@ -120,9 +120,16 @@ export function SellerAddProductPage() {
       images: readyImages.map((img, index) => ({ imageUrl: img.url, sortOrder: index })),
       // Task 55-c: only rows that already carry an uploaded URL go in the
       // payload; picked-file rows attach via /api/upload/video after create.
+      // Task 67-c: every row carries its FORM index as sortOrder so payload
+      // rows and post-write file attaches land in the seller's exact order.
       videos: videos
-        .filter((v) => v.url !== '' && v.status === 'ready')
-        .map((v) => ({ url: v.url, ...(v.title.trim() ? { title: v.title.trim() } : {}) })),
+        .map((v, idx) => ({ v, idx }))
+        .filter(({ v }) => v.url !== '' && v.status === 'ready')
+        .map(({ v, idx }) => ({
+          url: v.url,
+          sortOrder: idx,
+          ...(v.title.trim() ? { title: v.title.trim() } : {}),
+        })),
       variants: variants
         .filter((v) => v.variantName.trim() && v.variantValue.trim())
         .map((v) => ({
@@ -144,17 +151,17 @@ export function SellerAddProductPage() {
 
   /** Task 55-c + 67-b: attach every picked FILE video after the product write.
    *  External https:// links do NOT go through here — they ride the create
-   *  payload itself (transactional with the product, sortOrder = form index),
-   *  so attaching them again here would create duplicates (the exact bug the
-   *  browser QA caught on the first Task 67 run). */
+   *  payload itself (transactional, sortOrder = form index), so attaching
+   *  them again here would create duplicates (the exact bug the browser QA
+   *  caught on the first Task 67 run). Task 67-c: each file attaches with its
+   *  FORM index so mixed file+link rows keep the seller's exact order. */
   const attachPendingVideos = async (productId: string): Promise<string[]> => {
-    const pending = videos.filter((v) => v.file && v.status !== 'error');
     const failures: string[] = [];
-    for (const v of pending) {
-      const file = v.file;
-      if (!file) continue;
-      const result = await uploadAndAttachVideo(productId, file, v.title, undefined, token);
-      if (!result.ok && result.error) failures.push(`${v.fileName}: ${result.error}`);
+    for (let idx = 0; idx < videos.length; idx++) {
+      const file = videos[idx].file;
+      if (!file || videos[idx].status === 'error') continue;
+      const result = await uploadAndAttachVideo(productId, file, videos[idx].title, idx, token);
+      if (!result.ok && result.error) failures.push(`${videos[idx].fileName}: ${result.error}`);
     }
     return failures;
   };

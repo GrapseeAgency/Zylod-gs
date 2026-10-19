@@ -241,6 +241,37 @@ const main = async () => {
   const audits = await db.auditLogs.count({ where: { entityType: 'products', action: { in: ['product_video_attached', 'product_video_detached'] } } })
   ok(audits === 5, '5 real audit rows (attach local + attach external + delete local + delete external + re-attach)', `got ${audits}`)
 
+  section('E) Task 67-c: ONE ordering truth — explicit sortOrders')
+  const ordUpload = await uploadVideo(sellerA, 'video/mp4', ftypBytes())
+  ok(ordUpload.status === 200, 'ordering: second real upload ok')
+  const ordLink = 'https://cdn.example.com/qa67-order/link.mp4'
+  const ordProd = await sellerA('POST', '/api/supplier/products', {
+    name: 'QA67 ordered videos', description: 'QA t67c form-order preservation', categoryId, unit: 'pcs',
+    moq: 1, basePrice: 60, stockQuantity: 10, priceTiers: [{ minQty: 1, pricePerUnit: 60 }],
+    images: [{ imageUrl: '/placeholder.svg', sortOrder: 0 }], videos: [],
+  })
+  const ordProductId = ordProd.json?.data?.id ?? ordProd.json?.id
+  // approve like every real listing — the buyer PDP only serves approved rows
+  const ordApprove = await admin('PATCH', '/api/admin/products', { productId: ordProductId, action: 'approve', reason: 'QA67' })
+  ok([200, 201].includes(ordApprove.status), 'ordering product approved')
+  // rows carrying EXPLICIT sortOrders exactly as the form now sends them
+  const ordAttach1 = await sellerA('POST', `/api/supplier/products/${ordProductId}/videos`, { videoUrl: ordLink, sortOrder: 5 })
+  const ordAttach0 = await sellerA('POST', `/api/supplier/products/${ordProductId}/videos`, { videoUrl: ordUpload.json.videoUrl, sortOrder: 2 })
+  ok(ordAttach1.status === 201 && ordAttach0.status === 201, 'attach with explicit sortOrders 5 and 2 → 201')
+  const ordPdp = await buyer('GET', `/api/products/${ordProductId}`)
+  const ordVids = ordPdp.json?.data?.videos ?? []
+  ok(ordVids.length === 2 && ordVids[0].videoUrl === ordUpload.json.videoUrl && ordVids[1].videoUrl === ordLink, 'PDP lists rows by explicit sortOrder (2 before 5), not insertion order', JSON.stringify(ordVids.map((v) => [v.videoUrl, v.sortOrder])))
+  // cleanup the ordering test rows + product
+  for (const v of ordVids) {
+    if (v.videoUrl.startsWith('/uploads/videos/')) {
+      await sellerA('DELETE', `/api/supplier/products/${ordProductId}/videos/${v.id}`)
+      const p = path.join(VIDEOS_DIR, path.basename(v.videoUrl))
+      if (existsSync(p)) unlinkSync(p)
+    }
+  }
+  const ordDel = await sellerA('DELETE', `/api/supplier/products/${ordProductId}`)
+  ok([200, 201].includes(ordDel.status), 'ordering test product removed', `got ${ordDel.status}`)
+
   // cleanup: the re-attached local row + its file so the repo stays clean
   const remaining = (await buyer('GET', `/api/products/${productId}`)).json?.data?.videos ?? []
   for (const v of remaining) {

@@ -235,7 +235,9 @@ export async function PATCH(
                     create: payload.videos.map((video, index) => ({
                       videoUrl: video.url,
                       title: video.title ?? null,
-                      sortOrder: index,
+                      // Task 67-c: honor the form index when the form sends one;
+                      // fall back to array order for legacy payloads.
+                      sortOrder: video.sortOrder ?? index,
                     })),
                   }
                 : undefined,

@@ -90,6 +90,11 @@ export const productVideoSchema = z.object({
       'Video URL must start with /uploads/videos/ or be an https:// URL'
     ),
   title: z.string().trim().max(140, 'Title must be 140 characters or fewer').optional(),
+  // Task 67-c: the FORM index rides with the row so the payload path and the
+  // post-write file-attach path agree on ONE ordering truth — the seller's
+  // form order — instead of the payload path re-indexing from 0 (which
+  // reordered mixed file+link rows on the PDP).
+  sortOrder: z.number().int('Sort order must be a whole number').min(0).max(99).optional(),
 })
 
 export const productVariantSchema = z.object({

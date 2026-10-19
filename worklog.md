@@ -2522,3 +2522,19 @@ Stage Summary:
 - Mobile buyers get the full variant experience at last: pick an OOS variant, watch THAT variant, get told when THAT variant returns — and every number on the mobile screen is the selected variant's truth.
 - Video is REAL end to end for the first time: file uploads actually work (the 404 endpoint is gone), https links have a UI, both paths enforce one contract, delete unlinks what it owns, and the storage story is env-driven for Railway volumes with object storage as the named long-term answer.
 - REMAINING FAKE/INCOMPLETE: none found in these slices. Queued: mixed file+link ordering renders links before files (payload rows get 0..n, files append after — display order only, documented); variant chips on the mobile PDP could use a horizontal-scroll layout when many variants; notification action buttons inside the order-detail page could deep-link to the specific payment row.
+---
+Task ID: 67-c
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: VIDEO ORDERING — one ordering truth for mixed file+link rows (the queued follow-up from Task 67).
+
+Work Log:
+- productVideoSchema gained optional sortOrder (int 0..99); both write paths honor it: create + PATCH full-replace use `video.sortOrder ?? index` (legacy payloads keep working), and the attach route already accepted an explicit sortOrder.
+- Both seller pages now send EVERY payload video row with its FORM index as sortOrder, and picked FILES attach post-write with their form index too (attachPendingVideos iterates by index). Result: the seller's exact form order survives both paths — a file above a link stays above it on the PDP; no more payload-reindex shuffling.
+- t67-e2e gained section E: upload a real mp4 + a https link, attach with explicit sortOrders 2 and 5 (attachment order deliberately reversed) → the PDP lists 2 before 5. First run exposed a harness gap (the ordering product was unapproved so the buyer PDP served nothing) — the harness now approves it like every real listing; the product-delete call also exercises the supplier product DELETE route. FINAL 34/34 on wiped DB.
+- REGRESSIONS: t65 53/53, t61 33/33 (wiped DBs). tsc 0; eslint 0 on all touched files.
+- BROWSER: one full publish with a pasted link after the change → exactly ONE video row with sortOrder 0 from the form index; console clean. Ops note: the categories combobox went empty mid-round — root cause was the 5-min withApiCache('categories:tree') holding rows fetched during a wiped DB window (a cache artifact, not a code bug); a dev-server restart cleared it and the form re-verified. Also: pkill on the dev loop killed the supervisor — restarted `bun run dev` manually (self-restarting wrapper confirmed alive).
+
+Stage Summary:
+- Video rows now have ONE ordering truth (the seller's form index) across the payload path and the post-write attach path; proven by E2E (34/34) and a live publish.
+- REMAINING FAKE/INCOMPLETE: none in these slices. Queued: categories-tree cache coherency on admin category edits (up to 5-min TTL + stale-window serving; a real ops work item, discovered and diagnosed this round), variant chips horizontal-scroll on mobile for many-variant products.
