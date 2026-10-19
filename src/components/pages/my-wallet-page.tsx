@@ -23,6 +23,7 @@ export function MyWalletPage() {
     balance: number
     totalDeposits: number
     totalWithdrawals: number
+    escrowBalance?: number
     recentTransactions: Array<{
       id: string
       type: string
@@ -35,6 +36,7 @@ export function MyWalletPage() {
     balance: 0,
     totalDeposits: 0,
     totalWithdrawals: 0,
+    escrowBalance: 0,
     recentTransactions: [],
   })
 
@@ -107,7 +109,7 @@ export function MyWalletPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
+          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
             <div className="bg-white/5 rounded-2xl p-3 border border-white/5">
               <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Total Outflow</span>
               <span className="text-sm font-bold text-amber-300 block mt-0.5">
@@ -118,6 +120,13 @@ export function MyWalletPage() {
               <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Total Inflow</span>
               <span className="text-sm font-bold text-emerald-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.totalDeposits) : '••••••'}
+              </span>
+            </div>
+            {/* Task 71: the SafePay escrow ledger is REAL now — show it. */}
+            <div className="bg-white/5 rounded-2xl p-3 border border-white/5">
+              <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">In Escrow</span>
+              <span className="text-sm font-bold text-sky-300 block mt-0.5">
+                {showBalance ? formatPrice(walletData.escrowBalance ?? 0) : '••••••'}
               </span>
             </div>
           </div>

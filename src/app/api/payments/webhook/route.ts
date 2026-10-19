@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from 'crypto'
 import { db } from '@/lib/db'
 import { clientIp } from '@/lib/rate-limit'
 import { notifyPaymentVerified, notifyPaymentRejected } from '@/lib/notifications'
+import { holdEscrowInTx } from '@/lib/escrow'
 
 /**
  * POST /api/payments/webhook — THE ONLY AUTOMATED PATH THAT CAN MARK AN ORDER PAID.
@@ -107,6 +108,8 @@ export async function POST(request: NextRequest) {
         where: { id: order.id },
         data: { paymentStatus: 'paid' },
       })
+      // Task 71: verified webhook money is HELD in escrow per supplier.
+      await holdEscrowInTx(tx, order.id, order.buyerId)
     }
   })
 

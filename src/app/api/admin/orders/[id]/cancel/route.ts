@@ -5,6 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { notifyBackInStock, notifyVariantBackInStock } from '@/lib/stock-alerts'
+import { refundEscrowInTx } from '@/lib/escrow'
 
 /**
  * POST /api/admin/orders/[id]/cancel — the admin force-cancel override
@@ -162,6 +163,9 @@ export async function POST(
           where: { id: order.id },
           data: { paymentStatus: 'refunded' },
         })
+        // Task 71: the force-cancel refund-mark applies to the ESCROW LEDGER
+        // too — every still-'held' row flips to 'refunded' with the payments.
+        await refundEscrowInTx(tx, order.id)
       } else {
         // Nothing verified: the order owes nothing once nothing ships.
         await tx.orders.update({

@@ -5,6 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { notifyPaymentVerified, notifyPaymentRejected } from '@/lib/notifications'
+import { holdEscrowInTx } from '@/lib/escrow'
 
 /**
  * POST /api/admin/payments/[id]/verify — the ADMIN's override half of the
@@ -151,6 +152,8 @@ export async function POST(
           where: { id: payment.order.id },
           data: { paymentStatus: newOrderPaymentStatus },
         })
+        // Task 71: verified money is HELD in escrow per supplier (idempotent).
+        await holdEscrowInTx(tx, payment.order.id, payment.order.buyerId)
       }
       await tx.auditLogs.create({
         data: {

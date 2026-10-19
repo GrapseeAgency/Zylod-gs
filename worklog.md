@@ -2603,3 +2603,25 @@ Work Log:
 Stage Summary:
 - The wallet is finally a complete money system: top up → HOLD → PAY for orders (instantly verified) → withdraw → full ledger. Checkout offers both honest legs: instant wallet PAID or the verification-waiting manual leg.
 - REMAINING FAKE/INCOMPLETE: none in these slices. Queued: escrowAccounts rows are still written by NOBODY (all readers aggregate zeros) — the escrow ledger is the honest next money slice; seller wallet payouts on delivery could ride the same rails; wallet page UI could surface the new 'payment' transaction type (it already lists all types generically).
+
+---
+Task ID: 71
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE SAFEPAY ESCROW LEDGER — the top queued item from Task 70. The escrowAccounts table had FOUR readers (wallet balance, wallet page, finance/earnings, support copy promising "funds remain securely in escrow") and ZERO writers: every "held in escrow" number was an honest zero wearing a confident label. Now the ledger is written by the real money paths.
+
+Work Log:
+- Proof-first opening: HEAD 2ef0546 (Task 70 pushed), cron list EMPTY (no-cron order holds), DB 139×0, dev 200.
+- New src/lib/escrow.ts — three in-tx, idempotent helpers: holdEscrowInTx (one row per supplier subOrder, amount = the REAL subtotal, status 'held'; a second verification never duplicates), releaseEscrowInTx (per-supplier or order-wide, held→released + releasedAt), refundEscrowInTx (order-wide held→refunded).
+- HOLD wired into ALL FOUR verified-payment moments: seller verify, admin override verify, signed webhook success, and Task 70's wallet-pay (the hold moved AFTER the subOrders loop inside the order transaction — caught before first run: at the wallet-debit site the subOrders did not exist yet and the hold would have found nothing).
+- RELEASE wired: supplier PATCH status 'delivered' → releaseEscrowInTx scoped to THAT supplier inside the same transaction (the seller has earned it; re-delivered PATCHes are no-ops).
+- REFUND wired: admin force-cancel with verified money → order-wide refund-mark alongside the existing payments refund; buyer per-shipment cancel → the CANCELLED SUPPLIERS' rows refund-mark inline (still-active suppliers keep holding — partial-cancel honesty).
+- Reader surface: the wallet page never showed the escrowBalance the /api/wallet GET already returned — the balance card now carries a third "In Escrow" tile (grid-cols-3) next to Inflow/Outflow.
+- 🐞 one rg display artifact chased down as a false alarm (my `-rln` flag told ripgrep to REPLACE matches with 'ln' in the output — no source corruption existed; verified the raw files).
+- E2E scripts/qa/t71-e2e.mjs: 18/18 PASS on wiped DB — no row while payment is merely PENDING (hold = verified money only); HOLD 300 with real buyer/supplier ids; READER COHESION heldInEscrow=300 on /api/wallet/balance; shipped→delivered → RELEASED with releasedAt + heldInEscrow back to 0; re-delivered PATCH → still exactly ONE row (idempotent); wallet order → HELD 200 inside the same transaction; force-cancel → REFUNDED + the wallet payments row refunded (existing doctrine intact); webhook → HELD 100.
+- BROWSER QA (gateway :81, real UI login): wallet page shows the new "In Escrow ৳100" tile with the REAL webhook-held row (balance ৳800, inflow ৳1,000 — all matching the DB exactly). Console clean.
+- REGRESSIONS on wiped DBs: t70 28/28, t68 56/56, t69 16/16, t61 33/33, t67 34/34, t71 18/18. tsc 0 whole project; eslint 0 on all touched files. DB wiped 139×0 before commit.
+
+Stage Summary:
+- The SafePay story is now true end to end: verified money is HELD per supplier at the moment of verification (all four payment paths), RELEASED when their shipment is delivered, REFUND-MARKED on cancellation — and the buyer can SEE it on the wallet page.
+- REMAINING FAKE/INCOMPLETE: none in these slices. Queued: seller payout on release (a real walletTransactions credit to the SELLER's wallet when their escrow releases — the rails now exist end to end, the seller-side credit is the natural next slice); delivery-driver escrow view; escrow rows for the RFQ converted-order path (if RFQ orders accept manual payments they get holds automatically via the same verify routes — no separate work needed, verified by reading).

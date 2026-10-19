@@ -6,6 +6,7 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { notifyPaymentVerified } from '@/lib/notifications'
+import { holdEscrowInTx } from '@/lib/escrow'
 import { roundQty } from '@/lib/product-contract'
 
 export async function GET(request: NextRequest) {
@@ -288,6 +289,8 @@ export async function POST(request: NextRequest) {
               paidAt: new Date(),
             },
           })
+          // Task 71 escrow hold happens AFTER the subOrders loop below — the
+          // per-supplier rows must exist first.
           walletPaymentId = walletPayment.id
         }
 
@@ -378,6 +381,13 @@ export async function POST(request: NextRequest) {
               soldCount: updatedProduct.soldCount,
             })
           }
+        }
+
+        // Task 71: wallet money is platform-held by definition — the escrow
+        // rows (one per supplier subOrder, amount = the real subtotal) are
+        // created NOW, after the subOrders exist, inside the same tx.
+        if (walletLeg) {
+          await holdEscrowInTx(tx, newOrder.id, buyerId)
         }
 
         // Clear cart

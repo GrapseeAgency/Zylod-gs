@@ -6,6 +6,7 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { notifyPaymentVerified, notifyPaymentRejected } from '@/lib/notifications'
+import { holdEscrowInTx } from '@/lib/escrow'
 
 /**
  * POST /api/seller/payments/[id]/verify — the SELLER's half of the manual
@@ -166,6 +167,8 @@ export async function POST(
           where: { id: payment.order.id },
           data: { paymentStatus: newOrderPaymentStatus },
         })
+        // Task 71: verified money is HELD in escrow per supplier (idempotent).
+        await holdEscrowInTx(tx, payment.order.id, payment.order.buyerId)
       }
       await tx.auditLogs.create({
         data: {

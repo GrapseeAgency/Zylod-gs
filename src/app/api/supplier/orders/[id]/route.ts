@@ -5,6 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
 import { notifyOrderMilestone, notifyDeliveryDispatch } from '@/lib/notifications'
+import { releaseEscrowInTx } from '@/lib/escrow'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 /**
@@ -257,6 +258,11 @@ export async function PATCH(
           select: { id: true, status: true, trackingNumber: true, updatedAt: true },
         })
         rows.push(row)
+      }
+      // Task 71: DELIVERED releases this supplier's held escrow (the seller
+      // has earned it). Idempotent — non-'held' rows are never re-flipped.
+      if (status === 'delivered') {
+        await releaseEscrowInTx(tx, order.id, supplierScope ?? undefined)
       }
       return rows
     })

@@ -227,6 +227,17 @@ export async function POST(
         paymentsVoided = voided.count
       }
 
+      // Task 71: escrow rows of the CANCELLED suppliers are refund-marked
+      // (verified money backing a dead shipment must not stay 'held'). Rows
+      // of still-active suppliers keep holding.
+      if (order.paymentStatus === 'paid' || order.paymentStatus === 'partial') {
+        const cancelledSuppliers = [...new Set(selected.map((s) => s.supplierId))]
+        await tx.escrowAccounts.updateMany({
+          where: { orderId: order.id, supplierId: { in: cancelledSuppliers }, status: 'held' },
+          data: { status: 'refunded' },
+        })
+      }
+
       // Honest ledger: the order now owes exactly what remains active.
       const cancelledValue = selected.reduce(
         (sum, so) => sum + so.subtotal + (so.shippingCost ?? 0),
