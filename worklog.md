@@ -2419,3 +2419,22 @@ Stage Summary:
 - Notifications are now LIVE platform-wide through a private, token-gated, own-id-only room per user — one broadcast point in sendNotification, zero polling.
 - The stock-watch loop is closed on the SELLER side too: buyer watches → seller's demand queue ticks up live with the real count → seller restocks → watches complete, buyers get the real stock number live, and the demand queue drains itself live. Both directions proven with real sockets and real browser sessions.
 - REMAINING FAKE/INCOMPLETE: none found in these slices. Queued: watch-count analytics on the product edit page, variant-level watches (model is product-level), a notifications unread live badge in the header bell.
+
+---
+Task ID: 63
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: (63-a) LIVE header-bell unread badge (desktop header + mobile top-nav) over the user room; (63-b) "N buyers waiting" demand chip on the seller edit-product page; (63-c) REAL FORM BUG found by QA and fixed — the shared product form's quantity inputs imposed a broken browser-side step grid that blocked saving whole numbers on kg products.
+
+Work Log:
+- NEW src/hooks/use-live-notifications.ts: subscribes the signed-in user to their private user:<id> room and ingests every 'notification:new' into the notification store. notification-store gained ingestLive — idempotent by id (a row already fetched never double-counts the unread badge), caps the in-memory list at 50.
+- Header + MobileTopNav now run the hook; MobileTopNav also gained the initial fetch on sign-in (it previously only read the store, which starts empty on mobile).
+- Seller edit-product page: real watchers count from GET /api/seller/stock-watches for THIS product → amber "N buyer(s) waiting … saving a higher stock quantity notifies them instantly" banner above the form (demand at the exact point of restocking; courtesy rail — fetch failure never blocks editing).
+- 🐞 REAL BUG (caught by browser QA blocking the save): product-form-fields quantity inputs used min=0.1 + step=0.5 (kg) — the HTML5 step grid anchors at MIN, so MOQ=1 / tier minQty=1 were "invalid" (nearest valid 0.6/1.1) and Chrome silently blocked form submission with a cryptic message. Fixed step="any" on ALL of them (MOQ, max order qty, stock quantity, low-stock threshold, tier min/max, variant stock) — the server-side Zod contract stays the single validation truth (the same values were always accepted by the API; only the browser grid lied). Found via eval of willValidate/checkValidity across form inputs, then verified "0 invalid inputs".
+- BROWSER QA (gateway :81): buyer desktop session, bell badge baseline "1"; seller session edit page shows the "1 buyer waiting" chip; seller sets stock 0→15 through the REAL form and saves → DB stock 15 + notifications row "Restocked: QA63 Rod 12mm" + watch flipped 'notified' (product-PATCH restock path from Task 61) → buyer's STILL-OPEN session bell ticked 1→2 LIVE with NO reload (ingestLive over the user room). Consoles clean both sessions.
+- E2E REGRESSION after the form change (shared component): t62 wiped + re-run 22/22 PASS. tsc 0 whole project; eslint 0 output. DB wiped 139×0 + WAL checkpoint before commit.
+- Honest ops note: one stale-chunk detour — after the step fix the OLD bundle still served (same cryptic alert) until a FRESH browser session was opened (known HMR failure mode); the form fix itself was correct.
+
+Stage Summary:
+- Every surface of the notification loop is now live and cohesive: platform persists → user room pushes → notifications page refetches, header bell + mobile badge tick up in place, and the seller sees demand at both the dashboard card AND the edit form. The QA pass paid for itself by catching and fixing a form bug that silently blocked whole-number saves on kg products.
+- REMAINING FAKE/INCOMPLETE: none found in these slices. Queued: variant-level watches (model is product-level), watch analytics on the seller analytics page, notification action deep-links.

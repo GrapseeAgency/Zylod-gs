@@ -5,6 +5,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useNotificationStore } from '@/store/notification-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useState, useEffect } from 'react'
+import { useLiveNotifications } from '@/hooks/use-live-notifications'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -36,8 +37,15 @@ const QUICK_ACCESS = [
 export function MobileTopNav() {
   const { navigate } = useNavigationStore()
   const notifications = useNotificationStore((s) => s.notifications)
+  const fetchNotifications = useNotificationStore((s) => s.fetchNotifications)
   const unreadCount = notifications.filter((n) => !n.isRead).length
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
+  // Task 63: live unread badge — private user room pushes 'notification:new'
+  // straight into the store; initial load happens once on sign-in.
+  useLiveNotifications(user?.id)
+  useEffect(() => {
+    if (isAuthenticated) void fetchNotifications()
+  }, [isAuthenticated, fetchNotifications])
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 

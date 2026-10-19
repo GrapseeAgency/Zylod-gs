@@ -4,6 +4,7 @@ import { useState, useEffect, useSyncExternalStore, useCallback, Suspense, lazy 
 import { createPortal } from 'react-dom'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { useLiveNotifications } from '@/hooks/use-live-notifications'
 import { useCartStore } from '@/store/cart-store'
 import { useCurrencyStore, CURRENCIES, type CurrencyCode } from '@/store/currency-store'
 import { useNotificationStore } from '@/store/notification-store'
@@ -245,6 +246,11 @@ export function Header() {
       fetchNotifications()
     }
   }, [isAuthenticated, fetchNotifications])
+
+  /* Task 63: LIVE unread badge — the signed-in user's private room pushes
+     'notification:new' into the store the instant any notification is
+     persisted anywhere in the platform. */
+  useLiveNotifications(user?.id)
 
   /* Track scroll for shadow enhancement */
   useEffect(() => {

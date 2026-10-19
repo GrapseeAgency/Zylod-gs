@@ -28,6 +28,8 @@ interface NotificationState {
   markAsRead: (notificationId: string) => void
   markAllAsRead: () => void
   fetchNotifications: () => Promise<void>
+  /** Task 63: LIVE ingestion from the user's private socket room. */
+  ingestLive: (n: Notification) => void
 }
 
 export const useNotificationStore = create<NotificationState>()(
@@ -66,6 +68,17 @@ export const useNotificationStore = create<NotificationState>()(
           body: JSON.stringify({ markAll: true }),
         }).catch(() => {})
       },
+
+      ingestLive: (n) =>
+        set((state) => {
+          // Idempotent by id — a row that already arrived through a fetch
+          // must never double-count the unread badge.
+          if (state.notifications.some((x) => x.id === n.id)) return state
+          return {
+            notifications: [n, ...state.notifications].slice(0, 50),
+            unreadCount: state.unreadCount + (n.isRead ? 0 : 1),
+          }
+        }),
 
       fetchNotifications: async () => {
         set({ loading: true })

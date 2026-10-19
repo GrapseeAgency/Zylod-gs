@@ -568,7 +568,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               id="pf-moq"
               type="number"
               min={form.unit === 'kg' ? '0.1' : '1'}
-              step={form.unit === 'kg' ? '0.5' : '1'}
+              step="any"
               value={form.moq}
               onChange={(e) => onFormChange({ moq: e.target.value })}
               required
@@ -583,7 +583,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               id="pf-max-order"
               type="number"
               min={form.unit === 'kg' ? '0.1' : '1'}
-              step={form.unit === 'kg' ? '0.5' : '1'}
+              step="any"
               value={form.maxOrderQty}
               onChange={(e) => onFormChange({ maxOrderQty: e.target.value })}
               className={inputClass}
@@ -596,7 +596,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               id="pf-stock"
               type="number"
               min="0"
-              step={form.unit === 'kg' ? '0.5' : '1'}
+              step="any"
               value={form.stockQuantity}
               onChange={(e) => onFormChange({ stockQuantity: e.target.value })}
               required
@@ -613,7 +613,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               id="pf-stock-alert"
               type="number"
               min="0"
-              step="0.5"
+              step="any"
               value={form.stockAlertThreshold}
               onChange={(e) => onFormChange({ stockAlertThreshold: e.target.value })}
               className={inputClass}
@@ -655,7 +655,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                     <input
                       type="number"
                       min={form.unit === 'kg' ? '0.1' : '1'}
-                      step={form.unit === 'kg' ? '0.5' : '1'}
+                      step="any"
                       aria-label={`Tier ${index + 1} minimum quantity`}
                       placeholder="Min"
                       value={tier.minQty}
@@ -672,7 +672,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                     <input
                       type="number"
                       min={form.unit === 'kg' ? '0.1' : '1'}
-                      step={form.unit === 'kg' ? '0.5' : '1'}
+                      step="any"
                       aria-label={`Tier ${index + 1} maximum quantity`}
                       placeholder="Max (empty = open)"
                       value={tier.maxQty}
@@ -778,7 +778,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                   <input
                     type="number"
                     min="0"
-                    step={form.unit === 'kg' ? '0.5' : '1'}
+                    step="any"
                     aria-label={`Variant ${index + 1} stock`}
                     placeholder="Stock"
                     value={variant.stockQuantity}

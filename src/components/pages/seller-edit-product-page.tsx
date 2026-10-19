@@ -11,7 +11,7 @@
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, AlertTriangle, Save } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Save, BellRing } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useAuthStore } from '@/store/auth-store';
@@ -223,6 +223,28 @@ export function SellerEditProductPage() {
   useEffect(() => {
     fetchProduct();
   }, [fetchProduct]);
+
+  /* Task 63-b: demand signal at the point of restocking — how many buyers
+     hold an ACTIVE back-in-stock watch on THIS product. Real number from
+     GET /api/seller/stock-watches; null = not fetched / no row. */
+  const [watchers, setWatchers] = useState<number | null>(null);
+  useEffect(() => {
+    if (!productId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/seller/stock-watches', { credentials: 'include' });
+        const json = await res.json().catch(() => null);
+        if (!cancelled && res.ok && json?.success) {
+          const row = (json.data || []).find((r: { productId: string }) => r.productId === productId);
+          setWatchers(row ? row.watchers : 0);
+        }
+      } catch {
+        // demand chip is a courtesy rail — never blocks editing
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [productId]);
 
   const buildPayload = () => {
     const moq = optionalQty(form.moq);
@@ -489,6 +511,15 @@ export function SellerEditProductPage() {
           <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
             This listing is still awaiting admin review — buyers cannot see it yet. You can keep editing it.
           </p>
+        )}
+
+        {watchers !== null && watchers > 0 && (
+          <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3" role="status">
+            <BellRing className="w-4 h-4 text-amber-600 mt-0.5 shrink-0 animate-pulse" />
+            <p className="text-sm text-amber-800">
+              <span className="font-semibold">{watchers} buyer{watchers !== 1 ? 's' : ''} waiting</span> for this product to come back in stock — saving a higher stock quantity notifies them instantly.
+            </p>
+          </div>
         )}
 
         {error && (
