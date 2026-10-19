@@ -2701,3 +2701,22 @@ Work Log:
 Stage Summary:
 - The coupon system is now a closed, honest loop: admin mints (audited), buyers see and claim, checkout applies with server-truth discounting, every refusal names its real reason, usage limits hold under concurrency, and reviews cannot be stacked.
 - REMAINING FAKE/INCOMPLETE: none in these slices. Queued: support tickets thread audit (buyer submit → seller/admin respond → rate — routes exist, UI wiring unverified this round).
+
+---
+Task ID: 75
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: SUPPORT THREADS GET THEIR RESPONDER — the queued ticket audit found a responder-less half: buyers could create a thread, message into the void, and rate answers nobody could give. The admin can now see every thread, reply as the platform, and drive the lifecycle.
+
+Work Log:
+- Proof-first opening: HEAD ea23afa, cron list EMPTY (no-cron order holds), DB 139×0, dev 200.
+- Backend: GET /api/support/tickets — admins see EVERY thread with the filer's identity; buyers keep own-only. GET [id] — admins open any thread. PATCH [id] — admin status lifecycle (in_progress | waiting_buyer | resolved | closed, assignedTo set on first response, invalid status → 400 with the allowed list); buyer keeps reopen/close. POST messages — admins reply with senderType 'admin' (the model's intended value, never used until now) + the ticket flips in_progress + the buyer gets a REAL notification row ("Support replied: <subject>", relatedEntityId = ticketId). No-leak everywhere: stranger PATCH/message/GET on someone else's ticket stays 404.
+- Deep-links: notifications-page targetFor + notification-detail handleAction gained the 'system' with relatedId → ticket-detail mapping (a support reply lands the buyer on the thread).
+- Admin UI: NEW admin-support-tickets-page (status filter tabs with real counts, expandable threads, reply box, resolve/waiting/closed buttons, buyer rating display) — registered in chunk-misc AND the page-loader id list (the loader list was the missing half at first run: the page bounced home until registered there — caught in browser QA); admin dashboard gained the "Support Threads" card (LifeBuoy).
+- E2E scripts/qa/t75-e2e.mjs: 21/21 PASS on wiped DB — admin list + filer identity; buyer list own-only; admin reply → senderType 'admin' + in_progress + assignedTo + buyer notification with deep-link id; buyer follow-up; admin resolve; buyer rate 5; stranger PATCH/message/GET → 404 ×3; invalid admin status → 400; final DB truth (2 messages, resolved, rated, assigned).
+- BROWSER QA (gateway :81, real UI logins): admin → Support Threads via the dashboard card → thread visible with filer email + In Progress chip → reply through the REAL input ("Zylod Support" tag in the thread, DB row senderType 'admin') → buyer's notification click lands DIRECTLY on the ticket-detail thread showing the admin reply. Consoles clean.
+- tsc 0 whole project; eslint 0 on touched files. DB wiped 139×0 before commit.
+
+Stage Summary:
+- The support loop is closed: buyer files → admin sees with identity → replies as the platform → buyer is notified and lands on the thread → lifecycle drives to resolved → buyer rates. No-leak guards verified on every crossing.
+- REMAINING FAKE/INCOMPLETE: none in these slices. Queued: supplierSupportTickets (the SELLER-side twin) has a resolve route family but no seller-facing submit UI wiring verified — audit next round.

@@ -17,12 +17,18 @@ export async function GET(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
+    // Task 75: admins can open ANY thread (the responder half); buyers only
+    // their own. Not-yours stays a no-leak 404.
+    const isAdmin = auth.user.userType === 'admin'
     const ticket = await db.supportTickets.findFirst({
-      where: { id, userId: auth.user.id },
+      where: isAdmin ? { id } : { id, userId: auth.user.id },
       include: {
         messages: {
           orderBy: { createdAt: 'asc' },
         },
+        ...(isAdmin
+          ? { user: { select: { id: true, email: true, userType: true, buyerProfile: { select: { fullName: true } } } } }
+          : {}),
       },
     })
 
@@ -50,6 +56,28 @@ export async function PATCH(
 
     const body = await request.json()
     const { status } = body
+
+    // Task 75: the RESPONDER half of the status lifecycle. Admins drive the
+    // thread (in_progress / waiting_buyer / resolved / closed, assignedTo =
+    // the responding admin); the buyer keeps reopen/close on their own.
+    const ADMIN_STATUSES = ['open', 'in_progress', 'waiting_buyer', 'resolved', 'closed']
+    if (auth.user.userType === 'admin') {
+      const ticket = await db.supportTickets.findUnique({ where: { id } })
+      if (!ticket) {
+        return NextResponse.json({ error: 'Ticket not found' }, { status: 404 })
+      }
+      if (!ADMIN_STATUSES.includes(String(status || ''))) {
+        return NextResponse.json({ error: `status must be one of: ${ADMIN_STATUSES.join(' | ')}` }, { status: 400 })
+      }
+      const updated = await db.supportTickets.update({
+        where: { id },
+        data: {
+          status: String(status),
+          assignedTo: ticket.assignedTo ?? auth.user.id,
+        },
+      })
+      return NextResponse.json({ success: true, data: updated })
+    }
 
     const existing = await db.supportTickets.findFirst({
       where: { id, userId: auth.user.id },

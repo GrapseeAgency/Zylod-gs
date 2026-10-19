@@ -129,6 +129,11 @@ export function NotificationsPage() {
       case 'back_in_stock':
       case 'promotion':
         return { page: 'product-detail', params: { productId: notif.relatedId } }
+      case 'system':
+        // Task 75: a support reply carries the ticket id — land on the thread.
+        return notif.relatedId
+          ? { page: 'ticket-detail', params: { id: notif.relatedId } }
+          : { page: 'notification-detail', params: { id: notif.id } }
       default:
         return { page: 'notification-detail', params: { id: notif.id } }
     }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { sendNotification } from '@/lib/notifications'
 
 /**
  * GET /api/support/tickets/[id]/messages — get message thread
@@ -49,8 +50,11 @@ export async function POST(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
+    // Task 75: admins can reply on ANY thread (senderType 'admin'); buyers
+    // only on their own. Not-yours stays a no-leak 404.
+    const isAdmin = auth.user.userType === 'admin'
     const ticket = await db.supportTickets.findFirst({
-      where: { id, userId: auth.user.id },
+      where: isAdmin ? { id } : { id, userId: auth.user.id },
     })
 
     if (!ticket) {
@@ -68,11 +72,32 @@ export async function POST(
       data: {
         ticketId: id,
         senderId: auth.user.id,
-        senderType: 'user',
+        senderType: isAdmin ? 'admin' : 'user',
         message: String(message).trim(),
         attachments: attachments ? JSON.stringify(attachments) : null,
       },
     })
+
+    // Task 75: an admin reply flips the thread to in_progress AND notifies
+    // the filer (real row — bell + list; the ticket list is one tap away).
+    if (isAdmin) {
+      await db.supportTickets.update({
+        where: { id },
+        data: {
+          updatedAt: new Date(),
+          status: ticket.status === 'resolved' || ticket.status === 'closed' ? 'open' : 'in_progress',
+          assignedTo: ticket.assignedTo ?? auth.user.id,
+        },
+      })
+      void sendNotification({
+        userId: ticket.userId,
+        type: 'system',
+        title: `Support replied: ${ticket.subject}`,
+        body: String(message).trim().slice(0, 300),
+        relatedEntityId: id,
+      })
+      return NextResponse.json({ success: true, data: newMsg }, { status: 201 })
+    }
 
     // Update ticket status to in_progress if currently waiting
     await db.supportTickets.update({

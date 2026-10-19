@@ -14,10 +14,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
   }
   try {
+    // Task 75: the responder half — admins see EVERY thread (with the
+    // filer's identity); buyers keep seeing only their own.
+    const isAdmin = auth.user.userType === 'admin'
     const tickets = await db.supportTickets.findMany({
-      where: { userId: auth.user.id },
+      where: isAdmin ? {} : { userId: auth.user.id },
       orderBy: { createdAt: 'desc' },
-      include: { _count: { select: { messages: true } } },
+      include: {
+        _count: { select: { messages: true } },
+        ...(isAdmin
+          ? { user: { select: { id: true, email: true, userType: true, buyerProfile: { select: { fullName: true } } } } }
+          : {}),
+      },
     })
     return NextResponse.json({ success: true, data: tickets })
   } catch (error) {

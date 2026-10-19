@@ -136,6 +136,14 @@ export function NotificationDetailPage() {
           navigate('promo-notifications')
         }
         break
+      case 'system':
+        // Task 75: a support reply carries the ticket id — land on the thread.
+        if (notification.relatedId) {
+          navigate('ticket-detail', { id: notification.relatedId })
+        } else {
+          navigate('notifications')
+        }
+        break
       default:
         navigate('notifications')
     }
