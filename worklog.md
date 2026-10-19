@@ -2720,3 +2720,24 @@ Work Log:
 Stage Summary:
 - The support loop is closed: buyer files → admin sees with identity → replies as the platform → buyer is notified and lands on the thread → lifecycle drives to resolved → buyer rates. No-leak guards verified on every crossing.
 - REMAINING FAKE/INCOMPLETE: none in these slices. Queued: supplierSupportTickets (the SELLER-side twin) has a resolve route family but no seller-facing submit UI wiring verified — audit next round.
+
+---
+Task ID: 76
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: SELLER SUPPORT THREADS get their responder (the Task 75 queued item) — sellerSupportTickets had the same responder-less class AND admins could not even VIEW the route (resolveSupplierProfile 403'd every admin).
+
+Work Log:
+- Proof-first opening: HEAD f1671d5, cron list EMPTY (no-cron order holds), DB 139×0, dev 200.
+- GET /api/supplier/support — admins see EVERY seller thread with company identity (companyName + email); sellers keep own-only; the old unconditional profile resolution 403'd admins (the responder could not even open the door).
+- [id] GET — admin opens any thread; POST — admin replies with senderRole 'admin' (the model's intended value, never used until now) + the thread moves in_progress + the SELLER gets a real notification ("Support replied: <subject>", relatedEntityId = thread id); NEW PATCH route — admin-only status transitions (open/in_progress/resolved/closed, resolvedAt on resolve) + the seller notified of the state change.
+- 🐞 caught by the E2E before anything else: the POST still had the OLD unconditional resolveSupplierProfile 403 ABOVE my admin branch — the admin reply 403'd (proven live in an isolated probe: 403 Supplier profile required). Removed the stale block; rerun clean.
+- 🐞 UI registration lesson from 75 applied proactively: page-loader id list + chunk-misc both updated for any new page (this round added none — the admin-support-tickets page gained a Buyer/Seller mode switch instead of a new page).
+- Admin UI: the Support Threads page gained a Buyer Threads / Seller Threads mode switch — seller mode renders company identity, SELLER_STATUS_LABELS (no waiting_buyer — the model has no such status), messageCount fallback, senderRole-aware message tags.
+- t75-e2e extended with section F: seller creates → admin list sees it with company identity → admin reply (senderRole 'admin', in_progress) → seller notified with deep-link → admin resolves (+resolvedAt) → seller notified of resolution → seller PATCH → 401 (admin-only route). t75 now 31/31 PASS on wiped DB (plus the earlier buyer sections still green: 401-first, no-leak 404s, audit rows).
+- BROWSER QA (gateway :81, real UI login): admin → Support Threads → Seller Threads tab → thread visible with company + Resolved chip → expanded shows the admin reply + lifecycle buttons. Console clean.
+- tsc 0 whole project; eslint 0 on touched files. DB wiped 139×0 before commit.
+
+Stage Summary:
+- Both support registries (buyer + seller) now have their responder, their notifications, their lifecycle, and their admin surface — one page, two modes, no-leak verified on every crossing.
+- REMAINING FAKE/INCOMPLETE: none in these slices. Queued: none new from support; next round re-audits the remaining page families (returns/RFQ surfaces were verified in earlier rounds).

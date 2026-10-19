@@ -143,6 +143,44 @@ const main = async () => {
   const final = await db.supportTickets.findUnique({ where: { id: ticketId } })
   ok(final?.status === 'resolved' && final?.rating === 5 && final?.assignedTo !== null, 'final truth: resolved, rated 5, assigned')
 
+  // ── Task 76: the SELLER twin gets its responder too ──
+  section('F) Task 76 — seller threads: admin sees, replies, resolves')
+  const seller = makeSession()
+  await registerAndLogin(seller, 'supplier', `qa75-supa@qa.local`, PASSWORD)
+  const st = await seller('POST', '/api/supplier/support', {
+    category: 'payments', subject: 'QA75 seller payout question',
+    description: 'My escrow release shows on the order but the wallet balance has not updated yet — please check.',
+    priority: 'medium',
+  })
+  ok(st.status === 201, 'seller creates a support ticket')
+  const sellerTicketId = st.json?.data?.id
+
+  const adminSellerList = await admin('GET', '/api/supplier/support')
+  ok(adminSellerList.status === 200 && (adminSellerList.json?.data ?? []).some((t) => t.id === sellerTicketId), 'admin seller-thread LIST includes it (was: admin 403 on the whole route)')
+  const seenSeller = (adminSellerList.json?.data ?? []).find((t) => t.id === sellerTicketId)
+  ok(Boolean(seenSeller?.supplier?.companyName), 'seller list carries the company identity')
+
+  const adminReply = await admin('POST', `/api/supplier/support/${sellerTicketId}`, {
+    message: 'QA75: the payout posts within one hour of release — rechecking your ledger now.',
+  })
+  ok(adminReply.status === 201, 'admin replies on the seller thread')
+  const sellerMsgRow = await db.sellerSupportMessages.findUnique({ where: { id: adminReply.json?.data?.id } })
+  ok(sellerMsgRow?.senderRole === 'admin', "seller-thread message persisted with senderRole 'admin'")
+  const stAfter = await db.sellerSupportTickets.findUnique({ where: { id: sellerTicketId } })
+  ok(stAfter?.status === 'in_progress', 'seller ticket flipped to in_progress')
+  await sleep(300)
+  const sellerNotifs = await seller('GET', '/api/notifications?limit=50')
+  const sNotif = (sellerNotifs.json?.data ?? []).find((n) => /Support replied: QA75 seller payout/.test(n.title ?? ''))
+  ok(Boolean(sNotif) && sNotif?.relatedId === sellerTicketId, 'seller got the Support-replied notification with the thread deep-link')
+
+  const resolve = await admin('PATCH', `/api/supplier/support/${sellerTicketId}`, { status: 'resolved' })
+  ok(resolve.status === 200 && resolve.json?.data?.status === 'resolved', 'admin resolves the seller thread')
+  const sellerNotifs2 = await seller('GET', '/api/notifications?limit=50')
+  ok((sellerNotifs2.json?.data ?? []).some((n) => /Ticket Resolved: QA75 seller payout/.test(n.title ?? '')), 'seller notified of the resolution')
+
+  const sellerPatch = await seller('PATCH', `/api/supplier/support/${sellerTicketId}`, { status: 'closed' })
+  ok(sellerPatch.status === 401, 'seller PATCH on seller tickets (admin-only route) -> 401')
+
   console.log(`\n════════════════════════════════════════`)
   console.log(`PASS ${PASS}  FAIL ${FAIL}`)
   if (failures.length) {

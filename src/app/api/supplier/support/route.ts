@@ -33,15 +33,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
 
-    const profile = await resolveSupplierProfile(auth.user)
-    if (!profile) {
-      return NextResponse.json(SUPPLIER_PROFILE_REQUIRED, { status: 403 })
+    // Task 76: the responder half — admins see EVERY seller thread (with the
+    // filer's identity); a seller keeps their own. Admins have no supplier
+    // profile, so the old unconditional profile resolution 403'd them.
+    const isAdmin = auth.user.userType === 'admin'
+    let supplierId: string | null = null
+    if (!isAdmin) {
+      const profile = await resolveSupplierProfile(auth.user)
+      if (!profile) {
+        return NextResponse.json(SUPPLIER_PROFILE_REQUIRED, { status: 403 })
+      }
+      supplierId = profile.id
     }
 
     const status = request.nextUrl.searchParams.get('status')
 
     const tickets = await db.sellerSupportTickets.findMany({
-      where: { supplierId: profile.id, ...(status ? { status } : {}) },
+      where: {
+        ...(isAdmin ? {} : { supplierId: supplierId! }),
+        ...(status ? { status } : {}),
+      },
       include: {
         _count: { select: { messages: true } },
         messages: {
@@ -49,6 +60,7 @@ export async function GET(request: NextRequest) {
           take: 1,
           select: { message: true, createdAt: true, senderRole: true },
         },
+        supplier: { select: { id: true, companyName: true, user: { select: { email: true } } } },
       },
       orderBy: { createdAt: 'desc' },
       take: 100,
@@ -67,6 +79,9 @@ export async function GET(request: NextRequest) {
         createdAt: t.createdAt,
         messageCount: t._count.messages,
         lastMessage: t.messages[0] || null,
+        ...(isAdmin
+          ? { supplier: { id: t.supplier?.id, companyName: t.supplier?.companyName, email: t.supplier?.user?.email } }
+          : {}),
       })),
     })
   } catch (error) {

@@ -31,12 +31,18 @@ interface ApiTicket {
   updatedAt: string
   _count?: { messages: number }
   user?: { id: string; email: string; userType: string; buyerProfile?: { fullName: string | null } | null }
+  /** Task 76: seller-thread mode — the filer is a supplier, not a user. */
+  supplier?: { id: string; companyName: string; email: string } | null
+  messageCount?: number
+  lastMessage?: { message: string; createdAt: string; senderRole: string } | null
+  resolvedAt?: string | null
 }
 
 interface ApiMessage {
   id: string
   senderId: string
-  senderType: string
+  senderType?: string
+  senderRole?: string
   message: string
   createdAt: string
 }
@@ -45,6 +51,14 @@ const STATUS_LABELS: Record<string, string> = {
   open: 'Open',
   in_progress: 'In Progress',
   waiting_buyer: 'Waiting on Buyer',
+  resolved: 'Resolved',
+  closed: 'Closed',
+}
+
+/** Task 76: the seller-thread lifecycle (sellerSupportTickets model). */
+const SELLER_STATUS_LABELS: Record<string, string> = {
+  open: 'Open',
+  in_progress: 'In Progress',
   resolved: 'Resolved',
   closed: 'Closed',
 }
@@ -66,6 +80,8 @@ export function AdminSupportTicketsPage() {
   const [needsAuth, setNeedsAuth] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'in_progress' | 'waiting_buyer' | 'resolved' | 'closed'>('all')
+  // Task 76: buyer tickets vs seller tickets — one page, two registries.
+  const [mode, setMode] = useState<'buyer' | 'seller'>('buyer')
 
   const [openId, setOpenId] = useState<string | null>(null)
   const [messages, setMessages] = useState<ApiMessage[]>([])
@@ -84,7 +100,8 @@ export function AdminSupportTicketsPage() {
     try {
       const headers: Record<string, string> = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
-      const res = await fetch('/api/support/tickets', { headers })
+      const endpoint = mode === 'buyer' ? '/api/support/tickets' : '/api/supplier/support'
+      const res = await fetch(endpoint, { headers })
       if (res.status === 401) { setNeedsAuth(true); setTickets([]); return }
       const json = await res.json().catch(() => null)
       if (!res.ok || !json?.success) {
@@ -99,7 +116,7 @@ export function AdminSupportTicketsPage() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [token])
+  }, [token, mode])
 
   useEffect(() => { loadTickets() }, [loadTickets])
 
@@ -112,7 +129,10 @@ export function AdminSupportTicketsPage() {
     try {
       const headers: Record<string, string> = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
-      const res = await fetch(`/api/support/tickets/${encodeURIComponent(id)}`, { headers })
+      const endpoint = mode === 'buyer'
+        ? `/api/support/tickets/${encodeURIComponent(id)}`
+        : `/api/supplier/support/${encodeURIComponent(id)}`
+      const res = await fetch(endpoint, { headers })
       if (res.status === 401) { setThreadError('Session expired — reload the page.'); return }
       const json = await res.json().catch(() => null)
       if (!res.ok || !json?.success) {
@@ -135,7 +155,10 @@ export function AdminSupportTicketsPage() {
     try {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
-      const res = await fetch(`/api/support/tickets/${encodeURIComponent(ticket.id)}/messages`, {
+      const endpoint = mode === 'buyer'
+        ? `/api/support/tickets/${encodeURIComponent(ticket.id)}/messages`
+        : `/api/supplier/support/${encodeURIComponent(ticket.id)}`
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers,
         body: JSON.stringify({ message: reply.trim() }),
@@ -162,7 +185,10 @@ export function AdminSupportTicketsPage() {
     try {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
-      const res = await fetch(`/api/support/tickets/${encodeURIComponent(ticket.id)}`, {
+      const endpoint = mode === 'buyer'
+        ? `/api/support/tickets/${encodeURIComponent(ticket.id)}`
+        : `/api/supplier/support/${encodeURIComponent(ticket.id)}`
+      const res = await fetch(endpoint, {
         method: 'PATCH',
         headers,
         body: JSON.stringify({ status }),
@@ -203,7 +229,7 @@ export function AdminSupportTicketsPage() {
                 <LifeBuoy className="h-5 w-5 text-primary" /> Support Threads
               </h1>
               <p className="text-[11px] text-slate-400">
-                Buyer support tickets — reply as the platform. Every reply notifies the filer; status changes are yours to drive.
+                Reply as the platform. Every reply notifies the filer; status changes are yours to drive.
               </p>
             </div>
           </div>
@@ -215,6 +241,19 @@ export function AdminSupportTicketsPage() {
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
           </Button>
+        </div>
+
+        {/* Task 76: buyer tickets vs seller tickets — two registries, one page. */}
+        <div className="flex gap-2">
+          {(['buyer', 'seller'] as const).map((m) => (
+            <button
+              key={m}
+              onClick={() => { setMode(m); setOpenId(null); setStatusFilter('all') }}
+              className={`min-h-11 px-5 rounded-xl text-xs font-black uppercase tracking-wide transition ${mode === m ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'}`}
+            >
+              {m === 'buyer' ? 'Buyer Threads' : 'Seller Threads'}
+            </button>
+          ))}
         </div>
 
         {needsAuth ? (
@@ -275,16 +314,19 @@ export function AdminSupportTicketsPage() {
                               </span>
                             </div>
                             <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                              {t.user ? `${t.user.buyerProfile?.fullName || t.user.email} · ${t.user.email}` : 'Buyer'} · {t.category.replace(/_/g, ' ')}
-                              {t.relatedOrderId ? ` · order ${t.relatedOrderId.slice(-8)}` : ''}
+                              {mode === 'buyer'
+                                ? (t.user ? `${t.user.buyerProfile?.fullName || t.user.email} · ${t.user.email}` : 'Buyer')
+                                : (t.supplier ? `${t.supplier.companyName} · ${t.supplier.email}` : 'Seller')}
+                              {' · '}{t.category.replace(/_/g, ' ')}
+                              {mode === 'buyer' && t.relatedOrderId ? ` · order ${t.relatedOrderId.slice(-8)}` : ''}
                             </p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <span className="text-[10px] font-black uppercase px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
-                              {STATUS_LABELS[t.status] ?? t.status}
+                              {(mode === 'buyer' ? STATUS_LABELS[t.status] : SELLER_STATUS_LABELS[t.status]) ?? t.status}
                             </span>
                             <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                              <MessageSquare className="h-3 w-3" /> {t._count?.messages ?? 0}
+                              <MessageSquare className="h-3 w-3" /> {t._count?.messages ?? t.messageCount ?? 0}
                             </span>
                             {isOpen ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
                           </div>
@@ -308,17 +350,20 @@ export function AdminSupportTicketsPage() {
                                   <span className="text-[9px] font-black uppercase text-slate-400">Buyer · opened</span>
                                   <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-wrap">{t.description}</p>
                                 </div>
-                                {messages.map((m) => (
-                                  <div
-                                    key={m.id}
-                                    className={`rounded-2xl border p-3 ${m.senderType === 'admin' ? 'bg-primary/5 border-primary/20' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800'}`}
-                                  >
-                                    <span className={`text-[9px] font-black uppercase ${m.senderType === 'admin' ? 'text-primary' : 'text-slate-400'}`}>
-                                      {m.senderType === 'admin' ? 'Zylod Support' : 'Buyer'} · {new Date(m.createdAt).toLocaleString('en-GB')}
-                                    </span>
-                                    <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-wrap">{m.message}</p>
-                                  </div>
-                                ))}
+                                {messages.map((m) => {
+                                  const isAdminMsg = (m.senderType ?? m.senderRole) === 'admin'
+                                  return (
+                                    <div
+                                      key={m.id}
+                                      className={`rounded-2xl border p-3 ${isAdminMsg ? 'bg-primary/5 border-primary/20' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800'}`}
+                                    >
+                                      <span className={`text-[9px] font-black uppercase ${isAdminMsg ? 'text-primary' : 'text-slate-400'}`}>
+                                        {isAdminMsg ? 'Zylod Support' : mode === 'buyer' ? 'Buyer' : 'Seller'} · {new Date(m.createdAt).toLocaleString('en-GB')}
+                                      </span>
+                                      <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-wrap">{m.message}</p>
+                                    </div>
+                                  )
+                                })}
                               </div>
 
                               <div className="flex gap-2">
@@ -340,7 +385,10 @@ export function AdminSupportTicketsPage() {
                               </div>
 
                               <div className="flex flex-wrap gap-2 pt-1">
-                                {(['in_progress', 'waiting_buyer', 'resolved', 'closed'] as const).map((s) => (
+                                {(mode === 'buyer'
+                                  ? (['in_progress', 'waiting_buyer', 'resolved', 'closed'] as const)
+                                  : (['in_progress', 'resolved', 'closed'] as const)
+                                ).map((s) => (
                                   <Button
                                     key={s}
                                     variant={s === 'resolved' ? 'default' : 'outline'}
@@ -350,7 +398,7 @@ export function AdminSupportTicketsPage() {
                                   >
                                     {s === 'resolved' ? <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> : null}
                                     {s === 'closed' ? <XCircle className="h-3.5 w-3.5 mr-1" /> : null}
-                                    {STATUS_LABELS[s]}
+                                    {(mode === 'buyer' ? STATUS_LABELS[s] : SELLER_STATUS_LABELS[s]) ?? s}
                                   </Button>
                                 ))}
                               </div>
