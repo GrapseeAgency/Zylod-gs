@@ -2355,3 +2355,21 @@ Stage Summary:
 - The returns flow is now FULLY closed on every side: buyer files → admin approves → seller physically receives → stock/soldCount restore atomically (exact cancellation-math inverse) → shipments honestly marked returned when fully covered → buyer watches receipts arrive on their return page → admin sees the k/N goods-received denominator → every step audited and broadcast live. Money stays strictly on the refunds ledger; goods stay strictly on returnReceipts.
 - Dead fabricated API surface deleted; the consumed timeline surface made honest for closed shipments.
 - REMAINING FAKE/INCOMPLETE: none found in these slices. Queued: gateway re-verification post-incident, mobile-viewport pass, uploads object-storage note (Railway ephemeral), eslint baseline in untouched files.
+
+---
+Task ID: 60-incident (follow-up to Task 60 ops note)
+Agent: orchestrator (Z.ai Code)
+
+Task: Root-cause the dev-server wedge that blocked post-restart gateway QA.
+
+Work Log / Diagnosis (all verified with live commands):
+- Symptom chain: supervisor restart 14:51 → stale chunk-graph ChunkLoadError (healed by .next purge + clean restart) → then EVERY new `next dev` process wedged in D-state right after binding its port (:3000, then :3010 test).
+- Two D-state processes (6485, 6958) held :3000 in the kernel; kill -9 pends forever (D is uninterruptible); ss -K cannot destroy a LISTEN socket on this kernel; no root for umount/Caddy.
+- SMOKING GUN: `/home/z/my-project/upload` is an ossfs FUSE mount (Alibaba OSS) layered over a tmpfs — and its ossfs DAEMON IS DEAD (pgrep finds nothing). `stat` on that path hangs 30s+; every other path on the box is fast. Turbopack's watcher walks the project root at startup, touches the dead mount, and wedges forever — that is why every fresh `next dev` dies at first compile.
+- Disk itself is healthy (dd 1.9 GB/s, 300 node writes in 52 ms) — the stall is ONLY through the dead FUSE mount.
+- Blocked recoveries, all permission-bound: umount/fusermount (superuser only), Caddyfile reroute (/app/Caddyfile is root:root 0600, caddy runs as root PID 2), kernel socket destruction (ss -K unsupported for LISTEN here).
+- Recovery path for the next session (fresh container or root): `umount -l /home/z/my-project/upload` (dead ossfs), then the supervisor loop (still retrying EADDRINUSE every 3s) binds :3000 instantly; if resuming THIS container with root: same umount → next supervisor retry heals everything. Then finish the queued re-verification: the three Task 60 pages via the :81 gateway + mobile 375×812 + console checks.
+- All Task 60 code/QA evidence predates the wedge and is already committed+pushed (673cff8 + 8aec9ea). Working tree clean; DB artifact wiped to 139×0 pre-commit.
+
+Stage Summary:
+- The wedge is an environment failure (orphaned ossfs FUSE mount owned by root), NOT a code defect: proven by healthy disk I/O everywhere else and by the exact hang point (any process touching upload/). Dev server self-heals the moment the mount is detached by someone with privileges.
