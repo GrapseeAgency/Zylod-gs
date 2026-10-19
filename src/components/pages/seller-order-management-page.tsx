@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { Search, Download, Package, Calendar, Radio, Wallet, ChevronDown, ChevronUp, Check, X, Hourglass } from 'lucide-react';
+import { Search, Download, Package, Calendar, Radio, Wallet, ChevronDown, ChevronUp, Check, X, Hourglass, Undo2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room';
 
@@ -49,6 +49,14 @@ const STATUS_CHIP: Record<string, string> = {
   returned: 'bg-gray-200 text-gray-700',
 };
 
+/** REAL returnRequests.status values (prisma/schema.prisma — Task 59-a). */
+const RETURN_STATUS_CHIP: Record<string, string> = {
+  pending: 'bg-yellow-100 text-yellow-700',
+  approved: 'bg-blue-100 text-blue-700',
+  rejected: 'bg-red-100 text-red-700',
+  refunded: 'bg-emerald-100 text-emerald-700',
+};
+
 interface SupplierOrderRow {
   id: string;
   orderNumber: string;
@@ -60,6 +68,33 @@ interface SupplierOrderRow {
   moqPackCount: number;
   totalAmount: number;
   items: { name: string; imageUrl: string | null; quantity: number; price: number; unit: string | null }[];
+}
+
+/** Real row shape of GET /api/seller/returns (Task 59-a). */
+interface SellerReturnRow {
+  id: string;
+  returnNumber: string;
+  orderId: string;
+  orderNumber: string | null;
+  orderPaymentStatus: string | null;
+  status: string;
+  shippingMethod: string;
+  estimatedRefund: number;
+  sellerShare: number;
+  resolutionNote: string | null;
+  resolvedAt: string | null;
+  createdAt: string;
+  items: {
+    id: string;
+    productName: string | null;
+    unit: string | null;
+    variant: string | null;
+    quantity: number;
+    orderedQuantity: number | null;
+    reason: string;
+    comments: string | null;
+    estimatedItemValue: number;
+  }[];
 }
 
 /** Real row shape of GET /api/seller/payments (Task 56-b). */
@@ -98,6 +133,12 @@ export function SellerOrderManagementPage() {
   const [verifyNotes, setVerifyNotes] = useState<Record<string, string>>({});
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
 
+  // ── Returns queue (Task 59-a — the seller leg of the real returns flow) ─
+  const [returns, setReturns] = useState<SellerReturnRow[]>([]);
+  const [returnsLoading, setReturnsLoading] = useState(true);
+  const [returnsError, setReturnsError] = useState<string | null>(null);
+  const [returnsOpen, setReturnsOpen] = useState(true);
+
   const fetchOrders = useCallback(async (tab: string) => {
     setLoading(true);
     setError(null);
@@ -134,7 +175,7 @@ export function SellerOrderManagementPage() {
         const res = await fetch('/api/profile/me', { credentials: 'include' });
         if (!res.ok) return; // signed out → no live feed, honest
         const data = await res.json();
-        const id = data?.user?.supplierProfile?.id;
+        const id = data?.data?.supplierProfile?.id;
         if (!cancelled && typeof id === 'string' && id.length > 0) setSellerRoom(`seller:${id}`);
       } catch {
         /* profile fetch failed — live feed stays off, list still works */
@@ -178,6 +219,40 @@ export function SellerOrderManagementPage() {
   useEffect(() => {
     void fetchPayments();
   }, [fetchPayments]);
+
+  const fetchReturns = useCallback(async () => {
+    setReturnsLoading(true);
+    setReturnsError(null);
+    try {
+      const res = await fetch('/api/seller/returns', { credentials: 'include' });
+      if (res.status === 401) {
+        setReturnsError('Sign in to see return requests.');
+        setReturns([]);
+        return;
+      }
+      if (res.status === 403) {
+        // No supplier profile — the section hides itself (no goods to return).
+        setReturns([]);
+        return;
+      }
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.success) {
+        setReturnsError(body?.error || `Failed to load return requests (HTTP ${res.status})`);
+        setReturns([]);
+        return;
+      }
+      setReturns(Array.isArray(body.data) ? body.data : []);
+    } catch {
+      setReturnsError('Network error while loading return requests');
+      setReturns([]);
+    } finally {
+      setReturnsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchReturns();
+  }, [fetchReturns]);
 
   const activeTabRef = useRef(activeTab);
   useEffect(() => {
@@ -241,8 +316,12 @@ export function SellerOrderManagementPage() {
       if (message.event === 'payment:verified' || message.event === 'payment:rejected') {
         void fetchPayments();
       }
+      if (message.event === 'return:new') {
+        toast('New return request received', { description: 'A buyer filed a return that touches your goods — see the Returns queue.' });
+        void fetchReturns();
+      }
     },
-    [fetchOrders, fetchPayments]
+    [fetchOrders, fetchPayments, fetchReturns]
   );
 
   const { connected } = useRealtimeRoom(sellerRoom ? [sellerRoom] : [], {
@@ -451,6 +530,78 @@ export function SellerOrderManagementPage() {
                     </div>
                   </div>
                 ))
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ── Returns queue (Task 59-a) — real requests touching this supplier ── */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <button
+            onClick={() => setReturnsOpen((o) => !o)}
+            className="min-h-11 w-full px-4 py-3 flex items-center justify-between text-left"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+              <Undo2 className="w-4 h-4 text-[#C8102E]" />
+              Returns queue
+              {returns.length > 0 && (
+                <span className="text-xs bg-[#C8102E] text-white px-2 py-0.5 rounded-full font-medium">{returns.length}</span>
+              )}
+            </span>
+            {returnsOpen ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+          </button>
+
+          {returnsOpen && (
+            <div className="px-4 pb-4 space-y-3">
+              {returnsError && (
+                <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-lg p-3">{returnsError}</div>
+              )}
+              {returnsLoading ? (
+                <div className="h-16 bg-gray-100 rounded-lg animate-pulse" />
+              ) : returns.length === 0 && !returnsError ? (
+                <p className="text-xs text-gray-400 py-2">No return requests touching your goods right now.</p>
+              ) : (
+                <>
+                  <p className="text-[11px] text-gray-400">
+                    The Zylod team reviews and resolves every return. This queue shows each request that includes YOUR items — read-only.
+                  </p>
+                  {returns.map((r) => (
+                    <div key={r.id} className="border border-gray-100 rounded-lg p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-900">{r.returnNumber}</p>
+                          <p className="text-xs text-gray-500">Order #{r.orderNumber ?? '—'} · {r.shippingMethod}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium capitalize ${RETURN_STATUS_CHIP[r.status] || 'bg-gray-100 text-gray-700'}`}>
+                            {r.status}
+                          </span>
+                          <p className="text-xs font-bold text-[#C8102E] mt-1">৳{r.sellerShare?.toLocaleString()} <span className="font-normal text-gray-400">your share</span></p>
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        {r.items.map((it) => (
+                          <div key={it.id} className="bg-gray-50 border border-gray-100 rounded-md px-2.5 py-1.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="text-xs font-medium text-gray-800 truncate">
+                                {it.productName ?? 'Item'}{it.variant ? ` (${it.variant})` : ''}
+                              </p>
+                              <span className="text-[11px] text-gray-500 shrink-0">
+                                {it.quantity}/{it.orderedQuantity ?? '?'} {it.unit ?? ''} · ৳{it.estimatedItemValue?.toLocaleString()}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-gray-500 mt-0.5">Reason: {it.reason}{it.comments ? ` — “${it.comments}”` : ''}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-gray-400">
+                        <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {format(new Date(r.createdAt), 'MMM dd, HH:mm')}</span>
+                        <span>· full-request refund estimate ৳{r.estimatedRefund?.toLocaleString()}</span>
+                        {r.resolutionNote && <span className="text-gray-600">· note: {r.resolutionNote}</span>}
+                      </div>
+                    </div>
+                  ))}
+                </>
               )}
             </div>
           )}

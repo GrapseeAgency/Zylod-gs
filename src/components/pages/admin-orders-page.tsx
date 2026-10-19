@@ -14,18 +14,23 @@
  * where.subOrders = { some: { status } } — nothing is filtered client-side
  * so counts and pagination stay real.
  *
- * Read-only oversight: fulfillment moves happen seller-side
- * (PATCH /api/supplier/orders/[id]) — this page makes decisions visible, it
- * does not duplicate the controls.
+ * Read-only oversight EXCEPT one real admin lever (Task 59-b): Force cancel —
+ * POST /api/admin/orders/[id]/cancel cancels every active shipment in any
+ * state, voids pending payment references, marks verified money refunded and
+ * restores stock. It exists because fraud/dispute intervention cannot be
+ * blocked by the buyer-facing guards. Everything else stays seller-side
+ * (PATCH /api/supplier/orders/[id]).
  */
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { toast } from 'sonner'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   ShieldCheck, Search, RefreshCw, AlertTriangle, CheckCircle2, Package,
-  ShoppingBag, Truck, Boxes, ChevronDown, ChevronUp,
+  ShoppingBag, Truck, Boxes, ChevronDown, ChevronUp, Ban,
 } from 'lucide-react'
 
 // ── Real API types (GET /api/admin/orders) ─────────────────────────────
@@ -111,6 +116,11 @@ export function AdminOrdersPage() {
   const [total, setTotal] = useState(0)
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
+  // ── Force cancel (Task 59-b) — the one admin lever on this page ────────
+  const [forceTarget, setForceTarget] = useState<ApiOrder | null>(null)
+  const [forceReason, setForceReason] = useState('')
+  const [forceBusy, setForceBusy] = useState(false)
+
   const loadOrders = useCallback(async (opts?: { status?: string; q?: string; page?: number }) => {
     const useStatus = opts?.status ?? statusTab
     const useQ = opts?.q ?? q
@@ -146,6 +156,36 @@ export function AdminOrdersPage() {
   }, [statusTab, q, page])
 
   useEffect(() => { loadOrders() }, [loadOrders])
+
+  const confirmForceCancel = useCallback(async () => {
+    if (!forceTarget) return
+    setForceBusy(true)
+    try {
+      const reason = forceReason.trim()
+      const res = await fetch(`/api/admin/orders/${encodeURIComponent(forceTarget.id)}/cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(reason ? { reason } : {}),
+      })
+      const body = await res.json().catch(() => null)
+      if (!res.ok) {
+        toast.error(body?.error || `Force cancel failed (HTTP ${res.status})`)
+        return
+      }
+      const d = body?.data
+      toast.success(`Order #${d?.orderNumber ?? forceTarget.orderNumber} force-cancelled`, {
+        description: `${d?.subOrdersCancelled ?? 0} shipment(s) cancelled · ${d?.paymentsFailed ?? 0} pending reference(s) voided · ${d?.paymentsRefunded ?? 0} verified payment(s) marked refunded (৳${d?.refundedAmount ?? 0}) · stock restored`,
+      })
+      setForceTarget(null)
+      setForceReason('')
+      loadOrders()
+    } catch {
+      toast.error('Network error while force-cancelling the order')
+    } finally {
+      setForceBusy(false)
+    }
+  }, [forceTarget, forceReason, loadOrders])
 
   const switchStatus = (s: string) => {
     setStatusTab(s)
@@ -302,6 +342,17 @@ export function AdminOrdersPage() {
                       <Boxes className="h-3 w-3" /> {o.subOrderCount} shipment{o.subOrderCount === 1 ? '' : 's'} · {o.itemCount} item{o.itemCount === 1 ? '' : 's'} across all shipments
                       <Truck className="h-3 w-3 ml-2" /> status changes are made by the selling supplier and appear here after their next edit
                     </p>
+                    {subOrders.some((s) => s.status !== 'cancelled') && (
+                      <div className="pt-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => { setForceReason(''); setForceTarget(o) }}
+                          className="h-9 px-4 rounded-xl text-xs font-bold gap-1.5 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"
+                        >
+                          <Ban className="h-3.5 w-3.5" /> Force cancel order
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -320,6 +371,41 @@ export function AdminOrdersPage() {
           )}
         </div>
       )}
+
+      {/* Force-cancel confirm (Task 59-b) — verbatim doctrine before the lever fires */}
+      <AlertDialog open={forceTarget !== null} onOpenChange={(open) => { if (!open) setForceTarget(null) }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Force cancel order #{forceTarget?.orderNumber ?? ''}?</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-xs">
+                <p>
+                  Every active shipment is cancelled in its CURRENT state — pending, packed, shipped or delivered.
+                  Goods already on the road must be physically recovered outside the system.
+                </p>
+                <p>
+                  Pending payment references are voided. Verified money is marked refunded
+                  (the real transfer happens outside this system) and the order shows refunded.
+                  Stock is restored for every cancelled item.
+                </p>
+                <Input
+                  value={forceReason}
+                  onChange={(e) => setForceReason(e.target.value)}
+                  placeholder="Reason (optional, audit-logged)"
+                  maxLength={500}
+                  className="h-10 rounded-xl text-xs"
+                />
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button variant="outline" disabled={forceBusy} onClick={() => setForceTarget(null)} className="h-10 px-4 rounded-xl text-xs font-bold">Keep order</Button>
+            <Button disabled={forceBusy} onClick={() => void confirmForceCancel()} className="h-10 px-4 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white">
+              {forceBusy ? 'Cancelling…' : 'Force cancel'}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

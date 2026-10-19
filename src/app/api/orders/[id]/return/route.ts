@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { getSettingValue, RETURNS_WINDOW_DAYS_DEFAULT } from '@/lib/admin-settings'
+import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import type { returnRequests, returnRequestItems } from '@prisma/client'
 
 function generateReturnNumber(): string {
@@ -111,7 +112,9 @@ export async function POST(
     const itemIds = [...new Set(items.map(i => i.itemId as string))]
     const dbItems = await db.orderItems.findMany({
       where: { id: { in: itemIds }, subOrder: { orderId: id } },
-      select: { id: true, quantity: true, subOrderId: true, subOrder: { select: { status: true } } },
+      // supplierId rides along so the affected sellers can be told in real
+      // time (return:new push) after the request is persisted (Task 59-a).
+      select: { id: true, quantity: true, subOrderId: true, subOrder: { select: { status: true, supplierId: true } } },
     })
     const dbItemsById = new Map(dbItems.map(i => [i.id, i]))
 
@@ -236,6 +239,33 @@ export async function POST(
         }),
       },
     })
+
+    // Real-time (Task 59-a): every seller whose goods are being returned
+    // gets a live return:new push on their seller:<supplierId> room, and
+    // every admin's own room hears it too. Real persisted values only — no
+    // buyer PII; sellers refetch through their authenticated GET.
+    const affectedSupplierIds = [...new Set(dbItems.map(i => i.subOrder.supplierId))]
+    const admins = await db.users.findMany({
+      where: { userType: 'admin' },
+      select: { id: true },
+    })
+    const returnPayload = {
+      returnId: created.id,
+      returnNumber: created.returnNumber,
+      orderId: id,
+      orderNumber: order.orderNumber,
+      itemCount: createdItems.length,
+      estimatedRefund: created.estimatedRefund,
+      createdAt: created.createdAt.toISOString(),
+    }
+    void Promise.allSettled([
+      ...affectedSupplierIds.map(supplierId =>
+        broadcastToRoom(`seller:${supplierId}`, 'return:new', returnPayload)
+      ),
+      ...admins.map(admin =>
+        broadcastToRoom(`admin:${admin.id}`, 'return:new', returnPayload)
+      ),
+    ])
 
     return NextResponse.json({
       success: true,
