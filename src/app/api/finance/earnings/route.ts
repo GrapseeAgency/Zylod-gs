@@ -11,9 +11,19 @@ export async function GET(request: NextRequest) {
   try {
     const userId = auth.user.id
 
+    // 🐞 Task 73: subOrders.supplierId and escrowAccounts.supplierId store
+    // supplierProfiles.id — filtering them by users.id (the OLD code) matched
+    // NOTHING: grossGMV, monthly sales and pendingEscrow all read zero for
+    // every seller. Resolve the caller's real profile id first.
+    const profile = await db.supplierProfiles.findUnique({
+      where: { userId },
+      select: { id: true },
+    })
+    const supplierId = profile?.id ?? 'none'
+
     // Gross GMV from supplier subOrders
     const salesAgg = await db.subOrders.aggregate({
-      where: { supplierId: userId },
+      where: { supplierId },
       _sum: { subtotal: true, shippingCost: true },
       _count: { id: true },
     })
@@ -31,13 +41,19 @@ export async function GET(request: NextRequest) {
 
     // Escrow currently in transit
     const escrowAgg = await db.escrowAccounts.aggregate({
-      where: { supplierId: userId, status: 'held' },
+      where: { supplierId, status: 'held' },
+      _sum: { amount: true },
+    })
+
+    // Task 73: money ACTUALLY paid out — the Task 72 payout ledger rows.
+    const payoutAgg = await db.walletTransactions.aggregate({
+      where: { wallet: { userId }, type: 'payout' },
       _sum: { amount: true },
     })
 
     // Monthly breakdown (last 6 months calculation)
     const subOrders = await db.subOrders.findMany({
-      where: { supplierId: userId },
+      where: { supplierId },
       select: { subtotal: true, shippingCost: true, createdAt: true },
       orderBy: { createdAt: 'desc' },
       take: 100,
@@ -51,6 +67,7 @@ export async function GET(request: NextRequest) {
         platformCommission,
         availablePayout,
         pendingEscrow: escrowAgg._sum.amount || 0,
+        totalPaidOut: payoutAgg._sum.amount || 0,
         totalOrders,
         commissionRate: '3.0%',
         currency: 'BDT',

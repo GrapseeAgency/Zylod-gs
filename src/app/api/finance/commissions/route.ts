@@ -11,8 +11,16 @@ export async function GET(request: NextRequest) {
   try {
     const userId = auth.user.id
 
+    // 🐞 Task 73: subOrders.supplierId stores supplierProfiles.id — the OLD
+    // code filtered by users.id, so this list was ALWAYS empty for sellers.
+    const profile = await db.supplierProfiles.findUnique({
+      where: { userId },
+      select: { id: true },
+    })
+    const supplierId = profile?.id ?? 'none'
+
     const subOrders = await db.subOrders.findMany({
-      where: { supplierId: userId },
+      where: { supplierId },
       include: {
         order: { select: { orderNumber: true } },
       },

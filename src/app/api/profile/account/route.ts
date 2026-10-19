@@ -15,9 +15,16 @@ export async function GET(request: NextRequest) {
   try {
     const userId = auth.user.id
 
+    // 🐞 Task 73: products.supplierId stores supplierProfiles.id — the OLD
+    // code counted by users.id, so the seller's product count was ALWAYS 0.
+    const profile = await db.supplierProfiles.findUnique({
+      where: { userId },
+      select: { id: true },
+    })
+
     const [ordersCount, productsCount, reviewsCount, user] = await Promise.all([
       db.orders.count({ where: { buyerId: userId } }),
-      db.products.count({ where: { supplierId: userId } }),
+      db.products.count({ where: { supplierId: profile?.id ?? 'none' } }),
       db.reviews.count({ where: { buyerId: userId } }),
       db.users.findUnique({
         where: { id: userId },

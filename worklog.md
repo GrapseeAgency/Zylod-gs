@@ -2660,3 +2660,24 @@ Work Log:
 Stage Summary:
 - The seller deep-link chain is honest at last: Escrow Released notification → click → the order page ACTUALLY OPENS for the seller. The id-space bug is the kind of half-connection the cohesion mandate exists for — caught by following my own feature's path end to end.
 - REMAINING FAKE/INCOMPLETE: none in these slices. Queued: seller Earnings summary card reading walletTransactions type 'payout' aggregates (the finance/earnings API already aggregates escrow — audit first, then build).
+
+---
+Task ID: 73
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: SELLER EARNINGS TRUTH — the queued earnings card item, which opened into the same id-space bug class as 72-b in THREE more routes, plus the missing payout/escrow tiles on the earnings dashboard.
+
+Work Log:
+- 🐞 finance/earnings: subOrders.aggregate + subOrders.findMany + escrowAccounts.aggregate ALL filtered supplierId by users.id — grossGMV, monthly sales and pendingEscrow read ZERO for every seller forever. Fixed with the like-for-like profile resolution (72-b pattern).
+- 🐞 finance/commissions: same bug — the whole commission ledger was ALWAYS empty for sellers. Fixed.
+- 🐞 profile/account: products.count by users.id — the account page's "products" stat was ALWAYS 0 for sellers. Fixed.
+- Sweep for the class: the supplier dashboard/analytics routes already resolve profiles correctly (supplierScopeIds) — audited, clean.
+- API: earnings gained totalPaidOut (walletTransactions type 'payout' aggregate — the Task 72 money made visible).
+- UI: earnings-dashboard gained two REAL tiles in the Revenue Analytics Breakdown (grid-cols-3): "Held in SafePay Escrow (in transit)" (amber) and "Escrow Released & Paid to Wallet" (emerald) — both were hidden zeros before the Task 71/72 ledgers existed.
+- Verified with REAL data (t71 state): earnings { grossGMV 600, totalOrders 3, pendingEscrow 100, totalPaidOut 300, availablePayout 300 }, commissions 3 items totalGross 600 — every number now matches the DB.
+- BROWSER QA (gateway :81, real UI login as seller, page earnings-dashboard): GMV ৳600 + "Held in SafePay Escrow ৳100" + "Escrow Released & Paid to Wallet ৳300" tiles all render. Console clean.
+- tsc 0 whole project; eslint 0 on touched files. DB wiped 139×0 before commit.
+
+Stage Summary:
+- The seller's entire money story is now visible and TRUE: GMV, commission, escrow in transit, released & paid out, wallet balance — every surface reads real ledgers, every id-space mismatch in the money paths is fixed.
+- REMAINING FAKE/INCOMPLETE: none in these slices. Queued: none new — the money slice family (wallet-pay, escrow, payout, earnings truth, commission ledger) is cohesive end to end.

@@ -23,6 +23,7 @@ export function EarningsDashboardPage() {
     platformCommission: number
     availablePayout: number
     pendingEscrow: number
+    totalPaidOut?: number
     totalOrders: number
     commissionRate: string
     recentSales: Array<{ total: number; date: string }>
@@ -32,6 +33,7 @@ export function EarningsDashboardPage() {
     platformCommission: 0,
     availablePayout: 0,
     pendingEscrow: 0,
+    totalPaidOut: 0,
     totalOrders: 0,
     commissionRate: '3.0%',
     recentSales: [],
@@ -150,7 +152,7 @@ export function EarningsDashboardPage() {
             Revenue Analytics Breakdown
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
             <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 md:rounded-xl md:border md:border-slate-100 md:flex-col md:items-start md:gap-1">
               <span className="text-slate-500 font-medium">Gross Merchandise Value (GMV)</span>
               <span className="font-bold text-slate-900 font-mono">{formatPrice(data.grossGMV)}</span>
@@ -162,6 +164,16 @@ export function EarningsDashboardPage() {
             <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 md:rounded-xl md:border md:border-slate-100 md:flex-col md:items-start md:gap-1">
               <span className="text-slate-500 font-medium">Available for Bank Payout</span>
               <span className="font-bold text-emerald-600 font-mono">{formatPrice(data.availablePayout)}</span>
+            </div>
+            {/* Task 73: these two were hidden zeros before the escrow + payout
+                ledgers existed — now they are the seller's real money state. */}
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-amber-50 md:rounded-xl md:border md:border-amber-100 md:flex-col md:items-start md:gap-1">
+              <span className="text-slate-500 font-medium">Held in SafePay Escrow (in transit)</span>
+              <span className="font-bold text-amber-600 font-mono">{formatPrice(data.pendingEscrow)}</span>
+            </div>
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-emerald-50 md:rounded-xl md:border md:border-emerald-100 md:flex-col md:items-start md:gap-1">
+              <span className="text-slate-500 font-medium">Escrow Released &amp; Paid to Wallet</span>
+              <span className="font-bold text-emerald-700 font-mono">{formatPrice(data.totalPaidOut ?? 0)}</span>
             </div>
             <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 md:rounded-xl md:border md:border-slate-100 md:flex-col md:items-start md:gap-1">
               <span className="text-slate-500 font-medium">Total Orders Recorded</span>
