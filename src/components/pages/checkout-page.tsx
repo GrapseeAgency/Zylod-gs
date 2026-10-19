@@ -7,7 +7,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
 import {
   ArrowLeft, MapPin, CreditCard, Check, CheckCircle2, Package,
-  Lock, AlertCircle, Loader2, Plus
+  Lock, AlertCircle, Loader2, Plus, Wallet
 } from 'lucide-react'
 
 /**
@@ -52,6 +52,13 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   const [addressesError, setAddressesError] = useState('')
   const [selectedAddressId, setSelectedAddressId] = useState<string>('')
 
+  // Task 70: WALLET-PAY — the buyer's REAL balance, fetched from the wallet
+  // API. A funded wallet can pay the order at checkout (order lands PAID in
+  // the same transaction that debits the balance); an unfunded one shows the
+  // honest state instead of a dead toggle.
+  const [walletBalance, setWalletBalance] = useState<number | null>(null)
+  const [payWithWallet, setPayWithWallet] = useState(false)
+
   const loadAddresses = useCallback(async () => {
     setAddressesLoading(true)
     setAddressesError('')
@@ -87,7 +94,29 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
     loadAddresses()
   }, [loadAddresses])
 
+  // Task 70: courtesy fetch — a failing wallet read NEVER blocks checkout
+  // (the toggle simply stays hidden and the manual payment leg applies).
+  useEffect(() => {
+    let cancelled = false
+    const loadWallet = async () => {
+      try {
+        const res = await fetch('/api/wallet/balance', { credentials: 'include' })
+        if (!res.ok || cancelled) return
+        const data = await res.json().catch(() => null)
+        if (!cancelled && data?.success && typeof data.data?.availableBalance === 'number') {
+          setWalletBalance(data.data.availableBalance)
+        }
+      } catch {
+        /* courtesy rail — silent, honest fallback is the manual leg */
+      }
+    }
+    void loadWallet()
+    return () => { cancelled = true }
+  }, [])
+
   const subtotal = useMemo(() => items.reduce((sum, i) => sum + (i.totalPrice || i.unitPrice * i.quantity), 0), [items])
+
+  const walletCanCover = walletBalance !== null && walletBalance >= subtotal
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || null
 
@@ -109,6 +138,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         credentials: 'include',
         body: JSON.stringify({
           shippingAddressId: selectedAddress.id,
+          payWithWallet: payWithWallet && walletCanCover ? true : undefined,
           items: items.map((i) => ({
             productId: i.productId,
             variantId: i.variantId || null,
@@ -124,13 +154,19 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         setError(data?.error || 'Your session has expired. Sign in again to place this order.')
         return
       }
+      if (res.status === 402) {
+        // The server re-checked the REAL balance at write time — trust it.
+        setPayWithWallet(false)
+        setError(data?.error || 'Insufficient wallet balance.')
+        return
+      }
       if (!res.ok || !data?.success) {
         // Surface the REAL backend error (stock, MOQ, address, product availability…)
         setError(data?.error || `Order failed (HTTP ${res.status}). Please try again.`)
         return
       }
 
-      // Real order created server-side — status starts as UNPAID.
+      // Real order created server-side — wallet-paid orders land PAID.
       clearCart()
       setPlacedOrder({
         orderNumber: data.data.orderNumber,
@@ -153,8 +189,17 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         </div>
         <h1 className="text-xl md:text-2xl font-black text-slate-900">Order {placedOrder.orderNumber} Created</h1>
         <p className="text-xs text-slate-500 mt-2 max-w-xs leading-relaxed">
-          Status: <span className="font-bold text-amber-600 uppercase">{placedOrder.paymentStatus}</span>.
-          The order is NOT confirmed until payment is verified. The supplier sees it now.
+          {placedOrder.paymentStatus === 'paid' ? (
+            <>
+              Status: <span className="font-bold text-emerald-600 uppercase">PAID</span> — settled from your wallet
+              balance. The supplier can confirm and start packing right away.
+            </>
+          ) : (
+            <>
+              Status: <span className="font-bold text-amber-600 uppercase">{placedOrder.paymentStatus}</span>.
+              The order is NOT confirmed until payment is verified. The supplier sees it now.
+            </>
+          )}
         </p>
         <div className="mt-6 space-y-2 w-full max-w-xs">
           <Button
@@ -319,18 +364,73 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
           ))}
         </div>
 
-        {/* Card 3: Payment (honest state — no gateway faked) */}
+        {/* Card 3: Payment (honest state — wallet or the verified manual leg) */}
         <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-2">
           <div className="flex items-center gap-2">
             <CreditCard className="h-4 w-4 text-primary" />
             <h2 className="text-xs font-bold text-slate-900">Payment</h2>
           </div>
+
+          {/* Task 70: pay from the REAL wallet balance */}
+          {walletBalance !== null && (
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={payWithWallet && walletCanCover}
+              disabled={!walletCanCover}
+              onClick={() => walletCanCover && setPayWithWallet((v) => !v)}
+              className={`w-full flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
+                payWithWallet && walletCanCover
+                  ? 'border-primary bg-primary/5'
+                  : walletCanCover
+                    ? 'border-slate-200 hover:bg-slate-50'
+                    : 'border-slate-100 bg-slate-50 opacity-70 cursor-not-allowed'
+              }`}
+            >
+              <span
+                className={`flex h-5 w-5 items-center justify-center rounded-md border ${
+                  payWithWallet && walletCanCover ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-white'
+                }`}
+                aria-hidden
+              >
+                {payWithWallet && walletCanCover && <Check className="h-3.5 w-3.5" />}
+              </span>
+              <Wallet className={`h-4 w-4 shrink-0 ${payWithWallet && walletCanCover ? 'text-primary' : 'text-slate-400'}`} />
+              <span className="text-xs">
+                {walletCanCover ? (
+                  <>
+                    <span className="font-bold text-slate-900">Pay {formatPrice(subtotal)} from wallet balance</span>
+                    <span className="block text-[10px] text-slate-500">
+                      Balance {formatPrice(walletBalance)} — the order is marked PAID instantly, no verification wait.
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-bold text-slate-500">Wallet balance {formatPrice(walletBalance)}</span>
+                    <span className="block text-[10px] text-slate-400">
+                      Not enough for this order ({formatPrice(subtotal)}) — top up from the wallet page, or pay manually below.
+                    </span>
+                  </>
+                )}
+              </span>
+            </button>
+          )}
+
           <div className="flex items-start gap-2 pt-1 pl-6 text-xs text-slate-600">
             <Lock className="h-3.5 w-3.5 text-slate-400 mt-0.5 shrink-0" />
             <p>
-              The order is created with status <span className="font-bold">UNPAID</span>. Payment must be
-              completed and verified before the supplier confirms — the total is re-verified server-side
-              from live catalog prices, so amounts shown here are final only after the server confirms.
+              {payWithWallet && walletCanCover ? (
+                <>
+                  The total is re-verified server-side from live catalog prices and debited from your wallet in the
+                  same transaction that reserves the stock.
+                </>
+              ) : (
+                <>
+                  The order is created with status <span className="font-bold">UNPAID</span>. Payment must be
+                  completed and verified before the supplier confirms — the total is re-verified server-side
+                  from live catalog prices, so amounts shown here are final only after the server confirms.
+                </>
+              )}
             </p>
           </div>
         </div>

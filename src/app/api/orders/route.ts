@@ -5,6 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { notifyPaymentVerified } from '@/lib/notifications'
 import { roundQty } from '@/lib/product-contract'
 
 export async function GET(request: NextRequest) {
@@ -81,6 +82,10 @@ const createOrderSchema = z.object({
   shippingAddressId: z.string().min(1).optional().nullable(),
   couponCode: z.string().min(1).optional().nullable(),
   items: z.array(orderItemSchema).min(1, 'At least one item is required').max(50, 'Too many items per order'),
+  // Task 70: pay the (server-priced) total straight from the buyer's real
+  // wallet balance — the order lands PAID in the same transaction that
+  // decrements stock. Omitted/false keeps the classic UNPAID manual leg.
+  payWithWallet: z.boolean().optional(),
 })
 
 /** Thrown inside the transaction when a variant has insufficient stock —
@@ -91,6 +96,17 @@ class VariantStockError extends Error {
     super(message)
     this.name = 'VariantStockError'
     this.available = available
+  }
+}
+
+/** Task 70: thrown inside the transaction when the wallet cannot cover the
+ *  server-priced total — carries the REAL balance so the 402 states truth. */
+class WalletInsufficientError extends Error {
+  balance: number
+  constructor(balance: number) {
+    super('Insufficient wallet balance for this order')
+    this.name = 'WalletInsufficientError'
+    this.balance = balance
   }
 }
 
@@ -114,7 +130,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    const { shippingAddressId, couponCode, items } = parsed.data
+    const { shippingAddressId, couponCode, items, payWithWallet } = parsed.data
     // Unit-bearing decimals: normalize to 2 dp so float drift never reaches DB rows.
     for (const item of items) {
       item.quantity = roundQty(item.quantity)
@@ -205,15 +221,75 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        // Task 70: WALLET-PAY — debit the buyer's REAL balance inside the SAME
+        // transaction that prices the order and decrements stock. A balance
+        // that cannot cover the server-priced total throws an honest 402
+        // carrying the real balance; the conditional updateMany makes an
+        // overspend race impossible (balance >= total is re-checked AT the
+        // write, not at the read).
+        let walletLeg: { walletId: string; balanceAfter: number } | null = null
+        if (payWithWallet) {
+          const wallet = await tx.wallets.findFirst({ where: { userId: buyerId } })
+          if (!wallet || wallet.balance < totalAmount) {
+            throw new WalletInsufficientError(wallet?.balance ?? 0)
+          }
+          const debited = await tx.wallets.updateMany({
+            where: { id: wallet.id, balance: { gte: totalAmount } },
+            data: { balance: { decrement: totalAmount } },
+          })
+          if (debited.count === 0) {
+            const current = await tx.wallets.findFirst({ where: { userId: buyerId } })
+            throw new WalletInsufficientError(current?.balance ?? 0)
+          }
+          walletLeg = { walletId: wallet.id, balanceAfter: wallet.balance - totalAmount }
+        }
+
         const newOrder = await tx.orders.create({
           data: {
             buyerId,
             orderNumber,
             totalAmount,
-            paymentStatus: 'unpaid',
+            // Task 70: a wallet-paid order is verified money the moment the
+            // balance debits — it NEVER passes through 'unpaid'.
+            paymentStatus: payWithWallet ? 'paid' : 'unpaid',
             shippingAddressId: shippingAddressId || null,
           },
         })
+
+        // Task 70 (cont.): the wallet ledger row + the REAL payments row land
+        // after the order exists — method 'wallet', status 'success', paidAt
+        // now. This is a VERIFIED payment by construction (the money was
+        // already the buyer's, held by the platform), so the house payment
+        // doctrine treats it exactly like a verified webhook/manual leg.
+        let walletPaymentId: string | null = null
+        if (walletLeg) {
+          const walletTx = await tx.walletTransactions.create({
+            data: {
+              walletId: walletLeg.walletId,
+              type: 'payment',
+              amount: -totalAmount,
+              balanceAfter: walletLeg.balanceAfter,
+              description: `Order ${orderNumber} paid from wallet balance`,
+              relatedEntityId: newOrder.id,
+            },
+          })
+          const walletPayment = await tx.payments.create({
+            data: {
+              orderId: newOrder.id,
+              method: 'wallet',
+              amount: totalAmount,
+              status: 'success',
+              transactionId: `WALLET-${orderNumber}`,
+              gatewayResponse: JSON.stringify({
+                walletTransactionId: walletTx.id,
+                paidFrom: 'wallet_balance',
+                balanceAfter: walletLeg.balanceAfter,
+              }),
+              paidAt: new Date(),
+            },
+          })
+          walletPaymentId = walletPayment.id
+        }
 
         // Create sub-orders for each supplier
         // sellerFeed = what each affected seller is told in real time
@@ -310,7 +386,7 @@ export async function POST(request: NextRequest) {
           await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
         }
 
-        return { order: newOrder, sellerFeed, stockFeed }
+        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId }
       })
 
       // Real-time (Task 51-a): every seller with a slice of this order gets a
@@ -342,6 +418,39 @@ export async function POST(request: NextRequest) {
         })
       }
 
+      // Task 70: a wallet-paid order broadcasts the SAME verified-payment
+      // event shape the manual/webhook legs emit — sellers and admins see
+      // 'payment:verified' (money is real), the buyer's order room tickles
+      // the Task 69-c live refetch, and the buyer gets the notification row.
+      if (order.walletPaymentId) {
+        const adminsW = await db.users.findMany({ where: { userType: 'admin' }, select: { id: true } })
+        const payPayload = {
+          orderId: order.order.id,
+          orderNumber: order.order.orderNumber,
+          paymentId: order.walletPaymentId,
+          paymentStatus: 'success',
+          orderPaymentStatus: 'paid',
+          amountPaid: order.order.totalAmount,
+          orderTotal: order.order.totalAmount,
+        }
+        void Promise.allSettled([
+          broadcastToRoom(`order:${order.order.id}`, 'payment:verified', payPayload),
+          ...order.sellerFeed.map((feed) =>
+            broadcastToRoom(`seller:${feed.supplierId}`, 'payment:verified', payPayload)
+          ),
+          ...adminsW.map((a) => broadcastToRoom(`admin:${a.id}`, 'payment:verified', payPayload)),
+        ])
+        void notifyPaymentVerified(
+          order.order.buyerId,
+          order.order.orderNumber,
+          order.order.id,
+          order.walletPaymentId,
+          order.order.totalAmount,
+          order.order.totalAmount,
+          'paid'
+        )
+      }
+
       return NextResponse.json({
         success: true,
         data: {
@@ -350,6 +459,7 @@ export async function POST(request: NextRequest) {
           totalAmount: order.order.totalAmount,
           paymentStatus: order.order.paymentStatus,
           subOrdersCount: order.sellerFeed.length,
+          walletPaymentId: order.walletPaymentId,
         },
       }, { status: 201 })
     } catch (txError) {
@@ -357,6 +467,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: txError.message, available: txError.available },
           { status: 409 }
+        )
+      }
+      if (txError instanceof WalletInsufficientError) {
+        // 402 Payment Required — with the REAL balance so the checkout can
+        // state exactly how much is missing.
+        return NextResponse.json(
+          { error: 'Insufficient wallet balance for this order — top up or pay manually after placing the order.', walletBalance: txError.balance },
+          { status: 402 }
         )
       }
       if (txError instanceof PricingError) {
