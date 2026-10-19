@@ -2759,3 +2759,23 @@ Work Log:
 Stage Summary:
 - The seller support loop is now genuinely closed at the UI layer too: file → admin replies → seller notified → seller opens THEIR OWN real thread page → replies back. No stubs, no wrong-registry deep-links.
 - REMAINING FAKE/INCOMPLETE: none in these slices. The endpoint + page-registry sweeps are clean platform-wide.
+
+---
+Task ID: 77
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: 🐞 BULK UPLOAD WAS A FAKE WORKFLOW — the worst fake class in the platform: bulk-upload-products-page's handleUpload was literally `setTimeout(() => setUploading(false), 2000)` — a 2-second spinner that uploaded NOTHING, while the REAL POST /api/supplier/bulk-upload (Zod rows, transactional creation, honest per-row errors, sellerBulkUploads ledger) sat unused. A seller "uploaded" a file and got a success animation with zero products. The history page showed an INVENTED row (batch_0812.csv / Success: 120 rows); the template page listed two .xlsx files that existed nowhere.
+
+Work Log:
+- Bulk-upload-products rebuilt REAL: file picker (.csv only) → REAL multipart POST → the server's honest per-row results panel (N of M created, expandable per-row failures with real reasons, upload id) → links to history + products. Auth/profile failures surface verbatim.
+- Bulk-upload-history rebuilt REAL: GET rows with file name, Created/Partial/Failed chip from REAL counts, expandable per-row errors, honest empty state. The invented batch_0812 row is gone.
+- Bulk-upload-template rebuilt REAL: generates a downloadable CSV with the EXACT server-expected header and example rows carrying the SELLER'S LIVE category ids (fetched from /api/categories tree) — copy-paste-valid categoryId on the first try.
+- Entry point: the Product Listings manager gained a "Bulk" button next to Add (the footer link existed; the workflow's home now has one too).
+- Sweeps: all 115 UI-called endpoints resolve to real routes; page-registry sweep clean.
+- E2E scripts/qa/t77-e2e.mjs: 13/13 PASS on wiped DB — anon 401; multipart 3-row CSV (2 good + 1 bogus unit) → 201 with server truth (3→2 created/1 failed) + the failed row naming its real reason; exactly 2 product rows in the moderation queue for MY store; HISTORY carries the real run; all-bad CSV → 422 with both failures (NO fake success path); another supplier's history honestly empty + created products scoped to the uploader only.
+- BROWSER QA (gateway :81, real UI login): file injected into the real picker → Upload & process → "2 of 3 rows created · 1 failed" with Row 3's reason → View history → browser-batch.csv 2/3 rows, no invented data. Console clean.
+- tsc 0 whole project; eslint 0 on touched files. DB wiped 139×0 before commit.
+
+Stage Summary:
+- The bulk-upload workflow is real end to end for the first time: template with live category ids → real upload → honest per-row results → real history — the seller's CSV becomes products in the moderation queue, and every failure names its reason.
+- REMAINING FAKE/INCOMPLETE: the 59-candidate small-page sweep flagged mostly legitimately-static info pages (terms/careers) — data-heavy pages are now all wired. The stub-sweep class (fake spinners/hardcoded rows) found bulk-upload + seller-ticket-detail; both fixed. Next round continues the family audit if anything else surfaces.

@@ -14,7 +14,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, Search, Plus, Edit, Eye, EyeOff, Trash2, RefreshCw,
-  AlertTriangle, LogIn, Package,
+  AlertTriangle, LogIn, Package, UploadCloud,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigationStore } from '@/store/navigation-store';
@@ -231,12 +231,22 @@ export function ProductListingsManagerPage() {
             </button>
             <h1 className="text-lg font-bold text-gray-900">Product Listings</h1>
           </div>
-          <button
-            onClick={() => navigate('seller-add-product')}
-            className="min-h-11 bg-primary text-white px-4 rounded-lg flex items-center gap-1 text-sm font-medium"
-          >
-            <Plus className="w-4 h-4" /> Add
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Task 77: the real bulk-upload entry — a seller workflow that
+                used to be a fake spinner page. */}
+            <button
+              onClick={() => navigate('bulk-upload-products')}
+              className="min-h-11 bg-white border border-gray-200 text-gray-700 px-3 rounded-lg flex items-center gap-1 text-sm font-medium"
+            >
+              <UploadCloud className="w-4 h-4" /> Bulk
+            </button>
+            <button
+              onClick={() => navigate('seller-add-product')}
+              className="min-h-11 bg-primary text-white px-4 rounded-lg flex items-center gap-1 text-sm font-medium"
+            >
+              <Plus className="w-4 h-4" /> Add
+            </button>
+          </div>
         </div>
 
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
