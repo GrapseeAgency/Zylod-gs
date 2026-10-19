@@ -2779,3 +2779,21 @@ Work Log:
 Stage Summary:
 - The bulk-upload workflow is real end to end for the first time: template with live category ids → real upload → honest per-row results → real history — the seller's CSV becomes products in the moderation queue, and every failure names its reason.
 - REMAINING FAKE/INCOMPLETE: the 59-candidate small-page sweep flagged mostly legitimately-static info pages (terms/careers) — data-heavy pages are now all wired. The stub-sweep class (fake spinners/hardcoded rows) found bulk-upload + seller-ticket-detail; both fixed. Next round continues the family audit if anything else surfaces.
+
+---
+Task ID: 78
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: 🐞 CACHE-STATS PAGE INVENTED ITS NUMBERS — "94.2% Cloudflare hit ratio", "1.42 GB saved" — telemetry collected NOWHERE, presented as "Real-time cache performance metrics". Replaced with REAL observable counters from the actual in-memory cache (the Task 68 module).
+
+Work Log:
+- api-cache.ts gained REAL counters (freshHits / staleServed / dbLoads / invalidated — incremented at the exact code paths where each event happens) + cacheSnapshot() (counter totals, live entry count, in-flight single-flight loads, per-prefix key breakdown).
+- NEW GET /api/admin/cache-stats (admin-only 401-first, rate-limited): the snapshot + an honestly-computed hitRatio ((fresh+stale)÷total, null at zero requests) + the reset-on-restart note.
+- cache-stats-page rebuilt: the invented tiles are gone; the page renders the REAL counters (Fresh hits / DB loads / Stale served / Invalidated), hit ratio, live entries, in-flight, and a per-family entries bar breakdown; honest needsAuth/error/empty states; "admin access required" for non-admins (the endpoint gates).
+- Verified live: anon 401; admin 200 with counters that EXACTLY match the requests just made (1 DB load + 1 fresh hit after two category fetches → hitRatio 50%).
+- BROWSER QA (gateway :81, real UI admin login): real title, real tiles, per-family bars, reset note — and the invented "94.2% / 1.42 GB" are GONE. Console clean.
+- tsc 0 whole project; eslint 0 on touched files. DB wiped 139×0 before commit.
+
+Stage Summary:
+- The admin telemetry surface now tells the truth: every number on the cache page is a counter that actually incremented in this process. Invented metrics are a platform-wide pattern to keep hunting (the stub sweep continues).
+- REMAINING FAKE/INCOMPLETE: none in these slices. The 59 small-page sweep candidates: remaining ones are legitimately static content pages (terms/careers/FAQ) — verified by sampling; no more data-heavy fakes found.

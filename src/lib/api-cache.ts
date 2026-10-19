@@ -36,6 +36,7 @@ export function invalidateCacheKeys(...prefixes: string[]): number {
     if (prefixes.some((p) => key === p || key.startsWith(p))) {
       store.delete(key)
       generation.set(key, (generation.get(key) ?? 0) + 1)
+      counters.invalidated++
       invalidated++
     }
   }
@@ -49,9 +50,44 @@ export interface CacheOptions {
   staleMs: number
 }
 
+// Task 78: REAL observable counters — the cache-stats page used to invent
+// "94.2% Cloudflare hit ratio"; these numbers are what actually happens in
+// this process. They reset on server restart (stated honestly on the page).
+export interface CacheCounters {
+  freshHits: number
+  staleServed: number
+  dbLoads: number
+  invalidated: number
+}
+const counters: CacheCounters = { freshHits: 0, staleServed: 0, dbLoads: 0, invalidated: 0 }
+
+export function cacheSnapshot(): {
+  counters: CacheCounters
+  entries: number
+  inFlight: number
+  byPrefix: Array<{ prefix: string; keys: number }>
+} {
+  const byPrefix = new Map<string, number>()
+  for (const key of store.keys()) {
+    const prefix = key.split(':')[0] ?? key
+    byPrefix.set(prefix, (byPrefix.get(prefix) ?? 0) + 1)
+  }
+  return {
+    counters: { ...counters },
+    entries: store.size,
+    inFlight: inflight.size,
+    byPrefix: Array.from(byPrefix.entries())
+      .map(([prefix, keys]) => ({ prefix, keys }))
+      .sort((a, b) => b.keys - a.keys),
+  }
+}
+
 export function cacheGetFresh<T>(key: string): T | undefined {
   const entry = store.get(key)
-  if (entry && Date.now() < entry.freshUntil) return entry.value as T
+  if (entry && Date.now() < entry.freshUntil) {
+    counters.freshHits++
+    return entry.value as T
+  }
   return undefined
 }
 
@@ -89,6 +125,7 @@ export async function withApiCache<T>(
       // to this request (correct — it started before the write) but is NOT
       // cached for the next one.
       const gen = generation.get(key) ?? 0
+      counters.dbLoads++
       p = loadFromDb()
         .then((value) => {
           if ((generation.get(key) ?? 0) === gen) {
@@ -107,6 +144,7 @@ export async function withApiCache<T>(
   const stale = cacheGetStale<T>(key)
   if (stale !== undefined) {
     // Stale-while-revalidate: answer immediately, refresh behind the scenes
+    counters.staleServed++
     startLoad().catch(() => {
       console.warn(`[api-cache] background refresh failed for "${key}", keeping stale copy`)
     })
