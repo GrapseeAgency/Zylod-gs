@@ -44,6 +44,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   const [submitting, setSubmitting] = useState(false)
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [placedOrder, setPlacedOrder] = useState<{ orderNumber: string; paymentStatus: string } | null>(null)
+  const [placedCoupon, setPlacedCoupon] = useState<{ code: string; discount: number } | null>(null)
   const [error, setError] = useState<string>('')
   const [needsAuth, setNeedsAuth] = useState(false)
 
@@ -58,6 +59,13 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   // honest state instead of a dead toggle.
   const [walletBalance, setWalletBalance] = useState<number | null>(null)
   const [payWithWallet, setPayWithWallet] = useState(false)
+
+  // Task 74: coupon application — the API honors couponCode and now refuses
+  // invalid ones with the real reason; this input is the half that was
+  // missing on the buyer side.
+  const [couponInput, setCouponInput] = useState('')
+  const [couponApplied, setCouponApplied] = useState<{ code: string; discount: number } | null>(null)
+  const [couponError, setCouponError] = useState('')
 
   const loadAddresses = useCallback(async () => {
     setAddressesLoading(true)
@@ -116,7 +124,20 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
 
   const subtotal = useMemo(() => items.reduce((sum, i) => sum + (i.totalPrice || i.unitPrice * i.quantity), 0), [items])
 
-  const walletCanCover = walletBalance !== null && walletBalance >= subtotal
+  const walletCanCover = walletBalance !== null && walletBalance >= subtotal - (couponApplied?.discount ?? 0)
+
+  const applyCoupon = () => {
+    setCouponError('')
+    const code = couponInput.trim().toUpperCase()
+    if (!code) {
+      setCouponError('Enter a coupon code first.')
+      return
+    }
+    // Client-side attach only — the server re-validates EVERYTHING at order
+    // time (existence, window, minimum, usage limit) and refuses honestly;
+    // the REAL discount arrives on the order receipt.
+    setCouponApplied({ code, discount: 0 })
+  }
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || null
 
@@ -139,6 +160,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         body: JSON.stringify({
           shippingAddressId: selectedAddress.id,
           payWithWallet: payWithWallet && walletCanCover ? true : undefined,
+          couponCode: couponApplied?.code,
           items: items.map((i) => ({
             productId: i.productId,
             variantId: i.variantId || null,
@@ -160,6 +182,12 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         setError(data?.error || 'Insufficient wallet balance.')
         return
       }
+      if (res.status === 409 && /coupon/i.test(data?.error ?? '')) {
+        // The coupon could not be honored — the error names the real reason.
+        setCouponApplied(null)
+        setCouponError(data?.error || 'Coupon could not be applied.')
+        return
+      }
       if (!res.ok || !data?.success) {
         // Surface the REAL backend error (stock, MOQ, address, product availability…)
         setError(data?.error || `Order failed (HTTP ${res.status}). Please try again.`)
@@ -172,6 +200,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         orderNumber: data.data.orderNumber,
         paymentStatus: data.data.paymentStatus,
       })
+      setPlacedCoupon(data.data.couponApplied ?? null)
       setOrderPlaced(true)
     } catch {
       setError('Network error while placing the order. Check your connection and retry.')
@@ -189,6 +218,11 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         </div>
         <h1 className="text-xl md:text-2xl font-black text-slate-900">Order {placedOrder.orderNumber} Created</h1>
         <p className="text-xs text-slate-500 mt-2 max-w-xs leading-relaxed">
+          {placedCoupon && (
+            <span className="block text-emerald-600 font-bold mb-1">
+              Coupon {placedCoupon.code} saved you {formatPrice(placedCoupon.discount)}.
+            </span>
+          )}
           {placedOrder.paymentStatus === 'paid' ? (
             <>
               Status: <span className="font-bold text-emerald-600 uppercase">PAID</span> — settled from your wallet
@@ -458,6 +492,50 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             <div className="text-xl md:text-2xl font-black text-primary">
               {formatPrice(subtotal)}
             </div>
+          </div>
+
+          {/* Task 74: coupon attach — validated and discounted server-side. */}
+          <div className="pt-2 space-y-1.5">
+            {couponApplied ? (
+              <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2">
+                <span className="text-xs font-bold text-emerald-700 truncate">
+                  Coupon {couponApplied.code}
+                  <span className="block text-[10px] font-medium text-emerald-600 normal-case">
+                    Attached — the server confirms the final discount when you place the order.
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => { setCouponApplied(null); setCouponInput(''); setCouponError('') }}
+                  className="text-emerald-600 hover:text-emerald-800 text-xs font-black px-1"
+                  aria-label="Remove coupon"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  value={couponInput}
+                  onChange={(e) => { setCouponInput(e.target.value); setCouponError('') }}
+                  placeholder="Coupon code"
+                  aria-label="Coupon code"
+                  maxLength={24}
+                  className="flex-1 h-9 rounded-xl border border-slate-200 px-3 text-xs uppercase tracking-wide placeholder:normal-case placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={applyCoupon}
+                  className="h-9 px-4 rounded-xl text-xs font-bold border-slate-200 text-slate-700 hover:bg-slate-50"
+                >
+                  Apply
+                </Button>
+              </div>
+            )}
+            {couponError && (
+              <p className="text-[10px] font-bold text-red-600 leading-relaxed" role="alert">{couponError}</p>
+            )}
           </div>
           <p className="text-[10px] text-slate-400 leading-relaxed">
             Prices are recalculated from the live database when the order is placed. Stock and MOQ

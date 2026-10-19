@@ -97,6 +97,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Product not found — you can only review real catalog products' }, { status: 404 })
     }
 
+    // Task 74: ONE review per buyer per product — the product-scoped review
+    // route already enforced this; this twin route silently allowed a buyer
+    // to stack reviews and skew the product's ratingAvg. Same honest 409.
+    const already = await db.reviews.findFirst({
+      where: { productId, buyerId, replyToId: null },
+      select: { id: true },
+    })
+    if (already) {
+      return NextResponse.json(
+        { error: 'You have already reviewed this product — one review per buyer per product.' },
+        { status: 409 }
+      )
+    }
+
     // Verified purchase = the buyer actually has this product in a real order
     const purchased = await db.orderItems.findFirst({
       where: {

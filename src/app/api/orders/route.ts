@@ -111,6 +111,15 @@ class WalletInsufficientError extends Error {
   }
 }
 
+/** Task 74: thrown when a submitted couponCode cannot be honored — the 409
+ *  carries the REAL reason so the checkout states the truth. */
+class CouponError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'CouponError'
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Auth-first (Task 51-a mandate), then the checkout abuse guard.
@@ -212,13 +221,55 @@ export async function POST(request: NextRequest) {
           totalAmount += totalPrice
         }
 
-        // Apply coupon if provided
+        // Task 74: coupon application is HONEST and ENFORCED. The old block
+        // silently ignored every failure (unknown code, expired, below the
+        // minimum, exhausted) — a buyer could think they had a discount and
+        // be charged full, and usageLimit was never counted. Now: a
+        // couponCode that cannot be honored refuses the order with the real
+        // reason, and the usage counter increments atomically inside this
+        // transaction (updateMany re-checks usedCount < usageLimit AT the
+        // write, so concurrent orders can never overrun the limit).
+        let appliedCoupon: { code: string; discount: number } | null = null
         if (couponCode) {
           const coupon = await tx.coupons.findUnique({ where: { code: couponCode } })
-          if (coupon && coupon.isActive && new Date() >= coupon.validFrom && new Date() <= coupon.validUntil) {
-            const discount = totalAmount * (coupon.discountPercent / 100)
-            const maxDiscount = coupon.maxDiscount || discount
-            totalAmount -= Math.min(discount, maxDiscount)
+          if (!coupon) {
+            throw new CouponError(`Coupon code "${couponCode}" does not exist`)
+          }
+          if (!coupon.isActive) {
+            throw new CouponError(`Coupon "${coupon.code}" is no longer active`)
+          }
+          const now = new Date()
+          if (now < coupon.validFrom) {
+            throw new CouponError(`Coupon "${coupon.code}" is not active yet`)
+          }
+          if (now > coupon.validUntil) {
+            throw new CouponError(`Coupon "${coupon.code}" has expired`)
+          }
+          if (coupon.minOrderAmount && totalAmount < coupon.minOrderAmount) {
+            throw new CouponError(
+              `Coupon "${coupon.code}" requires a minimum order of ৳${coupon.minOrderAmount.toLocaleString()} — this order totals ৳${totalAmount.toLocaleString()}`
+            )
+          }
+          if (coupon.usageLimit !== null && coupon.usedCount >= coupon.usageLimit) {
+            throw new CouponError(`Coupon "${coupon.code}" has reached its usage limit`)
+          }
+
+          const discount =
+            coupon.discountType === 'fixed'
+              ? Math.min(coupon.discountPercent, totalAmount)
+              : Math.min(totalAmount * (coupon.discountPercent / 100), coupon.maxDiscount ?? Number.POSITIVE_INFINITY)
+          totalAmount -= discount
+          appliedCoupon = { code: coupon.code, discount }
+
+          const counted = await tx.coupons.updateMany({
+            where: {
+              id: coupon.id,
+              ...(coupon.usageLimit !== null ? { usedCount: { lt: coupon.usageLimit } } : {}),
+            },
+            data: { usedCount: { increment: 1 } },
+          })
+          if (counted.count === 0) {
+            throw new CouponError(`Coupon "${coupon.code}" has reached its usage limit`)
           }
         }
 
@@ -396,7 +447,7 @@ export async function POST(request: NextRequest) {
           await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
         }
 
-        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId }
+        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon }
       })
 
       // Real-time (Task 51-a): every seller with a slice of this order gets a
@@ -470,6 +521,8 @@ export async function POST(request: NextRequest) {
           paymentStatus: order.order.paymentStatus,
           subOrdersCount: order.sellerFeed.length,
           walletPaymentId: order.walletPaymentId,
+          // Task 74: the honest receipt — what the coupon actually took off.
+          couponApplied: order.appliedCoupon,
         },
       }, { status: 201 })
     } catch (txError) {
@@ -486,6 +539,9 @@ export async function POST(request: NextRequest) {
           { error: 'Insufficient wallet balance for this order — top up or pay manually after placing the order.', walletBalance: txError.balance },
           { status: 402 }
         )
+      }
+      if (txError instanceof CouponError) {
+        return NextResponse.json({ error: txError.message }, { status: 409 })
       }
       if (txError instanceof PricingError) {
         return NextResponse.json(

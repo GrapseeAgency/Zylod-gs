@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { db } from '@/lib/db'
-import { authenticateRequest } from '@/lib/auth'
+import { requireUserType } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 /**
  * GET /api/coupons
@@ -40,29 +42,60 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * POST /api/coupons (Admin coupon creation)
+ * POST /api/coupons — ADMIN coupon creation ONLY.
+ *
+ * 🐞 Task 74: this used to authenticate ANY user — a BUYER could mint a 99%
+ * discount coupon and then apply it at checkout. House contract now: admin
+ * only (401-first), rate limited, Zod-validated, audit-logged.
  */
+const couponCreateSchema = z
+  .object({
+    code: z
+      .string()
+      .trim()
+      .min(3, 'Coupon code must be at least 3 characters')
+      .max(24, 'Coupon code must be at most 24 characters')
+      .regex(/^[A-Za-z0-9_-]+$/, 'Coupon code may contain only letters, numbers, dash and underscore'),
+    discountType: z.enum(['percentage', 'fixed']).optional(),
+    // percentage → 1..100 (% off); fixed → the flat ৳ amount (> 0)
+    discountPercent: z.number().positive('Discount must be positive'),
+    minOrderAmount: z.number().min(0).optional(),
+    maxDiscount: z.number().min(0).nullable().optional(),
+    validFrom: z.string().datetime().optional(),
+    validUntil: z.string().datetime(),
+    usageLimit: z.number().int().min(1).max(1_000_000).optional(),
+  })
+  .strict()
+  .refine((d) => d.discountType !== 'percentage' || d.discountPercent <= 100, {
+    message: 'Percentage discounts cannot exceed 100',
+    path: ['discountPercent'],
+  })
+
 export async function POST(request: NextRequest) {
   try {
-    const auth = await authenticateRequest(request)
+    // 401-first, then admin-only: wrong type maps to the 401 convention.
+    const auth = await requireUserType(request, ['admin'])
     if (!auth.authenticated || !auth.user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
     }
 
-    const body = await request.json()
-    const {
-      code,
-      discountType = 'percentage',
-      discountPercent,
-      minOrderAmount = 0,
-      maxDiscount,
-      validFrom,
-      validUntil,
-      usageLimit = 1000,
-    } = body
+    const rl = checkRateLimit(request, 'admin-coupons-create', 20, 5 * 60 * 1000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
-    if (!code || discountPercent === undefined || !validUntil) {
-      return NextResponse.json({ error: 'code, discountPercent, and validUntil are required' }, { status: 400 })
+    const parsed = couponCreateSchema.safeParse(await request.json().catch(() => null))
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0]
+      return NextResponse.json(
+        { error: issue ? `${issue.path.join('.') || 'body'}: ${issue.message}` : 'Invalid coupon payload' },
+        { status: 400 }
+      )
+    }
+    const { code, discountType = 'percentage', discountPercent, minOrderAmount = 0, maxDiscount, validFrom, validUntil, usageLimit = 1000 } = parsed.data
+
+    const validFromAt = validFrom ? new Date(validFrom) : new Date()
+    const validUntilAt = new Date(validUntil)
+    if (validUntilAt <= validFromAt) {
+      return NextResponse.json({ error: 'validUntil must be after validFrom' }, { status: 400 })
     }
 
     const existing = await db.coupons.findUnique({
@@ -79,10 +112,30 @@ export async function POST(request: NextRequest) {
         discountPercent: Number(discountPercent),
         minOrderAmount: Number(minOrderAmount),
         maxDiscount: maxDiscount ? Number(maxDiscount) : null,
-        validFrom: validFrom ? new Date(validFrom) : new Date(),
-        validUntil: new Date(validUntil),
+        validFrom: validFromAt,
+        validUntil: validUntilAt,
         usageLimit: Number(usageLimit),
         isActive: true,
+      },
+    })
+
+    // Task 74: admin money-adjacent actions are audit-logged (house doctrine).
+    await db.auditLogs.create({
+      data: {
+        actorId: auth.user.id,
+        action: 'coupon_created',
+        entityType: 'coupons',
+        entityId: coupon.id,
+        metadata: JSON.stringify({
+          code: coupon.code,
+          discountType: coupon.discountType,
+          discountPercent: coupon.discountPercent,
+          minOrderAmount: coupon.minOrderAmount,
+          maxDiscount: coupon.maxDiscount,
+          validUntil: coupon.validUntil,
+          usageLimit: coupon.usageLimit,
+          adminId: auth.user.id,
+        }),
       },
     })
 

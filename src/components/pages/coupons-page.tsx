@@ -25,7 +25,7 @@ interface Coupon {
 
 export function CouponsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, user } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [coupons, setCoupons] = useState<Coupon[]>([])
@@ -33,6 +33,52 @@ export function CouponsPage() {
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [claimingId, setClaimingId] = useState<string | null>(null)
   const [claimedCodes, setClaimedCodes] = useState<Set<string>>(new Set())
+
+  // Task 74: ADMIN creation panel — the API became admin-only, so the admin
+  // surface lives here (one coupons page, both halves connected).
+  const isAdmin = user?.userType === 'admin'
+  const [showCreate, setShowCreate] = useState(false)
+  const [form, setForm] = useState({
+    code: '', discountType: 'percentage', discountPercent: '',
+    minOrderAmount: '', maxDiscount: '', validUntil: '', usageLimit: '1000',
+  })
+  const [creating, setCreating] = useState(false)
+  const [createError, setCreateError] = useState('')
+  const [createOk, setCreateOk] = useState('')
+
+  const handleCreate = async () => {
+    setCreateError('')
+    setCreateOk('')
+    setCreating(true)
+    try {
+      const payload: Record<string, unknown> = {
+        code: form.code.trim().toUpperCase(),
+        discountType: form.discountType,
+        discountPercent: Number(form.discountPercent),
+        usageLimit: Number(form.usageLimit || 1000),
+        validUntil: form.validUntil ? new Date(form.validUntil).toISOString() : '',
+      }
+      if (form.minOrderAmount) payload.minOrderAmount = Number(form.minOrderAmount)
+      if (form.maxDiscount) payload.maxDiscount = Number(form.maxDiscount)
+      const res = await fetch('/api/coupons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify(payload),
+      })
+      const data = await res.json().catch(() => null)
+      if (res.status === 201 && data?.success) {
+        setCreateOk(`Coupon ${data.data.code} created.`)
+        setForm({ code: '', discountType: 'percentage', discountPercent: '', minOrderAmount: '', maxDiscount: '', validUntil: '', usageLimit: '1000' })
+        void fetchCoupons()
+      } else {
+        setCreateError(data?.error || `Creation failed (HTTP ${res.status})`)
+      }
+    } catch {
+      setCreateError('Network error while creating the coupon.')
+    } finally {
+      setCreating(false)
+    }
+  }
 
   const fetchCoupons = useCallback(async () => {
     try {
@@ -133,6 +179,96 @@ export function CouponsPage() {
 
       {/* Coupons List */}
       <div className="flex-1 px-4 py-4 md:px-6 md:py-6 max-w-3xl mx-auto w-full space-y-4 md:space-y-5 pb-24 md:pb-8 lg:max-w-5xl">
+        {/* Task 74: ADMIN creation panel — admin-only, collapsed by default. */}
+        {isAdmin && (
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowCreate((v) => !v)}
+              className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-slate-50 transition"
+              aria-expanded={showCreate}
+            >
+              <span className="text-xs font-black uppercase tracking-wider text-slate-500">
+                Admin — Create Coupon
+              </span>
+              <span className="text-xs font-bold text-primary">{showCreate ? 'Hide' : 'Open'}</span>
+            </button>
+            {showCreate && (
+              <div className="px-5 pb-5 space-y-3 border-t border-slate-100 pt-4">
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    value={form.code}
+                    onChange={(e) => setForm((f) => ({ ...f, code: e.target.value.toUpperCase() }))}
+                    placeholder="CODE"
+                    aria-label="Coupon code"
+                    maxLength={24}
+                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs font-bold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                  <select
+                    value={form.discountType}
+                    onChange={(e) => setForm((f) => ({ ...f, discountType: e.target.value }))}
+                    aria-label="Discount type"
+                    className="h-10 rounded-xl border border-slate-200 px-2 text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  >
+                    <option value="percentage">Percentage %</option>
+                    <option value="fixed">Fixed ৳</option>
+                  </select>
+                  <input
+                    value={form.discountPercent}
+                    onChange={(e) => setForm((f) => ({ ...f, discountPercent: e.target.value }))}
+                    placeholder={form.discountType === 'percentage' ? 'Discount %' : 'Discount ৳'}
+                    aria-label="Discount amount"
+                    inputMode="decimal"
+                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                  <input
+                    value={form.minOrderAmount}
+                    onChange={(e) => setForm((f) => ({ ...f, minOrderAmount: e.target.value }))}
+                    placeholder="Min order ৳ (optional)"
+                    aria-label="Minimum order amount"
+                    inputMode="decimal"
+                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                  <input
+                    value={form.maxDiscount}
+                    onChange={(e) => setForm((f) => ({ ...f, maxDiscount: e.target.value }))}
+                    placeholder="Max discount ৳ (optional)"
+                    aria-label="Maximum discount"
+                    inputMode="decimal"
+                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                  <input
+                    value={form.usageLimit}
+                    onChange={(e) => setForm((f) => ({ ...f, usageLimit: e.target.value }))}
+                    placeholder="Usage limit"
+                    aria-label="Usage limit"
+                    inputMode="numeric"
+                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                </div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Valid until
+                  <input
+                    type="datetime-local"
+                    value={form.validUntil}
+                    onChange={(e) => setForm((f) => ({ ...f, validUntil: e.target.value }))}
+                    className="mt-1 w-full h-10 rounded-xl border border-slate-200 px-3 text-xs font-normal normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                </label>
+                {createError && <p className="text-[11px] font-bold text-red-600" role="alert">{createError}</p>}
+                {createOk && <p className="text-[11px] font-bold text-emerald-600">{createOk}</p>}
+                <Button
+                  onClick={handleCreate}
+                  disabled={creating || !form.code || !form.discountPercent || !form.validUntil}
+                  className="w-full h-11 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs"
+                >
+                  {creating ? 'Creating…' : 'Create coupon'}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (

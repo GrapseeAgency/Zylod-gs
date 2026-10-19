@@ -2681,3 +2681,23 @@ Work Log:
 Stage Summary:
 - The seller's entire money story is now visible and TRUE: GMV, commission, escrow in transit, released & paid out, wallet balance — every surface reads real ledgers, every id-space mismatch in the money paths is fixed.
 - REMAINING FAKE/INCOMPLETE: none in these slices. Queued: none new — the money slice family (wallet-pay, escrow, payout, earnings truth, commission ledger) is cohesive end to end.
+
+---
+Task ID: 74
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: COUPON + REVIEW INTEGRITY — the audit of the coupons/reviews surfaces found a money-minting hole and two silent-lie blocks, all fixed; the missing buyer/admin UI halves built.
+
+Work Log:
+- Proof-first opening: HEAD 29d431c, cron list EMPTY (no-cron order holds), DB 139×0, dev 200.
+- 🐞 SECURITY: POST /api/coupons authenticated ANY user — a BUYER could mint a 99% coupon and apply it at checkout (unauthenticated money printing). Now admin-only (401-first requireUserType), rate limited (admin-coupons-create 20/5min), Zod strict (code charset, percentage ≤ 100, validUntil ISO, usageLimit ≥ 1), 409 duplicate code, audit-logged 'coupon_created'.
+- 🐞 Orders POST coupon block silently ignored EVERY failure (unknown code, inactive, expired, below minOrderAmount, exhausted) — a buyer could believe they had a discount and be charged full — and usageLimit was NEVER counted (unlimited reuse). Now: CouponError → honest 409 with the real reason for each case; fixed-type coupons compute (the old code always computed percentage); the usage counter increments atomically via updateMany({usedCount: {lt: usageLimit}}) inside the order transaction — concurrent orders can never overrun; the receipt echoes couponApplied {code, discount}.
+- 🐞 Reviews: the twin creation route /api/reviews POST lacked the one-review-per-buyer-per-product guard the product-scoped route already had — stacking reviews skewed ratingAvg. Same honest 409 added; aggregates verified exact.
+- UI halves built: checkout gained the coupon input (attach/remove, honest "server confirms the final discount" copy, 409 reasons surfaced verbatim, success screen shows "Coupon X saved you ৳Y" from the server receipt); the coupons page gained the ADMIN creation panel (collapsed by default, admin-only render, full field set, list refresh on create) — one page, both halves connected.
+- E2E scripts/qa/t74-e2e.mjs: 28/28 PASS on wiped DB — anon 401, BUYER 401 (hole closed), no 99% row in DB, percentage>100 400, charset 400, audit row, unknown/below-min 409s with reasons, 10% math (600→540) + receipt echo, fixed ৳100→৳50, third use 409, CONCURRENT limit-1 race → exactly [201,409] + usedCount exactly 1, review duplicate 409 on both routes, aggregates 5.0/1 then 4.5/2.
+- BROWSER QA (gateway :81, real UI logins): admin → coupons page shows the Admin panel → created BROWSER10 through the REAL form ("Coupon BROWSER10 created." + appears in list); buyer → checkout shows the coupon input → attach → Place Order → success "saved you ৳10" — DB truth: order ORD-MVFV1RXQQA4V total ৳90 (10% off), BROWSER10 usedCount 1. Consoles clean.
+- REGRESSIONS on wiped DBs (orders POST changed): t70 28/28, t68 56/56, t71 23/23, t61 33/33, t67 34/34, t74 28/28. tsc 0 whole project; eslint 0 on touched files. DB wiped 139×0 before commit.
+
+Stage Summary:
+- The coupon system is now a closed, honest loop: admin mints (audited), buyers see and claim, checkout applies with server-truth discounting, every refusal names its real reason, usage limits hold under concurrency, and reviews cannot be stacked.
+- REMAINING FAKE/INCOMPLETE: none in these slices. Queued: support tickets thread audit (buyer submit → seller/admin respond → rate — routes exist, UI wiring unverified this round).
