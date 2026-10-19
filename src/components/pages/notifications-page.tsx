@@ -102,6 +102,44 @@ export function NotificationsPage() {
     }
   }
 
+  // Task 64: deep-links — a notification that carries a real relatedId opens
+  // its TARGET directly (order / product / shipment) instead of the generic
+  // detail page; the row is marked read on the way (fire-and-forget).
+  const targetFor = (notif: NotificationItem): { page: string; params?: Record<string, string> } => {
+    if (!notif.relatedId) return { page: 'notification-detail', params: { id: notif.id } }
+    switch (notif.type) {
+      case 'order':
+      case 'payment':
+        return { page: 'order-detail', params: { orderId: notif.relatedId } }
+      case 'delivery':
+        return { page: 'delivery-updates' }
+      case 'price_drop':
+      case 'back_in_stock':
+      case 'promotion':
+        return { page: 'product-detail', params: { productId: notif.relatedId } }
+      default:
+        return { page: 'notification-detail', params: { id: notif.id } }
+    }
+  }
+
+  const openNotification = (notif: NotificationItem) => {
+    try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (token) headers['Authorization'] = `Bearer ${token}`
+      void fetch('/api/notifications', {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ id: notif.id }),
+      }).catch(() => {})
+    } catch { /* read-state is best-effort; navigation must never block */ }
+    if (!notif.isRead) {
+      setNotifications(prev => prev.map(n => (n.id === notif.id ? { ...n, isRead: true } : n)))
+      setUnreadCount(c => Math.max(0, c - 1))
+    }
+    const target = targetFor(notif)
+    navigate(target.page as never, target.params as never)
+  }
+
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
     try {
@@ -273,7 +311,7 @@ export function NotificationsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.15, delay: Math.min(idx * 0.02, 0.2) }}
-                onClick={() => navigate('notification-detail', { id: notif.id })}
+                onClick={() => openNotification(notif)}
                 className={`group relative bg-white rounded-2xl p-4 border transition cursor-pointer shadow-sm hover:shadow hover:border-gray-300 ${
                   !notif.isRead ? 'border-red-200 bg-red-50/20' : 'border-gray-100'
                 }`}

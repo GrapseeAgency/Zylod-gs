@@ -2438,3 +2438,20 @@ Work Log:
 Stage Summary:
 - Every surface of the notification loop is now live and cohesive: platform persists → user room pushes → notifications page refetches, header bell + mobile badge tick up in place, and the seller sees demand at both the dashboard card AND the edit form. The QA pass paid for itself by catching and fixing a form bug that silently blocked whole-number saves on kg products.
 - REMAINING FAKE/INCOMPLETE: none found in these slices. Queued: variant-level watches (model is product-level), watch analytics on the seller analytics page, notification action deep-links.
+
+---
+Task ID: 64
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: NOTIFICATION DEEP-LINKS — clicking a notification now opens its real target directly (order detail / product detail / shipment list) instead of forcing a second hop through the generic detail page.
+
+Work Log:
+- notifications-page gained targetFor(): 'order' and 'payment' with relatedId → order-detail {orderId} (payment notifications carry the orderId — matches notifyEscrowDeposit and the verification flows); 'delivery' → delivery-updates; 'price_drop' / 'back_in_stock' / 'promotion' → product-detail {productId}; no relatedId or unknown type → the existing notification-detail fallback. Same semantics as the detail page's action button, now applied at the list row.
+- openNotification(): fires the mark-read PATCH best-effort, flips the local row + unread badge optimistically (never blocks navigation), then navigates to the target.
+- Row click handler switched from the generic detail navigate to openNotification (delete button keeps stopPropagation).
+- BROWSER QA: t63-qa-setup seed → buyer logs in → notifications page → click "Restock Watch Activated: QA63 Rod 12mm" row → lands DIRECTLY on the product-detail page for QA63 Rod 12mm (PDP heading + out-of-stock restock CTA visible), no intermediate page; console clean.
+- tsc 0 whole project; eslint 0 output. DB wiped 139×0 + WAL checkpoint before commit.
+
+Stage Summary:
+- The notification loop is now navigable end to end: an event lands (live), the badge ticks (live), and one click takes the user to the exact order/product it is about.
+- REMAINING FAKE/INCOMPLETE: none found in these slices. Queued: variant-level restock watches (schema: variantId on stockAlerts), watch analytics on the seller analytics page, delivery notifications carrying shipment ids for per-shipment deep-links.
