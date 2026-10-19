@@ -2301,3 +2301,31 @@ Stage Summary:
 
 Stage Summary (round 57+58 combined):
 - TWO slices this round: (57) buyer cancellation doctrine + seller-tuned stock thresholds; (58) per-shipment cancellation with honest ledger math. Commits 5b22a29 (57) + this one, both pushed. Order lifecycle now: unpaid/partial → cancel per shipment (restock + total adjust) OR payment submit → verify (paid/partial) → seller fulfill (ship/pack) → delivered → returns → refund ledger.
+
+---
+Task ID: 59
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order ("no cron, just only you and you").
+
+Task: Continue the wholesale build — close the returns-flow cohesion gap (seller side was completely missing) + ship the admin force-cancel override queued by Task 58. All sides connected, all verified.
+
+Work Log:
+- Fixed working tree: skills/web-reader + web-search files had been deleted locally (unexplained); restored via git checkout. Cron list = 0 jobs; per standing owner order, none created.
+- Healed dev server: single healthy stack on :3000 (stale EADDRINUSE dead-loser line in dev.log only).
+- (59-a) NEW GET /api/seller/returns: 401-first → 403 SUPPLIER_PROFILE_REQUIRED → 30/min → ?status validated (400 on junk) → scopes a multi-supplier return to THIS supplier's own orderItems (returnRequestItems → orderItems → subOrders.supplierId; stated 1000-line cap) → prorated sellerShare = Σ(line totalPrice × returnedQty ÷ orderedQty) → honest read-only meta ("Zylod team reviews; read-only").
+- (59-a) POST /api/orders/[id]/return now broadcasts return:new to seller:<supplierId> for EVERY affected supplier + admin:<id> rooms (real persisted values, no buyer PII).
+- (59-a) Seller UI: seller-order-management-page "Returns queue" collapsible (badge count, per-item product/variant/qty/orderedQty/value, reason + comments, sellerShare, full-request estimate, resolution note, live return:new toast+refetch via existing seller room).
+- 🐞 REAL BUG found by the E2E harness: this page resolved its live room id via profile/me as data?.user?.supplierProfile?.id — wrong shape (real: data?.data?.supplierProfile?.id) → sellerRoom NEVER set → the whole seller live feed (order:new, payment:submitted/verified/rejected, return:new) was silently dead. Fixed; feed is alive now.
+- (59-b) NEW POST /api/admin/orders/[id]/cancel (force override): requireUserType admin 401-first → 20/min → 404 no-leak → 409 already-cancelled → optional strict {reason≤500} → ONE tx: race-guarded subOrders.updateMany (status≠cancelled, count check — stock never restored twice), payments pending→failed, unpaid→total 0 (paymentStatus stays unpaid), paid|partial→success payments→refunded + paymentStatus refunded + totalAmount INTACT (charged historical value; real money moves outside the system, same doctrine as returns refunds), exact-inverse variant+product stock restore, auditLogs 'order_force_cancelled' with real before/after + reason + actorType admin (in metadata — no such column), broadcasts order:cancelled(force:true) + product:stock to order/seller/admin rooms.
+- (59-b) Admin UI: admin-orders-page Force cancel button in the expanded shipments panel (only when ≥1 active shipment) + AlertDialog with verbatim money/stock doctrine + optional reason input + real toast with the actual numbers + list refetch.
+- Banked QA IN-REPO this time: scripts/qa/t59-e2e.mjs (65 assertions) + scripts/qa/wipe.mjs (node:sqlite full wipe; the /home/z/.qa copy was lost between sessions).
+- E2E debugging path (all honest failures fixed at the harness or revealed real bugs): product contract needs description; fresh products need ADMIN APPROVAL before purchase (real moderation gate — harness now exercises it); payment method enum is bank_transfer|mobile_banking|cod|wallet|card (brand carries bKash); register rate limit 5/hour/IP is x-forwarded-for aware (harness carries a stable per-session IP like any gateway client); profile/me shape bug (above); return POST returns 200 not 201.
+- FINAL E2E: 65/65 PASS on wiped DB (A: scoping + share math 13 asserts incl. sellerA sees ONLY own item, sellerShare ৳400 = 4/10×1000, 401/403/400 guards; B: socket return:new received with matching returnNumber; C: force-cancel unpaid (401×2, 404, 400, total→0, stock 35→40, re-cancel 409, buyer self-cancel on force-cancelled 409) + paid (refund ৳600, paymentStatus refunded, total intact, stock B→18, admin payments list shows refunded row) + audit before/after/reason/actorType; D: product:stock on force-cancel; E: Task 57 self-cancel regression + EXACT stock ledger A=40).
+- Browser QA via :81 gateway: 1280×800 — seller Returns queue renders RTN-MVF95O64-O3SU / order # / pickup / ৳400 your share / product name; admin orders → Force cancel dialog → confirm → DB truth: all 5 shipments cancelled, stock A exactly 50 (ledger closes), order REFUNDED chip, 3rd audit row, toast fired; 375×812 — seller queue same real data; console clean both (rg-filtered).
+- tsc 0 whole project, eslint 0/0. DB wiped → 138 tables × 0 rows + WAL checkpoint(TRUNCATE). Commit 56d359d pushed (9 files, +1155/−8); tree clean, in sync with origin/main.
+
+Stage Summary:
+- The returns flow is now three-sided: buyer files (paid+delivered only) → seller SEES their items live (read-only, honest share) → admin approves/refunds with a real ledger. No side abandoned.
+- Admin has a real fraud/dispute lever that cannot be blocked by buyer-facing guards, with honest money semantics per payment state.
+- Platform bug fixed: seller live feed on order management was dead since its introduction (profile/me shape). All live events on that page now actually arrive.
+- E2E + wipe tooling now lives in the repo (scripts/qa/) — survives session resets.
+- REMAINING FAKE/INCOMPLETE: none found in these slices. Queued next: buyer return detail already exists; consider seller-side return receipt confirmation, order lifecycle tracking polish (orderTracking timeline on buyer side), uploads object-storage note (Railway ephemeral), eslint baseline cleanup in untouched files.
