@@ -109,6 +109,9 @@ export const productPayloadSchema = z
     basePrice: z.number().positive('Base price must be greater than 0'),
     currency: z.literal('BDT').default('BDT'),
     stockQuantity: z.number().min(0, 'Stock cannot be negative'),
+    // Seller-tuned PDP low-stock urgency threshold (Task 57-b). Null/omitted
+    // = platform default (5). Must be ≥ 0 when supplied.
+    stockAlertThreshold: z.number().min(0, 'Low-stock threshold cannot be negative').nullable().optional(),
     isCustomizable: z.boolean().optional(),
     thumbnailUrl: z.string().nullable().optional(),
     images: z.array(productImageSchema),

@@ -47,7 +47,7 @@ function formatMoneyPrecise(amountBDT: number, formatPrice: (n: number) => strin
 interface ApiProduct {
   id: string; name: string; slug: string; description: string | null; brand: string | null
   unit: string; bundleSize: number | null; basePrice: number; moq: number; maxOrderQty: number | null
-  stockQuantity: number; thumbnailUrl: string | null; ratingAvg: number; reviewCount: number
+  stockQuantity: number; stockAlertThreshold: number | null; thumbnailUrl: string | null; ratingAvg: number; reviewCount: number
   soldCount: number; isCustomizable: boolean; createdAt: string
   category: { id: string; name: string; slug: string; parentId: string | null }
   supplier: { id: string; companyName: string; slug: string; city: string; ratingAvg: number; ratingCount: number; verificationStatus: string }
@@ -65,11 +65,10 @@ interface ApiProduct {
 /* ─── Tab Types ─── */
 type TabId = 'details' | 'specifications' | 'shipping' | 'reviews'
 
-/* Task 56-c: products has NO per-product low-stock threshold column (schema
-   check — the only stockAlert* model is the buyer-side watchlist), so the
-   urgent 'Only X left' threshold is the platform constant (same value the
-   desktop PDP uses). */
-const LOW_STOCK_THRESHOLD = 5
+/* Task 57-b: the urgent 'Only X left' threshold is the SELLER-tuned
+   products.stockAlertThreshold (schema column); null falls back to this
+   platform default (same value the desktop PDP uses). */
+const LOW_STOCK_THRESHOLD_DEFAULT = 5
 
 /* ─── Component ─── */
 
@@ -409,7 +408,7 @@ export function MobileProductDetailPage() {
               <Package className="w-3 h-3" />
               Out of stock
             </span>
-          ) : product.stockQuantity <= LOW_STOCK_THRESHOLD ? (
+          ) : product.stockQuantity <= (product.stockAlertThreshold ?? LOW_STOCK_THRESHOLD_DEFAULT) ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 animate-pulse">
               <AlertCircle className="w-3 h-3" />
               Only {formatQty(product.stockQuantity)} {product.unit} left
@@ -550,7 +549,7 @@ export function MobileProductDetailPage() {
                     <p className={`text-sm font-semibold mt-0.5 ${
                       product.stockQuantity <= 0
                         ? 'text-red-600'
-                        : product.stockQuantity <= LOW_STOCK_THRESHOLD
+                        : product.stockQuantity <= (product.stockAlertThreshold ?? LOW_STOCK_THRESHOLD_DEFAULT)
                           ? 'text-amber-600'
                           : 'text-foreground'
                     }`}>

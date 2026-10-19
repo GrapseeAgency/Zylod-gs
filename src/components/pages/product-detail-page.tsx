@@ -141,6 +141,8 @@ interface ProductData {
   moq: number
   maxOrderQty: number | null
   stockQuantity: number
+  /** Task 57-b: seller-tuned low-stock urgency threshold (null = platform default 5). */
+  stockAlertThreshold: number | null
   thumbnailUrl: string | null
   ratingAvg: number
   reviewCount: number
@@ -159,15 +161,14 @@ interface ProductData {
 }
 
 /* ─── Helper: Stock Status ───
-    Task 56-c: products has NO per-product low-stock threshold column
-    (schema check — the only stockAlert* model is the buyer-side watchlist),
-    so the urgent 'Only X left' threshold is this platform constant. */
-const LOW_STOCK_THRESHOLD = 5
+    Task 57-b: the threshold is the SELLER-tuned products.stockAlertThreshold
+    (nullable schema column); null falls back to this platform default. */
+const LOW_STOCK_THRESHOLD_DEFAULT = 5
 
-function getStockStatus(stock: number, maxStock: number) {
+function getStockStatus(stock: number, maxStock: number, threshold: number = LOW_STOCK_THRESHOLD_DEFAULT) {
   const ratio = maxStock > 0 ? stock / maxStock : 0
   if (stock === 0) return { label: 'Out of Stock', color: 'text-red-600', bg: 'bg-red-50', barColor: 'bg-red-500', urgency: false }
-  if (stock <= LOW_STOCK_THRESHOLD || ratio < 0.2) return { label: `Only ${formatQty(stock)} left!`, color: 'text-amber-600', bg: 'bg-amber-50', barColor: 'bg-amber-500', urgency: true }
+  if (stock <= threshold || ratio < 0.2) return { label: `Only ${formatQty(stock)} left!`, color: 'text-amber-600', bg: 'bg-amber-50', barColor: 'bg-amber-500', urgency: true }
   if (ratio < 0.5) return { label: 'Low Stock', color: 'text-yellow-600', bg: 'bg-yellow-50', barColor: 'bg-yellow-500', urgency: false }
   return { label: 'In Stock', color: 'text-green-600', bg: 'bg-green-50', barColor: 'bg-green-500', urgency: false }
 }
@@ -440,7 +441,10 @@ function DesktopProductDetailPage() {
   const priceUnitLabel = isBundle ? 'bundle' : unit
   const effectivePerUnit = isBundle && bundleSize ? applicablePrice / bundleSize : applicablePrice
   const maxStock = product?.stockQuantity || 0
-  const stockStatus = getStockStatus(currentVariantStock, maxStock)
+  // Task 57-b: the seller's own threshold drives the urgent state; the
+  // platform default (5) applies when the seller never tuned one.
+  const stockAlertThreshold = product?.stockAlertThreshold ?? LOW_STOCK_THRESHOLD_DEFAULT
+  const stockStatus = getStockStatus(currentVariantStock, maxStock, stockAlertThreshold)
   const deliveryDays = currentVariantStock === 0 ? 21 : currentVariantStock < maxStock * 0.2 ? 10 : 5
 
   const handleAddToCart = () => {
@@ -824,7 +828,11 @@ function DesktopProductDetailPage() {
                     {variant.priceOverride != null && (
                       <span className="ml-1 text-xs">({formatPrice(variant.priceOverride)})</span>
                     )}
-                    {variant.stockQuantity === 0 && <span className="ml-1 text-[10px]">(Out of stock)</span>}
+                    {/* Task 57-b: per-variant urgency inherits the product's threshold */}
+                    {variant.stockQuantity === 0 && <span className="ml-1 text-[10px] text-red-600 dark:text-red-400">(Out of stock)</span>}
+                    {variant.stockQuantity > 0 && variant.stockQuantity <= stockAlertThreshold && (
+                      <span className="ml-1 text-[10px] text-amber-600 dark:text-amber-400">(Only {formatQty(variant.stockQuantity)} left)</span>
+                    )}
                   </Button>
                 ))}
               </div>

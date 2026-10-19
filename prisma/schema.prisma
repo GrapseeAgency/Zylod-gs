@@ -349,6 +349,10 @@ model products {
   // currency default BDT
   currency     String   @default("BDT")
   stockQuantity Float
+  // Seller-tuned low-stock urgency threshold shown on the PDP ("Only X left").
+  // Null = platform default (5). Kept on the product, not per variant —
+  // variant stock inherits the parent's threshold.
+  stockAlertThreshold Float?
   isActive       Boolean  @default(true)
   isApproved     Boolean  @default(false)
   isCustomizable Boolean  @default(false)

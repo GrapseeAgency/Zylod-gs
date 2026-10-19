@@ -44,6 +44,7 @@ interface ApiProduct {
   maxOrderQty: number | null;
   basePrice: number;
   stockQuantity: number;
+  stockAlertThreshold: number | null;
   isCustomizable: boolean;
   isActive: boolean;
   isApproved: boolean;
@@ -89,6 +90,7 @@ export function SellerEditProductPage() {
     maxOrderQty: '',
     basePrice: '',
     stockQuantity: '',
+    stockAlertThreshold: '',
     isCustomizable: false,
     isActive: true,
   });
@@ -168,6 +170,7 @@ export function SellerEditProductPage() {
         maxOrderQty: p.maxOrderQty == null ? '' : String(p.maxOrderQty),
         basePrice: String(p.basePrice ?? ''),
         stockQuantity: String(p.stockQuantity ?? ''),
+        stockAlertThreshold: p.stockAlertThreshold == null ? '' : String(p.stockAlertThreshold),
         isCustomizable: Boolean(p.isCustomizable),
         isActive: Boolean(p.isActive),
       });
@@ -239,6 +242,8 @@ export function SellerEditProductPage() {
       basePrice: form.basePrice.trim() === '' ? NaN : Number(form.basePrice),
       currency: 'BDT' as const,
       stockQuantity: form.stockQuantity.trim() === '' ? NaN : Number(form.stockQuantity),
+      // Task 57-b: '' = platform default (null); otherwise decimal ≥ 0.
+      stockAlertThreshold: form.stockAlertThreshold.trim() === '' ? null : Number(form.stockAlertThreshold),
       isCustomizable: form.isCustomizable,
       thumbnailUrl: readyImages.length > 0 ? readyImages[0].url : null,
       images: readyImages.map((img, index) => ({ imageUrl: img.url, sortOrder: index })),

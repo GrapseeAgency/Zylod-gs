@@ -46,6 +46,8 @@ export interface ProductFormState {
   maxOrderQty: string;
   basePrice: string;
   stockQuantity: string;
+  /** '' = platform default threshold (5). Decimal ≥ 0. (Task 57-b) */
+  stockAlertThreshold: string;
   isCustomizable: boolean;
   /** Edit page only (schema-backed products.isActive); the add page ignores it. */
   isActive: boolean;
@@ -122,6 +124,7 @@ export const EMPTY_PRODUCT_FORM: ProductFormState = {
   maxOrderQty: '',
   basePrice: '',
   stockQuantity: '',
+  stockAlertThreshold: '',
   isCustomizable: false,
   isActive: true,
 };
@@ -601,6 +604,24 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               placeholder={form.unit === 'kg' ? 'e.g., 250.5' : 'e.g., 1200'}
             />
             {serverIssues.stockQuantity?.[0] && <FieldError message={serverIssues.stockQuantity[0]} />}
+          </div>
+          <div className="space-y-1 col-span-2">
+            <label htmlFor="pf-stock-alert" className="text-sm font-medium text-gray-700">
+              Low-stock alert threshold <span className="text-gray-400">(optional)</span>
+            </label>
+            <input
+              id="pf-stock-alert"
+              type="number"
+              min="0"
+              step="0.5"
+              value={form.stockAlertThreshold}
+              onChange={(e) => onFormChange({ stockAlertThreshold: e.target.value })}
+              className={inputClass}
+              placeholder="Default 5 — e.g. 10 for bulk-heavy stock"
+            />
+            <p className="text-[11px] text-gray-500">
+              When stock falls to this level the product page shows an urgent “Only X left” warning.
+            </p>
           </div>
         </div>
 

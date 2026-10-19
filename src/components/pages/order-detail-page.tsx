@@ -118,6 +118,10 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const [paySubmitting, setPaySubmitting] = useState(false)
   const [payError, setPayError] = useState('')
 
+  // ── Cancel-order state (Task 57-a) ──────────────────────────────────
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
+
   const loadOrder = useCallback(async () => {
     if (!orderId) { setLoading(false); return }
     setLoading(true)
@@ -199,6 +203,33 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
       setPayError('Network error while submitting your payment. Check your connection and retry.')
     } finally {
       setPaySubmitting(false)
+    }
+  }
+
+  // ── Task 57-a: buyer self-service cancellation ────────────────────────
+  const cancelOrder = async () => {
+    if (!order) return
+    setCancelling(true)
+    try {
+      const res = await fetch(`/api/orders/${encodeURIComponent(order.id)}/cancel`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) {
+        toast.error(json?.error || `Cancellation failed (HTTP ${res.status})`)
+        setCancelDialogOpen(false)
+        return
+      }
+      toast.success('Order cancelled', {
+        description: `${json?.data?.subOrdersCancelled ?? 0} shipment(s) cancelled · stock restored${json?.data?.paymentsVoided ? ` · ${json.data.paymentsVoided} pending payment reference voided` : ''}.`,
+      })
+      setCancelDialogOpen(false)
+      loadOrder()
+    } catch {
+      toast.error('Network error while cancelling this order. Check your connection and retry.')
+    } finally {
+      setCancelling(false)
     }
   }
 
@@ -294,6 +325,12 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const remainingDue = Math.max(0, order.totalAmount - verifiedPaid)
   const canSubmitPayment =
     isBuyerOwner && (order.paymentStatus === 'unpaid' || order.paymentStatus === 'partial')
+  // Task 57-a: mirror of the API guards — money not verified yet AND nothing
+  // has moved past confirmed. A cancelled order shows no cancel button.
+  const canCancelOrder =
+    canSubmitPayment &&
+    order.subOrders.length > 0 &&
+    order.subOrders.every((so) => ['pending', 'confirmed'].includes((so.status || 'pending').toLowerCase()))
   const hasPendingVerification = order.payments.some((p) => p.status === 'pending')
   const status = deriveStatus(order.subOrders)
   const subtotal = order.subOrders.reduce((sum, so) => sum + (typeof so.subtotal === 'number' ? so.subtotal : 0), 0)
@@ -500,6 +537,24 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
             </div>
           )}
 
+          {/* Task 57-a: buyer self-service cancellation — pre-payment, pre-pack only */}
+          {canCancelOrder && (
+            <div className="pt-3">
+              <Button
+                variant="outline"
+                onClick={() => setCancelDialogOpen(true)}
+                disabled={cancelling}
+                className="w-full h-11 rounded-2xl text-xs font-bold text-red-600 dark:text-red-400 border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-700 dark:hover:text-red-300 gap-2"
+              >
+                <XCircle className="h-4 w-4" />
+                Cancel order
+              </Button>
+              <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+                Cancelling restores the stock and voids any pending payment reference. Once the seller packs or ships, contact the supplier instead.
+              </p>
+            </div>
+          )}
+
           {/* Real payment records */}
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
             {order.payments.length === 0 ? (
@@ -692,6 +747,30 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               className="h-10 px-5 rounded-xl text-xs font-bold bg-primary hover:bg-primary/90 text-white"
             >
               {paySubmitting ? 'Submitting…' : 'Submit payment'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Task 57-a: cancel confirmation — states the real consequences verbatim */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent className="max-w-md rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black">Cancel order #{order?.orderNumber || '--'}?</DialogTitle>
+            <DialogDescription className="text-xs leading-relaxed">
+              This cancels every shipment on the order, restores the stock to the supplier, and voids any pending payment reference so it can never be verified later. This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setCancelDialogOpen(false)} disabled={cancelling} className="h-10 px-4 rounded-xl text-xs font-bold">
+              Keep order
+            </Button>
+            <Button
+              onClick={cancelOrder}
+              disabled={cancelling}
+              className="h-10 px-5 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white"
+            >
+              {cancelling ? 'Cancelling…' : 'Yes, cancel order'}
             </Button>
           </DialogFooter>
         </DialogContent>

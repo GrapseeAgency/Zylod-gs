@@ -97,6 +97,8 @@ export function SellerAddProductPage() {
     const maxOrderQty = optionalQty(form.maxOrderQty);
     const bundleSize = parseBundleSize(form.bundleSize);
     const stockQuantity = form.stockQuantity.trim() === '' ? NaN : Number(form.stockQuantity);
+    // Task 57-b: '' = platform default (omit); otherwise decimal ≥ 0.
+    const stockAlertThreshold = form.stockAlertThreshold.trim() === '' ? null : Number(form.stockAlertThreshold);
     const readyImages = images.filter((img) => img.status === 'ready');
 
     return {
@@ -112,6 +114,7 @@ export function SellerAddProductPage() {
       basePrice: form.basePrice.trim() === '' ? NaN : Number(form.basePrice),
       currency: 'BDT' as const,
       stockQuantity,
+      stockAlertThreshold,
       isCustomizable: form.isCustomizable,
       thumbnailUrl: readyImages.length > 0 ? readyImages[0].url : null,
       images: readyImages.map((img, index) => ({ imageUrl: img.url, sortOrder: index })),

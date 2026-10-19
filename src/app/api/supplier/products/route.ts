@@ -194,6 +194,8 @@ export async function POST(request: NextRequest) {
         basePrice: payload.basePrice,
         currency: payload.currency,
         stockQuantity: payload.stockQuantity,
+        // Task 57-b: seller-tuned PDP low-stock threshold (null = platform default 5).
+        stockAlertThreshold: payload.stockAlertThreshold ?? null,
         isApproved: false, // moderation queue decides visibility — creation never self-approves
         isActive: true,
         isCustomizable: payload.isCustomizable ?? false,
