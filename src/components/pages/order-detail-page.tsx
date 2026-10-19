@@ -9,6 +9,7 @@ import {
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useAuthStore } from '@/store/auth-store'
+import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room'
 import { toast } from 'sonner'
 import {
   ArrowLeft, HelpCircle, Check, Package, Truck, Home,
@@ -18,6 +19,19 @@ import {
 
 // ── Real API types (GET /api/orders/[id]) ──────────────────────────────
 interface ApiProduct { id: string; name: string; thumbnailUrl: string | null; unit: string | null; slug: string }
+
+// Task 69-c: the order-room events that mean "refetch this order NOW". Every
+// one of these is broadcast by a real write path: payment:submitted/verified/
+// rejected (all four money paths), order:status (seller PATCH), order:cancelled
+// (buyer + admin force-cancel), return:received (seller confirms receipt).
+const LIVE_ORDER_EVENTS = new Set([
+  'payment:submitted',
+  'payment:verified',
+  'payment:rejected',
+  'order:status',
+  'order:cancelled',
+  'return:received',
+])
 interface ApiVariant { id: string; variantName: string; variantValue: string }
 interface ApiItem {
   id: string
@@ -157,6 +171,37 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   }, [orderId])
 
   useEffect(() => { loadOrder() }, [loadOrder])
+
+  // ── Task 69-c: LIVE order room ────────────────────────────────────────────
+  // The buyer's order page joins order:<id> (token minted by the delivery
+  // room-token endpoint, which authorizes the order's buyer). Every real
+  // event on that room — payment submitted/verified/rejected (all FOUR money
+  // paths broadcast here), seller status changes, cancels, return receipts —
+  // triggers ONE honest refetch: the fetch is the truth, the socket only says
+  // WHEN. Before this, a buyer staring at the page saw nothing until they
+  // reloaded, even while the decision they were waiting for landed.
+  const loadOrderRef = useRef(loadOrder)
+  useEffect(() => { loadOrderRef.current = loadOrder }, [loadOrder])
+
+  const { connected: orderRoomConnected } = useRealtimeRoom(orderId ? [`order:${orderId}`] : [], {
+    getToken: useCallback(async (room: string) => {
+      try {
+        const oid = room.slice('order:'.length)
+        const res = await fetch(`/api/delivery/orders/${encodeURIComponent(oid)}/room-token`, {
+          credentials: 'include',
+        })
+        if (!res.ok) return null
+        const json = (await res.json()) as { success?: boolean; token?: unknown }
+        return typeof json.token === 'string' && json.token.length > 0 ? json.token : null
+      } catch {
+        return null
+      }
+    }, []),
+    onEvent: useCallback((msg: RealtimeRoomMessage) => {
+      if (!LIVE_ORDER_EVENTS.has(msg.event)) return
+      void loadOrderRef.current()
+    }, []),
+  })
 
   // Task 68-c: once the order (and its payments) is on screen, bring the
   // deep-linked payment chip into view. A stale/foreign payment id simply
@@ -571,7 +616,21 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
 
         {/* Payment Summary Card */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 lg:col-start-3 lg:row-start-1 lg:row-span-2">
-          <h2 className="text-xs md:text-sm font-bold">Payment Summary</h2>
+          <h2 className="text-xs md:text-sm font-bold flex items-center gap-2">
+            Payment Summary
+            {orderRoomConnected && (
+              <span
+                className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400"
+                aria-label="Live updates active — this page refreshes itself when payment or shipment state changes"
+              >
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                </span>
+                Live
+              </span>
+            )}
+          </h2>
 
           <div className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 pt-1">
             <div className="flex justify-between">

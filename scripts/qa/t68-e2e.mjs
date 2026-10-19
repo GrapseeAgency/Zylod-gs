@@ -20,12 +20,17 @@
  *     Verified') exactly as the order transitions to 'partial'.
  *
  * Run: bun scripts/qa/t68-e2e.mjs   (DB must be EMPTY — first-admin window;
- *      PAYMENT_WEBHOOK_SECRET is intentionally NOT set in dev, so the
- *      webhook path (same helper calls) is code-verified, not E2E-verified.)
+ *      dev server must be FRESH — the in-memory cache outlives DB wipes.
+ *      Section F runs when PAYMENT_WEBHOOK_SECRET is set in the dev env.)
  */
 const BASE = 'http://127.0.0.1:3000'
+import { createHmac } from 'crypto'
 import { PrismaClient } from '@prisma/client'
 const db = new PrismaClient()
+
+// Section F needs the dev env's webhook secret (.env, gitignored). If it is
+// missing the harness says so honestly instead of faking the section.
+const WEBHOOK_SECRET = process.env.PAYMENT_WEBHOOK_SECRET ?? ''
 
 let PASS = 0, FAIL = 0
 const failures = []
@@ -285,6 +290,67 @@ const main = async () => {
     where: { action: { in: ['payment_submitted', 'payment_verified', 'payment_rejected'] }, entityType: 'payments' },
   })
   ok(auditRows.length === 8, '8 audit rows (4 submits + 3 verifies + 1 reject)', `${auditRows.length}`)
+
+  // ════════════════════════ SECTION F: the signed webhook path ════════════════════════
+  // The FOURTH money path (the only AUTOMATED one). Needs PAYMENT_WEBHOOK_SECRET
+  // in the dev env — this round sets it, so the signed round-trip is proven too.
+  section('F) 68-c on the webhook — signed success/failed reach the buyer as rows')
+  if (!WEBHOOK_SECRET) {
+    ok(false, 'PAYMENT_WEBHOOK_SECRET not set in this environment — webhook section SKIPPED honestly')
+  } else {
+  const order4 = await buyer('POST', '/api/orders', { items: [{ productId, quantity: 1 }] })
+  const orderId4 = order4.json.data.orderId
+  const total4 = order4.json.data.totalAmount
+
+  const badSig = await fetch(`${BASE}/api/payments/webhook`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-zylod-signature': 'sha256=deadbeef' },
+    body: JSON.stringify({ orderId: orderId4, transactionId: `QA68WH${ts}X`, amount: total4, status: 'success' }),
+  })
+  ok(badSig.status === 401, 'webhook with WRONG signature → 401 (timing-safe compare)', `got ${badSig.status}`)
+
+  const rawOk = JSON.stringify({ orderId: orderId4, transactionId: `QA68WH${ts}A`, amount: total4, status: 'success', gateway: 'QA68-bank' })
+  const sigOk = 'sha256=' + createHmac('sha256', WEBHOOK_SECRET).update(rawOk).digest('hex')
+  const whOk = await fetch(`${BASE}/api/payments/webhook`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-zylod-signature': sigOk },
+    body: rawOk,
+  })
+  ok(whOk.status === 200, 'webhook SIGNED success → 200', `got ${whOk.status}`)
+  const whOkBody = await whOk.json().catch(() => null)
+  ok(whOkBody?.data?.paymentStatus === 'paid', 'webhook success → order PAID (the automated transition)')
+  await sleep(300)
+  const whPayment = await db.payments.findFirst({ where: { transactionId: `QA68WH${ts}A` } })
+  ok(whPayment?.status === 'success' && whPayment?.paidAt !== null, 'webhook payment row success + paidAt REAL in DB')
+  const notifWh = await buyerNotifications(buyer)
+  const whRow = notifWh.find((n) => n.type === 'payment' && n.relatedPaymentId === whPayment?.id)
+  ok(/Verified/.test(whRow?.title ?? '') && whRow?.relatedId === orderId4, 'webhook success reaches the buyer as a REAL notification row with BOTH ids')
+
+  // Signed failed — a failed gateway callback is also a real buyer-facing event.
+  const order5 = await buyer('POST', '/api/orders', { items: [{ productId, quantity: 1 }] })
+  const rawFail = JSON.stringify({ orderId: order5.json.data.orderId, transactionId: `QA68WH${ts}B`, amount: order5.json.data.totalAmount, status: 'failed', gateway: 'QA68-bank' })
+  const sigFail = 'sha256=' + createHmac('sha256', WEBHOOK_SECRET).update(rawFail).digest('hex')
+  const whFail = await fetch(`${BASE}/api/payments/webhook`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-zylod-signature': sigFail },
+    body: rawFail,
+  })
+  ok(whFail.status === 200, 'webhook SIGNED failed → 200')
+  await sleep(300)
+  const notifWhFail = await buyerNotifications(buyer)
+  const failRow = notifWhFail.find((n) => n.type === 'payment' && /Rejected/.test(n.title ?? '') && n.relatedId === order5.json.data.orderId)
+  ok(Boolean(failRow), 'webhook FAILED callback reaches the buyer as a REAL rejection row')
+
+  // Replay idempotency — the same signed payload twice must NOT double-fire.
+  const replay = await fetch(`${BASE}/api/payments/webhook`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-zylod-signature': sigOk },
+    body: rawOk,
+  })
+  ok(replay.status === 200 && (await replay.json())?.data?.alreadyProcessed === true, 'webhook replay → alreadyProcessed (no double payment)')
+  const whPayments = await db.payments.count({ where: { transactionId: `QA68WH${ts}A` } })
+  ok(whPayments === 1, 'exactly ONE payments row for the replayed transaction')
+  }
 
   console.log(`\n════════════════════════════════════════`)
   console.log(`PASS ${PASS}  FAIL ${FAIL}`)
