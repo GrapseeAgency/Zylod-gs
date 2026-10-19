@@ -44,6 +44,7 @@ export async function GET(
         timestamp: notification.createdAt.toISOString(),
         isRead: true,
         relatedId: notification.relatedEntityId,
+        relatedShipmentId: notification.relatedShipmentId,
       },
     })
   } catch (error) {

@@ -17,6 +17,8 @@ export interface CreateNotificationParams {
   title: string
   body: string
   relatedEntityId?: string | null
+  /** Task 66: the exact subOrder (shipment) this notification is about. */
+  relatedShipmentId?: string | null
 }
 
 /**
@@ -29,6 +31,7 @@ export async function sendNotification({
   title,
   body,
   relatedEntityId = null,
+  relatedShipmentId = null,
 }: CreateNotificationParams) {
   try {
     // Check user preferences if exists
@@ -59,6 +62,7 @@ export async function sendNotification({
         body,
         isRead: false,
         relatedEntityId: relatedEntityId || null,
+        relatedShipmentId: relatedShipmentId || null,
       },
     })
 
@@ -73,6 +77,7 @@ export async function sendNotification({
       message: notif.body,
       isRead: notif.isRead,
       relatedId: notif.relatedEntityId,
+      relatedShipmentId: notif.relatedShipmentId,
       timestamp: notif.createdAt.toISOString(),
     })
 
@@ -88,7 +93,9 @@ export async function notifyOrderMilestone(
   userId: string,
   orderNumber: string,
   status: string,
-  orderId: string
+  orderId: string,
+  /** Task 66: set when the milestone is a PER-SHIPMENT event. */
+  shipmentId?: string | null
 ) {
   const statusMessages: Record<string, { title: string; body: string }> = {
     confirmed: {
@@ -124,6 +131,7 @@ export async function notifyOrderMilestone(
     title: msg.title,
     body: msg.body,
     relatedEntityId: orderId,
+    relatedShipmentId: shipmentId ?? null,
   })
 }
 
@@ -133,7 +141,9 @@ export async function notifyDeliveryDispatch(
   orderNumber: string,
   carrier: string,
   trackingNumber: string,
-  orderId: string
+  orderId: string,
+  /** Task 66: the shipment this consignment belongs to. */
+  shipmentId?: string | null
 ) {
   return sendNotification({
     userId,
@@ -141,6 +151,7 @@ export async function notifyDeliveryDispatch(
     title: `Courier In Transit: ${orderNumber}`,
     body: `Your consignment has been dispatched via ${carrier}. Consignment Waybill: ${trackingNumber}. Real-time tracking is now active.`,
     relatedEntityId: orderId,
+    relatedShipmentId: shipmentId ?? null,
   })
 }
 

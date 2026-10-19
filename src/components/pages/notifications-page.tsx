@@ -23,6 +23,7 @@ interface NotificationItem {
   timestamp: string
   isRead: boolean
   relatedId?: string | null
+  relatedShipmentId?: string | null
 }
 
 export function NotificationsPage() {
@@ -112,7 +113,12 @@ export function NotificationsPage() {
       case 'payment':
         return { page: 'order-detail', params: { orderId: notif.relatedId } }
       case 'delivery':
-        return { page: 'delivery-updates' }
+        // Task 66: a per-shipment delivery notification lands on the ORDER
+        // view where that shipment's tracking lives — the generic delivery
+        // hub stays the fallback for legacy rows without a shipment id.
+        return notif.relatedShipmentId
+          ? { page: 'order-detail', params: { orderId: notif.relatedId! } }
+          : { page: 'delivery-updates' }
       case 'price_drop':
       case 'back_in_stock':
       case 'promotion':

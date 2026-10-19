@@ -21,6 +21,7 @@ interface NotificationDetail {
   timestamp: string
   isRead: boolean
   relatedId?: string | null
+  relatedShipmentId?: string | null
 }
 
 export function NotificationDetailPage() {
@@ -87,7 +88,12 @@ export function NotificationDetailPage() {
         }
         break
       case 'delivery':
-        if (notification.relatedId) {
+        // Task 66: per-shipment delivery notifications land on the ORDER
+        // view where that shipment's tracking lives; legacy rows (no
+        // shipment id) keep the generic delivery hub.
+        if (notification.relatedShipmentId && notification.relatedId) {
+          navigate('order-detail', { orderId: notification.relatedId })
+        } else if (notification.relatedId) {
           navigate('delivery-updates')
         } else {
           navigate('orders')

@@ -153,9 +153,10 @@ export async function POST(
       // Dispatch real milestone and delivery notifications to buyer
       const parentOrder = await db.orders.findUnique({ where: { id }, select: { buyerId: true, orderNumber: true } })
       if (parentOrder) {
-        await notifyOrderMilestone(parentOrder.buyerId, parentOrder.orderNumber, status, id)
+        // Task 66: per-shipment events carry THAT shipment's id for deep-links.
+        await notifyOrderMilestone(parentOrder.buyerId, parentOrder.orderNumber, status, id, subOrderId)
         if (status === 'shipped' && subOrder.trackingNumber) {
-          await notifyDeliveryDispatch(parentOrder.buyerId, parentOrder.orderNumber, 'the supplier', subOrder.trackingNumber, id)
+          await notifyDeliveryDispatch(parentOrder.buyerId, parentOrder.orderNumber, 'the supplier', subOrder.trackingNumber, id, subOrderId)
         }
       }
 

@@ -94,6 +94,55 @@ export async function GET(request: NextRequest) {
       .slice(0, 5)
       .map((p) => ({ id: p.id, name: p.name, unitsSold: p.unitsSold, revenue: Math.round(p.revenue * 100) / 100 }))
 
+    // ─── Restock-watch demand (Task 66): REAL active stockAlerts rows on this
+    // supplier's products — the buyers explicitly waiting for goods to come
+    // back. Variant watches (Task 65) count toward their product and their
+    // pinned labels are listed. Products nobody waits on are not rows.
+    // (stockAlerts carries no products relation — scope by product ids.)
+    const supplierProducts = await db.products.findMany({
+      where: { supplierId: profile.id },
+      select: { id: true, name: true, stockQuantity: true, unit: true, isActive: true },
+    })
+    const demandProductMeta = new Map(supplierProducts.map((p) => [p.id, p]))
+    const activeWatches = await db.stockAlerts.findMany({
+      where: { status: 'active', productId: { in: supplierProducts.map((p) => p.id) } },
+      select: { productId: true, variantId: true, variantLabel: true },
+    })
+    const demandMap = new Map<string, {
+      productId: string; productName: string; stockQuantity: number; unit: string
+      isActive: boolean; watchers: number; variantLabels: Set<string>
+    }>()
+    for (const w of activeWatches) {
+      const meta = demandProductMeta.get(w.productId)
+      if (!meta) continue
+      const entry = demandMap.get(w.productId) || {
+        productId: w.productId,
+        productName: meta.name,
+        stockQuantity: meta.stockQuantity,
+        unit: meta.unit,
+        isActive: meta.isActive,
+        watchers: 0,
+        variantLabels: new Set<string>(),
+      }
+      entry.watchers += 1
+      if (w.variantLabel) entry.variantLabels.add(w.variantLabel)
+      demandMap.set(w.productId, entry)
+    }
+    const restockDemand = {
+      totalWatchers: activeWatches.length,
+      products: Array.from(demandMap.values())
+        .sort((a, b) => b.watchers - a.watchers)
+        .map((d) => ({
+          productId: d.productId,
+          productName: d.productName,
+          stockQuantity: d.stockQuantity,
+          unit: d.unit,
+          isActive: d.isActive,
+          watchers: d.watchers,
+          variantLabels: Array.from(d.variantLabels),
+        })),
+    }
+
     return NextResponse.json({
       success: true,
       data: {
@@ -110,6 +159,7 @@ export async function GET(request: NextRequest) {
         // No real traffic-attribution source exists — honest empty.
         trafficSources: [],
         topProducts,
+        restockDemand,
       },
     })
   } catch (error) {

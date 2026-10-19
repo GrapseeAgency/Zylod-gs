@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigationStore } from '@/store/navigation-store';
-import { ArrowLeft, Loader2, TrendingUp, DollarSign, Activity, Users, ShoppingCart, MousePointerClick } from 'lucide-react';
+import { ArrowLeft, Loader2, TrendingUp, DollarSign, Activity, Users, ShoppingCart, MousePointerClick, BellRing } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,6 +20,18 @@ interface AnalyticsData {
   salesPerformance: { date: string; bdt: number }[];
   trafficSources: { source: string; percentage: number }[];
   topProducts: { id: string; name: string; unitsSold: number; revenue: number }[];
+  restockDemand: {
+    totalWatchers: number;
+    products: {
+      productId: string;
+      productName: string;
+      stockQuantity: number;
+      unit: string;
+      isActive: boolean;
+      watchers: number;
+      variantLabels: string[];
+    }[];
+  };
 }
 
 export function SellerAnalyticsPage() {
@@ -189,6 +201,62 @@ export function SellerAnalyticsPage() {
                 </CardContent>
               </Card>
             </div>
+
+            <Card className="shadow-sm border-l-4 border-l-amber-400">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex justify-between items-center">
+                  <span className="flex items-center gap-2">
+                    <BellRing className="h-4 w-4 text-amber-600" />
+                    Restock Demand
+                  </span>
+                  {data.restockDemand.totalWatchers > 0 && (
+                    <span className="px-2 py-0.5 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full">
+                      {data.restockDemand.totalWatchers} buyer{data.restockDemand.totalWatchers === 1 ? '' : 's'} waiting
+                    </span>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  Buyers who set a restock watch on your sold-out goods — real rows, not estimates
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {data.restockDemand.products.length === 0 ? (
+                  <p className="text-sm text-gray-400 py-3 text-center">
+                    No active restock watches right now — buyers watching your sold-out products will appear here.
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {data.restockDemand.products.map((p) => (
+                      <div
+                        key={p.productId}
+                        className="flex items-start gap-3 border border-gray-100 rounded-xl p-3 cursor-pointer hover:border-amber-200 transition"
+                        onClick={() => navigate('edit-product', { productId: p.productId })}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-gray-900 truncate">{p.productName}</h4>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {p.isActive
+                              ? p.stockQuantity <= 0
+                                ? 'Out of stock'
+                                : `${p.stockQuantity} ${p.unit} in stock`
+                              : 'Listing hidden'}
+                            {p.variantLabels.length > 0 && (
+                              <span className="ml-1">
+                                · waiting on {p.variantLabels.join(', ')}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0 px-2 py-1 rounded-full bg-amber-50 border border-amber-200">
+                          <Users className="h-3 w-3 text-amber-600" />
+                          <span className="text-xs font-bold text-amber-700">{p.watchers} watching</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             <Card className="shadow-sm">
               <CardHeader className="pb-2">

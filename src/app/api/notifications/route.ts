@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
       timestamp: n.createdAt.toISOString(),
       isRead: n.isRead,
       relatedId: n.relatedEntityId,
+      relatedShipmentId: n.relatedShipmentId,
       actionUrl: null,
       actionLabel: null,
       priority: 'medium',

@@ -794,6 +794,9 @@ model notifications {
   body            String
   isRead          Boolean  @default(false)
   relatedEntityId String?
+  // Task 66: for order/delivery notifications born from a PER-SHIPMENT event
+  // — the exact subOrder this notification is about (deep-link target).
+  relatedShipmentId String?
   createdAt       DateTime @default(now())
 
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)

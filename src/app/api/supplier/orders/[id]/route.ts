@@ -4,7 +4,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
-import { notifyOrderMilestone } from '@/lib/notifications'
+import { notifyOrderMilestone, notifyDeliveryDispatch } from '@/lib/notifications'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 /**
@@ -285,8 +285,21 @@ export async function PATCH(
     })
 
     // Buyer milestone notification — only after the write succeeded.
+    // Task 66: a single-shipment status change carries THAT shipment's id so
+    // the buyer's notification deep-link lands on the shipment's order view.
     if (status !== undefined) {
-      await notifyOrderMilestone(order.buyerId, order.orderNumber, status, order.id)
+      await notifyOrderMilestone(order.buyerId, order.orderNumber, status, order.id, targets.length === 1 ? targets[0].id : undefined)
+    }
+    // Task 66: shipping with a waybill on THIS path (the normal seller flow)
+    // also dispatches the courier-in-transit push — previously only the
+    // driver track endpoint notified, so buyers got the milestone but never
+    // the "Consignment Waybill" message when their seller shipped.
+    if (status === 'shipped') {
+      for (const r of after) {
+        if (r.trackingNumber) {
+          await notifyDeliveryDispatch(order.buyerId, order.orderNumber, 'the supplier', r.trackingNumber, order.id, r.id)
+        }
+      }
     }
 
     // Real-time: push the persisted state into the order room (buyer tracking
