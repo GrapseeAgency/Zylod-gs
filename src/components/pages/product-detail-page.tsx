@@ -405,6 +405,17 @@ function DesktopProductDetailPage() {
     return product?.stockQuantity || 0
   }, [product, selectedVariantId])
 
+  // Task 65: the selected variant row itself — feeds the per-variant restock
+  // watch CTA (watch THIS variant when it alone is out of stock).
+  const selectedVariant = useMemo(() => (
+    selectedVariantId && product?.variants
+      ? product.variants.find(v => v.id === selectedVariantId) ?? null
+      : null
+  ), [product, selectedVariantId])
+  const selectedVariantLabel = selectedVariant
+    ? `${selectedVariant.variantName}: ${selectedVariant.variantValue}`.replace(/\s+/g, ' ').trim()
+    : null
+
   // Calculate applicable price — CANONICAL WHOLESALE PRICING RULE:
   // a variant with priceOverride is priced individually (tiers do NOT
   // apply); otherwise the tier matching the current quantity applies;
@@ -822,14 +833,18 @@ function DesktopProductDetailPage() {
                     variant={selectedVariantId === variant.id ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedVariantId(variant.id)}
-                    disabled={variant.stockQuantity === 0}
-                    className={`text-sm ${selectedVariantId === variant.id ? 'bg-[primary] hover:bg-[#C62828]' : 'hover:border-[primary] hover:text-[primary]'}`}
+                    aria-pressed={selectedVariantId === variant.id}
+                    className={`text-sm ${selectedVariantId === variant.id ? 'bg-[primary] hover:bg-[#C62828]' : 'hover:border-[primary] hover:text-[primary]'} ${variant.stockQuantity === 0 ? 'opacity-80' : ''}`}
                   >
                     {variant.variantName}: {variant.variantValue}
                     {variant.priceOverride != null && (
                       <span className="ml-1 text-xs">({formatPrice(variant.priceOverride)})</span>
                     )}
-                    {/* Task 57-b: per-variant urgency inherits the product's threshold */}
+                    {/* Task 57-b: per-variant urgency inherits the product's threshold.
+                        Task 65: an OOS variant stays SELECTABLE on purpose — picking it
+                        is how the buyer reaches the per-variant restock watch. Ordering
+                        it stays impossible: Add to Cart / Buy Now independently disable
+                        on the selected variant's stock. */}
                     {variant.stockQuantity === 0 && <span className="ml-1 text-[10px] text-red-600 dark:text-red-400">(Out of stock)</span>}
                     {variant.stockQuantity > 0 && variant.stockQuantity <= stockAlertThreshold && (
                       <span className="ml-1 text-[10px] text-amber-600 dark:text-amber-400">(Only {formatQty(variant.stockQuantity)} left)</span>
@@ -994,18 +1009,29 @@ function DesktopProductDetailPage() {
             {/* Task 61: out-of-stock restock watch — renders only when the
                 PRODUCT itself is at zero stock (the stockAlerts model is
                 product-level; per-variant OOS keeps its own badge) and
-                disappears on its own when live stock returns. */}
+                disappears on its own when live stock returns.
+                Task 65: when the product still has stock but the SELECTED
+                variant is at zero, the CTA becomes a watch pinned to that
+                exact variant — it completes only when THAT variant restocks. */}
             <BackInStockButton
               productId={product.id}
               productName={productName}
               stockQuantity={product.stockQuantity}
+              variantId={selectedVariant?.id ?? null}
+              variantLabel={selectedVariantLabel}
+              variantStock={selectedVariant ? currentVariantStock : null}
               className="w-full h-11"
               onRequireLogin={() => {
                 toast({ title: 'Sign in required', description: 'Sign in to get a restock alert for this product.' })
                 navigate('login')
               }}
               onSubscribed={() =>
-                toast({ title: 'Restock watch set', description: `We'll notify you the moment ${productName} is back in stock.` })
+                toast({
+                  title: 'Restock watch set',
+                  description: selectedVariant && product.stockQuantity > 0
+                    ? `We'll notify you the moment ${selectedVariantLabel} of ${productName} is back.`
+                    : `We'll notify you the moment ${productName} is back in stock.`,
+                })
               }
             />
             <div className="flex gap-3">

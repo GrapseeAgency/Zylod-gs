@@ -470,6 +470,7 @@ model productVariants {
   product   products   @relation(fields: [productId], references: [id], onDelete: Cascade)
   cartItems cartItems[]
   orderItems orderItems[]
+  stockAlerts stockAlerts[]
 
   @@index([productId])
 }
@@ -2184,17 +2185,24 @@ model stockAlerts {
   productId       String
   productName     String
   productImage    String?
+  // Task 65: variant-level watches. null = watch the whole product;
+  // set = watch THIS exact variant (completes only when that variant
+  // itself restocks). variantLabel snapshots "Name: Value" for display.
+  variantId       String?
+  variantLabel    String?
   // status: active | notified | cancelled
   status          String   @default("active")
   lastNotifiedAt  DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  variant productVariants? @relation(fields: [variantId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([productId])
   @@index([status])
+  @@index([variantId])
 }
 
 model deliveryAlerts {

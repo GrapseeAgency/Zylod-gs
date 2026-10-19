@@ -4,7 +4,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
-import { notifyBackInStock } from '@/lib/stock-alerts'
+import { notifyBackInStock, notifyVariantBackInStock } from '@/lib/stock-alerts'
 
 /**
  * POST /api/admin/orders/[id]/cancel — the admin force-cancel override
@@ -176,12 +176,16 @@ export async function POST(
         string,
         { stockQuantity: number; unit: string; bundleSize: number | null; soldCount: number }
       >()
+      // Task 65: variant goods this force-cancel puts back — each completes
+      // only the watches pinned to THAT variant.
+      const variantFeed = new Map<string, string>() // variantId → productId
       for (const item of items) {
         if (item.variantId) {
           await tx.productVariants.update({
             where: { id: item.variantId },
             data: { stockQuantity: { increment: item.quantity } },
           })
+          variantFeed.set(item.variantId, item.productId)
         }
         const restoredProduct = await tx.products.update({
           where: { id: item.productId },
@@ -237,6 +241,7 @@ export async function POST(
         paymentStatus: wasVerifiedMoney ? 'refunded' : order.paymentStatus,
         totalAmount: wasVerifiedMoney ? order.totalAmount : 0,
         stockFeed,
+        variantFeed,
       }
     })
 
@@ -278,6 +283,11 @@ export async function POST(
     // evaluation (no cron), after commit, fire-and-forget.
     for (const productId of result.stockFeed.keys()) {
       notifyBackInStock(productId)
+    }
+    // Task 65: variant goods restored by this force-cancel complete the
+    // watches pinned to THAT variant only.
+    for (const [variantId, productId] of result.variantFeed) {
+      notifyVariantBackInStock(productId, variantId)
     }
 
     return NextResponse.json({

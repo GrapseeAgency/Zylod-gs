@@ -18,6 +18,8 @@ interface StockAlert {
   productId: string
   productName: string
   productImage: string | null
+  variantId: string | null
+  variantLabel: string | null
   currentPrice: number
   stockQuantity: number
   inStock: boolean
@@ -206,6 +208,17 @@ export function BackInStockAlertsPage() {
                       </span>
                     )}
                   </div>
+
+                  {/* Task 65: this watch is pinned to ONE variant — say so,
+                      and the stock line above is THAT variant's stock. */}
+                  {alert.variantLabel && (
+                    <p className="mt-1">
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold text-gray-700 bg-gray-100 border border-gray-200 rounded-md">
+                        <Layers className="w-3 h-3" />
+                        {alert.variantLabel}
+                      </span>
+                    </p>
+                  )}
 
                   <p className="text-xs font-bold text-gray-700 mt-1">
                     {formatPrice(alert.currentPrice)}

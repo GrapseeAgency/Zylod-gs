@@ -80,3 +80,8 @@ src/generated/bundle-identity.ts
 
 # User-uploaded media (ephemeral runtime storage)
 public/uploads/
+
+# sqlite runtime files — recreated by prisma db:push, never tracked
+db/*.db
+db/*.db-shm
+db/*.db-wal

@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
-import { notifyBackInStock } from '@/lib/stock-alerts'
+import { notifyBackInStock, notifyVariantBackInStock } from '@/lib/stock-alerts'
 import { roundQty } from '@/lib/product-contract'
 import { z } from 'zod'
 
@@ -310,8 +310,14 @@ export async function PATCH(request: NextRequest) {
       })
       // Task 61: a genuine RESTOCK (stock increased) may complete somebody's
       // back-in-stock watch. Decreases and no-ops never notify.
+      // Task 65: a variant row restock completes THAT variant's watches; a
+      // product row restock completes the product-level watches.
       if (r.after > r.before) {
-        notifyBackInStock(productId)
+        if (r.variantId) {
+          notifyVariantBackInStock(productId, r.variantId)
+        } else {
+          notifyBackInStock(productId)
+        }
       }
       // Task 62: the seller's own room also hears the edit — the dashboard's
       // Restock Demand card refetches live so completed watches leave the

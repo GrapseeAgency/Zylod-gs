@@ -5,7 +5,7 @@ import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
-import { notifyBackInStock } from '@/lib/stock-alerts'
+import { notifyBackInStock, notifyVariantBackInStock } from '@/lib/stock-alerts'
 
 /**
  * POST /api/seller/returns/[id]/confirm-receipt — the seller confirms the
@@ -173,6 +173,9 @@ export async function POST(
         })
       : []
     const variantBefore = new Map(variantRows.map((v) => [v.id, v]))
+    // Task 65: variant goods this receipt puts back on the shelf — each
+    // completes only the watches pinned to THAT variant (variantId → productId).
+    const variantFeed = new Map<string, string>()
 
     // Restored value = the same prorated math the seller queue displays:
     // Σ(orderItem.totalPrice × returnedQty ÷ orderedQty) over MY items.
@@ -240,6 +243,7 @@ export async function POST(
             data: { stockQuantity: afterVariantStock },
           })
           variantBefore.set(oi.variantId, { id: oi.variantId, stockQuantity: afterVariantStock })
+          variantFeed.set(oi.variantId, oi.productId)
         }
       }
 
@@ -332,6 +336,11 @@ export async function POST(
     // back-in-stock evaluation (no cron), after commit, fire-and-forget.
     for (const pid of productIds) {
       notifyBackInStock(pid)
+    }
+    // Task 65: returned VARIANT goods complete the watches pinned to that
+    // exact variant only.
+    for (const [variantId, productId] of variantFeed) {
+      notifyVariantBackInStock(productId, variantId)
     }
 
     return NextResponse.json({
