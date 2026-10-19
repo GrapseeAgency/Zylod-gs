@@ -59,8 +59,10 @@ const CONTROL_URL =
 
 /** Room names must match this exactly; the socket service rejects others.
  *  Task 52-a added the `rfq` prefix (token-gated — see vocabulary above); the
- *  socket service re-derives this pattern locally (no shared import). */
-export const REALTIME_ROOM_PATTERN = /^(order|product|seller|admin|rfq):[A-Za-z0-9_-]+$/
+ *  socket service re-derives this pattern locally (no shared import).
+ *  Task 62 added the `user` prefix (token-gated, own-id only — per-user live
+ *  notifications). */
+export const REALTIME_ROOM_PATTERN = /^(order|product|seller|admin|rfq|user):[A-Za-z0-9_-]+$/
 
 export function isValidRealtimeRoom(room: string): boolean {
   return REALTIME_ROOM_PATTERN.test(room)

@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
 import { 
   Package, ShoppingCart, AlertTriangle, DollarSign, MessageCircle, 
-  Plus, Truck, Store, BarChart3, ChevronRight, LayoutList, Users, PackageSearch
+  Plus, Truck, Store, BarChart3, ChevronRight, LayoutList, Users, PackageSearch,
+  BellRing
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useRealtimeRoom } from '@/hooks/use-realtime-room';
 
 /* Data comes from the REAL GET /api/supplier/dashboard (per-supplier stats,
  * monthly revenue, recent sub-orders). Every number is a real aggregate —
@@ -27,7 +29,7 @@ interface DashboardData {
     thisMonthRevenue: number;
     totalBuyers: number;
   };
-  supplier: { companyName: string; verificationStatus: string; ratingAvg: number };
+  supplier: { companyName: string; verificationStatus: string; ratingAvg: number; supplierId?: string | null };
   recentSubOrders: Array<{
     id: string;
     orderNumber: string;
@@ -39,6 +41,15 @@ interface DashboardData {
   }>;
   monthlyRevenue: Array<{ month: string; revenue: number }>;
   storeStats: { messages: number; quotes: number };
+}
+
+interface RestockDemandRow {
+  productId: string;
+  productName: string;
+  stockQuantity: number;
+  unit: string;
+  isActive: boolean;
+  watchers: number;
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -57,6 +68,22 @@ export const SellerDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [authRequired, setAuthRequired] = useState(false);
+  const [demand, setDemand] = useState<RestockDemandRow[]>([]);
+  const [totalWatchers, setTotalWatchers] = useState(0);
+  const [demandPulse, setDemandPulse] = useState<'none' | 'watcher' | 'restock'>('none');
+
+  const fetchDemand = useCallback(async () => {
+    try {
+      const res = await fetch('/api/seller/stock-watches');
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setDemand(json.data || []);
+        setTotalWatchers(json.totalWatchers || 0);
+      }
+    } catch (err) {
+      console.error('Error fetching restock demand:', err);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -78,7 +105,25 @@ export const SellerDashboardPage = () => {
       }
     };
     fetchDashboard();
-  }, []);
+    fetchDemand();
+  }, [fetchDemand]);
+
+  /* Task 62: live demand tick — a buyer hitting 'Notify me when back in
+     stock' pushes the REAL active-watcher count into this seller's room;
+     the card pulses and refetches. No polling loop. */
+  const sellerRoom = data?.supplier?.supplierId ? `seller:${data.supplier.supplierId}` : null;
+  useRealtimeRoom(sellerRoom ? [sellerRoom] : [], {
+    onEvent: useCallback((msg) => {
+      // 'stock:watch' — a buyer just started watching; 'inventory:updated' —
+      // the seller's own restock just landed and completed watches must
+      // leave the demand queue immediately (both are real persisted truths).
+      if (msg.event === 'stock:watch' || msg.event === 'inventory:updated') {
+        setDemandPulse(msg.event === 'stock:watch' ? 'watcher' : 'restock');
+        fetchDemand();
+        setTimeout(() => setDemandPulse('none'), 3000);
+      }
+    }, [fetchDemand]),
+  });
 
   const stats = [
     { label: "Paid Revenue (all time)", value: data ? `৳${data.stats.totalRevenueBDT.toLocaleString(undefined, { maximumFractionDigits: 2 })}` : '0', icon: DollarSign, color: "text-green-600" },
@@ -166,6 +211,50 @@ export const SellerDashboardPage = () => {
                 </Card>
               ))}
             </div>
+
+            {/* Restock Demand — REAL active watch counts per product (Task 62) */}
+            <Card className={`border-none shadow-sm dark:bg-gray-800 transition-shadow ${demandPulse !== 'none' ? 'ring-2 ring-primary/40' : ''}`}>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <BellRing className={`w-4 h-4 ${demandPulse !== 'none' ? 'text-primary animate-pulse' : 'text-gray-400'}`} />
+                    Restock Demand
+                    {demandPulse === 'watcher' && <span className="text-[10px] font-medium text-primary">new watcher</span>}
+                    {demandPulse === 'restock' && <span className="text-[10px] font-medium text-emerald-600">stock updated</span>}
+                  </span>
+                  {totalWatchers > 0 && (
+                    <Badge variant="outline" className="text-[10px]">{totalWatchers} buyer{totalWatchers !== 1 ? 's' : ''} waiting</Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {demand.length === 0 ? (
+                  <div className="py-4 text-center">
+                    <p className="text-xs text-gray-500">No active restock watches right now. Buyers who tap “Notify me” on a sold-out product appear here instantly.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {demand.map((row) => (
+                      <div key={row.productId} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold truncate dark:text-white">{row.productName}</div>
+                          <div className="text-[10px] text-gray-500">
+                            {row.stockQuantity <= 0 ? 'Out of stock' : `${row.stockQuantity} ${row.unit} in stock`}
+                            {!row.isActive && ' · hidden listing'}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Badge variant="outline" className="text-[10px] font-semibold">{row.watchers} watching</Badge>
+                          <Button variant="outline" size="sm" className="h-7 text-[10px]" onClick={() => navigate('inventory-management')}>
+                            Restock
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Revenue Trend — real monthly revenue bars from subOrders */}
             <Card className="border-none shadow-sm dark:bg-gray-800">

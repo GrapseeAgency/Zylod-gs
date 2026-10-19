@@ -211,6 +211,9 @@ export async function GET(request: NextRequest) {
           companyName: supplierProfile?.companyName || 'Your Store',
           verificationStatus: supplierProfile?.verificationStatus || 'pending',
           ratingAvg: supplierProfile?.ratingAvg || 0,
+          // Task 62: the canonical room id for the seller's live room (used by
+          // the dashboard's restock-demand live tick).
+          supplierId: supplierProfile?.id || null,
         },
         recentSubOrders: allSubOrders.slice(0, 8).map((so) => ({
           id: so.id,

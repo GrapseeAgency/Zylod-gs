@@ -2395,3 +2395,27 @@ Work Log:
 Stage Summary:
 - Back-in-stock is now a CLOSED loop with no cron anywhere in the platform: buyer watches a sold-out product from either PDP → ANY of the five stock-restoring paths (buyer cancel, admin force cancel, seller return receipt, inventory restock, product edit restock) completes the watch and delivers a real notification with the real stock number — every state proven in API E2E (33/33) and live browser QA on both viewports.
 - REMAINING FAKE/INCOMPLETE: none found in these slices. Queued next: notification live-delivery room for users (currently page refetch), variant-level restock watches (model is product-level), seller-side "who is watching" analytics, eslint baseline already 0.
+
+---
+Task ID: 62
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: (62-a) PER-USER LIVE NOTIFICATION ROOM (user:<id>) — every notification the platform persists now arrives LIVE; (62-b) SELLER RESTOCK-DEMAND SIGNAL — sellers finally SEE the buyers waiting on their sold-out products, live.
+
+Work Log:
+- Realtime infra extended end to end: REALTIME_ROOM_PATTERN + socket-service ROOM_PATTERN + client hook pattern all gained the `user` prefix (token-gated; bun --hot picked the service change up live). Room-token route: user:<id> mints for OWN id only — any session type, 403 for anyone else (notifications are private; even admin may not listen on another user's stream).
+- sendNotification now fires 'notification:new' (the REAL persisted row: id/type/title/message/isRead/relatedId/timestamp) into user:<id> after create — ONE hook point covers EVERY notification source platform-wide (order milestones, payments, back-in-stock, system). notifications-page subscribes to its own room and refetches on the event — no polling loop.
+- NEW GET /api/seller/stock-watches: 401 → 403 SUPPLIER_PROFILE_REQUIRED → 30/min → groupBy stockAlerts (status='active' only — completed/cancelled watches are not demand) scoped to the supplier's products, ordered watchers desc, returns totalWatchers. Zero-watch products are not rows — a demand queue, not a listing.
+- POST /api/stock-alerts now broadcasts 'stock:watch' {productId, productName, watchers: REAL active count} to seller:<supplierId> after create.
+- supplier/inventory PATCH also broadcasts 'inventory:updated' {before, after} to the seller's OWN room so completed watches leave the demand queue the moment their own restock lands.
+- Seller dashboard: "Restock Demand" card — per-product rows (name, Out-of-stock/current stock, hidden-listing note, watchers count, Restock quick action), "N buyers waiting" badge, live pulse with honest labels ("new watcher" vs "stock updated") driven ONLY by real room events; empty state states the truth.
+- supplier/dashboard response now carries supplier.supplierId (canonical room id for the card's live room).
+- E2E scripts/qa/t62-e2e.mjs: 22/22 PASS on wiped DB — FIRST FULL RUN (guards: 401/403 stock-watches, foreign user-room 403, own-room 200; empty queue; drain→watch×2 with LIVE seller ticks (watchers 1 then 2, exact payload); demand queue 2 watching/stock 0/totalWatchers 2; restock → buyer2's user room received LIVE 'notification:new' "Restocked: … 30 units"; queue drains to 0). Re-run after the inventory:updated addition: 22/22 again. Two honest harness fixes before the first green run: profile/me shape is data.id / data.supplierProfile.id (not data.user.id), and a leftover placeholder line was removed.
+- BROWSER QA (gateway :81): seller (1280×800) dashboard shows "Restock Demand — 2 buyers waiting — QA62 Cement 50kg — Out of stock — 2 watching" from REAL rows; buyer (375×812) notifications page open; then seller restocks 0→40 via the REAL inventory API and with NO reloads: the demand card drained LIVE to "No active restock watches right now" AND the buyer's notifications page gained "Restocked: QA62 Cement 50kg … 40 units" at the top. Console clean both sessions.
+- OPS: tsc OOM-killed (exit 137) once under memory pressure — freed memory (closed browser sessions, killed the dev processes briefly; supervisor self-restarted), re-ran clean. Also confirmed the known benign duplicate-supervisor condition (two while-loops, one server wins).
+- tsc 0 whole project; eslint 0 output whole project. DB wiped 139×0 + WAL checkpoint before commit.
+
+Stage Summary:
+- Notifications are now LIVE platform-wide through a private, token-gated, own-id-only room per user — one broadcast point in sendNotification, zero polling.
+- The stock-watch loop is closed on the SELLER side too: buyer watches → seller's demand queue ticks up live with the real count → seller restocks → watches complete, buyers get the real stock number live, and the demand queue drains itself live. Both directions proven with real sockets and real browser sessions.
+- REMAINING FAKE/INCOMPLETE: none found in these slices. Queued: watch-count analytics on the product edit page, variant-level watches (model is product-level), a notifications unread live badge in the header bell.

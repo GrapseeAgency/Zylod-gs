@@ -34,6 +34,9 @@ import { REALTIME_ROOM_PATTERN } from '@/lib/realtime-broadcast'
  *                          supplierProfiles.id has an rfqQuotes row on THIS
  *                          rfq (i.e. you already quoted it). Everyone else →
  *                          403.
+ *   room=user:<id>       → TOKEN-GATED, OWN-ID ONLY (Task 62 — per-user live
+ *                          notifications). Any authenticated session type may
+ *                          mint, but only for their own id (403 otherwise).
  *
  * Read-only: no DB writes (tokens are stateless and self-verifying).
  */
@@ -166,6 +169,24 @@ export async function GET(request: NextRequest) {
         )
       }
 
+      const { token, expiresIn } = issueDeliveryRoomToken({
+        roomId: room,
+        userId: auth.user.id,
+        userType: auth.user.userType,
+      })
+      return NextResponse.json({ success: true, token, roomId: room, expiresIn })
+    }
+
+    // user: rooms (Task 62) — per-user live notifications. Strictly OWN-ID
+    // ONLY for every session type (notifications are private data; even an
+    // admin has no legitimate reason to listen on somebody else's stream).
+    if (prefix === 'user') {
+      if (auth.user.id !== targetId) {
+        return NextResponse.json(
+          { error: 'You may only mint a room token for your own user room.' },
+          { status: 403 }
+        )
+      }
       const { token, expiresIn } = issueDeliveryRoomToken({
         roomId: room,
         userId: auth.user.id,

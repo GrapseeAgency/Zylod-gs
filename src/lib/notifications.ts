@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 export type NotificationType =
   | 'order'
@@ -59,6 +60,20 @@ export async function sendNotification({
         isRead: false,
         relatedEntityId: relatedEntityId || null,
       },
+    })
+
+    // Task 62: push the REAL persisted row into the recipient's private
+    // user:<id> room — every notification source in the platform (order
+    // milestones, payments, back-in-stock, system) becomes live the moment
+    // it is persisted. Fire-and-forget; the DB row is already the truth.
+    void broadcastToRoom(`user:${userId}`, 'notification:new', {
+      id: notif.id,
+      type: notif.type,
+      title: notif.title,
+      message: notif.body,
+      isRead: notif.isRead,
+      relatedId: notif.relatedEntityId,
+      timestamp: notif.createdAt.toISOString(),
     })
 
     return notif

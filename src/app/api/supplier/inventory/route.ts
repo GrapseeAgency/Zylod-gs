@@ -313,6 +313,18 @@ export async function PATCH(request: NextRequest) {
       if (r.after > r.before) {
         notifyBackInStock(productId)
       }
+      // Task 62: the seller's own room also hears the edit — the dashboard's
+      // Restock Demand card refetches live so completed watches leave the
+      // queue the moment their own restock lands. Admin edits skip this
+      // (the product room push above already carries the public truth).
+      if (profileId) {
+        void broadcastToRoom(`seller:${profileId}`, 'inventory:updated', {
+          productId,
+          ...(r.variantId ? { variantId: r.variantId } : {}),
+          before: r.before,
+          after: r.after,
+        })
+      }
     }
 
     return NextResponse.json({

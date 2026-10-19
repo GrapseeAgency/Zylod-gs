@@ -13,7 +13,8 @@
  *   subscribed clients (inventory:updated / order:new / order:status … — the
  *   full vocabulary lives in src/lib/realtime-broadcast.ts).
  *
- * ROOM VOCABULARY (subscribe handler, Task 51-a; rfq added Task 52-a):
+ * ROOM VOCABULARY (subscribe handler, Task 51-a; rfq added Task 52-a;
+ * user added Task 62):
  *   order:${orderId}      — token-gated
  *   seller:${supplierId}  — token-gated (minted by GET /api/realtime/room-token)
  *   admin:${adminUserId}  — token-gated (minted by GET /api/realtime/room-token)
@@ -21,6 +22,9 @@
  *     Task 52-a: rfq buyer-owner / admin / a supplier with a quote on the RFQ).
  *     Quotes carry supplier pricing — rfq rooms are deliberately NOT public,
  *     unlike product rooms.
+ *   user:${userId}        — TOKEN-GATED, OWN-ID ONLY (minted by GET
+ *     /api/realtime/room-token; Task 62 — per-user live notifications:
+ *     every sendNotification lands here as 'notification:new').
  *   product:${productId}  — PUBLIC, joins WITHOUT a token. This is deliberate
  *     parity: product stock/availability is already public data rendered on
  *     the PDP (/api/products/[id] is a public read), so the push channel
@@ -67,8 +71,9 @@ import { Server } from 'socket.io'
 const PORT = 3005 // public socket.io (via gateway: /?XTransformPort=3005)
 const CONTROL_PORT = 3006 // internal, Next.js API only
 
-/** Room names accepted by the subscribe handler (Task 51-a; rfq: Task 52-a). */
-const ROOM_PATTERN = /^(order|product|seller|admin|rfq):[A-Za-z0-9_-]+$/
+/** Room names accepted by the subscribe handler (Task 51-a; rfq: Task 52-a;
+ *  user: Task 62). */
+const ROOM_PATTERN = /^(order|product|seller|admin|rfq|user):[A-Za-z0-9_-]+$/
 
 /* ── Env: load the repo-root .env explicitly (bun does NOT auto-load it) ── */
 const ENV_KEYS = [

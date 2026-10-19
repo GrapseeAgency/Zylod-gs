@@ -61,7 +61,8 @@ const ROOM_TOKEN_REFRESH_MS = 8 * 60 * 1000
 // rfq rooms are TOKEN-GATED on the server (Task 52) — the client pattern must
 // accept them or every rfq live event (new-quote/quote-accepted/converted) is
 // silently dropped in the UI (caught live in Task 55 browser QA).
-const ROOM_PATTERN = /^(order|product|seller|admin|rfq):[A-Za-z0-9_-]+$/
+// user rooms are TOKEN-GATED OWN-ONLY (Task 62) — same client-side rule.
+const ROOM_PATTERN = /^(order|product|seller|admin|rfq|user):[A-Za-z0-9_-]+$/
 
 function roomsNeedToken(room: string): boolean {
   return !room.startsWith('product:')

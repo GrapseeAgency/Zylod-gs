@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { sendNotification } from '@/lib/notifications'
+import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 /**
  * GET /api/stock-alerts
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
 
     const product = await db.products.findUnique({
       where: { id: productId },
-      select: { id: true, name: true, thumbnailUrl: true, stockQuantity: true, isActive: true },
+      select: { id: true, name: true, thumbnailUrl: true, stockQuantity: true, isActive: true, supplierId: true },
     })
 
     if (!product || !product.isActive) {
@@ -135,6 +136,20 @@ export async function POST(request: NextRequest) {
       body: `We are monitoring ${product.name}. As soon as factory inventory is replenished, you will receive an immediate restock alert.`,
       relatedEntityId: productId,
     })
+
+    // Task 62: the seller's demand signal — a buyer is waiting for THIS
+    // product. Push the REAL active-watcher count into the seller room so a
+    // live dashboard tick is backed by the same number a GET returns.
+    if (product.supplierId) {
+      const watchers = await db.stockAlerts.count({
+        where: { productId, status: 'active' },
+      })
+      void broadcastToRoom(`seller:${product.supplierId}`, 'stock:watch', {
+        productId,
+        productName: product.name,
+        watchers,
+      })
+    }
 
     return NextResponse.json({ success: true, data: alert }, { status: 201 })
   } catch (error) {

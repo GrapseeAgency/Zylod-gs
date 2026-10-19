@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { useRealtimeRoom } from '@/hooks/use-realtime-room'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -26,7 +27,7 @@ interface NotificationItem {
 
 export function NotificationsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, user } = useAuthStore()
 
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'order' | 'promotion' | 'delivery' | 'system'>('all')
   const [notifications, setNotifications] = useState<NotificationItem[]>([])
@@ -69,6 +70,18 @@ export function NotificationsPage() {
     setPage(1)
     fetchNotifications(1, false)
   }, [fetchNotifications])
+
+  // Task 62: LIVE delivery — every notification the platform persists lands
+  // in the recipient's private user:<id> room as 'notification:new' and this
+  // page refetches immediately (no polling loop anywhere).
+  const userRoom = user?.id ? `user:${user.id}` : null
+  useRealtimeRoom(userRoom ? [userRoom] : [], {
+    onEvent: useCallback((msg) => {
+      if (msg.event === 'notification:new') {
+        fetchNotifications(1, false)
+      }
+    }, [fetchNotifications]),
+  })
 
   const handleMarkAllRead = async () => {
     try {
