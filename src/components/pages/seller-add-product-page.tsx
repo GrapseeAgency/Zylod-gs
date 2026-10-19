@@ -142,13 +142,18 @@ export function SellerAddProductPage() {
     };
   };
 
-  /** Task 55-c: upload+attach every picked video file to the just-created product. */
+  /** Task 55-c + 67-b: attach every picked FILE video after the product write.
+   *  External https:// links do NOT go through here — they ride the create
+   *  payload itself (transactional with the product, sortOrder = form index),
+   *  so attaching them again here would create duplicates (the exact bug the
+   *  browser QA caught on the first Task 67 run). */
   const attachPendingVideos = async (productId: string): Promise<string[]> => {
     const pending = videos.filter((v) => v.file && v.status !== 'error');
     const failures: string[] = [];
-    for (let i = 0; i < pending.length; i++) {
-      const v = pending[i];
-      const result = await uploadAndAttachVideo(productId, v.file as File, v.title, i, token);
+    for (const v of pending) {
+      const file = v.file;
+      if (!file) continue;
+      const result = await uploadAndAttachVideo(productId, file, v.title, undefined, token);
       if (!result.ok && result.error) failures.push(`${v.fileName}: ${result.error}`);
     }
     return failures;

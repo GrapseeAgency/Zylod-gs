@@ -14,9 +14,9 @@
  * samplePrice, weight, leadTimeDays — products has no such columns (verified
  * against prisma/schema.prisma).
  */
-import React, { useRef, type Dispatch, type SetStateAction } from 'react';
+import React, { useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { toast } from 'sonner';
-import { ImagePlus, Loader2, Plus, Trash2, Video as VideoIcon, X } from 'lucide-react';
+import { ImagePlus, Link2, Loader2, Plus, Trash2, Video as VideoIcon, X } from 'lucide-react';
 import { PRODUCT_UNITS, PRODUCT_UNIT_LABELS, type ProductUnit } from '@/lib/product-contract';
 
 /**
@@ -248,7 +248,7 @@ export async function uploadAndAttachVideo(
   productId: string,
   file: File,
   title: string,
-  sortOrder: number,
+  sortOrder?: number,
   token?: string | null
 ): Promise<{ ok: boolean; error?: string }> {
   try {
@@ -276,7 +276,7 @@ export async function uploadAndAttachVideo(
       body: JSON.stringify({
         videoUrl: upJson.videoUrl,
         ...(title.trim() ? { title: title.trim() } : upJson.title ? { title: String(upJson.title) } : {}),
-        sortOrder,
+        ...(sortOrder != null ? { sortOrder } : {}),
       }),
     });
     const attachJson = await attachRes.json().catch(() => null);
@@ -287,6 +287,21 @@ export async function uploadAndAttachVideo(
   } catch {
     return { ok: false, error: 'Network error while uploading the video. Check your connection and retry.' };
   }
+}
+
+/**
+ * Task 67-b predicate — a row the seller added by PASTE (https:// URL), not by
+ * file pick: ready, no backing File, never hydrated from the server (no
+ * remoteId). Shared with the edit page's re-hydrate path so a pasted link
+ * survives a video-row delete (it must NOT be treated as an already-attached
+ * row until the product write recreates it).
+ *
+ * Ownership doctrine (learned from the duplicate-attach bug): external links
+ * ride the create/PATCH payload (transactional, sortOrder = form index);
+ * picked FILES attach after the write via uploadAndAttachVideo. Never both.
+ */
+export function isPendingExternalVideo(v: MediaVideo): boolean {
+  return v.status === 'ready' && !v.file && !v.remoteId && v.url.startsWith('https://');
 }
 
 export function ProductFormFields(props: ProductFormFieldsProps) {
@@ -310,6 +325,8 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  // Task 67-b: the paste-a-link input's current value.
+  const [videoLink, setVideoLink] = useState('');
 
   const basePriceNumber = Number(form.basePrice);
   const { rowErrors: tierErrors, global: tierGlobalError } = computeTierErrors(tiers, basePriceNumber);
@@ -389,6 +406,36 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
       { url: '', title: '', fileName: file.name, status: 'ready' as const, file },
     ]);
     if (videoInputRef.current) videoInputRef.current.value = '';
+  };
+
+  /**
+   * Task 67-b: add a video by PASTE — an https:// link the supplier hosts
+   * elsewhere (CDN, Drive-export, their own server). Client-side validation
+   * mirrors the attach route's Zod contract verbatim (https only, ≤500
+   * chars) plus a same-URL dedupe courtesy; the server stays the authority.
+   * The row joins the SAME list as picked files — one rendering path, one
+   * delete path — and the publish flows attach it after the product write.
+   */
+  const handleAddVideoLink = () => {
+    const url = videoLink.trim();
+    if (!url) return;
+    if (!url.startsWith('https://')) {
+      toast.error('Only secure https:// video links are accepted');
+      return;
+    }
+    if (url.length > 500) {
+      toast.error('That link is too long (500 characters maximum)');
+      return;
+    }
+    if (videos.some((v) => v.url === url && v.status !== 'error')) {
+      toast.error('That video link is already on this product');
+      return;
+    }
+    onVideosChange((current) => [
+      ...current,
+      { url, title: '', fileName: url, status: 'ready' as const },
+    ]);
+    setVideoLink('');
   };
 
   const uploadingCount = images.filter((i) => i.status === 'uploading').length;
@@ -899,6 +946,36 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             <span className="text-xs text-gray-500">
               MP4, WebM, or MOV up to {VIDEO_MAX_MB_DEFAULT}MB — uploads and attaches right after you publish (max 5 per product)
             </span>
+          </div>
+
+          {/* Task 67-b: paste an externally-hosted video link — the attach API
+              has always accepted https:// URLs, now the form can use them.
+              Large files that would fight the upload cap can live on the
+              seller's own hosting and still play on the product page. */}
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="url"
+              aria-label="Video link (https URL)"
+              placeholder="…or paste a video link (https://…)"
+              value={videoLink}
+              onChange={(e) => setVideoLink(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAddVideoLink();
+                }
+              }}
+              maxLength={500}
+              className="flex-1 min-w-[220px] min-h-11 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[primary]/30 focus:border-[primary]"
+            />
+            <button
+              type="button"
+              onClick={handleAddVideoLink}
+              disabled={videoLink.trim() === ''}
+              className="min-h-11 px-4 border border-[primary]/40 bg-[primary]/5 rounded-lg text-sm font-medium text-[primary] flex items-center gap-2 hover:bg-[primary]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Link2 className="w-4 h-4" /> Add from link
+            </button>
           </div>
 
           {videos.length === 0 ? (

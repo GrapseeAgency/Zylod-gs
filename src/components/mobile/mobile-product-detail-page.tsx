@@ -86,6 +86,11 @@ export function MobileProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [product, setProduct] = useState<ApiProduct | null>(null)
   const [specifications, setSpecifications] = useState<Record<string, string>>({})
+  // Task 67-a: the selected variant — the mobile PDP previously had NO variant
+  // selector at all (variant stock pushes were ignored, the restock CTA stayed
+  // product-level, cart lines carried null variants). Now at full parity with
+  // the desktop PDP's semantics.
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
 
   const productId = pageParams?.productId || pageParams?.slug || ''
 
@@ -99,6 +104,7 @@ export function MobileProductDetailPage() {
         if (json.success && json.data) {
           setProduct(json.data as ApiProduct)
           setQuantity(json.data.moq || 50)
+          setSelectedVariantId(null) // a fresh product load resets the choice
           // Fetch specifications
           try {
             const specRes = await fetch(`/api/products/${productId}/specifications`)
@@ -132,22 +138,32 @@ export function MobileProductDetailPage() {
 
   const handleRealtimeEvent = useCallback(
     (msg: RealtimeRoomMessage) => {
-      if (msg.event !== 'product:stock') return
+      if (msg.event !== 'product:stock' && msg.event !== 'inventory:updated') return
       const d = msg.data as Record<string, unknown> | null
       if (!d || typeof d !== 'object' || Array.isArray(d)) return
       if (typeof d.productId !== 'string' || d.productId !== productId) return
-      // Variant-level edits don't move the product-level stock this page
-      // shows (the mobile PDP has no variant selector) — ignore them.
-      if (typeof d.variantId === 'string' && d.variantId.length > 0) return
       const stock = d.stockQuantity
       if (typeof stock !== 'number' || !Number.isFinite(stock) || stock < 0) return
+      // Task 67-a: a variant-scoped push updates THAT variant's row only
+      // (mirrors the desktop handler) — it never lies about product-level stock.
+      const variantId =
+        typeof d.variantId === 'string' && d.variantId.length > 0 ? d.variantId : null
       const soldCount =
         typeof d.soldCount === 'number' && Number.isFinite(d.soldCount) && d.soldCount >= 0
           ? d.soldCount
           : null
-      setProduct((prev) =>
-        prev ? { ...prev, stockQuantity: stock, ...(soldCount != null ? { soldCount } : {}) } : prev
-      )
+      setProduct((prev) => {
+        if (!prev) return prev
+        if (variantId) {
+          return {
+            ...prev,
+            variants: prev.variants.map((v) =>
+              v.id === variantId ? { ...v, stockQuantity: stock } : v
+            ),
+          }
+        }
+        return { ...prev, stockQuantity: stock, ...(soldCount != null ? { soldCount } : {}) }
+      })
       setLiveStockAt(Date.now())
       if (liveHideTimerRef.current) clearTimeout(liveHideTimerRef.current)
       liveHideTimerRef.current = setTimeout(() => setLiveStockAt(null), 4_000)
@@ -182,31 +198,68 @@ export function MobileProductDetailPage() {
   const isWishlisted = product ? isInWishlist(product.id) : false
   const cartItemCount = getItemCount()
 
+  // ─── Task 67-a: selected variant derivations (mirrors the desktop PDP) ───
+  const selectedVariant = useMemo(() => (
+    selectedVariantId && product?.variants
+      ? product.variants.find(v => v.id === selectedVariantId) ?? null
+      : null
+  ), [product, selectedVariantId])
+  const selectedVariantLabel = selectedVariant
+    ? `${selectedVariant.variantName}: ${selectedVariant.variantValue}`.replace(/\s+/g, ' ').trim()
+    : null
+  const currentVariantStock = useMemo(() => {
+    if (selectedVariantId && product?.variants) {
+      const variant = product.variants.find(v => v.id === selectedVariantId)
+      if (variant) return variant.stockQuantity
+    }
+    return product?.stockQuantity || 0
+  }, [product, selectedVariantId])
+
   // Task 55-c bundle semantics (display depth only — price stays per bundle).
   const bundleSize = product?.bundleSize ?? null
   const isBundle = bundleSize != null && bundleSize > 1
   const priceUnitLabel = isBundle ? 'bundle' : (product?.unit || 'pcs')
-  const currentPrice = activeTier?.pricePerUnit || product?.basePrice || 0
+  // CANONICAL WHOLESALE PRICING RULE (same as desktop): a variant with
+  // priceOverride is priced individually (tiers do NOT apply); otherwise the
+  // tier matching the current quantity applies; otherwise base price.
+  const currentPrice = selectedVariant?.priceOverride != null
+    ? selectedVariant.priceOverride
+    : (activeTier?.pricePerUnit || product?.basePrice || 0)
   const effectivePerUnit = isBundle && bundleSize ? currentPrice / bundleSize : currentPrice
+  // The strip's urgency thresholds ride the product's own setting.
+  const stockAlertThreshold = product?.stockAlertThreshold ?? LOW_STOCK_THRESHOLD_DEFAULT
 
   const handleAddToCart = useCallback(() => {
     if (!product) return
-    // Was this product already in the cart?
-    const alreadyInCart = useCartStore.getState().items.some((i) => i.productId === product.id)
+    // Task 67-a: ordering a selected variant with zero stock stays impossible.
+    if (currentVariantStock === 0) {
+      toast.error(selectedVariantLabel ? `${selectedVariantLabel} is out of stock` : 'Out of stock', {
+        description: selectedVariantLabel
+          ? `Pick another option or set a restock watch for ${selectedVariantLabel}.`
+          : 'Set a restock watch to be notified when it returns.',
+      })
+      return
+    }
+    // Variant-aware cart dedupe check (the store itself merges per
+    // productId::variantId — this toast mirrors that same key).
+    const keyOf = (i: Pick<CartItemData, 'productId' | 'variantId'>) => `${i.productId}::${i.variantId ?? null}`
+    const alreadyInCart = useCartStore.getState().items.some((i) => keyOf(i) === keyOf({ productId: product.id, variantId: selectedVariantId }))
     const item: CartItemData = {
-      id: `${product.id}-${Date.now()}`,
+      id: `cart-${product.id}-${selectedVariantId || 'default'}-${Date.now()}`,
       productId: product.id,
       productName: product.name,
       productSlug: product.slug,
       productImage: product.thumbnailUrl,
-      variantId: null,
-      variantName: null,
-      variantValue: null,
+      variantId: selectedVariantId,
+      variantName: selectedVariant?.variantName || null,
+      variantValue: selectedVariant?.variantValue || null,
       quantity,
-      unitPrice: activeTier?.pricePerUnit || product.basePrice,
-      totalPrice: (activeTier?.pricePerUnit || product.basePrice) * quantity,
+      unitPrice: currentPrice,
+      totalPrice: currentPrice * quantity,
       moq: product.moq,
-      maxOrderQty: product.stockQuantity,
+      // Honest cap: the selected variant's own stock (equals product stock
+      // when no variant is chosen) — not the whole product row.
+      maxOrderQty: currentVariantStock,
       supplierId: product.supplier.id,
       supplierName: product.supplier.companyName,
       supplierSlug: product.supplier.companyName.toLowerCase().replace(/\s+/g, '-'),
@@ -218,16 +271,17 @@ export function MobileProductDetailPage() {
     setJustAdded(true)
     setTimeout(() => setJustAdded(false), 2000)
     if (alreadyInCart) {
-      toast.info('Already in your cart', { description: `${product.name} — quantity updated to ${item.quantity}` })
+      toast.info('Already in your cart', { description: `${selectedVariantLabel ? `${selectedVariantLabel} — ` : ''}${product.name} — quantity updated to ${item.quantity}` })
     } else {
-      toast.success('Added to cart', { description: product.name })
+      toast.success('Added to cart', { description: selectedVariantLabel ? `${product.name} — ${selectedVariantLabel}` : product.name })
     }
-  }, [product, quantity, activeTier, addItem])
+  }, [product, quantity, selectedVariantId, selectedVariant, selectedVariantLabel, currentPrice, currentVariantStock, activeTier, addItem])
 
   const handleBuyNow = useCallback(() => {
+    if (currentVariantStock === 0 || quantity < (product?.moq || 1)) return
     handleAddToCart()
     navigate('cart')
-  }, [handleAddToCart, navigate])
+  }, [handleAddToCart, navigate, currentVariantStock, quantity, product])
 
   const handleToggleWishlist = useCallback(() => {
     if (!product) return
@@ -390,7 +444,10 @@ export function MobileProductDetailPage() {
         {/* Task 56-c: live stock status strip — always visible, non-intrusive.
             Live pulse while the socket is connected, an 'Updated live' flash
             right after a push, an urgent amber 'Only X left' at/below the
-            low-stock threshold and a red 'Out of stock' chip at zero. */}
+            low-stock threshold and a red 'Out of stock' chip at zero.
+            Task 67-a: with a variant selected, the strip reports THAT
+            variant's stock (its own OOS/urgency state), never the product
+            row's number — the same honesty rule as the desktop page. */}
         <div className="mt-3 flex items-center gap-2 flex-wrap" aria-live="polite">
           {liveConnected && liveStockAt === null && (
             <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
@@ -404,32 +461,84 @@ export function MobileProductDetailPage() {
               Stock updated live
             </span>
           )}
-          {product.stockQuantity <= 0 ? (
+          {currentVariantStock <= 0 ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700">
               <Package className="w-3 h-3" />
-              Out of stock
+              {selectedVariant ? `${selectedVariantLabel} — Out of stock` : 'Out of stock'}
             </span>
-          ) : product.stockQuantity <= (product.stockAlertThreshold ?? LOW_STOCK_THRESHOLD_DEFAULT) ? (
+          ) : currentVariantStock <= stockAlertThreshold ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 animate-pulse">
               <AlertCircle className="w-3 h-3" />
-              Only {formatQty(product.stockQuantity)} {product.unit} left
+              Only {formatQty(currentVariantStock)} {product.unit} left{selectedVariant ? ` (${selectedVariantLabel})` : ''}
+            </span>
+          ) : selectedVariant ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-medium text-foreground">
+              <Package className="w-3 h-3" />
+              {selectedVariantLabel}: {formatQty(currentVariantStock)} {product.unit} available
             </span>
           ) : null}
         </div>
 
-        {/* Task 61: out-of-stock restock watch — buyer taps once, gets a real
-            notification the moment any stock-restoring event lands. */}
+        {/* ─── Task 67-a: variant selector (mobile parity with the desktop PDP).
+            Mirrors the desktop semantics exactly: OOS variants stay SELECTABLE
+            (picking one is how the buyer reaches the per-variant restock
+            watch), ordering stays impossible via the button guards below. */}
+        {product.variants && product.variants.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Select Variant</h3>
+            <div className="flex flex-wrap gap-2">
+              {product.variants.map((variant) => {
+                const isSelected = selectedVariantId === variant.id
+                const label = `${variant.variantName}: ${variant.variantValue}`.replace(/\s+/g, ' ').trim()
+                return (
+                  <button
+                    key={variant.id}
+                    type="button"
+                    onClick={() => setSelectedVariantId(isSelected ? null : variant.id)}
+                    aria-pressed={isSelected}
+                    className={`max-w-full rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
+                      isSelected
+                        ? 'border-[#E53935] bg-[#E53935] text-white'
+                        : 'border-gray-300 bg-white text-foreground active:bg-gray-50'
+                    } ${variant.stockQuantity === 0 && !isSelected ? 'opacity-80' : ''}`}
+                  >
+                    <span className="truncate">{label}</span>
+                    {variant.priceOverride != null && (
+                      <span className="ml-1">({formatPrice(variant.priceOverride)})</span>
+                    )}
+                    {variant.stockQuantity === 0 && (
+                      <span className={`ml-1 text-[10px] ${isSelected ? 'text-white/90' : 'text-red-600'}`}>(Out of stock)</span>
+                    )}
+                    {variant.stockQuantity > 0 && variant.stockQuantity <= stockAlertThreshold && (
+                      <span className={`ml-1 text-[10px] ${isSelected ? 'text-white/90' : 'text-amber-600'}`}>(Only {formatQty(variant.stockQuantity)} left)</span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Task 61 + 65 + 67-a: out-of-stock restock watch — now variant-aware
+            on mobile too: the product row at zero watches the WHOLE product;
+            the product in stock with the SELECTED variant at zero watches that
+            exact variant. Renders only when something watchable is out. */}
         <BackInStockButton
           productId={product.id}
           productName={product.name}
           stockQuantity={product.stockQuantity}
+          variantId={selectedVariant?.id ?? null}
+          variantLabel={selectedVariantLabel}
+          variantStock={selectedVariant ? currentVariantStock : null}
           className="w-full h-11 mt-3"
           onRequireLogin={() => {
             toast('Sign in to get a restock alert for this product')
             navigate('login')
           }}
           onSubscribed={() =>
-            toast(`Restock watch set — we'll notify you when ${product.name} is back`)
+            toast(selectedVariant && product.stockQuantity > 0
+              ? `Restock watch set — we'll notify you when ${selectedVariantLabel} of ${product.name} is back`
+              : `Restock watch set — we'll notify you when ${product.name} is back`)
           }
         />
 
@@ -524,14 +633,23 @@ export function MobileProductDetailPage() {
             </button>
           )}
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="flex-1 h-10 border-[#E53935] text-[#E53935] hover:bg-[#E53935]/5 text-sm font-semibold" onClick={handleAddToCart}>
+            <Button
+              variant="outline"
+              className="flex-1 h-10 border-[#E53935] text-[#E53935] hover:bg-[#E53935]/5 text-sm font-semibold disabled:opacity-50"
+              onClick={handleAddToCart}
+              disabled={currentVariantStock === 0}
+            >
               {justAdded ? (
                 <><CheckCircle2 className="w-4 h-4 mr-1.5" />In Cart ✓</>
               ) : (
                 <><ShoppingCart className="w-4 h-4 mr-1.5" />Add to Cart</>
               )}
             </Button>
-            <Button className="flex-[1.5] h-10 bg-[#E53935] hover:bg-[#E53935]/90 text-white text-sm font-semibold" onClick={handleBuyNow}>
+            <Button
+              className="flex-[1.5] h-10 bg-[#E53935] hover:bg-[#E53935]/90 text-white text-sm font-semibold disabled:opacity-50"
+              onClick={handleBuyNow}
+              disabled={currentVariantStock === 0 || quantity < product.moq}
+            >
               Buy Now
             </Button>
           </div>

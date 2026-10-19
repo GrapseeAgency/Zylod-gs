@@ -75,8 +75,21 @@ export const productImageSchema = z.object({
 })
 
 export const productVideoSchema = z.object({
-  url: z.string().min(1, 'Video URL is required'),
-  title: z.string().max(200).optional(),
+  // Task 67-b: the SAME contract the attach route enforces — a row may carry
+  // either an uploaded /uploads/videos/ path or an external https:// link.
+  // The payload path (product create / PATCH full-replace) used to accept any
+  // string, so a URL the delete route treats as local-storage or the PDP
+  // can't play could slip in behind the attach route's back.
+  url: z
+    .string()
+    .trim()
+    .min(1, 'Video URL is required')
+    .max(500, 'Video URL must be 500 characters or fewer')
+    .refine(
+      (v) => v.startsWith('/uploads/videos/') || v.startsWith('https://'),
+      'Video URL must start with /uploads/videos/ or be an https:// URL'
+    ),
+  title: z.string().trim().max(140, 'Title must be 140 characters or fewer').optional(),
 })
 
 export const productVariantSchema = z.object({

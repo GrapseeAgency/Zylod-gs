@@ -72,10 +72,14 @@ export async function DELETE(
     })
 
     // Best-effort unlink of locally-stored files. External https:// media is
-    // left untouched (Zylod does not own that storage).
+    // left untouched (Zylod does not own that storage). The directory is the
+    // SAME resolution the upload route uses — VIDEO_UPLOAD_DIR override first,
+    // public/uploads/videos default — or a volume-backed deployment would
+    // write in one place and delete in another.
     let fileUnlinked = false
     if (video.videoUrl.startsWith('/uploads/videos/')) {
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'videos')
+      const uploadDir =
+        process.env.VIDEO_UPLOAD_DIR || path.join(process.cwd(), 'public', 'uploads', 'videos')
       const base = path.basename(video.videoUrl)
       const target = path.join(uploadDir, base)
       if (path.resolve(target).startsWith(path.resolve(uploadDir) + path.sep)) {

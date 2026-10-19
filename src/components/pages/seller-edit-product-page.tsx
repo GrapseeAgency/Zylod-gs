@@ -22,6 +22,7 @@ import {
   flattenApiCategories,
   parseBundleSize,
   uploadAndAttachVideo,
+  isPendingExternalVideo,
   type ApiCategoryRow,
   type ProductFormState,
   type TierRow,
@@ -294,13 +295,18 @@ export function SellerEditProductPage() {
     };
   };
 
-  /** Task 55-c: upload+attach every picked video file to this product. */
+  /** Task 55-c + 67-b: attach every picked FILE video after the PATCH.
+   *  External https:// links do NOT go through here — they ride the PATCH
+   *  payload itself (full-replace recreates them transactionally with
+   *  sortOrder = form index), so attaching them again here would create
+   *  duplicates (the exact bug the browser QA caught on the first run). */
   const attachPendingVideos = async (pid: string): Promise<string[]> => {
     const pending = videos.filter((v) => v.file && v.status !== 'error');
     const failures: string[] = [];
-    for (let i = 0; i < pending.length; i++) {
-      const v = pending[i];
-      const result = await uploadAndAttachVideo(pid, v.file as File, v.title, i, token);
+    for (const v of pending) {
+      const file = v.file;
+      if (!file) continue;
+      const result = await uploadAndAttachVideo(pid, file, v.title, undefined, token);
       if (!result.ok && result.error) failures.push(`${v.fileName}: ${result.error}`);
     }
     return failures;
@@ -330,11 +336,15 @@ export function SellerEditProductPage() {
       }
       toast.success('Video removed from the product');
       // Re-hydrate from the server (row deleted + file unlinked there) but
-      // keep any picked-but-not-yet-attached files in the form.
-      const pendingFiles = videos.filter((v) => v.file);
+      // keep any picked-but-not-yet-attached files AND pasted-but-not-yet-
+      // attached external links (Task 67-b) in the form.
+      const pendingUnattached = videos.filter((v) => v.file || isPendingExternalVideo(v));
       await fetchProduct();
-      if (pendingFiles.length > 0) {
-        setVideos((prev) => [...prev.filter((v) => v.file), ...pendingFiles]);
+      if (pendingUnattached.length > 0) {
+        setVideos((prev) => [
+          ...prev.filter((v) => v.file || isPendingExternalVideo(v)),
+          ...pendingUnattached,
+        ]);
       }
     } catch {
       const message = 'Network error while removing the video. Check your connection and retry.';
