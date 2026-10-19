@@ -13,6 +13,9 @@ import { listEvidence } from '@/lib/evidence'
  * mimeType, sizeBytes, note, createdAt, url) for THIS request — metadata
  * only, never the bytes; bytes are served by /api/attachments/[id] which
  * enforces the same owner-or-admin rule as this route.
+ * Receipts (Task 60-a): the response carries the real seller receipts of the
+ * returned GOODS (returnReceipts) + the supplier denominator, so the buyer
+ * sees the physical loop close on their own return.
  */
 export async function GET(
   request: NextRequest,
@@ -47,6 +50,20 @@ export async function GET(
 
     // Buyer-provided evidence photos (metadata only — never the bytes).
     const evidencePhotos = await listEvidence('return', ret.id)
+
+    // Seller receipts of the returned goods (Task 60-a) + the supplier
+    // denominator from returnRequestItems → orderItems → subOrders.
+    const receipts = await db.returnReceipts.findMany({
+      where: { returnRequestId: ret.id },
+      orderBy: { createdAt: 'asc' },
+    })
+    const itemSupplierRows = retItems.length
+      ? await db.orderItems.findMany({
+          where: { id: { in: retItems.map((i) => i.orderItemId) } },
+          select: { id: true, subOrder: { select: { supplierId: true } } },
+        })
+      : []
+    const supplierCount = new Set(itemSupplierRows.map((i) => i.subOrder.supplierId)).size
 
     const order = await db.orders.findUnique({
       where: { id: ret.orderId },
@@ -86,6 +103,14 @@ export async function GET(
           note: f.note,
         })),
         evidencePhotos,
+        receipts: receipts.map(rc => ({
+          supplierId: rc.supplierId,
+          itemsRestored: rc.itemsRestored,
+          restoredValue: rc.restoredValue,
+          note: rc.note,
+          receivedAt: rc.createdAt.toISOString(),
+        })),
+        supplierCount,
       },
     })
   } catch (error) {

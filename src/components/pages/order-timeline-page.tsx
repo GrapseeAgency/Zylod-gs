@@ -142,14 +142,23 @@ function buildTimelineEvents(order: ApiOrderDetail, formatPrice: (value: number)
 
     const trackingRows = so.tracking || []
     if (trackingRows.length === 0) {
-      // Real sub-order with no tracking history yet — honest placeholder, real status
+      // Real sub-order with no tracking history yet — honest placeholder, real
+      // status-specific copy (cancelled/returned shipments will never gain
+      // tracking rows, so the placeholder must say what actually happened).
+      const statusText = capitalizeWord(so.status || 'pending')
+      const closedShipment = so.status === 'cancelled' || so.status === 'returned'
       events.push({
         id: `shipment-${so.id}`,
-        title: `Shipment ${capitalizeWord(so.status || 'pending')}`,
-        description: 'No tracking updates recorded yet for this shipment.',
+        title: `Shipment ${statusText}`,
+        description:
+          so.status === 'cancelled'
+            ? 'This shipment was cancelled — no further tracking updates will be recorded for it.'
+            : so.status === 'returned'
+              ? 'The goods were returned to the seller — this shipment is closed as returned.'
+              : 'No tracking updates recorded yet for this shipment.',
         meta: shipmentMeta,
         ts: null,
-        icon: Package,
+        icon: closedShipment ? XCircle : Package,
       })
       continue
     }

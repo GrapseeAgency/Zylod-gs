@@ -145,12 +145,24 @@ export async function PATCH(
     })
 
     // Serialize the updated row exactly like GET so the UI can replace state
-    // (includes the real refunds ledger, if any, for refundTotal accuracy).
+    // (includes the real refunds ledger, if any, for refundTotal accuracy,
+    // and the real seller receipts + supplier denominator, Task 60-a).
     const items = await db.returnRequestItems.findMany({ where: { returnRequestId: updated.id } })
     const refunds = await db.refunds.findMany({
       where: { returnRequestId: updated.id },
       orderBy: { createdAt: 'desc' },
     })
+    const receiptRows = await db.returnReceipts.findMany({
+      where: { returnRequestId: updated.id },
+      orderBy: { createdAt: 'asc' },
+    })
+    const itemSupplierRows = items.length
+      ? await db.orderItems.findMany({
+          where: { id: { in: items.map((i) => i.orderItemId) } },
+          select: { id: true, subOrder: { select: { supplierId: true } } },
+        })
+      : []
+    const supplierCount = new Set(itemSupplierRows.map((i) => i.subOrder.supplierId)).size
     const order = await db.orders.findUnique({
       where: { id: updated.orderId },
       select: {
@@ -176,7 +188,9 @@ export async function PATCH(
         refunds,
         // The row's real evidence metadata so the queue UI can replace state
         // without losing the evidence section (same shape as the list GET).
-        await listEvidence('return', updated.id)
+        await listEvidence('return', updated.id),
+        receiptRows,
+        supplierCount
       ),
       message:
         action === 'approve'

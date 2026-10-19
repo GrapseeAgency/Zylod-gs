@@ -16,7 +16,7 @@ import { toast } from 'sonner'
 import { EvidenceThumbs } from '@/components/pages/evidence-thumbs'
 import {
   RotateCcw, RefreshCw, AlertTriangle, CheckCircle2, XCircle, Package,
-  User, Wallet, Truck, ScrollText, Inbox, Banknote,
+  User, Wallet, Truck, ScrollText, Inbox, Banknote, PackageCheck,
 } from 'lucide-react'
 
 // ── Real API types (GET /api/admin/returns · PATCH · POST …/refund) ──
@@ -64,6 +64,14 @@ interface ApiReturnEvidence {
   url: string
 }
 
+interface ApiReturnReceipt {
+  supplierId: string
+  itemsRestored: number
+  restoredValue: number
+  note: string | null
+  createdAt: string
+}
+
 interface ApiAdminReturn {
   id: string
   returnNumber: string
@@ -81,6 +89,9 @@ interface ApiAdminReturn {
   updatedAt: string
   items: ApiAdminReturnItem[]
   refunds: ApiRefund[]
+  /** Seller receipts of the returned GOODS (Task 60-a) + the supplier denominator. */
+  receipts: ApiReturnReceipt[]
+  supplierCount: number
   /** Buyer-provided evidence photos — review only, never fabricated. */
   evidence: ApiReturnEvidence[]
   order: ApiAdminReturnOrder | null
@@ -565,6 +576,42 @@ export function AdminReturnsPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Task 60-a — goods receipt by the seller(s), distinct from money */}
+              {r.supplierCount > 0 && (
+                <div
+                  className={`flex items-start gap-2 rounded-xl border px-3 py-2 ${
+                    r.receipts.length >= r.supplierCount
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900'
+                      : 'bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800'
+                  }`}
+                >
+                  <PackageCheck
+                    className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${
+                      r.receipts.length >= r.supplierCount ? 'text-emerald-600' : 'text-slate-400'
+                    }`}
+                  />
+                  <div className="min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400">
+                      Goods received by seller
+                    </p>
+                    {r.receipts.length === 0 ? (
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Not yet — stock restores when each seller confirms the goods arrived
+                      </p>
+                    ) : (
+                      <>
+                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                          {r.receipts.length}/{r.supplierCount} seller(s) · {r.receipts.reduce((s, x) => s + x.itemsRestored, 0)} line(s) back in stock
+                        </p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
+                          {r.receipts.map((rc) => formatPrice(rc.restoredValue)).join(' + ')} stock value restored
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Items — real reasons / quantities / comments */}
               <div>

@@ -7,7 +7,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { EvidenceManager } from '@/components/pages/evidence-manager'
 import {
   ArrowLeft, Truck, Headphones,
-  Package, AlertCircle, RefreshCw, LogIn, Box, RotateCcw, Clock, CheckCircle2, XCircle, Banknote,
+  Package, AlertCircle, RefreshCw, LogIn, Box, RotateCcw, Clock, CheckCircle2, XCircle, Banknote, PackageCheck,
 } from 'lucide-react'
 
 interface RefundRecord {
@@ -43,6 +43,9 @@ interface ReturnRequest {
   createdAt: string
   items: ReturnItem[]
   refunds: RefundRecord[]
+  /** Seller receipts of the returned GOODS (Task 60-a) + the supplier denominator. */
+  receipts: Array<{ supplierId: string; itemsRestored: number; restoredValue: number; note: string | null; receivedAt: string }>
+  supplierCount: number
 }
 
 const STATUS_META: Record<string, { label: string; className: string; icon: typeof Clock; note: string }> = {
@@ -326,6 +329,30 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                         {f.note && <p className="text-[10px] text-slate-500 break-words">{f.note}</p>}
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {/* Goods received — the physical loop closing, real receipts only (Task 60-a) */}
+                {ret.receipts.length > 0 && (
+                  <div className="bg-white rounded-3xl p-5 border border-emerald-200 shadow-2xs space-y-3">
+                    <h2 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <PackageCheck className="h-3.5 w-3.5 text-emerald-600" /> Goods received by seller
+                    </h2>
+                    {ret.receipts.map((rc, idx) => (
+                      <div key={`${rc.supplierId}-${idx}`} className="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-100 space-y-1">
+                        <p className="text-[11px] font-bold text-emerald-800">
+                          {rc.itemsRestored} item line(s) received back · {formatPrice(rc.restoredValue)} stock restored
+                        </p>
+                        <p className="text-[10px] text-slate-500">
+                          Confirmed {new Date(rc.receivedAt).toLocaleString()}{rc.note ? ` — ${rc.note}` : ''}
+                        </p>
+                      </div>
+                    ))}
+                    {ret.supplierCount > ret.receipts.length && (
+                      <p className="text-[10px] text-slate-400">
+                        Waiting on {ret.supplierCount - ret.receipts.length} more seller(s) to confirm their items arrived.
+                      </p>
+                    )}
                   </div>
                 )}
 

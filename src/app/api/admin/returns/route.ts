@@ -117,6 +117,35 @@ export async function GET(request: NextRequest) {
       evidenceByReturn.set(photo.returnRequestId, list)
     }
 
+    // Real seller receipts of the returned GOODS (Task 60-a) — ONE batch
+    // query; plus the receipt denominator (distinct suppliers per return)
+    // from the return items' orderItems → subOrders.supplierId chain.
+    const allReceipts = returnIds.length
+      ? await db.returnReceipts.findMany({ where: { returnRequestId: { in: returnIds } }, orderBy: { createdAt: 'asc' } })
+      : []
+    const receiptsByReturn = new Map<string, typeof allReceipts>()
+    for (const rc of allReceipts) {
+      const list = receiptsByReturn.get(rc.returnRequestId) ?? []
+      list.push(rc)
+      receiptsByReturn.set(rc.returnRequestId, list)
+    }
+    const allItemOrderIds = [...new Set(allItems.map((i) => i.orderItemId))]
+    const itemSupplierRows = allItemOrderIds.length
+      ? await db.orderItems.findMany({
+          where: { id: { in: allItemOrderIds } },
+          select: { id: true, subOrder: { select: { supplierId: true } } },
+        })
+      : []
+    const supplierByOrderItem = new Map(itemSupplierRows.map((i) => [i.id, i.subOrder.supplierId]))
+    const supplierSetsByReturn = new Map<string, Set<string>>()
+    for (const item of allItems) {
+      const sid = supplierByOrderItem.get(item.orderItemId)
+      if (!sid) continue
+      const set = supplierSetsByReturn.get(item.returnRequestId) ?? new Set<string>()
+      set.add(sid)
+      supplierSetsByReturn.set(item.returnRequestId, set)
+    }
+
     // Real order context (orderNumber / paymentStatus / subOrder statuses).
     const orderIds = [...new Set(returns.map((r) => r.orderId))]
     const orders = orderIds.length
@@ -175,7 +204,9 @@ export async function GET(request: NextRequest) {
             orderById.get(r.orderId) ?? null,
             buyerById.get(r.buyerId) ?? null,
             refundsByReturn.get(r.id) ?? [],
-            evidenceByReturn.get(r.id) ?? []
+            evidenceByReturn.get(r.id) ?? [],
+            receiptsByReturn.get(r.id) ?? [],
+            supplierSetsByReturn.get(r.id)?.size ?? 0
           )
         ),
         counts: { ...counts, total },
@@ -185,6 +216,7 @@ export async function GET(request: NextRequest) {
           'Refunds are a real ledger of money that actually moved OUTSIDE this system (bank transfer / mobile banking / cash) — recording one requires a real transaction reference and flips the return to "refunded". This rail never moves money itself.',
           'orders.paymentStatus is deliberately never modified by the refund rail — no real payment write-back exists, and flipping it without one would fake financial truth.',
           'Evidence photos are buyer-provided: they can only be attached while a return request is pending and are locked from the review decision onwards. Bytes are served by /api/attachments/[id] to the uploading buyer and admins only.',
+          'Seller receipts (returnReceipts) record the returned GOODS physically arriving back at each supplier\u2019s warehouse — that confirmation, not the approval, is what restores their stock. Money stays on the refunds ledger.',
         ],
       },
     })

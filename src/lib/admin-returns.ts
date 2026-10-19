@@ -13,7 +13,7 @@
  * — no real payment write-back rail exists, and flipping it would fake
  * financial truth.
  */
-import type { returnRequests, returnRequestItems, refunds } from '@prisma/client'
+import type { returnRequests, returnRequestItems, refunds, returnReceipts } from '@prisma/client'
 import type { EvidencePhotoMeta } from '@/lib/evidence'
 
 /** Legal return statuses (mirrors the schema comment). */
@@ -48,6 +48,14 @@ export interface SerializedRefund {
   createdAt: string
 }
 
+export interface SerializedReceipt {
+  supplierId: string
+  itemsRestored: number
+  restoredValue: number
+  note: string | null
+  createdAt: string
+}
+
 export interface SerializedAdminReturn {
   id: string
   returnNumber: string
@@ -71,6 +79,10 @@ export interface SerializedAdminReturn {
     comments: string | null
   }[]
   refunds: SerializedRefund[]
+  /** Seller receipts of the returned GOODS (Task 60-a) — one per supplier that confirmed. */
+  receipts: SerializedReceipt[]
+  /** Distinct suppliers whose goods appear in this return — the receipt denominator. */
+  supplierCount: number
   /** Buyer-provided evidence photos (metadata only — bytes live in /api/attachments/[id]). */
   evidence: EvidencePhotoMeta[]
   order: AdminReturnOrderInfo | null
@@ -116,7 +128,9 @@ export function serializeAdminReturn(
   order: AdminReturnOrderRow | null,
   buyer: AdminReturnBuyerRow | null,
   refundRows: refunds[] = [],
-  evidenceRows: EvidencePhotoMeta[] = []
+  evidenceRows: EvidencePhotoMeta[] = [],
+  receiptRows: returnReceipts[] = [],
+  supplierCount = 0
 ): SerializedAdminReturn {
   const refundsSerialized: SerializedRefund[] = refundRows.map((f) => ({
     id: f.id,
@@ -151,6 +165,14 @@ export function serializeAdminReturn(
       comments: i.comments,
     })),
     refunds: refundsSerialized,
+    receipts: receiptRows.map((rc) => ({
+      supplierId: rc.supplierId,
+      itemsRestored: rc.itemsRestored,
+      restoredValue: rc.restoredValue,
+      note: rc.note,
+      createdAt: rc.createdAt.toISOString(),
+    })),
+    supplierCount,
     evidence: evidenceRows,
     order: order
       ? {

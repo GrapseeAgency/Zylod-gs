@@ -21,7 +21,10 @@ import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplie
  * - ?status=pending|approved|rejected|refunded|all (default all), 400 on
  *   anything else. Newest-first inside the result.
  * - Resolution is the Zylod team's job (admin PATCH /api/admin/returns/[id]
- *   + refund ledger) — this endpoint is deliberately READ-ONLY and says so.
+ *   + refund ledger). Receipt of the returned GOODS is the seller's own
+ *   action (Task 60-a): POST .../[id]/confirm-receipt restores stock for
+ *   their items once the goods physically arrive — each row carries the
+ *   caller's myReceipt state so the UI can offer/reflect exactly that.
  * - sellerShare = the seller's own prorated value of the returned goods:
  *   Σ(orderItem.totalPrice × returnedQty ÷ orderedQty) over their items.
  *   The return's estimatedRefund covers the whole request (all suppliers);
@@ -144,6 +147,13 @@ export async function GET(request: NextRequest) {
     })
     const orderById = new Map(orders.map((o) => [o.id, o]))
 
+    // 8b) THIS supplier's receipt rows for these returns (Task 60-a) — one
+    //     per (return, supplier) by the unique constraint, so the map is flat.
+    const myReceipts = await db.returnReceipts.findMany({
+      where: { returnRequestId: { in: returns.map((r) => r.id) }, supplierId: profile.id },
+    })
+    const receiptByReturnId = new Map(myReceipts.map((rc) => [rc.returnRequestId, rc]))
+
     let sellerShareTotal = 0
     const data = returns.map((r) => {
       const items = myItems
@@ -183,6 +193,14 @@ export async function GET(request: NextRequest) {
         resolvedAt: r.resolvedAt?.toISOString() ?? null,
         createdAt: r.createdAt.toISOString(),
         updatedAt: r.updatedAt.toISOString(),
+        myReceipt: receiptByReturnId.has(r.id)
+          ? {
+              itemsRestored: receiptByReturnId.get(r.id)!.itemsRestored,
+              restoredValue: receiptByReturnId.get(r.id)!.restoredValue,
+              note: receiptByReturnId.get(r.id)!.note,
+              createdAt: receiptByReturnId.get(r.id)!.createdAt.toISOString(),
+            }
+          : null,
         items,
       }
     })
@@ -193,7 +211,7 @@ export async function GET(request: NextRequest) {
       meta: {
         count: data.length,
         sellerShareTotal: Math.round(sellerShareTotal * 100) / 100,
-        note: 'Returns are reviewed and resolved by the Zylod team. This queue is read-only.',
+        note: 'Returns are reviewed and resolved by the Zylod team. Once a return is approved, confirm receipt here when the goods physically arrive — that is what restores your stock.'
       },
     })
   } catch (error) {

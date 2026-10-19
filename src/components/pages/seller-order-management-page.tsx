@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { Search, Download, Package, Calendar, Radio, Wallet, ChevronDown, ChevronUp, Check, X, Hourglass, Undo2 } from 'lucide-react';
+import { Search, Download, Package, Calendar, Radio, Wallet, ChevronDown, ChevronUp, Check, X, Hourglass, Undo2, PackageCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room';
 
@@ -84,6 +84,13 @@ interface SellerReturnRow {
   resolutionNote: string | null;
   resolvedAt: string | null;
   createdAt: string;
+  /** THIS supplier's receipt of the returned goods (Task 60-a) — null until confirmed. */
+  myReceipt: {
+    itemsRestored: number;
+    restoredValue: number;
+    note: string | null;
+    createdAt: string;
+  } | null;
   items: {
     id: string;
     productName: string | null;
@@ -138,6 +145,10 @@ export function SellerOrderManagementPage() {
   const [returnsLoading, setReturnsLoading] = useState(true);
   const [returnsError, setReturnsError] = useState<string | null>(null);
   const [returnsOpen, setReturnsOpen] = useState(true);
+  // Task 60-a: receipt confirmation of the returned goods (restores stock).
+  const [receiptConfirmFor, setReceiptConfirmFor] = useState<string | null>(null);
+  const [receiptNotes, setReceiptNotes] = useState<Record<string, string>>({});
+  const [confirmingReceiptId, setConfirmingReceiptId] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async (tab: string) => {
     setLoading(true);
@@ -303,6 +314,51 @@ export function SellerOrderManagementPage() {
     [verifyNotes, fetchPayments, fetchOrders]
   );
 
+  /**
+   * Task 60-a: confirm the returned goods physically arrived back at this
+   * supplier's warehouse. THIS action (not the admin approval) is what
+   * restores stock/soldCount for the supplier's own items — the API is the
+   * source of truth; the toast reports its real numbers.
+   */
+  const confirmReceipt = useCallback(
+    async (returnId: string) => {
+      setConfirmingReceiptId(returnId);
+      try {
+        const note = (receiptNotes[returnId] || '').trim();
+        const res = await fetch(`/api/seller/returns/${encodeURIComponent(returnId)}/confirm-receipt`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(note ? { note } : {}),
+        });
+        const body = await res.json().catch(() => null);
+        if (!res.ok) {
+          toast.error(body?.error || `Could not confirm receipt (HTTP ${res.status})`);
+          return;
+        }
+        const d = body?.data;
+        toast.success(body?.message || 'Receipt confirmed', {
+          description: d
+            ? `${d.itemsRestored} item line(s) back in stock · ৳${d.restoredValue} restored${d.subOrdersMarkedReturned?.length ? ` · ${d.subOrdersMarkedReturned.length} shipment(s) marked returned` : ''}`
+            : undefined,
+        });
+        setReceiptConfirmFor(null);
+        setReceiptNotes((prev) => {
+          const next = { ...prev };
+          delete next[returnId];
+          return next;
+        });
+        void fetchReturns();
+        void fetchOrders(activeTabRef.current);
+      } catch {
+        toast.error('Network error while confirming receipt');
+      } finally {
+        setConfirmingReceiptId(null);
+      }
+    },
+    [receiptNotes, fetchReturns, fetchOrders]
+  );
+
   const onLiveEvent = useCallback(
     (message: RealtimeRoomMessage) => {
       if (message.event === 'order:new') {
@@ -318,6 +374,11 @@ export function SellerOrderManagementPage() {
       }
       if (message.event === 'return:new') {
         toast('New return request received', { description: 'A buyer filed a return that touches your goods — see the Returns queue.' });
+        void fetchReturns();
+      }
+      if (message.event === 'return:received') {
+        // Own confirmations and (for multi-supplier returns) the other
+        // supplier's receipt both land here — refetch to reflect truth.
         void fetchReturns();
       }
     },
@@ -563,7 +624,7 @@ export function SellerOrderManagementPage() {
               ) : (
                 <>
                   <p className="text-[11px] text-gray-400">
-                    The Zylod team reviews and resolves every return. This queue shows each request that includes YOUR items — read-only.
+                    The Zylod team reviews and resolves every return. Once a return is APPROVED, confirm receipt below when the returned goods physically reach your warehouse — that confirmation restores your stock.
                   </p>
                   {returns.map((r) => (
                     <div key={r.id} className="border border-gray-100 rounded-lg p-3 space-y-2">
@@ -599,6 +660,60 @@ export function SellerOrderManagementPage() {
                         <span>· full-request refund estimate ৳{r.estimatedRefund?.toLocaleString()}</span>
                         {r.resolutionNote && <span className="text-gray-600">· note: {r.resolutionNote}</span>}
                       </div>
+
+                      {/* Task 60-a — the physical half of the returns flow */}
+                      {r.myReceipt ? (
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-md px-2.5 py-2 flex items-start gap-2">
+                          <PackageCheck className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-semibold text-emerald-800">
+                              Goods received · {r.myReceipt.itemsRestored} item line(s) back in stock · ৳{r.myReceipt.restoredValue?.toLocaleString()} restored
+                            </p>
+                            <p className="text-[10px] text-emerald-700 mt-0.5">
+                              Confirmed {format(new Date(r.myReceipt.createdAt), 'MMM dd, HH:mm')}{r.myReceipt.note ? ` — “${r.myReceipt.note}”` : ''}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (r.status === 'approved' || r.status === 'refunded') && (
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => setReceiptConfirmFor(receiptConfirmFor === r.id ? null : r.id)}
+                            className="min-h-11 w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-md transition-colors"
+                          >
+                            Confirm receipt of returned goods
+                          </button>
+                          {receiptConfirmFor === r.id && (
+                            <div className="border border-emerald-200 bg-emerald-50/60 rounded-md p-2.5 space-y-2">
+                              <p className="text-[11px] text-emerald-900">
+                                Confirm ONLY when the returned items are physically back with you. This restores their stock and sold counts ({r.items.length} line(s) · ৳{r.sellerShare?.toLocaleString()} value) and cannot be undone.
+                              </p>
+                              <input
+                                type="text"
+                                value={receiptNotes[r.id] || ''}
+                                onChange={(e) => setReceiptNotes((prev) => ({ ...prev, [r.id]: e.target.value }))}
+                                placeholder="Optional note (e.g. condition of the goods)"
+                                maxLength={500}
+                                className="w-full min-h-10 bg-white border border-gray-300 rounded-md px-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                              />
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => void confirmReceipt(r.id)}
+                                  disabled={confirmingReceiptId === r.id}
+                                  className="min-h-10 flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-xs font-semibold rounded-md transition-colors"
+                                >
+                                  {confirmingReceiptId === r.id ? 'Confirming…' : 'Yes, goods received'}
+                                </button>
+                                <button
+                                  onClick={() => setReceiptConfirmFor(null)}
+                                  className="min-h-10 px-3 bg-white border border-gray-300 text-gray-700 text-xs font-medium rounded-md hover:bg-gray-50 transition-colors"
+                                >
+                                  Not yet
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </>

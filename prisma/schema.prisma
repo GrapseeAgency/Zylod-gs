@@ -2828,6 +2828,32 @@ model returnRequestItems {
   @@index([returnRequestId])
 }
 
+// SELLER RECEIPT OF RETURNED GOODS — the physical half of the returns flow.
+// An admin approving a return authorizes the goods to travel back; only the
+// SELLER knows when they actually arrive at their warehouse, so only the
+// seller confirms receipt — and THAT confirmation (not the approval) is what
+// restores stock/soldCount, exactly mirroring the cancellation restock math.
+// One row per (return, supplier): a multi-supplier return is received
+// independently by each supplier, for their own items only.
+// Money is untouched here: refunds are the admin refunds ledger's job.
+model returnReceipts {
+  id              String   @id @default(cuid())
+  returnRequestId String
+  supplierId      String
+  // The supplier user who confirmed (audit actor), NOT the profile id.
+  receivedById    String
+  note            String?
+  // Real counts/values computed from THIS supplier's items of the return.
+  itemsRestored   Int
+  restoredValue   Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([returnRequestId, supplierId])
+  @@index([returnRequestId])
+  @@index([supplierId])
+}
+
 // REAL REFUND LEDGER — documents money that actually moved OUTSIDE this system
 // (bank transfer / mobile banking / cash handed over). It does NOT move money.
 // A row is written only after the admin records a real-world transaction id
