@@ -22,6 +22,8 @@ interface NotificationDetail {
   isRead: boolean
   relatedId?: string | null
   relatedShipmentId?: string | null
+  /** Task 68-c: the exact payments row a payment notification is about. */
+  relatedPaymentId?: string | null
 }
 
 export function NotificationDetailPage() {
@@ -83,6 +85,20 @@ export function NotificationDetailPage() {
       case 'order':
         if (notification.relatedId) {
           navigate('order-detail', { orderId: notification.relatedId })
+        } else {
+          navigate('orders')
+        }
+        break
+      case 'payment':
+        // Task 68-c: payment notifications open the order view; when the row
+        // carries the exact payments id, the matching chip highlights there.
+        if (notification.relatedId) {
+          navigate(
+            'order-detail',
+            notification.relatedPaymentId
+              ? { orderId: notification.relatedId, payment: notification.relatedPaymentId }
+              : { orderId: notification.relatedId }
+          )
         } else {
           navigate('orders')
         }

@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 
 /**
  * GET /api/admin/products — list products pending approval (or all if approved=true). ADMIN ONLY.
@@ -148,6 +149,11 @@ export async function PATCH(request: NextRequest) {
       where: { id: productId },
       data: { isApproved: newIsApproved },
     })
+
+    // Task 68: approval flips move the product in/out of every cached public
+    // surface (products list, brand facets, category tree counts) — drop them
+    // before the audit row so a failing audit can never leave stale truth.
+    invalidateCacheKeys('products:list:', 'brands:list:', 'categories:tree')
 
     // Audit log with the REAL before/after values.
     await db.auditLogs.create({

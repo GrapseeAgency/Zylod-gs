@@ -15,6 +15,10 @@ export interface Notification {
   actionUrl: string | null
   actionLabel: string | null
   relatedId: string | null
+  /** Task 66: exact subOrder for per-shipment deep-links (optional passthrough). */
+  relatedShipmentId?: string | null
+  /** Task 68-c: exact payments row for payment deep-links (optional passthrough). */
+  relatedPaymentId?: string | null
   priority: 'low' | 'medium' | 'high'
 }
 
@@ -95,6 +99,8 @@ export const useNotificationStore = create<NotificationState>()(
                 timestamp: n.timestamp,
                 isRead: n.isRead,
                 relatedId: n.relatedId,
+                relatedShipmentId: n.relatedShipmentId ?? null,
+                relatedPaymentId: n.relatedPaymentId ?? null,
                 actionUrl: n.actionUrl,
                 actionLabel: n.actionLabel,
                 priority: n.priority || 'medium',

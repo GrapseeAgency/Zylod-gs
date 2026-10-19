@@ -5,6 +5,7 @@ import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { notifyPaymentVerified, notifyPaymentRejected } from '@/lib/notifications'
 
 /**
  * POST /api/seller/payments/[id]/verify — the SELLER's half of the manual
@@ -207,6 +208,23 @@ export async function POST(
         broadcastToRoom(`admin:${admin.id}`, verifying ? 'payment:verified' : 'payment:rejected', payload)
       ),
     ])
+
+    // Task 68-c: the buyer learns the decision from a REAL notification row
+    // (bell + list + deep-link to the exact payment), not only from a room
+    // broadcast that requires the order page to be open right now.
+    if (verifying) {
+      void notifyPaymentVerified(
+        payment.order.buyerId,
+        payment.order.orderNumber,
+        payment.order.id,
+        payment.id,
+        payment.amount,
+        payment.order.totalAmount,
+        newOrderPaymentStatus
+      )
+    } else {
+      void notifyPaymentRejected(payment.order.buyerId, payment.order.orderNumber, payment.order.id, payment.id, note ?? null)
+    }
 
     return NextResponse.json({
       success: true,

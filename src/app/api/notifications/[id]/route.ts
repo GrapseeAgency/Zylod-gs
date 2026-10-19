@@ -45,6 +45,7 @@ export async function GET(
         isRead: true,
         relatedId: notification.relatedEntityId,
         relatedShipmentId: notification.relatedShipmentId,
+        relatedPaymentId: notification.relatedPaymentId,
       },
     })
   } catch (error) {

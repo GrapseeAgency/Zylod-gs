@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
       isRead: n.isRead,
       relatedId: n.relatedEntityId,
       relatedShipmentId: n.relatedShipmentId,
+      relatedPaymentId: n.relatedPaymentId,
       actionUrl: null,
       actionLabel: null,
       priority: 'medium',

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { sendNotification } from '@/lib/notifications'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 
 export async function GET(
   request: NextRequest,
@@ -118,6 +119,9 @@ export async function PATCH(
         where: { OR: [{ id: existing.reportedUserId }, { userId: existing.reportedUserId }] },
         data: { verificationStatus: 'rejected', rejectionReason: `Account suspended due to policy report #${id}: ${adminNotes || 'Fraud/Breach'}` },
       })
+      // Task 68: a store suspension just changed the supplier's public KYC
+      // status — drop the cached suppliers list.
+      invalidateCacheKeys('suppliers:list:')
     } else if (actionType === 'freeze_escrow') {
       // Mark pending orders as refund requested / under review if linked
       if (existing.relatedOrderId) {

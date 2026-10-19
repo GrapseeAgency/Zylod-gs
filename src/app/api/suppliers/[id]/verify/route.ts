@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 
 /**
  * POST /api/suppliers/[id]/verify — admin action to approve/reject a supplier (ADMIN ONLY)
@@ -42,6 +43,10 @@ export async function POST(
       where: { id },
       data: update,
     })
+
+    // Task 68: KYC decisions change what the cached public suppliers list
+    // serves — drop it before the audit row.
+    invalidateCacheKeys('suppliers:list:')
 
     await db.auditLogs.create({
       data: {

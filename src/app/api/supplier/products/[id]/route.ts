@@ -6,6 +6,7 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { productPayloadSchema } from '@/lib/product-contract'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { notifyBackInStock } from '@/lib/stock-alerts'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 import { z } from 'zod'
 
 /**
@@ -136,6 +137,8 @@ export async function PATCH(
         data: { isActive: parsedToggle.data.isActive },
         include: productInclude,
       })
+      // Task 68: visibility flips change the public lists instantly.
+      invalidateCacheKeys('products:list:', 'brands:list:', 'categories:tree')
       await db.auditLogs.create({
         data: {
           actorId: auth.user.id,
@@ -270,6 +273,11 @@ export async function PATCH(
       throw txError
     }
 
+    // Task 68: the full-replace changed name/category/brand/stock/unit — all
+    // of which the cached public lists + tree serve. Invalidate before the
+    // audit row (a failing audit must never leave pre-write truth cached).
+    invalidateCacheKeys('products:list:', 'brands:list:', 'categories:tree')
+
     await db.auditLogs.create({
       data: {
         actorId: auth.user.id,
@@ -343,6 +351,9 @@ export async function DELETE(
       data: { isActive: false },
       include: productInclude,
     })
+
+    // Task 68: the listing just left the public storefront — drop cached lists.
+    invalidateCacheKeys('products:list:', 'brands:list:', 'categories:tree')
 
     await db.auditLogs.create({
       data: {

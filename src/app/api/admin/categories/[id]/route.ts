@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { serializeAdminCategory, slugifyName, SLUG_PATTERN } from '@/lib/admin-categories'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 
 /**
  * PATCH  /api/admin/categories/[id] — update a real category row (ADMIN ONLY).
@@ -219,6 +220,11 @@ export async function PATCH(
         include: categoryInclude,
       })
 
+      // Task 68: invalidate the cached public tree (name/slug/isActive/sort
+      // all change what buyers see) — before the audit row, so a failing
+      // audit can never leave the cache serving pre-write truth.
+      invalidateCacheKeys('categories:tree')
+
       await db.auditLogs.create({
         data: {
           actorId: auth.user.id,
@@ -297,6 +303,9 @@ export async function DELETE(
     }
 
     await db.categories.delete({ where: { id } })
+
+    // Task 68: invalidate the cached public tree immediately after the delete.
+    invalidateCacheKeys('categories:tree')
 
     await db.auditLogs.create({
       data: {

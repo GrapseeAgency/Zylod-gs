@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -102,6 +102,10 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const user = useAuthStore((s) => s.user)
   const pageParams = _pageParams || storeParams || {}
   const orderId = pageParams.orderId || ''
+  // Task 68-c: a payment notification deep-link carries the exact payments
+  // row (?page=order-detail&orderId=X&payment=Y) — the matching chip is
+  // highlighted and scrolled into view when the order loads.
+  const highlightPaymentId = pageParams.payment || ''
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -123,6 +127,9 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const [cancelling, setCancelling] = useState(false)
   // Task 58: when set, the confirm dialog targets ONE shipment only.
   const [scopedShipment, setScopedShipment] = useState<{ id: string; label: string } | null>(null)
+
+  // Task 68-c: the deep-linked payment chip scrolls into view once loaded.
+  const highlightedPaymentRef = useRef<HTMLDivElement | null>(null)
 
   const loadOrder = useCallback(async () => {
     if (!orderId) { setLoading(false); return }
@@ -150,6 +157,15 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   }, [orderId])
 
   useEffect(() => { loadOrder() }, [loadOrder])
+
+  // Task 68-c: once the order (and its payments) is on screen, bring the
+  // deep-linked payment chip into view. A stale/foreign payment id simply
+  // has no chip — nothing scrolls, nothing highlights (honest no-op).
+  useEffect(() => {
+    if (!loading && order && highlightPaymentId && highlightedPaymentRef.current) {
+      highlightedPaymentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [loading, order, highlightPaymentId])
 
   const openPayDialog = () => {
     setPayMethodIdx(0)
@@ -618,19 +634,36 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
                 No payments recorded yet. Orders start <span className="font-bold text-amber-600">UNPAID</span> — payment is confirmed only after verification.
               </p>
             ) : (
-              order.payments.map((p) => (
-                <div key={p.id} className="flex items-center justify-between text-[11px]">
-                  <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 capitalize">
-                    <CreditCard className="h-3.5 w-3.5" /> {p.method || '--'}
-                  </span>
-                  <span className="text-right">
-                    <span className="font-bold text-slate-900 dark:text-slate-100 block">{formatPrice(p.amount)}</span>
-                    <span className={`text-[10px] uppercase ${p.status === 'pending' ? 'text-sky-600 dark:text-sky-400 font-bold' : 'text-slate-400'}`}>
-                      {p.status === 'pending' ? 'verification pending' : (p.status || '--')}
+              order.payments.map((p) => {
+                const highlighted = p.id === highlightPaymentId
+                return (
+                  <div
+                    key={p.id}
+                    ref={highlighted ? highlightedPaymentRef : undefined}
+                    aria-label={highlighted ? 'The payment this notification is about' : undefined}
+                    className={`flex items-center justify-between text-[11px] rounded-xl px-2 py-1.5 -mx-2 transition-colors ${
+                      highlighted
+                        ? 'bg-amber-50 dark:bg-amber-950/40 ring-1 ring-amber-300 dark:ring-amber-700'
+                        : ''
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 capitalize">
+                      <CreditCard className="h-3.5 w-3.5" /> {p.method || '--'}
+                      {highlighted && (
+                        <span className="text-[9px] font-bold uppercase text-amber-600 dark:text-amber-400 ml-1">
+                          ← from your notification
+                        </span>
+                      )}
                     </span>
-                  </span>
-                </div>
-              ))
+                    <span className="text-right">
+                      <span className="font-bold text-slate-900 dark:text-slate-100 block">{formatPrice(p.amount)}</span>
+                      <span className={`text-[10px] uppercase ${p.status === 'pending' ? 'text-sky-600 dark:text-sky-400 font-bold' : 'text-slate-400'}`}>
+                        {p.status === 'pending' ? 'verification pending' : (p.status || '--')}
+                      </span>
+                    </span>
+                  </div>
+                )
+              })
             )}
           </div>
 

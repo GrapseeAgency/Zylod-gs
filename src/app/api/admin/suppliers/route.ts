@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 
 /**
  * GET /api/admin/suppliers — supplier KYC verification queue (ADMIN ONLY)
@@ -188,6 +189,10 @@ export async function PATCH(request: NextRequest) {
         verifiedAt: new Date(),
       },
     })
+
+    // Task 68: KYC decisions change what the cached public suppliers list
+    // serves — drop it before the audit row.
+    invalidateCacheKeys('suppliers:list:')
 
     await db.auditLogs.create({
       data: {

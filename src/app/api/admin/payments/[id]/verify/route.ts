@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { notifyPaymentVerified, notifyPaymentRejected } from '@/lib/notifications'
 
 /**
  * POST /api/admin/payments/[id]/verify — the ADMIN's override half of the
@@ -194,6 +195,21 @@ export async function POST(
         broadcastToRoom(`admin:${admin.id}`, verifying ? 'payment:verified' : 'payment:rejected', payload)
       ),
     ])
+
+    // Task 68-c: admin override decisions reach the buyer as REAL rows too.
+    if (verifying) {
+      void notifyPaymentVerified(
+        payment.order.buyerId,
+        payment.order.orderNumber,
+        payment.order.id,
+        payment.id,
+        payment.amount,
+        payment.order.totalAmount,
+        newOrderPaymentStatus
+      )
+    } else {
+      void notifyPaymentRejected(payment.order.buyerId, payment.order.orderNumber, payment.order.id, payment.id, note ?? null)
+    }
 
     return NextResponse.json({
       success: true,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createHmac, timingSafeEqual } from 'crypto'
 import { db } from '@/lib/db'
 import { clientIp } from '@/lib/rate-limit'
+import { notifyPaymentVerified, notifyPaymentRejected } from '@/lib/notifications'
 
 /**
  * POST /api/payments/webhook — THE ONLY AUTOMATED PATH THAT CAN MARK AN ORDER PAID.
@@ -87,8 +88,9 @@ export async function POST(request: NextRequest) {
 
   const gatewayNote = `${payload.gateway || 'unknown-gateway'} ${new Date().toISOString()}`.slice(0, 500)
 
+  let payment
   await db.$transaction(async (tx) => {
-    await tx.payments.create({
+    payment = await tx.payments.create({
       data: {
         orderId: order.id,
         method: 'bank_transfer',
@@ -107,6 +109,15 @@ export async function POST(request: NextRequest) {
       })
     }
   })
+
+  // Task 68-c: the webhook is the THIRD money path — its decision reaches the
+  // buyer as a REAL notification row too (bell + list + deep-link), exactly
+  // like the seller/admin manual verify paths.
+  if (status === 'success') {
+    void notifyPaymentVerified(order.buyerId, order.orderNumber, order.id, payment.id, amount, order.totalAmount, 'paid')
+  } else {
+    void notifyPaymentRejected(order.buyerId, order.orderNumber, order.id, payment.id, null)
+  }
 
   return NextResponse.json({ success: true, data: { orderNumber: order.orderNumber, paymentStatus: status === 'success' ? 'paid' : order.paymentStatus } })
 }

@@ -71,6 +71,11 @@ type TabId = 'details' | 'specifications' | 'shipping' | 'reviews'
    platform default (same value the desktop PDP uses). */
 const LOW_STOCK_THRESHOLD_DEFAULT = 5
 
+/* Task 68-b: with more variants than this, the chips become a horizontal
+   snap strip (the wrap layout would stack 3+ rows and push the buy actions
+   below the fold on a phone). */
+const VARIANT_SCROLL_THRESHOLD = 6
+
 /* ─── Component ─── */
 
 export function MobileProductDetailPage() {
@@ -485,37 +490,84 @@ export function MobileProductDetailPage() {
             watch), ordering stays impossible via the button guards below. */}
         {product.variants && product.variants.length > 0 && (
           <div className="mt-4">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Select Variant</h3>
-            <div className="flex flex-wrap gap-2">
-              {product.variants.map((variant) => {
-                const isSelected = selectedVariantId === variant.id
-                const label = `${variant.variantName}: ${variant.variantValue}`.replace(/\s+/g, ' ').trim()
-                return (
-                  <button
-                    key={variant.id}
-                    type="button"
-                    onClick={() => setSelectedVariantId(isSelected ? null : variant.id)}
-                    aria-pressed={isSelected}
-                    className={`max-w-full rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
-                      isSelected
-                        ? 'border-[#E53935] bg-[#E53935] text-white'
-                        : 'border-gray-300 bg-white text-foreground active:bg-gray-50'
-                    } ${variant.stockQuantity === 0 && !isSelected ? 'opacity-80' : ''}`}
-                  >
-                    <span className="truncate">{label}</span>
-                    {variant.priceOverride != null && (
-                      <span className="ml-1">({formatPrice(variant.priceOverride)})</span>
-                    )}
-                    {variant.stockQuantity === 0 && (
-                      <span className={`ml-1 text-[10px] ${isSelected ? 'text-white/90' : 'text-red-600'}`}>(Out of stock)</span>
-                    )}
-                    {variant.stockQuantity > 0 && variant.stockQuantity <= stockAlertThreshold && (
-                      <span className={`ml-1 text-[10px] ${isSelected ? 'text-white/90' : 'text-amber-600'}`}>(Only {formatQty(variant.stockQuantity)} left)</span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+              Select Variant
+              {product.variants.length > VARIANT_SCROLL_THRESHOLD && (
+                <span className="ml-2 normal-case font-normal text-[10px] text-muted-foreground">swipe for more →</span>
+              )}
+            </h3>
+            {product.variants.length > VARIANT_SCROLL_THRESHOLD ? (
+              /* Task 68-b: many variants — a horizontal snap strip keeps the
+                 buy actions above the fold; the half-cut next chip is the
+                 scroll affordance. Few variants keep the wrap layout. */
+              <div
+                className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 snap-x [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]"
+                role="listbox"
+                aria-label="Product variants"
+              >
+                {product.variants.map((variant) => {
+                  const isSelected = selectedVariantId === variant.id
+                  const label = `${variant.variantName}: ${variant.variantValue}`.replace(/\s+/g, ' ').trim()
+                  return (
+                    <button
+                      key={variant.id}
+                      type="button"
+                      onClick={() => setSelectedVariantId(isSelected ? null : variant.id)}
+                      role="option"
+                      aria-selected={isSelected}
+                      className={`shrink-0 snap-start whitespace-nowrap rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
+                        isSelected
+                          ? 'border-[#E53935] bg-[#E53935] text-white'
+                          : 'border-gray-300 bg-white text-foreground active:bg-gray-50'
+                      } ${variant.stockQuantity === 0 && !isSelected ? 'opacity-80' : ''}`}
+                    >
+                      {label}
+                      {variant.priceOverride != null && (
+                        <span className="ml-1">({formatPrice(variant.priceOverride)})</span>
+                      )}
+                      {variant.stockQuantity === 0 && (
+                        <span className={`ml-1 text-[10px] ${isSelected ? 'text-white/90' : 'text-red-600'}`}>(Out of stock)</span>
+                      )}
+                      {variant.stockQuantity > 0 && variant.stockQuantity <= stockAlertThreshold && (
+                        <span className={`ml-1 text-[10px] ${isSelected ? 'text-white/90' : 'text-amber-600'}`}>(Only {formatQty(variant.stockQuantity)} left)</span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2" role="listbox" aria-label="Product variants">
+                {product.variants.map((variant) => {
+                  const isSelected = selectedVariantId === variant.id
+                  const label = `${variant.variantName}: ${variant.variantValue}`.replace(/\s+/g, ' ').trim()
+                  return (
+                    <button
+                      key={variant.id}
+                      type="button"
+                      onClick={() => setSelectedVariantId(isSelected ? null : variant.id)}
+                      role="option"
+                      aria-selected={isSelected}
+                      className={`max-w-full rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
+                        isSelected
+                          ? 'border-[#E53935] bg-[#E53935] text-white'
+                          : 'border-gray-300 bg-white text-foreground active:bg-gray-50'
+                      } ${variant.stockQuantity === 0 && !isSelected ? 'opacity-80' : ''}`}
+                    >
+                      <span className="truncate">{label}</span>
+                      {variant.priceOverride != null && (
+                        <span className="ml-1">({formatPrice(variant.priceOverride)})</span>
+                      )}
+                      {variant.stockQuantity === 0 && (
+                        <span className={`ml-1 text-[10px] ${isSelected ? 'text-white/90' : 'text-red-600'}`}>(Out of stock)</span>
+                      )}
+                      {variant.stockQuantity > 0 && variant.stockQuantity <= stockAlertThreshold && (
+                        <span className={`ml-1 text-[10px] ${isSelected ? 'text-white/90' : 'text-amber-600'}`}>(Only {formatQty(variant.stockQuantity)} left)</span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
           </div>
         )}
 

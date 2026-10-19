@@ -19,6 +19,8 @@ export interface CreateNotificationParams {
   relatedEntityId?: string | null
   /** Task 66: the exact subOrder (shipment) this notification is about. */
   relatedShipmentId?: string | null
+  /** Task 68-c: the exact payments row this notification is about. */
+  relatedPaymentId?: string | null
 }
 
 /**
@@ -32,6 +34,7 @@ export async function sendNotification({
   body,
   relatedEntityId = null,
   relatedShipmentId = null,
+  relatedPaymentId = null,
 }: CreateNotificationParams) {
   try {
     // Check user preferences if exists
@@ -63,6 +66,7 @@ export async function sendNotification({
         isRead: false,
         relatedEntityId: relatedEntityId || null,
         relatedShipmentId: relatedShipmentId || null,
+        relatedPaymentId: relatedPaymentId || null,
       },
     })
 
@@ -78,6 +82,7 @@ export async function sendNotification({
       isRead: notif.isRead,
       relatedId: notif.relatedEntityId,
       relatedShipmentId: notif.relatedShipmentId,
+      relatedPaymentId: notif.relatedPaymentId,
       timestamp: notif.createdAt.toISOString(),
     })
 
@@ -188,18 +193,75 @@ export async function notifyRestockTriggered(
   })
 }
 
-/** Triggered when bKash/Bank escrow is locked */
-export async function notifyEscrowDeposit(
+/**
+ * Task 68-c — REAL payment notifications to the BUYER. Before this, the
+ * manual payment leg (submit → verify/reject) sent room broadcasts only:
+ * the buyer got a bell tick ONLY if they happened to have the order page
+ * open at that exact moment, and their notifications page never showed any
+ * payment event. These helpers persist real rows (via sendNotification) so
+ * the whole live loop — bell, list, deep-link — works like every other
+ * notification family. relatedEntityId carries the ORDER (the Task 64
+ * deep-link contract), relatedPaymentId the exact payments row.
+ */
+
+/** Buyer submitted payment credentials — verification pending. */
+export async function notifyPaymentSubmitted(
   userId: string,
-  amount: number,
   orderNumber: string,
-  orderId: string
+  orderId: string,
+  paymentId: string,
+  amount: number,
+  method: string
 ) {
   return sendNotification({
     userId,
     type: 'payment',
-    title: `SafePay Escrow Locked: ৳${amount.toLocaleString()}`,
-    body: `Payment of ৳${amount.toLocaleString()} for Order ${orderNumber} is secured in Zylod SafePay Escrow. Funds are protected until you verify the delivery.`,
+    title: `Payment Submitted: ${orderNumber}`,
+    body: `Your ${method.replace('_', ' ')} payment reference for ৳${amount.toLocaleString()} on order ${orderNumber} was received and is now PENDING VERIFICATION. Every order stays unpaid until its payment is verified.`,
     relatedEntityId: orderId,
+    relatedPaymentId: paymentId,
+  })
+}
+
+/** Seller/admin verified the payment — honest partial math spelled out. */
+export async function notifyPaymentVerified(
+  userId: string,
+  orderNumber: string,
+  orderId: string,
+  paymentId: string,
+  amountPaid: number,
+  orderTotal: number,
+  orderPaymentStatus: string
+) {
+  const partial = orderPaymentStatus === 'partial'
+  return sendNotification({
+    userId,
+    type: 'payment',
+    title: partial
+      ? `Payment Partially Verified: ${orderNumber}`
+      : `Payment Verified: ${orderNumber}`,
+    body: partial
+      ? `৳${amountPaid.toLocaleString()} of ৳${orderTotal.toLocaleString()} verified for order ${orderNumber}. The order stays PARTIALLY PAID — submit the remaining balance to unlock processing.`
+      : `৳${amountPaid.toLocaleString()} verified for order ${orderNumber}. The order is now PAID and the supplier can start processing.`,
+    relatedEntityId: orderId,
+    relatedPaymentId: paymentId,
+  })
+}
+
+/** Seller/admin rejected the submitted credentials. */
+export async function notifyPaymentRejected(
+  userId: string,
+  orderNumber: string,
+  orderId: string,
+  paymentId: string,
+  note: string | null
+) {
+  return sendNotification({
+    userId,
+    type: 'payment',
+    title: `Payment Rejected: ${orderNumber}`,
+    body: `The payment reference you submitted for order ${orderNumber} could not be verified and was rejected${note ? ` — "${note}"` : ''}. The order remains unpaid; submit a correct reference or contact support.`,
+    relatedEntityId: orderId,
+    relatedPaymentId: paymentId,
   })
 }

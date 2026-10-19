@@ -797,6 +797,9 @@ model notifications {
   // Task 66: for order/delivery notifications born from a PER-SHIPMENT event
   // — the exact subOrder this notification is about (deep-link target).
   relatedShipmentId String?
+  // Task 68-c: for payment notifications — the exact payments row this
+  // notification is about (order-detail deep-links to + highlights it).
+  relatedPaymentId  String?
   createdAt       DateTime @default(now())
 
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)

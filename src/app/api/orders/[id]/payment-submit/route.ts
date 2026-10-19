@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { notifyPaymentSubmitted } from '@/lib/notifications'
 
 /**
  * POST /api/orders/[id]/payment-submit — the buyer's MANUAL payment leg
@@ -200,6 +201,10 @@ export async function POST(
       ...admins.map((admin) => broadcastToRoom(`admin:${admin.id}`, 'payment:submitted', payload)),
       broadcastToRoom(`order:${order.id}`, 'payment:submitted', payload),
     ])
+
+    // Task 68-c: the buyer gets a REAL notification row (bell + list +
+    // deep-link), not just a room broadcast that needs the order page open.
+    void notifyPaymentSubmitted(order.buyerId, order.orderNumber, order.id, payment.id, amount, method)
 
     return NextResponse.json(
       {

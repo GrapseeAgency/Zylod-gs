@@ -24,6 +24,8 @@ interface NotificationItem {
   isRead: boolean
   relatedId?: string | null
   relatedShipmentId?: string | null
+  /** Task 68-c: the exact payments row a payment notification is about. */
+  relatedPaymentId?: string | null
 }
 
 export function NotificationsPage() {
@@ -111,7 +113,11 @@ export function NotificationsPage() {
     switch (notif.type) {
       case 'order':
       case 'payment':
-        return { page: 'order-detail', params: { orderId: notif.relatedId } }
+        // Task 68-c: a payment notification that carries the exact payments
+        // row lands on the order view AND highlights that payment chip.
+        return notif.type === 'payment' && notif.relatedPaymentId
+          ? { page: 'order-detail', params: { orderId: notif.relatedId!, payment: notif.relatedPaymentId } }
+          : { page: 'order-detail', params: { orderId: notif.relatedId } }
       case 'delivery':
         // Task 66: a per-shipment delivery notification lands on the ORDER
         // view where that shipment's tracking lives — the generic delivery

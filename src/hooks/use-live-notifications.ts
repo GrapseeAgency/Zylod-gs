@@ -27,6 +27,8 @@ export function useLiveNotifications(userId?: string | null) {
           timestamp: data.timestamp ?? new Date().toISOString(),
           isRead: false,
           relatedId: data.relatedId ?? null,
+          relatedShipmentId: data.relatedShipmentId ?? null,
+          relatedPaymentId: (data as { relatedPaymentId?: string | null }).relatedPaymentId ?? null,
           actionUrl: data.actionUrl ?? null,
           actionLabel: data.actionLabel ?? null,
           priority: data.priority ?? 'medium',

@@ -10,6 +10,7 @@ import {
   SLUG_PATTERN,
   ADMIN_CATEGORIES_DATA_NOTES,
 } from '@/lib/admin-categories'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 
 /**
  * GET   /api/admin/categories — full flat category list for the admin tree (ADMIN ONLY).
@@ -167,6 +168,10 @@ export async function POST(request: NextRequest) {
         _count: { select: { products: true, children: true } },
       },
     })
+
+    // Task 68: the public category tree is cached (5-min TTL) — every write
+    // that changes it invalidates immediately, or buyers see stale truth.
+    invalidateCacheKeys('categories:tree')
 
     await db.auditLogs.create({
       data: {
