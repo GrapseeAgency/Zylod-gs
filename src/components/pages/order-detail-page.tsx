@@ -118,9 +118,11 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const [paySubmitting, setPaySubmitting] = useState(false)
   const [payError, setPayError] = useState('')
 
-  // ── Cancel-order state (Task 57-a) ──────────────────────────────────
+  // ── Cancel-order state (Task 57-a/58) ────────────────────────────────
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [cancelling, setCancelling] = useState(false)
+  // Task 58: when set, the confirm dialog targets ONE shipment only.
+  const [scopedShipment, setScopedShipment] = useState<{ id: string; label: string } | null>(null)
 
   const loadOrder = useCallback(async () => {
     if (!orderId) { setLoading(false); return }
@@ -206,28 +208,52 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
     }
   }
 
-  // ── Task 57-a: buyer self-service cancellation ────────────────────────
-  const cancelOrder = async () => {
+  // ── Task 57-a: buyer self-service cancellation (whole order) ────────
+  const cancelOrder = () => {
+    setScopedShipment(null)
+    setCancelDialogOpen(true)
+  }
+
+  // ── Task 58: cancel ONE shipment on a multi-supplier order ─────────
+  const cancelShipment = (subOrderId: string, label: string) => {
+    setScopedShipment({ id: subOrderId, label })
+    setCancelDialogOpen(true)
+  }
+
+  const confirmCancel = async () => {
     if (!order) return
     setCancelling(true)
     try {
+      const body = scopedShipment ? { subOrderIds: [scopedShipment.id] } : undefined
       const res = await fetch(`/api/orders/${encodeURIComponent(order.id)}/cancel`, {
         method: 'POST',
+        headers: body ? { 'Content-Type': 'application/json' } : undefined,
         credentials: 'include',
+        body: body ? JSON.stringify(body) : undefined,
       })
       const json = await res.json().catch(() => null)
       if (!res.ok) {
         toast.error(json?.error || `Cancellation failed (HTTP ${res.status})`)
         setCancelDialogOpen(false)
+        setScopedShipment(null)
         return
       }
-      toast.success('Order cancelled', {
-        description: `${json?.data?.subOrdersCancelled ?? 0} shipment(s) cancelled · stock restored${json?.data?.paymentsVoided ? ` · ${json.data.paymentsVoided} pending payment reference voided` : ''}.`,
+      const d = json?.data ?? {}
+      const remaining = typeof d.remainingActive === 'number' ? d.remainingActive : null
+      toast.success(scopedShipment ? 'Shipment cancelled' : 'Order cancelled', {
+        description:
+          `${d.subOrdersCancelled ?? 0} shipment(s) cancelled · stock restored` +
+          (typeof d.totalAmount === 'number' && typeof d.totalBefore === 'number' && d.totalAmount !== d.totalBefore
+            ? ` · order total now ${formatPrice(d.totalAmount)}`
+            : '') +
+          (d.paymentsVoided ? ` · ${d.paymentsVoided} pending payment reference voided` : '') +
+          (remaining !== null && remaining > 0 ? ` · ${remaining} shipment(s) remain active` : ''),
       })
       setCancelDialogOpen(false)
+      setScopedShipment(null)
       loadOrder()
     } catch {
-      toast.error('Network error while cancelling this order. Check your connection and retry.')
+      toast.error('Network error while cancelling. Check your connection and retry.')
     } finally {
       setCancelling(false)
     }
@@ -452,7 +478,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
           </div>
         </div>
 
-        {/* Items in Order Card */}
+        {/* Items in Order Card — grouped by shipment (Task 58) */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 lg:col-span-2">
           <h2 className="text-xs md:text-sm font-bold">
             Items in Order ({allItems.length})
@@ -461,38 +487,68 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
           {allItems.length === 0 ? (
             <p className="text-xs text-slate-400 py-4 text-center">No items recorded on this order.</p>
           ) : (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800 space-y-3 pt-1">
-              {allItems.map((item, idx) => (
-                <div key={item.id} className={`flex gap-3 items-center ${idx > 0 ? 'pt-3' : ''}`}>
-                  <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
-                    {item.product?.thumbnailUrl ? (
-                      <img src={item.product.thumbnailUrl} alt={item.product?.name || 'Product'} className="w-full h-full object-cover" />
-                    ) : (
-                      <PlaceholderImage />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-xs font-bold line-clamp-1 leading-snug">
-                      {item.product?.name || '--'}
-                    </h3>
-                    <p className="text-[10px] text-slate-400 mt-0.5">
-                      {item.variant ? `${item.variant.variantName}: ${item.variant.variantValue} · ` : ''}
-                      {item.product?.unit ? `Sold per ${item.product.unit}` : ''}
-                    </p>
-                    <div className="flex items-baseline justify-between mt-1.5">
-                      <span className="text-xs font-black text-primary">
-                        {formatPrice(item.totalPrice)}{' '}
-                        <span className="text-[10px] text-slate-400 font-normal">
-                          ({formatPrice(item.unitPrice)}/unit)
-                        </span>
-                      </span>
-                      <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                        Qty: {item.quantity}
-                      </span>
+            <div className="space-y-4 pt-1">
+              {order.subOrders.map((so) => {
+                const soStatus = (so.status || 'pending').toLowerCase()
+                const soCancellable =
+                  canCancelOrder &&
+                  ['pending', 'confirmed'].includes(soStatus)
+                return (
+                  <div key={so.id} className="rounded-2xl border border-slate-100 dark:border-slate-800 p-3 space-y-3">
+                    {/* Shipment header: supplier + real status + per-shipment cancel */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                          Shipment · {so.supplier?.companyName || 'Supplier'}
+                        </p>
+                        <p className="text-[10px] text-slate-400 capitalize">{soStatus}</p>
+                      </div>
+                      {soCancellable && order.subOrders.length > 1 && (
+                        <button
+                          onClick={() => cancelShipment(so.id, so.supplier?.companyName || 'Supplier')}
+                          disabled={cancelling}
+                          className="text-[10px] font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border border-red-200 dark:border-red-900 rounded-lg px-2 py-1 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-50"
+                        >
+                          Cancel this shipment
+                        </button>
+                      )}
+                    </div>
+                    <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {(so.items || []).map((item) => (
+                        <div key={item.id} className="flex gap-3 items-center py-2">
+                          <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
+                            {item.product?.thumbnailUrl ? (
+                              <img src={item.product.thumbnailUrl} alt={item.product?.name || 'Product'} className="w-full h-full object-cover" />
+                            ) : (
+                              <PlaceholderImage />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xs font-bold line-clamp-1 leading-snug">
+                              {item.product?.name || '--'}
+                            </h3>
+                            <p className="text-[10px] text-slate-400 mt-0.5">
+                              {item.variant ? `${item.variant.variantName}: ${item.variant.variantValue} · ` : ''}
+                              {item.product?.unit ? `Sold per ${item.product.unit}` : ''}
+                            </p>
+                            <div className="flex items-baseline justify-between mt-1.5">
+                              <span className="text-xs font-black text-primary">
+                                {formatPrice(item.totalPrice)}{' '}
+                                <span className="text-[10px] text-slate-400 font-normal">
+                                  ({formatPrice(item.unitPrice)}/unit)
+                                </span>
+                              </span>
+                              <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                Qty: {item.quantity}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
@@ -752,25 +808,31 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
         </DialogContent>
       </Dialog>
 
-      {/* Task 57-a: cancel confirmation — states the real consequences verbatim */}
-      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+      {/* Task 57-a/58: cancel confirmation — states the real consequences verbatim */}
+      <Dialog open={cancelDialogOpen} onOpenChange={(open) => { setCancelDialogOpen(open); if (!open) setScopedShipment(null) }}>
         <DialogContent className="max-w-md rounded-3xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-black">Cancel order #{order?.orderNumber || '--'}?</DialogTitle>
+            <DialogTitle className="text-base font-black">
+              {scopedShipment
+                ? `Cancel the ${scopedShipment.label} shipment?`
+                : `Cancel order #${order?.orderNumber || '--'}?`}
+            </DialogTitle>
             <DialogDescription className="text-xs leading-relaxed">
-              This cancels every shipment on the order, restores the stock to the supplier, and voids any pending payment reference so it can never be verified later. This cannot be undone.
+              {scopedShipment
+                ? 'This cancels only this supplier\u2019s shipment, restores its stock, and reduces the order total by what that shipment owed. The rest of the order stays active. This cannot be undone.'
+                : 'This cancels every shipment on the order, restores the stock to the supplier, and voids any pending payment reference so it can never be verified later. This cannot be undone.'}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setCancelDialogOpen(false)} disabled={cancelling} className="h-10 px-4 rounded-xl text-xs font-bold">
-              Keep order
+            <Button variant="outline" onClick={() => { setCancelDialogOpen(false); setScopedShipment(null) }} disabled={cancelling} className="h-10 px-4 rounded-xl text-xs font-bold">
+              {scopedShipment ? 'Keep shipment' : 'Keep order'}
             </Button>
             <Button
-              onClick={cancelOrder}
+              onClick={confirmCancel}
               disabled={cancelling}
               className="h-10 px-5 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white"
             >
-              {cancelling ? 'Cancelling…' : 'Yes, cancel order'}
+              {cancelling ? 'Cancelling…' : scopedShipment ? 'Yes, cancel shipment' : 'Yes, cancel order'}
             </Button>
           </DialogFooter>
         </DialogContent>
