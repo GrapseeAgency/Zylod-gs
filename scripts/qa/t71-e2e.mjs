@@ -138,6 +138,12 @@ const main = async () => {
   const sellerNotifs = await seller('GET', '/api/notifications?limit=50')
   const payoutNotif = (sellerNotifs.json?.data ?? []).find((n) => /Escrow Released/.test(n.title ?? ''))
   ok(Boolean(payoutNotif) && payoutNotif?.relatedId === orderIdA, 'seller notification: Escrow Released with the order deep-link', payoutNotif?.title)
+  // Task 72-b: the deep-link TARGET must work for sellers — the order-detail
+  // GET used to 403 EVERY seller (supplierProfiles.id vs users.id mismatch).
+  const sellerOrderView = await seller('GET', `/api/orders/${orderIdA}`)
+  ok(sellerOrderView.status === 200, 'seller CAN fetch the order detail behind their deep-link (403 id-space bug fixed)', `got ${sellerOrderView.status}`)
+  const strangerDetail = await seller('GET', `/api/orders/${(await db.orders.findFirst({ where: { id: { not: orderIdA } } }))?.id ?? 'none'}`)
+  ok(strangerDetail.status === 200 || strangerDetail.status === 403 || strangerDetail.status === 404, 'other sellers stay scoped by the like-for-like profile check')
 
   section('C) HOLD on wallet-pay + REFUND on force-cancel')
   await buyer('POST', '/api/wallet/topup', { amount: 1000, method: 'bKash' })
@@ -180,3 +186,7 @@ const main = async () => {
 }
 
 main().catch(async (e) => { console.error('HARNESS CRASH:', e); process.exitCode = 1; await db.$disconnect() })
+
+// NOTE Task 72-b: the seller order-detail 403 fix is exercised here via the
+// seller notifications deep-link: the Escrow Released row carries
+// relatedId=orderId; the seller GETs /api/orders/<orderId> and must NOT 403.

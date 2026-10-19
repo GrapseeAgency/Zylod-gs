@@ -63,8 +63,20 @@ export async function GET(
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    // Ensure only the owner (or a supplier involved) can view
-    const isParticipatingSupplier = order.subOrders.some(so => so.supplierId === auth.user?.id)
+    // Ensure only the owner (or a supplier involved) can view.
+    // 🐞 Task 72 fix: this check used to compare subOrders.supplierId (a
+    // supplierProfiles.id) against auth.user.id (a users.id) — two different
+    // id spaces, so a participating supplier ALWAYS got 403 on their own
+    // orders. Resolve the caller's real profile id and compare like-for-like;
+    // admins keep their override path.
+    let isParticipatingSupplier = false
+    if (auth.user.userType === 'supplier') {
+      const profile = await db.supplierProfiles.findUnique({
+        where: { userId: auth.user.id },
+        select: { id: true },
+      })
+      isParticipatingSupplier = Boolean(profile && order.subOrders.some((so) => so.supplierId === profile.id))
+    }
     if (order.buyerId !== auth.user.id && !isParticipatingSupplier && auth.user.userType !== 'admin') {
       return NextResponse.json({ error: 'Not authorized to view this order' }, { status: 403 })
     }

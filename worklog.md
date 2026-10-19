@@ -2644,3 +2644,19 @@ Work Log:
 Stage Summary:
 - The wholesale money loop is closed end to end: buyer pays → verified → HELD per supplier → delivered → RELEASED → seller wallet credited with a real payout row → seller notified. Every hop has a ledger row and a notification; nothing vanishes.
 - REMAINING FAKE/INCOMPLETE: none in these slices. Queued: seller WITHDRAWAL already existed (the withdraw route) — so the full seller money story is now top-up-free: earn → withdraw; a seller "Earnings" summary card could read walletTransactions type 'payout' aggregates (the finance/earnings API already aggregates escrow — verify before building); RFQ converted orders ride the same verify paths so their escrow/payout works automatically.
+
+---
+Task ID: 72-b
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: 🐞 REAL BUG — the seller order-detail 403. Found while verifying my own Task 72 wiring (the seller's "Escrow Released" deep-link lands on the buyer-style order-detail page): GET /api/orders/[id] compared subOrders.supplierId (a supplierProfiles.id) against auth.user.id (a users.id) — two different id spaces — so EVERY participating supplier got 403 on their own orders, forever. The seller deep-links were landing on a wall.
+
+Work Log:
+- Fix: resolve the caller's REAL profile id (supplierProfiles by userId) and compare like-for-like; admins keep the override path; buyers unaffected.
+- Proven live: seeded order → SELLER GET /api/orders/<id> = 200 (was always 403), BUYER GET still 200.
+- t71-e2e extended with the regression assertions: seller deep-link TARGET reachable (200) after the payout. t71 now 23/23 on wiped DB.
+- REGRESSIONS on wiped DBs: t68 56/56, t70 28/28, t61 33/33, t67 34/34, t71 23/23. tsc 0 whole project. DB wiped 139×0 before commit.
+
+Stage Summary:
+- The seller deep-link chain is honest at last: Escrow Released notification → click → the order page ACTUALLY OPENS for the seller. The id-space bug is the kind of half-connection the cohesion mandate exists for — caught by following my own feature's path end to end.
+- REMAINING FAKE/INCOMPLETE: none in these slices. Queued: seller Earnings summary card reading walletTransactions type 'payout' aggregates (the finance/earnings API already aggregates escrow — audit first, then build).
