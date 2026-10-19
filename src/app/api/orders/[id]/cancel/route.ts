@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { notifyBackInStock } from '@/lib/stock-alerts'
 
 /**
  * POST /api/orders/[id]/cancel — the buyer's self-service cancellation (Task
@@ -344,6 +345,11 @@ export async function POST(
         })
       ),
     ])
+    // Task 61: every restored product may complete somebody's back-in-stock
+    // watch — event-driven evaluation (no cron), after commit, fire-and-forget.
+    for (const productId of result.stockFeed.keys()) {
+      notifyBackInStock(productId)
+    }
 
     return NextResponse.json({
       success: true,

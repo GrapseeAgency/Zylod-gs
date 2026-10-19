@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { notifyBackInStock } from '@/lib/stock-alerts'
 import { roundQty } from '@/lib/product-contract'
 import { z } from 'zod'
 
@@ -307,6 +308,11 @@ export async function PATCH(request: NextRequest) {
         bundleSize,
         inStock: r.after > 0,
       })
+      // Task 61: a genuine RESTOCK (stock increased) may complete somebody's
+      // back-in-stock watch. Decreases and no-ops never notify.
+      if (r.after > r.before) {
+        notifyBackInStock(productId)
+      }
     }
 
     return NextResponse.json({

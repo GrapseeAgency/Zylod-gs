@@ -99,6 +99,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
+    // Task 61: a restock watch exists to fire when stock RETURNS. Watching an
+    // in-stock product is a contradiction (and would turn any later stock
+    // edit into a fake "restocked!" push) — refuse it honestly.
+    if (product.stockQuantity > 0) {
+      return NextResponse.json(
+        { error: 'This product is already in stock — there is nothing to watch' },
+        { status: 409 }
+      )
+    }
+
     // Prevent duplicate active alerts
     const existing = await db.stockAlerts.findFirst({
       where: { userId: auth.user.id, productId, status: 'active' },

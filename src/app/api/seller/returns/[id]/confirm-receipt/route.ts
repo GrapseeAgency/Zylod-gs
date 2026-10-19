@@ -5,6 +5,7 @@ import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { notifyBackInStock } from '@/lib/stock-alerts'
 
 /**
  * POST /api/seller/returns/[id]/confirm-receipt — the seller confirms the
@@ -327,6 +328,11 @@ export async function POST(
         })
       }),
     ])
+    // Task 61: received goods are back on the shelf — event-driven
+    // back-in-stock evaluation (no cron), after commit, fire-and-forget.
+    for (const pid of productIds) {
+      notifyBackInStock(pid)
+    }
 
     return NextResponse.json({
       success: true,

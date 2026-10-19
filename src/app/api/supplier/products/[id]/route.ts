@@ -5,6 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { productPayloadSchema } from '@/lib/product-contract'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { notifyBackInStock } from '@/lib/stock-alerts'
 import { z } from 'zod'
 
 /**
@@ -294,6 +295,11 @@ export async function PATCH(
         bundleSize: updated.bundleSize,
         inStock: updated.stockQuantity > 0,
       })
+      // Task 61: only a genuine RESTOCK (increase) completes back-in-stock
+      // watches. Decreases and no-ops never notify.
+      if (updated.stockQuantity > existing.stockQuantity) {
+        notifyBackInStock(id)
+      }
     }
 
     return NextResponse.json({

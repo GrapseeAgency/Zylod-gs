@@ -13,6 +13,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { useWishlistStore } from '@/store/wishlist-store'
 import { toast } from 'sonner'
 import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room'
+import { BackInStockButton } from '@/components/shared/back-in-stock-button'
 import {
   ChevronLeft, Share2, ShoppingCart, Heart, Star, Truck, Store, MapPin,
   Circle, Clock, Package, Navigation, Minus, Plus, ChevronRight, QrCode,
@@ -415,6 +416,22 @@ export function MobileProductDetailPage() {
             </span>
           ) : null}
         </div>
+
+        {/* Task 61: out-of-stock restock watch — buyer taps once, gets a real
+            notification the moment any stock-restoring event lands. */}
+        <BackInStockButton
+          productId={product.id}
+          productName={product.name}
+          stockQuantity={product.stockQuantity}
+          className="w-full h-11 mt-3"
+          onRequireLogin={() => {
+            toast('Sign in to get a restock alert for this product')
+            navigate('login')
+          }}
+          onSubscribed={() =>
+            toast(`Restock watch set — we'll notify you when ${product.name} is back`)
+          }
+        />
 
         {/* Tiered Pricing */}
         {product.priceTiers && product.priceTiers.length > 0 && (

@@ -20,6 +20,7 @@ import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-
 import { MobileProductDetailPage } from '@/components/mobile/mobile-product-detail-page'
 import { ProductQRCodeDialog } from '@/components/shared/product-qr-code'
 import { ProductShareDialog } from '@/components/shared/product-share-dialog'
+import { BackInStockButton } from '@/components/shared/back-in-stock-button'
 import {
   ShoppingCart, Package, Star, Heart, ChevronLeft,
   Truck, Shield, MessageSquare, Minus, Plus, ArrowRight,
@@ -990,6 +991,23 @@ function DesktopProductDetailPage() {
                 {buyNowLoading ? 'Placing Order...' : 'Buy Now'}
               </Button>
             </div>
+            {/* Task 61: out-of-stock restock watch — renders only when the
+                PRODUCT itself is at zero stock (the stockAlerts model is
+                product-level; per-variant OOS keeps its own badge) and
+                disappears on its own when live stock returns. */}
+            <BackInStockButton
+              productId={product.id}
+              productName={productName}
+              stockQuantity={product.stockQuantity}
+              className="w-full h-11"
+              onRequireLogin={() => {
+                toast({ title: 'Sign in required', description: 'Sign in to get a restock alert for this product.' })
+                navigate('login')
+              }}
+              onSubscribed={() =>
+                toast({ title: 'Restock watch set', description: `We'll notify you the moment ${productName} is back in stock.` })
+              }
+            />
             <div className="flex gap-3">
               <Button
                 variant="outline"
