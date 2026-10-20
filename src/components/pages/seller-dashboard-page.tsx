@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   Package, ShoppingCart, AlertTriangle, DollarSign, MessageCircle,
   Plus, Truck, Store, BarChart3, ChevronRight, LayoutList, Users, PackageSearch,
-  BellRing, PackageOpen
+  BellRing, PackageOpen, BadgePercent
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,6 +52,20 @@ interface RestockDemandRow {
   watchers: number;
 }
 
+/* Task 102: platform campaigns featuring THIS supplier's products —
+   server-windowed, cross-supplier-isolated, real pins only. */
+interface CampaignParticipation {
+  id: string;
+  name: string;
+  description: string | null;
+  type: string;
+  value: number;
+  minOrderAmount: number | null;
+  maxDiscount: number | null;
+  validUntil: string;
+  products: Array<{ id: string; name: string }>;
+}
+
 const STATUS_BADGE: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-200',
   confirmed: 'bg-blue-50 text-blue-700 border-blue-200',
@@ -71,6 +85,7 @@ export const SellerDashboardPage = () => {
   const [demand, setDemand] = useState<RestockDemandRow[]>([]);
   const [totalWatchers, setTotalWatchers] = useState(0);
   const [demandPulse, setDemandPulse] = useState<'none' | 'watcher' | 'restock'>('none');
+  const [campaigns, setCampaigns] = useState<CampaignParticipation[]>([]);
 
   const fetchDemand = useCallback(async () => {
     try {
@@ -107,6 +122,21 @@ export const SellerDashboardPage = () => {
     fetchDashboard();
     fetchDemand();
   }, [fetchDemand]);
+
+  /* Task 102: the platform campaigns this supplier's products are pinned
+     into — the seller side of the admin's promotion console. Real rows
+     only; a silent list simply means no campaign is running. */
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/supplier/promotion-participation', { credentials: 'include' });
+        const json = await res.json().catch(() => null);
+        if (!cancelled && res.ok && json?.success) setCampaigns(json.data ?? []);
+      } catch { /* the card is informational — a failed fetch stays silent */ }
+    })();
+    return () => { cancelled = true };
+  }, []);
 
   /* Task 62: live demand tick — a buyer hitting 'Notify me when back in
      stock' pushes the REAL active-watcher count into this seller's room;
@@ -292,6 +322,37 @@ export const SellerDashboardPage = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Task 102: platform campaigns featuring this supplier's products —
+                rendered ONLY when a live campaign exists; silence means none. */}
+            {campaigns.length > 0 && (
+              <Card className="border-emerald-200 dark:border-emerald-900 shadow-sm dark:bg-gray-800">
+                <CardHeader className="pb-2 px-4 pt-4">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                    <BadgePercent className="w-4 h-4" /> Platform campaigns featuring your products ({campaigns.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-4 space-y-2">
+                  {campaigns.map((c) => (
+                    <div key={c.id} className="rounded-lg border border-emerald-100 dark:border-emerald-900/60 p-3">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">{c.name}</span>
+                        <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-900">
+                          {c.type === 'percentage' ? `${c.value}% off` : `৳${c.value.toLocaleString()} off`}
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                        {c.products.length} of your products pinned · ends {new Date(c.validUntil).toLocaleDateString('en-GB')}
+                        {c.minOrderAmount != null ? ` · applies from ৳${c.minOrderAmount.toLocaleString()}` : ''}
+                      </p>
+                      <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">
+                        You are always paid the full line value — the platform funds the discount.
+                      </p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Recent Orders — real subOrders */}
             <div>
