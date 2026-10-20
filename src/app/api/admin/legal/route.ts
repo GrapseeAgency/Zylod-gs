@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
-import { tapAllAdmins } from '@/lib/warehouses'
 import { LEGAL_DOC_LABELS, LEGAL_DOC_TYPES, shapeAdminLegal } from '@/lib/company-content'
 
 /**

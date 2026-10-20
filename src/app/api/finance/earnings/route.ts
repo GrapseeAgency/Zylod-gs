@@ -35,9 +35,18 @@ export async function GET(request: NextRequest) {
     const platformCommission = grossGMV * 0.03
     const netEarnings = grossGMV - platformCommission
 
-    // Available for payout (wallet balance)
+    // Available for payout (wallet balance minus the seller's own pending
+    // withdrawal requests — Task 107: requests HOLD their amount until an
+    // admin decides, so the same ৳ can never be double-spent)
     const wallet = await db.wallets.findFirst({ where: { userId } })
-    const availablePayout = wallet?.balance || 0
+    const openPayouts = profile
+      ? await db.sellerPayouts.findMany({
+          where: { supplierId: profile.id, status: { in: ['pending', 'processing'] } },
+          select: { amount: true },
+        })
+      : []
+    const onHold = openPayouts.reduce((s, r) => s + r.amount, 0)
+    const availablePayout = Math.max(0, (wallet?.balance || 0) - onHold)
 
     // Escrow currently in transit
     const escrowAgg = await db.escrowAccounts.aggregate({
@@ -66,6 +75,7 @@ export async function GET(request: NextRequest) {
         netEarnings,
         platformCommission,
         availablePayout,
+        onHoldForPayouts: onHold,
         pendingEscrow: escrowAgg._sum.amount || 0,
         totalPaidOut: payoutAgg._sum.amount || 0,
         totalOrders,

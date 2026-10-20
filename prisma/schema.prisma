@@ -1872,10 +1872,13 @@ model sellerPayouts {
   id          String    @id @default(cuid())
   supplierId  String
   amount      Float
-  // method: bank_transfer | bkash | nagad
+  // method: bank_transfer | bkash | nagad | upay | rocket
   method      String
   // status: pending | processing | completed | failed
   status      String    @default("pending")
+  // destination: the seller's withdrawal target, verbatim at request time
+  destination String?
+  // reference: the admin-stamped transfer reference (TRXID) at completion
   reference   String?
   fee         Float     @default(0)
   processedAt DateTime?

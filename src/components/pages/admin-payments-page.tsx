@@ -24,6 +24,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { AdminPayoutsManager } from '@/components/admin/admin-payouts-manager'
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
@@ -118,6 +119,7 @@ export function AdminPaymentsPage() {
   const inflightRef = useRef(false)
   const seqRef = useRef(0)
   const dialogOpenRef = useRef(false)
+  const [moneyRail, setMoneyRail] = useState<'buyer-payments' | 'seller-payouts'>('buyer-payments')
   useEffect(() => {
     dialogOpenRef.current = dialogTarget !== null
   }, [dialogTarget])
@@ -263,8 +265,21 @@ export function AdminPaymentsPage() {
     )
   }
 
+  if (moneyRail === 'seller-payouts') {
+    return (
+      <div className="max-w-[1280px] mx-auto space-y-4 px-4 py-4">
+        <MoneyRailSwitcher rail={moneyRail} onChange={setMoneyRail} />
+        <AdminPayoutsManager />
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-[1280px] mx-auto space-y-4 px-4 py-4">
+      {/* Money-rail switcher — buyer payments and seller payouts are the two
+          ends of the same verification doctrine; they share one console. */}
+      <MoneyRailSwitcher rail={moneyRail} onChange={setMoneyRail} />
+
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
@@ -505,6 +520,39 @@ export function AdminPaymentsPage() {
           )}
         </DialogContent>
       </Dialog>
+    </div>
+  )
+}
+
+/* ── Money-rail switcher ─────────────────────────────────────────────── */
+
+function MoneyRailSwitcher({
+  rail,
+  onChange,
+}: {
+  rail: 'buyer-payments' | 'seller-payouts'
+  onChange: (r: 'buyer-payments' | 'seller-payouts') => void
+}) {
+  return (
+    <div className="flex items-center gap-2 flex-wrap" role="tablist" aria-label="Money rails">
+      {([
+        { id: 'buyer-payments', label: 'Buyer payments' },
+        { id: 'seller-payouts', label: 'Seller payouts' },
+      ] as const).map((t) => (
+        <button
+          key={t.id}
+          role="tab"
+          aria-selected={rail === t.id}
+          onClick={() => onChange(t.id)}
+          className={`h-9 px-4 rounded-xl text-xs font-bold transition ${
+            rail === t.id
+              ? 'bg-primary text-white shadow-md'
+              : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+          }`}
+        >
+          {t.label}
+        </button>
+      ))}
     </div>
   )
 }

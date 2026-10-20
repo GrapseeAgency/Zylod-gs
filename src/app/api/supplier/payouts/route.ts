@@ -51,6 +51,7 @@ export async function GET(request: NextRequest) {
           amount: p.amount,
           method: p.method,
           status: p.status,
+          destination: p.destination,
           reference: p.reference,
           fee: p.fee,
           processedAt: p.processedAt,
