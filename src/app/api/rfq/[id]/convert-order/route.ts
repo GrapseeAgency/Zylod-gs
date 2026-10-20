@@ -196,6 +196,18 @@ export async function POST(
         },
       })
 
+      // Task 82: the RFQ path now writes the SAME 'Order placed' timeline row
+      // the cart flow and create-direct write — all three creation paths tell
+      // one honest tracking story from second zero.
+      await tx.orderTracking.create({
+        data: {
+          subOrderId: newSubOrder.id,
+          status: 'pending',
+          location: 'Order placed',
+          note: 'Converted from an accepted quote — awaiting payment and supplier confirmation.',
+        },
+      })
+
       // THE NEGOTIATED PRICE OVERRIDES the pricing rule: unitPrice is the
       // accepted quote's pricePerUnit. NO resolveUnitPrice, NO MOQ check —
       // the deal was negotiated; re-applying list-price rules would betray it.

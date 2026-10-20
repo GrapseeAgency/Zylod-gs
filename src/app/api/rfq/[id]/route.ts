@@ -93,6 +93,12 @@ export async function GET(
       })),
       quoteCount: rfq.quotes.length,
       buyerName: rfq.buyer?.buyerProfile?.fullName ?? null,
+      // Task 82: the buyer learns their RFQ became a real order — the
+      // denormalized order number rides the row itself (id + payment status
+      // need no join the buyer surface shouldn't make).
+      convertedOrder: rfq.convertedOrderId
+        ? { id: rfq.convertedOrderId, orderNumber: rfq.convertedOrderNumber }
+        : null,
       createdAt: rfq.createdAt,
       updatedAt: rfq.updatedAt,
     }

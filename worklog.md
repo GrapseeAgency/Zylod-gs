@@ -2855,3 +2855,19 @@ Work Log:
 Stage Summary:
 - Every queue item from the Task 56 era is now closed: per-product alert lines (79), tracking timeline loop (80), uploads honesty + video reality + eslint baseline (80-b).
 - REMAINING FAKE/INCOMPLETE: none found in this slice. Next rounds: continue the platform-wide fake/incomplete hunt (info-page sampling was clean; remaining sweeps = cross-cutting integration drills: full buyer→payment→ship→deliver→review happy path in ONE browser session on a fresh DB).
+
+---
+Task ID: 81
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE FULL COMMERCE SPINE IN ONE SESSION — the cross-cutting integration drill queued in 80-b. Every leg had its own E2E (t56 payment, t71/72 escrow+payout, t74 review dedupe, t80 timeline) but NOTHING had ever proven they compose: an interaction break between modules would have shipped unseen.
+
+Work Log:
+- scripts/qa/t81-e2e.mjs drills the whole spine against one fresh DB: register → product (approve) → order 3×200 → buyer payment-submit (PENDING, order honestly unpaid) → seller verify (paid, escrow HELD 600) → confirmed → shipped with waybill → delivered (timeline 4 rows, escrow RELEASED, seller wallet payout ledger 600) → REVIEW leg → stock truth.
+- THE NEW PROOF: verifiedPurchase on a REAL delivered order — buyer's review flags TRUE (no prior E2E ever hit the delivered-order-item branch with a live purchase; t74 proved dedupe only on a purchase-less review), a passerby's review flags FALSE, duplicate still 409, product ratingAvg 3.5 ((5+2)/2 honest math), reviewCount 2, stock 10→7 by the real order, anon review 401.
+- 20/20 PASS on wiped DB — FIRST RUN. Every previously delivered task composed with zero interaction breaks: the doctrine chain (pending→paid→escrow→release→payout), the Task 80 timeline, and the review integrity guarantees all held together.
+- eslint 0; DB wiped 139×0 before commit; pushed a5ca361.
+
+Stage Summary:
+- The platform spine is proven AS A WHOLE, not just as parts: money, goods, and reputation all move through one coherent, audited path.
+- REMAINING FAKE/INCOMPLETE: none found in this drill. Next: continue the hunt on surfaces no E2E has opened yet (RFQ convert flow, return/refund end-to-end, supplier verification lifecycle) or deepen UI polish.

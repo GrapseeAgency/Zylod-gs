@@ -23,9 +23,25 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit') || 20)))
 
     const skip = (page - 1) * limit
+    // Task 82: role=supplier filters by the caller's SUPPLIER PROFILE id —
+    // rfqQuotes.supplierId is a supplierProfiles reference (schema relation),
+    // so the old `supplierId: userId` compared two different id spaces and
+    // always matched nothing (a seller listing their quoted RFQs via this
+    // route saw an empty list). Sellers without a profile get an honest
+    // empty result, not a silent wrong one.
+    let supplierFilterId: string | null = null
+    if (role === 'supplier') {
+      const profile = await db.supplierProfiles.findUnique({
+        where: { userId },
+        select: { id: true },
+      })
+      supplierFilterId = profile?.id ?? null
+    }
     const where: Record<string, unknown> =
       role === 'supplier'
-        ? { quotes: { some: { supplierId: userId } } }
+        ? supplierFilterId
+          ? { quotes: { some: { supplierId: supplierFilterId } } }
+          : { id: '__no_supplier_profile__' } // honest empty set
         : { buyerId: userId }
     if (status) Object.assign(where, { status })
 
@@ -38,7 +54,7 @@ export async function GET(request: NextRequest) {
         include: {
           items: true,
           quotes: role === 'supplier'
-            ? { where: { supplierId: userId } }
+            ? { where: { supplierId: supplierFilterId ?? '__none__' } }
             : { take: 5, orderBy: { createdAt: 'desc' } },
           _count: { select: { quotes: true } },
         },
