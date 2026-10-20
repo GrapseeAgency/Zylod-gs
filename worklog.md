@@ -2890,3 +2890,20 @@ Work Log:
 Stage Summary:
 - The negotiation rail is proven end to end: a buyer's question becomes two sellers' quotes, one award, and a real order at the negotiated price with stock, timeline, and audits all truthful.
 - REMAINING FAKE/INCOMPLETE: none found in this chain. Next candidates: return/refund end-to-end drill, supplier verification lifecycle drill, or UI polish rounds.
+
+---
+Task ID: 83
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE RETURN→RECEIPT→REFUND LOOP — drilled end to end for the first time (the queue's "return/refund end-to-end drill"). No prior E2E had touched returnRequests, returnReceipts, or the refunds ledger.
+
+Work Log:
+- scripts/qa/t83-e2e.mjs: 33/33 PASS on wiped DB — auth gates (401 ×3) → order paid+delivered via the real spine → creation guards (stranger 403; UNPAID order 409 naming the real paymentStatus; foreign order item 400; qty-beyond-ordered 400; duplicate open return 409) → the real filing (RTN- number, pending, buyer list) → admin approves (buyer 401 on the admin rail; approval ALONE moves nothing) → SELLER confirm-receipt (the physical act): stock 7→8, soldCount 3→2, restoredValue 300, double receipt 409 → admin refund DOCUMENTED money (invalid body 400; ledger row with real UTR reference; refund-on-refunded 409; over-refund 422 carrying the real remaining; honest amount fine) → buyer sees refunded + refunds[] + the seller receipt; final DB truth 8/2; return decisions audit-logged.
+- HONEST FINDING REPORT: the first run showed 7 failures — ALL were drill-side errors, verified against raw DB rows before fixing: (1) my stock baseline forgot the D-section unpaid-order guard probe (cart orders decrement at creation) — the receipt restore was real and correct all along (DB math 10−2−1+1−1+1=8/2 exact); (2) a refund probe double-fired and the second call's 409 was the honest guard; (3) the return route returns 200 not 201; (4) the 5/min per-client return rate limit correctly bit my guard-probe budget (second loop uses a fresh session/IP); (5) re-registering an existing email 409s (login, not register). ZERO platform defects in this loop — the loop was already real; now it is also PROVEN.
+- Cohesion note: the return-filing window computes from the REAL delivered orderTracking timestamps (Task 80) — the timeline work feeds this guard directly; verified the window path stays open in the drill.
+- BROWSER QA (gateway :81, real UI buyer login, deep-linked return detail): "Return RTN-MVGGF31K-GS0G" with the honest doctrine text ("Zylod documents refunds that were sent manually… it does not move money itself"), ৳300 + "Reference: UTR83ABC123", "1 item line(s) received back · ৳300 stock restored", refunded-so-far, evidence-lock notice. Console clean.
+- tsc 0 whole project; eslint 0; DB wiped 139×0 before commit; pushed 29fb540.
+
+Stage Summary:
+- The physical half (goods back, stock/soldCount restored by the seller's own receipt) and the financial half (admin-documented refunds with real-world references, never fabricated in-system) are both proven, together, on one DB.
+- REMAINING FAKE/INCOMPLETE: none in this loop. Next: supplier verification lifecycle drill, then UI polish rounds.
