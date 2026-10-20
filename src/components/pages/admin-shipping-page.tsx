@@ -16,6 +16,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { AdminDeliveryMethodsManager } from '@/components/admin/admin-delivery-methods-manager'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -45,7 +46,7 @@ export function AdminShippingPage() {
   const { navigate } = useNavigationStore()
   const sessionUser = useAuthStore((s) => s.user)
 
-  const [tab, setTab] = useState<'zones' | 'methods' | 'rates' | 'quote'>('zones')
+  const [tab, setTab] = useState<'zones' | 'methods' | 'rates' | 'quote' | 'couriers'>('zones')
   const [zones, setZones] = useState<Zone[] | null>(null)
   const [methods, setMethods] = useState<Method[] | null>(null)
   const [rates, setRates] = useState<Rate[] | null>(null)
@@ -290,7 +291,7 @@ export function AdminShippingPage() {
         </div>
 
         <div className="flex gap-1.5 flex-wrap">
-          {(['zones', 'methods', 'rates', 'quote'] as const).map((t) => (
+          {(['zones', 'methods', 'rates', 'quote', 'couriers'] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -298,10 +299,13 @@ export function AdminShippingPage() {
                 tab === t ? 'bg-primary text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
               }`}
             >
-              {t === 'quote' ? 'Quote tester' : t}
+              {t === 'quote' ? 'Quote tester' : t === 'couriers' ? 'Checkout couriers' : t}
             </button>
           ))}
         </div>
+
+        {/* ─── CHECKOUT COURIERS ─── */}
+        {tab === 'couriers' && <AdminDeliveryMethodsManager />}
 
         {/* ─── ZONES ─── */}
         {tab === 'zones' && (
