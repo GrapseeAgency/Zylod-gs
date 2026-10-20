@@ -3406,3 +3406,24 @@ Stage Summary:
 - The checkout courier promise is finally keepable: admins curate the options buyers actually see, parked options vanish honestly, and the display-vs-charge boundary between the courier list and the Task-95 quote engine is stated in the console instead of silently blurred.
 - Read-without-writer queue remaining: couponEarningTasks (/api/coupons/earn), mediaKitAssets (/api/press/media-kit), investorDocuments (/api/investor), appVersions/maintenanceSchedules/appDiagnostics (/api/app/*).
 - REMAINING FAKE/INCOMPLETE: none found in this surface. Sandbox notes: `[m` display artifact (base64-verify suspected corruption); tsc OOM formula holds (close browser + fresh next-server before typechecking).
+
+---
+Task ID: 109
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE PLATFORM STATUS RAIL — three tables whose public readers were real from day one with zero writers: appVersions (the update check's provenance duty was real; its update payload could only serve the degraded hardcoded '2.4.5'), maintenanceSchedules (GET /api/app/maintenance could never fire), appDiagnostics (the diagnostics page read an ops journal nobody could write).
+
+Work Log:
+- APP RELEASES (GET/POST /api/admin/app-versions + PATCH/DELETE /[id]): platform enum android|ios|web; semver-validated versionNumber; positive-integer versionCode with LOGICAL per-platform uniqueness (duplicate → 409 naming the clash — two rows claiming one release would make the update check a coin flip); isMandatory; EN/BN changelogs; apkDownloadUrl/apkSizeBytes; isPublished draft semantics (the day-one reader filters isPublished — drafts never reach the update check or history); before/after audits + appstatus:changed taps.
+- MAINTENANCE WINDOWS (GET/POST /api/admin/maintenance + PATCH/DELETE /[id]): start<end enforced at create AND across merged PATCH pairs; affectedServices vocabulary the reader implies (all|checkout|api|search); isActive fires the real endpoint immediately (verified end-to-end through the untouched public reader); IP whitelist feeds the day-one bypass logic; before/after audits.
+- SERVICE LOG (GET/POST /api/admin/diagnostics): admin-logged observations {serviceName, status healthy|degraded|down, responseTimeMs, details} the public diagnostics page serves verbatim beside its live probes.
+- UI: admin-settings gained the Platform status section (self-contained AdminAppStatusManager — three honest empty states, releases with platform/code/mandatory/published badges, windows with active/scheduled chips + time ranges, journal with status colors, three create dialogs, verbatim server errors).
+- DRILL-SIDE FIX ×1: latestVersion in the update-check payload is an OBJECT (versionNumber/versionCode) — first draft asserted a string. Platform right; assertions corrected.
+- scripts/qa/t109-e2e.mjs: 36/36 PASS on wiped DB ×2 (degraded-fallback-before → real-payload-after; gates ×4; semver/strict/uniqueness refusals; draft invisibility both directions; versionCode ordering; window sanity + endpoint firing + deactivation; public diagnostics verbatim; audit counts exact {2/1/1}{1/1/1}{2}).
+- BROWSER QA (gateway :81, real UI login): admin-settings shows the three honest empty states → REAL dialog published android 2.5.0 (code 250) → row renders → public update-check answers updateAvailable:true with the real latestVersion object → REAL dialog logged courier_api degraded 4200ms → row renders → mobile 375×812 zero overflow → console clean → raw DB {release + observation + audits verbatim}.
+- tsc 0 whole project; eslint 0/0; DB wiped 139×0 before commit; pushed as 1f5ce6c.
+
+Stage Summary:
+- The platform now runs on its own published truth: releases drive the update check, maintenance windows fire the banner endpoint, and the ops journal is written by the people who do the checking.
+- Read-without-writer queue remaining: couponEarningTasks (/api/coupons/earn), mediaKitAssets (/api/press/media-kit), investorDocuments (/api/investor ×4 pages).
+- REMAINING FAKE/INCOMPLETE: none found in this surface.
