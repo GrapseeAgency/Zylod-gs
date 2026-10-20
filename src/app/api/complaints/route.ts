@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
-import { serializeComplaint } from '@/lib/complaints'
+import { serializeComplaint, notifyComplaintFiled } from '@/lib/complaints'
 
 /**
  * POST /api/complaints — the authenticated buyer files a complaint.
@@ -50,6 +50,9 @@ export async function POST(request: NextRequest) {
       )
     }
     const { category, title, description, orderId, subOrderId } = parsed.data
+    // Captured when orderId is given — the cohesion rails (notifyComplaintFiled)
+    // reference the real order number even though the ownership block ends below.
+    let orderNumber: string | null = null
 
     // A sub-order reference only makes sense together with its parent order.
     if (subOrderId && !orderId) {
@@ -72,6 +75,7 @@ export async function POST(request: NextRequest) {
       if (order.buyerId !== auth.user.id) {
         return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
       }
+      orderNumber = order.orderNumber
 
       if (subOrderId) {
         const subOrder = await db.subOrders.findUnique({
@@ -98,6 +102,12 @@ export async function POST(request: NextRequest) {
         status: 'open',
       },
     })
+
+    // Task 86 cohesion rails — the complaint must REACH its reviewers: every
+    // admin (durable notification + live 'complaint:new' tap on their
+    // admin:<id> room) and every seller with a sub-order on the named order.
+    // Best-effort by design; the row above is already the persisted truth.
+    await notifyComplaintFiled(created, { orderNumber })
 
     return NextResponse.json(
       {

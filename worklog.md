@@ -2939,3 +2939,23 @@ Work Log:
 
 Stage Summary:
 - The surfaces this round built now look like finished product, not wireframes. Queued next: more surface drills (disputes) or polish as found.
+
+---
+Task ID: 86
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE DISPUTE SURFACE — drilled end to end for the first time (the queue's "disputes"), plus the cohesion hole the drill exposed: complaints lived in SILENCE. A buyer could file and no admin was ever told; an admin could decide and the buyer was never notified; a seller whose shipment was complained about heard nothing. Three sides, zero connections — the exact anti-pattern the owner's cohesion mandate names.
+
+Work Log:
+- COHESION RAILS ADDED (lib/complaints.ts): notifyComplaintFiled — every admin gets a durable notification + a live 'complaint:new' tap on their admin:<id> room; every supplier with a sub-order on the named order is notified through the REAL id-space join (subOrders.supplierId is a supplierProfiles id → profile.userId). notifyComplaintDecided — start_review/resolve/reject each land a durable buyer notification AND a live 'notification:new' push into user:<buyerId> (sendNotification broadcasts it). Both fire AFTER the row is persisted; notification failure can never fail the API call.
+- Admin queue UI now CONSUMES the tap: admin-complaints-page joins the session admin's token-gated admin:<id> room (useRealtimeRoom, same pattern as admin-payments) — a new filing toasts and background-refreshes the queue with no polling luck.
+- scripts/qa/t86-e2e.mjs: 72/72 PASS on wiped DB (also re-run on a second fresh wipe — repeatable). Covers: 7 auth gates (incl. anon evidence + buyer-on-admin-rail + foreign room-token 403); 6 create guards (category/title/description, subOrder-without-order 400, unknown order 404, FOREIGN order 403); live 'complaint:new' on admin room with the real id; durable admin + seller notices; evidence lifecycle (foreign 403, magic-byte sniff 400, caption cap 400, 2 MB → 413, 5-photo cap 409 naming the real count, owner-only bytes 200 vs stranger 404 no-leak, delete-while-open + slot refill); review lifecycle (resolve-while-open 409, live buyer push on start_review, evidence sealed at in_review, note REQUIRED 422 ×2, resolve → resolvedAt, terminal 409 ×3, note verbatim in buyer detail); rejected path; withdraw path (stranger 403, ADMIN CANNOT withdraw on a buyer's behalf 403, re-withdraw 409); admin queue groupBy counts {resolved 1, rejected 1, withdrawn 1, total 3} + buyerName/categoryLabel/evidence[]; 4 audit actions verified in raw DB.
+- DRILL-SIDE FIXES ONLY (platform stricter than my assertions both times): anon-vs-authed session on one 401 probe; stranger evidence-bytes is honestly 404 (no existence leak), not 403.
+- BROWSER QA (gateway :81, real UI logins both sides): buyer filed complaint #4 through the dispute-center FORM (real DB row verified in raw sqlite) → admin queue showed counts + the OPEN row → Start review → resolve dialog enforces the note (confirm disabled) → DB row resolved with note + resolvedAt → ADMIN BELL showed "New complaint filed — product quality: 'Two tiles cracked in bulk carton'" → BUYER BELL showed the full decision history with the resolution note verbatim. Console clean; 375×812 dispute-center renders cleanly with no overflow.
+- TOOLING: /home/z/.qa/wipe.js was lost with the sandbox home cleanup — recreated INSIDE the repo as scripts/qa/wipe.mjs (substr() guard against the old LIKE-'_' bug, WAL checkpoint, verifies 0).
+- tsc 0 whole project; eslint 0 on all touched files; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The dispute loop is now a closed, connected circuit: filing reaches admins live + durably, decisions reach the buyer live + durably, implicated sellers are told through the correct id join, evidence is sealed at review, and every transition is audited.
+- First-admin window note: the drill consumed it again (qa86-* accounts) — DB wiped after.
+- REMAINING FAKE/INCOMPLETE: none found in this surface. Queued next: conversations/chatMessages surface drill, addresses/checkout drill, or further UI polish as found.

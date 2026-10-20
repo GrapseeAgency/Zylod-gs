@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
-import { serializeComplaint } from '@/lib/complaints'
+import { serializeComplaint, notifyComplaintDecided } from '@/lib/complaints'
 import { listEvidence } from '@/lib/evidence'
 
 /**
@@ -126,6 +126,16 @@ export async function PATCH(
         }),
       },
     })
+
+    // Task 86 cohesion rail — the filer HEARS every move: start_review,
+    // resolve and reject each land a durable notification on the buyer AND a
+    // live 'notification:new' push into their user:<buyerId> room
+    // (sendNotification broadcasts it). Awaited: the notification is part of
+    // the decision, not decoration.
+    await notifyComplaintDecided(
+      { ...existing, resolutionNote: updated.resolutionNote },
+      action
+    )
 
     return NextResponse.json({
       success: true,

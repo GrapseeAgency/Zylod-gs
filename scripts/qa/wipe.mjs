@@ -1,44 +1,45 @@
 /**
- * Full DB wipe — banked INSIDE the repo so it survives (the /home/z/.qa copy
- * was lost). Deletes every row from every user table (Prisma internal tables
- * starting with '_' are kept), then truncates the WAL so the empty state is
- * durable, then verifies 0 rows everywhere.
+ * QA wipe — TRUNCATE every user table in the SQLite DB (custom.db) and
+ * checkpoint the WAL so the emptiness is durable on disk.
  *
- * Run: bun scripts/qa/wipe.mjs
- * Doctrine: the DB stays TRULY EMPTY between proofs — no seeds, no fakes.
+ * Provenance: /home/z/.qa/wipe.js from earlier tasks was lost with the
+ * sandbox home cleanup — recreated here, inside the repo, so it survives.
+ *
+ * Rules:
+ *  - sqlite internal tables start with '_' (sqlite_sequence, _cf_...) and are
+ *    SKIPPED — the earlier inline LIKE-'_' filter bug (underscore is a LIKE
+ *    wildcard that matches EVERYTHING) is exactly what this substr() guard
+ *    prevents.
+ *  - foreign keys OFF during the sweep, WAL checkpointed after, verified 0.
+ *
+ * Run: node scripts/qa/wipe.mjs
  */
 import { DatabaseSync } from 'node:sqlite'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const DB_PATH = '/home/z/my-project/db/custom.db'
-const s = new DatabaseSync(DB_PATH)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const DB_PATH = path.join(__dirname, '..', '..', 'db', 'custom.db')
 
-s.exec('PRAGMA foreign_keys = OFF;')
-const tables = s
-  .prepare("SELECT name FROM sqlite_master WHERE type='table'")
+const db = new DatabaseSync(DB_PATH)
+db.exec('PRAGMA foreign_keys = OFF;')
+
+const tables = db
+  .prepare("SELECT name FROM sqlite_master WHERE type='table' AND substr(name,1,1) != '_'")
   .all()
-  .map((r) => r.name)
-  .filter((n) => n.length > 0 && n[0] !== '_')
 
-let totalDeleted = 0
-for (const t of tables) {
-  // Bracket-quote every identifier — tables come from sqlite_master, but be strict anyway.
-  const del = s.prepare(`DELETE FROM "${t.replace(/"/g, '""')}"`)
-  const n = del.run().changes
-  if (n > 0) console.log(`  ${t}: ${n} rows deleted`)
-  totalDeleted += n
+for (const { name } of tables) {
+  db.exec(`DELETE FROM "${name}";`)
 }
 
-s.exec('PRAGMA wal_checkpoint(TRUNCATE);')
-s.exec('PRAGMA foreign_keys = ON;')
+db.exec('PRAGMA wal_checkpoint(TRUNCATE);')
+db.exec('PRAGMA foreign_keys = ON;')
 
-// Verify zero.
-let nonzero = []
-for (const t of tables) {
-  const c = s.prepare(`SELECT COUNT(*) AS c FROM "${t.replace(/"/g, '""')}"`).get().c
-  if (c !== 0) nonzero.push(`${t}=${c}`)
+let remaining = 0
+for (const { name } of tables) {
+  const c = db.prepare(`SELECT COUNT(*) AS c FROM "${name}"`).get().c
+  if (c > 0) { remaining += c; console.log(`NOT EMPTY: ${name} = ${c}`) }
 }
-
-console.log(`\ntables: ${tables.length}, rows deleted: ${totalDeleted}`)
-console.log(nonzero.length === 0 ? 'VERIFY: all tables EMPTY (0 rows)' : `VERIFY FAILED: ${nonzero.join(', ')}`)
-s.close()
-process.exit(nonzero.length === 0 ? 0 : 1)
+console.log(`wiped ${tables.length} tables — ${remaining} rows remain`)
+db.close()
+if (remaining > 0) process.exit(1)

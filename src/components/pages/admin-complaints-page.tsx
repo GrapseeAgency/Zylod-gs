@@ -9,6 +9,8 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { useRealtimeRoom } from '@/hooks/use-realtime-room'
 import { toast } from 'sonner'
 import { EvidenceThumbs } from '@/components/pages/evidence-thumbs'
 import {
@@ -168,6 +170,24 @@ export function AdminComplaintsPage() {
     const id = setInterval(() => { if (!dialogOpenRef.current) loadComplaints(true) }, REFRESH_INTERVAL_MS)
     return () => clearInterval(id)
   }, [loadComplaints])
+
+  // Task 86 — live tap on the session admin's own token-gated admin:<id> room:
+  // the moment any buyer files a complaint the queue refreshes itself (no
+  // polling luck). Degraded honestly to polling when there is no session id.
+  const sessionUser = useAuthStore((s) => s.user)
+  const adminRoom = sessionUser?.userType === 'admin' && sessionUser.id ? `admin:${sessionUser.id}` : ''
+  const lastEventRef = useRef('')
+  useRealtimeRoom(adminRoom ? [adminRoom] : [], {
+    onEvent: (message) => {
+      const key = `${message.event}:${message.receivedAt.getTime()}`
+      if (key === lastEventRef.current) return
+      lastEventRef.current = key
+      if (message.event === 'complaint:new') {
+        toast('New complaint filed', { description: 'A buyer filed a complaint — the queue is refreshing.' })
+        void loadComplaints(true)
+      }
+    },
+  })
 
   const openDialog = (complaint: ApiAdminComplaint, action: 'resolve' | 'reject') => {
     setDialog({ complaint, action })
