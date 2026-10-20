@@ -579,7 +579,7 @@ export function InventoryManagementPage() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 mt-3 pl-0 sm:pl-11">
+                        <div className="flex flex-wrap items-center gap-2 mt-3 pl-0 sm:pl-11">
                           <input
                             type="number"
                             min="0"
@@ -599,7 +599,7 @@ export function InventoryManagementPage() {
                           >
                             Set
                           </button>
-                          <div className="flex items-center gap-1.5 ml-1">
+                          <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto sm:ml-1">
                             <input
                               type="number"
                               min="0"

@@ -138,11 +138,18 @@ function timelineTime(iso: string) {
 }
 
 /** One REAL orderTracking row (seller transition, driver milestone, or creation). */
-function TimelineRow({ row }: { row: ApiTracking }) {
+function TimelineRow({ row, isLast }: { row: ApiTracking; isLast?: boolean }) {
   const st = timelineStyle(row.status)
   return (
-    <li className="flex gap-2.5">
-      <span aria-hidden className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${st.dot}`} />
+    <li className="relative flex gap-2.5 pb-2.5 last:pb-0">
+      {/* Task 85: a real timeline look — the connector line runs dot to dot */}
+      {!isLast && (
+        <span
+          aria-hidden
+          className="absolute left-[4.5px] top-4 bottom-0 w-px bg-slate-200 dark:bg-slate-700"
+        />
+      )}
+      <span aria-hidden className={`relative z-10 mt-1 h-2.5 w-2.5 shrink-0 rounded-full ring-2 ring-white dark:ring-slate-900 ${st.dot}`} />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${st.chip}`}>
@@ -183,9 +190,9 @@ function ShipmentTimeline({ rows }: { rows: ApiTracking[] }) {
         </span>
         <span className="text-[10px] font-bold text-slate-500">{open ? 'Hide' : 'Show all'}</span>
       </button>
-      <ul className="mt-2 space-y-2.5">
-        {(open ? ordered : ordered.slice(0, 1)).map((row) => (
-          <TimelineRow key={row.id} row={row} />
+      <ul className="mt-2 space-y-0">
+        {(open ? ordered : ordered.slice(0, 1)).map((row, i) => (
+          <TimelineRow key={row.id} row={row} isLast={open ? i === ordered.length - 1 : true} />
         ))}
       </ul>
     </div>
