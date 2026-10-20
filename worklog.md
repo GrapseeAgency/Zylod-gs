@@ -3189,3 +3189,22 @@ Stage Summary:
 - Curation is a working feature: buyers collect from their wishlist, share by secret link, and every dead button on the four surfaces now does what its label says.
 - Dead-table queue remaining: promotions/promotionProducts (needs checkout-pricing decisions), blogPosts, warehouseLocations.
 - REMAINING FAKE/INCOMPLETE: none found in this surface. The 502/RSC reload noise remains environmental. Sandbox lesson recorded: failed Bash calls reap session processes — keep-alive loop is the canonical server runner.
+
+---
+Task ID: 98
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE WAREHOUSE RAIL — "where do these goods actually ship from?" The dead-table audit's next find: warehouseLocations sat in the schema from day one, was even PROJECTED by GET /api/suppliers/[id] (as additionalLocations), yet nothing could write a row and no storefront surface displayed one — a read of a table nobody could fill. Built the full circuit this round.
+
+Work Log:
+- SUPPLIER CRUD (GET/POST /api/supplier/warehouses + PATCH/DELETE /[id]): profile gate 403 (SUPPLIER_PROFILE_REQUIRED — a buyer session gets the honest refusal), 401-first, rate limits ('warehouses-list' 60/min, 'warehouses-write' 20/min), Zod STRICT with bounded coordinates (lat −90…90, lng −180…180), cap 8 per supplier → 409 naming the cap (the same trust-smell doctrine as Task 92's 12-cert wall), no-leak 404 (foreign id == phantom id), audits warehouse_added/updated/removed, and LIVE admin-room taps (warehouse:changed with action/supplier/company/district) through the token-gated subscribe protocol.
+- PUBLIC SIDE: GET /api/supplier/storefront now serves `warehouses` — the supplier's ACTIVE rows only (createdAt never leaves; shape via shapePublic). The manage list keeps deactivated rows; the storefront hides them. One source, two honest views.
+- UI (src/components/supplier/storefront-warehouses.tsx + a new 'Locations (N)' tab on the storefront): buyers read ship-from cards (name, address lines, city/district, coordinates badge when filed); the OWNER manages in the SAME tab of their own storefront — add form (required-field guard, coordinate sanity, server errors verbatim incl. the 409 cap), active toggle, confirm-gated remove, honest empty states in both directions (a buyer sees "has not published its ship-from locations yet"; the owner sees "Add where your goods actually ship from").
+- scripts/qa/t98-e2e.mjs: 26/26 PASS on wiped DB ×2. Gates (401-first, buyer 403); strict keys; bounded coords (lat 95 → 400); create + LIVE tap received by a subscribed admin socket (subscribed BEFORE the mutation, token minted via the gated room-token rail); cap fill to 8 → 9th 409; foreign/phantom PATCH/DELETE same-404; deactivate → guest storefront excludes while manage list keeps (the split proven both ways); delete + re-delete 404; audit groupBy exact (8/1/1). THREE drill-side fixes along the way: Prisma SQLite rejects `not: null` in that position (firstRow lookup instead); the phantom-PATCH test originally used a 1-char name and hit Zod before ownership (valid payload now proves ownership is what refuses); the second E2E run without an intervening wipe correctly 403'd (first-admin window) — repeatability requires the wipe, as documented.
+- BROWSER QA (gateway :81, real UI login): supplier login → own storefront "Locations (7)" → REAL form filed 'Chattogram Port Depot' (all 7 fields incl. 22.3276/91.8123) → card + toast "Warehouse location added — buyers see it on your storefront" + raw DB row {city, lat, lng, active:true} → toggle off → switch flips, DB active:false → guest (storage cleared) storefront shows Locations (7) WITHOUT the depot → manage list still holds it → mobile 375×812 zero overflow (375=375) → console clean.
+- tsc 0 whole project; eslint 0/0; DB wiped 139×0 before commit; pushed as f5a6791.
+
+Stage Summary:
+- The wholesale trust story now covers WHERE goods ship from as well as WHAT they are: a supplier's real locations are buyer-visible the moment they're filed, admin-visible the moment they change, and never fabricated by the platform.
+- Dead-table queue remaining: promotions/promotionProducts (needs checkout-pricing decisions), blogPosts (platform content rail).
+- REMAINING FAKE/INCOMPLETE: none found in this surface. Sandbox note: a Bash call that fails/times out can reap session processes — every call now ends `; true`; the canonical server runner is the package.json dev keep-alive loop, restarted via setsid after OOM events.
