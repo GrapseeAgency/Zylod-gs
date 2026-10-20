@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
-import { ArrowLeft, Edit, Package, Share2, Star, ImageOff, Store, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Edit, Package, Share2, Star, ImageOff, Store, AlertCircle, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import StorefrontCertifications, { StorefrontCertRollup } from '@/components/supplier/storefront-certifications';
 
 interface StorefrontData {
   id?: string;
@@ -23,6 +24,9 @@ interface StorefrontData {
     thumbnailUrl?: string | null;
   }>;
   _count?: { products?: number; supplierReviews?: number };
+  // Task 96: the server-computed rollup of the Task-92 certification rail
+  // across this store's PUBLIC products. Null/absent = honest empty state.
+  certificationRollup?: StorefrontCertRollup | null;
 }
 
 /** Initials circle from the store's real company name (up to 2 letters). */
@@ -182,6 +186,9 @@ export const SellerStorefrontPage = () => {
               <TabsList className="w-full h-auto p-0 bg-transparent gap-6 flex justify-start overflow-x-auto scrollbar-hide border-b border-gray-200 dark:border-gray-700 rounded-none">
                 <TabsTrigger value="products" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">All Products</TabsTrigger>
                 <TabsTrigger value="featured" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Featured</TabsTrigger>
+                <TabsTrigger value="certifications" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                  Certifications{!loading && data?.certificationRollup && data.certificationRollup.total > 0 ? ` (${data.certificationRollup.total})` : ''}
+                </TabsTrigger>
                 <TabsTrigger value="story" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none" onClick={() => navigate('store-story-about')}>Profile</TabsTrigger>
               </TabsList>
             </div>
@@ -232,11 +239,19 @@ export const SellerStorefrontPage = () => {
                   </div>
                 ) : (
                   <div className="text-center py-10">
-                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-gray-500 font-medium mb-4">Set up featured collections</h3>
                     <Button onClick={() => navigate('store-featured-products')}>Manage Featured Products</Button>
                   </div>
                 )}
+              </TabsContent>
+              <TabsContent value="certifications" className="mt-0 outline-none">
+                <div aria-label="Store certifications">
+                  {/* Task 96: renders ONLY the server-computed rollup — an empty
+                      store shows the honest empty state, an expired document
+                      keeps its Expired badge. */}
+                  <StorefrontCertifications rollup={loading ? undefined : data?.certificationRollup} />
+                </div>
               </TabsContent>
             </div>
           </Tabs>

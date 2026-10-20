@@ -12,6 +12,7 @@ import {
   ArrowLeft, Building2, Factory, Users, Globe2, Award,
   ShieldCheck, Save, Check, Plus, Trash2, Camera
 } from 'lucide-react'
+import StorefrontCertifications, { StorefrontCertRollup } from '@/components/supplier/storefront-certifications'
 
 interface CompanyStoryData {
   companyName: string
@@ -48,6 +49,10 @@ export function StoreStoryAboutPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [savedSuccess, setSavedSuccess] = useState(false)
+  // Task 96: what the REAL certification rail serves on this supplier's
+  // storefront — shown in the editor so the supplier sees exactly what a
+  // buyer sees (server-computed statuses, expired rows badged).
+  const [liveCertRollup, setLiveCertRollup] = useState<StorefrontCertRollup | null>(null)
 
   useEffect(() => {
     async function loadStory() {
@@ -83,6 +88,7 @@ export function StoreStoryAboutPage() {
             factoryPhotos: Array.isArray(customSections.factoryPhotos) ? customSections.factoryPhotos : [],
             machineryList: Array.isArray(customSections.machineryList) ? customSections.machineryList : []
           })
+          setLiveCertRollup(supplier.certificationRollup ?? null)
         }
       } catch (err) {
         console.error('Failed to load story:', err)
@@ -348,6 +354,18 @@ export function StoreStoryAboutPage() {
                   </button>
                 </Badge>
               ))}
+            </div>
+
+            {/* Task 96: the SERVER-VERIFIED side of the trust story. These are
+                NOT the free-text badges above — they are documents the
+                supplier filed per product through the guarded rail, exactly
+                as buyers see them on the public storefront. */}
+            <div className="pt-2 border-t border-neutral-800">
+              <p className="text-[11px] text-neutral-400 font-medium mb-3 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                Verified product certifications — live on your public storefront
+              </p>
+              <StorefrontCertifications rollup={liveCertRollup} />
             </div>
           </CardContent>
         </Card>

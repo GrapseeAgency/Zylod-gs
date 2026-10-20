@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { certificationStatus } from '@/lib/certifications'
 
 export async function GET(request: NextRequest) {
   try {
@@ -60,6 +61,46 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Supplier not found' }, { status: 404 })
     }
 
+    // Task 96: THE STOREFRONT TRUST ROLLUP — Task 92's productCertifications
+    // rail aggregated across this supplier's PUBLIC products (the exact
+    // visibility contract the storefront itself uses: isActive + isApproved —
+    // a pending/rejected listing's certs never advertise trust). Every status
+    // is server-computed by the SAME vocabulary the PDP tab uses, expired
+    // rows are counted and badged (never silently dropped), and the recent
+    // list carries real product attribution so a buyer can tap through to
+    // the product's own certification tab. Empty = the honest zero, never a
+    // fabricated claim.
+    const certRows = await db.productCertifications.findMany({
+      where: {
+        product: { supplierId: supplier.id, isActive: true, isApproved: true },
+      },
+      orderBy: { issuedAt: 'desc' },
+      include: { product: { select: { id: true, name: true } } },
+    })
+    const certStats = { active: 0, expiring_soon: 0, expired: 0 } as Record<string, number>
+    const issuers = new Set<string>()
+    for (const row of certRows) {
+      certStats[certificationStatus(row.expiresAt)] += 1
+      if (row.issuedBy.trim()) issuers.add(row.issuedBy.trim())
+    }
+    const certificationRollup = {
+      total: certRows.length,
+      active: certStats.active,
+      expiringSoon: certStats.expiring_soon,
+      expired: certStats.expired,
+      issuers: Array.from(issuers).sort((a, b) => a.localeCompare(b)),
+      recent: certRows.slice(0, 6).map((row) => ({
+        id: row.id,
+        certName: row.certName,
+        issuedBy: row.issuedBy,
+        issuedAt: row.issuedAt.toISOString(),
+        expiresAt: row.expiresAt ? row.expiresAt.toISOString() : null,
+        status: certificationStatus(row.expiresAt),
+        productId: row.product.id,
+        productName: row.product.name,
+      })),
+    }
+
     /* PUBLIC PROJECTION — this endpoint serves guests. The old code returned
        the raw supplierProfiles row, leaking KYC data (NID, trade license,
        TIN, bank details, rejection internals) AND reviewer emails/phones via
@@ -73,6 +114,7 @@ export async function GET(request: NextRequest) {
       memberSince: supplier.createdAt,
       storeCustomization: supplier.storeCustomization,
       products: supplier.products,
+      certificationRollup,
       reviews: (supplier.supplierReviews || []).map((r) => ({
         id: r.id,
         rating: r.rating,
