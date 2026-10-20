@@ -23,6 +23,7 @@ import { ProductShareDialog } from '@/components/shared/product-share-dialog'
 import { BackInStockButton } from '@/components/shared/back-in-stock-button'
 import { SampleRequestDialog } from '@/components/product/sample-request-dialog'
 import { ProductCertifications } from '@/components/product/product-certifications'
+import { ProductQas } from '@/components/product/product-qas'
 import {
   ShoppingCart, Package, Star, Heart, ChevronLeft,
   Truck, Shield, MessageSquare, Minus, Plus, ArrowRight,
@@ -275,6 +276,8 @@ function DesktopProductDetailPage() {
   const [specifications, setSpecifications] = useState<Record<string, Array<{ specName: string; specValue: string }>>>({})
   // Task 92: real certification count for the trust tab (null = not loaded yet)
   const [certCount, setCertCount] = useState<number | null>(null)
+  // Task 93: real Q&A count for the ask-a-question tab (null = not loaded yet)
+  const [qaCount, setQaCount] = useState<number | null>(null)
   const [quantity, setQuantity] = useState(50)
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('details')
@@ -330,6 +333,12 @@ function DesktopProductDetailPage() {
           .then((r) => (r.ok ? r.json() : null))
           .then((j) => setCertCount(typeof j?.count === 'number' ? j.count : 0))
           .catch(() => setCertCount(0))
+
+        // Task 93: real Q&A count for the tab label
+        fetch(`/api/products/${productId}/qa`, { credentials: 'include' })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((j) => setQaCount(typeof j?.count === 'number' ? j.count : 0))
+          .catch(() => setQaCount(0))
       } catch {
         // Silently handle errors
       } finally {
@@ -1231,6 +1240,7 @@ function DesktopProductDetailPage() {
           <TabsTrigger value="details">Product Details</TabsTrigger>
           <TabsTrigger value="specifications">Specifications</TabsTrigger>
           <TabsTrigger value="certifications">Certifications{certCount !== null ? ` (${certCount})` : ''}</TabsTrigger>
+          <TabsTrigger value="qa">Q&amp;A{qaCount !== null ? ` (${qaCount})` : ''}</TabsTrigger>
           <TabsTrigger value="reviews">Reviews ({productReviewCount})</TabsTrigger>
           <TabsTrigger value="shipping">Shipping & Delivery</TabsTrigger>
         </TabsList>
@@ -1319,6 +1329,15 @@ function DesktopProductDetailPage() {
           <Card className="border-0 shadow-sm">
             <CardContent className="p-0">
               <ProductCertifications productId={productId} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ─── Q&A Tab (Task 93: the real pre-purchase conversation) ─── */}
+        <TabsContent value="qa">
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-0">
+              <ProductQas productId={productId} />
             </CardContent>
           </Card>
         </TabsContent>

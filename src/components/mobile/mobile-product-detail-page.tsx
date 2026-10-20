@@ -16,6 +16,7 @@ import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-
 import { BackInStockButton } from '@/components/shared/back-in-stock-button'
 import { SampleRequestDialog } from '@/components/product/sample-request-dialog'
 import { ProductCertifications } from '@/components/product/product-certifications'
+import { ProductQas } from '@/components/product/product-qas'
 import {
   ChevronLeft, Share2, ShoppingCart, Heart, Star, Truck, Store, MapPin,
   Circle, Clock, Package, Navigation, Minus, Plus, ChevronRight, QrCode,
@@ -66,7 +67,7 @@ interface ApiProduct {
 }
 
 /* ─── Tab Types ─── */
-type TabId = 'details' | 'specifications' | 'certifications' | 'shipping' | 'reviews'
+type TabId = 'details' | 'specifications' | 'certifications' | 'qa' | 'shipping' | 'reviews'
 
 /* Task 57-b: the urgent 'Only X left' threshold is the SELLER-tuned
    products.stockAlertThreshold (schema column); null falls back to this
@@ -96,6 +97,8 @@ export function MobileProductDetailPage() {
   const [specifications, setSpecifications] = useState<Record<string, string>>({})
   // Task 92: real certification count for the trust tab (null = not loaded yet)
   const [certCount, setCertCount] = useState<number | null>(null)
+  // Task 93: real Q&A count (null = not loaded yet)
+  const [qaCount, setQaCount] = useState<number | null>(null)
   // Task 67-a: the selected variant — the mobile PDP previously had NO variant
   // selector at all (variant stock pushes were ignored, the restock CTA stayed
   // product-level, cart lines carried null variants). Now at full parity with
@@ -135,6 +138,12 @@ export function MobileProductDetailPage() {
             const certJson = await certRes.json()
             setCertCount(typeof certJson?.count === 'number' ? certJson.count : 0)
           } catch { setCertCount(0) }
+          // Task 93: real Q&A count for the tab label
+          try {
+            const qaRes = await fetch(`/api/products/${productId}/qa`, { credentials: 'include' })
+            const qaJson = await qaRes.json()
+            setQaCount(typeof qaJson?.count === 'number' ? qaJson.count : 0)
+          } catch { setQaCount(0) }
         }
       } catch { /* silent */ } finally {
         setLoading(false)
@@ -351,6 +360,7 @@ export function MobileProductDetailPage() {
     { id: 'details', label: 'Product Details' },
     { id: 'specifications', label: specEntries.length > 0 ? 'Specifications' : 'Details' },
     { id: 'certifications', label: `Certifications${certCount !== null ? ` (${certCount})` : ''}` },
+    { id: 'qa', label: `Q&A${qaCount !== null ? ` (${qaCount})` : ''}` },
     { id: 'shipping', label: 'Shipping' },
     { id: 'reviews', label: `Reviews (${product.reviewCount || product.reviews?.length || 0})` },
   ]
@@ -799,6 +809,12 @@ export function MobileProductDetailPage() {
             {activeTab === 'certifications' && (
               <motion.div key="certifications" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
                 <ProductCertifications productId={productId} />
+              </motion.div>
+            )}
+
+            {activeTab === 'qa' && (
+              <motion.div key="qa" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                <ProductQas productId={productId} />
               </motion.div>
             )}
 
