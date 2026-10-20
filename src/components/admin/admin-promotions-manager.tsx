@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { BadgePercent, Plus, Trash2, Loader2, Pencil, Search, X } from 'lucide-react';
+import { BadgePercent, Plus, Trash2, Loader2, Pencil, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,6 +48,17 @@ interface Stats { total: number; live: number; notActive: number }
 
 interface ProductHit { id: string; name: string; basePrice: number; unit: string }
 
+/* Task 103: one applied-discount event, read from the pricing engine's REAL audit rows. */
+interface CampaignUsage {
+  id: string;
+  orderNumber: string;
+  type: string | null;
+  value: number | null;
+  promotedSubtotal: number | null;
+  discount: number | null;
+  at: string;
+}
+
 const EMPTY_FORM = {
   name: '',
   type: 'percentage' as 'percentage' | 'fixed',
@@ -87,6 +98,10 @@ export function AdminPromotionsManager() {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState<Campaign | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Campaign | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [usages, setUsages] = useState<CampaignUsage[]>([]);
+  const [usageTotals, setUsageTotals] = useState<{ count: number; totalDiscount: number } | null>(null);
+  const [usagesLoading, setUsagesLoading] = useState(false);
 
   // Product picker state (create + edit share it)
   const [pinned, setPinned] = useState<PinnedProduct[]>([]);
@@ -230,6 +245,28 @@ export function AdminPromotionsManager() {
     }
   };
 
+  const toggleExpand = async (c: Campaign) => {
+    if (expandedId === c.id) { setExpandedId(null); setUsages([]); setUsageTotals(null); return; }
+    setExpandedId(c.id);
+    setUsages([]);
+    setUsageTotals(null);
+    setUsagesLoading(true);
+    try {
+      const res = await fetch(`/api/admin/promotions/${c.id}/usages`, { credentials: 'include' });
+      const json = await res.json().catch(() => null);
+      if (res.ok && json?.success) {
+        setUsages(json.data ?? []);
+        setUsageTotals(json.totals ?? null);
+      } else {
+        toast.error(json?.error || `Could not load usage history (HTTP ${res.status})`);
+      }
+    } catch {
+      toast.error('Could not reach the promotions service');
+    } finally {
+      setUsagesLoading(false);
+    }
+  };
+
   const toggleActive = async (c: Campaign) => {
     setBusyId(c.id);
     try {
@@ -321,7 +358,8 @@ export function AdminPromotionsManager() {
       ) : (
         <div className="space-y-2">
           {campaigns.map((c) => (
-            <div key={c.id} className="flex items-center gap-3 rounded-lg border p-3">
+            <div key={c.id} className="rounded-lg border">
+            <div className="flex items-center gap-3 p-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h4 className="text-sm font-semibold truncate">{c.name}</h4>
@@ -346,10 +384,41 @@ export function AdminPromotionsManager() {
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(c)} aria-label={`Edit ${c.name}`}>
                   <Pencil className="h-3.5 w-3.5" />
                 </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleExpand(c)} aria-label={`${expandedId === c.id ? 'Hide' : 'Show'} usage history for ${c.name}`}>
+                  {expandedId === c.id ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteTarget(c)} aria-label={`Delete ${c.name}`}>
                   {busyId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                 </Button>
               </div>
+            </div>
+            {/* Task 103: usage drill-down — the REAL applied-discount events. */}
+            {expandedId === c.id && (
+              <div className="border-t bg-muted/30 p-3">
+                {usagesLoading ? (
+                  <div className="space-y-2">{[0, 1].map((i) => <div key={i} className="h-8 rounded bg-muted animate-pulse" />)}</div>
+                ) : usages.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No order has used this campaign yet — the usedCount above is the real zero.</p>
+                ) : (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-muted-foreground uppercase tracking-wide">
+                      <span>{usageTotals?.count ?? 0} orders · ৳{(usageTotals?.totalDiscount ?? 0).toLocaleString()} total funded</span>
+                      <span>most recent first</span>
+                    </div>
+                    {usages.map((u) => (
+                      <div key={u.id} className="flex items-center justify-between gap-2 text-xs bg-white dark:bg-gray-800 rounded border px-2.5 py-1.5">
+                        <span className="font-mono font-semibold">{u.orderNumber}</span>
+                        <span className="text-muted-foreground">
+                          {u.type === 'percentage' ? `${u.value}% of ৳${(u.promotedSubtotal ?? 0).toLocaleString()}` : u.type === 'fixed' ? `৳${u.value?.toLocaleString()} flat` : '—'}
+                        </span>
+                        <span className="font-bold text-emerald-600">−৳{(u.discount ?? 0).toLocaleString()}</span>
+                        <span className="text-muted-foreground text-[11px] shrink-0">{new Date(u.at).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             </div>
           ))}
         </div>
