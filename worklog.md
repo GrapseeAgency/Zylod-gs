@@ -3266,3 +3266,21 @@ Stage Summary:
 - The platform's entire promise is now proven as ONE chain, not 101 isolated slices: pricing stacks honestly, money only moves through verification, escrow holds supplier value in full, fulfillment is tracked, reviews are earned by real purchases.
 - Next candidates: UI polish rounds (the audit surface is fully wired), campaign analytics depth, per-supplier co-funded promotions (design round), uploads object-storage note for Railway (ephemeral disk caveat already documented).
 - REMAINING FAKE/INCOMPLETE: none found in this chain.
+
+---
+Task ID: 102
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE SELLER SIDE OF THE PROMOTION RAIL — cohesion per the owner mandate ('eikhane shob kichu admin er satheo connect thakbe'): a supplier whose product the platform pins into a campaign must SEE it, not discover it from a discounted order. Also audited the queued uploads/external-video-host items (both already honest: magic-byte sniffing + env-driven PRODUCT_MEDIA_UPLOAD_DIR for Railway volumes; videos accept /uploads/videos/ paths or https URLs).
+
+Work Log:
+- GET /api/supplier/promotion-participation: requireUserType(['supplier','admin']) 401-first (the house pattern for this route family — the drill's 403 assertion was corrected to the honest 401), 60/min, profile gate, LIVE-windowed only, cross-supplier isolation (A never sees B's pins), ends-soonest ordering, no operational counters in the payload.
+- Seller dashboard card: renders ONLY when a live campaign exists (silence = none — no noise card); carries campaign name, discount rule, pinned count, window end, the floor, and the economic truth line 'You are always paid the full line value — the platform funds the discount.'
+- scripts/qa/t102-e2e.mjs: 10/10 PASS on wiped DB (gates, isolation both directions, paused invisibility, shape).
+- BROWSER QA (gateway :81, real UI login): seller dashboard shows 'Platform campaigns featuring your products · Fittings Fest' on desktop AND mobile 375×812 (zero overflow), console clean.
+- tsc 0 whole project; eslint 0/0; DB wiped 139×0 before commit; pushed as e9dda9f.
+
+Stage Summary:
+- The promotion rail now has all three faces: admin curates (console), buyers receive automatically (pricing engine + public page + PDP banner), sellers see their participation (dashboard card) with the funding truth stated plainly.
+- Next candidates: campaign analytics depth (usedCount trend per campaign on the admin tab), per-supplier co-funded promotions (design round), UI polish passes on any surface the owner names.
+- REMAINING FAKE/INCOMPLETE: none found in this surface.
