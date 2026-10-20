@@ -13,7 +13,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import {
   DollarSign, TrendingUp, Package, ShoppingCart, Clock, ChevronRight, AlertCircle,
   AlertTriangle, BarChart3, Users, MapPin, Star, PlusCircle, ClipboardList,
-  Award, Store, MessageSquare, ShoppingBag,
+  Award, Store, MessageSquare, ShoppingBag, PackageOpen,
 } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
@@ -86,6 +86,7 @@ const getSeverityColor = (severity: string) => {
 const QUICK_ACTIONS = [
   { title: 'Add Product', description: 'List a new product in your catalog', icon: PlusCircle, page: 'supplier-add-product' },
   { title: 'Manage Orders', description: 'Process incoming orders', icon: ClipboardList, page: 'supplier-orders' },
+  { title: 'Sample Requests', description: 'Buyers trying products before bulk cartons', icon: PackageOpen, page: 'supplier-samples' },
   { title: 'View Analytics', description: 'Track sales performance', icon: BarChart3, page: 'supplier-analytics' },
   { title: 'Update Catalog', description: 'Edit product listings', icon: Package, page: 'supplier-products' },
 ]

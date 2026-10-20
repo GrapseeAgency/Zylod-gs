@@ -1272,6 +1272,10 @@ model sampleOrders {
   status           String   @default("requested")
   samplePrice      Float    @default(0)
   shippingAddressId String?
+  // Task 90: immutable order-time snapshot of the shipping address (the
+  // Task 87 lesson replayed — addresses are user-deletable and the FK is
+  // SetNull, so the sample's real shipping history must live in the row).
+  shippingAddressSnapshot String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

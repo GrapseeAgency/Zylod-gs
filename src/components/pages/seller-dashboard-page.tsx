@@ -3,10 +3,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
-import { 
-  Package, ShoppingCart, AlertTriangle, DollarSign, MessageCircle, 
+import {
+  Package, ShoppingCart, AlertTriangle, DollarSign, MessageCircle,
   Plus, Truck, Store, BarChart3, ChevronRight, LayoutList, Users, PackageSearch,
-  BellRing
+  BellRing, PackageOpen
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -137,6 +137,7 @@ export const SellerDashboardPage = () => {
   const quickActions = [
     { icon: Plus, label: 'Add Product', page: 'seller-add-product' },
     { icon: Truck, label: 'Orders', page: 'seller-orders' },
+    { icon: PackageOpen, label: 'Samples', page: 'supplier-samples' },
     { icon: PackageSearch, label: 'Inventory', page: 'inventory-management' },
     { icon: LayoutList, label: 'Listings', page: 'product-listings-manager' },
     { icon: Store, label: 'Store', page: 'seller-storefront' },

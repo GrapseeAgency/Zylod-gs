@@ -21,6 +21,7 @@ import { MobileProductDetailPage } from '@/components/mobile/mobile-product-deta
 import { ProductQRCodeDialog } from '@/components/shared/product-qr-code'
 import { ProductShareDialog } from '@/components/shared/product-share-dialog'
 import { BackInStockButton } from '@/components/shared/back-in-stock-button'
+import { SampleRequestDialog } from '@/components/product/sample-request-dialog'
 import {
   ShoppingCart, Package, Star, Heart, ChevronLeft,
   Truck, Shield, MessageSquare, Minus, Plus, ArrowRight,
@@ -30,7 +31,7 @@ import {
   Zap, CircleCheck, X,
   Building2, TrendingDown, Info,
   Navigation, User, Loader2, ExternalLink, RefreshCw, Edit,
-  ShieldAlert, ShieldCheck, AlertTriangle,
+  ShieldAlert, ShieldCheck, AlertTriangle, PackageOpen,
 } from 'lucide-react'
 
 /* ─── Color Constants ─── */
@@ -281,6 +282,8 @@ function DesktopProductDetailPage() {
 
   // Buy Now / Order tracking state
   const [buyNowLoading, setBuyNowLoading] = useState(false)
+  // Task 90: sample rail dialog
+  const [sampleOpen, setSampleOpen] = useState(false)
   const [showOrderDialog, setShowOrderDialog] = useState(false)
   const [orderConfirmation, setOrderConfirmation] = useState<OrderConfirmationData | null>(null)
   const [trackingData, setTrackingData] = useState<TrackingData | null>(null)
@@ -785,6 +788,16 @@ function DesktopProductDetailPage() {
             <div className="flex items-center gap-1 shrink-0">
               <ProductQRCodeDialog productId={product?.id || ''} productName={productName} />
               <ProductShareDialog productId={product?.id || ''} productName={productName} productPrice={basePrice} />
+              {product && (
+                <SampleRequestDialog
+                  open={sampleOpen}
+                  onOpenChange={setSampleOpen}
+                  productId={product.id}
+                  productName={productName}
+                  unit={product.unit}
+                  moq={product.moq}
+                />
+              )}
             </div>
           </div>
 
@@ -1049,6 +1062,15 @@ function DesktopProductDetailPage() {
                 Task 65: when the product still has stock but the SELECTED
                 variant is at zero, the CTA becomes a watch pinned to that
                 exact variant — it completes only when THAT variant restocks. */}
+            {/* Task 90: the sample rail — try one before the bulk carton */}
+            <Button
+              variant="outline"
+              className="w-full h-11"
+              onClick={() => setSampleOpen(true)}
+            >
+              <PackageOpen className="h-4 w-4 mr-2 text-primary" />
+              Order a sample first
+            </Button>
             <BackInStockButton
               productId={product.id}
               productName={productName}

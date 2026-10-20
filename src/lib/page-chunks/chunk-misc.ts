@@ -4,7 +4,7 @@ import type { PageLoadResult } from './types'
 import { loadFromMap } from './types'
 
 export const CHUNK_MISC = new Set([
-  'admin-dashboard', 'admin-payments', 'admin-users', 'admin-products', 'admin-suppliers', 'admin-analytics', 'admin-returns', 'admin-categories', 'admin-complaints', 'admin-settings', 'admin-orders', 'admin-inventory', 'admin-rfq', 'admin-support-tickets', 'admin-content', 'buyer-complaints', 'buyer-dashboard',
+  'admin-dashboard', 'admin-payments', 'admin-users', 'admin-products', 'admin-suppliers', 'admin-analytics', 'admin-returns', 'admin-categories', 'admin-complaints', 'admin-settings', 'admin-orders', 'admin-inventory', 'admin-rfq', 'admin-support-tickets', 'admin-content', 'buyer-complaints', 'buyer-dashboard', 'my-samples', 'supplier-samples',
   // Remaining pageIds resolve via generic components (component: null from loadFromMap)
   'buyer-orders', 'notifications', 'chat-list', 'chat-detail',
   'quote-request', 'coupons',
@@ -93,6 +93,8 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'admin-rfq': () => import('@/components/pages/admin-rfq-page'),
     'quote-request': () => import('@/components/pages/quote-request-page'),
     'buyer-complaints': () => import('@/components/pages/buyer-complaints-page'),
+    'my-samples': () => import('@/components/pages/my-samples-page'),
+    'supplier-samples': () => import('@/components/pages/supplier-samples-page'),
     'admin-reports': () => import('@/components/pages/admin-reports-page'),
     'admin-moderation': () => import('@/components/pages/admin-reports-page'),
     'buyer-dashboard': () => import('@/components/pages/buyer-dashboard-page'),

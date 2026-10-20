@@ -14,10 +14,11 @@ import { useWishlistStore } from '@/store/wishlist-store'
 import { toast } from 'sonner'
 import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room'
 import { BackInStockButton } from '@/components/shared/back-in-stock-button'
+import { SampleRequestDialog } from '@/components/product/sample-request-dialog'
 import {
   ChevronLeft, Share2, ShoppingCart, Heart, Star, Truck, Store, MapPin,
   Circle, Clock, Package, Navigation, Minus, Plus, ChevronRight, QrCode,
-  MessageCircle, CheckCircle2, AlertCircle,
+  MessageCircle, CheckCircle2, AlertCircle, PackageOpen,
 } from 'lucide-react'
 
 /* ─── Material Symbols Helper ─── */
@@ -86,6 +87,7 @@ export function MobileProductDetailPage() {
 
   const [activeTab, setActiveTab] = useState<TabId>('details')
   const [justAdded, setJustAdded] = useState(false)
+  const [sampleOpen, setSampleOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [quantity, setQuantity] = useState(50)
   const [loading, setLoading] = useState(true)
@@ -594,6 +596,16 @@ export function MobileProductDetailPage() {
           }
         />
 
+        {/* Task 90: the sample rail on mobile — try one before the bulk carton */}
+        <Button
+          variant="outline"
+          className="w-full h-11 mt-3 text-sm"
+          onClick={() => setSampleOpen(true)}
+        >
+          <PackageOpen className="w-4 h-4 mr-1.5 text-[#E53935]" />
+          Order a sample first
+        </Button>
+
         {/* Tiered Pricing */}
         {product.priceTiers && product.priceTiers.length > 0 && (
           <div className="mt-4">
@@ -886,6 +898,17 @@ export function MobileProductDetailPage() {
       </div>
 
       <div className="h-4" />
+
+      {/* Task 90: sample rail dialog (mounted at page tail like the
+          desktop PDP; the CTA button above toggles it) */}
+      <SampleRequestDialog
+        open={sampleOpen}
+        onOpenChange={setSampleOpen}
+        productId={product.id}
+        productName={product.name}
+        unit={product.unit}
+        moq={product.moq}
+      />
     </div>
   )
 }

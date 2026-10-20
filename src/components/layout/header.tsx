@@ -44,6 +44,7 @@ import {
   Info,
   Gift,
   X,
+  PackageOpen,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -465,6 +466,9 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('my-orders')} className="cursor-pointer">
                     <Clock className="h-4 w-4 mr-2" /> Orders
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('my-samples')} className="cursor-pointer">
+                    <PackageOpen className="h-4 w-4 mr-2" /> My Samples
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
