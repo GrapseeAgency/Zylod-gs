@@ -30,7 +30,7 @@ import {
   Zap, CircleCheck, X,
   Building2, TrendingDown, Info,
   Navigation, User, Loader2, ExternalLink, RefreshCw, Edit,
-  ShieldAlert, ShieldCheck,
+  ShieldAlert, ShieldCheck, AlertTriangle,
 } from 'lucide-react'
 
 /* ─── Color Constants ─── */
@@ -120,6 +120,53 @@ interface ProductVideo {
   thumbnailUrl: string | null
   title: string | null
   sortOrder: number
+}
+
+/**
+ * Task 80-b: an honest video player. A <video> element only plays DIRECT
+ * media streams — a pasted YouTube/Drive PAGE link (or a dead file) renders
+ * as a silent black box otherwise. On error the player swaps itself for the
+ * truth: what failed, plus a way out (open the source in a new tab).
+ */
+function VideoPlayer({ video, productName }: { video: ProductVideo; productName: string }) {
+  const [failed, setFailed] = useState(false)
+  if (failed) {
+    return (
+      <div className="space-y-1" data-video-failed>
+        <div className="w-full aspect-video bg-muted rounded-xl border border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 p-4 text-center">
+          <AlertTriangle className="h-5 w-5 text-amber-500" aria-hidden />
+          <p className="text-xs font-semibold">This video can&apos;t be played in the browser player</p>
+          <p className="text-[11px] text-muted-foreground">
+            The link is not a direct video stream (or the file is gone).
+          </p>
+          <a
+            href={video.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] font-bold text-primary underline underline-offset-2"
+          >
+            Open the source in a new tab
+          </a>
+        </div>
+        {video.title && <p className="text-xs text-muted-foreground">{video.title}</p>}
+      </div>
+    )
+  }
+  return (
+    <div className="space-y-1">
+      <video
+        controls
+        preload="metadata"
+        playsInline
+        poster={video.thumbnailUrl || undefined}
+        src={video.videoUrl}
+        className="w-full aspect-video bg-muted rounded-xl object-cover"
+        aria-label={video.title || `Product video for ${productName}`}
+        onError={() => setFailed(true)}
+      />
+      {video.title && <p className="text-xs text-muted-foreground">{video.title}</p>}
+    </div>
+  )
 }
 
 interface ReviewData {
@@ -715,18 +762,7 @@ function DesktopProductDetailPage() {
               <h3 className="text-sm font-semibold">Product Videos</h3>
               <div className={`grid gap-3 ${product.videos.length > 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
                 {product.videos.map((video) => (
-                  <div key={video.id} className="space-y-1">
-                    <video
-                      controls
-                      preload="metadata"
-                      playsInline
-                      poster={video.thumbnailUrl || undefined}
-                      src={video.videoUrl}
-                      className="w-full aspect-video bg-muted rounded-xl object-cover"
-                      aria-label={video.title || `Product video for ${productName}`}
-                    />
-                    {video.title && <p className="text-xs text-muted-foreground">{video.title}</p>}
-                  </div>
+                  <VideoPlayer key={video.id} video={video} productName={productName} />
                 ))}
               </div>
             </div>

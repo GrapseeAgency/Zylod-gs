@@ -427,6 +427,28 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
       toast.error('That link is too long (500 characters maximum)');
       return;
     }
+    // Task 80-b: a <video> player can only play DIRECT streams. Page links
+    // (YouTube, Drive, socials) never play — say so BEFORE the seller
+    // publishes and buyers hit a black box. The row is still allowed (the
+    // server is the authority and CDN mirrors may exist), the PDP shows an
+    // honest fallback player if it truly cannot render.
+    try {
+      const host = new URL(url).hostname.replace(/^www\./, '');
+      const PAGE_HOSTS = [
+        'youtube.com', 'youtu.be', 'm.youtube.com', 'drive.google.com',
+        'facebook.com', 'fb.watch', 'instagram.com', 'tiktok.com',
+        'vimeo.com', 'twitter.com', 'x.com', 'dailymotion.com',
+      ];
+      if (PAGE_HOSTS.some((h) => host === h || host.endsWith(`.${h}`))) {
+        toast.warning(
+          'That looks like a PAGE link, not a video file — the product player needs a direct .mp4/.webm stream (e.g. a CDN link). It will be saved, but buyers may see a “cannot play” notice.',
+          { duration: 8000 }
+        );
+      }
+    } catch {
+      toast.error('That is not a valid URL');
+      return;
+    }
     if (videos.some((v) => v.url === url && v.status !== 'error')) {
       toast.error('That video link is already on this product');
       return;
@@ -868,6 +890,11 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
       {/* Media — real uploads to /api/uploads/product-media */}
       <section className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-4">
         <h2 className="font-semibold text-gray-900">Media</h2>
+        <p className="text-[11px] text-gray-500 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
+          Files upload immediately to the Zylod server and are served from <code className="font-mono">/uploads/…</code>.
+          Self-hosting note: the container disk is ephemeral — point <code className="font-mono">PRODUCT_MEDIA_UPLOAD_DIR</code>{" "}
+          and <code className="font-mono">VIDEO_UPLOAD_DIR</code> at a mounted volume so your media survives redeploys.
+        </p>
 
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-3">
@@ -956,7 +983,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             <input
               type="url"
               aria-label="Video link (https URL)"
-              placeholder="…or paste a video link (https://…)"
+              placeholder="…or paste a video link (https://… — a direct .mp4/.webm stream)"
               value={videoLink}
               onChange={(e) => setVideoLink(e.target.value)}
               onKeyDown={(e) => {

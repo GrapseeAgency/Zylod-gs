@@ -2817,3 +2817,23 @@ Work Log:
 Stage Summary:
 - The seller-tuned low-stock line is now a real platform concept end to end: tuned in the product form OR inline from the inventory console, honored by the API summary, both inventory surfaces, and both PDPs, broadcast cross-session, audited on every change.
 - REMAINING FAKE/INCOMPLETE: none in this slice. Queued next: order lifecycle depth (subOrder ship → deliver → tracking polish), uploads object-storage note (Railway ephemeral disk), eslint baseline cleanup (voice-search/cart-page/use-api), external video host reality check.
+
+---
+Task ID: 80
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: ORDER LIFECYCLE — TRACKING TIMELINE LOOP CLOSED (the queued "subOrder shipping → delivery → tracking polish" item). Audit found a DEAD DATA PATH: subOrders carried the trackingHistory relation, GET /api/orders/[id] mapped it into per-shipment `tracking[]`, the buyer page even TYPED it (ApiTracking[]) — but (1) seller status transitions never wrote orderTracking rows (only creation in create-direct and driver GPS pings did), and (2) the buyer page never rendered a single timeline row. Data flowed nowhere, visible nowhere.
+
+Work Log:
+- Proof-first opening: HEAD 6ea6c32 pushed, cron EMPTY, dev 200, DB 139×0.
+- Seller PATCH /api/supplier/orders/[id]: every GENUINE status transition now appends an orderTracking row (TRANSITION_TIMELINE phrases per status: placed/confirmed/packed/handed to courier/delivered/cancelled/returned); same-status re-sets write NOTHING (idempotent, mirrors the t71 escrow guarantee); the seller's optional PATCH note rides along ("Seller note: …"); a shipped transition names its waybill in the note; rows written after the tx commits, before notifications.
+- Cart-flow POST /api/orders: now writes the SAME 'Order placed' row create-direct always wrote — every buyer path starts its tracking story the same way (the inconsistency existed since the two creation paths diverged).
+- Buyer order-detail-page: new ShipmentTimeline — collapsible per-shipment timeline (collapsed = latest event always visible + event count; expanded = full history newest-first), TimelineRow with honest chips for BOTH status families (seller transitions pending→delivered/cancelled/returned AND driver milestones picked_up/in_transit/out_for_delivery from the same table), location + note + timestamp; min-h-11 toggle, aria-expanded; rendered under each shipment's items.
+- Realtime comes free: the page already refetches on order:status, so transitions appear live — verified by the existing handler, no new code needed.
+- scripts/qa/t80-e2e.mjs: 26/26 PASS on wiped DB — creation row (cart flow), confirmed+note rides, same-status re-set writes no row, packed/shipped+waybill/delivered, 5 rows total, newest-first order, re-delivered PATCH still 5 rows, /track endpoint tells the same story (latest=delivered, waybill surfaced), stranger track read 403, six audited PATCHes, DB holds exactly 5 rows, no duplicate creation rows.
+- BROWSER QA (gateway :81, real UI buyer login, deep-linked order detail): "TRACKING TIMELINE (5 EVENTS)" collapsed shows Delivered + note; expanded shows all 5 (Order placed → Seller confirmed → Packed → Handed to courier + "Waybill WB80QA12345." → Delivered), newest first, aria-expanded toggles. Console clean.
+- tsc 0 whole project; eslint 0 on all touched files; DB wiped 139×0 before commit; pushed 5701b9f.
+
+Stage Summary:
+- The tracking story is now written once (real orderTracking rows) and read everywhere (buyer detail, /track endpoint, driver GPS views): seller transitions, buyer creation, and driver pings are one honest timeline instead of three disconnected truths.
+- REMAINING FAKE/INCOMPLETE: none in this slice. Queued: uploads object-storage note (Railway ephemeral disk), eslint baseline cleanup (voice-search/cart-page/use-api), external video host reality check.
