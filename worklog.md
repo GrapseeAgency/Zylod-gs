@@ -3250,3 +3250,19 @@ Stage Summary:
 - The platform now HAS a promotions story end to end: admin curates real campaigns pinned to real products, buyers get the discount automatically with the receipt proving the exact ৳, suppliers are paid in full (platform-funded), and no surface invents a number.
 - Dead-table queue: NONE remaining — promotions/promotionProducts (the last pair) is alive. Future depth available if asked: promotion scheduling UI polish, per-supplier co-funded promos, campaign analytics.
 - REMAINING FAKE/INCOMPLETE: none found in this surface. Sandbox notes: zod v4 .partial() does NOT neutralize .default() (never put defaults on PATCH-shared schemas); agent-browser fills can drift refs on rerendered dialogs (verify input values via eval before submitting); the reaper killed the supervisor twice mid-QA (canonical restart + one-batch QA loop works).
+
+---
+Task ID: 101
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE FULL LIFECYCLE DRILL — the cross-cutting proof queued since the money slice landed: one fresh DB, one buyer, ONE continuous chain through every rail (order with the full pricing stack → realtime → payment doctrine → fulfillment → review), so no slice is trusted merely because a sibling drill passed it.
+
+Work Log:
+- scripts/qa/t101-e2e.mjs: 28/28 PASS on wiped DB ×2. Chain proven: register → approve product → campaign + coupon + shipping book → cart order (promotion −৳120 → coupon −৳88 ON THE PROMOTED TOTAL → shipping ৳140 → totalAmount 932 EXACT) → socket order:new on the token-gated seller room (GET /api/realtime/room-token?room=seller:<id> — the drill first forgot the ?room param, got denied, fixed) → manual payment submit (mobile_banking TRXID → PENDING, buyer can never self-confirm) → seller payments queue → seller verify → PAID + socket payment:verified → ship with waybill → tracking 'Handed to courier' (orderTracking sorts by trackedAt — drill fix) → deliver → escrow: verified manual money HELD at the FULL subOrder subtotal (1000) and RELEASED on delivery (my own assertion was wrong — the platform is right: verified money escrows idempotently; corrected to the honest contract) → review verifiedPurchase TRUE + aggregates recomputed + one-per-buyer 409 → admin payments list → audits.
+- No production code changed this round — the drill surfaced ZERO platform bugs across the whole chain (the two fixes were drill-side), which is itself the result: every slice built by Tasks 50–100 composes correctly under one continuous session.
+- DB wiped 139×0 before commit; pushed as 2302979.
+
+Stage Summary:
+- The platform's entire promise is now proven as ONE chain, not 101 isolated slices: pricing stacks honestly, money only moves through verification, escrow holds supplier value in full, fulfillment is tracked, reviews are earned by real purchases.
+- Next candidates: UI polish rounds (the audit surface is fully wired), campaign analytics depth, per-supplier co-funded promotions (design round), uploads object-storage note for Railway (ephemeral disk caveat already documented).
+- REMAINING FAKE/INCOMPLETE: none found in this chain.
