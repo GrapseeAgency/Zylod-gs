@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { sendNotification } from '@/lib/notifications'
 
 /**
  * GET /api/chat/conversations/[id]/messages — get messages in a conversation
@@ -134,13 +136,29 @@ export async function POST(
     }
     const senderId = auth.user.id
 
-    const { id } = await params
-    const body = await request.json()
-    const { messageText, attachmentUrl, attachmentType, attachmentName, replyToId } = body
+    const rl = checkRateLimit(request, 'chat-message-send', 60, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
-    if (!messageText && !attachmentUrl) {
+    const { id } = await params
+    const body = await request.json().catch(() => null)
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    }
+    const { messageText, attachmentUrl, attachmentType, attachmentName, replyToId } = body as Record<string, unknown>
+
+    if ((!messageText || typeof messageText !== 'string') && !attachmentUrl) {
       return NextResponse.json({ error: 'messageText or attachmentUrl is required' }, { status: 400 })
     }
+    if (typeof messageText === 'string' && messageText.length > 5000) {
+      return NextResponse.json({ error: 'messageText must be 5000 characters or fewer' }, { status: 400 })
+    }
+    if (replyToId !== undefined && replyToId !== null && (typeof replyToId !== 'string' || !replyToId.trim())) {
+      return NextResponse.json({ error: 'replyToId must be a message id when provided' }, { status: 400 })
+    }
+    if (attachmentUrl !== undefined && attachmentUrl !== null && typeof attachmentUrl !== 'string') {
+      return NextResponse.json({ error: 'attachmentUrl must be a string when provided' }, { status: 400 })
+    }
+    const replyTo = typeof replyToId === 'string' ? replyToId.trim() : null
 
     // Verify conversation exists and sender is a participant
     const conversation = await db.conversations.findUnique({ where: { id } })
@@ -152,9 +170,9 @@ export async function POST(
     }
 
     // If replying, verify the target message exists in this conversation
-    if (replyToId) {
+    if (replyTo) {
       const replyTarget = await db.messages.findFirst({
-        where: { id: replyToId, conversationId: id },
+        where: { id: replyTo, conversationId: id },
         select: { id: true },
       })
       if (!replyTarget) {
@@ -166,11 +184,11 @@ export async function POST(
       data: {
         conversationId: id,
         senderId,
-        messageText: messageText || '',
-        attachmentUrl: attachmentUrl || null,
-        attachmentType: attachmentType || null,
-        attachmentName: attachmentName || null,
-        replyToId: replyToId || null,
+        messageText: typeof messageText === 'string' ? messageText : '',
+        attachmentUrl: typeof attachmentUrl === 'string' ? attachmentUrl : null,
+        attachmentType: typeof attachmentType === 'string' ? attachmentType : null,
+        attachmentName: typeof attachmentName === 'string' ? attachmentName : null,
+        replyToId: replyTo,
       },
     })
 
@@ -178,6 +196,25 @@ export async function POST(
     await db.conversations.update({
       where: { id },
       data: { lastMessageAt: new Date() },
+    })
+
+    // Task 88 — the other side HEARS the message: a durable notifications row
+    // (type 'chat', bell) AND a live 'notification:new' push into their
+    // user:<id> room (sendNotification broadcasts it). Without this a message
+    // sat invisible until the recipient happened to open the chat.
+    const recipientId = conversation.buyerId === senderId ? conversation.supplierId : conversation.buyerId
+    const senderLabel = auth.user.userType === 'supplier'
+      ? (await db.supplierProfiles.findUnique({ where: { userId: senderId }, select: { companyName: true } }))?.companyName ?? 'The supplier'
+      : (await db.buyerProfiles.findUnique({ where: { userId: senderId }, select: { fullName: true } }))?.fullName ?? 'A buyer'
+    const textPreview = typeof messageText === 'string' && messageText.length > 0
+      ? messageText.slice(0, 200)
+      : 'Sent an attachment'
+    await sendNotification({
+      userId: recipientId,
+      type: 'chat',
+      title: `${senderLabel} sent you a message`,
+      body: textPreview,
+      relatedEntityId: id,
     })
 
     return NextResponse.json({ success: true, data: message }, { status: 201 })

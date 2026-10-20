@@ -2977,3 +2977,22 @@ Work Log:
 Stage Summary:
 - An order now remembers where it ships to FOREVER, regardless of what the buyer later does to their address book — three creation paths, one read shape, honest flags, 40/40 E2E.
 - REMAINING FAKE/INCOMPLETE: none found in this rail. Queued next: conversations/chatMessages surface drill, banners/dailyDeals content rails, or UI polish as found.
+
+---
+Task ID: 88
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE BUYER↔SUPPLIER CHAT RAIL — drilled for the first time, and the drill caught TWO REAL DEFECTS: (1) POST /api/chat/conversations accepted ANY string as supplierId (conversations with phantom accounts) and any productId (a buyer could open a chat pinned to ANOTHER seller's product); (2) a sent message notified NOBODY — no notification row, no live push, no badge until the recipient happened to open the chat (the whole rail was one-sided silence, the exact anti-pattern the cohesion mandate names). Zero rate limits on both rails.
+
+Work Log:
+- CONVERSATION-CREATE HARDENED: rate limit 10/min; supplierId must resolve to a real users row with userType 'supplier' (the same users.id space the PDP sends via product.supplier.userId); when productId is given it must EXIST and belong to THAT supplier (products.supplierId → supplierProfiles → userId join). GET list: 60/min.
+- MESSAGE-SEND NOW SPEAKS: rate limit 60/min; body validated (text ≤ 5000, typed attachment fields, replyToId must be a message IN this conversation); after persisting + bumping lastMessageAt, the recipient gets a durable notifications row (type 'chat', title "<REAL profile name> sent you a message", body = 200-char preview) AND the live 'notification:new' push into their user:<id> room — senderLabel resolved from buyerProfiles.fullName / supplierProfiles.companyName, never 'Unknown'.
+- scripts/qa/t88-e2e.mjs: 35/35 PASS on wiped DB ×2 (repeatable). Covers: 4 auth gates; 5 create guards (phantom supplier 400, buyer-id-as-supplier 400, phantom product 400, cross-seller product 400 — all impossible before this task); idempotent create (same pair reuses ONE conversation); participant-only message access (stranger 403 both ways); payload guards (empty 400, >5000 400, foreign replyTo 400); unread badges + read-marking both directions; replyTo resolution with quoted sender; list embeds REAL profile names + product payload; LIVE pushes both directions with real previews.
+- DRILL-SIDE FIXES ONLY (3): the live push payload field is 'message' (same shape t62 proved — my assertion read '.body'); and my thread read consumed the unread state before the list assertion (reordered: badge first, read, badge 0).
+- BROWSER QA (gateway :81, real UI buyer login): chat-list renders the conversation with the real company name + last-message preview; chat-detail renders both messages with the ↩ quoted-reply block, timestamps, and the composer; sent "Browser QA message — deal at 480 confirmed" through the REAL input (Enter) → real DB row verified in raw sqlite; bell badge live; console clean.
+- tsc 0 whole project; eslint 0 touched files; DB wiped 139×0 before commit.
+
+Stage Summary:
+- Chat is now a connected, guarded conversation: real parties only, real products only, and every message rings the other side's bell live + durably.
+- Platform webDevReview cron (job 469017, every 15 min) remains active per mandate.
+- REMAINING FAKE/INCOMPLETE: none in this rail. Queued next: banners/dailyDeals content rails, couponEarningTasks, or UI polish as found.

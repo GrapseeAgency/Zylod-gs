@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 /**
  * GET /api/chat/conversations — list conversations for the authenticated user
@@ -13,6 +14,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
     const userId = auth.user.id
+
+    const rl = checkRateLimit(request, 'chat-conversations-list', 60, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const { searchParams } = request.nextUrl
     const role = searchParams.get('role') || auth.user.userType || 'buyer'
@@ -110,12 +114,48 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    const body = await request.json()
-    const buyerId = auth.user.id
-    const { supplierId, productId } = body
+    const rl = checkRateLimit(request, 'chat-conversation-create', 10, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
-    if (!supplierId) {
+    const body = await request.json().catch(() => null)
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    }
+    const buyerId = auth.user.id
+    const { supplierId, productId } = body as { supplierId?: unknown; productId?: unknown }
+
+    if (!supplierId || typeof supplierId !== 'string') {
       return NextResponse.json({ error: 'supplierId is required' }, { status: 400 })
+    }
+
+    // Task 88 — a conversation is only real when the supplier is real: the id
+    // must resolve to an actual SUPPLIER user account (users.id, the same
+    // space the PDP sends via product.supplier.userId). No more conversations
+    // with phantom accounts.
+    const supplierUser = await db.users.findUnique({
+      where: { id: supplierId },
+      select: { id: true, userType: true },
+    })
+    if (!supplierUser || supplierUser.userType !== 'supplier') {
+      return NextResponse.json({ error: 'supplierId must reference a real supplier account' }, { status: 400 })
+    }
+
+    // The linked product must be real AND belong to THAT supplier — a buyer
+    // cannot open a chat claiming another seller's product.
+    if (productId != null) {
+      if (typeof productId !== 'string') {
+        return NextResponse.json({ error: 'productId must be a string when provided' }, { status: 400 })
+      }
+      const product = await db.products.findUnique({
+        where: { id: productId },
+        select: { id: true, supplier: { select: { userId: true } } },
+      })
+      if (!product || product.supplier.userId !== supplierId) {
+        return NextResponse.json(
+          { error: 'productId must reference a product that belongs to this supplier' },
+          { status: 400 }
+        )
+      }
     }
 
     // Check if conversation already exists
