@@ -3284,3 +3284,21 @@ Stage Summary:
 - The promotion rail now has all three faces: admin curates (console), buyers receive automatically (pricing engine + public page + PDP banner), sellers see their participation (dashboard card) with the funding truth stated plainly.
 - Next candidates: campaign analytics depth (usedCount trend per campaign on the admin tab), per-supplier co-funded promotions (design round), UI polish passes on any surface the owner names.
 - REMAINING FAKE/INCOMPLETE: none found in this surface.
+
+---
+Task ID: 103
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: CAMPAIGN ANALYTICS DEPTH — the drill-down under the admin promotion console: every applied-discount event per campaign, read from the pricing engine's REAL audit rows, with totals and per-order pricing numbers.
+
+Work Log:
+- GET /api/admin/promotions/[id]/usages: requireUserType 401-first, 60/min, no-leak 404, NO buyer PII, totals {count, totalDiscount} from real rows. ROUTE TRUTH FIX before shipping: the first draft guessed a second audit shape (entityType 'promotions'); the engine writes ONE shape (entityType 'orders', entityId = orderNumber, metadata.promotionId + the numbers) — rewritten to the source of truth instead of papering over it.
+- AdminPromotionsManager: chevron per campaign row → expandable usage history (totals line 'N ORDERS · ৳X TOTAL FUNDED', per-order rows rendering the rule verbatim ('10% of ৳3,000', '−৳300') + timestamps; honest empty state naming the real zero). Loading skeletons, verbatim server errors via toast.
+- scripts/qa/t103-e2e.mjs: 14/14 PASS on wiped DB (two orders −৳100/−৳300 → totals ৳400 exact; verbatim numbers; gates; phantom 404; cross-campaign isolation).
+- BROWSER QA (gateway :81, real UI login): drill-down renders '2 ORDERS · ৳400 TOTAL FUNDED' with both order rows (real orderNumbers, '10% of ৳3,000 −৳300' / '10% of ৳1,000 −৳100', timestamps); console clean.
+- tsc 0 whole project; eslint 0/0; DB wiped 139×0 before commit; pushed as d256cf0.
+
+Stage Summary:
+- The promotion rail is now fully observable: admin curates, sees participation AND the exact money trail per campaign; buyers receive automatically with receipts; sellers see their side with the funding truth.
+- Next candidates: any surface polish the owner names; per-supplier co-funded promotions (design round); campaign scheduling niceties (pause/resume already live).
+- REMAINING FAKE/INCOMPLETE: none found in this surface.
