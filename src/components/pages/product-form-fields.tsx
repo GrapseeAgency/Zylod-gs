@@ -42,6 +42,8 @@ export interface ProductFormState {
   unit: ProductUnit;
   /** '' = plain single units (products.bundleSize null). Decimal, > 1. */
   bundleSize: string;
+  /** '' = no weight filed (products.weightKg null). Decimal kg > 0, per ONE purchasable unit. (Task 95) */
+  weightKg: string;
   moq: string;
   maxOrderQty: string;
   basePrice: string;
@@ -120,6 +122,7 @@ export const EMPTY_PRODUCT_FORM: ProductFormState = {
   description: '',
   unit: 'pcs',
   bundleSize: '',
+  weightKg: '',
   moq: '',
   maxOrderQty: '',
   basePrice: '',
@@ -135,6 +138,15 @@ export function parseBundleSize(value: string): number | null {
   if (t === '') return null;
   const n = Number(t);
   return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : NaN;
+}
+
+/** Task 95: '' = no weight filed (null); otherwise a positive decimal in kg
+ *  (per ONE purchasable unit) rounded to 3 dp. NaN = malformed input. */
+export function parseWeightKg(value: string): number | null {
+  const t = value.trim();
+  if (t === '') return null;
+  const n = Number(t);
+  return Number.isFinite(n) && n > 0 ? Math.round(n * 1000) / 1000 : NaN;
 }
 
 /** Real GET /api/categories row (root categories with nested children). */
@@ -339,6 +351,13 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
   const bundleSizeError =
     form.bundleSize.trim() !== '' && (!Number.isFinite(bundleSizeNumber) || bundleSizeNumber <= 1)
       ? 'Bundle size must be greater than 1 (units per bundle)'
+      : undefined;
+
+  // Task 95: optional per-unit weight feeding the checkout courier quotes.
+  const weightKgNumber = Number(form.weightKg);
+  const weightKgError =
+    form.weightKg.trim() !== '' && (!Number.isFinite(weightKgNumber) || weightKgNumber <= 0)
+      ? 'Weight must be a positive number of kg'
       : undefined;
 
   const handleUnitChange = (nextUnit: ProductUnit) => {
@@ -629,6 +648,28 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               </p>
             </div>
           )}
+          {/* Task 95: per-unit weight — lets checkout quote REAL courier rates
+              against the shipment weight. Empty = honest "settles with supplier". */}
+          <div className="space-y-1">
+            <label htmlFor="pf-weight-kg" className="text-sm font-medium text-gray-700">
+              Weight per {form.unit === 'bundle' ? 'bundle' : form.unit === 'pcs' ? 'piece' : form.unit} <span className="text-gray-400">(kg, optional)</span>
+            </label>
+            <input
+              id="pf-weight-kg"
+              type="number"
+              min="0.001"
+              step="any"
+              value={form.weightKg}
+              onChange={(e) => onFormChange({ weightKg: e.target.value })}
+              className={inputClass}
+              placeholder="e.g., 12.5"
+            />
+            <FieldError message={weightKgError} />
+            <p className="text-[11px] text-gray-500">
+              Buyers see live courier prices for their district at checkout, quoted against this weight. Leave it
+              empty and shipping is settled directly with you.
+            </p>
+          </div>
           <div className="space-y-1">
             <label htmlFor="pf-moq" className="text-sm font-medium text-gray-700">
               MOQ (minimum order){form.unit === 'kg' ? ' — kg' : ''}

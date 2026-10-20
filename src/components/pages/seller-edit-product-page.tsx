@@ -22,6 +22,7 @@ import {
   emptyTier,
   flattenApiCategories,
   parseBundleSize,
+  parseWeightKg,
   uploadAndAttachVideo,
   isPendingExternalVideo,
   type ApiCategoryRow,
@@ -42,6 +43,7 @@ interface ApiProduct {
   sku: string | null;
   unit: string;
   bundleSize: number | null;
+  weightKg: number | null;
   moq: number;
   maxOrderQty: number | null;
   basePrice: number;
@@ -88,6 +90,7 @@ export function SellerEditProductPage() {
     description: '',
     unit: 'pcs',
     bundleSize: '',
+    weightKg: '',
     moq: '',
     maxOrderQty: '',
     basePrice: '',
@@ -168,6 +171,7 @@ export function SellerEditProductPage() {
         description: p.description ?? '',
         unit: (p.unit as ProductFormState['unit']) || 'pcs',
         bundleSize: p.bundleSize == null ? '' : String(p.bundleSize),
+        weightKg: p.weightKg == null ? '' : String(p.weightKg),
         moq: String(p.moq ?? ''),
         maxOrderQty: p.maxOrderQty == null ? '' : String(p.maxOrderQty),
         basePrice: String(p.basePrice ?? ''),
@@ -252,6 +256,7 @@ export function SellerEditProductPage() {
     const moq = optionalQty(form.moq);
     const maxOrderQty = optionalQty(form.maxOrderQty);
     const bundleSize = parseBundleSize(form.bundleSize);
+    const weightKg = parseWeightKg(form.weightKg);
     const readyImages = images.filter((img) => img.status === 'ready');
     return {
       name: form.name.trim(),
@@ -261,6 +266,8 @@ export function SellerEditProductPage() {
       ...(form.sku.trim() ? { sku: form.sku.trim() } : {}),
       unit: form.unit,
       bundleSize,
+      // Task 95: per-unit weight for the checkout quote rail (null = un-quoted).
+      weightKg,
       moq,
       ...(maxOrderQty !== null ? { maxOrderQty } : { maxOrderQty: null }),
       basePrice: form.basePrice.trim() === '' ? NaN : Number(form.basePrice),

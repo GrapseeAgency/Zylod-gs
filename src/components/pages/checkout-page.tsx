@@ -4,10 +4,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
-import { useCartStore } from '@/store/cart-store'
+import { useCartStore, type CartItemData } from '@/store/cart-store'
 import {
   ArrowLeft, MapPin, CreditCard, Check, CheckCircle2, Package,
-  Lock, AlertCircle, Loader2, Plus, Wallet
+  Lock, AlertCircle, Loader2, Plus, Wallet, Truck
 } from 'lucide-react'
 
 /**
@@ -16,6 +16,11 @@ import {
  * - Shipping address comes from the real /api/addresses endpoint.
  * - Order creation goes through POST /api/orders, which re-prices every item
  *   server-side from the database (client totals are display-only).
+ * - Task 95: shipping is QUOTED live per supplier shipment through the real
+ *   /api/shipping/quote rail (district + shipment weight + goods subtotal);
+ *   the buyer picks a method per supplier or honestly ships un-quoted
+ *   (settles with the supplier). The server re-quotes at order time — the
+ *   client never sends a price.
  * - Backend errors are surfaced verbatim — never hidden, never faked.
  */
 
@@ -36,6 +41,33 @@ interface AddressData {
   address_line1?: string
 }
 
+/** One option from the real quote rail (GET /api/shipping/quote). */
+interface ShippingOption {
+  methodId: string
+  methodName: string
+  estimatedDays: string | null
+  basePrice: number
+  price: number
+  freeShipping: boolean
+  freeAbove: number | null
+}
+
+interface QuoteState {
+  loading: boolean
+  options: ShippingOption[]
+  error: string
+}
+
+/** One supplier shipment — the unit the quote rail is asked about. */
+interface SupplierGroup {
+  supplierId: string
+  supplierName: string
+  items: CartItemData[]
+  subtotal: number
+  /** null = any line lacks a filed weight — honestly unquotable. */
+  weightKg: number | null
+}
+
 export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
@@ -45,6 +77,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [placedOrder, setPlacedOrder] = useState<{ orderNumber: string; paymentStatus: string } | null>(null)
   const [placedCoupon, setPlacedCoupon] = useState<{ code: string; discount: number } | null>(null)
+  const [placedReceipt, setPlacedReceipt] = useState<{ totalAmount: number; shippingFee: number } | null>(null)
   const [error, setError] = useState<string>('')
   const [needsAuth, setNeedsAuth] = useState(false)
 
@@ -66,6 +99,13 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   const [couponInput, setCouponInput] = useState('')
   const [couponApplied, setCouponApplied] = useState<{ code: string; discount: number } | null>(null)
   const [couponError, setCouponError] = useState('')
+
+  // Task 95: live shipping quotes per supplier shipment + the buyer's picks.
+  const [quotes, setQuotes] = useState<Record<string, QuoteState>>({})
+  const [shippingChoices, setShippingChoices] = useState<Record<string, string>>({})
+  const [quoteTick, setQuoteTick] = useState(0)
+
+  const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || null
 
   const loadAddresses = useCallback(async () => {
     setAddressesLoading(true)
@@ -124,7 +164,114 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
 
   const subtotal = useMemo(() => items.reduce((sum, i) => sum + (i.totalPrice || i.unitPrice * i.quantity), 0), [items])
 
-  const walletCanCover = walletBalance !== null && walletBalance >= subtotal - (couponApplied?.discount ?? 0)
+  // Task 95: group the cart into supplier shipments and weigh each one
+  // (Σ quantity × weightKg; any unweighed line makes the group honestly
+  // unquotable — never priced as 0 kg).
+  const supplierGroups = useMemo<SupplierGroup[]>(() => {
+    const map = new Map<string, SupplierGroup>()
+    for (const item of items) {
+      const g = map.get(item.supplierId) ?? {
+        supplierId: item.supplierId,
+        supplierName: item.supplierName || 'Supplier',
+        items: [],
+        subtotal: 0,
+        weightKg: null,
+      }
+      g.items.push(item)
+      g.subtotal += item.totalPrice || item.unitPrice * item.quantity
+      map.set(item.supplierId, g)
+    }
+    const groups = Array.from(map.values())
+    for (const g of groups) {
+      let w = 0
+      let unweighed = false
+      for (const it of g.items) {
+        if (it.weightKg == null) {
+          unweighed = true
+          break
+        }
+        w += it.quantity * it.weightKg
+      }
+      g.weightKg = unweighed ? null : w
+    }
+    return groups
+  }, [items])
+
+  // Task 95: quote each shipment through the REAL public rail whenever the
+  // delivery district or the shipment contents change. Choices that the
+  // fresh quote no longer offers are pruned (never silently kept).
+  useEffect(() => {
+    if (!selectedAddress || supplierGroups.length === 0) return
+    let cancelled = false
+    const district = selectedAddress.district
+    setQuotes(
+      Object.fromEntries(
+        supplierGroups.map((g) => [g.supplierId, { loading: true, options: [], error: '' }])
+      )
+    )
+    const run = async () => {
+      const results: Record<string, QuoteState> = {}
+      await Promise.all(
+        supplierGroups.map(async (g) => {
+          if (g.weightKg === null) {
+            results[g.supplierId] = { loading: false, options: [], error: '' }
+            return
+          }
+          try {
+            const res = await fetch(
+              `/api/shipping/quote?district=${encodeURIComponent(district)}&weightKg=${encodeURIComponent(String(g.weightKg))}&subtotal=${encodeURIComponent(String(g.subtotal))}`,
+              { credentials: 'include' }
+            )
+            const data = await res.json().catch(() => null)
+            if (cancelled) return
+            if (!res.ok || !data?.success) {
+              results[g.supplierId] = {
+                loading: false,
+                options: [],
+                error: data?.error || `Could not quote shipping (HTTP ${res.status})`,
+              }
+              return
+            }
+            results[g.supplierId] = { loading: false, options: data.data ?? [], error: '' }
+          } catch {
+            if (!cancelled) {
+              results[g.supplierId] = { loading: false, options: [], error: 'Network error while quoting shipping.' }
+            }
+          }
+        })
+      )
+      if (cancelled) return
+      setQuotes(results)
+      // Prune choices the fresh book no longer offers.
+      setShippingChoices((prev) => {
+        const next: Record<string, string> = {}
+        for (const [sid, mid] of Object.entries(prev)) {
+          if (results[sid]?.options.some((o) => o.methodId === mid)) next[sid] = mid
+        }
+        return next
+      })
+    }
+    void run()
+    return () => {
+      cancelled = true
+    }
+  }, [selectedAddress, supplierGroups, quoteTick])
+
+  // Task 95: the display-only shipping fee (the server re-quotes at order time).
+  const shippingFee = useMemo(
+    () =>
+      supplierGroups.reduce((sum, g) => {
+        const methodId = shippingChoices[g.supplierId]
+        if (!methodId) return sum
+        const opt = quotes[g.supplierId]?.options.find((o) => o.methodId === methodId)
+        return sum + (opt ? opt.price : 0)
+      }, 0),
+    [supplierGroups, quotes, shippingChoices]
+  )
+  const hasShippingChoice = supplierGroups.some((g) => !!shippingChoices[g.supplierId])
+  const orderTotal = subtotal + shippingFee
+
+  const walletCanCover = walletBalance !== null && walletBalance >= orderTotal - (couponApplied?.discount ?? 0)
 
   const applyCoupon = () => {
     setCouponError('')
@@ -138,8 +285,6 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
     // the REAL discount arrives on the order receipt.
     setCouponApplied({ code, discount: 0 })
   }
-
-  const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || null
 
   const handlePlaceOrder = async () => {
     setError('')
@@ -161,6 +306,16 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
           shippingAddressId: selectedAddress.id,
           payWithWallet: payWithWallet && walletCanCover ? true : undefined,
           couponCode: couponApplied?.code,
+          // Task 95: (supplierId, methodId) pairs only — never a price. The
+          // server re-quotes every shipment against the live rate book.
+          ...(hasShippingChoice
+            ? {
+                shippingChoices: Object.entries(shippingChoices).map(([supplierId, methodId]) => ({
+                  supplierId,
+                  methodId,
+                })),
+              }
+            : {}),
           items: items.map((i) => ({
             productId: i.productId,
             variantId: i.variantId || null,
@@ -188,6 +343,13 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         setCouponError(data?.error || 'Coupon could not be applied.')
         return
       }
+      if ((res.status === 409 || res.status === 400) && /shipping|method/i.test(data?.error ?? '')) {
+        // Task 95: the quoted book changed under the buyer (rate edited,
+        // method deactivated…). Re-quote live and surface the real reason.
+        setQuoteTick((t) => t + 1)
+        setError(data?.error || 'Shipping options changed — pick a method again.')
+        return
+      }
       if (!res.ok || !data?.success) {
         // Surface the REAL backend error (stock, MOQ, address, product availability…)
         setError(data?.error || `Order failed (HTTP ${res.status}). Please try again.`)
@@ -201,6 +363,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         paymentStatus: data.data.paymentStatus,
       })
       setPlacedCoupon(data.data.couponApplied ?? null)
+      setPlacedReceipt({
+        totalAmount: typeof data.data.totalAmount === 'number' ? data.data.totalAmount : 0,
+        shippingFee: typeof data.data.shippingFee === 'number' ? data.data.shippingFee : 0,
+      })
       setOrderPlaced(true)
     } catch {
       setError('Network error while placing the order. Check your connection and retry.')
@@ -221,6 +387,11 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
           {placedCoupon && (
             <span className="block text-emerald-600 font-bold mb-1">
               Coupon {placedCoupon.code} saved you {formatPrice(placedCoupon.discount)}.
+            </span>
+          )}
+          {placedReceipt && placedReceipt.shippingFee > 0 && (
+            <span className="block text-slate-600 font-bold mb-1">
+              Goods {formatPrice(placedReceipt.totalAmount - placedReceipt.shippingFee)} + Shipping {formatPrice(placedReceipt.shippingFee)} = {formatPrice(placedReceipt.totalAmount)}
             </span>
           )}
           {placedOrder.paymentStatus === 'paid' ? (
@@ -398,6 +569,126 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
           ))}
         </div>
 
+        {/* Card 2.5: Shipping — quoted live per supplier shipment (Task 95) */}
+        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Truck className="h-4 w-4 text-primary" />
+              <h2 className="text-xs font-bold text-slate-900">Shipping</h2>
+            </div>
+            {selectedAddress && (
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">to {selectedAddress.district}</span>
+            )}
+          </div>
+
+          {supplierGroups.map((g) => {
+            const q = quotes[g.supplierId]
+            const picked = shippingChoices[g.supplierId]
+            return (
+              <div key={g.supplierId} className="border-t border-slate-100 first:border-t-0 first:pt-0 pt-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-bold text-slate-800 truncate">{g.supplierName}</p>
+                  <p className="text-[10px] text-slate-400 shrink-0">
+                    {g.weightKg === null ? 'no weight on file' : `${g.weightKg} kg · ships separately`}
+                  </p>
+                </div>
+
+                {g.weightKg === null ? (
+                  <p className="text-[10px] text-slate-400 leading-relaxed">
+                    A product in this shipment has no weight on file — shipping settles directly with the supplier.
+                  </p>
+                ) : !q || q.loading ? (
+                  <p className="flex items-center gap-2 text-[10px] text-slate-400">
+                    <Loader2 className="h-3 w-3 animate-spin" /> Quoting couriers for {selectedAddress?.district ?? 'your district'}…
+                  </p>
+                ) : q.error ? (
+                  <div className="space-y-1.5">
+                    <p className="text-[10px] font-bold text-red-600" role="alert">{q.error}</p>
+                    <button
+                      type="button"
+                      onClick={() => setQuoteTick((t) => t + 1)}
+                      className="text-[10px] font-bold text-primary hover:underline"
+                    >
+                      Retry quote
+                    </button>
+                  </div>
+                ) : q.options.length === 0 ? (
+                  <p className="text-[10px] text-slate-400 leading-relaxed">
+                    No courier covers {g.weightKg} kg to {selectedAddress?.district ?? 'this district'} — place the order and settle shipping with the supplier.
+                  </p>
+                ) : (
+                  <div className="space-y-1.5" role="radiogroup" aria-label={`Shipping method for ${g.supplierName}`}>
+                    {q.options.map((opt) => {
+                      const active = picked === opt.methodId
+                      return (
+                        <label
+                          key={opt.methodId}
+                          className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 cursor-pointer transition-colors ${
+                            active ? 'border-primary bg-primary/5' : 'border-slate-200 hover:bg-slate-50'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name={`ship-${g.supplierId}`}
+                            className="sr-only"
+                            checked={active}
+                            onChange={() => setShippingChoices((prev) => ({ ...prev, [g.supplierId]: opt.methodId }))}
+                          />
+                          <span
+                            aria-hidden
+                            className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${
+                              active ? 'border-primary' : 'border-slate-300'
+                            }`}
+                          >
+                            {active && <span className="h-2 w-2 rounded-full bg-primary" />}
+                          </span>
+                          <span className="flex-1 min-w-0">
+                            <span className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-slate-900 truncate">{opt.methodName}</span>
+                              {opt.freeShipping && (
+                                <span className="text-[9px] font-black text-emerald-600 uppercase bg-emerald-50 border border-emerald-200 rounded-full px-1.5 py-0.5">Free</span>
+                              )}
+                            </span>
+                            <span className="block text-[10px] text-slate-400">
+                              {opt.estimatedDays ? `Est. ${opt.estimatedDays}` : 'Est. delivery not stated'}
+                              {opt.freeShipping && opt.basePrice > 0 && (
+                                <s className="ml-1">{formatPrice(opt.basePrice)}</s>
+                              )}
+                            </span>
+                          </span>
+                          <span className={`text-xs font-black shrink-0 ${opt.freeShipping ? 'text-emerald-600' : 'text-slate-900'}`}>
+                            {opt.freeShipping ? 'Free' : formatPrice(opt.price)}
+                          </span>
+                        </label>
+                      )
+                    })}
+                    {picked && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShippingChoices((prev) => {
+                            const next = { ...prev }
+                            delete next[g.supplierId]
+                            return next
+                          })
+                        }
+                        className="text-[10px] font-bold text-slate-400 hover:text-slate-600 underline"
+                      >
+                        No shipping method — settle with the supplier
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+
+          <p className="text-[10px] text-slate-400 leading-relaxed">
+            Quotes are re-computed server-side from the live rate book when the order is placed — what you see is
+            what the couriers charge today, not a stored estimate.
+          </p>
+        </div>
+
         {/* Card 3: Payment (honest state — wallet or the verified manual leg) */}
         <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-2">
           <div className="flex items-center gap-2">
@@ -433,7 +724,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
               <span className="text-xs">
                 {walletCanCover ? (
                   <>
-                    <span className="font-bold text-slate-900">Pay {formatPrice(subtotal)} from wallet balance</span>
+                    <span className="font-bold text-slate-900">Pay {formatPrice(orderTotal)} from wallet balance</span>
                     <span className="block text-[10px] text-slate-500">
                       Balance {formatPrice(walletBalance)} — the order is marked PAID instantly, no verification wait.
                     </span>
@@ -442,7 +733,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                   <>
                     <span className="font-bold text-slate-500">Wallet balance {formatPrice(walletBalance)}</span>
                     <span className="block text-[10px] text-slate-400">
-                      Not enough for this order ({formatPrice(subtotal)}) — top up from the wallet page, or pay manually below.
+                      Not enough for this order ({formatPrice(orderTotal)}) — top up from the wallet page, or pay manually below.
                     </span>
                   </>
                 )}
@@ -481,16 +772,20 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
               <span>Items ({items.length})</span>
               <span className="font-semibold text-slate-800">{formatPrice(subtotal)}</span>
             </div>
+            {/* Task 95: the honest shipping line — real quoted fee, or the
+                truthful "settles with the supplier" when nothing is picked. */}
             <div className="flex justify-between">
-              <span>Shipping & fees</span>
-              <span className="font-semibold text-slate-800">Settled with supplier</span>
+              <span>Shipping</span>
+              <span className={`font-semibold ${hasShippingChoice && shippingFee === 0 ? 'text-emerald-600' : 'text-slate-800'}`}>
+                {hasShippingChoice ? (shippingFee === 0 ? 'Free' : formatPrice(shippingFee)) : 'Settled with supplier'}
+              </span>
             </div>
           </div>
 
           <div className="pt-2 border-t border-slate-100 flex justify-between items-baseline">
-            <span className="text-xs font-bold text-slate-800">Goods total</span>
+            <span className="text-xs font-bold text-slate-800">{hasShippingChoice ? 'Total (goods + shipping)' : 'Goods total'}</span>
             <div className="text-xl md:text-2xl font-black text-primary">
-              {formatPrice(subtotal)}
+              {formatPrice(orderTotal)}
             </div>
           </div>
 

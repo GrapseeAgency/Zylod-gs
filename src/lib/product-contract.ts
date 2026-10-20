@@ -59,6 +59,21 @@ export const bundleSizeSchema = z
   .optional()
   .transform((v) => (v == null ? null : roundQty(v)))
 
+/**
+ * Unit weight (Task 95): optional positive decimal ≤ 100,000 kg per ONE
+ * purchasable unit (a bundle when bundleSize > 1), normalized to 3 decimal
+ * places via roundWeight so checkout can quote courier bands against it.
+ * Empty = null — the product ships un-quoted (settles with the supplier);
+ * the checkout never prices it as 0 kg.
+ */
+export const weightKgSchema = z
+  .number()
+  .positive('Weight must be greater than 0')
+  .max(100000, 'Weight cannot exceed 100,000 kg')
+  .nullable()
+  .optional()
+  .transform((v) => (v == null ? null : Math.round(v * 1000) / 1000))
+
 export const priceTierSchema = z.object({
   minQty: z.number().positive('Minimum quantity must be greater than 0'),
   maxQty: z
@@ -122,6 +137,10 @@ export const productPayloadSchema = z
     sku: z.string().trim().max(100).optional(),
     unit: z.enum(PRODUCT_UNITS, { message: 'Unit must be one of: pcs, dozen, kg, carton, box, set, bundle' }),
     bundleSize: bundleSizeSchema,
+    // Task 95: kg per ONE purchasable unit — the checkout quote rail weighs
+    // shipments as Σ(quantity × weightKg). Null = un-quoted, settles with
+    // the supplier.
+    weightKg: weightKgSchema,
     moq: z.number().positive('MOQ must be greater than 0'),
     maxOrderQty: z.number().positive().nullable().optional(),
     basePrice: z.number().positive('Base price must be greater than 0'),

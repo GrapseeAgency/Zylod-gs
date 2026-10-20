@@ -26,6 +26,7 @@ import {
   emptyTier,
   flattenApiCategories,
   parseBundleSize,
+  parseWeightKg,
   uploadAndAttachVideo,
   type ApiCategoryRow,
   type ProductFormState,
@@ -96,6 +97,7 @@ export function SellerAddProductPage() {
     const moq = optionalQty(form.moq);
     const maxOrderQty = optionalQty(form.maxOrderQty);
     const bundleSize = parseBundleSize(form.bundleSize);
+    const weightKg = parseWeightKg(form.weightKg);
     const stockQuantity = form.stockQuantity.trim() === '' ? NaN : Number(form.stockQuantity);
     // Task 57-b: '' = platform default (omit); otherwise decimal ≥ 0.
     const stockAlertThreshold = form.stockAlertThreshold.trim() === '' ? null : Number(form.stockAlertThreshold);
@@ -109,6 +111,8 @@ export function SellerAddProductPage() {
       ...(form.sku.trim() ? { sku: form.sku.trim() } : {}),
       unit: form.unit,
       bundleSize,
+      // Task 95: per-unit weight for the checkout quote rail (null = un-quoted).
+      weightKg,
       moq,
       ...(maxOrderQty !== null ? { maxOrderQty } : { maxOrderQty: null }),
       basePrice: form.basePrice.trim() === '' ? NaN : Number(form.basePrice),

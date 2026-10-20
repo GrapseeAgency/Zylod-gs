@@ -50,6 +50,8 @@ interface ApiSubOrder {
   supplier: { companyName: string; slug: string; ratingAvg: number; ratingCount: number } | null
   subtotal: number
   shippingCost: number
+  // Task 95: which courier the buyer picked for this shipment (null = none).
+  shippingMethodName: string | null
   status: string
   trackingNumber: string | null
   estimatedDelivery: string | null
@@ -512,6 +514,10 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const status = deriveStatus(order.subOrders)
   const subtotal = order.subOrders.reduce((sum, so) => sum + (typeof so.subtotal === 'number' ? so.subtotal : 0), 0)
   const shipping = order.subOrders.reduce((sum, so) => sum + (typeof so.shippingCost === 'number' ? so.shippingCost : 0), 0)
+  // Task 95: the couriers the buyer picked, for the receipt's shipping row.
+  const shippingMethodNames = Array.from(
+    new Set(order.subOrders.map((so) => so.shippingMethodName).filter((n): n is string => typeof n === 'string' && n.length > 0))
+  )
   const allItems = order.subOrders.flatMap((so) => so.items || [])
   const estDelivery = order.subOrders
     .map((so) => so.estimatedDelivery)
@@ -730,8 +736,15 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               <span className="font-semibold text-slate-900 dark:text-slate-100">{formatPrice(subtotal)}</span>
             </div>
             <div className="flex justify-between">
-              <span>Shipping</span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">{formatPrice(shipping)}</span>
+              <span>
+                Shipping
+                {shippingMethodNames.length > 0 && (
+                  <span className="block text-[10px] text-slate-400">{shippingMethodNames.join(' · ')}</span>
+                )}
+              </span>
+              <span className={`font-semibold ${shipping === 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-slate-100'}`}>
+                {shipping === 0 ? 'With supplier' : formatPrice(shipping)}
+              </span>
             </div>
 
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-baseline">

@@ -9,6 +9,7 @@ import { notifyPaymentVerified } from '@/lib/notifications'
 import { holdEscrowInTx } from '@/lib/escrow'
 import { roundQty } from '@/lib/product-contract'
 import { buildAddressSnapshot } from '@/lib/addresses'
+import { computeQuote, shipmentWeightKg } from '@/lib/shipping'
 
 export async function GET(request: NextRequest) {
   try {
@@ -88,6 +89,18 @@ const createOrderSchema = z.object({
   // wallet balance — the order lands PAID in the same transaction that
   // decrements stock. Omitted/false keeps the classic UNPAID manual leg.
   payWithWallet: z.boolean().optional(),
+  // Task 95: the shipping method the buyer picked PER SUPPLIER SHIPMENT.
+  // The client NEVER sends a price — the server re-quotes every shipment
+  // against the live zones/methods/rates book and lands the quoted fee.
+  shippingChoices: z
+    .array(
+      z.object({
+        supplierId: z.string().min(1, 'supplierId is required'),
+        methodId: z.string().min(1, 'methodId is required'),
+      })
+    )
+    .max(20, 'Too many shipping choices')
+    .optional(),
 })
 
 /** Thrown inside the transaction when a variant has insufficient stock —
@@ -121,6 +134,19 @@ class CouponError extends Error {
   }
 }
 
+/** Task 95: thrown when a shipping choice cannot be honored. 400 for
+ *  structurally wrong choices (no address / unknown supplier / unweighed
+ *  product), 409 when the quoted book no longer covers the picked method
+ *  (the buyer re-fetches the quote and re-picks). */
+class ShippingChoiceError extends Error {
+  status: number
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'ShippingChoiceError'
+    this.status = status
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Auth-first (Task 51-a mandate), then the checkout abuse guard.
@@ -141,7 +167,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    const { shippingAddressId, couponCode, items, payWithWallet } = parsed.data
+    const { shippingAddressId, couponCode, items, payWithWallet, shippingChoices } = parsed.data
     // Unit-bearing decimals: normalize to 2 dp so float drift never reaches DB rows.
     for (const item of items) {
       item.quantity = roundQty(item.quantity)
@@ -152,6 +178,7 @@ export async function POST(request: NextRequest) {
     // the FK is SetNull, so without this a deleted address would erase the
     // order's real shipping history.
     let shippingAddressSnapshot: string | null = null
+    let shippingDistrict: string | null = null
     if (shippingAddressId) {
       const address = await db.addresses.findFirst({
         where: { id: shippingAddressId, userId: buyerId },
@@ -160,6 +187,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid shipping address' }, { status: 400 })
       }
       shippingAddressSnapshot = buildAddressSnapshot(address)
+      // Task 95: the quote rail's district input — where the shipments go.
+      shippingDistrict = address.district
     }
 
     // Generate order number
@@ -174,7 +203,7 @@ export async function POST(request: NextRequest) {
         // with the canonical wholesale pricing rule.
         const supplierGroups: Record<
           string,
-          { items: Array<{ productId: string; variantId: string | null; quantity: number; unitPrice: number; totalPrice: number; unit: string; bundleSize: number | null }>; subtotal: number }
+          { items: Array<{ productId: string; variantId: string | null; quantity: number; unitPrice: number; totalPrice: number; unit: string; bundleSize: number | null; weightKg: number | null; productName: string }>; subtotal: number }
         > = {}
         let totalAmount = 0
 
@@ -222,6 +251,9 @@ export async function POST(request: NextRequest) {
             // unit/bundleSize ride along for the product:stock broadcast
             unit: product.unit,
             bundleSize: product.bundleSize,
+            // Task 95: per-unit weight for the shipment weighing below
+            weightKg: product.weightKg,
+            productName: product.name,
           })
           supplierGroups[supplierId].subtotal += totalPrice
           totalAmount += totalPrice
@@ -279,6 +311,80 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        // Task 95: SHIPPING — the buyer's per-shipment choices are re-quoted
+        // SERVER-SIDE from the live zones/methods/rates book. The client
+        // sends only (supplierId, methodId); the price is whatever THIS
+        // database quotes for THIS shipment right now: weight =
+        // Σ(quantity × product.weightKg), district from the buyer's own
+        // address, subtotal = the server-priced goods of that supplier
+        // group. No choice, no weight on file, or no covering method →
+        // honest errors / null shippingCost (settle with supplier) — never
+        // a fabricated fee.
+        let shippingFee = 0
+        const shippingLegs: Array<{
+          supplierId: string
+          methodId: string
+          methodName: string
+          price: number
+          weightKg: number
+        }> = []
+        if (shippingChoices && shippingChoices.length > 0) {
+          if (!shippingDistrict) {
+            throw new ShippingChoiceError(
+              'A shipping address with a district is required when a shipping method is selected',
+              400
+            )
+          }
+          const seenSuppliers = new Set<string>()
+          for (const choice of shippingChoices) {
+            if (seenSuppliers.has(choice.supplierId)) {
+              throw new ShippingChoiceError('Duplicate shipping choice for the same supplier', 400)
+            }
+            seenSuppliers.add(choice.supplierId)
+            const group = supplierGroups[choice.supplierId]
+            if (!group) {
+              throw new ShippingChoiceError(
+                'Shipping choice does not match any supplier in this order',
+                400
+              )
+            }
+            const weightKg = shipmentWeightKg(group.items)
+            if (weightKg === null) {
+              const unweighed = group.items.find((i) => i.weightKg === null || i.weightKg === undefined)
+              throw new ShippingChoiceError(
+                `Shipping cannot be quoted: "${unweighed?.productName ?? 'a product'}" has no weight on file — place the order without a shipping choice and settle shipping with the supplier`,
+                400
+              )
+            }
+            const [zones, methods, rates] = await Promise.all([
+              tx.shippingZones.findMany(),
+              tx.shippingMethods.findMany(),
+              tx.shippingRates.findMany(),
+            ])
+            const options = computeQuote(zones, methods, rates, shippingDistrict, weightKg, group.subtotal)
+            const picked = options.find((o) => o.methodId === choice.methodId)
+            if (!picked) {
+              throw new ShippingChoiceError(
+                `The selected shipping method no longer covers this shipment (${weightKg}kg to ${shippingDistrict}) — refresh the shipping options and pick again`,
+                409
+              )
+            }
+            shippingFee += picked.price
+            shippingLegs.push({
+              supplierId: choice.supplierId,
+              methodId: picked.methodId,
+              methodName: picked.methodName,
+              price: picked.price,
+              weightKg,
+            })
+          }
+        }
+        // The ORDER total = goods after coupon + quoted shipping. Every
+        // downstream payment math (wallet-pay below, payment-submit
+        // default, seller/admin verify) reads totalAmount, so shipping
+        // rides in the paid amount automatically.
+        const orderTotal = totalAmount + shippingFee
+
         // Task 70: WALLET-PAY — debit the buyer's REAL balance inside the SAME
         // transaction that prices the order and decrements stock. A balance
         // that cannot cover the server-priced total throws an honest 402
@@ -288,25 +394,26 @@ export async function POST(request: NextRequest) {
         let walletLeg: { walletId: string; balanceAfter: number } | null = null
         if (payWithWallet) {
           const wallet = await tx.wallets.findFirst({ where: { userId: buyerId } })
-          if (!wallet || wallet.balance < totalAmount) {
+          if (!wallet || wallet.balance < orderTotal) {
             throw new WalletInsufficientError(wallet?.balance ?? 0)
           }
           const debited = await tx.wallets.updateMany({
-            where: { id: wallet.id, balance: { gte: totalAmount } },
-            data: { balance: { decrement: totalAmount } },
+            where: { id: wallet.id, balance: { gte: orderTotal } },
+            data: { balance: { decrement: orderTotal } },
           })
           if (debited.count === 0) {
             const current = await tx.wallets.findFirst({ where: { userId: buyerId } })
             throw new WalletInsufficientError(current?.balance ?? 0)
           }
-          walletLeg = { walletId: wallet.id, balanceAfter: wallet.balance - totalAmount }
+          walletLeg = { walletId: wallet.id, balanceAfter: wallet.balance - orderTotal }
         }
 
         const newOrder = await tx.orders.create({
           data: {
             buyerId,
             orderNumber,
-            totalAmount,
+            totalAmount: orderTotal,
+            shippingFee,
             // Task 70: a wallet-paid order is verified money the moment the
             // balance debits — it NEVER passes through 'unpaid'.
             paymentStatus: payWithWallet ? 'paid' : 'unpaid',
@@ -326,7 +433,7 @@ export async function POST(request: NextRequest) {
             data: {
               walletId: walletLeg.walletId,
               type: 'payment',
-              amount: -totalAmount,
+              amount: -orderTotal,
               balanceAfter: walletLeg.balanceAfter,
               description: `Order ${orderNumber} paid from wallet balance`,
               relatedEntityId: newOrder.id,
@@ -336,7 +443,7 @@ export async function POST(request: NextRequest) {
             data: {
               orderId: newOrder.id,
               method: 'wallet',
-              amount: totalAmount,
+              amount: orderTotal,
               status: 'success',
               transactionId: `WALLET-${orderNumber}`,
               gatewayResponse: JSON.stringify({
@@ -370,14 +477,41 @@ export async function POST(request: NextRequest) {
           { stockQuantity: number; unit: string; bundleSize: number | null; soldCount: number }
         >()
         for (const [supplierId, group] of Object.entries(supplierGroups)) {
+          // Task 95: this supplier's quoted shipping leg, if the buyer chose one.
+          const leg = shippingLegs.find((l) => l.supplierId === supplierId) ?? null
           const subOrder = await tx.subOrders.create({
             data: {
               orderId: newOrder.id,
               supplierId,
               subtotal: group.subtotal,
+              shippingCost: leg ? leg.price : null,
+              shippingMethodId: leg?.methodId ?? null,
+              shippingMethodName: leg?.methodName ?? null,
               status: 'pending',
             },
           })
+          if (leg) {
+            // Task 95: every shipping decision is audited — who chose which
+            // method, for which shipment, at what quoted price and weight.
+            await tx.auditLogs.create({
+              data: {
+                actorId: buyerId,
+                action: 'shipping_selected',
+                entityType: 'subOrders',
+                entityId: subOrder.id,
+                metadata: JSON.stringify({
+                  orderId: newOrder.id,
+                  orderNumber,
+                  supplierId,
+                  methodId: leg.methodId,
+                  methodName: leg.methodName,
+                  price: leg.price,
+                  weightKg: leg.weightKg,
+                  district: shippingDistrict,
+                }),
+              },
+            })
+          }
           sellerFeed.push({
             supplierId,
             subOrderIds: [subOrder.id],
@@ -466,7 +600,7 @@ export async function POST(request: NextRequest) {
           await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
         }
 
-        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon }
+        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon, shippingLegs, shippingFee }
       })
 
       // Real-time (Task 51-a): every seller with a slice of this order gets a
@@ -537,6 +671,10 @@ export async function POST(request: NextRequest) {
           orderId: order.order.id,
           orderNumber: order.order.orderNumber,
           totalAmount: order.order.totalAmount,
+          // Task 95: the honest receipt — what shipping was quoted, and the
+          // per-shipment legs the buyer picked.
+          shippingFee: order.shippingFee,
+          shippingLegs: order.shippingLegs,
           paymentStatus: order.order.paymentStatus,
           subOrdersCount: order.sellerFeed.length,
           walletPaymentId: order.walletPaymentId,
@@ -561,6 +699,9 @@ export async function POST(request: NextRequest) {
       }
       if (txError instanceof CouponError) {
         return NextResponse.json({ error: txError.message }, { status: 409 })
+      }
+      if (txError instanceof ShippingChoiceError) {
+        return NextResponse.json({ error: txError.message }, { status: txError.status })
       }
       if (txError instanceof PricingError) {
         return NextResponse.json(

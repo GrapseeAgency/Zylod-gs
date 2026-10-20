@@ -173,6 +173,7 @@ export function QuickOrderPage() {
         supplierName: item.supplierName,
         supplierSlug: '',
         unit: item.unit,
+        weightKg: (item as { weightKg?: number | null }).weightKg ?? null,
         priceTiers: item.priceTiers,
       })
     })

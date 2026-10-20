@@ -17,6 +17,7 @@ interface ProductData {
   unit?: string
   moq?: number
   stockQuantity?: number
+  weightKg?: number | null
   thumbnailUrl?: string | null
   images?: Array<{ imageUrl?: string; url?: string }>
   supplier?: { id: string; companyName: string } | null
@@ -37,7 +38,19 @@ interface PlacedOrder {
   orderId: string
   orderNumber: string
   totalAmount: number
+  shippingFee?: number
   paymentStatus: string
+}
+
+/** One option from the real quote rail (GET /api/shipping/quote). */
+interface ShippingOption {
+  methodId: string
+  methodName: string
+  estimatedDays: string | null
+  basePrice: number
+  price: number
+  freeShipping: boolean
+  freeAbove: number | null
 }
 
 export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
@@ -60,6 +73,11 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [placedOrder, setPlacedOrder] = useState<PlacedOrder | null>(null)
+
+  // Task 95: live shipping quote for THIS shipment + the buyer's pick.
+  const [quote, setQuote] = useState<{ loading: boolean; options: ShippingOption[]; error: string } | null>(null)
+  const [shippingMethodId, setShippingMethodId] = useState<string>('')
+  const [quoteTick, setQuoteTick] = useState(0)
 
   const fetchData = useCallback(async () => {
     if (!productId) {
@@ -130,9 +148,53 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   const subtotal = useMemo(() => unitPrice * (quantity || 0), [unitPrice, quantity])
   const moq = product?.moq || 1
   const stock = product?.stockQuantity ?? 0
+  // Task 95: this shipment's weight — null when the supplier never filed one.
+  const shipmentWeightKg =
+    product?.weightKg != null && quantity != null ? Math.round(quantity * product.weightKg * 100) / 100 : null
+  const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || null
+  const quotedOption = useMemo(
+    () => quote?.options.find((o) => o.methodId === shippingMethodId) ?? null,
+    [quote, shippingMethodId]
+  )
+  const orderTotal = subtotal + (quotedOption?.price ?? 0)
   const productImage = product
     ? product.images?.[0]?.imageUrl || product.images?.[0]?.url || product.thumbnailUrl || null
     : null
+
+  // Task 95: quote the shipment through the REAL public rail whenever the
+  // district, the product or the quantity changes. A pick the fresh quote
+  // no longer offers is pruned, never silently kept.
+  useEffect(() => {
+    if (!selectedAddress || shipmentWeightKg === null) {
+      setQuote(null)
+      return
+    }
+    let cancelled = false
+    setQuote({ loading: true, options: [], error: '' })
+    const run = async () => {
+      try {
+        const res = await fetch(
+          `/api/shipping/quote?district=${encodeURIComponent(selectedAddress.district || '')}&weightKg=${encodeURIComponent(String(shipmentWeightKg))}&subtotal=${encodeURIComponent(String(subtotal))}`,
+          { credentials: 'include' }
+        )
+        const data = await res.json().catch(() => null)
+        if (cancelled) return
+        if (!res.ok || !data?.success) {
+          setQuote({ loading: false, options: [], error: data?.error || `Could not quote shipping (HTTP ${res.status})` })
+          return
+        }
+        const options: ShippingOption[] = data.data ?? []
+        setQuote({ loading: false, options, error: '' })
+        setShippingMethodId((prev) => (options.some((o) => o.methodId === prev) ? prev : ''))
+      } catch {
+        if (!cancelled) setQuote({ loading: false, options: [], error: 'Network error while quoting shipping.' })
+      }
+    }
+    void run()
+    return () => {
+      cancelled = true
+    }
+  }, [selectedAddress, shipmentWeightKg, subtotal, quoteTick])
 
   const handleQtyChange = (delta: number) => {
     setQuantity((prev) => {
@@ -168,6 +230,9 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
           supplierId: product.supplier.id,
           shippingAddressId: selectedAddressId,
           paymentMethod: 'cod',
+          // Task 95: the method id only — never a price. The server re-quotes
+          // the shipment against the live rate book.
+          ...(shippingMethodId ? { shippingMethodId } : {}),
         }),
       })
       const data = await res.json().catch(() => null)
@@ -175,6 +240,9 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
         if (res.status === 401) {
           setNeedsAuth(true)
           setSubmitError('Your session has expired. Please sign in to place this order.')
+        } else if ((res.status === 409 || res.status === 400) && /shipping|method/i.test(data?.error ?? '')) {
+          setQuoteTick((t) => t + 1)
+          setSubmitError(data?.error || 'Shipping options changed — pick a method again.')
         } else {
           setSubmitError(data?.error || `Order could not be placed (${res.status})`)
         }
@@ -228,6 +296,12 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
             <span className="text-slate-500">Order total</span>
             <span className="font-black text-slate-900">{formatPrice(placedOrder.totalAmount)}</span>
           </div>
+          {typeof placedOrder.shippingFee === 'number' && placedOrder.shippingFee > 0 && (
+            <div className="flex justify-between">
+              <span className="text-slate-500">Incl. shipping</span>
+              <span className="font-bold text-slate-900">{formatPrice(placedOrder.shippingFee)}</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-slate-500">Payment status</span>
             <span className="font-bold text-slate-900 capitalize">{placedOrder.paymentStatus || 'unpaid'}</span>
@@ -466,6 +540,101 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
             )}
           </div>
 
+          {/* Task 95: Shipping method — quoted live for THIS shipment */}
+          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Truck className="h-4 w-4 text-primary" />
+                <h2 className="text-xs font-bold text-slate-900">Courier</h2>
+              </div>
+              {selectedAddress?.district && (
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">to {selectedAddress.district}</span>
+              )}
+            </div>
+
+            {shipmentWeightKg === null ? (
+              <p className="text-[10px] text-slate-400 leading-relaxed">
+                No weight on file for this product — shipping settles directly with the supplier.
+              </p>
+            ) : !quote || quote.loading ? (
+              <p className="flex items-center gap-2 text-[10px] text-slate-400">
+                <RefreshCw className="h-3 w-3 animate-spin" /> Quoting couriers for {shipmentWeightKg} kg…
+              </p>
+            ) : quote.error ? (
+              <div className="space-y-1.5">
+                <p className="text-[10px] font-bold text-red-600" role="alert">{quote.error}</p>
+                <button
+                  type="button"
+                  onClick={() => setQuoteTick((t) => t + 1)}
+                  className="text-[10px] font-bold text-primary hover:underline"
+                >
+                  Retry quote
+                </button>
+              </div>
+            ) : quote.options.length === 0 ? (
+              <p className="text-[10px] text-slate-400 leading-relaxed">
+                No courier covers {shipmentWeightKg} kg to {selectedAddress?.district ?? 'this district'} — place the order and settle shipping with the supplier.
+              </p>
+            ) : (
+              <div className="space-y-1.5" role="radiogroup" aria-label="Shipping method">
+                {quote.options.map((opt) => {
+                  const active = shippingMethodId === opt.methodId
+                  return (
+                    <label
+                      key={opt.methodId}
+                      className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 cursor-pointer transition-colors ${
+                        active ? 'border-primary bg-primary/5' : 'border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="buy-now-ship"
+                        className="sr-only"
+                        checked={active}
+                        onChange={() => setShippingMethodId(opt.methodId)}
+                      />
+                      <span
+                        aria-hidden
+                        className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${
+                          active ? 'border-primary' : 'border-slate-300'
+                        }`}
+                      >
+                        {active && <span className="h-2 w-2 rounded-full bg-primary" />}
+                      </span>
+                      <span className="flex-1 min-w-0">
+                        <span className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-900 truncate">{opt.methodName}</span>
+                          {opt.freeShipping && (
+                            <span className="text-[9px] font-black text-emerald-600 uppercase bg-emerald-50 border border-emerald-200 rounded-full px-1.5 py-0.5">Free</span>
+                          )}
+                        </span>
+                        <span className="block text-[10px] text-slate-400">
+                          {opt.estimatedDays ? `Est. ${opt.estimatedDays}` : 'Est. delivery not stated'} · {shipmentWeightKg} kg
+                          {opt.freeShipping && opt.basePrice > 0 && <s className="ml-1">{formatPrice(opt.basePrice)}</s>}
+                        </span>
+                      </span>
+                      <span className={`text-xs font-black shrink-0 ${opt.freeShipping ? 'text-emerald-600' : 'text-slate-900'}`}>
+                        {opt.freeShipping ? 'Free' : formatPrice(opt.price)}
+                      </span>
+                    </label>
+                  )
+                })}
+                {shippingMethodId && (
+                  <button
+                    type="button"
+                    onClick={() => setShippingMethodId('')}
+                    className="text-[10px] font-bold text-slate-400 hover:text-slate-600 underline"
+                  >
+                    No shipping method — settle with the supplier
+                  </button>
+                )}
+              </div>
+            )}
+            <p className="text-[10px] text-slate-400 leading-relaxed">
+              Re-quoted server-side from the live rate book when the order is placed.
+            </p>
+          </div>
+
           {/* Payment Method Card — only what actually exists */}
           <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
             <div className="flex items-center gap-2">
@@ -500,12 +669,20 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                 </span>
                 <span className="font-semibold text-slate-800">{formatPrice(subtotal)}</span>
               </div>
+              {quotedOption && (
+                <div className="flex justify-between">
+                  <span>Shipping · {quotedOption.methodName}</span>
+                  <span className={`font-semibold ${quotedOption.freeShipping ? 'text-emerald-600' : 'text-slate-800'}`}>
+                    {quotedOption.freeShipping ? 'Free' : formatPrice(quotedOption.price)}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="pt-2 border-t border-slate-100 flex justify-between items-baseline">
-              <span className="text-xs font-bold text-slate-800">Order Total</span>
+              <span className="text-xs font-bold text-slate-800">{quotedOption ? 'Total (goods + shipping)' : 'Order Total'}</span>
               <div className="text-xl font-black text-primary">
-                {formatPrice(subtotal)}
+                {formatPrice(orderTotal)}
               </div>
             </div>
 
@@ -540,9 +717,17 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
               </span>
               <span className="font-semibold text-slate-800">{formatPrice(subtotal)}</span>
             </div>
+            {quotedOption && (
+              <div className="flex justify-between">
+                <span>Shipping · {quotedOption.methodName}</span>
+                <span className={`font-semibold ${quotedOption.freeShipping ? 'text-emerald-600' : 'text-slate-800'}`}>
+                  {quotedOption.freeShipping ? 'Free' : formatPrice(quotedOption.price)}
+                </span>
+              </div>
+            )}
             <div className="pt-1 border-t border-slate-100 flex justify-between items-baseline">
-              <span className="text-xs font-bold text-slate-800">Order Total</span>
-              <span className="text-lg font-black text-primary">{formatPrice(subtotal)}</span>
+              <span className="text-xs font-bold text-slate-800">{quotedOption ? 'Total (goods + shipping)' : 'Order Total'}</span>
+              <span className="text-lg font-black text-primary">{formatPrice(orderTotal)}</span>
             </div>
           </div>
 

@@ -50,7 +50,7 @@ function formatMoneyPrecise(amountBDT: number, formatPrice: (n: number) => strin
 /* ─── Types matching GET /api/products/[id] ─── */
 interface ApiProduct {
   id: string; name: string; slug: string; description: string | null; brand: string | null
-  unit: string; bundleSize: number | null; basePrice: number; moq: number; maxOrderQty: number | null
+  unit: string; bundleSize: number | null; weightKg: number | null; basePrice: number; moq: number; maxOrderQty: number | null
   stockQuantity: number; stockAlertThreshold: number | null; thumbnailUrl: string | null; ratingAvg: number; reviewCount: number
   soldCount: number; isCustomizable: boolean; createdAt: string
   category: { id: string; name: string; slug: string; parentId: string | null }
@@ -290,6 +290,7 @@ export function MobileProductDetailPage() {
       supplierSlug: product.supplier.companyName.toLowerCase().replace(/\s+/g, '-'),
       unit: product.unit,
       bundleSize: product.bundleSize ?? null,
+      weightKg: product.weightKg ?? null,
       priceTiers: product.priceTiers?.map(t => ({ minQty: t.minQty, maxQty: t.maxQty, pricePerUnit: t.pricePerUnit })) || [],
     }
     addItem(item)

@@ -167,6 +167,7 @@ export function ProductListPage() {
       supplierName: product.supplier_name,
       supplierSlug: product.supplier_slug,
       unit: product.unit,
+      weightKg: (product as { weightKg?: number | null }).weightKg ?? null,
       priceTiers: [],
     })
   }, [addItem])

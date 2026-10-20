@@ -26,6 +26,8 @@ export interface CartItemData {
   variantPriceOverride?: number | null
   /** products.bundleSize — Task 55-c bundle display depth ONLY (the price stays per bundle; pricing math is unchanged). Optional: legacy lines predate it. */
   bundleSize?: number | null
+  /** Task 95: kg per ONE purchasable unit (a bundle when bundleSize > 1). Null = supplier never filed a weight — the shipment is honestly unquotable. */
+  weightKg?: number | null
 }
 
 interface CartState {
@@ -253,6 +255,8 @@ export const useCartStore = create<CartState>()(
                   variantPriceOverride: typeof item.variant?.priceOverride === 'number' ? item.variant.priceOverride : null,
                   // Task 55-c: bundle display depth (null = plain single units).
                   bundleSize: typeof item.product?.bundleSize === 'number' ? item.product.bundleSize : null,
+                  // Task 95: per-unit weight for the checkout quote rail.
+                  weightKg: typeof item.product?.weightKg === 'number' ? item.product.weightKg : null,
                   supplierId: item.supplierId || s.supplierId,
                   supplierName: s.supplierName || '',
                   supplierSlug: '',
@@ -268,9 +272,26 @@ export const useCartStore = create<CartState>()(
               // Merge: keep local items, add API items that aren't locally present
               const localIds = new Set(get().items.map(i => i.productId))
               const newFromApi = apiItems.filter((i: CartItemData) => !localIds.has(i.productId))
-              
-              if (newFromApi.length > 0) {
-                set({ items: [...get().items, ...newFromApi], isSynced: true })
+
+              // Task 95 heal: locally-built lines predate fields the API row
+              // carries (weightKg, bundleSize, tiers…). Backfill what the
+              // local line lacks from its API twin — checkout must quote on
+              // real weights, never on a stale local shape.
+              const apiByProduct = new Map(apiItems.map((i: CartItemData) => [`${i.productId}::${i.variantId ?? null}`, i] as const))
+              const healed = get().items.map((it) => {
+                const api = apiByProduct.get(`${it.productId}::${it.variantId ?? null}`)
+                if (!api) return it
+                const patched: CartItemData = { ...it }
+                if (patched.weightKg == null && api.weightKg != null) patched.weightKg = api.weightKg
+                if (patched.bundleSize == null && api.bundleSize != null) patched.bundleSize = api.bundleSize
+                if (patched.basePrice == null && api.basePrice != null) patched.basePrice = api.basePrice
+                if ((patched.priceTiers?.length ?? 0) === 0 && api.priceTiers.length > 0) patched.priceTiers = api.priceTiers
+                return patched
+              })
+              const healedChanged = healed.some((it, idx) => it !== get().items[idx])
+
+              if (newFromApi.length > 0 || healedChanged) {
+                set({ items: [...healed, ...newFromApi], isSynced: true })
               } else {
                 set({ isSynced: true })
               }

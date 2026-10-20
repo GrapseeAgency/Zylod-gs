@@ -150,6 +150,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
         supplierName: 'Verified Supplier',
         supplierSlug: '',
         unit: item.unit,
+        weightKg: (item as { weightKg?: number | null }).weightKg ?? null,
         priceTiers: [],
       })
     })

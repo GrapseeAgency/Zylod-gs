@@ -204,6 +204,8 @@ export async function PATCH(
             unit: payload.unit,
             // Task 55-c: bundle semantics (null = plain single units).
             bundleSize: payload.bundleSize ?? null,
+            // Task 95: per-unit weight for the checkout quote rail (null = un-quoted).
+            weightKg: payload.weightKg ?? null,
             moq: payload.moq,
             maxOrderQty: payload.maxOrderQty ?? null,
             basePrice: payload.basePrice,

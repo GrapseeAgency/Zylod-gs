@@ -188,6 +188,8 @@ interface ProductData {
   brand: string | null
   unit: string
   bundleSize: number | null
+  /** Task 95: kg per ONE purchasable unit — feeds the checkout courier quote. */
+  weightKg: number | null
   basePrice: number
   moq: number
   maxOrderQty: number | null
@@ -554,6 +556,8 @@ function DesktopProductDetailPage() {
       unit: product.unit,
       // Task 55-c: bundle display depth for the cart line label.
       bundleSize: product.bundleSize ?? null,
+      // Task 95: per-unit weight — checkout quotes courier rates from it.
+      weightKg: product.weightKg ?? null,
       priceTiers: product.priceTiers?.map(t => ({
         minQty: t.minQty,
         maxQty: t.maxQty,
@@ -828,6 +832,13 @@ function DesktopProductDetailPage() {
               <Badge variant="outline" className="text-xs border-primary/40 text-primary bg-primary/5">
                 <Package className="h-3 w-3 mr-1" />
                 1 bundle = {formatQty(bundleSize ?? 0)} {unit === 'bundle' ? 'pcs' : unit}
+              </Badge>
+            )}
+            {/* Task 95: the filed shipping weight — buyers see what couriers quote against */}
+            {product.weightKg != null && (
+              <Badge variant="outline" className="text-xs border-slate-300 text-slate-600">
+                <Truck className="h-3 w-3 mr-1" />
+                {formatQty(product.weightKg)} kg per {isBundle ? 'bundle' : unit === 'pcs' ? 'pc' : unit}
               </Badge>
             )}
             <div className="flex items-center gap-1 text-sm">

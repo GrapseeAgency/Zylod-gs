@@ -437,6 +437,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
         supplierName: product.supplier_name,
         supplierSlug: product.supplier_slug,
         unit: product.unit,
+        weightKg: (product as { weightKg?: number | null }).weightKg ?? null,
         priceTiers: [],
       })
     },

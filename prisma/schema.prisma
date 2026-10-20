@@ -12,68 +12,68 @@ datasource db {
 // ============================================================
 
 model users {
-  id             String   @id @default(cuid())
+  id                 String    @id @default(cuid())
   // userType: buyer | supplier | admin | driver
-  userType       String
-  email          String?  @unique
-  phone          String?  @unique
-  passwordHash   String?
+  userType           String
+  email              String?   @unique
+  phone              String?   @unique
+  passwordHash       String?
   // authProvider: phone_otp | google | email
-  authProvider   String
-  googleId       String?
+  authProvider       String
+  googleId           String?
   // accountStatus: active | suspended | banned
-  accountStatus  String   @default("active")
-  isEmailVerified Boolean  @default(false)
-  isPhoneVerified Boolean  @default(false)
-  twoFactorSecret String?
-  isTwoFactorEnabled Boolean @default(false)
+  accountStatus      String    @default("active")
+  isEmailVerified    Boolean   @default(false)
+  isPhoneVerified    Boolean   @default(false)
+  twoFactorSecret    String?
+  isTwoFactorEnabled Boolean   @default(false)
   // Suspension metadata (set when accountStatus != active)
-  suspensionReason  String?
-  suspensionRef     String?
-  suspendedAt       DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  suspensionReason   String?
+  suspensionRef      String?
+  suspendedAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   // Core relations
-  buyerProfile       buyerProfiles?
-  supplierProfile    supplierProfiles?
-  addresses          addresses[]
-  otpCodes           otpCodes[]
-  sessions           sessions[]
-  backupCodes        backupCodes[]
-  carts              carts[]
-  orders             orders[]
-  wishlists          wishlists[]
-  notifications      notifications[]
-  notificationPrefs  notificationPreferences?
+  buyerProfile      buyerProfiles?
+  supplierProfile   supplierProfiles?
+  addresses         addresses[]
+  otpCodes          otpCodes[]
+  sessions          sessions[]
+  backupCodes       backupCodes[]
+  carts             carts[]
+  orders            orders[]
+  wishlists         wishlists[]
+  notifications     notifications[]
+  notificationPrefs notificationPreferences?
   priceAlerts       priceAlerts[]
   stockAlerts       stockAlerts[]
   deliveryAlerts    deliveryAlerts[]
-  conversations      conversations[]
-  conversations2     conversations[] @relation("SupplierConversations")
-  messages           messages[]
-  userSettings       userSettings?
-  reviews            reviews[]
-  supplierReviews    supplierReviews[]
-  productQas         productQas[]
-  auditLogs          auditLogs[] @relation("ActorAuditLogs")
-  blogPosts          blogPosts[]
-  creditLines        creditLines[]
-  creditLines2       creditLines[] @relation("SupplierCreditLines")
+  conversations     conversations[]
+  conversations2    conversations[]          @relation("SupplierConversations")
+  messages          messages[]
+  userSettings      userSettings?
+  reviews           reviews[]
+  supplierReviews   supplierReviews[]
+  productQas        productQas[]
+  auditLogs         auditLogs[]              @relation("ActorAuditLogs")
+  blogPosts         blogPosts[]
+  creditLines       creditLines[]
+  creditLines2      creditLines[]            @relation("SupplierCreditLines")
 
   // Flash Deals & Promotions
-  browsingHistory    browsingHistory[]
-  compareItems       compareItems[]
+  browsingHistory browsingHistory[]
+  compareItems    compareItems[]
 
   // Wishlist & Favorites
-  savedForLater      savedForLater[]
-  collections        collections[]
+  savedForLater savedForLater[]
+  collections   collections[]
 
   // RFQ System
-  rfqRequests        rfqRequests[]
+  rfqRequests rfqRequests[]
 
   // Sample Orders
-  sampleOrders       sampleOrders[]
+  sampleOrders sampleOrders[]
 
   // Inspection
   inspectionRequests inspectionRequests[]
@@ -82,20 +82,20 @@ model users {
   buyerRewards       buyerRewards?
   rewardTransactions rewardTransactions[]
   referralCodes      referralCodes[]
-  referralUses       referralUses[] @relation("ReferredUser")
+  referralUses       referralUses[]       @relation("ReferredUser")
 
   // Wallet & Escrow
-  wallets            wallets[]
-  paymentMethods     paymentMethods[]
-  walletTopups      walletTopups[]
-  reportedIssues     reportedIssues[] @relation("IssueReporter")
+  wallets        wallets[]
+  paymentMethods paymentMethods[]
+  walletTopups   walletTopups[]
+  reportedIssues reportedIssues[] @relation("IssueReporter")
 
   // Admin & Content
-  apiKeys            apiKeys[]
-  pushTokens         pushTokens[]
+  apiKeys    apiKeys[]
+  pushTokens pushTokens[]
 
   // Search & Navigation
-  searchHistory      searchHistory[]
+  searchHistory searchHistory[]
 
   // Support & Help
   supportTickets     supportTickets[]
@@ -139,14 +139,14 @@ model backupCodes {
 }
 
 model sessions {
-  id        String   @id @default(cuid())
-  userId    String
-  tokenHash String   @unique
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique
   // device info for multi-device tracking
   deviceInfo String?
-  ip        String?
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  ip         String?
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
 
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -160,19 +160,19 @@ model sessions {
 // ============================================================
 
 model buyerProfiles {
-  id               String  @id @default(cuid())
-  userId           String  @unique
-  fullName         String
-  businessName     String?
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  fullName             String
+  businessName         String?
   // businessType: individual | retailer | distributor | wholesaler | manufacturer
-  businessType     String  @default("individual")
-  defaultAddressId String? @unique
-  profileCompletionPct Int @default(0)
-  isProfileComplete   Boolean @default(false)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  businessType         String   @default("individual")
+  defaultAddressId     String?  @unique
+  profileCompletionPct Int      @default(0)
+  isProfileComplete    Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  user           users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           users      @relation(fields: [userId], references: [id], onDelete: Cascade)
   defaultAddress addresses? @relation("BuyerDefaultAddress", fields: [defaultAddressId], references: [id])
 }
 
@@ -218,11 +218,11 @@ model addresses {
   lng          Float?
   isDefault    Boolean @default(false)
 
-  user               users            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders             orders[]
-  buyerDefaultAddress buyerProfiles?  @relation("BuyerDefaultAddress")
+  user                users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders              orders[]
+  buyerDefaultAddress buyerProfiles?    @relation("BuyerDefaultAddress")
   supplierWarehouse   supplierProfiles? @relation("SupplierWarehouse")
-  sampleOrders       sampleOrders[]
+  sampleOrders        sampleOrders[]
 
   @@index([userId])
   @@index([district])
@@ -233,64 +233,64 @@ model addresses {
 // ============================================================
 
 model supplierProfiles {
-  id                 String  @id @default(cuid())
-  userId             String  @unique
-  companyName        String
-  nidNumber          String
-  nidFrontImageUrl   String
-  nidBackImageUrl    String
-  tradeLicenseNumber String
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  companyName          String
+  nidNumber            String
+  nidFrontImageUrl     String
+  nidBackImageUrl      String
+  tradeLicenseNumber   String
   tradeLicenseImageUrl String
-  tinNumber          String
-  bankAccountName    String
-  bankAccountNumber  String
-  bankName           String
-  branch             String
-  warehouseAddressId String? @unique
+  tinNumber            String
+  bankAccountName      String
+  bankAccountNumber    String
+  bankName             String
+  branch               String
+  warehouseAddressId   String?   @unique
   // verificationStatus: pending | under_review | approved | rejected
-  verificationStatus String  @default("pending")
-  rejectionReason    String?
-  verifiedBy         String?
-  verifiedAt         DateTime?
-  ratingAvg          Float   @default(0)
-  ratingCount        Int     @default(0)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  verificationStatus   String    @default("pending")
+  rejectionReason      String?
+  verifiedBy           String?
+  verifiedAt           DateTime?
+  ratingAvg            Float     @default(0)
+  ratingCount          Int       @default(0)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
-  user              users           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  warehouseAddress  addresses?      @relation("SupplierWarehouse", fields: [warehouseAddressId], references: [id])
-  products          products[]
+  user               users                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  warehouseAddress   addresses?           @relation("SupplierWarehouse", fields: [warehouseAddressId], references: [id])
+  products           products[]
   supplierAgreements supplierAgreements[]
   supplierReviews    supplierReviews[]
 
   // Supplier Enhancements
-  warehouseLocations warehouseLocations[]
-  supplierLocations  supplierLocations[]
-  supplierCampaigns  supplierCampaigns[]
+  warehouseLocations   warehouseLocations[]
+  supplierLocations    supplierLocations[]
+  supplierCampaigns    supplierCampaigns[]
   supplierLoyaltyTiers supplierLoyaltyTiers[]
 
   // Sample Orders
-  sampleOrders       sampleOrders[] @relation("SupplierSampleOrders")
+  sampleOrders sampleOrders[] @relation("SupplierSampleOrders")
 
   // RFQ Quotes
-  rfqQuotes          rfqQuotes[]
+  rfqQuotes rfqQuotes[]
 
   // Seller Enhancement Relations
-  verificationDocuments  sellerVerificationDocuments[]
-  sellerPromotions       sellerPromotions[]
-  shippingConfigs        sellerShippingConfigs[]
-  returnPolicies         sellerReturnPolicies[]
+  verificationDocuments sellerVerificationDocuments[]
+  sellerPromotions      sellerPromotions[]
+  shippingConfigs       sellerShippingConfigs[]
+  returnPolicies        sellerReturnPolicies[]
   supportTickets        sellerSupportTickets[]
   storeCustomization    sellerStoreCustomizations?
-  payouts              sellerPayouts[]
-  bulkUploads          sellerBulkUploads[]
-  customerQueries      sellerCustomerQueries[]
+  payouts               sellerPayouts[]
+  bulkUploads           sellerBulkUploads[]
+  customerQueries       sellerCustomerQueries[]
 
   @@index([verificationStatus])
 }
 
 model supplierAgreements {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   supplierId    String
   // agreementType: terms_of_service | nda | supplier_contract | quality_agreement
   agreementType String
@@ -329,82 +329,86 @@ model categories {
 }
 
 model products {
-  id           String   @id @default(cuid())
-  supplierId   String
-  categoryId   String
-  name         String
-  slug         String
-  sku          String?
-  description  String
-  brand        String?
+  id                  String   @id @default(cuid())
+  supplierId          String
+  categoryId          String
+  name                String
+  slug                String
+  sku                 String?
+  description         String
+  brand               String?
   // unit: pcs | dozen | kg | carton | box | set | bundle
-  unit         String   @default("pcs")
+  unit                String   @default("pcs")
   // Wholesale bundles: how many base units ONE purchasable bundle contains
   // (e.g. bundleSize 50 + unit pcs = "bundle of 50 pcs"). Per-unit kom-dam
   // price shown to buyers = price / bundleSize. Null/1 = plain single units.
-  bundleSize   Float?
-  moq          Float    @default(1)
-  maxOrderQty  Float?
-  basePrice    Float
+  bundleSize          Float?
+  moq                 Float    @default(1)
+  maxOrderQty         Float?
+  basePrice           Float
+  // Task 95: kg per ONE purchasable unit (one bundle when bundleSize > 1,
+  // else one piece). Seller-filed — checkout weighs a shipment as
+  // Σ(quantity × weightKg) and quotes it against the shippingRates bands.
+  // Null = the supplier never filed a weight: the group is honestly
+  // UNQUOTABLE and shipping settles with the supplier (never a fabricated
+  // 0-kg price).
+  weightKg            Float?
   // currency default BDT
-  currency     String   @default("BDT")
-  stockQuantity Float
+  currency            String   @default("BDT")
+  stockQuantity       Float
   // Seller-tuned low-stock urgency threshold shown on the PDP ("Only X left").
   // Null = platform default (5). Kept on the product, not per variant —
   // variant stock inherits the parent's threshold.
   stockAlertThreshold Float?
-  isActive       Boolean  @default(true)
-  isApproved     Boolean  @default(false)
-  isCustomizable Boolean  @default(false)
+  isActive            Boolean  @default(true)
+  isApproved          Boolean  @default(false)
+  isCustomizable      Boolean  @default(false)
   // Discovery merchandising flags
-  isClearance    Boolean  @default(false)
-  isSeasonal     Boolean  @default(false)
-  thumbnailUrl   String?
-  soldCount      Float    @default(0)
-  ratingAvg      Float    @default(0)
-  reviewCount    Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  isClearance         Boolean  @default(false)
+  isSeasonal          Boolean  @default(false)
+  thumbnailUrl        String?
+  soldCount           Float    @default(0)
+  ratingAvg           Float    @default(0)
+  reviewCount         Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
-  supplier      supplierProfiles    @relation(fields: [supplierId], references: [id])
-  category      categories          @relation(fields: [categoryId], references: [id])
-  images        productImages[]
-  priceTiers    productPriceTiers[]
-  variants      productVariants[]
-  cartItems     cartItems[]
-  orderItems    orderItems[]
-  reviews       reviews[]
-  wishlists     wishlists[]
-  conversations conversations[]
-  savedForLater savedForLater[]
+  supplier        supplierProfiles    @relation(fields: [supplierId], references: [id])
+  category        categories          @relation(fields: [categoryId], references: [id])
+  images          productImages[]
+  priceTiers      productPriceTiers[]
+  variants        productVariants[]
+  cartItems       cartItems[]
+  orderItems      orderItems[]
+  reviews         reviews[]
+  wishlists       wishlists[]
+  conversations   conversations[]
+  savedForLater   savedForLater[]
   collectionItems collectionItems[]
-  rfqRequests   rfqRequests[]
-
+  rfqRequests     rfqRequests[]
 
   // Product Enhancement
-  specifications   productSpecifications[]
-  tagRelations     productTagRelations[]
-  videos           productVideos[]
-  certifications   productCertifications[]
-  qas              productQas[]
+  specifications productSpecifications[]
+  tagRelations   productTagRelations[]
+  videos         productVideos[]
+  certifications productCertifications[]
+  qas            productQas[]
 
   // Flash Deals & Promotions
-  flashDeals       flashDeals[]
-  dailyDeals       dailyDeals[]
+  flashDeals        flashDeals[]
+  dailyDeals        dailyDeals[]
   promotionProducts promotionProducts[]
 
   // Browsing & Compare
-  browsingHistory  browsingHistory[]
-  compareItems     compareItems[]
+  browsingHistory browsingHistory[]
+  compareItems    compareItems[]
 
   // Visual Search — CLIP embedding of the thumbnail (JSON float array)
   embedding      String?
   embeddingModel String?
 
   // Sample Orders
-  sampleOrders     sampleOrders[]
-
-
+  sampleOrders sampleOrders[]
 
   @@index([supplierId])
   @@index([categoryId])
@@ -429,15 +433,15 @@ model productImages {
 }
 
 model productQas {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   productId  String
   userId     String
   question   String
   answer     String?
   answeredBy String? // user id of the answering supplier
   answeredAt DateTime?
-  helpful    Int      @default(0)
-  createdAt  DateTime @default(now())
+  helpful    Int       @default(0)
+  createdAt  DateTime  @default(now())
 
   product products @relation(fields: [productId], references: [id], onDelete: Cascade)
   user    users    @relation(fields: [userId], references: [id])
@@ -447,10 +451,10 @@ model productQas {
 }
 
 model productPriceTiers {
-  id          String @id @default(cuid())
-  productId   String
-  minQty      Float
-  maxQty      Float?
+  id           String @id @default(cuid())
+  productId    String
+  minQty       Float
+  maxQty       Float?
   pricePerUnit Float
 
   product products @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -467,9 +471,9 @@ model productVariants {
   stockQuantity Float
   priceOverride Float?
 
-  product   products   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  cartItems cartItems[]
-  orderItems orderItems[]
+  product     products      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems   cartItems[]
+  orderItems  orderItems[]
   stockAlerts stockAlerts[]
 
   @@index([productId])
@@ -480,24 +484,24 @@ model productVariants {
 // ============================================================
 
 model carts {
-  id       String   @id @default(cuid())
-  buyerId  String
+  id        String   @id @default(cuid())
+  buyerId   String
   createdAt DateTime @default(now())
 
-  buyer users      @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  buyer users       @relation(fields: [buyerId], references: [id], onDelete: Cascade)
   items cartItems[]
 
   @@index([buyerId])
 }
 
 model cartItems {
-  id        String   @id @default(cuid())
-  cartId    String
-  productId String
-  variantId String?
-  quantity  Float
+  id         String   @id @default(cuid())
+  cartId     String
+  productId  String
+  variantId  String?
+  quantity   Float
   supplierId String
-  addedAt   DateTime @default(now())
+  addedAt    DateTime @default(now())
 
   cart    carts            @relation(fields: [cartId], references: [id], onDelete: Cascade)
   product products         @relation(fields: [productId], references: [id])
@@ -508,13 +512,19 @@ model cartItems {
 }
 
 model orders {
-  id               String  @id @default(cuid())
-  buyerId          String
-  orderNumber      String  @unique
-  totalAmount      Float
+  id                      String   @id @default(cuid())
+  buyerId                 String
+  orderNumber             String   @unique
+  totalAmount             Float
+  // Task 95: the sum of the per-shipment quoted shipping prices chosen at
+  // checkout (0 = no shipping choice was quotable/chosen — settles with
+  // suppliers). totalAmount ALWAYS includes this fee, so every payment
+  // math that compares against totalAmount (payment-submit default,
+  // seller/admin verify, wallet-pay) reads the true deliverable cost.
+  shippingFee             Float    @default(0)
   // paymentStatus: unpaid | partial | paid | refunded
-  paymentStatus    String  @default("unpaid")
-  shippingAddressId String?
+  paymentStatus           String   @default("unpaid")
+  shippingAddressId       String?
   // Task 87: immutable copy of the address AT ORDER TIME. addresses are
   // user-deletable and the FK is SetNull — without this snapshot a buyer
   // deleting an address book entry would silently erase a real order's
@@ -522,11 +532,11 @@ model orders {
   // create-direct, rfq convert-order); read as the fallback when the live
   // relation is gone.
   shippingAddressSnapshot String?
-  placedAt         DateTime @default(now())
-  createdAt        DateTime @default(now())
+  placedAt                DateTime @default(now())
+  createdAt               DateTime @default(now())
 
-  buyer           users      @relation(fields: [buyerId], references: [id])
-  shippingAddress addresses? @relation(fields: [shippingAddressId], references: [id])
+  buyer           users       @relation(fields: [buyerId], references: [id])
+  shippingAddress addresses?  @relation(fields: [shippingAddressId], references: [id])
   subOrders       subOrders[]
   payments        payments[]
 
@@ -534,7 +544,7 @@ model orders {
   crossBorderOrder crossBorderOrders?
 
   // Escrow
-  escrowAccounts  escrowAccounts[]
+  escrowAccounts escrowAccounts[]
 
   // Inspection
   inspectionRequests inspectionRequests[]
@@ -546,19 +556,26 @@ model orders {
 }
 
 model subOrders {
-  id               String   @id @default(cuid())
-  orderId          String
-  supplierId       String
-  subtotal         Float
-  shippingCost     Float?
+  id                 String    @id @default(cuid())
+  orderId            String
+  supplierId         String
+  subtotal           Float
+  shippingCost       Float?
+  // Task 95: which shippingMethod the buyer picked for THIS shipment and
+  // the name AT ORDER TIME (methods are editable/deactivatable — the
+  // snapshot keeps the receipt readable forever). shippingMethodId is a
+  // plain reference (no FK) — the method row may be deleted later and the
+  // order history must survive it.
+  shippingMethodId   String?
+  shippingMethodName String?
   // status: pending | confirmed | packed | shipped | delivered | cancelled | returned
-  status           String   @default("pending")
-  trackingNumber   String?
-  estimatedDelivery DateTime?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  status             String    @default("pending")
+  trackingNumber     String?
+  estimatedDelivery  DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
-  order orders     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order orders       @relation(fields: [orderId], references: [id], onDelete: Cascade)
   items orderItems[]
 
   // Order Tracking
@@ -594,13 +611,13 @@ model orderItems {
 // ============================================================
 
 model payments {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   orderId         String
   // method: cod | bank_transfer | card | mobile_banking | wallet
   method          String
   amount          Float
   // status: pending | success | failed | refunded
-  status          String   @default("pending")
+  status          String    @default("pending")
   transactionId   String?
   gatewayResponse String?
   paidAt          DateTime?
@@ -642,16 +659,16 @@ model userSettings {
 // ============================================================
 
 model conversations {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   buyerId       String
   supplierId    String
   productId     String?
   lastMessageAt DateTime?
-  createdAt     DateTime @default(now())
+  createdAt     DateTime  @default(now())
 
-  buyer    users     @relation(fields: [buyerId], references: [id])
-  supplier users     @relation("SupplierConversations", fields: [supplierId], references: [id])
-  product  products? @relation(fields: [productId], references: [id])
+  buyer    users      @relation(fields: [buyerId], references: [id])
+  supplier users      @relation("SupplierConversations", fields: [supplierId], references: [id])
+  product  products?  @relation(fields: [productId], references: [id])
   messages messages[]
 
   @@index([buyerId])
@@ -672,9 +689,9 @@ model messages {
   sentAt         DateTime @default(now())
 
   conversation conversations @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender       users        @relation(fields: [senderId], references: [id])
-  replyTo      messages?    @relation("MessageReply", fields: [replyToId], references: [id], onDelete: SetNull)
-  replies      messages[]   @relation("MessageReply")
+  sender       users         @relation(fields: [senderId], references: [id])
+  replyTo      messages?     @relation("MessageReply", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies      messages[]    @relation("MessageReply")
 
   @@index([conversationId])
   @@index([senderId])
@@ -686,21 +703,21 @@ model messages {
 // ============================================================
 
 model reviews {
-  id        String   @id @default(cuid())
-  productId String
-  buyerId   String
-  rating    Int
-  comment   String?
+  id               String   @id @default(cuid())
+  productId        String
+  buyerId          String
+  rating           Int
+  comment          String?
   // Verified-purchase flag (set when the buyer has a delivered order for this product)
   verifiedPurchase Boolean  @default(false)
   // Review image urls (JSON string array) — e.g. ["/uploads/reviews/xx.jpg"]
-  images    String? // JSON array of image URLs
+  images           String? // JSON array of image URLs
   // replyToId — for reply-to-review threads
-  replyToId String?
-  createdAt DateTime @default(now())
+  replyToId        String?
+  createdAt        DateTime @default(now())
 
-  product products @relation(fields: [productId], references: [id])
-  buyer   users    @relation(fields: [buyerId], references: [id])
+  product products  @relation(fields: [productId], references: [id])
+  buyer   users     @relation(fields: [buyerId], references: [id])
   replyTo reviews?  @relation("ReviewReply", fields: [replyToId], references: [id], onDelete: SetNull)
   replies reviews[] @relation("ReviewReply")
 
@@ -711,12 +728,12 @@ model reviews {
 }
 
 model supplierReviews {
-  id        String   @id @default(cuid())
+  id         String   @id @default(cuid())
   supplierId String
-  buyerId   String
-  rating    Int
-  comment   String?
-  createdAt DateTime @default(now())
+  buyerId    String
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id])
   buyer    users            @relation(fields: [buyerId], references: [id])
@@ -793,21 +810,21 @@ model collectionItems {
 }
 
 model notifications {
-  id              String   @id @default(cuid())
-  userId          String
+  id                String   @id @default(cuid())
+  userId            String
   // type: order | payment | promotion | system | chat | review
-  type            String
-  title           String
-  body            String
-  isRead          Boolean  @default(false)
-  relatedEntityId String?
+  type              String
+  title             String
+  body              String
+  isRead            Boolean  @default(false)
+  relatedEntityId   String?
   // Task 66: for order/delivery notifications born from a PER-SHIPMENT event
   // — the exact subOrder this notification is about (deep-link target).
   relatedShipmentId String?
   // Task 68-c: for payment notifications — the exact payments row this
   // notification is about (order-detail deep-links to + highlights it).
   relatedPaymentId  String?
-  createdAt       DateTime @default(now())
+  createdAt         DateTime @default(now())
 
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -817,14 +834,14 @@ model notifications {
 }
 
 model auditLogs {
-  id        String   @id @default(cuid())
-  actorId   String?
-  action    String
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
   entityType String
-  entityId  String?
+  entityId   String?
   // metadata stored as JSON string
-  metadata  String?
-  createdAt DateTime @default(now())
+  metadata   String?
+  createdAt  DateTime @default(now())
 
   actor users? @relation("ActorAuditLogs", fields: [actorId], references: [id])
 
@@ -854,17 +871,17 @@ model coupons {
 }
 
 model blogPosts {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   authorId      String?
   title         String
-  slug          String   @unique
+  slug          String    @unique
   content       String
   excerpt       String?
   coverImageUrl String?
-  isPublished   Boolean  @default(false)
+  isPublished   Boolean   @default(false)
   publishedAt   DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   author users? @relation(fields: [authorId], references: [id])
 
@@ -878,7 +895,7 @@ model creditLines {
   buyerId         String
   supplierId      String?
   creditLimit     Float
-  usedCredit      Float   @default(0)
+  usedCredit      Float    @default(0)
   availableCredit Float
   interestRate    Float?
   // status: active | suspended | closed
@@ -899,17 +916,17 @@ model creditLines {
 // ============================================================
 
 model flashDeals {
-  id             String   @id @default(cuid())
-  productId      String
-  dealPrice      Float
+  id              String   @id @default(cuid())
+  productId       String
+  dealPrice       Float
   discountPercent Float
-  startAt        DateTime
-  endAt          DateTime
-  totalStock     Float
-  soldCount      Float    @default(0)
-  maxPerBuyer    Float?
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
+  startAt         DateTime
+  endAt           DateTime
+  totalStock      Float
+  soldCount       Float    @default(0)
+  maxPerBuyer     Float?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
 
   product products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -920,13 +937,13 @@ model flashDeals {
 }
 
 model dailyDeals {
-  id             String   @id @default(cuid())
-  productId      String
-  dealPrice      Float
+  id              String   @id @default(cuid())
+  productId       String
+  dealPrice       Float
   discountPercent Float
-  dayDate        DateTime
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
+  dayDate         DateTime
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
 
   product products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -936,19 +953,19 @@ model dailyDeals {
 }
 
 model banners {
-  id          String   @id @default(cuid())
-  title       String
-  subtitle    String?
-  imageUrl    String
-  linkPageId  String?
-  linkParams  String?
+  id         String    @id @default(cuid())
+  title      String
+  subtitle   String?
+  imageUrl   String
+  linkPageId String?
+  linkParams String?
   // position: home_top | home_middle | category_top | sidebar
-  position    String   @default("home_top")
-  sortOrder   Int      @default(0)
-  isActive    Boolean  @default(true)
-  startAt     DateTime?
-  endAt       DateTime?
-  createdAt   DateTime @default(now())
+  position   String    @default("home_top")
+  sortOrder  Int       @default(0)
+  isActive   Boolean   @default(true)
+  startAt    DateTime?
+  endAt      DateTime?
+  createdAt  DateTime  @default(now())
 
   @@index([position])
   @@index([isActive])
@@ -980,9 +997,9 @@ model promotions {
 }
 
 model promotionProducts {
-  id           String @id @default(cuid())
-  promotionId  String
-  productId    String
+  id          String @id @default(cuid())
+  promotionId String
+  productId   String
 
   promotion promotions @relation(fields: [promotionId], references: [id], onDelete: Cascade)
   product   products   @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -1039,9 +1056,9 @@ model productSpecifications {
 }
 
 model productTags {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
 
   tagRelations productTagRelations[]
 
@@ -1062,12 +1079,12 @@ model productTagRelations {
 }
 
 model productVideos {
-  id           String @id @default(cuid())
+  id           String  @id @default(cuid())
   productId    String
   videoUrl     String
   thumbnailUrl String?
   title        String?
-  sortOrder    Int    @default(0)
+  sortOrder    Int     @default(0)
 
   product products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -1092,11 +1109,11 @@ model shippingZones {
 }
 
 model shippingMethods {
-  id             String  @id @default(cuid())
-  name           String
-  description    String?
-  estimatedDays  String?
-  isActive       Boolean @default(true)
+  id            String  @id @default(cuid())
+  name          String
+  description   String?
+  estimatedDays String?
+  isActive      Boolean @default(true)
 
   shippingRates shippingRates[]
 
@@ -1104,13 +1121,13 @@ model shippingMethods {
 }
 
 model shippingRates {
-  id         String @id @default(cuid())
-  zoneId     String
-  methodId   String
-  weightMin  Float  @default(0)
-  weightMax  Float?
-  price      Float
-  freeAbove  Float?
+  id        String @id @default(cuid())
+  zoneId    String
+  methodId  String
+  weightMin Float  @default(0)
+  weightMax Float?
+  price     Float
+  freeAbove Float?
 
   zone   shippingZones   @relation(fields: [zoneId], references: [id], onDelete: Cascade)
   method shippingMethods @relation(fields: [methodId], references: [id], onDelete: Cascade)
@@ -1120,22 +1137,22 @@ model shippingRates {
 }
 
 model orderTracking {
-  id         String   @id @default(cuid())
-  subOrderId String
+  id              String   @id @default(cuid())
+  subOrderId      String
   // status: pending | picked_up | in_transit | out_for_delivery | delivered
-  status     String
-  location   String?
-  note       String?
+  status          String
+  location        String?
+  note            String?
   // Live GPS coordinates from the driver's device
-  lat        Float?
-  lng        Float?
+  lat             Float?
+  lng             Float?
   // Accuracy in meters from the GPS fix
-  accuracy   Float?
+  accuracy        Float?
   // Speed in km/h from the device
-  speed      Float?
+  speed           Float?
   // Unique courier/driver session id — used to group live location pings
   driverSessionId String?
-  trackedAt  DateTime @default(now())
+  trackedAt       DateTime @default(now())
 
   subOrder subOrders @relation(fields: [subOrderId], references: [id], onDelete: Cascade)
 
@@ -1187,31 +1204,31 @@ model warehouseLocations {
 // ============================================================
 
 model rfqRequests {
-  id           String   @id @default(cuid())
-  buyerId      String
-  title        String
-  description  String
-  categorySlug String?
+  id                   String    @id @default(cuid())
+  buyerId              String
+  title                String
+  description          String
+  categorySlug         String?
   // Optional product link: set when the RFQ is filed about a specific
   // marketplace product — required for accepted-quote → order conversion.
-  productId    String?
-  quantity     Float?
+  productId            String?
+  quantity             Float?
   // unit: pcs | dozen | kg | carton | box | set
-  unit         String   @default("pcs")
-  targetPrice  Float?
-  deliveryCity String?
-  deadline     DateTime?
+  unit                 String    @default("pcs")
+  targetPrice          Float?
+  deliveryCity         String?
+  deadline             DateTime?
   // status: open | quoted | awarded | closed | expired
-  status       String   @default("open")
+  status               String    @default("open")
   // Set when the buyer converts the accepted quote into a real order
   // (one order per accepted quote — idempotency + guard for re-conversion).
   convertedOrderId     String?
   convertedOrderNumber String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
-  buyer   users      @relation(fields: [buyerId], references: [id], onDelete: Cascade)
-  product products?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  buyer   users       @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  product products?   @relation(fields: [productId], references: [id], onDelete: SetNull)
   items   rfqItems[]
   quotes  rfqQuotes[]
 
@@ -1224,14 +1241,14 @@ model rfqRequests {
 }
 
 model rfqItems {
-  id            String @id @default(cuid())
-  rfqId         String
-  productName   String
+  id             String  @id @default(cuid())
+  rfqId          String
+  productName    String
   specifications String?
-  quantity      Float
+  quantity       Float
   // unit: pcs | dozen | kg | carton | box | set
-  unit          String @default("pcs")
-  targetPrice   Float?
+  unit           String  @default("pcs")
+  targetPrice    Float?
 
   rfqRequest rfqRequests @relation(fields: [rfqId], references: [id], onDelete: Cascade)
 
@@ -1263,21 +1280,21 @@ model rfqQuotes {
 // ============================================================
 
 model sampleOrders {
-  id               String   @id @default(cuid())
-  buyerId          String
-  supplierId       String
-  productId        String
-  quantity         Float    @default(1)
+  id                      String   @id @default(cuid())
+  buyerId                 String
+  supplierId              String
+  productId               String
+  quantity                Float    @default(1)
   // status: requested | shipped | delivered | cancelled
-  status           String   @default("requested")
-  samplePrice      Float    @default(0)
-  shippingAddressId String?
+  status                  String   @default("requested")
+  samplePrice             Float    @default(0)
+  shippingAddressId       String?
   // Task 90: immutable order-time snapshot of the shipping address (the
   // Task 87 lesson replayed — addresses are user-deletable and the FK is
   // SetNull, so the sample's real shipping history must live in the row).
   shippingAddressSnapshot String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   buyer           users            @relation(fields: [buyerId], references: [id])
   supplier        supplierProfiles @relation("SupplierSampleOrders", fields: [supplierId], references: [id])
@@ -1295,17 +1312,17 @@ model sampleOrders {
 // ============================================================
 
 model inspectionRequests {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   orderId       String
   buyerId       String
   // inspectorType: self | third_party
   inspectorType String
   // status: pending | scheduled | completed | failed
-  status        String   @default("pending")
+  status        String    @default("pending")
   reportUrl     String?
   scheduledAt   DateTime?
   completedAt   DateTime?
-  createdAt     DateTime @default(now())
+  createdAt     DateTime  @default(now())
 
   order orders @relation(fields: [orderId], references: [id])
   buyer users  @relation(fields: [buyerId], references: [id])
@@ -1316,7 +1333,7 @@ model inspectionRequests {
 }
 
 model productCertifications {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   productId   String
   certName    String
   certNumber  String?
@@ -1378,7 +1395,7 @@ model referralCodes {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
-  buyer users @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  buyer users          @relation(fields: [buyerId], references: [id], onDelete: Cascade)
   uses  referralUses[]
 
   @@index([buyerId])
@@ -1393,7 +1410,7 @@ model referralUses {
   createdAt      DateTime @default(now())
 
   referralCode referralCodes @relation(fields: [referralCodeId], references: [id], onDelete: Cascade)
-  referredUser users        @relation("ReferredUser", fields: [referredUserId], references: [id])
+  referredUser users         @relation("ReferredUser", fields: [referredUserId], references: [id])
 
   @@index([referralCodeId])
   @@index([referredUserId])
@@ -1411,7 +1428,7 @@ model wallets {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user         users              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         users                @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions walletTransactions[]
 
   @@index([userId])
@@ -1436,16 +1453,16 @@ model walletTransactions {
 }
 
 model escrowAccounts {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   orderId    String
   buyerId    String
   supplierId String
   amount     Float
   // status: held | partial_release | released | refunded
-  status     String   @default("held")
-  heldAt     DateTime @default(now())
+  status     String    @default("held")
+  heldAt     DateTime  @default(now())
   releasedAt DateTime?
-  createdAt  DateTime @default(now())
+  createdAt  DateTime  @default(now())
 
   order orders @relation(fields: [orderId], references: [id])
 
@@ -1472,15 +1489,15 @@ model adminSettings {
 }
 
 model contentPages {
-  id             String   @id @default(cuid())
-  slug           String   @unique
-  title          String
-  content        String
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  title           String
+  content         String
   metaDescription String?
-  isPublished    Boolean  @default(false)
-  publishedAt    DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  isPublished     Boolean   @default(false)
+  publishedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([slug])
   @@index([isPublished])
@@ -1505,7 +1522,7 @@ model apiKeys {
 }
 
 model reportedIssues {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   reporterId  String
   // entityType: product | review | user | message | order
   entityType  String
@@ -1513,10 +1530,10 @@ model reportedIssues {
   reason      String
   description String?
   // status: open | investigating | resolved | dismissed
-  status      String   @default("open")
+  status      String    @default("open")
   resolvedBy  String?
   resolvedAt  DateTime?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
 
   reporter users @relation("IssueReporter", fields: [reporterId], references: [id])
 
@@ -1531,12 +1548,12 @@ model reportedIssues {
 // ============================================================
 
 model supplierLocations {
-  id              String   @id @default(cuid())
-  supplierId      String
-  lat             Float
-  lng             Float
-  coverageRadius  Float?   // in km
-  isActive        Boolean  @default(true)
+  id             String  @id @default(cuid())
+  supplierId     String
+  lat            Float
+  lng            Float
+  coverageRadius Float? // in km
+  isActive       Boolean @default(true)
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -1566,12 +1583,12 @@ model supplierCampaigns {
 }
 
 model supplierLoyaltyTiers {
-  id             String   @id @default(cuid())
-  supplierId     String
-  tierName       String
-  minPurchase    Float
+  id              String   @id @default(cuid())
+  supplierId      String
+  tierName        String
+  minPurchase     Float
   discountPercent Float
-  createdAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -1595,20 +1612,20 @@ model crossBorderOrders {
   customsDocuments   String?
   createdAt          DateTime @default(now())
 
-  order      orders            @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  documents  customsDocuments[]
+  order     orders             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  documents customsDocuments[]
 
   @@index([orderId])
   @@index([customsStatus])
 }
 
 model customsDocuments {
-  id               String   @id @default(cuid())
+  id                 String   @id @default(cuid())
   crossBorderOrderId String
   // documentType: commercial_invoice | packing_list | bill_of_lading | certificate_of_origin | customs_declaration
-  documentType     String
-  documentUrl      String
-  uploadedAt       DateTime @default(now())
+  documentType       String
+  documentUrl        String
+  uploadedAt         DateTime @default(now())
 
   crossBorderOrder crossBorderOrders @relation(fields: [crossBorderOrderId], references: [id], onDelete: Cascade)
 
@@ -1621,14 +1638,14 @@ model customsDocuments {
 // ============================================================
 
 model marketReports {
-  id          String   @id @default(cuid())
+  id           String   @id @default(cuid())
   categorySlug String?
-  title       String
-  summary     String?
+  title        String
+  summary      String?
   // reportData: JSON string containing structured report data
-  reportData  String
-  publishedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
+  reportData   String
+  publishedAt  DateTime @default(now())
+  createdAt    DateTime @default(now())
 
   category categories? @relation(fields: [categorySlug], references: [slug])
 
@@ -1677,7 +1694,7 @@ model searchSuggestions {
 // ============================================================
 
 model sellerVerificationDocuments {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   supplierId      String
   // documentType: nid_front | nid_back | trade_license | tin_certificate | bank_statement | utility_bill
   documentType    String
@@ -1685,9 +1702,9 @@ model sellerVerificationDocuments {
   fileUrl         String?
   fileSize        String?
   // status: pending | under_review | verified | rejected
-  status          String   @default("pending")
+  status          String    @default("pending")
   rejectionReason String?
-  uploadedAt      DateTime @default(now())
+  uploadedAt      DateTime  @default(now())
   reviewedAt      DateTime?
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
@@ -1698,29 +1715,29 @@ model sellerVerificationDocuments {
 }
 
 model sellerPromotions {
-  id                String   @id @default(cuid())
-  supplierId        String
-  name              String
+  id             String   @id @default(cuid())
+  supplierId     String
+  name           String
   // type: percentage_discount | fixed_discount | buy_one_get_one | free_shipping
-  type              String
-  discountValue     Float    @default(0)
-  startDate         DateTime
-  endDate           DateTime
+  type           String
+  discountValue  Float    @default(0)
+  startDate      DateTime
+  endDate        DateTime
   // status: draft | scheduled | active | paused | ended
-  status            String   @default("draft")
+  status         String   @default("draft")
   // applicableTo: all | category | selected
-  applicableTo      String   @default("all")
-  categoryIds       String?  // JSON array string
-  productIds        String?  // JSON array string
-  minOrderAmount    Float    @default(0)
-  maxDiscount       Float    @default(0)
-  usageLimit        Int      @default(0)
-  usageCount        Int      @default(0)
-  budget            Float?
-  spentBudget       Float    @default(0)
-  description       String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  applicableTo   String   @default("all")
+  categoryIds    String? // JSON array string
+  productIds     String? // JSON array string
+  minOrderAmount Float    @default(0)
+  maxDiscount    Float    @default(0)
+  usageLimit     Int      @default(0)
+  usageCount     Int      @default(0)
+  budget         Float?
+  spentBudget    Float    @default(0)
+  description    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -1751,19 +1768,19 @@ model sellerShippingConfigs {
 }
 
 model sellerReturnPolicies {
-  id                String   @id @default(cuid())
-  supplierId        String
+  id               String   @id @default(cuid())
+  supplierId       String
   // policyType: return | exchange | refund | restock
-  policyType        String
-  returnWindowDays  Int      @default(7)
-  exchangeAllowed   Boolean  @default(true)
+  policyType       String
+  returnWindowDays Int      @default(7)
+  exchangeAllowed  Boolean  @default(true)
   // refundMethod: original_payment | wallet | store_credit
-  refundMethod      String   @default("original_payment")
-  restockingFeePct  Float    @default(0)
-  conditions        String?  // JSON string of conditions
-  isActive          Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  refundMethod     String   @default("original_payment")
+  restockingFeePct Float    @default(0)
+  conditions       String? // JSON string of conditions
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -1772,21 +1789,21 @@ model sellerReturnPolicies {
 }
 
 model sellerSupportTickets {
-  id              String   @id @default(cuid())
-  supplierId      String
+  id          String    @id @default(cuid())
+  supplierId  String
   // category: account | orders | payments | products | technical | other
-  category        String
-  subject         String
-  description     String
+  category    String
+  subject     String
+  description String
   // priority: low | medium | high | urgent
-  priority        String   @default("medium")
+  priority    String    @default("medium")
   // status: open | in_progress | resolved | closed
-  status          String   @default("open")
-  resolvedAt      DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  status      String    @default("open")
+  resolvedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplier supplierProfiles        @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   messages sellerSupportMessages[]
 
   @@index([supplierId])
@@ -1796,13 +1813,13 @@ model sellerSupportTickets {
 }
 
 model sellerSupportMessages {
-  id        String   @id @default(cuid())
-  ticketId  String
-  senderId  String
+  id         String   @id @default(cuid())
+  ticketId   String
+  senderId   String
   // senderRole: supplier | admin
   senderRole String
-  message   String
-  createdAt DateTime @default(now())
+  message    String
+  createdAt  DateTime @default(now())
 
   ticket sellerSupportTickets @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
@@ -1811,20 +1828,20 @@ model sellerSupportMessages {
 }
 
 model sellerStoreCustomizations {
-  id              String   @id @default(cuid())
-  supplierId      String   @unique
-  bannerUrl       String?
-  logoUrl         String?
-  theme           String   @default("default")
-  layout          String   @default("grid")
-  font            String   @default("inter")
-  customSections  String?  // JSON string of custom sections
-  showRatings     Boolean  @default(true)
-  showContactInfo Boolean  @default(true)
-  showCategories  Boolean  @default(true)
-  showRecentOrders Boolean @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String   @id @default(cuid())
+  supplierId       String   @unique
+  bannerUrl        String?
+  logoUrl          String?
+  theme            String   @default("default")
+  layout           String   @default("grid")
+  font             String   @default("inter")
+  customSections   String? // JSON string of custom sections
+  showRatings      Boolean  @default(true)
+  showContactInfo  Boolean  @default(true)
+  showCategories   Boolean  @default(true)
+  showRecentOrders Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -1832,17 +1849,17 @@ model sellerStoreCustomizations {
 }
 
 model sellerPayouts {
-  id              String   @id @default(cuid())
-  supplierId      String
-  amount          Float
+  id          String    @id @default(cuid())
+  supplierId  String
+  amount      Float
   // method: bank_transfer | bkash | nagad
-  method          String
+  method      String
   // status: pending | processing | completed | failed
-  status          String   @default("pending")
-  reference       String?
-  fee             Float    @default(0)
-  processedAt     DateTime?
-  createdAt       DateTime @default(now())
+  status      String    @default("pending")
+  reference   String?
+  fee         Float     @default(0)
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -1852,16 +1869,16 @@ model sellerPayouts {
 }
 
 model sellerBulkUploads {
-  id              String   @id @default(cuid())
-  supplierId      String
-  fileName        String
+  id           String   @id @default(cuid())
+  supplierId   String
+  fileName     String
   // status: processing | completed | failed
-  status          String   @default("processing")
-  totalRows       Int      @default(0)
-  successCount    Int      @default(0)
-  failureCount    Int      @default(0)
-  errors          String?  // JSON string of error details
-  createdAt       DateTime @default(now())
+  status       String   @default("processing")
+  totalRows    Int      @default(0)
+  successCount Int      @default(0)
+  failureCount Int      @default(0)
+  errors       String? // JSON string of error details
+  createdAt    DateTime @default(now())
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -1871,20 +1888,20 @@ model sellerBulkUploads {
 }
 
 model sellerCustomerQueries {
-  id              String   @id @default(cuid())
-  supplierId      String
-  buyerId         String
-  productId       String?
+  id           String    @id @default(cuid())
+  supplierId   String
+  buyerId      String
+  productId    String?
   // queryType: product_question | pre_order | custom_request | complaint
-  queryType       String
-  subject         String
-  message         String
+  queryType    String
+  subject      String
+  message      String
   // status: open | replied | resolved | closed
-  status          String   @default("open")
-  replyMessage    String?
-  repliedAt       DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  status       String    @default("open")
+  replyMessage String?
+  repliedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
@@ -1899,20 +1916,20 @@ model sellerCustomerQueries {
 // ============================================================
 
 model searchHistory {
-  id          String   @id @default(cuid())
-  userId      String
-  query       String
+  id               String   @id @default(cuid())
+  userId           String
+  query            String
   // searchType: text | voice | image | qr | barcode
-  searchType  String   @default("text")
+  searchType       String   @default("text")
   // resultCount: how many results were returned
-  resultCount Int      @default(0)
+  resultCount      Int      @default(0)
   // selectedItemId: the item the user clicked on from results (if any)
-  selectedItemId String?
+  selectedItemId   String?
   // selectedItemType: product | supplier | category
   selectedItemType String?
   // filters: JSON string of applied filters
-  filters     String?
-  createdAt   DateTime @default(now())
+  filters          String?
+  createdAt        DateTime @default(now())
 
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1923,17 +1940,17 @@ model searchHistory {
 }
 
 model popularSearches {
-  id          String   @id @default(cuid())
-  query       String   @unique
-  searchCount Int      @default(1)
-  clickCount  Int      @default(0)
+  id             String   @id @default(cuid())
+  query          String   @unique
+  searchCount    Int      @default(1)
+  clickCount     Int      @default(0)
   // category: the primary category this search relates to
-  category    String?
+  category       String?
   // trendingScore: computed score based on recency and volume
-  trendingScore Float  @default(0)
+  trendingScore  Float    @default(0)
   lastSearchedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([query])
   @@index([searchCount])
@@ -1942,14 +1959,14 @@ model popularSearches {
 }
 
 model searchFilters {
-  id          String   @id @default(cuid())
-  userId      String?
-  name        String
+  id           String   @id @default(cuid())
+  userId       String?
+  name         String
   // filterConfig: JSON string of the filter configuration
   filterConfig String
-  isDefault   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([userId])
 }
@@ -1959,27 +1976,27 @@ model searchFilters {
 // ============================================================
 
 model supportTickets {
-  id              String   @id @default(cuid())
-  userId          String
+  id             String   @id @default(cuid())
+  userId         String
   // category: order_issue | payment_issue | account_issue | product_issue | seller_issue | general
-  category        String
-  subject         String
-  description     String
+  category       String
+  subject        String
+  description    String
   // priority: low | medium | high | urgent
-  priority        String   @default("medium")
+  priority       String   @default("medium")
   // status: open | in_progress | waiting_buyer | waiting_seller | resolved | closed
-  status          String   @default("open")
-  assignedTo      String?
+  status         String   @default("open")
+  assignedTo     String?
   // attachments: JSON array of file URLs
-  attachments     String?
+  attachments    String?
   // relatedOrderId: if ticket is about a specific order
-  relatedOrderId  String?
-  rating          Int?
-  ratingComment   String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  relatedOrderId String?
+  rating         Int?
+  ratingComment  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  user    users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     users                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages supportTicketMessages[]
 
   @@index([userId])
@@ -2027,20 +2044,20 @@ model feedbackSubmissions {
 }
 
 model reportedUsers {
-  id              String   @id @default(cuid())
-  reporterId      String
-  reportedUserId  String
+  id             String   @id @default(cuid())
+  reporterId     String
+  reportedUserId String
   // reason: scam | counterfeit | harassment | inappropriate | fake_listing | other
-  reason          String
-  description     String
+  reason         String
+  description    String
   // evidence: JSON array of evidence file URLs
-  evidence        String?
-  relatedOrderId  String?
+  evidence       String?
+  relatedOrderId String?
   // status: pending | under_review | action_taken | dismissed
-  status          String   @default("pending")
-  adminNotes      String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  status         String   @default("pending")
+  adminNotes     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([reporterId])
   @@index([reportedUserId])
@@ -2048,17 +2065,17 @@ model reportedUsers {
 }
 
 model chatSessions {
-  id          String   @id @default(cuid())
-  userId      String
+  id        String    @id @default(cuid())
+  userId    String
   // type: live_chat | chatbot
-  type        String   @default("live_chat")
+  type      String    @default("live_chat")
   // status: active | ended | timed_out
-  status      String   @default("active")
-  agentId     String?
-  subject     String?
-  endedAt     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status    String    @default("active")
+  agentId   String?
+  subject   String?
+  endedAt   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   messages chatMessages[]
 
@@ -2113,22 +2130,22 @@ model helpArticles {
 }
 
 model contactSubmissions {
-  id          String   @id @default(cuid())
-  userId      String?
-  name        String
-  email       String
-  phone       String?
+  id            String   @id @default(cuid())
+  userId        String?
+  name          String
+  email         String
+  phone         String?
   // category: order_issue | payment_issue | account_issue | seller_issue | product_issue | general
-  category    String
-  subject     String
-  message     String
+  category      String
+  subject       String
+  message       String
   // attachmentUrl: URL to uploaded file
   attachmentUrl String?
   // status: new | in_progress | resolved | closed
-  status      String   @default("new")
-  ticketId    String?  // linked support ticket if created
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status        String   @default("new")
+  ticketId      String? // linked support ticket if created
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   user users? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
@@ -2162,8 +2179,8 @@ model notificationPreferences {
   // Sound & quiet hours
   notificationSound String   @default("default") // default | silent | vibrate | custom
   quietHoursEnabled Boolean  @default(false)
-  quietHoursStart   String?  // HH:mm format
-  quietHoursEnd     String?  // HH:mm format
+  quietHoursStart   String? // HH:mm format
+  quietHoursEnd     String? // HH:mm format
   // General
   digestEnabled     Boolean  @default(false) // daily digest
   mentionNotify     Boolean  @default(true)
@@ -2176,18 +2193,18 @@ model notificationPreferences {
 }
 
 model priceAlerts {
-  id              String   @id @default(cuid())
-  userId          String
-  productId       String
-  productName     String
-  productImage    String?
-  currentPrice    Float
-  targetPrice     Float   // alert when price drops to or below this
+  id             String    @id @default(cuid())
+  userId         String
+  productId      String
+  productName    String
+  productImage   String?
+  currentPrice   Float
+  targetPrice    Float // alert when price drops to or below this
   // status: active | triggered | expired | cancelled
-  status          String   @default("active")
-  lastNotifiedAt  DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  status         String    @default("active")
+  lastNotifiedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2197,21 +2214,21 @@ model priceAlerts {
 }
 
 model stockAlerts {
-  id              String   @id @default(cuid())
-  userId          String
-  productId       String
-  productName     String
-  productImage    String?
+  id             String    @id @default(cuid())
+  userId         String
+  productId      String
+  productName    String
+  productImage   String?
   // Task 65: variant-level watches. null = watch the whole product;
   // set = watch THIS exact variant (completes only when that variant
   // itself restocks). variantLabel snapshots "Name: Value" for display.
-  variantId       String?
-  variantLabel    String?
+  variantId      String?
+  variantLabel   String?
   // status: active | notified | cancelled
-  status          String   @default("active")
-  lastNotifiedAt  DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  status         String    @default("active")
+  lastNotifiedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   user    users            @relation(fields: [userId], references: [id], onDelete: Cascade)
   variant productVariants? @relation(fields: [variantId], references: [id], onDelete: SetNull)
@@ -2223,17 +2240,17 @@ model stockAlerts {
 }
 
 model deliveryAlerts {
-  id              String   @id @default(cuid())
-  userId          String
-  orderId         String
-  trackingNumber  String?
+  id             String    @id @default(cuid())
+  userId         String
+  orderId        String
+  trackingNumber String?
   // status: pending | dispatched | out_for_delivery | delivered | failed
-  status          String   @default("pending")
-  carrier         String?  // e.g., "Pathao", "RedX", "Sundarban"
-  estimatedDate   DateTime?
-  lastNotifiedAt  DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  status         String    @default("pending")
+  carrier        String? // e.g., "Pathao", "RedX", "Sundarban"
+  estimatedDate  DateTime?
+  lastNotifiedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2247,27 +2264,27 @@ model deliveryAlerts {
 // ============================================================
 
 model userCoupons {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   userId        String
   couponId      String
   code          String
   title         String
   // discountStyle: percentage | fixed | free-shipping
-  discountStyle String   @default("fixed")
+  discountStyle String    @default("fixed")
   discountLabel String
   // status: active | used | expired
-  status        String   @default("active")
+  status        String    @default("active")
   validUntil    DateTime
-  claimedAt     DateTime @default(now())
+  claimedAt     DateTime  @default(now())
   usedAt        DateTime?
   usedOnOrder   String?
-  savingsBDT    Float    @default(0)
-  minOrderBDT   Float    @default(0)
+  savingsBDT    Float     @default(0)
+  minOrderBDT   Float     @default(0)
   categoryLabel String?
   categoryColor String?
-  accentColor   String   @default("#E53935")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  accentColor   String    @default("#E53935")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([userId])
   @@index([status])
@@ -2275,34 +2292,34 @@ model userCoupons {
 }
 
 model couponEarningTasks {
-  id            String   @id @default(cuid())
+  id          String   @id @default(cuid())
   // type: share | review | bulk | referral | checkin | spin | review_photo | first_order | milestone | wishlist
-  type          String
-  title         String
-  description   String
-  rewardLabel   String
-  rewardBDT     Float    @default(0)
-  iconColor     String   @default("#C8102E")
-  isActive      Boolean  @default(true)
-  sortOrder     Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  type        String
+  title       String
+  description String
+  rewardLabel String
+  rewardBDT   Float    @default(0)
+  iconColor   String   @default("#C8102E")
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([type])
   @@index([isActive])
 }
 
 model spinWinResults {
-  id            String   @id @default(cuid())
-  userId        String
+  id         String   @id @default(cuid())
+  userId     String
   // prizeType: fixed | percentage | free-shipping | points | try-again
-  prizeType     String
-  prizeLabel    String
-  prizeValue    Float    @default(0)
-  couponId      String?
-  spinsToday    Int      @default(0)
-  spinDate      String   // YYYY-MM-DD
-  createdAt     DateTime @default(now())
+  prizeType  String
+  prizeLabel String
+  prizeValue Float    @default(0)
+  couponId   String?
+  spinsToday Int      @default(0)
+  spinDate   String // YYYY-MM-DD
+  createdAt  DateTime @default(now())
 
   @@index([userId])
   @@index([spinDate])
@@ -2330,22 +2347,22 @@ model paymentMethods {
 }
 
 model walletTopups {
-  id            String    @id @default(cuid())
-  userId        String
+  id           String    @id @default(cuid())
+  userId       String
   // provider: bkash | sslcommerz | manual
-  provider      String
+  provider     String
   // bKash paymentID / SSLCommerz sessionkey
-  sessionId     String?
+  sessionId    String?
   // bKash merchantInvoiceNumber / SSLCommerz tran_id — unique per attempt
-  reference     String
-  amount        Float
-  currency      String    @default("BDT")
+  reference    String
+  amount       Float
+  currency     String    @default("BDT")
   // status: pending | credited | failed | cancelled
-  status        String    @default("pending")
-  gatewayTrxId  String?
-  creditedAt    DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  status       String    @default("pending")
+  gatewayTrxId String?
+  creditedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2359,20 +2376,20 @@ model walletTopups {
 // ============================================================
 
 model groupBuyCampaigns {
-  id               String   @id @default(cuid())
-  productId        String
-  title            String
-  targetQty        Float
-  currentQty       Float    @default(0)
-  discountedPrice  Float
-  originalPrice    Float
-  minParticipants  Int      @default(2)
-  maxParticipants  Int      @default(100)
+  id              String   @id @default(cuid())
+  productId       String
+  title           String
+  targetQty       Float
+  currentQty      Float    @default(0)
+  discountedPrice Float
+  originalPrice   Float
+  minParticipants Int      @default(2)
+  maxParticipants Int      @default(100)
   // status: active | completed | expired
-  status           String   @default("active")
-  expiresAt        DateTime
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  status          String   @default("active")
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([productId])
   @@index([status])
@@ -2404,7 +2421,7 @@ model liveStreams {
   viewerCount        Int       @default(0)
   scheduledAt        DateTime  @default(now())
   endedAt            DateTime?
-  featuredProductIds String?   // Comma-separated product IDs
+  featuredProductIds String? // Comma-separated product IDs
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
@@ -2432,12 +2449,12 @@ model affiliateProfiles {
 }
 
 model dailyCheckins {
-  id             String   @id @default(cuid())
-  userId         String
-  checkinDate    String   // YYYY-MM-DD
-  streakCount    Int      @default(1)
-  pointsAwarded  Int      @default(50)
-  createdAt      DateTime @default(now())
+  id            String   @id @default(cuid())
+  userId        String
+  checkinDate   String // YYYY-MM-DD
+  streakCount   Int      @default(1)
+  pointsAwarded Int      @default(50)
+  createdAt     DateTime @default(now())
 
   @@unique([userId, checkinDate])
   @@index([userId])
@@ -2445,13 +2462,13 @@ model dailyCheckins {
 }
 
 model miniGameScores {
-  id         String   @id @default(cuid())
-  userId     String
+  id        String   @id @default(cuid())
+  userId    String
   // gameType: wheel | memory_match | wholesale_trivia | box_picker
-  gameType   String
-  score      Int      @default(0)
-  pointsWon  Int      @default(0)
-  playedAt   DateTime @default(now())
+  gameType  String
+  score     Int      @default(0)
+  pointsWon Int      @default(0)
+  playedAt  DateTime @default(now())
 
   @@index([userId])
   @@index([gameType])
@@ -2466,8 +2483,8 @@ model legalDocuments {
   docType       String   @unique
   titleEn       String
   titleBn       String?
-  contentEn     String  
-  contentBn     String? 
+  contentEn     String
+  contentBn     String?
   version       String   @default("1.0")
   effectiveDate DateTime @default(now())
   isActive      Boolean  @default(true)
@@ -2484,8 +2501,8 @@ model faqItems {
   category   String   @map("docType")
   questionEn String
   questionBn String?
-  answerEn   String  
-  answerBn   String? 
+  answerEn   String
+  answerBn   String?
   sortOrder  Int      @default(0)
   isActive   Boolean  @default(true)
   helpfulYes Int      @default(0)
@@ -2514,49 +2531,49 @@ model cookieConsents {
 }
 
 model dmcaReports {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   // status: pending | under_review | resolved | dismissed
-  status            String   @default("pending")
+  status            String    @default("pending")
   complainantName   String
   complainantEmail  String
   complainantPhone  String?
   infringingUrl     String
   originalWorkUrl   String?
   copyrightOwner    String
-  copyrightWorkDesc String  
-  declarationSigned Boolean  @default(false)
+  copyrightWorkDesc String
+  declarationSigned Boolean   @default(false)
   resolvedAt        DateTime?
-  adminNotes        String? 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  adminNotes        String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([status])
   @@index([complainantEmail])
 }
 
 model jobListings {
-  id               String   @id @default(cuid())
+  id               String    @id @default(cuid())
   title            String
-  slug             String   @unique
+  slug             String    @unique
   // department: Engineering | Design | Marketing | Sales | Operations | Legal | Finance | HR
   department       String
   // locationType: remote | onsite | hybrid
-  locationType     String   @default("hybrid")
-  location         String   @default("Dhaka, Bangladesh")
+  locationType     String    @default("hybrid")
+  location         String    @default("Dhaka, Bangladesh")
   // employmentType: full_time | part_time | contract | intern
-  employmentType   String   @default("full_time")
+  employmentType   String    @default("full_time")
   salaryMin        Int?
   salaryMax        Int?
-  currency         String   @default("BDT")
-  descriptionEn    String  
-  requirementsEn   String  
-  benefitsEn       String? 
-  isActive         Boolean  @default(true)
-  isFeatured       Boolean  @default(false)
+  currency         String    @default("BDT")
+  descriptionEn    String
+  requirementsEn   String
+  benefitsEn       String?
+  isActive         Boolean   @default(true)
+  isFeatured       Boolean   @default(false)
   expiresAt        DateTime?
-  applicationCount Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  applicationCount Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   applications jobApplications[]
 
@@ -2573,7 +2590,7 @@ model jobApplications {
   applicantEmail String
   applicantPhone String?
   resumeUrl      String?
-  coverLetter    String? 
+  coverLetter    String?
   portfolioUrl   String?
   linkedInUrl    String?
   yearsExp       Int?
@@ -2594,9 +2611,9 @@ model pressReleases {
   id          String   @id @default(cuid())
   slug        String   @unique
   title       String
-  summary     String  
-  contentEn   String  
-  contentBn   String? 
+  summary     String
+  contentEn   String
+  contentBn   String?
   // category: company_news | product_launch | partnership | funding | award | milestone
   category    String   @default("company_news")
   imageUrl    String?
@@ -2613,17 +2630,17 @@ model pressReleases {
 }
 
 model mediaKitAssets {
-  id          String   @id @default(cuid())
+  id           String   @id @default(cuid())
   // assetType: logo | brand_guideline | photography | executive_photo | product_screenshot | press_photo
-  assetType   String
-  title       String
-  description String?
-  fileUrl     String
+  assetType    String
+  title        String
+  description  String?
+  fileUrl      String
   thumbnailUrl String?
-  fileSizeMB  Float?
-  fileFormat  String?
-  isPublic    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  fileSizeMB   Float?
+  fileFormat   String?
+  isPublic     Boolean  @default(true)
+  createdAt    DateTime @default(now())
 
   @@index([assetType])
 }
@@ -2636,7 +2653,7 @@ model investorDocuments {
   fiscalYear  String?
   fiscalQ     String?
   fileUrl     String
-  summary     String? 
+  summary     String?
   isPublished Boolean  @default(true)
   publishedAt DateTime @default(now())
   createdAt   DateTime @default(now())
@@ -2651,7 +2668,7 @@ model companyMilestones {
   year        Int
   month       Int?
   title       String
-  description String  
+  description String
   iconType    String?  @default("star")
   sortOrder   Int      @default(0)
   isPublished Boolean  @default(true)
@@ -2667,7 +2684,7 @@ model companyMilestones {
 model appSystemSettings {
   id          String   @id @default(cuid())
   key         String   @unique
-  value       String  
+  value       String
   category    String   @default("general") // general, network, cache, storage, security
   description String?
   isPublic    Boolean  @default(true)
@@ -2680,15 +2697,15 @@ model appSystemSettings {
 model appVersions {
   id                  String   @id @default(cuid())
   platform            String   @default("android") // android, ios, web
-  versionNumber       String   // e.g. "2.4.0"
-  versionCode         Int      // e.g. 240
+  versionNumber       String // e.g. "2.4.0"
+  versionCode         Int // e.g. 240
   minSupportedVersion String   @default("1.0.0")
   isMandatory         Boolean  @default(false)
-  changelogEn         String  
-  changelogBn         String? 
+  changelogEn         String
+  changelogBn         String?
   apkDownloadUrl      String?
   apkSizeBytes        BigInt?
-  releaseNotes        String? 
+  releaseNotes        String?
   isPublished         Boolean  @default(true)
   releasedAt          DateTime @default(now())
   createdAt           DateTime @default(now())
@@ -2698,35 +2715,35 @@ model appVersions {
 }
 
 model maintenanceSchedules {
-  id               String    @id @default(cuid())
+  id               String   @id @default(cuid())
   title            String
-  messageEn        String   
-  messageBn        String?  
+  messageEn        String
+  messageBn        String?
   scheduledStart   DateTime
   scheduledEnd     DateTime
-  isActive         Boolean   @default(false)
-  allowedIps       String?   // comma-separated IP whitelist
-  affectedServices String    @default("all") // all, checkout, api, search
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  isActive         Boolean  @default(false)
+  allowedIps       String? // comma-separated IP whitelist
+  affectedServices String   @default("all") // all, checkout, api, search
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@index([isActive])
   @@index([scheduledStart, scheduledEnd])
 }
 
 model deepLinkRoutes {
-  id              String   @id @default(cuid())
-  slug            String   @unique // e.g. "product-deals", "rmg-textiles"
-  pathPattern     String   // e.g. "/product/:id", "/supplier/:id"
-  targetPage      String   // e.g. "product-detail", "supplier-storefront"
-  queryParamsJson String? 
-  clickCount      Int      @default(0)
-  isDynamic       Boolean  @default(true)
-  isActive        Boolean  @default(true)
+  id              String    @id @default(cuid())
+  slug            String    @unique // e.g. "product-deals", "rmg-textiles"
+  pathPattern     String // e.g. "/product/:id", "/supplier/:id"
+  targetPage      String // e.g. "product-detail", "supplier-storefront"
+  queryParamsJson String?
+  clickCount      Int       @default(0)
+  isDynamic       Boolean   @default(true)
+  isActive        Boolean   @default(true)
   description     String?
   lastClickedAt   DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([slug])
   @@index([targetPage])
@@ -2736,12 +2753,12 @@ model offlineSyncQueue {
   id           String    @id @default(cuid())
   userId       String?
   deviceId     String?
-  syncAction   String    // CREATE_ORDER, SAVE_WISHLIST, UPDATE_PROFILE
-  entityType   String    // order, wishlist, product_cache, rfq
-  payloadJson  String   
+  syncAction   String // CREATE_ORDER, SAVE_WISHLIST, UPDATE_PROFILE
+  entityType   String // order, wishlist, product_cache, rfq
+  payloadJson  String
   status       String    @default("pending") // pending, syncing, completed, failed
   retryCount   Int       @default(0)
-  errorMessage String?  
+  errorMessage String?
   syncedAt     DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -2755,15 +2772,15 @@ model errorTelemetryLogs {
   id           String   @id @default(cuid())
   errorCode    String   @default("UNKNOWN")
   statusCode   Int      @default(500)
-  message      String  
-  stackTrace   String? 
+  message      String
+  stackTrace   String?
   route        String?
   method       String?  @default("GET")
-  userAgent    String? 
+  userAgent    String?
   clientIp     String?
   platform     String   @default("web") // android, ios, web
   appVersion   String?
-  metadataJson String? 
+  metadataJson String?
   createdAt    DateTime @default(now())
 
   @@index([errorCode])
@@ -2775,7 +2792,7 @@ model storageCacheAudits {
   id            String   @id @default(cuid())
   userId        String?
   deviceId      String?
-  cacheCategory String   // images, offline_catalogue, api_cache, session_data
+  cacheCategory String // images, offline_catalogue, api_cache, session_data
   storageBytes  BigInt   @default(0)
   itemCount     Int      @default(0)
   lastClearedAt DateTime @default(now())
@@ -2787,10 +2804,10 @@ model storageCacheAudits {
 
 model appDiagnostics {
   id             String   @id @default(cuid())
-  serviceName    String   // postgres_db, redis_cache, safepay_gateway, courier_api
+  serviceName    String // postgres_db, redis_cache, safepay_gateway, courier_api
   status         String   @default("healthy") // healthy, degraded, down
   responseTimeMs Int      @default(15)
-  detailsJson    String? 
+  detailsJson    String?
   checkedAt      DateTime @default(now())
 
   @@index([serviceName])
@@ -2808,12 +2825,12 @@ model offlineSyncEvents {
   // actionType: POST /api/orders, SAVE_WISHLIST, SUBMIT_RFQ, ...
   actionType      String
   entityType      String
-  payloadJson     String   
+  payloadJson     String
   clientCreatedAt DateTime
   retryCount      Int       @default(0)
   receivedAt      DateTime  @default(now())
   processedAt     DateTime?
-  processError    String?  
+  processError    String?
 
   @@index([userId])
   @@index([actionType])
@@ -2823,19 +2840,19 @@ model offlineSyncEvents {
 
 // ─── Return requests (buyer-initiated, admin-reviewed) ───
 model returnRequests {
-  id              String   @id @default(cuid())
-  returnNumber    String   @unique
+  id              String    @id @default(cuid())
+  returnNumber    String    @unique
   orderId         String
   buyerId         String
   // status: pending | approved | rejected | refunded
-  status          String   @default("pending")
-  shippingMethod  String   @default("pickup")
-  estimatedRefund Float    @default(0)
+  status          String    @default("pending")
+  shippingMethod  String    @default("pickup")
+  estimatedRefund Float     @default(0)
   resolutionNote  String?
   resolvedById    String?
   resolvedAt      DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([buyerId])
   @@index([orderId])
@@ -2918,7 +2935,7 @@ model refunds {
 //   open → withdrawn (owner withdraw; buyer can only withdraw while open)
 //   resolved | rejected are TERMINAL (no further transitions exist).
 model complaints {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   buyerId        String
   orderId        String?
   subOrderId     String?
@@ -2927,12 +2944,12 @@ model complaints {
   title          String
   description    String
   // status: open | in_review | resolved | rejected | withdrawn
-  status         String   @default("open")
+  status         String    @default("open")
   resolutionNote String?
   resolvedById   String?
   resolvedAt     DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([buyerId, status])
   @@index([status])

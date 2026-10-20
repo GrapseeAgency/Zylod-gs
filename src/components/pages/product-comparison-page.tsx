@@ -139,6 +139,7 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
       supplierName: product.supplier?.companyName ?? '',
       supplierSlug: '',
       unit: product.unit,
+      weightKg: (product as { weightKg?: number | null }).weightKg ?? null,
       priceTiers: product.priceTiers || [],
     })
   }, [addItem])

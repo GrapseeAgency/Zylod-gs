@@ -103,6 +103,7 @@ export function ClearanceSalePage() {
       supplierName: item.supplier?.companyName || 'Zylod Supplier',
       supplierSlug: item.supplier?.id || '',
       unit: item.unit || 'unit',
+      weightKg: (item as { weightKg?: number | null }).weightKg ?? null,
       priceTiers: [],
     })
     toast.success(`Added ${item.name} to cart!`)

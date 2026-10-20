@@ -132,6 +132,25 @@ export function computeQuote(
 }
 
 /**
+ * Task 95: weigh a shipment from its order lines. `weightKg` is filed per
+ * ONE purchasable unit (a bundle when bundleSize > 1) and `quantity` is in
+ * purchasable units, so the line weight is a straight multiply — no bundle
+ * double-count, no client-side math. Returns null when ANY line lacks a
+ * filed weight: the caller must treat that shipment as UNQUOTABLE (settle
+ * with the supplier), never price it as 0 kg.
+ */
+export function shipmentWeightKg(
+  lines: Array<{ quantity: number; weightKg: number | null }>
+): number | null {
+  let total = 0
+  for (const line of lines) {
+    if (line.weightKg === null || line.weightKg === undefined) return null
+    total += line.quantity * line.weightKg
+  }
+  return total
+}
+
+/**
  * True when [minA, maxA) overlaps [minB, maxB) (null max = open-ended).
  * Half-open, so adjacent bands [0,10] and [10,50] are a legal TILING, not
  * a conflict — 10kg belongs to the second band alone. Used to refuse two

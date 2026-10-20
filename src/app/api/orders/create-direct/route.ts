@@ -8,6 +8,7 @@ import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { roundQty } from '@/lib/product-contract'
 import { buildAddressSnapshot } from '@/lib/addresses'
+import { computeQuote, shipmentWeightKg } from '@/lib/shipping'
 
 /**
  * POST /api/orders/create-direct — Buy Now (single product, no cart).
@@ -38,6 +39,10 @@ const createDirectSchema = z.object({
     .max(10000, 'Quantity exceeds the per-line limit of 10000'),
   variantId: z.string().min(1).optional().nullable(),
   shippingAddressId: z.string().min(1).optional().nullable(),
+  // Task 95: the shipping method the buyer picked for this shipment. The
+  // client NEVER sends a price — the server re-quotes the shipment against
+  // the live zones/methods/rates book.
+  shippingMethodId: z.string().min(1).optional(),
 })
 
 /** Thrown inside the transaction when stock is insufficient —
@@ -48,6 +53,18 @@ class StockError extends Error {
     super(message)
     this.name = 'StockError'
     this.available = available
+  }
+}
+
+/** Task 95: thrown when the shipping choice cannot be honored — 400 for
+ *  structurally wrong requests, 409 when the quoted book no longer covers
+ *  the picked method. */
+class ShippingChoiceError extends Error {
+  status: number
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'ShippingChoiceError'
+    this.status = status
   }
 }
 
@@ -73,7 +90,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    const { productId, quantity: rawQty, variantId, shippingAddressId } = parsed.data
+    const { productId, quantity: rawQty, variantId, shippingAddressId, shippingMethodId } = parsed.data
     // Unit-bearing decimal (kg: 2.5 valid) — normalize to 2 dp.
     const qty = roundQty(rawQty)
 
@@ -81,6 +98,7 @@ export async function POST(request: NextRequest) {
     // Task 87: capture the address for the immutable order-time snapshot
     // (addresses are user-deletable; the FK alone would lose the history).
     let shippingAddressSnapshot: string | null = null
+    let shippingDistrict: string | null = null
     if (shippingAddressId) {
       const address = await db.addresses.findFirst({
         where: { id: shippingAddressId, userId: buyerId },
@@ -89,6 +107,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid shipping address' }, { status: 400 })
       }
       shippingAddressSnapshot = buildAddressSnapshot(address)
+      // Task 95: the quote rail's district input — where the shipment goes.
+      shippingDistrict = address.district
     }
 
     const orderNumber = 'ORD-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
@@ -132,11 +152,67 @@ export async function POST(request: NextRequest) {
 
         const totalPrice = resolved.unitPrice * qty
 
+        // Task 95: SHIPPING — re-quote the shipment server-side when the
+        // buyer picked a method. Weight = qty × product.weightKg (null
+        // weight = honestly unquotable, never priced as 0 kg), district
+        // from the buyer's own address, subtotal = the server-priced goods.
+        let shippingFee = 0
+        let shippingLeg: {
+          methodId: string
+          methodName: string
+          price: number
+          weightKg: number
+        } | null = null
+        if (shippingMethodId) {
+          if (!shippingDistrict) {
+            throw new ShippingChoiceError(
+              'A shipping address with a district is required when a shipping method is selected',
+              400
+            )
+          }
+          if (product.weightKg === null || product.weightKg === undefined) {
+            throw new ShippingChoiceError(
+              `Shipping cannot be quoted: "${product.name}" has no weight on file — place the order without a shipping choice and settle shipping with the supplier`,
+              400
+            )
+          }
+          const weightKg = shipmentWeightKg([{ quantity: qty, weightKg: product.weightKg }])
+          if (weightKg === null) {
+            throw new ShippingChoiceError(
+              `Shipping cannot be quoted: "${product.name}" has no weight on file`,
+              400
+            )
+          }
+          const [zones, methods, rates] = await Promise.all([
+            tx.shippingZones.findMany(),
+            tx.shippingMethods.findMany(),
+            tx.shippingRates.findMany(),
+          ])
+          const options = computeQuote(zones, methods, rates, shippingDistrict, weightKg, totalPrice)
+          const picked = options.find((o) => o.methodId === shippingMethodId)
+          if (!picked) {
+            throw new ShippingChoiceError(
+              `The selected shipping method no longer covers this shipment (${weightKg}kg to ${shippingDistrict}) — refresh the shipping options and pick again`,
+              409
+            )
+          }
+          shippingFee = picked.price
+          shippingLeg = {
+            methodId: picked.methodId,
+            methodName: picked.methodName,
+            price: picked.price,
+            weightKg,
+          }
+        }
+        // ORDER total = goods + quoted shipping — payment math reads this.
+        const orderTotal = totalPrice + shippingFee
+
         const newOrder = await tx.orders.create({
           data: {
             buyerId,
             orderNumber,
-            totalAmount: totalPrice,
+            totalAmount: orderTotal,
+            shippingFee,
             paymentStatus: 'unpaid',
             shippingAddressId: shippingAddressId || null,
             shippingAddressSnapshot,
@@ -148,11 +224,34 @@ export async function POST(request: NextRequest) {
             orderId: newOrder.id,
             supplierId,
             subtotal: totalPrice,
+            shippingCost: shippingLeg ? shippingLeg.price : null,
+            shippingMethodId: shippingLeg?.methodId ?? null,
+            shippingMethodName: shippingLeg?.methodName ?? null,
             status: 'pending',
             // estimatedDelivery intentionally left null — set by the supplier
             // when they actually confirm the order, never fabricated here.
           },
         })
+        if (shippingLeg) {
+          await tx.auditLogs.create({
+            data: {
+              actorId: buyerId,
+              action: 'shipping_selected',
+              entityType: 'subOrders',
+              entityId: subOrder.id,
+              metadata: JSON.stringify({
+                orderId: newOrder.id,
+                orderNumber,
+                supplierId,
+                methodId: shippingLeg.methodId,
+                methodName: shippingLeg.methodName,
+                price: shippingLeg.price,
+                weightKg: shippingLeg.weightKg,
+                district: shippingDistrict,
+              }),
+            },
+          })
+        }
 
         await tx.orderItems.create({
           data: {
@@ -213,7 +312,10 @@ export async function POST(request: NextRequest) {
         orderId: order.order.id,
         subOrderIds: [order.subOrder.id],
         itemCount: qty,
-        totalAmount: order.order.totalAmount,
+        // Goods subtotal of the seller's slice (consistent with the cart
+        // path) — the quoted shipping rides on the subOrder row they see
+        // through their authenticated GET.
+        totalAmount: order.subOrder.subtotal,
         createdAt: order.order.createdAt.toISOString(),
       })
 
@@ -223,6 +325,7 @@ export async function POST(request: NextRequest) {
           orderId: order.order.id,
           orderNumber: order.order.orderNumber,
           totalAmount: order.order.totalAmount,
+          shippingFee: order.order.shippingFee,
           paymentStatus: order.order.paymentStatus,
         },
       }, { status: 201 })
@@ -232,6 +335,9 @@ export async function POST(request: NextRequest) {
           { error: txError.message, available: txError.available },
           { status: 409 }
         )
+      }
+      if (txError instanceof ShippingChoiceError) {
+        return NextResponse.json({ error: txError.message }, { status: txError.status })
       }
       if (txError instanceof PricingError) {
         return NextResponse.json(
