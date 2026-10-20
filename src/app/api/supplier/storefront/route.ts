@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { certificationStatus } from '@/lib/certifications'
+import { shapePublic as shapeWarehouse } from '@/lib/warehouses'
 
 export async function GET(request: NextRequest) {
   try {
@@ -101,6 +102,14 @@ export async function GET(request: NextRequest) {
       })),
     }
 
+    // Task 98: THE WAREHOUSE RAIL (public side) — the supplier's ACTIVE
+    // ship-from locations. Inactive rows never advertise a place that
+    // doesn't operate; the storefront's visibility contract again.
+    const warehouseRows = await db.warehouseLocations.findMany({
+      where: { supplierId: supplier.id, isActive: true },
+      orderBy: { createdAt: 'asc' },
+    })
+
     /* PUBLIC PROJECTION — this endpoint serves guests. The old code returned
        the raw supplierProfiles row, leaking KYC data (NID, trade license,
        TIN, bank details, rejection internals) AND reviewer emails/phones via
@@ -115,6 +124,7 @@ export async function GET(request: NextRequest) {
       storeCustomization: supplier.storeCustomization,
       products: supplier.products,
       certificationRollup,
+      warehouses: warehouseRows.map(shapeWarehouse),
       reviews: (supplier.supplierReviews || []).map((r) => ({
         id: r.id,
         rating: r.rating,

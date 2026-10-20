@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import StorefrontCertifications, { StorefrontCertRollup } from '@/components/supplier/storefront-certifications';
+import StorefrontWarehouses, { WarehouseRow } from '@/components/supplier/storefront-warehouses';
 
 interface StorefrontData {
   id?: string;
@@ -27,6 +28,8 @@ interface StorefrontData {
   // Task 96: the server-computed rollup of the Task-92 certification rail
   // across this store's PUBLIC products. Null/absent = honest empty state.
   certificationRollup?: StorefrontCertRollup | null;
+  // Task 98: the supplier's ACTIVE ship-from locations (public projection).
+  warehouses?: WarehouseRow[];
 }
 
 /** Initials circle from the store's real company name (up to 2 letters). */
@@ -189,6 +192,9 @@ export const SellerStorefrontPage = () => {
                 <TabsTrigger value="certifications" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                   Certifications{!loading && data?.certificationRollup && data.certificationRollup.total > 0 ? ` (${data.certificationRollup.total})` : ''}
                 </TabsTrigger>
+                <TabsTrigger value="locations" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                  Locations{!loading && data?.warehouses && data.warehouses.length > 0 ? ` (${data.warehouses.length})` : ''}
+                </TabsTrigger>
                 <TabsTrigger value="story" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none" onClick={() => navigate('store-story-about')}>Profile</TabsTrigger>
               </TabsList>
             </div>
@@ -251,6 +257,13 @@ export const SellerStorefrontPage = () => {
                       store shows the honest empty state, an expired document
                       keeps its Expired badge. */}
                   <StorefrontCertifications rollup={loading ? undefined : data?.certificationRollup} />
+                </div>
+              </TabsContent>
+              <TabsContent value="locations" className="mt-0 outline-none">
+                <div aria-label="Store warehouse locations">
+                  {/* Task 98: buyers read the ship-from truth; the owner (no
+                      supplierId param) manages the full list in the same tab. */}
+                  <StorefrontWarehouses ownView={!viewedSupplierId} guestRows={data?.warehouses ?? []} />
                 </div>
               </TabsContent>
             </div>
