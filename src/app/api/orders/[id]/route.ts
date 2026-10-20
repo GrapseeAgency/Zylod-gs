@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { parseAddressSnapshot } from '@/lib/addresses'
 
 type OrderWithIncludes = Prisma.ordersGetPayload<{
   include: {
@@ -99,6 +100,9 @@ export async function GET(
       paymentStatus: order.paymentStatus,
       placedAt: order.placedAt.toISOString(),
       updatedAt: order.createdAt.toISOString(),
+      // Task 87 — one address shape from two sources: the LIVE address book
+      // row while it exists, else the immutable order-time snapshot (the FK
+      // is SetNull — a deleted address must never erase shipping history).
       shippingAddress: order.shippingAddress
         ? {
             id: order.shippingAddress.id,
@@ -109,7 +113,20 @@ export async function GET(
             district: order.shippingAddress.district,
             postalCode: order.shippingAddress.postalCode,
           }
-        : null,
+        : (() => {
+            const snap = parseAddressSnapshot(order.shippingAddressSnapshot)
+            if (!snap) return null
+            return {
+              id: order.shippingAddressId ?? null,
+              label: typeof snap.label === 'string' ? snap.label : null,
+              addressLine1: typeof snap.addressLine1 === 'string' ? snap.addressLine1 : null,
+              addressLine2: typeof snap.addressLine2 === 'string' ? snap.addressLine2 : null,
+              city: typeof snap.city === 'string' ? snap.city : null,
+              district: typeof snap.district === 'string' ? snap.district : null,
+              postalCode: typeof snap.postalCode === 'string' ? snap.postalCode : null,
+              fromSnapshot: true,
+            }
+          })(),
       payments: order.payments.map(p => ({
         id: p.id,
         method: p.method,

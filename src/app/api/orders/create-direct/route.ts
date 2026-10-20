@@ -7,6 +7,7 @@ import { notifyOrderMilestone } from '@/lib/notifications'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { roundQty } from '@/lib/product-contract'
+import { buildAddressSnapshot } from '@/lib/addresses'
 
 /**
  * POST /api/orders/create-direct — Buy Now (single product, no cart).
@@ -77,6 +78,9 @@ export async function POST(request: NextRequest) {
     const qty = roundQty(rawQty)
 
     // Validate shipping address belongs to this buyer
+    // Task 87: capture the address for the immutable order-time snapshot
+    // (addresses are user-deletable; the FK alone would lose the history).
+    let shippingAddressSnapshot: string | null = null
     if (shippingAddressId) {
       const address = await db.addresses.findFirst({
         where: { id: shippingAddressId, userId: buyerId },
@@ -84,6 +88,7 @@ export async function POST(request: NextRequest) {
       if (!address) {
         return NextResponse.json({ error: 'Invalid shipping address' }, { status: 400 })
       }
+      shippingAddressSnapshot = buildAddressSnapshot(address)
     }
 
     const orderNumber = 'ORD-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
@@ -134,6 +139,7 @@ export async function POST(request: NextRequest) {
             totalAmount: totalPrice,
             paymentStatus: 'unpaid',
             shippingAddressId: shippingAddressId || null,
+            shippingAddressSnapshot,
           },
         })
 

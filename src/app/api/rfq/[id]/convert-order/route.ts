@@ -5,6 +5,7 @@ import { authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { roundQty } from '@/lib/product-contract'
+import { buildAddressSnapshot } from '@/lib/addresses'
 
 /**
  * POST /api/rfq/[id]/convert-order — the buyer converts an ACCEPTED quote on
@@ -113,6 +114,9 @@ export async function POST(
     const { shippingAddressId } = parsed.data
 
     // Address validation identical to orders POST: must belong to THIS buyer.
+    // Task 87: capture the address for the immutable order-time snapshot
+    // (addresses are user-deletable; the FK alone would lose the history).
+    let shippingAddressSnapshot: string | null = null
     if (shippingAddressId) {
       const address = await db.addresses.findFirst({
         where: { id: shippingAddressId, userId: buyerId },
@@ -120,6 +124,7 @@ export async function POST(
       if (!address) {
         return NextResponse.json({ error: 'Invalid shipping address' }, { status: 400 })
       }
+      shippingAddressSnapshot = buildAddressSnapshot(address)
     }
 
     // 5a) Status guard — only an awarded RFQ (accepted quote decided) converts.
@@ -182,6 +187,7 @@ export async function POST(
           totalAmount,
           paymentStatus: 'unpaid',
           shippingAddressId: shippingAddressId ?? null,
+          shippingAddressSnapshot,
         },
       })
 

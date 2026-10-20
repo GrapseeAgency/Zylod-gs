@@ -8,6 +8,7 @@ import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { notifyPaymentVerified } from '@/lib/notifications'
 import { holdEscrowInTx } from '@/lib/escrow'
 import { roundQty } from '@/lib/product-contract'
+import { buildAddressSnapshot } from '@/lib/addresses'
 
 export async function GET(request: NextRequest) {
   try {
@@ -146,7 +147,11 @@ export async function POST(request: NextRequest) {
       item.quantity = roundQty(item.quantity)
     }
 
-    // Validate shipping address belongs to this buyer
+    // Validate shipping address belongs to this buyer — and CAPTURE it for
+    // the order's immutable snapshot (Task 87): addresses are user-deletable,
+    // the FK is SetNull, so without this a deleted address would erase the
+    // order's real shipping history.
+    let shippingAddressSnapshot: string | null = null
     if (shippingAddressId) {
       const address = await db.addresses.findFirst({
         where: { id: shippingAddressId, userId: buyerId },
@@ -154,6 +159,7 @@ export async function POST(request: NextRequest) {
       if (!address) {
         return NextResponse.json({ error: 'Invalid shipping address' }, { status: 400 })
       }
+      shippingAddressSnapshot = buildAddressSnapshot(address)
     }
 
     // Generate order number
@@ -305,6 +311,7 @@ export async function POST(request: NextRequest) {
             // balance debits — it NEVER passes through 'unpaid'.
             paymentStatus: payWithWallet ? 'paid' : 'unpaid',
             shippingAddressId: shippingAddressId || null,
+            shippingAddressSnapshot,
           },
         })
 

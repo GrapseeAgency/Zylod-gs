@@ -515,6 +515,13 @@ model orders {
   // paymentStatus: unpaid | partial | paid | refunded
   paymentStatus    String  @default("unpaid")
   shippingAddressId String?
+  // Task 87: immutable copy of the address AT ORDER TIME. addresses are
+  // user-deletable and the FK is SetNull — without this snapshot a buyer
+  // deleting an address book entry would silently erase a real order's
+  // shipping history. Written by every order-creation path (orders POST,
+  // create-direct, rfq convert-order); read as the fallback when the live
+  // relation is gone.
+  shippingAddressSnapshot String?
   placedAt         DateTime @default(now())
   createdAt        DateTime @default(now())
 

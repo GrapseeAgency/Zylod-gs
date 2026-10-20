@@ -2959,3 +2959,21 @@ Stage Summary:
 - The dispute loop is now a closed, connected circuit: filing reaches admins live + durably, decisions reach the buyer live + durably, implicated sellers are told through the correct id join, evidence is sealed at review, and every transition is audited.
 - First-admin window note: the drill consumed it again (qa86-* accounts) — DB wiped after.
 - REMAINING FAKE/INCOMPLETE: none found in this surface. Queued next: conversations/chatMessages surface drill, addresses/checkout drill, or further UI polish as found.
+
+---
+Task ID: 87
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE ADDRESS BOOK → CHECKOUT HISTORY RAIL — drilled for the first time, and the drill exposed a REAL DATA-LOSS DEFECT: addresses are user-deletable and orders.shippingAddressId is a SetNull FK — any buyer deleting an address book entry silently ERASED every order's real shipping history (courier disputes, returns, invoices all read it). The order of record lost where it was supposed to ship to.
+
+Work Log:
+- THE FIX (immutable order-time snapshot): new orders.shippingAddressSnapshot column (db:push applied) + src/lib/addresses.ts (buildAddressSnapshot / parseAddressSnapshot — honest parse, never fabricated fields). EVERY order-creation path now captures the address at order time: POST /api/orders (cart), POST /api/orders/create-direct, POST /api/rfq/[id]/convert-order. The order-detail read serves ONE shape from two sources: the LIVE row while it exists, else the snapshot — honestly flagged fromSnapshot:true with id null (the real SetNull state).
+- scripts/qa/t87-e2e.mjs: 40/40 PASS on wiped DB + a second fresh-wipe run (repeatable). Covers: 4 auth gates; 4 create guards naming the missing fields; CRUD + default semantics (first-address forced default, flag-swap demotes the old default in ONE transaction, PUT flip, destructive-guard 400s, unknown 404); ownership no-leak (foreign PUT/DELETE 404, empty stranger list); checkout (FOREIGN addressId 400); THE CORE — order survives its address's deletion with the full history readable (label/line1/city/postal from snapshot, raw DB FK null + snapshot text persisted); the SAME survival proven for the rfq convert path AND the create-direct path; default re-promotion after delete.
+- DRILL-SIDE FIXES ONLY (3): my invented RFQ quote/award endpoints corrected to the real contracts (POST /api/supplier/rfqs/[id]/quote {pricePerUnit} + PATCH /api/rfq/[id]/quotes/[qid] {action:'accept'}), and the RFQ needed a live productId link for convert (the 409 the guard returned was the platform being honest).
+- BROWSER QA (gateway :81, real UI buyer login): order ORD-MVGID85R965D's address book entry was deleted during the drill — the order detail page STILL renders the full "Shipping Address" block (Direct Path / Banani / Dhaka, Dhaka 1213) from the snapshot; Task-80 timeline with the Task-85 connector renders; console clean.
+- Platform mandate executed: the every-15-minutes webDevReview cron created as instructed (job 469017) with the required task description.
+- tsc 0 whole project; eslint 0 on all touched files; DB wiped 139×0 before commit.
+
+Stage Summary:
+- An order now remembers where it ships to FOREVER, regardless of what the buyer later does to their address book — three creation paths, one read shape, honest flags, 40/40 E2E.
+- REMAINING FAKE/INCOMPLETE: none found in this rail. Queued next: conversations/chatMessages surface drill, banners/dailyDeals content rails, or UI polish as found.
