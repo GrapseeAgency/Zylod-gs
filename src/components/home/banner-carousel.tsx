@@ -90,7 +90,15 @@ export function BannerCarousel() {
 
   const open = () => {
     if (!current.linkPageId) return
-    const params = current.linkParams ? `?${current.linkParams.replace(/^\?/, '')}` : ''
+    // linkParams is a raw query string from the admin; parse it into the
+    // navigation store's params object (invalid pairs are dropped, honest).
+    const params: Record<string, string> = {}
+    if (current.linkParams) {
+      for (const pair of current.linkParams.replace(/^\?/, '').split('&')) {
+        const [k, v] = pair.split('=')
+        if (k) params[k] = v ?? ''
+      }
+    }
     navigate(current.linkPageId, params)
   }
 

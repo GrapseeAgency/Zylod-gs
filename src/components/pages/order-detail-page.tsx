@@ -11,6 +11,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room'
 import { toast } from 'sonner'
+import { InspectionCard } from '@/components/shared/inspection-card'
 import {
   ArrowLeft, HelpCircle, Check, Package, Truck, Home,
   Download, AlertTriangle, MapPin, CreditCard, FileText, RefreshCw, XCircle,
@@ -902,6 +903,14 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
             </div>
           </div>
         </div>
+
+        {/* Task 91: the inspection rail — "check it before you accept it".
+            Buyer-side block: request an inspection of THIS order (self or
+            third party) and follow it pending → scheduled → completed/failed
+            with the REAL report link only when an admin recorded one. */}
+        {orderId && (
+          <InspectionCard orderId={orderId} orderNumber={order?.orderNumber || ''} />
+        )}
       </main>
 
       {/* Submit-payment dialog (Task 56-b manual leg) */}
