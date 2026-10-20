@@ -2924,3 +2924,18 @@ Work Log:
 Stage Summary:
 - KYC is now a closed, guarded loop: sellers upload (pending, resubmission replaces), admins review each document AND the profile (audited, notified), and the marketplace-facing status changes only through audited admin rails with cache invalidation.
 - REMAINING FAKE/INCOMPLETE: none in this slice. Next: UI polish rounds / further surface drills (returns UI admin side, disputes) as they surface.
+
+---
+Task ID: 85
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: UI POLISH on the two surfaces this round's work created — the Task 80 tracking timeline (read as floating dots, no progression) and the Task 79 seller inventory quick-edit row (five controls overflowed on narrow screens).
+
+Work Log:
+- TimelineRow: classic vertical connector line (absolute w-px, dot-to-dot, hidden on the last row; correct in both collapsed single-event and expanded states), dots gain a white/dark ring so they sit ON the line; verified visually on a real 4-event delivered order (Delivered green → Shipped blue → Confirmed amber → Pending slate).
+- Inventory quick-edit row: controls container now flex-wraps; the alert group (input + Alert + Reset) takes its own full-width line under sm — verified on 375×812: two clean rows, no overflow, no clipped buttons.
+- QA state produced by re-running t81 as the seeder (20/20 PASS again — double duty as a regression run).
+- tsc 0; eslint 0 touched; console clean both sessions; DB wiped 139×0 before commit; pushed eca055e.
+
+Stage Summary:
+- The surfaces this round built now look like finished product, not wireframes. Queued next: more surface drills (disputes) or polish as found.
