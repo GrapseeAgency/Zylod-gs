@@ -2907,3 +2907,20 @@ Work Log:
 Stage Summary:
 - The physical half (goods back, stock/soldCount restored by the seller's own receipt) and the financial half (admin-documented refunds with real-world references, never fabricated in-system) are both proven, together, on one DB.
 - REMAINING FAKE/INCOMPLETE: none in this loop. Next: supplier verification lifecycle drill, then UI polish rounds.
+
+---
+Task ID: 84
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: SUPPLIER VERIFICATION LIFECYCLE — drilled for the first time, and the drill caught a REAL SECURITY HOLE before anything else: PATCH /api/supplier/verification/[docId] authenticated ANY user, checked NO ownership, and accepted ANY status string — any buyer could flip any seller's KYC document to 'verified' with no audit and no rate limit (zero UI callers; a stray admin-power route).
+
+Work Log:
+- HOLE CLOSED: the route rebuilt as the missing ADMIN document-review rail — requireUserType(['admin']) 401-first (seller/buyer self-verification structurally impossible), rate limit 30/min 'admin-verification-review', Zod strict {status: under_review|verified|rejected} with rejectionReason REQUIRED on rejection (≤500), 404 unknown doc, ONE transaction (status + reason cleared on non-reject + reviewedAt + auditLogs 'verification_document_reviewed' with real before/after), and the SELLER notified of every decision with the human doc label. DELETE tightened: suppliers-only, ownership-scoped, 404 on foreign docs (the odd auth.userId fallback is gone — admins never delete through a supplier's route).
+- scripts/qa/t84-e2e.mjs: 36/36 PASS on wiped DB — THE HOLE PROOF (buyer doc-flip now 401); upload guards (unknown type 400, non-image 400); 4 required docs → 4 pending rows; honest progress 0 of 4 (json.progress shape — one drill-side field-name fix); resubmission REPLACES the same type (4 rows not 5); SELLER self-review 401; admin review: free-form status 400, under_review + reviewedAt, rejection without reason 400, rejection WITH reason; seller re-uploads the rejected doc → verified ×4; profile rail: reject-without-reason 400 → under_review → rejected with reason → approve (reason cleared, verifiedAt stamped); the twin POST /api/suppliers/[id]/verify rail verified; seller NOTIFIED of the rejection (title carries the doc label); audits cover both doc reviews and all profile decisions.
+- Admin UI compatibility checked: the admin suppliers page only calls the profile rail — no break.
+- BROWSER QA (gateway :81, real UI seller login): the verification hub renders "Fully Verified Merchant — 4 of 4 mandatory credentials approved", 100%, all four docs "Verified" — from the real DB rows the drill produced. Console clean.
+- tsc 0 whole project; eslint 0 touched; DB wiped 139×0 before commit; pushed f639f59.
+
+Stage Summary:
+- KYC is now a closed, guarded loop: sellers upload (pending, resubmission replaces), admins review each document AND the profile (audited, notified), and the marketplace-facing status changes only through audited admin rails with cache invalidation.
+- REMAINING FAKE/INCOMPLETE: none in this slice. Next: UI polish rounds / further surface drills (returns UI admin side, disputes) as they surface.
