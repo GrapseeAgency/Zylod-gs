@@ -1039,6 +1039,7 @@ model browsingHistory {
   user    users    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
   product products @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  @@unique([buyerId, productId])
   @@index([buyerId])
   @@index([productId])
   @@index([viewedAt])

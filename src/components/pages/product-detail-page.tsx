@@ -332,6 +332,18 @@ function DesktopProductDetailPage() {
         setProduct(result.data as ProductData)
         setQuantity(result.data.moq || 1)
 
+        // Task 104: record the view server-side (browsingHistory) so the
+        // Recently Viewed page reflects real browsing. Fire-and-forget: a
+        // guest's POST 401s and simply leaves no server history — the rail
+        // is buyer-scoped by design; a failure here must never disturb the
+        // product page itself.
+        fetch('/api/products/recently-viewed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ productId }),
+        }).catch(() => { /* buyer-scoped history is optional context, never a blocker */ })
+
         // Fetch detailed specifications for the Specifications tab
         const specRes = await fetch(`/api/products/${productId}/specifications`)
         if (specRes.ok) {
