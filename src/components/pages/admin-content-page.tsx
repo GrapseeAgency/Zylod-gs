@@ -37,6 +37,7 @@ import { toast } from 'sonner'
 import { AdminBlogManager } from '@/components/admin/admin-blog-manager'
 import { AdminPromotionsManager } from '@/components/admin/admin-promotions-manager'
 import { AdminCompanyManager } from '@/components/admin/admin-company-manager'
+import { AdminPressInvestorManager } from '@/components/admin/admin-press-investor-manager'
 import {
   ArrowRight, Image as ImageIcon, Megaphone, Newspaper, Plus, RefreshCw, Trash2, Zap, CalendarDays, BadgePercent, Scale,
 } from 'lucide-react'
@@ -139,7 +140,7 @@ function localToIso(value: string): string | undefined {
 export function AdminContentPage() {
   const navigate = useNavigationStore((s) => s.navigate)
 
-  const [tab, setTab] = useState<'banners' | 'deals' | 'blog' | 'promotions' | 'company'>('banners')
+  const [tab, setTab] = useState<'banners' | 'deals' | 'blog' | 'promotions' | 'company' | 'press'>('banners')
   const [banners, setBanners] = useState<AdminBanner[]>([])
   const [bannerStats, setBannerStats] = useState<BannerStats | null>(null)
   const [deals, setDeals] = useState<AdminDeal[]>([])
@@ -340,7 +341,7 @@ export function AdminContentPage() {
       ) : (
         <>
           {/* Tab bar */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button variant={tab === 'banners' ? 'default' : 'outline'} size="sm" onClick={() => setTab('banners')}>
               <ImageIcon className="h-4 w-4 mr-1.5" /> Banners ({bannerStats?.total ?? '…'})
             </Button>
@@ -355,6 +356,9 @@ export function AdminContentPage() {
             </Button>
             <Button variant={tab === 'company' ? 'default' : 'outline'} size="sm" onClick={() => setTab('company')}>
               <Scale className="h-4 w-4 mr-1.5" /> Company
+            </Button>
+            <Button variant={tab === 'press' ? 'default' : 'outline'} size="sm" onClick={() => setTab('press')}>
+              <Newspaper className="h-4 w-4 mr-1.5" /> Press & investor
             </Button>
             <div className="flex-1" />
             <Button variant="ghost" size="sm" onClick={() => load('both')} disabled={refreshing} className="text-muted-foreground">
@@ -373,6 +377,8 @@ export function AdminContentPage() {
             <AdminPromotionsManager />
           ) : tab === 'company' ? (
             <AdminCompanyManager />
+          ) : tab === 'press' ? (
+            <AdminPressInvestorManager />
           ) : loading ? (
             <div className="space-y-3">
               {[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}
