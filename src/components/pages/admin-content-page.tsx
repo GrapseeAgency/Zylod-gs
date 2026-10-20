@@ -36,8 +36,9 @@ import { useRealtimeRoom } from '@/hooks/use-realtime-room'
 import { toast } from 'sonner'
 import { AdminBlogManager } from '@/components/admin/admin-blog-manager'
 import { AdminPromotionsManager } from '@/components/admin/admin-promotions-manager'
+import { AdminCompanyManager } from '@/components/admin/admin-company-manager'
 import {
-  ArrowRight, Image as ImageIcon, Megaphone, Newspaper, Plus, RefreshCw, Trash2, Zap, CalendarDays, BadgePercent,
+  ArrowRight, Image as ImageIcon, Megaphone, Newspaper, Plus, RefreshCw, Trash2, Zap, CalendarDays, BadgePercent, Scale,
 } from 'lucide-react'
 
 /* ─── Types (mirror the API responses verbatim) ─── */
@@ -138,7 +139,7 @@ function localToIso(value: string): string | undefined {
 export function AdminContentPage() {
   const navigate = useNavigationStore((s) => s.navigate)
 
-  const [tab, setTab] = useState<'banners' | 'deals' | 'blog' | 'promotions'>('banners')
+  const [tab, setTab] = useState<'banners' | 'deals' | 'blog' | 'promotions' | 'company'>('banners')
   const [banners, setBanners] = useState<AdminBanner[]>([])
   const [bannerStats, setBannerStats] = useState<BannerStats | null>(null)
   const [deals, setDeals] = useState<AdminDeal[]>([])
@@ -352,6 +353,9 @@ export function AdminContentPage() {
             <Button variant={tab === 'promotions' ? 'default' : 'outline'} size="sm" onClick={() => setTab('promotions')}>
               <BadgePercent className="h-4 w-4 mr-1.5" /> Promotions
             </Button>
+            <Button variant={tab === 'company' ? 'default' : 'outline'} size="sm" onClick={() => setTab('company')}>
+              <Scale className="h-4 w-4 mr-1.5" /> Company
+            </Button>
             <div className="flex-1" />
             <Button variant="ghost" size="sm" onClick={() => load('both')} disabled={refreshing} className="text-muted-foreground">
               <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
@@ -367,6 +371,8 @@ export function AdminContentPage() {
             <AdminBlogManager />
           ) : tab === 'promotions' ? (
             <AdminPromotionsManager />
+          ) : tab === 'company' ? (
+            <AdminCompanyManager />
           ) : loading ? (
             <div className="space-y-3">
               {[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}
