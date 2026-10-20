@@ -1,13 +1,31 @@
 'use client'
 
+/**
+ * Product Specifications page (Task 92 rewrite) — this page previously
+ * FABRICATED an entire spec sheet for every product (hardcoded racking
+ * steel grades, dimensions and an "ISO 9001 / CE" certification array
+ * rendered no matter what the product actually was). That fabrication is
+ * gone. Everything rendered now comes from the real rails:
+ *
+ *   - Identity (name / SKU / image) from the real product row
+ *     (404 → honest not-found, never a stand-in product).
+ *   - Specifications from the real productSpecifications table via
+ *     GET /api/products/[id]/specifications (the same grouped feed the
+ *     PDP Specifications tab consumes).
+ *   - Certifications from the real productCertifications table via the
+ *     shared ProductCertifications component (server-computed Valid /
+ *     Expiring soon / Expired badges, document links) — empty when the
+ *     supplier filed nothing, never padded with invented claims.
+ */
+
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useNavigationStore } from '@/store/navigation-store'
+import { ProductCertifications } from '@/components/product/product-certifications'
 import {
   QrCode, Bell, FileText, Wrench, Ruler,
-  CheckCircle2, Download, Package, ArrowLeft
+  Download, Package, ArrowLeft, AlertCircle, Info,
 } from 'lucide-react'
 
 interface ProductData {
@@ -15,11 +33,6 @@ interface ProductData {
   name: string
   sku: string
   images: { url: string }[]
-  specs: {
-    material: { label: string; value: string }[]
-    dimensions: { label: string; value: string }[]
-    certifications: { title: string; subtitle: string }[]
-  }
 }
 
 export function ProductSpecificationsPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
@@ -28,49 +41,46 @@ export function ProductSpecificationsPage({ pageParams: _pageParams }: { pagePar
   const productId = pageParams.productId || ''
 
   const [product, setProduct] = useState<ProductData | null>(null)
+  const [notFound, setNotFound] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [groupedSpecs, setGroupedSpecs] = useState<Record<string, Array<{ specName: string; specValue: string }>>>({})
 
   useEffect(() => {
     let mounted = true
     const fetchProduct = async () => {
       setLoading(true)
+      setNotFound(false)
       try {
-        const url = productId ? `/api/products/${productId}` : '/api/products?limit=1'
-        const res = await fetch(url)
-        if (res.ok) {
-          const data = await res.json()
-          const p = data.data || (Array.isArray(data) ? data[0] : data)
-          if (mounted && p) {
-            setProduct({
-              id: p.id || '',
-              name: p.name || 'Heavy Duty Industrial Pallet Racking',
-              sku: p.sku || p.tags?.[0] || 'HD-IPR-7500',
-              images: Array.isArray(p.images) ? p.images : [],
-              specs: {
-                material: [
-                  { label: 'Yield Strength (MPa)', value: '≥ 235' },
-                  { label: 'Tensile Strength (MPa)', value: '375 - 500' },
-                  { label: 'Steel Grade', value: 'Q235B High-Tensile Steel' },
-                  { label: 'Surface Treatment', value: 'Epoxy Powder Coating (80-120 µm)' },
-                ],
-                dimensions: [
-                  { label: 'Standard Height (mm)', value: '3000 / 4000 / 5000 / 6000' },
-                  { label: 'Standard Depth (mm)', value: '900 / 1000 / 1200' },
-                  { label: 'Beam Length (mm)', value: '1350 / 2700 / 3300 / 3600' },
-                  { label: 'Load Capacity per Level', value: 'Up to 3000 kg (Uniformly Distributed Load)' },
-                ],
-                certifications: [
-                  { title: 'ISO 9001:2015', subtitle: 'Quality Management Systems' },
-                  { title: 'CE Certified', subtitle: 'European Health, Safety & Environmental Protection' },
-                  { title: 'FEM 10.2.02', subtitle: 'European Racking Design Standards' },
-                  { title: 'AS4084-2012', subtitle: 'Steel Storage Racking Standards (Australia)' },
-                ],
-              },
-            })
+        if (!productId) {
+          if (mounted) setNotFound(true)
+          return
+        }
+        const res = await fetch(`/api/products/${productId}`)
+        if (!res.ok) {
+          if (mounted) setNotFound(true)
+          return
+        }
+        const data = await res.json()
+        const p = data.data || (Array.isArray(data) ? data[0] : data)
+        if (mounted && p) {
+          setProduct({
+            id: p.id || '',
+            name: p.name || '',
+            sku: p.sku || '',
+            images: Array.isArray(p.images) ? p.images : [],
+          })
+        }
+        // Real grouped specifications (same feed the PDP tab consumes)
+        const specRes = await fetch(`/api/products/${productId}/specifications`)
+        if (specRes.ok) {
+          const specJson = await specRes.json()
+          if (mounted && specJson?.success && specJson.data?.groupedSpecifications) {
+            setGroupedSpecs(specJson.data.groupedSpecifications)
           }
         }
       } catch (e) {
         console.error('Failed to load specifications:', e)
+        if (mounted) setNotFound(true)
       } finally {
         if (mounted) setLoading(false)
       }
@@ -81,15 +91,23 @@ export function ProductSpecificationsPage({ pageParams: _pageParams }: { pagePar
   }, [productId])
 
   const handleDownloadPDF = () => {
-    // Generate/trigger file download simulation
+    // Downloads the REAL product record (identity + grouped specs) — no
+    // invented data sheet, just what the platform actually stores.
+    const payload = {
+      product: product ? { id: product.id, name: product.name, sku: product.sku } : null,
+      specifications: groupedSpecs,
+    }
     const element = document.createElement('a')
-    const file = new Blob([JSON.stringify(product, null, 2)], { type: 'text/plain' })
+    const file = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
     element.href = URL.createObjectURL(file)
-    element.download = `${product?.sku || 'Product'}-Specifications.txt`
+    element.download = `${product?.sku || 'Product'}-specifications.json`
     document.body.appendChild(element)
     element.click()
     document.body.removeChild(element)
   }
+
+  const specGroupCount = Object.keys(groupedSpecs).length
+  const specRowCount = Object.values(groupedSpecs).reduce((n, rows) => n + rows.length, 0)
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-10 text-slate-900">
@@ -122,31 +140,45 @@ export function ProductSpecificationsPage({ pageParams: _pageParams }: { pagePar
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Product
         </button>
-        {/* Title & SKU */}
+
         {loading ? (
           <div className="space-y-2">
             <Skeleton className="h-6 w-3/4" />
             <Skeleton className="h-4 w-1/4" />
             <Skeleton className="h-12 w-full rounded-2xl" />
           </div>
-        ) : product ? (
+        ) : notFound || !product ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-2">
+            <AlertCircle className="h-8 w-8 mx-auto text-slate-300" />
+            <h2 className="text-sm font-black text-slate-900">Product not found</h2>
+            <p className="text-xs text-slate-500">
+              This product may have been removed or is no longer publicly visible.
+            </p>
+            <Button onClick={goBack} variant="outline" className="h-9 rounded-xl text-xs font-bold">
+              Go back
+            </Button>
+          </div>
+        ) : (
           <>
+            {/* Title & SKU */}
             <div>
               <h1 className="text-lg md:text-2xl font-black text-slate-900 tracking-tight leading-snug">
                 {product.name}
               </h1>
-              <p className="text-xs font-bold text-slate-400 mt-0.5 uppercase tracking-wider">
-                SKU: {product.sku}
-              </p>
+              {product.sku && (
+                <p className="text-xs font-bold text-slate-400 mt-0.5 uppercase tracking-wider">
+                  SKU: {product.sku}
+                </p>
+              )}
             </div>
 
-            {/* Download PDF Button */}
+            {/* Download the real record */}
             <Button
               onClick={handleDownloadPDF}
               className="w-full md:w-auto md:px-10 bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md"
             >
               <Download className="h-4 w-4" />
-              Download PDF Data Sheet
+              Download specification record
             </Button>
 
             {/* Hero Image */}
@@ -164,60 +196,63 @@ export function ProductSpecificationsPage({ pageParams: _pageParams }: { pagePar
               )}
             </div>
 
-            {/* Section 1: Material Performance */}
+            {/* Section 1: Real specifications, grouped */}
             <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-2xs">
               <div className="bg-slate-100/70 px-4 py-2.5 border-b border-slate-200 flex items-center gap-2">
                 <Wrench className="h-4 w-4 text-primary" />
-                <h3 className="text-xs font-bold text-slate-900">Material Performance</h3>
+                <h3 className="text-xs font-bold text-slate-900">Specifications</h3>
+                {specRowCount > 0 && (
+                  <span className="ml-auto text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    {specRowCount} field{specRowCount === 1 ? '' : 's'} · {specGroupCount} group{specGroupCount === 1 ? '' : 's'}
+                  </span>
+                )}
               </div>
-              <div className="divide-y divide-slate-100">
-                {product.specs.material.map((row, idx) => (
-                  <div key={idx} className="p-3.5">
-                    <span className="text-[11px] text-slate-400 block mb-0.5">{row.label}</span>
-                    <span className="text-xs font-black text-slate-800">{row.value}</span>
-                  </div>
-                ))}
-              </div>
+              {specRowCount === 0 ? (
+                <div className="p-5 flex items-start gap-3">
+                  <Info className="h-4 w-4 text-slate-300 mt-0.5 shrink-0" />
+                  <p className="text-xs text-slate-500">
+                    The supplier has not published detailed specifications for this product yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {Object.entries(groupedSpecs).map(([category, rows]) => (
+                    <div key={category} className="p-4">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">{category}</p>
+                      <div className="space-y-1.5">
+                        {rows.map((row, idx) => (
+                          <div key={idx} className="flex justify-between gap-4">
+                            <span className="text-[11px] text-slate-500">{row.specName}</span>
+                            <span className="text-xs font-bold text-slate-800 text-right">{row.specValue}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Section 2: Dimensions & Capacity */}
+            {/* Section 2: Dimensions-style raw rows are covered above; certifications are REAL */}
             <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-2xs">
               <div className="bg-slate-100/70 px-4 py-2.5 border-b border-slate-200 flex items-center gap-2">
                 <Ruler className="h-4 w-4 text-primary" />
-                <h3 className="text-xs font-bold text-slate-900">Dimensions & Capacity</h3>
+                <h3 className="text-xs font-bold text-slate-900">Certifications &amp; Compliance</h3>
               </div>
-              <div className="divide-y divide-slate-100">
-                {product.specs.dimensions.map((row, idx) => (
-                  <div key={idx} className="p-3.5">
-                    <span className="text-[11px] text-slate-400 block mb-0.5">{row.label}</span>
-                    <span className="text-xs font-black text-slate-800">{row.value}</span>
-                  </div>
-                ))}
-              </div>
+              <ProductCertifications productId={product.id} />
             </div>
 
-            {/* Section 3: Certifications & Compliance */}
-            <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-2xs">
-              <div className="bg-slate-100/70 px-4 py-2.5 border-b border-slate-200 flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-primary" />
-                <h3 className="text-xs font-bold text-slate-900">Certifications & Compliance</h3>
-              </div>
-              <div className="p-4 space-y-3.5">
-                {product.specs.certifications.map((cert, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-slate-900">{cert.title}</h4>
-                      <p className="text-[10px] text-slate-500">{cert.subtitle}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {/* Download raw record again for the road */}
+            <div className="flex items-start gap-3 p-4 bg-slate-100/60 rounded-3xl border border-slate-200">
+              <FileText className="h-4 w-4 text-slate-400 mt-0.5 shrink-0" />
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Everything on this page is served from the platform&apos;s live product record.
+                Claims about quality or compliance appear here only when the supplier filed
+                verifiable certification documents — never pre-filled, never invented.
+              </p>
             </div>
           </>
-        ) : null}
+        )}
       </main>
     </div>
   )

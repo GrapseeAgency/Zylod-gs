@@ -22,6 +22,7 @@ import { ProductQRCodeDialog } from '@/components/shared/product-qr-code'
 import { ProductShareDialog } from '@/components/shared/product-share-dialog'
 import { BackInStockButton } from '@/components/shared/back-in-stock-button'
 import { SampleRequestDialog } from '@/components/product/sample-request-dialog'
+import { ProductCertifications } from '@/components/product/product-certifications'
 import {
   ShoppingCart, Package, Star, Heart, ChevronLeft,
   Truck, Shield, MessageSquare, Minus, Plus, ArrowRight,
@@ -272,6 +273,8 @@ function DesktopProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [product, setProduct] = useState<ProductData | null>(null)
   const [specifications, setSpecifications] = useState<Record<string, Array<{ specName: string; specValue: string }>>>({})
+  // Task 92: real certification count for the trust tab (null = not loaded yet)
+  const [certCount, setCertCount] = useState<number | null>(null)
   const [quantity, setQuantity] = useState(50)
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('details')
@@ -321,6 +324,12 @@ function DesktopProductDetailPage() {
             setSpecifications(specResult.data.groupedSpecifications)
           }
         }
+
+        // Task 92: real certification count for the trust tab label
+        fetch(`/api/products/${productId}/certifications`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((j) => setCertCount(typeof j?.count === 'number' ? j.count : 0))
+          .catch(() => setCertCount(0))
       } catch {
         // Silently handle errors
       } finally {
@@ -1221,6 +1230,7 @@ function DesktopProductDetailPage() {
         <TabsList className="w-full justify-start">
           <TabsTrigger value="details">Product Details</TabsTrigger>
           <TabsTrigger value="specifications">Specifications</TabsTrigger>
+          <TabsTrigger value="certifications">Certifications{certCount !== null ? ` (${certCount})` : ''}</TabsTrigger>
           <TabsTrigger value="reviews">Reviews ({productReviewCount})</TabsTrigger>
           <TabsTrigger value="shipping">Shipping & Delivery</TabsTrigger>
         </TabsList>
@@ -1300,6 +1310,15 @@ function DesktopProductDetailPage() {
                   <p className="text-muted-foreground">No detailed specifications available for this product.</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ─── Certifications Tab (Task 92: the real trust rail) ─── */}
+        <TabsContent value="certifications">
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-0">
+              <ProductCertifications productId={productId} />
             </CardContent>
           </Card>
         </TabsContent>

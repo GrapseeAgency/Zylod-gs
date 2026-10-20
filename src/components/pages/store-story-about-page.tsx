@@ -66,17 +66,22 @@ export function StoreStoryAboutPage() {
             }
           } catch {}
 
+          // Task 92: NO fabricated defaults. This page previously pre-filled
+          // 'ISO 9001:2015 / CE Compliant / RoHS / BSCI' and fake machinery
+          // lists for every supplier — the platform inventing trust claims.
+          // Empty means empty now; placeholders guide, nothing renders as a
+          // claim the supplier never wrote.
           setFormData({
             companyName: supplier.companyName || '',
-            foundedYear: customSections.foundedYear || '2015',
-            factorySizeSqFt: customSections.factorySizeSqFt || '45,000',
-            workforceCount: customSections.workforceCount || '250+',
-            productionCapacityMonthly: customSections.productionCapacityMonthly || '50,000 units/mo',
-            mainExportMarkets: Array.isArray(customSections.mainExportMarkets) ? customSections.mainExportMarkets : ['North America', 'European Union', 'Middle East', 'South Asia'],
-            certifications: Array.isArray(customSections.certifications) ? customSections.certifications : ['ISO 9001:2015', 'CE Compliant', 'RoHS Certified', 'BSCI Audited'],
-            aboutBio: customSections.aboutBio || supplier.bio || 'Leading wholesale manufacturer and verified supplier specialized in high-volume industrial export quality production.',
+            foundedYear: customSections.foundedYear || '',
+            factorySizeSqFt: customSections.factorySizeSqFt || '',
+            workforceCount: customSections.workforceCount || '',
+            productionCapacityMonthly: customSections.productionCapacityMonthly || '',
+            mainExportMarkets: Array.isArray(customSections.mainExportMarkets) ? customSections.mainExportMarkets : [],
+            certifications: Array.isArray(customSections.certifications) ? customSections.certifications : [],
+            aboutBio: customSections.aboutBio || supplier.bio || '',
             factoryPhotos: Array.isArray(customSections.factoryPhotos) ? customSections.factoryPhotos : [],
-            machineryList: Array.isArray(customSections.machineryList) ? customSections.machineryList : ['CNC Milling Stations (12 units)', 'Automated SMT Assembly Lines', 'Laser Cutting & Engraving', 'Automated QA Testing Rigs']
+            machineryList: Array.isArray(customSections.machineryList) ? customSections.machineryList : []
           })
         }
       } catch (err) {

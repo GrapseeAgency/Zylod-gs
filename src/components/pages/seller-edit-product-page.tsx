@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, AlertTriangle, Save, BellRing } from 'lucide-react';
 import { toast } from 'sonner';
+import { ProductCertifications } from '@/components/product/product-certifications';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useAuthStore } from '@/store/auth-store';
 import { productPayloadSchema } from '@/lib/product-contract';
@@ -597,6 +598,22 @@ export function SellerEditProductPage() {
             )}
           </button>
         </form>
+
+        {/* Task 92: the certification trust surface — the product's OWN
+            supplier files real, verifiable certificates here; the PDP
+            "Certifications" tab serves exactly these rows to buyers. */}
+        {productId && !notFound && (
+          <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/60">
+              <h2 className="text-sm font-black text-slate-900">Certifications &amp; compliance</h2>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                Shown to every buyer on the product page. File real, verifiable
+                certificates only — false claims are strictly penalized.
+              </p>
+            </div>
+            <ProductCertifications productId={productId} manage />
+          </section>
+        )}
       </div>
     </motion.div>
   );
