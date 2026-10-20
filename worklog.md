@@ -3427,3 +3427,23 @@ Stage Summary:
 - The platform now runs on its own published truth: releases drive the update check, maintenance windows fire the banner endpoint, and the ops journal is written by the people who do the checking.
 - Read-without-writer queue remaining: couponEarningTasks (/api/coupons/earn), mediaKitAssets (/api/press/media-kit), investorDocuments (/api/investor ×4 pages).
 - REMAINING FAKE/INCOMPLETE: none found in this surface.
+
+---
+Task ID: 110
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE PRESS & INVESTOR RAIL — four public pages (media kit, investor relations, financial filings, annual report) reading two tables with zero writers since day one: mediaKitAssets and investorDocuments.
+
+Work Log:
+- MEDIA KIT (GET/POST /api/admin/media-kit + PATCH/DELETE /[id]): assetType locked to the six vocabularies the public page groups by; fileUrl must be https:// or /uploads/ (house media rule); isPublic=false keeps an asset console-only (the grouped public rail serves only public rows — proven both directions); STRICT keys; audits media_asset_created/updated/deleted + press:changed taps.
+- INVESTOR DOCUMENTS (GET/POST /api/admin/investor-docs + PATCH/DELETE /[id]): docType locked to the five investor types; fiscalYear/fiscalQ/summary on the shape the readers already order and group by; isPublished draft semantics (day-one reader filters it — the drill promotes a draft and watches the public count 1→2); audits investor_doc_created/updated/deleted.
+- UI: admin-content sixth tab 'Press & investor' (self-contained AdminPressInvestorManager — both sections, honest empty states, type badges, public/draft chips, file URLs verbatim, two dialogs, deletes). Tab bar gained flex-wrap: the six-tab strip overflowed 375px mobile (841>375 caught by browser QA → 375=375 after the fix).
+- DRILL-SIDE FIX: the investor reader wraps {documents,total} — first draft asserted a bare array; corrected to the real shape.
+- scripts/qa/t110-e2e.mjs: 25/25 PASS on wiped DB ×2 (public honest-zeros; gates; fileUrl/assetType/docType/strict refusals; public-vs-private split; grouped-by verbatim; draft invisibility + promotion; deletes + re-delete 404s; audit counts exact).
+- BROWSER QA (gateway :81, real UI login): admin Press & investor tab honest empties → REAL dialog published 'Zylod Annual Report FY2026' → row renders LIVE → public /api/investor serves it verbatim → mobile zero overflow after the wrap fix → console clean.
+- tsc 0 whole project; eslint 0/0; DB wiped 139×0 before commit; pushed as be1cf65.
+
+Stage Summary:
+- Every public surface the platform ships can now be filled by its console: legal, milestones, releases, maintenance, service journal, couriers, payouts, press, investor documents.
+- Read-without-writer queue remaining: couponEarningTasks ONLY (/api/coupons/earn — deferred deliberately: awarding vouchers on task completion interacts with the coupon/voucher ledger and needs its own design round).
+- REMAINING FAKE/INCOMPLETE: none found in this surface.
