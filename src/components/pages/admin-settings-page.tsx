@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { AdminAppStatusManager } from '@/components/admin/admin-app-status-manager'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -454,6 +455,11 @@ export function AdminSettingsPage() {
               ))}
             </div>
           )}
+
+          {/* Task 109: platform status rail — releases, maintenance, service log */}
+          <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 p-4">
+            <AdminAppStatusManager />
+          </div>
         </div>
       )}
     </div>
