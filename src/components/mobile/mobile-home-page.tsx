@@ -8,6 +8,7 @@ import { MobilePromoIconGrid } from './mobile-promo-icon-grid'
 import { MobileSubsidySection } from './mobile-subsidy-section'
 import { MobileProductGrid } from './mobile-product-grid'
 import { MobileBottomNav } from './mobile-bottom-nav'
+import { BannerCarousel } from '@/components/home/banner-carousel'
 import { MobileHomeLoading } from '@/components/shared/loading-skeletons'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Bell, Menu } from 'lucide-react'
@@ -134,6 +135,11 @@ export function MobileHomePage() {
 
         {/* Category pill scroller with proper icons */}
         <MobileCategoryPills />
+
+        {/* Real admin-managed banners (Task 89) — renders nothing when empty */}
+        <div className="mt-2">
+          <BannerCarousel />
+        </div>
 
         {/* Quick Access — single horizontal scroll row */}
         <MobilePromoIconGrid />

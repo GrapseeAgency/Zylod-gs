@@ -14,7 +14,7 @@ import {
   LayoutDashboard, DollarSign, Users, Clock, ShoppingCart, TrendingUp, Package,
   ChevronRight, AlertCircle, BarChart3, Server, Database, Wifi, AlertTriangle,
   UserPlus, Star, MapPin, ArrowRight, ShieldAlert, ShieldCheck, RotateCcw, LayoutGrid, Settings, LifeBuoy,
-  ClipboardList, Warehouse, MessageSquareQuote,
+  ClipboardList, Warehouse, MessageSquareQuote, Megaphone,
 } from 'lucide-react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
@@ -89,6 +89,7 @@ const QUICK_ADMIN_ACTIONS = [
   { title: 'Review Returns', description: 'Approve or reject buyer return requests', icon: RotateCcw, page: 'admin-returns', badgeKey: null as string | null },
   { title: 'Manage Categories', description: 'Create, edit & order marketplace categories', icon: LayoutGrid, page: 'admin-categories', badgeKey: null as string | null },
   { title: 'Review Complaints', description: 'Respond to buyer & supplier complaints', icon: AlertTriangle, page: 'admin-complaints', badgeKey: null as string | null },
+  { title: 'Content & Deals', description: 'Home banners, flash & daily deals shoppers see', icon: Megaphone, page: 'admin-content', badgeKey: null as string | null },
   { title: 'Support Threads', description: 'Reply to buyer support tickets as the platform', icon: LifeBuoy, page: 'admin-support-tickets', badgeKey: null as string | null },
   { title: 'System Settings', description: 'Platform settings incl. return window', icon: Settings, page: 'admin-settings', badgeKey: null as string | null },
   { title: 'Trust & Safety Reports', description: 'Review buyer/seller fraud & violations', icon: ShieldAlert, page: 'admin-reports', badgeKey: null as string | null },

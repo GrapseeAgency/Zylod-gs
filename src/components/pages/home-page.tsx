@@ -15,6 +15,9 @@ const CategoryTabsAndProducts = lazy(() =>
 const RightSidebar = lazy(() =>
   import('@/components/home/right-sidebar').then((m) => ({ default: m.RightSidebar }))
 )
+const BannerCarousel = lazy(() =>
+  import('@/components/home/banner-carousel').then((m) => ({ default: m.BannerCarousel }))
+)
 
 /* ─── Loading fallback ─── */
 function SectionFallback() {
@@ -107,6 +110,9 @@ function DesktopHomePage() {
                 variants={fadeInVariants}
                 className="flex-1 min-w-0"
               >
+                <Suspense fallback={<SectionFallback />}>
+                  <BannerCarousel />
+                </Suspense>
                 <Suspense fallback={<SectionFallback />}>
                   <CategoryTabsAndProducts />
                 </Suspense>
