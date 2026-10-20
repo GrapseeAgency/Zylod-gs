@@ -34,8 +34,9 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useRealtimeRoom } from '@/hooks/use-realtime-room'
 import { toast } from 'sonner'
+import { AdminBlogManager } from '@/components/admin/admin-blog-manager'
 import {
-  ArrowRight, Image as ImageIcon, Megaphone, Plus, RefreshCw, Trash2, Zap, CalendarDays,
+  ArrowRight, Image as ImageIcon, Megaphone, Newspaper, Plus, RefreshCw, Trash2, Zap, CalendarDays,
 } from 'lucide-react'
 
 /* ─── Types (mirror the API responses verbatim) ─── */
@@ -136,7 +137,7 @@ function localToIso(value: string): string | undefined {
 export function AdminContentPage() {
   const navigate = useNavigationStore((s) => s.navigate)
 
-  const [tab, setTab] = useState<'banners' | 'deals'>('banners')
+  const [tab, setTab] = useState<'banners' | 'deals' | 'blog'>('banners')
   const [banners, setBanners] = useState<AdminBanner[]>([])
   const [bannerStats, setBannerStats] = useState<BannerStats | null>(null)
   const [deals, setDeals] = useState<AdminDeal[]>([])
@@ -344,6 +345,9 @@ export function AdminContentPage() {
             <Button variant={tab === 'deals' ? 'default' : 'outline'} size="sm" onClick={() => setTab('deals')}>
               <Zap className="h-4 w-4 mr-1.5" /> Deals ({dealStats?.total ?? '…'})
             </Button>
+            <Button variant={tab === 'blog' ? 'default' : 'outline'} size="sm" onClick={() => setTab('blog')}>
+              <Newspaper className="h-4 w-4 mr-1.5" /> Blog
+            </Button>
             <div className="flex-1" />
             <Button variant="ghost" size="sm" onClick={() => load('both')} disabled={refreshing} className="text-muted-foreground">
               <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
@@ -355,7 +359,9 @@ export function AdminContentPage() {
             <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{refreshError}</div>
           )}
 
-          {loading ? (
+          {tab === 'blog' ? (
+            <AdminBlogManager />
+          ) : loading ? (
             <div className="space-y-3">
               {[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}
             </div>

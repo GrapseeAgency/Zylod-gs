@@ -5,21 +5,45 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useNavigationStore } from '@/store/navigation-store'
-import { Calendar, Newspaper, ArrowRight, RefreshCw } from 'lucide-react'
+import { Calendar, Newspaper, ArrowRight, RefreshCw, ArrowLeft, ShieldAlert } from 'lucide-react'
 
-interface BlogPost {
+/**
+ * Task 99: THE EDITORIAL RAIL (reader). Serves exactly what the admin
+ * published through /api/blog — a draft and a phantom slug are the same
+ * honest 404. ?page=blog lists; ?page=blog-post&slug=… reads one.
+ */
+
+interface BlogListItem {
   id: string
   slug: string
   title: string
-  summary: string
-  category: string
+  excerpt: string | null
+  category: string | null
+  coverImageUrl: string | null
+  publishedAt: string
+}
+
+interface BlogFull {
+  slug: string
+  title: string
+  content: string
+  excerpt: string | null
+  category: string | null
+  coverImageUrl: string | null
   publishedAt: string
 }
 
 export function BlogPage() {
-  const { navigate } = useNavigationStore()
-  const [posts, setPosts] = useState<BlogPost[]>([])
-  const [loading, setLoading] = useState(true)
+  const { navigate, goBack, pageParams } = useNavigationStore()
+  const readSlug = (pageParams?.slug as string) || ''
+
+  const [posts, setPosts] = useState<BlogListItem[]>([])
+  const [loading, setLoading] = useState(!readSlug)
+
+  // Single-post mode
+  const [post, setPost] = useState<BlogFull | null>(null)
+  const [postMissing, setPostMissing] = useState(false)
+  const [postLoading, setPostLoading] = useState(!!readSlug)
 
   const fetchPosts = () => {
     setLoading(true)
@@ -33,9 +57,84 @@ export function BlogPage() {
   }
 
   useEffect(() => {
-    fetchPosts()
-  }, [])
+    if (readSlug) {
+      setPostLoading(true)
+      setPostMissing(false)
+      setPost(null)
+      fetch(`/api/blog/${encodeURIComponent(readSlug)}`)
+        .then(async res => {
+          const json = await res.json().catch(() => null)
+          if (res.ok && json?.success) setPost(json.data)
+          else setPostMissing(true)
+        })
+        .catch(() => setPostMissing(true))
+        .finally(() => setPostLoading(false))
+    } else {
+      fetchPosts()
+    }
+  }, [readSlug])
 
+  /* ── single post view ── */
+  if (readSlug) {
+    return (
+      <div className="min-h-screen bg-slate-50 pb-24 md:pb-10 text-slate-900">
+        <header className="bg-white border-b border-slate-100 px-4 py-3 sticky top-0 z-10">
+          <div className="max-w-2xl mx-auto flex items-center gap-3">
+            <button onClick={goBack} className="p-1.5 -ml-1.5 rounded-full hover:bg-slate-100" aria-label="Go back">
+              <ArrowLeft className="h-5 w-5 text-slate-700" />
+            </button>
+            <Newspaper className="h-4 w-4 text-primary" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Zylod Blog</span>
+          </div>
+        </header>
+
+        {postLoading ? (
+          <div className="px-4 py-8 max-w-2xl mx-auto space-y-4">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-40 w-full" />
+          </div>
+        ) : postMissing || !post ? (
+          <div className="max-w-2xl mx-auto px-4 py-20 text-center">
+            <ShieldAlert className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+            <h1 className="text-base font-bold text-slate-800">This article does not exist</h1>
+            <p className="text-xs text-slate-500 mt-1">The link is wrong, or the piece was unpublished.</p>
+            <Button variant="outline" size="sm" className="mt-4" onClick={() => navigate('blog')}>All articles</Button>
+          </div>
+        ) : (
+          <motion.article
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="px-4 py-6 md:py-10 max-w-2xl mx-auto w-full"
+          >
+            {post.category && (
+              <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-red-50 px-2 py-0.5 rounded-md">
+                {post.category}
+              </span>
+            )}
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight mt-2 leading-tight">{post.title}</h1>
+            <p className="text-xs text-slate-400 mt-2 flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {new Date(post.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
+            {post.coverImageUrl && (
+              <img src={post.coverImageUrl} alt={post.title} className="w-full rounded-2xl mt-5 border border-slate-100" />
+            )}
+            {post.excerpt && (
+              <p className="text-sm text-slate-500 leading-relaxed mt-5 border-l-2 border-primary/30 pl-3">{post.excerpt}</p>
+            )}
+            <div className="prose-sm mt-5 space-y-3">
+              {post.content.split(/\n{2,}/).map((para, i) => (
+                <p key={i} className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{para}</p>
+              ))}
+            </div>
+          </motion.article>
+        )}
+      </div>
+    )
+  }
+
+  /* ── list view ── */
   return (
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-10 text-slate-900">
       {/* Page Header */}
@@ -84,11 +183,18 @@ export function BlogPage() {
                 onClick={() => navigate('blog-post', { slug: post.slug })}
                 className="bg-white rounded-2xl p-5 border border-slate-100 shadow-2xs hover:border-primary/30 transition-colors cursor-pointer space-y-2"
               >
-                <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-red-50 px-2 py-0.5 rounded-md">
-                  {post.category}
-                </span>
+                {post.coverImageUrl && (
+                  <img src={post.coverImageUrl} alt="" className="w-full h-28 object-cover rounded-xl mb-2" />
+                )}
+                {post.category && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-red-50 px-2 py-0.5 rounded-md">
+                    {post.category}
+                  </span>
+                )}
                 <h2 className="text-sm font-bold text-slate-900 leading-snug">{post.title}</h2>
-                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{post.summary}</p>
+                {post.excerpt && (
+                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{post.excerpt}</p>
+                )}
                 <div className="flex items-center justify-between pt-2 border-t border-slate-50 text-[11px] text-slate-400">
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />

@@ -884,6 +884,9 @@ model blogPosts {
   slug          String    @unique
   content       String
   excerpt       String?
+  // Task 99: editorial section the UI has always shown a chip for
+  // ("Sourcing guide", "Market news") — optional, platform-editorial only.
+  category      String?
   coverImageUrl String?
   isPublished   Boolean   @default(false)
   publishedAt   DateTime?
