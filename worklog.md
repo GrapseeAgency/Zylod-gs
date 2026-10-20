@@ -2797,3 +2797,23 @@ Work Log:
 Stage Summary:
 - The admin telemetry surface now tells the truth: every number on the cache page is a counter that actually incremented in this process. Invented metrics are a platform-wide pattern to keep hunting (the stub sweep continues).
 - REMAINING FAKE/INCOMPLETE: none in these slices. The 59 small-page sweep candidates: remaining ones are legitimately static content pages (terms/careers/FAQ) — verified by sampling; no more data-heavy fakes found.
+
+---
+Task ID: 79
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: PER-PRODUCT LOW-STOCK ALERT LINES — the queued stockAlertThreshold item. The schema column, the product form, the create/update APIs and both PDPs (product + variant badges) already consumed the seller-tuned threshold (Task 57-b), but every INVENTORY surface still judged low stock against a hardcoded global ≤20: GET /api/supplier/inventory's summary, the seller console, and the admin audit — and the seller could not tune the line from the place they actually watch stock.
+
+Work Log:
+- Proof-first opening: HEAD ef3ca90, git status clean, cron list EMPTY (no-cron order holds), dev 200, DB 139 tables × 0 rows.
+- API (GET /api/supplier/inventory): select now includes stockAlertThreshold; summary.lowStockCount computes against each product's OWN line (stockAlertThreshold ?? 20 platform default, exported LOW_STOCK_FALLBACK).
+- API (PATCH): stockAlertThreshold added to stockUpdateSchema (≥0, ≤1e6, nullable) — product-only (variant+threshold → 400 "variants inherit"), may be sent ALONE (threshold-only updates get the honest "Low-stock alert updated" message) or together with a quantity change in the SAME transaction; response rows carry thresholdBefore/thresholdAfter; audit metadata carries them; the seller-room inventory:updated broadcast carries stockAlertThreshold for cross-session consoles (public product room deliberately unchanged — the alert line is seller-private tuning, public parity preserved).
+- Seller console (inventory-management-page): hardcoded LOW_STOCK_THRESHOLD 20 gone — alertLineFor/isLowStock per-product helpers; StockChip takes the product's line; the amber summary chip now reads "Low stock · N custom" (honest about how many products use tuned lines); each product row gained an inline "Alert at… (default 20)" input + Alert button + a Reset button (visible only when a custom line exists) — 🐞 caught during browser QA: my first implementation accepted '-'/'default' as reset inputs but the field is type=number so those strings could never arrive; replaced with the explicit Reset button submitting null; violet "Alert at ≤N unit" chip on rows with tuned lines; variants render against the product's line (inheritance made visible); the live cross-session handler applies stockAlertThreshold from the seller-room event; the summary effect mirrors the API math.
+- Admin audit (admin-inventory-page): same per-product math for the Low filter + chips; every row shows "Seller alert ≤N" or "Default alert ≤20" so oversight sees the line each seller actually chose.
+- scripts/qa/t79-e2e.mjs: 33/33 PASS on wiped DB — 401 gates; threshold round-trips from product create → GET; per-product summary (1, NOT the global-20 answer); threshold-only PATCH with before/after + honest message; quantity+threshold in one write; null reset; validation matrix (negative/non-numeric/both-quantity-fields/empty/variant-level); cross-seller no-leak 404; admin override; real audit rows (actorType admin, thresholdBefore 8 → thresholdAfter 6).
+- BROWSER QA (gateway :81, real UI login): SELLER desktop — summary "Low stock · 1 custom", P1 "Low · 5 kg" + "Alert at ≤6 kg", inline edit 40 → P2 flipped Low live with "Alert at ≤40 kg" + summary "2 custom", Reset → P2 back "In stock" + "1 custom". ADMIN — "Seller alert ≤6" / "Default alert ≤20" chips per row. MOBILE 375×812 — full flow renders, Alert/Reset buttons present. Console clean both sessions.
+- tsc 0 whole project; eslint 0 on all touched files; DB wiped 139×0 before commit; pushed 6ea6c32.
+
+Stage Summary:
+- The seller-tuned low-stock line is now a real platform concept end to end: tuned in the product form OR inline from the inventory console, honored by the API summary, both inventory surfaces, and both PDPs, broadcast cross-session, audited on every change.
+- REMAINING FAKE/INCOMPLETE: none in this slice. Queued next: order lifecycle depth (subOrder ship → deliver → tracking polish), uploads object-storage note (Railway ephemeral disk), eslint baseline cleanup (voice-search/cart-page/use-api), external video host reality check.

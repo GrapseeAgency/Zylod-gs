@@ -378,6 +378,18 @@ export async function POST(request: NextRequest) {
             subtotal: group.subtotal,
           })
 
+          // Task 80: the cart flow now writes the SAME 'Order placed'
+          // timeline row create-direct already writes — every buyer path
+          // starts its tracking story the same honest way.
+          await tx.orderTracking.create({
+            data: {
+              subOrderId: subOrder.id,
+              status: 'pending',
+              location: 'Order placed',
+              note: 'Order has been created and is awaiting payment and supplier confirmation.',
+            },
+          })
+
           // Create order items
           for (const item of group.items) {
             await tx.orderItems.create({

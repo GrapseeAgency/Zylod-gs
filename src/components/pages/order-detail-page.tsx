@@ -110,6 +110,88 @@ function PlaceholderImage() {
   )
 }
 
+/**
+ * Task 80: timeline styles for the REAL orderTracking rows — seller
+ * transitions (pending→confirmed→packed→shipped→delivered/cancelled/returned)
+ * and the driver-GPS milestones (picked_up/in_transit/out_for_delivery) share
+ * the table, so both families get honest colors here.
+ */
+const TIMELINE_STYLES: Record<string, { dot: string; chip: string }> = {
+  pending: { dot: 'bg-slate-400', chip: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' },
+  confirmed: { dot: 'bg-amber-500', chip: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400' },
+  packed: { dot: 'bg-amber-500', chip: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400' },
+  picked_up: { dot: 'bg-sky-500', chip: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400' },
+  shipped: { dot: 'bg-sky-500', chip: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400' },
+  in_transit: { dot: 'bg-sky-500', chip: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400' },
+  out_for_delivery: { dot: 'bg-sky-600', chip: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400' },
+  delivered: { dot: 'bg-emerald-500', chip: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400' },
+  cancelled: { dot: 'bg-red-500', chip: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400' },
+  returned: { dot: 'bg-red-500', chip: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400' },
+}
+
+function timelineStyle(status: string) {
+  return TIMELINE_STYLES[status] ?? TIMELINE_STYLES.pending
+}
+
+function timelineTime(iso: string) {
+  return new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+}
+
+/** One REAL orderTracking row (seller transition, driver milestone, or creation). */
+function TimelineRow({ row }: { row: ApiTracking }) {
+  const st = timelineStyle(row.status)
+  return (
+    <li className="flex gap-2.5">
+      <span aria-hidden className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${st.dot}`} />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${st.chip}`}>
+            {row.status.replace(/_/g, ' ')}
+          </span>
+          {row.location && <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">{row.location}</span>}
+          <span className="text-[10px] text-slate-400">{timelineTime(row.trackedAt)}</span>
+        </div>
+        {row.note && <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 break-words">{row.note}</p>}
+      </div>
+    </li>
+  )
+}
+
+/**
+ * Task 80: the buyer-facing tracking timeline for ONE shipment — the REAL
+ * orderTracking rows this order already accumulated (creation row, every
+ * seller transition, driver milestones). Collapsed shows the latest event;
+ * expanding shows the full history, newest first.
+ */
+function ShipmentTimeline({ rows }: { rows: ApiTracking[] }) {
+  const [open, setOpen] = useState(false)
+  const ordered = [...rows].sort(
+    (a, b) => new Date(b.trackedAt).getTime() - new Date(a.trackedAt).getTime()
+  )
+  if (ordered.length === 0) return null
+  return (
+    <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-3">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="w-full flex items-center justify-between gap-2 text-left min-h-11"
+      >
+        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <Truck className="h-3.5 w-3.5" aria-hidden />
+          Tracking timeline ({ordered.length} event{ordered.length === 1 ? '' : 's'})
+        </span>
+        <span className="text-[10px] font-bold text-slate-500">{open ? 'Hide' : 'Show all'}</span>
+      </button>
+      <ul className="mt-2 space-y-2.5">
+        {(open ? ordered : ordered.slice(0, 1)).map((row) => (
+          <TimelineRow key={row.id} row={row} />
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
@@ -607,6 +689,8 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
                         </div>
                       ))}
                     </div>
+                    {/* Task 80: the REAL tracking timeline for THIS shipment */}
+                    {(so.tracking?.length ?? 0) > 0 && <ShipmentTimeline rows={so.tracking} />}
                   </div>
                 )
               })}

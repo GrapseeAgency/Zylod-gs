@@ -45,6 +45,21 @@ const SUBORDER_STATUSES = [
   'returned',
 ] as const
 
+/**
+ * Task 80: every REAL status transition also appends an orderTracking timeline
+ * row for the buyer's tracking view — the same rows the driver GPS path and
+ * order creation already write, so the timeline tells one honest story.
+ */
+const TRANSITION_TIMELINE: Record<(typeof SUBORDER_STATUSES)[number], { location: string; note: string }> = {
+  pending: { location: 'Order placed', note: 'Order recorded and awaiting confirmation.' },
+  confirmed: { location: 'Seller confirmed', note: 'The seller confirmed this shipment and is preparing it.' },
+  packed: { location: 'Packed', note: 'Packed at the seller warehouse.' },
+  shipped: { location: 'Handed to courier', note: 'The shipment is on its way.' },
+  delivered: { location: 'Delivered', note: 'Delivered to the buyer.' },
+  cancelled: { location: 'Cancelled', note: 'This shipment was cancelled.' },
+  returned: { location: 'Returned', note: 'The shipment was returned to the seller.' },
+}
+
 const patchBodySchema = z
   .object({
     status: z.enum(SUBORDER_STATUSES, {
@@ -304,6 +319,29 @@ export async function PATCH(
       }
       return rows
     })
+
+    // Task 80: REAL transitions become REAL timeline rows — the buyer's
+    // tracking view reads these (GET /api/orders/[id]/track + the order
+    // detail payload). Same-status re-sets write nothing; the seller's
+    // optional note rides along; a waybill is named on shipped.
+    if (status !== undefined) {
+      const phrase = TRANSITION_TIMELINE[status]
+      for (const r of after) {
+        const b = before.find((x) => x.id === r.id)
+        if (b && b.status === r.status) continue // no transition happened
+        const baseNote = status === 'shipped' && r.trackingNumber
+          ? `${phrase.note} Waybill ${r.trackingNumber}.`
+          : phrase.note
+        await db.orderTracking.create({
+          data: {
+            subOrderId: r.id,
+            status: r.status,
+            location: phrase.location,
+            note: note ? `${baseNote} Seller note: ${note}` : baseNote,
+          },
+        })
+      }
+    }
 
     await db.auditLogs.create({
       data: {
