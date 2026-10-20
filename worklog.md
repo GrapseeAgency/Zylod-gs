@@ -2871,3 +2871,22 @@ Work Log:
 Stage Summary:
 - The platform spine is proven AS A WHOLE, not just as parts: money, goods, and reputation all move through one coherent, audited path.
 - REMAINING FAKE/INCOMPLETE: none found in this drill. Next: continue the hunt on surfaces no E2E has opened yet (RFQ convert flow, return/refund end-to-end, supplier verification lifecycle) or deepen UI polish.
+
+---
+Task ID: 82
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE RFQ CHAIN — drilled for the first time (create → seller quotes → buyer award → convert-order). No prior E2E had ever touched rfqRequests despite the full route family being live. The drill caught two real defects + one data-path gap before any buyer could.
+
+Work Log:
+- DEFECT 1 (timeline): convert-order is an order-CREATION path but never wrote the 'Order placed' orderTracking row — the cart flow (Task 80) and create-direct did. Fixed in the same transaction with a note naming the accepted quote ("Converted from an accepted quote — awaiting payment and supplier confirmation."); all three creation paths now tell one tracking story.
+- DEFECT 2 (id-space): GET /api/rfq?role=supplier filtered rfqQuotes.supplierId — a supplierProfiles reference per the schema relation — by the auth USER id: two different id spaces, the list was ALWAYS empty. Now resolves the caller's profile id (sellers without a profile get an honest empty set). No UI caller uses role=supplier today (the seller console uses the correctly profile-scoped /api/supplier/rfqs) — fixed because an API contract should not silently lie.
+- GAP 3 (dead data): GET /api/rfq/[id] never exposed the conversion to the buyer. convertedOrder {id, orderNumber} now rides the payload straight from the denormalized columns — the buyer can see (and the UI can link) that their RFQ became a real order.
+- scripts/qa/t82-e2e.mjs: 33/33 PASS on wiped DB — 401 gates (create/convert); RFQ create (open) → seller list sees it → both sellers quote (quoted) → buyer accepts A (awarded, sibling B auto-rejected) → convert: negotiated 420 beats list 500, total 4200, quantity 10, honestly unpaid, subOrder supplier = seller A PROFILE id (server truth, never client-sent), stock 100→90, timeline row present with the conversion note, convertedOrder exposed with matching order number, double-convert 409, stranger convert 404, late quote on awarded RFQ 409, both audit actions present; role=supplier now matches by profile id.
+- 🐞 in the drill itself: my first profile lookup used a nonexistent column (businessName) — supplierProfiles carries companyName; fixed to the userId→profile join.
+- BROWSER QA (gateway :81, real UI buyer login): My Quote Requests renders the awarded RFQ with target ৳400, 2 quotes, and the 'Order placed · ORD-…' chip fed by the REAL list payload (convertedOrderNumber, Task 55-b mapping verified in source). Console clean.
+- tsc 0 whole project; eslint 0 touched; DB wiped 139×0 before commit; pushed f7b05f4.
+
+Stage Summary:
+- The negotiation rail is proven end to end: a buyer's question becomes two sellers' quotes, one award, and a real order at the negotiated price with stock, timeline, and audits all truthful.
+- REMAINING FAKE/INCOMPLETE: none found in this chain. Next candidates: return/refund end-to-end drill, supplier verification lifecycle drill, or UI polish rounds.
