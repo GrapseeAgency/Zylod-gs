@@ -2837,3 +2837,21 @@ Work Log:
 Stage Summary:
 - The tracking story is now written once (real orderTracking rows) and read everywhere (buyer detail, /track endpoint, driver GPS views): seller transitions, buyer creation, and driver pings are one honest timeline instead of three disconnected truths.
 - REMAINING FAKE/INCOMPLETE: none in this slice. Queued: uploads object-storage note (Railway ephemeral disk), eslint baseline cleanup (voice-search/cart-page/use-api), external video host reality check.
+
+---
+Task ID: 80-b
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: LAST QUEUED GAPS — uploads object-storage honesty (Railway ephemeral disk) + external video host reality. Also verified the eslint baseline queue item is already resolved.
+
+Work Log:
+- ESLint: `bunx eslint .` project-wide = 0 errors, exit 0 — the old voice-search/cart-page/use-api baseline was already resolved in earlier rounds; queue item closed by verification, no code needed.
+- Uploads audit: every upload route is env-driven and consistent (PRODUCT_MEDIA_UPLOAD_DIR for product media, VIDEO_UPLOAD_DIR for videos, UPLOAD_DIR for review/kyc; public/uploads defaults), .env.example documents all three with the Railway volume note — but a seller uploading media saw NONE of that. Fixed at the point of action: the product form's Media section now states files land on server disk (/uploads/…) and names both env vars for mounted-volume deployments.
+- External video reality: the Task 67-b paste-a-link flow accepted ANY https:// URL — a YouTube/Drive/social PAGE link joined the video list silently and the PDP rendered a black <video> box that never plays. Two honest ends: (1) the form's paste handler detects known page hosts (youtube/youtu.be/drive/facebook/instagram/tiktok/vimeo/twitter-x/dailymotion + subdomains) and warns BEFORE publish — the row is still allowed (server is the authority; CDN mirrors exist), the placeholder now says "a direct .mp4/.webm stream"; (2) the PDP VideoPlayer swaps to an honest fallback on <video> error ("This video can't be played in the browser player — the link is not a direct video stream (or the file is gone)" + open-the-source-in-a-new-tab), covering dead files and unplayable links alike.
+- scripts/qa/t80b-qa-setup.mjs: seeds an approved product carrying one deliberately-broken video URL for fallback QA.
+- BROWSER QA (gateway :81, real UI login): seller add-product shows the disk/volume note; pasting a youtube.com watch link fires the page-link warning toast (verified visually) and still adds the row; buyer PDP on the broken-video product renders the fallback panel (verified visually) with the way out; console clean.
+- tsc 0 whole project; eslint 0 touched; DB wiped 139×0 before commit; pushed 4c03c78.
+
+Stage Summary:
+- Every queue item from the Task 56 era is now closed: per-product alert lines (79), tracking timeline loop (80), uploads honesty + video reality + eslint baseline (80-b).
+- REMAINING FAKE/INCOMPLETE: none found in this slice. Next rounds: continue the platform-wide fake/incomplete hunt (info-page sampling was clean; remaining sweeps = cross-cutting integration drills: full buyer→payment→ship→deliver→review happy path in ONE browser session on a fresh DB).
