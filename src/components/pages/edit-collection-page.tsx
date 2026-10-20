@@ -2,38 +2,50 @@
 
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, GripVertical, Plus, Search, Trash2, X } from 'lucide-react'
+import { ArrowLeft, GripVertical, Plus, Search, Trash2, X, Lock, Globe, Link as LinkIcon } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
 
 interface CollectionItem {
   id: string
   productId: string
-  name: string
-  image: string
-  price: number
+  product: {
+    id: string
+    name: string
+    basePrice: number
+    currency: string
+    unit: string
+    thumbnailUrl?: string | null
+  }
 }
 
 interface Collection {
   id: string
   name: string
   description: string
-  isPublic: boolean
+  privacy: 'PRIVATE' | 'PUBLIC' | 'SHARED'
+  coverColor?: string | null
   items: CollectionItem[]
 }
 
+const PRIVACY_OPTIONS = [
+  { id: 'PRIVATE', icon: Lock, label: 'Private' },
+  { id: 'SHARED', icon: LinkIcon, label: 'Shared' },
+  { id: 'PUBLIC', icon: Globe, label: 'Public' },
+] as const
+
 export function EditCollectionPage() {
-  const { pageParams, goBack } = useNavigationStore()
+  const { pageParams, goBack, navigate } = useNavigationStore()
   const collectionId = pageParams?.collectionId
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [collection, setCollection] = useState<Collection | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!collectionId) {
@@ -45,12 +57,18 @@ export function EditCollectionPage() {
     const fetchCollection = async () => {
       try {
         const res = await fetch(`/api/collections/${collectionId}`)
-        if (!res.ok) throw new Error('Failed to load collection')
-        const json = await res.json()
-        if (json.success) {
-          setCollection(json.data)
+        const json = await res.json().catch(() => null)
+        if (res.ok && json?.success) {
+          setCollection({
+            id: json.data.id,
+            name: json.data.name,
+            description: json.data.description || '',
+            privacy: json.data.privacy,
+            coverColor: json.data.coverColor,
+            items: json.data.items,
+          })
         } else {
-          throw new Error(json.error || 'Failed to load collection')
+          throw new Error(json?.error || 'Failed to load collection')
         }
       } catch (err: any) {
         setError(err.message)
@@ -65,21 +83,30 @@ export function EditCollectionPage() {
   const handleSave = async () => {
     if (!collection) return
     setSaving(true)
+    setSaveError(null)
     try {
+      // Task 97: PATCH takes the FULL desired item set, so a removal here
+      // persists in the same call that saves the fields (the old editor sent
+      // an itemIds field the server never read — removals silently died on
+      // refresh).
       const res = await fetch(`/api/collections/${collectionId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: collection.name,
           description: collection.description,
-          isPublic: collection.isPublic,
-          itemIds: collection.items.map(i => i.id)
+          privacy: collection.privacy,
+          productIds: collection.items.map(i => i.product.id),
         })
       })
-      if (!res.ok) throw new Error('Failed to save collection')
-      goBack()
+      const json = await res.json().catch(() => null)
+      if (res.ok && json?.success) {
+        goBack()
+      } else {
+        setSaveError(json?.error || `Could not save the collection (HTTP ${res.status})`)
+      }
     } catch (err: any) {
-      alert(err.message)
+      setSaveError('Could not reach the collections service')
     } finally {
       setSaving(false)
     }
@@ -89,18 +116,22 @@ export function EditCollectionPage() {
     if (!confirm('Are you sure you want to delete this collection?')) return
     try {
       const res = await fetch(`/api/collections/${collectionId}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to delete')
-      goBack()
+      const json = await res.json().catch(() => null)
+      if (res.ok) {
+        goBack()
+      } else {
+        setSaveError(json?.error || 'Failed to delete')
+      }
     } catch (err: any) {
-      alert(err.message)
+      setSaveError('Could not reach the collections service')
     }
   }
 
-  const removeItem = (id: string) => {
+  const removeItem = (productId: string) => {
     if (collection) {
       setCollection({
         ...collection,
-        items: collection.items.filter(i => i.id !== id)
+        items: collection.items.filter(i => i.product.id !== productId)
       })
     }
   }
@@ -139,7 +170,7 @@ export function EditCollectionPage() {
       className="min-h-screen bg-gray-50 flex flex-col pb-6"
     >
       <header className="bg-white h-14 border-b flex items-center justify-between px-4 sticky top-0 z-20 md:hidden">
-        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100">
+        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100" aria-label="Go back">
           <ArrowLeft className="w-5 h-5 text-gray-700" />
         </button>
         <h1 className="text-base font-semibold">Edit Collection</h1>
@@ -187,15 +218,33 @@ export function EditCollectionPage() {
               className="bg-gray-50 border-gray-200 resize-none h-20"
             />
           </div>
-          <div className="flex items-center justify-between pt-2">
-            <div>
-              <p className="text-sm font-medium text-gray-900">Make Public</p>
-              <p className="text-xs text-gray-500">Anyone with the link can view</p>
+
+          {/* Task 97: the real three-state privacy model — the old isPublic
+              switch wrote a field the server never accepted. */}
+          <div className="pt-2">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Privacy</label>
+            <div className="grid grid-cols-3 gap-2">
+              {PRIVACY_OPTIONS.map(opt => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setCollection({ ...collection, privacy: opt.id })}
+                  className={`flex flex-col items-center justify-center p-2.5 rounded-lg border-2 transition-all ${
+                    collection.privacy === opt.id
+                      ? 'border-primary bg-primary/5 text-primary'
+                      : 'border-gray-100 bg-white text-gray-500 hover:border-gray-200'
+                  }`}
+                >
+                  <opt.icon className="w-4 h-4 mb-1" />
+                  <span className="text-xs font-medium">{opt.label}</span>
+                </button>
+              ))}
             </div>
-            <Switch 
-              checked={collection.isPublic}
-              onCheckedChange={(c) => setCollection({...collection, isPublic: c})}
-            />
+            {collection.privacy === 'SHARED' && (
+              <p className="text-xs text-gray-500 mt-2">
+                A secret link lets anyone holding it view this collection. Flip back to Private and old links stop working.
+              </p>
+            )}
           </div>
         </div>
 
@@ -203,24 +252,32 @@ export function EditCollectionPage() {
         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold">Products ({collection.items.length})</h2>
-            <button className="text-primary text-sm font-medium flex items-center">
+            <button 
+              onClick={() => navigate('create-collection', { collectionId: collection.id })}
+              className="text-primary text-sm font-medium flex items-center"
+            >
               <Plus className="w-4 h-4 mr-1" /> Add More
             </button>
           </div>
           
           <div className="space-y-3">
-            {collection.items.map((item, index) => (
+            {collection.items.map((item) => (
               <div key={item.id} className="flex items-center gap-3 bg-gray-50 p-2 rounded-lg border border-gray-100">
-                <GripVertical className="w-5 h-5 text-gray-400 cursor-grab" />
+                <GripVertical className="w-5 h-5 text-gray-400 cursor-grab" aria-hidden="true" />
                 <div className="w-12 h-12 bg-white rounded border flex-shrink-0 overflow-hidden">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  {item.product?.thumbnailUrl ? (
+                    <img src={item.product.thumbnailUrl} alt={item.product.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full" />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
-                  <p className="text-xs text-gray-500">${item.price.toFixed(2)}</p>
+                  <p className="text-sm font-medium text-gray-900 truncate">{item.product?.name}</p>
+                  <p className="text-xs text-gray-500">৳{item.product?.basePrice} / {item.product?.unit}</p>
                 </div>
                 <button 
-                  onClick={() => removeItem(item.id)}
+                  onClick={() => removeItem(item.product.id)}
+                  aria-label={`Remove ${item.product?.name} — saved on Save`}
                   className="p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-200"
                 >
                   <X className="w-4 h-4" />
@@ -232,6 +289,10 @@ export function EditCollectionPage() {
             )}
           </div>
         </div>
+
+        {saveError && (
+          <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2" role="alert">{saveError}</p>
+        )}
 
         {/* Danger Zone */}
         <div className="bg-red-50 rounded-xl p-4 border border-red-100">

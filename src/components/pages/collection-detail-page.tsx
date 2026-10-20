@@ -2,19 +2,24 @@
 
 import React, { useEffect, useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
-import { ArrowLeft, MoreVertical, Lock, Globe, Link as LinkIcon, Share2, Grid, List, CheckSquare, Plus } from 'lucide-react'
+import { useCartStore } from '@/store/cart-store'
+import { toast } from 'sonner'
+import { ArrowLeft, MoreVertical, Lock, Globe, Link as LinkIcon, Share2, Grid, List, CheckSquare, Plus, Package, Trash2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
 
 export function CollectionDetailPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
   const { collectionId } = pageParams || {}
+  const addItem = useCartStore((s) => s.addItem)
   
   const [collection, setCollection] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'grid'|'list'>('grid')
   const [isBatchMode, setIsBatchMode] = useState(false)
   const [selectedItems, setSelectedItems] = useState<string[]>([])
+  const [copied, setCopied] = useState(false)
+  const [removing, setRemoving] = useState(false)
 
   useEffect(() => {
     if (!collectionId) {
@@ -24,9 +29,13 @@ export function CollectionDetailPage() {
     const fetchCollection = async () => {
       try {
         const res = await fetch(`/api/collections/${collectionId}`)
-        const data = await res.json()
-        if (data.success) {
+        const data = await res.json().catch(() => null)
+        if (res.ok && data?.success) {
           setCollection(data.data)
+        } else if (res.status === 404) {
+          // Foreign or deleted — same honest outcome.
+          toast.error('Collection not found')
+          goBack()
         }
       } catch (err) {
         console.error('Error fetching collection details', err)
@@ -44,6 +53,79 @@ export function CollectionDetailPage() {
 
   const toggleItemSelection = (id: string) => {
     setSelectedItems(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
+  }
+
+  // Task 97: the share link is REAL — the owner GET carries the minted
+  // shareToken while the collection is SHARED.
+  const copyShareLink = async () => {
+    if (!collection?.shareToken) {
+      toast.error('No share link yet — set the collection to Shared first')
+      return
+    }
+    const url = `${window.location.origin}/?page=collection-shared&token=${collection.shareToken}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      toast.success('Share link copied — anyone holding it can view')
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      toast.error('Could not copy — your browser blocked clipboard access')
+    }
+  }
+
+  // Task 97: add-to-cart buttons run the REAL cart store (same canonical
+  // pricing rule as the PDP — the collection page invents no prices).
+  const addLineToCart = (prod: any) => {
+    const qty = prod.moq || 1
+    addItem({
+      id: `cart-${prod.id}-default-${Date.now()}`,
+      productId: prod.id,
+      productName: prod.name,
+      productSlug: prod.slug || '',
+      productImage: prod.thumbnailUrl || null,
+      variantId: null,
+      variantName: null,
+      variantValue: null,
+      quantity: qty,
+      unitPrice: prod.basePrice,
+      totalPrice: prod.basePrice * qty,
+      moq: prod.moq || 1,
+      maxOrderQty: prod.maxOrderQty ?? null,
+      supplierId: prod.supplier?.id,
+      supplierName: prod.supplier?.companyName || '',
+      supplierSlug: '',
+      unit: prod.unit,
+      bundleSize: prod.bundleSize ?? null,
+      weightKg: prod.weightKg ?? null,
+      priceTiers: [],
+    })
+    toast.success(`Added ${qty} ${prod.unit} to cart`)
+  }
+
+  // Task 97: batch remove hits the real per-item rail, then refetches.
+  const removeSelected = async () => {
+    if (!collectionId || selectedItems.length === 0) return
+    setRemoving(true)
+    let failed = 0
+    for (const productId of selectedItems) {
+      try {
+        const res = await fetch(`/api/collections/${collectionId}/items?productId=${encodeURIComponent(productId)}`, { method: 'DELETE' })
+        if (!res.ok) failed += 1
+      } catch {
+        failed += 1
+      }
+    }
+    setRemoving(false)
+    if (failed === 0) {
+      toast.success(`Removed ${selectedItems.length} item${selectedItems.length > 1 ? 's' : ''}`)
+      setSelectedItems([])
+      setIsBatchMode(false)
+      const res = await fetch(`/api/collections/${collectionId}`)
+      const data = await res.json().catch(() => null)
+      if (res.ok && data?.success) setCollection(data.data)
+    } else {
+      toast.error(`Could not remove ${failed} item${failed > 1 ? 's' : ''}`)
+    }
   }
 
   if (isLoading) {
@@ -125,11 +207,15 @@ export function CollectionDetailPage() {
           <div className="bg-blue-50 px-4 py-3 flex items-center justify-between border-b border-blue-100">
             <div className="flex items-center gap-2 text-blue-800 text-sm">
               <Share2 className="w-4 h-4" />
-              <span className="font-medium">Anyone with link can view</span>
+              <span className="font-medium">{collection.privacy === 'SHARED' ? 'Anyone with the secret link can view' : 'Public — visible on your shared lists'}</span>
             </div>
-            <button className="text-blue-700 text-sm font-semibold bg-white px-3 py-1 rounded shadow-sm border border-blue-200">
-              Copy Link
-            </button>
+            {collection.privacy === 'SHARED' ? (
+              <button onClick={copyShareLink} className="text-blue-700 text-sm font-semibold bg-white px-3 py-1 rounded shadow-sm border border-blue-200 active:scale-95">
+                {copied ? 'Copied!' : 'Copy Link'}
+              </button>
+            ) : (
+              <span className="text-blue-600/60 text-xs">Sign in elsewhere to view</span>
+            )}
           </div>
         )}
 
@@ -176,8 +262,11 @@ export function CollectionDetailPage() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-1">Collection is empty</h3>
               <p className="text-sm text-gray-500 mb-6">Start adding products to this collection.</p>
-              <button className="bg-[#C8102E] text-white px-6 py-2.5 rounded-lg font-medium shadow-sm">
-                Browse Products
+              <button
+                onClick={() => navigate('create-collection', { collectionId: collection.id })}
+                className="bg-[#C8102E] text-white px-6 py-2.5 rounded-lg font-medium shadow-sm active:scale-95"
+              >
+                Add Products
               </button>
             </motion.div>
           ) : (
@@ -194,7 +283,8 @@ export function CollectionDetailPage() {
                     transition={{ delay: idx * 0.05 }}
                     onClick={() => {
                       if (isBatchMode) toggleItemSelection(prod.id)
-                      else navigate('product-detail', { id: prod.id })
+                      // Task 96 lesson: the PDP reads productId, not id.
+                      else navigate('product-detail', { productId: prod.id })
                     }}
                     className={`bg-white rounded-xl border overflow-hidden relative ${
                       viewMode === 'list' ? 'flex' : 'flex flex-col'
@@ -211,7 +301,11 @@ export function CollectionDetailPage() {
                     )}
                     
                     <div className={`relative ${viewMode === 'list' ? 'w-32 shrink-0' : 'w-full aspect-square'} bg-gray-100`}>
-                      <img src={prod.thumbnailUrl} alt={prod.name} className="w-full h-full object-cover" />
+                      {prod.thumbnailUrl ? (
+                        <img src={prod.thumbnailUrl} alt={prod.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300"><Package className="w-8 h-8" /></div>
+                      )}
                     </div>
                     
                     <div className={`p-3 flex flex-col justify-between flex-1 ${viewMode === 'list' ? '' : 'min-h-[110px]'}`}>
@@ -227,7 +321,8 @@ export function CollectionDetailPage() {
                         </span>
                         {!isBatchMode && (
                           <button 
-                            onClick={(e) => { e.stopPropagation(); /* TODO: Add to cart */ }}
+                            onClick={(e) => { e.stopPropagation(); addLineToCart(prod) }}
+                            aria-label={`Add ${prod.name} to cart`}
                             className="bg-[#C8102E] text-white p-1.5 rounded-full shadow-sm active:scale-95"
                           >
                             <Plus className="w-4 h-4" />
@@ -250,10 +345,23 @@ export function CollectionDetailPage() {
           animate={{ y: 0 }}
           className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white border-t p-4 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] z-20 flex gap-3"
         >
-          <button className="flex-1 bg-gray-100 text-gray-800 py-3 rounded-xl font-semibold">
-            Remove ({selectedItems.length})
+          <button
+            onClick={removeSelected}
+            disabled={removing}
+            className="flex-1 bg-gray-100 text-gray-800 py-3 rounded-xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            {removing ? 'Removing…' : `Remove (${selectedItems.length})`}
           </button>
-          <button className="flex-1 bg-[#C8102E] text-white py-3 rounded-xl font-semibold shadow-md shadow-red-200">
+          <button
+            onClick={() => {
+              const lines = items.filter((i: any) => selectedItems.includes(i.product.id)).map((i: any) => i.product)
+              lines.forEach((prod: any) => addLineToCart(prod))
+              setSelectedItems([])
+              setIsBatchMode(false)
+            }}
+            className="flex-1 bg-[#C8102E] text-white py-3 rounded-xl font-semibold shadow-md shadow-red-200"
+          >
             Add to Cart
           </button>
         </motion.div>

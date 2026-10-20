@@ -780,8 +780,15 @@ model collections {
   userId      String
   name        String
   description String?
-  coverImage  String?
-  isPublic    Boolean  @default(false)
+  // Task 97: named after the field the UI actually reads (coverImageUrl).
+  coverImageUrl String?
+  // Task 97: the buyer curation tool's real privacy model — the UI ships
+  // three states, the old routes fabricated a privacy column that never
+  // existed (every create 500'd). PRIVATE = owner-only. PUBLIC = listed
+  // for any signed-in reader. SHARED = secret-link via shareToken.
+  privacy     String   @default("PRIVATE")
+  // Task 97: cover color chip from the create/edit form (empty = none).
+  coverColor  String?
   // shareToken for public shared link
   shareToken  String?  @unique
   createdAt   DateTime @default(now())

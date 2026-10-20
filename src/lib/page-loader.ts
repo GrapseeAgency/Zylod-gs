@@ -47,7 +47,7 @@ const REAL_PAGES = new Set([
   'wishlist', 'wishlist-detail', 'favorites', 'favorite-suppliers', 'favorite-products', 'favorite-categories',
   'save-for-later', 'save-for-later-detail',
   'recently-viewed', 'recently-searched',
-  'collections', 'collection-detail', 'create-collection', 'edit-collection',
+  'collections', 'collection-detail', 'create-collection', 'edit-collection', 'collection-shared',
   'shared-wishlist', 'shared-wishlist-detail', 'wishlist-share',
   'price-drop-alerts', 'wishlist-sort-filter', 'bulk-add-to-cart',
   // Seller / Supplier Suite (129-150 + sub-pages)
@@ -288,7 +288,7 @@ export function getChunkForPage(pageId: string): string | null {
     'wishlist', 'wishlist-detail', 'favorites', 'favorite-suppliers', 'favorite-products', 'favorite-categories',
     'save-for-later', 'save-for-later-detail',
     'recently-viewed', 'recently-searched',
-    'collections', 'collection-detail', 'create-collection', 'edit-collection',
+    'collections', 'collection-detail', 'create-collection', 'edit-collection', 'collection-shared',
     'shared-wishlist', 'shared-wishlist-detail', 'wishlist-share',
     'price-drop-alerts', 'wishlist-sort-filter', 'bulk-add-to-cart',
   ].includes(pageId)) return 'wishlist'
