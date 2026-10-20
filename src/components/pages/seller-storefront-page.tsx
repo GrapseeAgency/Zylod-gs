@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import StorefrontCertifications, { StorefrontCertRollup } from '@/components/supplier/storefront-certifications';
 import StorefrontWarehouses, { WarehouseRow } from '@/components/supplier/storefront-warehouses';
+import StorefrontReviews, { StorefrontReviewRow } from '@/components/supplier/storefront-reviews';
 
 interface StorefrontData {
   id?: string;
@@ -30,6 +31,9 @@ interface StorefrontData {
   certificationRollup?: StorefrontCertRollup | null;
   // Task 98: the supplier's ACTIVE ship-from locations (public projection).
   warehouses?: WarehouseRow[];
+  // Task 105: the store's real buyer reviews (public projection, `mine`
+  // marked server-side for the signed-in viewer only).
+  reviews?: StorefrontReviewRow[];
 }
 
 /** Initials circle from the store's real company name (up to 2 letters). */
@@ -60,29 +64,33 @@ export const SellerStorefrontPage = () => {
   // product page) vs. the signed-in supplier's own storefront.
   const viewedSupplierId = pageParams.supplierId || '';
 
-  useEffect(() => {
-    const fetchStore = async () => {
-      try {
-        const url = viewedSupplierId
-          ? `/api/supplier/storefront?supplierId=${encodeURIComponent(viewedSupplierId)}`
-          : '/api/supplier/storefront';
-        const res = await fetch(url);
-        const json = await res.json();
-        if (res.ok && json.success && json.data) {
-          setData(json.data);
-        } else {
-          // Real API error surfaced — no demo content is substituted.
-          setError(json.error || 'Store profile not available');
-        }
-      } catch (e) {
-        console.error(e);
-        setError('Could not reach the store service');
-      } finally {
-        setLoading(false);
+  // Task 105: extracted so the Reviews tab can trigger a refresh after a
+  // write — the header aggregates and the list re-render from the same
+  // source of truth (the storefront API), never local guesses.
+  const fetchStore = React.useCallback(async () => {
+    try {
+      const url = viewedSupplierId
+        ? `/api/supplier/storefront?supplierId=${encodeURIComponent(viewedSupplierId)}`
+        : '/api/supplier/storefront';
+      const res = await fetch(url, { credentials: 'include' });
+      const json = await res.json();
+      if (res.ok && json.success && json.data) {
+        setData(json.data);
+      } else {
+        // Real API error surfaced — no demo content is substituted.
+        setError(json.error || 'Store profile not available');
       }
-    };
-    fetchStore();
+    } catch (e) {
+      console.error(e);
+      setError('Could not reach the store service');
+    } finally {
+      setLoading(false);
+    }
   }, [viewedSupplierId]);
+
+  useEffect(() => {
+    fetchStore();
+  }, [fetchStore]);
 
   const companyName = data?.companyName ?? '';
   const productCount = data?.products?.length ?? 0;
@@ -195,6 +203,9 @@ export const SellerStorefrontPage = () => {
                 <TabsTrigger value="locations" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                   Locations{!loading && data?.warehouses && data.warehouses.length > 0 ? ` (${data.warehouses.length})` : ''}
                 </TabsTrigger>
+                <TabsTrigger value="reviews" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                  Reviews{!loading && data?.ratingCount ? ` (${data.ratingCount})` : ''}
+                </TabsTrigger>
                 <TabsTrigger value="story" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none" onClick={() => navigate('store-story-about')}>Profile</TabsTrigger>
               </TabsList>
             </div>
@@ -264,6 +275,20 @@ export const SellerStorefrontPage = () => {
                   {/* Task 98: buyers read the ship-from truth; the owner (no
                       supplierId param) manages the full list in the same tab. */}
                   <StorefrontWarehouses ownView={!viewedSupplierId} guestRows={data?.warehouses ?? []} />
+                </div>
+              </TabsContent>
+              <TabsContent value="reviews" className="mt-0 outline-none">
+                <div aria-label="Store buyer reviews">
+                  {/* Task 105: the reviews list + write dialog. The server is
+                      the eligibility judge (buyer + real order + one per
+                      buyer); its refusals surface verbatim. */}
+                  <StorefrontReviews
+                    supplierId={data?.id || viewedSupplierId}
+                    rows={data?.reviews ?? []}
+                    avg={data?.ratingAvg}
+                    count={data?.ratingCount}
+                    onChanged={fetchStore}
+                  />
                 </div>
               </TabsContent>
             </div>

@@ -746,6 +746,7 @@ model supplierReviews {
   supplier supplierProfiles @relation(fields: [supplierId], references: [id])
   buyer    users            @relation(fields: [buyerId], references: [id])
 
+  @@unique([supplierId, buyerId])
   @@index([supplierId])
   @@index([buyerId])
 }

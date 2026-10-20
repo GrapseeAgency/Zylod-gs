@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const supplierId = searchParams.get('supplierId')
 
     let targetSupplierId: string | null = supplierId
+    let viewerBuyerId: string | null = null
 
     if (!targetSupplierId) {
       const auth = await authenticateRequest(request)
@@ -20,6 +21,21 @@ export async function GET(request: NextRequest) {
           select: { id: true },
         })
         targetSupplierId = profile ? profile.id : null
+      }
+    }
+
+    // Task 105: optional session identity — a signed-in buyer learns which
+    // review row is theirs (the only caller who can, and only via their own
+    // id). Guests get `mine: false` everywhere; nothing about other buyers
+    // ever leaves.
+    if (!viewerBuyerId) {
+      try {
+        const auth = await authenticateRequest(request)
+        if (auth.authenticated && auth.user?.userType === 'buyer') {
+          viewerBuyerId = auth.user.id
+        }
+      } catch {
+        // public route — an unreadable session is just a guest
       }
     }
 
@@ -51,7 +67,11 @@ export async function GET(request: NextRequest) {
           include: { priceTiers: true }
         },
         supplierReviews: {
-          take: 10,
+          // Task 105: newest-first and a fuller page — the Reviews tab
+          // renders this list directly (the old take:10 unordered shape
+          // made ordering an accident).
+          take: 50,
+          orderBy: { createdAt: 'desc' as const },
           include: { buyer: { select: { buyerProfile: { select: { fullName: true, businessName: true } } } } }
         },
         _count: { select: { products: true, supplierReviews: true } }
@@ -135,6 +155,7 @@ export async function GET(request: NextRequest) {
           r.buyer?.buyerProfile?.businessName ||
           r.buyer?.buyerProfile?.fullName ||
           'Verified buyer',
+        mine: !!viewerBuyerId && r.buyerId === viewerBuyerId,
       })),
       counts: supplier._count,
       // Kept as _count for the storefront page's existing consumption.
