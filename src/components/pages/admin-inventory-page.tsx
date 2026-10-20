@@ -5,8 +5,12 @@
  *
  * Consumes GET /api/supplier/inventory?all=true (admin-only cross-supplier
  * mode of the REAL seller inventory endpoint): products with nested variants
- * + a real summary {totalSkus, totalVariantSkus, lowStockCount (≤20),
- * outOfStockCount, totalInventoryUnits}.
+ * + a real summary {totalSkus, totalVariantSkus, lowStockCount, outOfStockCount,
+ * totalInventoryUnits}.
+ *
+ * Task 79: low-stock here honors each product's OWN seller-tuned
+ * products.stockAlertThreshold (null = platform default ≤20) — the audit
+ * shows the line each seller actually chose, not a guessed global constant.
  *
  * OVERSIGHT, NOT CONTROL: admins already have trusted API access if a stock
  * edit is ever truly needed (the PATCH accepts admin actors and audit-logs
@@ -48,6 +52,7 @@ interface ApiInventoryProduct {
   isActive: boolean
   isApproved: boolean
   updatedAt: string
+  stockAlertThreshold: number | null
   category: { name: string } | null
   supplier: { id: string; companyName: string; verificationStatus: string } | null
   variants: ApiVariant[]
@@ -61,10 +66,16 @@ interface ApiSummary {
   totalInventoryUnits: number
 }
 
-/** Low-stock threshold mirrors the API summary (stockQuantity > 0 && ≤ 20). */
-const LOW_STOCK_THRESHOLD = 20
+/** Platform default for products whose seller never tuned their alert line. */
+const LOW_STOCK_FALLBACK = 20
 
-function StockChip({ quantity, unit }: { quantity: number; unit?: string }) {
+/** The low-stock line a product is actually judged against. */
+function alertLineFor(p: Pick<ApiInventoryProduct, 'stockAlertThreshold'>): number {
+  return p.stockAlertThreshold ?? LOW_STOCK_FALLBACK
+}
+
+function StockChip({ quantity, unit, alertLine }: { quantity: number; unit?: string; alertLine?: number }) {
+  const line = alertLine ?? LOW_STOCK_FALLBACK
   if (quantity <= 0) {
     return (
       <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-red-50 text-red-600 border border-red-100 dark:bg-red-950 dark:text-red-400 dark:border-red-900">
@@ -72,7 +83,7 @@ function StockChip({ quantity, unit }: { quantity: number; unit?: string }) {
       </span>
     )
   }
-  if (quantity <= LOW_STOCK_THRESHOLD) {
+  if (quantity <= line) {
     return (
       <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900">
         Low · {quantity} {unit}
@@ -91,14 +102,14 @@ type StockFilter = 'all' | 'in' | 'low' | 'out'
 const STOCK_FILTERS: { key: StockFilter; label: string }[] = [
   { key: 'all', label: 'All stock states' },
   { key: 'out', label: 'Out of stock' },
-  { key: 'low', label: `Low (≤${LOW_STOCK_THRESHOLD})` },
+  { key: 'low', label: 'Low (seller alert lines)' },
   { key: 'in', label: 'In stock' },
 ]
 
-function matchesStockFilter(quantity: number, filter: StockFilter): boolean {
-  if (filter === 'out') return quantity <= 0
-  if (filter === 'low') return quantity > 0 && quantity <= LOW_STOCK_THRESHOLD
-  if (filter === 'in') return quantity > LOW_STOCK_THRESHOLD
+function matchesStockFilter(p: Pick<ApiInventoryProduct, 'stockQuantity' | 'stockAlertThreshold'>, filter: StockFilter): boolean {
+  if (filter === 'out') return p.stockQuantity <= 0
+  if (filter === 'low') return p.stockQuantity > 0 && p.stockQuantity <= alertLineFor(p)
+  if (filter === 'in') return p.stockQuantity > alertLineFor(p)
   return true
 }
 
@@ -165,7 +176,7 @@ export function AdminInventoryPage() {
   const filtered = items.filter((p) => {
     if (needle && !p.name.toLowerCase().includes(needle)) return false
     if (supplierFilter !== 'all' && p.supplier?.id !== supplierFilter) return false
-    return matchesStockFilter(p.stockQuantity, stockFilter)
+    return matchesStockFilter(p, stockFilter)
   })
 
   // ── Guard states ──────────────────────────────────────────────────────
@@ -316,8 +327,14 @@ export function AdminInventoryPage() {
                       </p>
                     </div>
                   </div>
-                  <StockChip quantity={p.stockQuantity} unit={p.unit} />
+                  <StockChip quantity={p.stockQuantity} unit={p.unit} alertLine={alertLineFor(p)} />
                   <div className="flex flex-wrap items-center gap-1.5">
+                    <span
+                      className="text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400"
+                      title={p.stockAlertThreshold != null ? 'The seller tuned this product’s own low-stock alert line' : 'Falls back to the platform default alert line (≤20)'}
+                    >
+                      {p.stockAlertThreshold != null ? `Seller alert ≤${p.stockAlertThreshold}` : `Default alert ≤${LOW_STOCK_FALLBACK}`}
+                    </span>
                     <span className={p.isApproved
                       ? 'text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 rounded-lg px-2 py-1 text-emerald-700 dark:text-emerald-400'
                       : 'text-[10px] font-bold bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-900 rounded-lg px-2 py-1 text-amber-700 dark:text-amber-400'}>
@@ -363,7 +380,7 @@ export function AdminInventoryPage() {
                             price override set
                           </span>
                         )}
-                        <StockChip quantity={v.stockQuantity} />
+                        <StockChip quantity={v.stockQuantity} alertLine={alertLineFor(p)} />
                       </div>
                     ))}
                   </div>

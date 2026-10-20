@@ -12,10 +12,13 @@ import { z } from 'zod'
  *      variants nested ({items:[{id,name,unit,stockQuantity,moq,variants:[…]}]}).
  *      Admins may pass ?all=true to audit every supplier's stock.
  * PATCH /api/supplier/inventory — REAL-TIME stock edits, applied instantly in a
- *      single transaction: {updates:[{productId?|variantId?, newQuantity?|delta?}]}.
- *      Product- and variant-level updates may be mixed. Every id is verified
- *      for ownership through products.supplierId (or admin) — no blind writes.
- *      Returns the real before/after quantity for every applied update.
+ *      single transaction: {updates:[{productId?|variantId?, newQuantity?|delta?,
+ *      stockAlertThreshold?}]}. Product- and variant-level updates may be mixed;
+ *      stockAlertThreshold (Task 79) is product-only — variants inherit it — and
+ *      may be sent alone (null clears back to the platform default) or together
+ *      with a quantity change. Every id is verified for ownership through
+ *      products.supplierId (or admin) — no blind writes. Returns the real
+ *      before/after quantity (and threshold when touched) for every update.
  *
  *      After the write succeeds, each updated product also gets a real-time
  *      `inventory:updated` push into its PUBLIC product:<productId> socket
@@ -30,18 +33,56 @@ const READ_LIMIT = { limit: 60, windowMs: 60_000 }
 const WRITE_LIMIT = { limit: 60, windowMs: 60_000 }
 const MAX_UPDATES_PER_REQUEST = 50
 
+/**
+ * Platform-default low-stock line (Task 79): products without a seller-tuned
+ * products.stockAlertThreshold fall back to this everywhere — API summary,
+ * seller console, admin audit, PDP urgency (PDP default is 5 for display
+ * urgency; inventory surfaces use 20 to mirror the historical summary math).
+ */
+export const LOW_STOCK_FALLBACK = 20
+
 const stockUpdateSchema = z
   .object({
     productId: z.string().min(1).optional(),
     variantId: z.string().min(1).optional(),
     newQuantity: z.number().min(0, 'Quantity cannot be negative').optional(),
     delta: z.number().optional(),
+    stockAlertThreshold: z
+      .number({ error: 'Alert threshold must be a number' })
+      .min(0, 'Alert threshold cannot be negative')
+      .max(1_000_000, 'Alert threshold is unreasonably large')
+      .nullable()
+      .optional(),
   })
   .refine((u) => Boolean(u.productId) !== Boolean(u.variantId), {
     message: 'Exactly one of productId or variantId is required per update',
   })
-  .refine((u) => (u.newQuantity !== undefined) !== (u.delta !== undefined), {
-    message: 'Exactly one of newQuantity (set to value) or delta (relative change) is required per update',
+  .superRefine((u, ctx) => {
+    if (u.variantId !== undefined && u.stockAlertThreshold !== undefined) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Variants inherit the product-level alert threshold — set it on the product, not the variant',
+        path: ['stockAlertThreshold'],
+      })
+    }
+    const hasNew = u.newQuantity !== undefined
+    const hasDelta = u.delta !== undefined
+    const hasThreshold = u.stockAlertThreshold !== undefined
+    const qtyXor = hasNew !== hasDelta
+    if ((hasNew || hasDelta) && !qtyXor) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Use either newQuantity or delta, not both',
+        path: ['newQuantity'],
+      })
+    }
+    if (!qtyXor && !hasThreshold) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Exactly one of newQuantity (set to value), delta (relative change), or stockAlertThreshold is required per update',
+        path: ['newQuantity'],
+      })
+    }
   })
 
 export async function GET(request: NextRequest) {
@@ -94,6 +135,7 @@ export async function GET(request: NextRequest) {
         isActive: true,
         isApproved: true,
         updatedAt: true,
+        stockAlertThreshold: true,
         category: { select: { name: true } },
         // Supplier attribution (admin ?all=true audit — who owns which stock).
         supplier: {
@@ -114,11 +156,16 @@ export async function GET(request: NextRequest) {
       orderBy: { stockQuantity: 'asc' },
     })
 
-    // Real summary from the actual rows (products + variant SKUs counted separately).
+    // Real summary from the actual rows (products + variant SKUs counted
+    // separately). Task 79: low-stock honors each product's OWN threshold —
+    // the seller-tuned products.stockAlertThreshold, falling back to the
+    // platform default when the seller never tuned it.
     const summary = {
       totalSkus: products.length,
       totalVariantSkus: products.reduce((acc, p) => acc + p.variants.length, 0),
-      lowStockCount: products.filter((p) => p.stockQuantity > 0 && p.stockQuantity <= 20).length,
+      lowStockCount: products.filter(
+        (p) => p.stockQuantity > 0 && p.stockQuantity <= (p.stockAlertThreshold ?? LOW_STOCK_FALLBACK)
+      ).length,
       outOfStockCount: products.filter((p) => p.stockQuantity <= 0).length,
       totalInventoryUnits: products.reduce((acc, p) => acc + p.stockQuantity, 0),
     }
@@ -187,13 +234,14 @@ export async function PATCH(request: NextRequest) {
       before: number
       unit: string
       bundleSize: number | null
+      thresholdBefore: number | null
     }> = []
 
     for (const [index, u] of updates.entries()) {
       if (u.productId) {
         const product = await db.products.findUnique({
           where: { id: u.productId },
-          select: { id: true, stockQuantity: true, supplierId: true, unit: true, bundleSize: true },
+          select: { id: true, stockQuantity: true, supplierId: true, unit: true, bundleSize: true, stockAlertThreshold: true },
         })
         if (!product || (!isAdmin && product.supplierId !== profileId)) {
           return NextResponse.json(
@@ -201,7 +249,7 @@ export async function PATCH(request: NextRequest) {
             { status: 404 }
           )
         }
-        resolved.push({ key: 'productId', id: product.id, before: product.stockQuantity, unit: product.unit, bundleSize: product.bundleSize })
+        resolved.push({ key: 'productId', id: product.id, before: product.stockQuantity, unit: product.unit, bundleSize: product.bundleSize, thresholdBefore: product.stockAlertThreshold })
       } else if (u.variantId) {
         const variant = await db.productVariants.findUnique({
           where: { id: u.variantId },
@@ -219,7 +267,7 @@ export async function PATCH(request: NextRequest) {
           )
         }
         variantProductIds.set(variant.id, variant.productId)
-        resolved.push({ key: 'variantId', id: variant.id, before: variant.stockQuantity, unit: variant.product.unit, bundleSize: variant.product.bundleSize })
+        resolved.push({ key: 'variantId', id: variant.id, before: variant.stockQuantity, unit: variant.product.unit, bundleSize: variant.product.bundleSize, thresholdBefore: null })
       }
     }
 
@@ -231,6 +279,8 @@ export async function PATCH(request: NextRequest) {
         before: number
         after: number
         updatedAt: Date
+        thresholdBefore?: number | null
+        thresholdAfter?: number | null
       }> = []
       for (const [index, u] of updates.entries()) {
         const r = resolved[index]
@@ -240,12 +290,27 @@ export async function PATCH(request: NextRequest) {
             : Math.max(0, r.before + (u.delta ?? 0))
         )
         if (r.key === 'productId') {
+          // Task 79: the seller-tuned alert threshold rides the same
+          // transactional write when the update carries it (undefined = not
+          // touched; null = clear back to the platform default).
+          const thresholdTouched = u.stockAlertThreshold !== undefined
           const row = await tx.products.update({
             where: { id: r.id },
-            data: { stockQuantity: target },
-            select: { stockQuantity: true, updatedAt: true },
+            data: {
+              stockQuantity: target,
+              ...(thresholdTouched ? { stockAlertThreshold: u.stockAlertThreshold } : {}),
+            },
+            select: { stockQuantity: true, updatedAt: true, stockAlertThreshold: true },
           })
-          applied.push({ productId: r.id, before: r.before, after: row.stockQuantity, updatedAt: row.updatedAt })
+          applied.push({
+            productId: r.id,
+            before: r.before,
+            after: row.stockQuantity,
+            updatedAt: row.updatedAt,
+            ...(thresholdTouched
+              ? { thresholdBefore: r.thresholdBefore, thresholdAfter: row.stockAlertThreshold }
+              : {}),
+          })
         } else {
           const row = await tx.productVariants.update({
             where: { id: r.id },
@@ -273,6 +338,9 @@ export async function PATCH(request: NextRequest) {
             ...(r.productId ? { productId: r.productId } : { variantId: r.variantId }),
             before: r.before,
             after: r.after,
+            ...(r.thresholdAfter !== undefined
+              ? { thresholdBefore: r.thresholdBefore, thresholdAfter: r.thresholdAfter }
+              : {}),
             updatedAt: r.updatedAt.toISOString(),
           })),
         }),
@@ -329,14 +397,23 @@ export async function PATCH(request: NextRequest) {
           ...(r.variantId ? { variantId: r.variantId } : {}),
           before: r.before,
           after: r.after,
+          // Task 79: cross-session consoles learn the new alert line too.
+          ...(r.thresholdAfter !== undefined ? { stockAlertThreshold: r.thresholdAfter } : {}),
         })
       }
     }
 
+    // An honest message: a threshold-only touch is not a stock edit.
+    const thresholdOnly =
+      updates.length > 0 &&
+      updates.every((u) => u.stockAlertThreshold !== undefined && u.newQuantity === undefined && u.delta === undefined)
+
     return NextResponse.json({
       success: true,
       data: { results },
-      message: `Stock updated for ${results.length} ${results.length === 1 ? 'item' : 'items'}`,
+      message: thresholdOnly
+        ? `Low-stock alert updated for ${results.length} ${results.length === 1 ? 'item' : 'items'}`
+        : `Stock updated for ${results.length} ${results.length === 1 ? 'item' : 'items'}`,
     })
   } catch (error) {
     console.error('Supplier inventory PATCH error:', error)

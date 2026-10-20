@@ -7,6 +7,10 @@
  * quick-adjust actually works now: PATCH {updates:[{productId|variantId, delta|
  * newQuantity}]} with ownership verified server-side. Optimistic updates roll
  * back on failure — success is never faked.
+ *
+ * Task 79: every low-stock judgment here honors the SELLER-TUNED
+ * products.stockAlertThreshold (inline "Alert at" editor per row; null falls
+ * back to the platform default). The old hardcoded ≤20 is gone.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
@@ -39,6 +43,7 @@ interface ApiInventoryProduct {
   isActive: boolean;
   isApproved: boolean;
   updatedAt: string;
+  stockAlertThreshold: number | null;
   category: { name: string } | null;
   variants: ApiVariant[];
 }
@@ -51,10 +56,19 @@ interface ApiSummary {
   totalInventoryUnits: number;
 }
 
-/** Low-stock threshold mirrors the API summary (stockQuantity > 0 && ≤ 20). */
-const LOW_STOCK_THRESHOLD = 20;
+/** Platform default for products whose seller never tuned their alert line. */
+const LOW_STOCK_FALLBACK = 20;
 
-function StockChip({ quantity, unit }: { quantity: number; unit?: string }) {
+/** The low-stock line for a product: seller-tuned threshold, else default. */
+function alertLineFor(p: Pick<ApiInventoryProduct, 'stockAlertThreshold'>): number {
+  return p.stockAlertThreshold ?? LOW_STOCK_FALLBACK;
+}
+
+function isLowStock(p: Pick<ApiInventoryProduct, 'stockQuantity' | 'stockAlertThreshold'>): boolean {
+  return p.stockQuantity > 0 && p.stockQuantity <= alertLineFor(p);
+}
+
+function StockChip({ quantity, unit, alertLine }: { quantity: number; unit?: string; alertLine?: number }) {
   if (quantity <= 0) {
     return (
       <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-red-50 text-red-600 border border-red-100">
@@ -62,7 +76,14 @@ function StockChip({ quantity, unit }: { quantity: number; unit?: string }) {
       </span>
     );
   }
-  if (quantity <= LOW_STOCK_THRESHOLD) {
+  if (alertLine !== undefined && quantity <= alertLine) {
+    return (
+      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+        Low · {quantity} {unit}
+      </span>
+    );
+  }
+  if (alertLine === undefined && quantity <= LOW_STOCK_FALLBACK) {
     return (
       <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
         Low · {quantity} {unit}
@@ -91,6 +112,7 @@ export function InventoryManagementPage() {
   // per-target single-flight + set-to-value inputs
   const [actingKey, setActingKey] = useState('');
   const [setValueInputs, setSetValueInputs] = useState<Record<string, string>>({});
+  const [thresholdInputs, setThresholdInputs] = useState<Record<string, string>>({});
   const seqRef = useRef(0);
 
   const fetchInventory = useCallback(async (background = false) => {
@@ -155,6 +177,11 @@ export function InventoryManagementPage() {
     const stock = d.stockQuantity;
     if (typeof stock !== 'number' || !Number.isFinite(stock) || stock < 0) return;
     const variantId = typeof d.variantId === 'string' && d.variantId.length > 0 ? d.variantId : null;
+    // Task 79: a threshold change rides the same cross-session event.
+    const thresholdTouched = 'stockAlertThreshold' in d;
+    const threshold = thresholdTouched && (d.stockAlertThreshold === null || typeof d.stockAlertThreshold === 'number')
+      ? (d.stockAlertThreshold as number | null)
+      : undefined;
     setItems((prev) =>
       variantId
         ? prev.map((p) =>
@@ -162,19 +189,24 @@ export function InventoryManagementPage() {
               ? { ...p, variants: p.variants.map((v) => (v.id === variantId ? { ...v, stockQuantity: stock } : v)) }
               : p
           )
-        : prev.map((p) => (p.id === d.productId ? { ...p, stockQuantity: stock } : p))
+        : prev.map((p) =>
+            p.id === d.productId
+              ? { ...p, stockQuantity: stock, ...(threshold !== undefined ? { stockAlertThreshold: threshold } : {}) }
+              : p
+          )
     );
   }, []);
 
   useRealtimeRoom(needsAuth ? [] : liveRooms, { onEvent: handleLiveInventory });
 
   // Keep the summary chips consistent with the rows they summarize while live
-  // events mutate stock (formula mirrors GET /api/supplier/inventory exactly).
+  // events mutate stock (formula mirrors GET /api/supplier/inventory exactly,
+  // including the per-product alert line).
   useEffect(() => {
     setSummary({
       totalSkus: items.length,
       totalVariantSkus: items.reduce((acc, p) => acc + p.variants.length, 0),
-      lowStockCount: items.filter((p) => p.stockQuantity > 0 && p.stockQuantity <= LOW_STOCK_THRESHOLD).length,
+      lowStockCount: items.filter(isLowStock).length,
       outOfStockCount: items.filter((p) => p.stockQuantity <= 0).length,
       totalInventoryUnits: items.reduce((acc, p) => acc + p.stockQuantity, 0),
     });
@@ -249,17 +281,22 @@ export function InventoryManagementPage() {
       const applied = Array.isArray(json.data?.results) ? json.data.results[0] : null;
       if (applied) {
         const after = applied.after as number | undefined;
-        if (typeof after === 'number') {
-          setItems((current) =>
-            current.map((p) => {
-              if ('productId' in applied && p.id === applied.productId) return { ...p, stockQuantity: after };
-              if ('variantId' in applied) {
-                return { ...p, variants: p.variants.map((v) => (v.id === applied.variantId ? { ...v, stockQuantity: after } : v)) };
-              }
-              return p;
-            })
-          );
-        }
+        const thresholdAfter = applied.thresholdAfter as number | null | undefined;
+        setItems((current) =>
+          current.map((p) => {
+            if ('productId' in applied && p.id === applied.productId) {
+              return {
+                ...p,
+                ...(typeof after === 'number' ? { stockQuantity: after } : {}),
+                ...(thresholdAfter !== undefined ? { stockAlertThreshold: thresholdAfter } : {}),
+              };
+            }
+            if ('variantId' in applied) {
+              return { ...p, variants: p.variants.map((v) => (v.id === applied.variantId ? { ...v, stockQuantity: after ?? v.stockQuantity } : v)) };
+            }
+            return p;
+          })
+        );
       }
     } catch {
       setItems((current) =>
@@ -290,9 +327,61 @@ export function InventoryManagementPage() {
     setSetValueInputs((prev) => ({ ...prev, [key]: '' }));
   };
 
+  /**
+   * Task 79: the seller-tuned low-stock line, saved through the SAME audited
+   * PATCH (stockAlertThreshold on the product update). The response's real
+   * thresholdAfter is applied — no optimistic guess needed here.
+   */
+  const submitThresholdValue = async (productId: string, value: number | null) => {
+    const key = `p:${productId}`;
+    if (actingKey) return;
+    setActingKey(key);
+    try {
+      const res = await fetch('/api/supplier/inventory', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ updates: [{ productId, stockAlertThreshold: value }] }),
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) {
+        toast.error(json?.error || `Alert update failed (HTTP ${res.status})`);
+        return;
+      }
+      const applied = Array.isArray(json.data?.results) ? json.data.results[0] : null;
+      const thresholdAfter = applied?.thresholdAfter;
+      if (thresholdAfter !== undefined) {
+        setItems((current) =>
+          current.map((p) => (p.id === productId ? { ...p, stockAlertThreshold: thresholdAfter as number | null } : p))
+        );
+      }
+      toast.success(json.message || 'Low-stock alert updated.');
+    } catch {
+      toast.error('Network error — alert threshold was not saved.');
+    } finally {
+      setActingKey('');
+    }
+  };
+
+  const submitThreshold = (productId: string) => {
+    const raw = (thresholdInputs[`p:${productId}`] ?? '').trim();
+    if (raw === '') return;
+    const n = Number(raw);
+    if (!Number.isFinite(n) || n < 0) {
+      toast.error('Alert threshold must be a number ≥ 0.');
+      return;
+    }
+    submitThresholdValue(productId, n);
+    setThresholdInputs((prev) => ({ ...prev, [`p:${productId}`]: '' }));
+  };
+
   const totalUnits = summary?.totalInventoryUnits ?? items.reduce((acc, p) => acc + p.stockQuantity, 0);
-  const lowStock = summary?.lowStockCount ?? items.filter((p) => p.stockQuantity > 0 && p.stockQuantity <= LOW_STOCK_THRESHOLD).length;
+  const lowStock = summary?.lowStockCount ?? items.filter(isLowStock).length;
   const outOfStock = summary?.outOfStockCount ?? items.filter((p) => p.stockQuantity <= 0).length;
+  const customAlerts = items.filter((p) => p.stockAlertThreshold != null).length;
 
   if (needsAuth) {
     return (
@@ -381,7 +470,9 @@ export function InventoryManagementPage() {
           <div className="bg-amber-50 p-3 md:p-4 rounded-xl border border-amber-100 flex flex-col justify-between">
             <div className="flex items-center gap-2 text-amber-600 mb-2">
               <AlertTriangle className="w-4 h-4" />
-              <span className="text-xs font-medium">Low Stock (≤{LOW_STOCK_THRESHOLD})</span>
+              <span className="text-xs font-medium" title={customAlerts > 0 ? `${customAlerts} of ${items.length} products use a custom alert line` : 'Using the platform default alert line (≤20)'}>
+                Low stock{customAlerts > 0 ? ` · ${customAlerts} custom` : ' (≤20 default)'}
+              </span>
             </div>
             <p className="text-2xl md:text-3xl font-bold text-amber-700">{lowStock}</p>
           </div>
@@ -452,13 +543,18 @@ export function InventoryManagementPage() {
                                 {product.sku ? ` · SKU ${product.sku}` : ''}
                                 {product.variants.length > 0 ? ` · ${product.variants.length} variant${product.variants.length === 1 ? '' : 's'}` : ''}
                               </p>
-                              <div className="mt-1.5">
-                                <StockChip quantity={product.stockQuantity} unit={product.unit} />
+                              <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                                <StockChip quantity={product.stockQuantity} unit={product.unit} alertLine={alertLineFor(product)} />
+                                {product.stockAlertThreshold != null && (
+                                  <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-100" title="This product uses its own low-stock alert line">
+                                    Alert at ≤{product.stockAlertThreshold} {product.unit}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
                           <div className="flex flex-col items-end gap-2 shrink-0">
-                            <span className={`text-lg font-bold ${product.stockQuantity === 0 ? 'text-red-500' : product.stockQuantity <= LOW_STOCK_THRESHOLD ? 'text-amber-600' : 'text-gray-900'}`}>
+                            <span className={`text-lg font-bold ${product.stockQuantity === 0 ? 'text-red-500' : isLowStock(product) ? 'text-amber-600' : 'text-gray-900'}`}>
                               {product.stockQuantity}
                             </span>
                             <div className="flex items-center gap-1.5">
@@ -503,6 +599,41 @@ export function InventoryManagementPage() {
                           >
                             Set
                           </button>
+                          <div className="flex items-center gap-1.5 ml-1">
+                            <input
+                              type="number"
+                              min="0"
+                              step="1"
+                              inputMode="numeric"
+                              aria-label={`Low-stock alert threshold for ${product.name} (empty = platform default ${LOW_STOCK_FALLBACK})`}
+                              placeholder={`Alert at… (default ${LOW_STOCK_FALLBACK})`}
+                              value={thresholdInputs[key] ?? ''}
+                              onChange={(e) => setThresholdInputs((prev) => ({ ...prev, [key]: e.target.value }))}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') submitThreshold(product.id);
+                              }}
+                              className="min-h-11 w-40 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            />
+                            <button
+                              type="button"
+                              disabled={actingKey === key || (thresholdInputs[key] ?? '').trim() === ''}
+                              onClick={() => submitThreshold(product.id)}
+                              className="min-h-11 px-3 bg-white border border-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-50 disabled:opacity-50"
+                            >
+                              Alert
+                            </button>
+                            {product.stockAlertThreshold != null && (
+                              <button
+                                type="button"
+                                aria-label={`Reset ${product.name} to the platform default alert line (${LOW_STOCK_FALLBACK})`}
+                                disabled={actingKey === key}
+                                onClick={() => submitThresholdValue(product.id, null)}
+                                className="min-h-11 px-3 bg-white border border-gray-200 text-gray-500 rounded-lg text-xs font-medium hover:bg-gray-50 disabled:opacity-50"
+                              >
+                                Reset
+                              </button>
+                            )}
+                          </div>
                           {actingKey === key && <RefreshCw className="w-4 h-4 text-gray-400 animate-spin" aria-label="Saving" />}
                         </div>
                       </div>
@@ -527,7 +658,7 @@ export function InventoryManagementPage() {
                                       {variant.priceOverride != null ? `Price override ${variant.priceOverride} BDT` : 'Base price applies'}
                                     </p>
                                     <div className="mt-1.5">
-                                      <StockChip quantity={variant.stockQuantity} unit={product.unit} />
+                                      <StockChip quantity={variant.stockQuantity} unit={product.unit} alertLine={alertLineFor(product)} />
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-1.5 shrink-0">
@@ -596,7 +727,7 @@ export function InventoryManagementPage() {
 
         <p className="flex items-center gap-1.5 text-[11px] text-gray-400 mt-4">
           <CheckCircle2 className="w-3.5 h-3.5" />
-          Every quick edit above is verified against your own catalog server-side and written in one transaction.
+          Every quick edit above is verified against your own catalog server-side and written in one transaction. "Alert" sets this product's own low-stock line — variants inherit it, and the product page shows urgency once stock dips to it.
         </p>
       </div>
     </motion.div>
