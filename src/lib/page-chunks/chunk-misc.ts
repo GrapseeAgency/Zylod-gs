@@ -214,7 +214,7 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'pricing': () => import('@/components/pages/bulk-pricing-page'),
     'product-catalog': () => import('@/components/pages/wholesale-catalog-page'),
     'product-reviews-list': () => import('@/components/pages/product-reviews-page'),
-    'promotions-page': () => import('@/components/pages/daily-deals-page'),
+    'promotions-page': () => import('@/components/pages/promotions-page'),
     'purchase-history': () => import('@/components/pages/orders-page'),
     'raise-dispute': () => import('@/components/pages/raise-complaint-page'),
     'rate-products': () => import('@/components/pages/write-review-page'),

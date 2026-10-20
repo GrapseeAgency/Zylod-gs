@@ -10,6 +10,8 @@ import { holdEscrowInTx } from '@/lib/escrow'
 import { roundQty } from '@/lib/product-contract'
 import { buildAddressSnapshot } from '@/lib/addresses'
 import { computeQuote, shipmentWeightKg } from '@/lib/shipping'
+import { activePromotionFilter, resolveBestPromotionApplication, claimPromotionUsage } from '@/lib/promotions'
+import { PromotionUsageError } from '@/lib/promotions-errors'
 
 export async function GET(request: NextRequest) {
   try {
@@ -206,6 +208,8 @@ export async function POST(request: NextRequest) {
           { items: Array<{ productId: string; variantId: string | null; quantity: number; unitPrice: number; totalPrice: number; unit: string; bundleSize: number | null; weightKg: number | null; productName: string }>; subtotal: number }
         > = {}
         let totalAmount = 0
+        // Task 100: the priced lines (server truth) feed the promotion engine.
+        const pricedLines: Array<{ productId: string; totalPrice: number }> = []
 
         for (const item of items) {
           const product = await tx.products.findUnique({ where: { id: item.productId } })
@@ -257,6 +261,66 @@ export async function POST(request: NextRequest) {
           })
           supplierGroups[supplierId].subtotal += totalPrice
           totalAmount += totalPrice
+          pricedLines.push({ productId: item.productId, totalPrice })
+        }
+
+        // Task 100: PLATFORM PROMOTION — automatic, admin-curated, applied
+        // BEFORE the coupon (the coupon then reads the promoted total, so the
+        // stack is honest: goods → promotion → coupon → + shipping). Every
+        // active campaign pinning any of these products is scored on the
+        // lines it actually pins; the best discount wins (tie → ends
+        // soonest). The usage counter is claimed ATOMICALLY — a campaign
+        // exhausted between read and write refuses the order (409) rather
+        // than repricing it behind the buyer's back. Platform-funded: the
+        // supplier subOrders below keep FULL line value — only the buyer's
+        // total shrinks.
+        let appliedPromotion: { id: string; name: string; discount: number } | null = null
+        {
+          const now = new Date()
+          const rows = await tx.promotionProducts.findMany({
+            where: { product: { id: { in: pricedLines.map((l) => l.productId) } }, promotion: activePromotionFilter(now) },
+            include: {
+              promotion: {
+                select: {
+                  id: true, name: true, type: true, value: true, minOrderAmount: true,
+                  maxDiscount: true, usageLimit: true, usedCount: true, isActive: true, validFrom: true, validUntil: true,
+                },
+              },
+            },
+          })
+          if (rows.length > 0) {
+            const campaigns = new Map<string, { promotion: (typeof rows)[number]['promotion']; pinnedProductIds: Set<string> }>()
+            for (const row of rows) {
+              let entry = campaigns.get(row.promotion.id)
+              if (!entry) {
+                entry = { promotion: row.promotion, pinnedProductIds: new Set() }
+                campaigns.set(row.promotion.id, entry)
+              }
+              entry.pinnedProductIds.add(row.productId)
+            }
+            const best = resolveBestPromotionApplication([...campaigns.values()], pricedLines, now)
+            if (best) {
+              await claimPromotionUsage(tx, best.promotion)
+              totalAmount -= best.discount
+              appliedPromotion = { id: best.promotion.id, name: best.promotion.name, discount: best.discount }
+              await tx.auditLogs.create({
+                data: {
+                  actorId: buyerId,
+                  action: 'promotion_applied',
+                  entityType: 'orders',
+                  entityId: orderNumber,
+                  metadata: JSON.stringify({
+                    promotionId: best.promotion.id,
+                    promotionName: best.promotion.name,
+                    type: best.promotion.type,
+                    value: best.promotion.value,
+                    promotedSubtotal: best.promotedSubtotal,
+                    discount: best.discount,
+                  }),
+                },
+              })
+            }
+          }
         }
 
         // Task 74: coupon application is HONEST and ENFORCED. The old block
@@ -414,6 +478,12 @@ export async function POST(request: NextRequest) {
             orderNumber,
             totalAmount: orderTotal,
             shippingFee,
+            // Task 100: the applied campaign is stamped on the order (name
+            // snapshot survives promotion deletion; discount is the real
+            // number the buyer was charged).
+            promotionId: appliedPromotion?.id ?? null,
+            promotionName: appliedPromotion?.name ?? null,
+            promotionDiscount: appliedPromotion?.discount ?? 0,
             // Task 70: a wallet-paid order is verified money the moment the
             // balance debits — it NEVER passes through 'unpaid'.
             paymentStatus: payWithWallet ? 'paid' : 'unpaid',
@@ -600,7 +670,7 @@ export async function POST(request: NextRequest) {
           await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
         }
 
-        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon, shippingLegs, shippingFee }
+        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon, appliedPromotion, shippingLegs, shippingFee }
       })
 
       // Real-time (Task 51-a): every seller with a slice of this order gets a
@@ -680,6 +750,9 @@ export async function POST(request: NextRequest) {
           walletPaymentId: order.walletPaymentId,
           // Task 74: the honest receipt — what the coupon actually took off.
           couponApplied: order.appliedCoupon,
+          // Task 100: the honest receipt — the campaign that applied, and
+          // the ৳ it actually took off (buyer-paid truth).
+          promotionApplied: order.appliedPromotion,
         },
       }, { status: 201 })
     } catch (txError) {
@@ -698,6 +771,9 @@ export async function POST(request: NextRequest) {
         )
       }
       if (txError instanceof CouponError) {
+        return NextResponse.json({ error: txError.message }, { status: 409 })
+      }
+      if (txError instanceof PromotionUsageError) {
         return NextResponse.json({ error: txError.message }, { status: 409 })
       }
       if (txError instanceof ShippingChoiceError) {

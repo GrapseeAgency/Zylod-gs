@@ -33,7 +33,7 @@ import {
   Zap, CircleCheck, X,
   Building2, TrendingDown, Info,
   Navigation, User, Loader2, ExternalLink, RefreshCw, Edit,
-  ShieldAlert, ShieldCheck, AlertTriangle, PackageOpen,
+  ShieldAlert, ShieldCheck, AlertTriangle, PackageOpen, BadgePercent,
 } from 'lucide-react'
 
 /* ─── Color Constants ─── */
@@ -210,6 +210,17 @@ interface ProductData {
   variants: ProductVariant[]
   videos: ProductVideo[]
   reviews: ReviewData[]
+  /** Task 100: the live platform campaign pinned to this product (window filtered server-side). */
+  activePromotion?: {
+    id: string
+    name: string
+    description: string | null
+    type: string
+    value: number
+    minOrderAmount: number | null
+    maxDiscount: number | null
+    validUntil: string
+  } | null
   createdAt: string
 }
 
@@ -992,6 +1003,28 @@ function DesktopProductDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* ─── Task 100: platform promotion banner (automatic at checkout) ─── */}
+          {product.activePromotion && (
+            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-3">
+              <BadgePercent className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+              <div className="min-w-0 text-xs">
+                <p className="font-bold text-emerald-800">
+                  {product.activePromotion.name} — {' '}
+                  {product.activePromotion.type === 'percentage'
+                    ? `${product.activePromotion.value}% off`
+                    : `৳${product.activePromotion.value.toLocaleString()} off`}
+                </p>
+                <p className="text-emerald-700/80 mt-0.5 leading-relaxed">
+                  Applied automatically at checkout — before any coupon code. The receipt shows the exact ৳ saved.
+                  {product.activePromotion.minOrderAmount != null
+                    ? ` Applies from ৳${product.activePromotion.minOrderAmount.toLocaleString()} of this item.`
+                    : ''}
+                  {' '}Ends {new Date(product.activePromotion.validUntil).toLocaleDateString('en-GB')}.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* ─── Quantity Selector ─── */}
           <div className="space-y-2">

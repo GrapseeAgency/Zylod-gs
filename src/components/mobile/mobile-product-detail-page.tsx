@@ -20,7 +20,7 @@ import { ProductQas } from '@/components/product/product-qas'
 import {
   ChevronLeft, Share2, ShoppingCart, Heart, Star, Truck, Store, MapPin,
   Circle, Clock, Package, Navigation, Minus, Plus, ChevronRight, QrCode,
-  MessageCircle, CheckCircle2, AlertCircle, PackageOpen,
+  MessageCircle, CheckCircle2, AlertCircle, PackageOpen, BadgePercent,
 } from 'lucide-react'
 
 /* ─── Material Symbols Helper ─── */
@@ -53,6 +53,11 @@ interface ApiProduct {
   unit: string; bundleSize: number | null; weightKg: number | null; basePrice: number; moq: number; maxOrderQty: number | null
   stockQuantity: number; stockAlertThreshold: number | null; thumbnailUrl: string | null; ratingAvg: number; reviewCount: number
   soldCount: number; isCustomizable: boolean; createdAt: string
+  /** Task 100: the live platform campaign pinned to this product (window filtered server-side). */
+  activePromotion?: {
+    id: string; name: string; description: string | null; type: string; value: number
+    minOrderAmount: number | null; maxDiscount: number | null; validUntil: string
+  } | null
   category: { id: string; name: string; slug: string; parentId: string | null }
   supplier: { id: string; companyName: string; slug: string; city: string; ratingAvg: number; ratingCount: number; verificationStatus: string }
   images: { id: string; imageUrl: string; sortOrder: number }[]
@@ -663,6 +668,27 @@ export function MobileProductDetailPage() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Task 100: platform promotion banner (automatic at checkout) ─── */}
+        {product.activePromotion && (
+          <div className="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5">
+            <BadgePercent className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+            <div className="min-w-0 text-xs">
+              <p className="font-bold text-emerald-800">
+                {product.activePromotion.name} — {product.activePromotion.type === 'percentage'
+                  ? `${product.activePromotion.value}% off`
+                  : `৳${product.activePromotion.value.toLocaleString()} off`}
+              </p>
+              <p className="text-emerald-700/80 mt-0.5 leading-relaxed">
+                Applied automatically at checkout — before any coupon code. The receipt shows the exact ৳ saved.
+                {product.activePromotion.minOrderAmount != null
+                  ? ` Applies from ৳${product.activePromotion.minOrderAmount.toLocaleString()} of this item.`
+                  : ''}
+                {' '}Ends {new Date(product.activePromotion.validUntil).toLocaleDateString('en-GB')}.
+              </p>
             </div>
           </div>
         )}

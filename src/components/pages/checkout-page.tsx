@@ -77,6 +77,8 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [placedOrder, setPlacedOrder] = useState<{ orderNumber: string; paymentStatus: string } | null>(null)
   const [placedCoupon, setPlacedCoupon] = useState<{ code: string; discount: number } | null>(null)
+  // Task 100: the platform campaign the server applied (automatic, before the coupon).
+  const [placedPromotion, setPlacedPromotion] = useState<{ name: string; discount: number } | null>(null)
   const [placedReceipt, setPlacedReceipt] = useState<{ totalAmount: number; shippingFee: number } | null>(null)
   const [error, setError] = useState<string>('')
   const [needsAuth, setNeedsAuth] = useState(false)
@@ -343,6 +345,13 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         setCouponError(data?.error || 'Coupon could not be applied.')
         return
       }
+      if (res.status === 409 && /promotion/i.test(data?.error ?? '')) {
+        // Task 100: the campaign hit its usage limit between pricing and the
+        // write — the order was refused, never repriced behind the buyer's
+        // back. Re-placing prices without the promotion.
+        setError(data?.error || 'A promotion just reached its limit — place the order again to price it without it.')
+        return
+      }
       if ((res.status === 409 || res.status === 400) && /shipping|method/i.test(data?.error ?? '')) {
         // Task 95: the quoted book changed under the buyer (rate edited,
         // method deactivated…). Re-quote live and surface the real reason.
@@ -363,6 +372,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         paymentStatus: data.data.paymentStatus,
       })
       setPlacedCoupon(data.data.couponApplied ?? null)
+      setPlacedPromotion(data.data.promotionApplied ?? null)
       setPlacedReceipt({
         totalAmount: typeof data.data.totalAmount === 'number' ? data.data.totalAmount : 0,
         shippingFee: typeof data.data.shippingFee === 'number' ? data.data.shippingFee : 0,
@@ -384,6 +394,11 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         </div>
         <h1 className="text-xl md:text-2xl font-black text-slate-900">Order {placedOrder.orderNumber} Created</h1>
         <p className="text-xs text-slate-500 mt-2 max-w-xs leading-relaxed">
+          {placedPromotion && (
+            <span className="block text-emerald-600 font-bold mb-1">
+              Promotion “{placedPromotion.name}” saved you {formatPrice(placedPromotion.discount)}.
+            </span>
+          )}
           {placedCoupon && (
             <span className="block text-emerald-600 font-bold mb-1">
               Coupon {placedCoupon.code} saved you {formatPrice(placedCoupon.discount)}.
@@ -791,6 +806,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
 
           {/* Task 74: coupon attach — validated and discounted server-side. */}
           <div className="pt-2 space-y-1.5">
+            {/* Task 100: platform promotions are automatic — stated, never precomputed. */}
+            <p className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-2.5 py-1.5 leading-relaxed">
+              Platform promotions on your items apply automatically — before any coupon code. The receipt shows the exact ৳ each discount saved you.
+            </p>
             {couponApplied ? (
               <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2">
                 <span className="text-xs font-bold text-emerald-700 truncate">

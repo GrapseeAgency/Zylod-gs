@@ -97,6 +97,10 @@ export async function GET(
       orderNumber: order.orderNumber,
       buyerId: order.buyerId,
       totalAmount: order.totalAmount,
+      // Task 100: the campaign stamp (name snapshot + the real ৳ it took
+      // off) — order history survives promotion deletion.
+      promotionName: order.promotionName,
+      promotionDiscount: order.promotionDiscount,
       paymentStatus: order.paymentStatus,
       placedAt: order.placedAt.toISOString(),
       updatedAt: order.createdAt.toISOString(),

@@ -66,6 +66,9 @@ interface ApiOrderDetail {
   orderNumber: string
   buyerId: string
   totalAmount: number
+  /** Task 100: the platform campaign stamp (snapshot survives promotion deletion). */
+  promotionName: string | null
+  promotionDiscount: number
   paymentStatus: string
   placedAt: string
   updatedAt: string
@@ -746,6 +749,16 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
                 {shipping === 0 ? 'With supplier' : formatPrice(shipping)}
               </span>
             </div>
+
+            {/* Task 100: the platform campaign's real ৳ — server-computed at order time. */}
+            {(order.promotionDiscount ?? 0) > 0 && (
+              <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
+                <span>
+                  Promotion{order.promotionName ? ` · ${order.promotionName}` : ''}
+                </span>
+                <span className="font-semibold">−{formatPrice(order.promotionDiscount)}</span>
+              </div>
+            )}
 
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-baseline">
               <span className="text-sm font-bold text-slate-900 dark:text-slate-100">Total</span>

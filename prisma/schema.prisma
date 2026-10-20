@@ -522,6 +522,14 @@ model orders {
   // math that compares against totalAmount (payment-submit default,
   // seller/admin verify, wallet-pay) reads the true deliverable cost.
   shippingFee             Float    @default(0)
+  // Task 100: platform promotion applied at pricing time (BEFORE the coupon).
+  // promotionDiscount is PLATFORM-FUNDED: suppliers' subOrder subtotals and
+  // escrow hold FULL line value — only the buyer's totalAmount shrinks.
+  // promotionName is a snapshot so order history survives promotion deletion
+  // (promotionId is a plain reference, no FK cascade either way).
+  promotionId             String?
+  promotionName           String?
+  promotionDiscount       Float    @default(0)
   // paymentStatus: unpaid | partial | paid | refunded
   paymentStatus           String   @default("unpaid")
   shippingAddressId       String?

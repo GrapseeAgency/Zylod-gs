@@ -9,6 +9,8 @@ import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { roundQty } from '@/lib/product-contract'
 import { buildAddressSnapshot } from '@/lib/addresses'
 import { computeQuote, shipmentWeightKg } from '@/lib/shipping'
+import { activePromotionFilter, resolveBestPromotionApplication, claimPromotionUsage } from '@/lib/promotions'
+import { PromotionUsageError } from '@/lib/promotions-errors'
 
 /**
  * POST /api/orders/create-direct — Buy Now (single product, no cart).
@@ -152,6 +154,53 @@ export async function POST(request: NextRequest) {
 
         const totalPrice = resolved.unitPrice * qty
 
+        // Task 100: PLATFORM PROMOTION — the same engine the cart path uses,
+        // applied BEFORE the order total (goods → promotion → + shipping).
+        // Automatic: no code, no opt-in. The usage claim is atomic; a
+        // campaign exhausted between read and write refuses the order (409).
+        let appliedPromotion: { id: string; name: string; discount: number } | null = null
+        {
+          const now = new Date()
+          const rows = await tx.promotionProducts.findMany({
+            where: { productId, promotion: activePromotionFilter(now) },
+            include: {
+              promotion: {
+                select: {
+                  id: true, name: true, type: true, value: true, minOrderAmount: true,
+                  maxDiscount: true, usageLimit: true, usedCount: true, isActive: true, validFrom: true, validUntil: true,
+                },
+              },
+            },
+          })
+          if (rows.length > 0) {
+            const best = resolveBestPromotionApplication(
+              rows.map((row) => ({ promotion: row.promotion, pinnedProductIds: new Set([productId]) })),
+              [{ productId, totalPrice }],
+              now
+            )
+            if (best) {
+              await claimPromotionUsage(tx, best.promotion)
+              appliedPromotion = { id: best.promotion.id, name: best.promotion.name, discount: best.discount }
+              await tx.auditLogs.create({
+                data: {
+                  actorId: buyerId,
+                  action: 'promotion_applied',
+                  entityType: 'orders',
+                  entityId: orderNumber,
+                  metadata: JSON.stringify({
+                    promotionId: best.promotion.id,
+                    promotionName: best.promotion.name,
+                    type: best.promotion.type,
+                    value: best.promotion.value,
+                    promotedSubtotal: best.promotedSubtotal,
+                    discount: best.discount,
+                  }),
+                },
+              })
+            }
+          }
+        }
+
         // Task 95: SHIPPING — re-quote the shipment server-side when the
         // buyer picked a method. Weight = qty × product.weightKg (null
         // weight = honestly unquotable, never priced as 0 kg), district
@@ -204,8 +253,8 @@ export async function POST(request: NextRequest) {
             weightKg,
           }
         }
-        // ORDER total = goods + quoted shipping — payment math reads this.
-        const orderTotal = totalPrice + shippingFee
+        // ORDER total = goods after promotion + quoted shipping — payment math reads this.
+        const orderTotal = totalPrice - (appliedPromotion?.discount ?? 0) + shippingFee
 
         const newOrder = await tx.orders.create({
           data: {
@@ -213,6 +262,9 @@ export async function POST(request: NextRequest) {
             orderNumber,
             totalAmount: orderTotal,
             shippingFee,
+            promotionId: appliedPromotion?.id ?? null,
+            promotionName: appliedPromotion?.name ?? null,
+            promotionDiscount: appliedPromotion?.discount ?? 0,
             paymentStatus: 'unpaid',
             shippingAddressId: shippingAddressId || null,
             shippingAddressSnapshot,
@@ -301,7 +353,7 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        return { order: newOrder, subOrder, supplierId }
+        return { order: newOrder, subOrder, supplierId, appliedPromotion }
       })
 
       await notifyOrderMilestone(buyerId, order.order.orderNumber, 'confirmed', order.order.id)
@@ -327,6 +379,8 @@ export async function POST(request: NextRequest) {
           totalAmount: order.order.totalAmount,
           shippingFee: order.order.shippingFee,
           paymentStatus: order.order.paymentStatus,
+          // Task 100: the honest buy-now receipt — the campaign that applied.
+          promotionApplied: order.appliedPromotion,
         },
       }, { status: 201 })
     } catch (txError) {
@@ -335,6 +389,9 @@ export async function POST(request: NextRequest) {
           { error: txError.message, available: txError.available },
           { status: 409 }
         )
+      }
+      if (txError instanceof PromotionUsageError) {
+        return NextResponse.json({ error: txError.message }, { status: 409 })
       }
       if (txError instanceof ShippingChoiceError) {
         return NextResponse.json({ error: txError.message }, { status: txError.status })
