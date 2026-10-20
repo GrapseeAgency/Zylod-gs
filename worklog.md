@@ -3208,3 +3208,23 @@ Stage Summary:
 - The wholesale trust story now covers WHERE goods ship from as well as WHAT they are: a supplier's real locations are buyer-visible the moment they're filed, admin-visible the moment they change, and never fabricated by the platform.
 - Dead-table queue remaining: promotions/promotionProducts (needs checkout-pricing decisions), blogPosts (platform content rail).
 - REMAINING FAKE/INCOMPLETE: none found in this surface. Sandbox note: a Bash call that fails/times out can reap session processes — every call now ends `; true`; the canonical server runner is the package.json dev keep-alive loop, restarted via setsid after OOM events.
+
+---
+Task ID: 99
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE EDITORIAL RAIL — the blog page fetched /api/blog since day one and the endpoint NEVER existed (every visitor landed on honest "No articles published yet" because the answer was a 404), while blogPosts sat in the schema with nothing to write it and no single-post view. Built the whole circuit: public read rails, admin editorial console, single-post reader mode.
+
+Work Log:
+- SCHEMA: blogPosts grew the `category` column the UI always showed a chip for (the drill caught it — tsc refused the shape, db:push landed it).
+- PUBLIC (GET /api/blog + GET /api/blog/[slug]): no auth by design (pre-purchase content), 120/min, published only, newest-first by publishedAt, no author PII, no internal flags in the shape; a DRAFT slug is the SAME 404 as a phantom one — half-written pieces are never discoverable.
+- ADMIN (GET/POST /api/admin/blog + PATCH/DELETE /[id]): requireUserType 401-first, 'admin-blog-list' 60/min, 'admin-blog-write' 20/min, Zod STRICT, real groupBy stats {total, published, drafts}; the server slugifies the title and UNIQUIFIES on clash (a title clash can never 500); the slug is NOT editable (the public URL is history); publish stamps publishedAt EXACTLY ONCE — the drill proves the stamp survives title edits + unpublish + re-publish; unpublish keeps the row while the public rails genuinely refuse; audits blog_created/updated/deleted + admin-room taps blog:changed.
+- UI: blog-page rewritten with a real single-post mode (?page=blog-post&slug=… — the 'blog-post' page id previously mapped to the same list with no way to read an article): pull-quote excerpt, paragraph-split body, cover image, honest not-found ("The link is wrong, or the piece was unpublished"); admin-content gained the third tab 'Blog' beside Banners/Deals — self-contained AdminBlogManager (stats chips, list with Live/Draft badges + slugs + publish dates, create/edit dialog with publish-now switch and verbatim server errors, publish toggle, AlertDialog-gated delete).
+- scripts/qa/t99-e2e.mjs: 29/29 PASS on wiped DB ×2 (plus a third clean cycle). Gates (public 200-empty by design; buyer on admin rail 401); strict keys + length bounds + URL validation; slugify + clash → '-2' suffix; draft invisibility both directions; the stamp-immobility proof; unpublish kills the link while the admin list keeps the row; delete + re-delete 404; stats + audit counts exact (2 created / 5 updated / 1 deleted). Two platform-shape bugs caught by tsc BEFORE any runtime lie (missing category column; a Zod innerType() call this version doesn't have — blogSchema.partial() instead).
+- BROWSER QA (gateway :81): guest blog list renders the drill's published article → article view with body text → admin login → admin-content Blog tab shows the LIVE row with real slug + date → REAL dialog wrote 'Wholesale Shipping Costs, Explained' → DB row {slug wholesale-shipping-costs-explained, isPublished false, publishedAt null, category 'Market news'} → publish toggle → LIVE badge → public list (storage cleared) serves BOTH posts → mobile 375×812 zero overflow (375=375) → console clean.
+- tsc 0 whole project; eslint 0/0; DB wiped 139×0 before commit; pushed as d82ca96.
+
+Stage Summary:
+- The editorial promise is kept end to end: the platform writes once, drafts stay invisible, publication dates are history, and the public blog serves exactly what was published — nothing more, nothing less.
+- Dead-table queue remaining: promotions/promotionProducts (the last one; needs checkout-pricing decisions — a promotion interacts with the Task-95 shipping-inclusive totals and the coupon math, so it gets its own design round).
+- REMAINING FAKE/INCOMPLETE: none found in this surface. Sandbox lessons reinforced: str.replace in unverified scripts can silently no-op (use the Edit tool for schema surgery); tsc OOM at ~4GB sandbox — cap the heap and retry.
