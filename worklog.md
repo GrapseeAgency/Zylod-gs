@@ -3833,3 +3833,20 @@ Stage Summary:
 - Sessions now keep active users alive honestly: near-expiry rotation with single-use semantics, httpOnly cookie completion, store sync, device independence — and the load-time race is designed out, not patched over.
 - REMAINING FAKE/INCOMPLETE: none found this round. Known cosmetic: buyer-profile 3px svg overflow at 375px (pre-existing).
 - Pushed as 9d079e0 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 125
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE 3PX OVERFLOW, CLOSED — Task 124's honest note (buyer-profile 378px vs 375px) pinned down and fixed at the root, plus this round's platform-change regressions.
+
+Work Log:
+- REGRESSIONS for Tasks 121–124's platform changes: t70 28/0 (doctrine topup), t119 56/0 (buyer withdrawal rail) on fresh wipes — the auth.ts additive field, refresh Set-Cookie, and session-info probe broke nothing.
+- ROOT CAUSE (browser-measured): the buyer-profile header's action row (`flex gap-2` with Edit Profile + Browse Catalog) is a no-wrap flex beside the 80px avatar — 3px wider than a 375px viewport. The earlier lucide-heart "offender" was a red herring (it lives inside the tab strip's own overflow-x-auto scroller — intended horizontal scroll, not document overflow).
+- FIX: the action row gained `flex-wrap justify-end min-w-0 max-w-[60%]` — buttons wrap right-aligned on narrow screens.
+- BROWSER-PROVEN: 375×812 → scrollWidth exactly 375, zero out-of-scroller offenders; card still renders; desktop 1280 → buttons remain on ONE line (row height unchanged), no overflow, right edge at 1136px (inside the 5xl container).
+- eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The buyer-profile mobile artifact from Task 124 is closed honestly — measured, root-caused, fixed, re-measured to exactly 375.
+- Pushed as fe374b8 with the owner-provided PAT (never stored in tracked files).
