@@ -3491,3 +3491,21 @@ Stage Summary:
 - Every point the platform awards is now earned against the server: questions graded, sequences dealt and timed, crates pre-sealed. The rewards economy (points → vouchers) has no remaining self-serve money printers.
 - REMAINING FAKE/INCOMPLETE: none found in this surface. Note: the spin wheel (/api/rewards/spin) was audited this round and was already honest (server odds, 3/day cap, real vouchers) — left as is.
 - Pushed with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 113
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE COHESION SWEEP — 47 drill scripts exist (t59–t112) but nothing proved they STILL pass together after later tasks changed shared code (schema migrations, zod lessons, auth helpers). Ran the full regression sweep over the 13 most recent drills (t100–t112 — the money + content spine), each on its own freshly wiped DB, and closed the last standing verification gap from Task 105 (the review write-dialog was API-proven 43/43 but never browser-verified because the sandbox wedged mid-round).
+
+Work Log:
+- REGRESSION t100–t112 SEQUENTIAL: 59+28+10+14+41+43+52+44+29+36+25+69+49 = 499 assertions, 0 failures. Every drill green against the current schema (140 tables) and current shared code — no cross-task regressions exist in the payments/orders/checkout/RFQ/returns/reviews/legal/milestones/payouts/couriers/press/rewards/games spine.
+- ENVIRONMENT FIND: the socket.io delivery-service (mini-services/delivery-service, :3005 socket / :3006 health) had DIED (health 000) — t101's socket assertions failed on TransportError until it was restarted via setsid `bun run dev` from its own folder. After restart t101 passed 28/28. The keep-alive story covers the Next.js server but NOT the mini-service — flagged for the next environment round.
+- T105 BROWSER GAP CLOSED (gateway :81, real UI login): storefront ?page=store-page&supplierId=<seed> → Reviews tab → honest empty + "Write a review" → dialog opened → 5 stars + comment via real clicks → "Publish review" → card appeared ("QA105 buyer · Oct 21, 2026 · you" + comment verbatim) → header aggregate updated to 5.0 and the tab now reads "Reviews (1)" → console clean. The sandbox wedged once mid-round (snapshots returned empty — the documented stale-session mode); a fresh session recovered it.
+- Audits that came back ALIVE this round (Task 105's zero-ref list was stale): sellerShippingConfigs (route + seller page), sellerReturnPolicies (route + page), warehouseLocations (the storefront Locations tab's real model). Buyer order cancellation (Task 65/69/71) and atomic stock decrement at order time verified present. Genuinely dead schema with NO readers remains (supplierLocations, supplierCampaigns, reportedIssues, contentPages, apiKeys, searchSuggestions, productTags, supplierAgreements, supplierLoyaltyTiers, crossBorderOrders, customsDocuments, marketReports, deliveryAlerts) — these are unused tables, not broken promises; building writers for unread tables would create the inverse fake.
+- DB wiped 140×0 before commit.
+
+Stage Summary:
+- The spine is provably coherent: 499/499 across thirteen surfaces, and the one human-facing gap (review dialog) is browser-closed.
+- NEXT ROUND PRIORITY: (1) a keep-alive for mini-services (delivery-service died silently once already); (2) if new surface work is wanted, pick from the owner's wholesale vision rather than the dead tables — e.g. per-seller campaign pages (supplierCampaigns) would need a buyer-facing rail AND seller console AND admin tap built together, never one side alone.
+- REMAINING FAKE/INCOMPLETE: none found in this round. Pushed with the owner-provided PAT (never stored in tracked files).
