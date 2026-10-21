@@ -1204,7 +1204,10 @@ model orderTracking {
 // assigned to; customers see the driver's position on the tracking map.
 model deliveryAssignments {
   id          String    @id @default(cuid())
-  subOrderId  String    @unique
+  // Task 123: NOT unique — a sub-order carries its assignment HISTORY
+  // (superseded 'cancelled' rows stay for the audit trail; exactly one
+  // 'active' row is enforced by the assignment route's transaction).
+  subOrderId  String
   driverId    String
   // status: active | completed | cancelled
   status      String    @default("active")
@@ -1214,6 +1217,7 @@ model deliveryAssignments {
   subOrder subOrders @relation(fields: [subOrderId], references: [id], onDelete: Cascade)
   driver   users     @relation(fields: [driverId], references: [id], onDelete: Cascade)
 
+  @@index([subOrderId])
   @@index([driverId])
   @@index([status])
 }

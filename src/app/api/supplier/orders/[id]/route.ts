@@ -282,6 +282,13 @@ export async function PATCH(
       // Task 72: the released amount is CREDITED to the seller's own wallet
       // as a real 'payout' ledger row — the money visibly lands.
       if (status === 'delivered') {
+        // Task 123: delivering the shipment COMPLETES its active driver
+        // assignment — an active assignment on a delivered sub-order would
+        // keep GPS pings armed forever.
+        await tx.deliveryAssignments.updateMany({
+          where: { subOrderId: { in: targets.map((t) => t.id) }, status: 'active' },
+          data: { status: 'completed', completedAt: new Date() },
+        })
         const releasedRows = await tx.escrowAccounts.findMany({
           where: { orderId: order.id, supplierId: supplierScope ?? undefined, status: 'held' },
           select: { id: true, amount: true },

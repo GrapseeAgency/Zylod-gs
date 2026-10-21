@@ -39,7 +39,7 @@ const REAL_PAGES = new Set([
   'upi-payment-setup', 'credit-debit-cards', 'add-card', 'payment-history',
   'payment-pending', 'payment-failed', 'refund-to-wallet', 'earnings-dashboard',
   'commission-history', 'invoice-management', 'credit-score', 'credit-limit',
-  'admin-dashboard', 'admin-payments', 'admin-users', 'admin-products', 'admin-reports', 'admin-moderation', 'admin-suppliers', 'admin-analytics', 'admin-returns', 'admin-categories', 'admin-complaints', 'admin-settings', 'admin-orders', 'admin-inventory', 'admin-rfq', 'admin-support-tickets', 'admin-content', 'admin-inspections', 'admin-shipping', 'supplier-dashboard', 'buyer-dashboard', 'my-samples', 'supplier-samples',
+  'admin-dashboard', 'admin-payments', 'admin-users', 'admin-products', 'admin-reports', 'admin-moderation', 'admin-suppliers', 'admin-analytics', 'admin-returns', 'admin-categories', 'admin-complaints', 'admin-settings', 'admin-orders', 'admin-inventory', 'admin-rfq', 'admin-support-tickets', 'admin-content', 'admin-inspections', 'admin-shipping', 'admin-deliveries', 'supplier-dashboard', 'buyer-dashboard', 'my-samples', 'supplier-samples',
   'buyer-complaints',
   'explore', 'discover', 'trending-products', 'trending', 'flash-sale', 'flash-deals', 'daily-deals', 'new-arrivals',
   'clearance', 'clearance-sale', 'seasonal-offers', 'seasonal-sale', 'brand-showcase', 'category-browser',

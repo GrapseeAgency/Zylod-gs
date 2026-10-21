@@ -86,6 +86,19 @@ export async function POST(
       )
     }
 
+    // Task 123: terminal sub-orders refuse pings even if an assignment row
+    // somehow stayed active — GPS tracking ends when the shipment does.
+    const terminal = await db.subOrders.findUnique({
+      where: { id: subOrderId },
+      select: { status: true },
+    })
+    if (!terminal || ['delivered', 'cancelled', 'returned'].includes(terminal.status)) {
+      return NextResponse.json(
+        { error: `Sub-order is ${terminal?.status ?? 'gone'} — GPS tracking is closed. Location was NOT recorded.` },
+        { status: 409 }
+      )
+    }
+
     const recordedAt = new Date()
     const ping = await db.orderTracking.create({
       data: {
