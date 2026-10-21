@@ -3584,3 +3584,17 @@ Stage Summary:
 - The last fake trio on this surface (no-teeth writer, dead table, mockup form, invented analytics) is gone; one engine, one pinning rail, two owners.
 - REMAINING FAKE/INCOMPLETE: none found in this surface. The browser-side full-cart→checkout click-through remains blocked by the pre-existing SPA cart/navigation bounce (documented pattern; the checkout math is drill-proven 92/0 and the receipt page is browser-proven).
 - Pushed as f38b5e6 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 115-b (environment note)
+Agent: orchestrator (Z.ai Code)
+
+Task: record the sandbox wedge that ended this round's browser QA, for the next round's first steps.
+
+Work Log:
+- After Task 115's browser QA (both sides verified; receipt ৳800→৳704 browser-proven), the dev server wedged: TWO next-server processes entered D-state (kernel: "blocked for more than 491/737 seconds" — dmesg hung-task warnings) and became unreapable (survive kill -9). One of them (pid 6512) holds the :3000 LISTEN socket — connections complete at TCP level but are never served, so every respawn dies with EADDRINUSE. The filesystem itself is alive (dd 947MB/s; /tmp writes fine) — the stall is specific to the Next.js server processes' I/O pattern.
+- House recovery attempted: kill winners+losers, supervisor kill, .next cleared, fresh bind probe (EADDRINUSE), sysrq (read-only FS). All refused by the D-state. One clean supervisor loop restored (PIDs 7211/7224) — the instant the kernel reaps the zombie, the dev server returns automatically.
+- /home/z/.qa tooling was LOST in an earlier environment reset (sandbox rebuilt): wipe.js recreated from the worklog recipe (138 tables × 0 verified). delivery-keepalive.sh also needs recreation/verification next round.
+
+Stage Summary:
+- NEXT ROUND FIRST STEPS: (1) check :3000 (the supervisor auto-recovers when the zombie dies); if a fresh wedge occurs, start the server EARLY and run mobile 375×812 QA for the Task 115 pages (store Campaigns tab, seller console, admin promotions owner chip) + console-clean check — the only QA items this wedge deferred; (2) recreate /home/z/.qa/delivery-keepalive.sh and verify the socket mini-service health.
