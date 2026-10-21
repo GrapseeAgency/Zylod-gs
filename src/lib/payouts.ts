@@ -38,6 +38,13 @@ export const payoutDecisionSchema = z
     }
   })
 
+/**
+ * Task 119: the BUYER withdrawal request contract — same shape and holds
+ * doctrine as the seller rail; validated against the buyer's own wallet at
+ * request time (available = balance − own pending/processing buyerPayouts).
+ */
+export const buyerWithdrawSchema = withdrawSchema
+
 export function normalizePayoutMethod(method: string): string {
   const map: Record<string, string> = {
     bank: 'bank_transfer',
@@ -68,6 +75,36 @@ export function shapeAdminPayout(
     id: row.id,
     supplierId: row.supplierId,
     ...(companyName !== undefined ? { companyName } : {}),
+    amount: row.amount,
+    method: row.method,
+    status: row.status,
+    destination: row.destination,
+    reference: row.reference,
+    fee: row.fee,
+    processedAt: row.processedAt?.toISOString() ?? null,
+    createdAt: row.createdAt.toISOString(),
+  }
+}
+
+export function shapeAdminBuyerPayout(
+  row: {
+    id: string
+    userId: string
+    amount: number
+    method: string
+    status: string
+    destination: string | null
+    reference: string | null
+    fee: number
+    processedAt: Date | null
+    createdAt: Date
+  },
+  claimant?: { displayName: string | null; email: string | null }
+) {
+  return {
+    id: row.id,
+    userId: row.userId,
+    ...(claimant !== undefined ? { claimant } : {}),
     amount: row.amount,
     method: row.method,
     status: row.status,

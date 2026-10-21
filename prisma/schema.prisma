@@ -88,6 +88,7 @@ model users {
   wallets        wallets[]
   paymentMethods paymentMethods[]
   walletTopups   walletTopups[]
+  buyerPayouts   buyerPayouts[]
   reportedIssues reportedIssues[] @relation("IssueReporter")
 
   // Admin & Content
@@ -1512,6 +1513,36 @@ model escrowAccounts {
 // ============================================================
 // Admin & Content
 // ============================================================
+
+// Task 119: the BUYER withdrawal rail — the OUT half of the buyer wallet
+// (topup claims are the IN half, Task 118). Same doctrine as sellerPayouts:
+// a request is a PENDING row that HOLDS the amount (available = balance −
+// own pending/processing) without touching the wallet; only the admin
+// decision moves money — complete debits with a transfer reference on
+// record, reject frees the hold. Terminal states can never be re-decided.
+model buyerPayouts {
+  id          String    @id @default(cuid())
+  userId      String
+  amount      Float
+  // method: bank_transfer | bkash | nagad | upay | rocket
+  method      String
+  // status: pending | processing | completed | failed
+  status      String    @default("pending")
+  // destination: the buyer's withdrawal target, verbatim at request time
+  destination String?
+  // reference: the admin-stamped transfer reference (TRXID) at completion
+  reference   String?
+  fee         Float     @default(0)
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
 
 model adminSettings {
   id          String   @id @default(cuid())

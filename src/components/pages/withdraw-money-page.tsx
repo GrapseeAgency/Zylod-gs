@@ -40,7 +40,15 @@ const STATUS_STYLES: Record<string, { label: string; cls: string; icon: React.Co
 export function WithdrawMoneyPage() {
   const { goBack } = useNavigationStore()
   const { token } = useAuthStore()
+  const sessionUser = useAuthStore((s) => s.user)
   const { formatPrice } = useCurrencyStore()
+
+  // Task 119: the rail is USER-TYPE AWARE — buyers withdraw from their
+  // sourcing fund (/api/buyer/withdrawals, the Task 119 buyer rail with the
+  // same hold/verify doctrine), sellers settle earnings (/api/wallet/withdraw,
+  // Task 107). One honest page, two real rails — no dead ends.
+  const isBuyer = sessionUser?.userType === 'buyer'
+  const railPath = isBuyer ? '/api/buyer/withdrawals' : '/api/wallet/withdraw'
 
   const [data, setData] = useState<WithdrawData | null>(null)
   const [amount, setAmount] = useState('')
@@ -57,15 +65,17 @@ export function WithdrawMoneyPage() {
   const load = useCallback(async () => {
     if (!token) return
     try {
-      const res = await fetch('/api/wallet/withdraw', {
+      const res = await fetch(railPath, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const json = await res.json().catch(() => null)
       if (res.ok && json?.success) setData(json.data)
+      else if (res.status === 401) setErrorMsg('Your session expired — sign in again to view your withdrawals.')
+      else if (json?.error) setErrorMsg(json.error)
     } finally {
       setInitialLoading(false)
     }
-  }, [token])
+  }, [token, railPath])
 
   useEffect(() => { load() }, [load])
 
@@ -93,7 +103,7 @@ export function WithdrawMoneyPage() {
     setSuccessMsg('')
 
     try {
-      const res = await fetch('/api/wallet/withdraw', {
+      const res = await fetch(railPath, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,10 +140,10 @@ export function WithdrawMoneyPage() {
         <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <span className="text-base font-black tracking-tight text-primary">Request Payout</span>
+        <span className="text-base font-black tracking-tight text-primary">{isBuyer ? 'Withdraw Funds' : 'Request Payout'}</span>
         <div className="w-8" />
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">Request Payout</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900">{isBuyer ? 'Withdraw Funds' : 'Request Payout'}</h1>
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-2xl md:px-6 md:py-6">
         {/* Balance box — honest three-way split under the payout doctrine */}
@@ -288,7 +298,7 @@ export function WithdrawMoneyPage() {
         {/* Payout requests — the queue the admin actually works from */}
         <section className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Your payout requests</h2>
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">{isBuyer ? 'Your withdrawal requests' : 'Your payout requests'}</h2>
             <span className="text-[11px] text-slate-400 font-mono">{data?.payouts.length ?? 0}</span>
           </div>
           {initialLoading ? (
@@ -297,7 +307,7 @@ export function WithdrawMoneyPage() {
             </div>
           ) : !data || data.payouts.length === 0 ? (
             <p className="text-xs text-slate-400 py-3 text-center">
-              No payout requests yet — the money in your wallet is all available.
+              {isBuyer ? 'No withdrawal requests yet — the money in your wallet is all available.' : 'No payout requests yet — the money in your wallet is all available.'}
             </p>
           ) : (
             <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
