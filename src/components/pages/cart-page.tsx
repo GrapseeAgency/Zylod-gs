@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore, CartItemData } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import { toast } from 'sonner'
 import {
   ArrowLeft, Minus, Plus, Lock, ShoppingBag,
@@ -25,6 +26,18 @@ export function CartPage() {
   const { navigate, goBack } = useNavigationStore()
   const { items, removeItem, updateQuantity } = useCartStore()
   const { formatPrice } = useCurrencyStore()
+
+  /* ─── Server-cart hydration on mount ───
+     The cart STORE is client-local (persisted per device); the SERVER cart is
+     the cross-session truth. A returning buyer (new device / fresh session)
+     starts with an empty local store while the server still holds their
+     lines — without this pull the cart page lied 'Your cart is empty' and
+     the write-side sync (syncWithApiBackground) had no read-side twin.
+     syncWithApi MERGES (local first, API-only rows added, fields healed). */
+  useEffect(() => {
+    const user = useAuthStore.getState().user
+    if (user?.id) void useCartStore.getState().syncWithApi(user.id)
+  }, [])
 
   /* ─── Selection state: everything selected by default ─── */
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())

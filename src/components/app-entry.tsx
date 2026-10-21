@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, Suspense } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { useCartStore } from '@/store/cart-store'
 import { loadPage, getChunkForPage } from '@/lib/page-loader'
 import type { GenericPageType } from '@/lib/page-loader'
 import { AppShell } from '@/components/layout/app-shell'
@@ -181,6 +183,17 @@ function GenericPageRenderer({ genericType, pageId, pageParams }: { genericType:
 
 export function AppEntry() {
   const { currentPage, pageParams } = useNavigationStore()
+
+  /* ─── Server-cart hydration at boot ───
+     One read-side twin for the write-side sync: an authenticated buyer
+     returning to the app gets their server cart pulled into the local
+     store once, so the header badge and any cart surface reflect the
+     cross-session truth without re-adding anything. Merge semantics are
+     the store's own (local kept, API-only rows added). */
+  useEffect(() => {
+    const user = useAuthStore.getState().user
+    if (user?.id) void useCartStore.getState().syncWithApi(user.id)
+  }, [])
 
   // First-time onboarding: show welcome/onboarding flow to new users on mobile.
   // Once seen, store flag in localStorage so it never shows again on that device.
