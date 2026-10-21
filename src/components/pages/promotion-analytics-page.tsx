@@ -33,8 +33,12 @@ function computedStatus(r: { isActive: boolean; validFrom: string; validUntil: s
   return 'live';
 }
 
-export function PromotionAnalyticsPage({ id }: { id?: string }) {
-  const { goBack } = useNavigationStore();
+export function PromotionAnalyticsPage({ id: idProp }: { id?: string }) {
+  const { goBack, pageParams } = useNavigationStore();
+  // The chunk renderer mounts pages with NO props — the id rides in the
+  // navigation store (navigate('promotion-analytics', { id })) just like
+  // the storefront's pageParams.supplierId.
+  const id = idProp ?? pageParams.id;
   const [row, setRow] = useState<AnalyticsRow | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
