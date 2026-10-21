@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   Package, ShoppingCart, AlertTriangle, DollarSign, MessageCircle,
   Plus, Truck, Store, BarChart3, ChevronRight, LayoutList, Users, PackageSearch,
-  BellRing, PackageOpen, BadgePercent
+  BellRing, PackageOpen, BadgePercent, Wallet, FileSpreadsheet, Trophy, Filter
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -172,6 +172,10 @@ export const SellerDashboardPage = () => {
     { icon: LayoutList, label: 'Listings', page: 'product-listings-manager' },
     { icon: Store, label: 'Store', page: 'seller-storefront' },
     { icon: BarChart3, label: 'Analytics', page: 'seller-analytics' },
+    { icon: Wallet, label: 'Payouts', page: 'seller-payouts' },
+    { icon: FileSpreadsheet, label: 'Financials', page: 'seller-financial-statements' },
+    { icon: Trophy, label: 'Rankings', page: 'seller-rankings' },
+    { icon: Filter, label: 'Funnel', page: 'seller-sales-funnel' },
   ];
 
   const maxRevenue = data?.monthlyRevenue?.reduce((m, r) => Math.max(m, r.revenue), 0) ?? 0;
