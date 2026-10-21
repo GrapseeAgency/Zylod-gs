@@ -3736,3 +3736,29 @@ Stage Summary:
 - The full money story (t118 topup doctrine → t116 wallet-pay → t119 withdrawal rail) is now consistent across platform AND drills.
 - REMAINING FAKE/INCOMPLETE: none found this round.
 - Pushed as 23686aa with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 121
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE SELLER BUSINESS VIEW — the cohesion audit (every /api route × every UI fetch) found FOUR honest, real backend endpoints with ZERO UI consumers (/api/supplier/payouts · revenue · performance · rankings) while the four seller pages that belonged to them were literal placeholders ("Content for Payouts will be populated from the API" + a 1s setTimeout). Admin settles seller payouts (t107) but the seller had NO page to see the result — exactly the one-sided feature the mandate forbids. Wired both sides.
+
+Work Log:
+- CRON MANDATE re-honored FIRST: Job 467469 had been RE-CREATED (created 2026-10-19, stopped/max_rounds_exceeded) — deleted again this round; cron list zero; NO CRON holds.
+- COHESION AUDIT: scripted scan (369 API routes × all components/lib/store/hooks fetch sites) → 51 raw orphans → verified down to the real gap: the four /api/supplier business endpoints (+ dead placeholder pages seller-payouts / seller-financial-statements / seller-rankings / seller-sales-funnel; also found seller-traffic-sources / seller-customer-insights / seller-tier-benefits / seller-badge-levels / seller-payout-request placeholders — next rounds).
+- FOUR PAGES REWRITTEN on the house skeleton (mobile sticky header + desktop h1, honest 401 sign-in card / error / empty / loaded states, dark classes, max-h scroll tables):
+  - seller-payouts → GET /api/supplier/payouts: summary cards (total paid + count, in-flight + count) with the doctrine copy ("a request alone never moves funds"), desktop table + mobile cards (amount, method, destination, reference, status chips, settled date), Request payout CTA → withdraw-money (the real t107/t119 rail).
+  - seller-financial-statements → GET /api/supplier/revenue: gross vs recognized split (paid-only), commission/net rendered as "—" with a tooltip "the platform has no fee ledger yet — this number is never invented", CSS daily-gross bars from the real dailySeries (last 14), ledger table (order no, product, qty, gross, payment chip, fulfillment chip) + the same never-estimated footnote.
+  - seller-rankings → GET /api/supplier/rankings: top products by real soldCount with medal ranks, rating/stock/unit, honest card stating platform-wide rank/tier aren't computed yet ("not before, not fabricated").
+  - seller-sales-funnel → GET /api/supplier/performance: fulfillment-rate + six real subOrder status counters, funnel bars where only real stages render (impressions/clicks/inquiries = "not tracked yet" dashed rows), honest empty alerts.
+- ENTRY POINTS (cohesion both ways): seller-dashboard quickActions gained Payouts / Financials / Rankings / Funnel tiles (11 live targets now, all real rendered pages).
+- DRILL scripts/qa/t121-e2e.mjs — **57/0 on a fresh wipe**. Matrix: gates (anon 401, buyer 401, name-less supplier 200-with-OWN-zeros on all four — register normalizes companyName to '' so the old 403 story is unreachable via the public rail; pinned the REAL contract); honest zeros before orders; two real orders (wallet-paid 2×1000 vs left-unpaid 3×500) → revenue gross 3500 vs recognized 2000 split, dailySeries sums back, ledger carries paid+delivered / unpaid+pending rows with commission/net null; performance ordersReceived 2 / fulfilled 1 / pendingShipment 1 / rate 50% / funnel orders real + impressions null; rankings ordered by soldCount NOT revenue (Hose Reel 3 > Clamp Set 2) with platformRank/tier null; payouts summary math (totalPaid 200/completed 1, pendingAmount 400/pending 1) with settled-row reference verbatim and pending-row nulls; isolation — seller B sees honest zeros and zero A rows everywhere. Drill-side fixes during the run (my own bugs): sellerProfile one-to-one FK, supplier/orders/[id] takes the ORDER id, destination is the composite "method · bank · account · holder" string.
+- REGRESSIONS: t107 44/0 (payout rail twin), t115 92/0 (order machinery) on fresh wipes.
+- BROWSER QA (real UI login via gateway :81, seller qa121b-seller): dashboard shows the four new tiles → Payouts tile click → real DB values (Total paid ৳200.00 / 1 completed, In flight ৳300.00, rows ৳200 Completed + ৳300 Pending, doctrine copy); Financials → ৳3,600 gross / ৳2,400 recognized, real order rows (ORD-MVIMEBGTIP9T Paid ৳2,400 / ORD-MVIMEBHQQ9FK Unpaid), commission "not tracked yet"; Rankings → rank 1 QA121B Industrial Clamp Pro soldCount 3; Funnel → 50% rate, 2 received, four stages with three honest "not tracked yet". MOBILE 375×812 on all four: data-testids verified with real values, ZERO horizontal overflow. Console clean (filtered), dev.log clean.
+- tsc 0 whole project; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The seller can now SEE the money story admin already controlled: settled payouts with references, gross-vs-recognized revenue, product rankings by real sales, and their fulfillment pipeline — every number from the same honest endpoints, nothing invented, every empty state honest.
+- Four endpoints that existed with zero consumers are now consumed, drilled, and browser-proven; the dashboard is the single entry point to all eleven live seller tools.
+- REMAINING FAKE/INCOMPLETE: five placeholder seller pages remain (seller-traffic-sources, seller-customer-insights, seller-tier-benefits, seller-badge-levels, seller-payout-request) — they have NO real data source yet; next rounds must make them honest (real endpoint or honest empty state), never mock.
+- Pushed as b2650d8 with the owner-provided PAT (never stored in tracked files).
