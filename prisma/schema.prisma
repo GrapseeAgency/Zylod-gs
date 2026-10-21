@@ -2334,22 +2334,31 @@ model paymentMethods {
 }
 
 model walletTopups {
-  id           String    @id @default(cuid())
-  userId       String
-  // provider: bkash | sslcommerz | manual
-  provider     String
+  id        String  @id @default(cuid())
+  userId    String
+  // provider: bkash | sslcommerz | nagad | rocket | upay | bank_transfer
+  provider  String
   // bKash paymentID / SSLCommerz sessionkey
-  sessionId    String?
-  // bKash merchantInvoiceNumber / SSLCommerz tran_id — unique per attempt
-  reference    String
-  amount       Float
-  currency     String    @default("BDT")
-  // status: pending | credited | failed | cancelled
-  status       String    @default("pending")
+  sessionId String?
+  // bKash merchantInvoiceNumber / SSLCommerz tran_id — unique per attempt.
+  // For MANUAL claims (Task 118) this IS the buyer's transaction reference
+  // (TRXID), globally unique — the same discipline as payments.transactionId.
+  reference String
+  amount    Float
+  currency  String  @default("BDT")
+  // status: pending | credited | failed | cancelled | rejected
+  // Task 118 doctrine: a manual claim NEVER moves money by itself — only the
+  // admin verify route flips pending → credited and writes the deposit row.
+  // 'rejected' = the admin refused the claim (distinct from gateway 'failed').
+  status    String  @default("pending")
   gatewayTrxId String?
+  // Task 118: manual-claim details {method, senderNumber?, note?, submittedAt}
+  // and, after an admin decision, the verification annex {verification:{...}} —
+  // the same policy as payments.gatewayResponse.
+  claimDetails Json?
   creditedAt   DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 

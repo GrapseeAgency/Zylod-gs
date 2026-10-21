@@ -11,8 +11,27 @@ import {
   Clock, ShieldCheck, ChevronRight, Landmark,
   CreditCard, RefreshCw, Eye, EyeOff, Plus,
   FileText, CheckCircle2, TrendingUp, AlertCircle,
-  HelpCircle, Receipt, DollarSign, Building2
+  HelpCircle, Receipt, DollarSign, Building2, XCircle,
 } from 'lucide-react'
+
+type FundingClaim = {
+  id: string
+  provider: string
+  reference: string
+  amount: number
+  currency: string
+  status: string
+  creditedAt: string | null
+  createdAt: string
+}
+
+const claimChip: Record<string, string> = {
+  pending: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
+  credited: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
+  rejected: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
+  failed: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
+  cancelled: 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800',
+}
 
 export function MyWalletPage() {
   const { navigate, goBack } = useNavigationStore()
@@ -42,6 +61,20 @@ export function MyWalletPage() {
 
   const [loading, setLoading] = useState(true)
   const [showBalance, setShowBalance] = useState(true)
+  const [claims, setClaims] = useState<FundingClaim[]>([])
+
+  const loadClaims = async () => {
+    if (!token) return
+    try {
+      const res = await fetch('/api/wallet/topup', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const json = await res.json().catch(() => null)
+      if (res.ok && json?.success && Array.isArray(json.data)) setClaims(json.data)
+    } catch {
+      // the claims ledger is secondary — a network miss leaves the wallet usable
+    }
+  }
 
   const loadWallet = async () => {
     if (!token) {
@@ -65,6 +98,7 @@ export function MyWalletPage() {
 
   useEffect(() => {
     loadWallet()
+    loadClaims()
   }, [token])
 
   return (
@@ -177,6 +211,63 @@ export function MyWalletPage() {
               <ChevronRight className="h-4 w-4 text-slate-400 shrink-0" />
             </button>
           ))}
+        </div>
+
+        {/* Funding Claims (Task 118) — the real walletTopups ledger with
+            honest statuses: a claim NEVER moved money on its own; only an
+            admin verification credits the wallet. */}
+        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3 lg:col-span-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
+              Funding claims
+            </h2>
+            <div className="flex items-center gap-3">
+              <button onClick={loadClaims} className="text-xs font-bold text-primary hover:underline">Refresh</button>
+              <button
+                onClick={() => navigate('add-money')}
+                className="text-xs font-bold text-primary hover:underline"
+              >
+                New claim
+              </button>
+            </div>
+          </div>
+          {claims.length > 0 ? (
+            <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
+              {claims.slice(0, 8).map((c) => (
+                <div key={c.id} className="py-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black text-slate-900">{formatPrice(c.amount)}</span>
+                      <span className={`text-[9px] font-black border rounded-lg px-1.5 py-0.5 uppercase tracking-wide ${claimChip[c.status] ?? claimChip.cancelled}`}>
+                        {c.status === 'credited' ? <CheckCircle2 className="h-2.5 w-2.5 inline mr-0.5" /> :
+                         c.status === 'pending' ? <Clock className="h-2.5 w-2.5 inline mr-0.5" /> :
+                         <XCircle className="h-2.5 w-2.5 inline mr-0.5" />}
+                        {c.status}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 block font-mono truncate">
+                      {c.provider} · {c.reference} · {new Date(c.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  {c.status === 'pending' ? (
+                    <span className="text-[10px] text-amber-600 font-bold shrink-0">awaiting verification</span>
+                  ) : (
+                    <ChevronRight className="h-4 w-4 text-slate-300 shrink-0" />
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="py-4 text-center text-slate-400 text-xs space-y-2">
+              <p>No funding claims yet.</p>
+              <button
+                onClick={() => navigate('add-money')}
+                className="inline-flex items-center gap-1.5 text-primary font-bold hover:underline"
+              >
+                <Plus className="h-3.5 w-3.5" /> Submit a funding claim
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Recent Transactions */}

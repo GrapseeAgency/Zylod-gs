@@ -25,6 +25,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AdminPayoutsManager } from '@/components/admin/admin-payouts-manager'
+import { AdminTopupsManager } from '@/components/admin/admin-topups-manager'
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
@@ -119,7 +120,7 @@ export function AdminPaymentsPage() {
   const inflightRef = useRef(false)
   const seqRef = useRef(0)
   const dialogOpenRef = useRef(false)
-  const [moneyRail, setMoneyRail] = useState<'buyer-payments' | 'seller-payouts'>('buyer-payments')
+  const [moneyRail, setMoneyRail] = useState<'buyer-payments' | 'wallet-topups' | 'seller-payouts'>('buyer-payments')
   useEffect(() => {
     dialogOpenRef.current = dialogTarget !== null
   }, [dialogTarget])
@@ -261,6 +262,15 @@ export function AdminPaymentsPage() {
         <h1 className="text-base font-black">Admin access required</h1>
         <p className="text-xs text-slate-500 max-w-sm mx-auto">This queue is restricted to Zylod admins. Sign in with an admin account to verify payments.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
+      </div>
+    )
+  }
+
+  if (moneyRail === 'wallet-topups') {
+    return (
+      <div className="max-w-[1280px] mx-auto space-y-4 px-4 py-4">
+        <MoneyRailSwitcher rail={moneyRail} onChange={setMoneyRail} />
+        <AdminTopupsManager />
       </div>
     )
   }
@@ -530,13 +540,14 @@ function MoneyRailSwitcher({
   rail,
   onChange,
 }: {
-  rail: 'buyer-payments' | 'seller-payouts'
-  onChange: (r: 'buyer-payments' | 'seller-payouts') => void
+  rail: 'buyer-payments' | 'wallet-topups' | 'seller-payouts'
+  onChange: (r: 'buyer-payments' | 'wallet-topups' | 'seller-payouts') => void
 }) {
   return (
     <div className="flex items-center gap-2 flex-wrap" role="tablist" aria-label="Money rails">
       {([
         { id: 'buyer-payments', label: 'Buyer payments' },
+        { id: 'wallet-topups', label: 'Wallet top-ups' },
         { id: 'seller-payouts', label: 'Seller payouts' },
       ] as const).map((t) => (
         <button
