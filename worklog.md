@@ -3810,3 +3810,26 @@ Stage Summary:
 - Two real platform defects died this round — found BY the new drill, fixed at the schema and both routes, re-proven green.
 - REMAINING FAKE/INCOMPLETE: none found on this surface. Remaining true orphans from the audit: /api/auth/refresh + /api/profile/completion-status (no UI consumer) — next rounds.
 - Pushed as 29b3d7d with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 124
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE LAST TWO ORPHANS — /api/auth/refresh and /api/profile/completion-status were the only remaining endpoints with zero UI consumers. refresh turned out to be UNWIREABLE as written (rotation returned a JSON token but never set the httpOnly auth-token cookie — no client could ever complete the rotation); completion-status had a perfect response with no reader. Both are now live, drilled, and browser-proven — including a load-time race the first design had, caught and designed out.
+
+Work Log:
+- refresh route FIXED: now calls setAuthCookie(response, newToken) — the rotated httpOnly cookie lands in the browser jar, making single-use rotation actually completable (old session destroyed → fresh 7-day Set-Cookie → the browser's next request carries the new session).
+- Shell wiring with a designed-out race: first cut rotated on EVERY page load — which destroys the token the page's Bearer fetches are about to use (extractToken gives Bearer PRECEDENCE over the cookie, so a stale store token 401s every Bearer call). Caught during browser QA (buyer-profile rendered without its completion card). FINAL DESIGN: NEW GET /api/auth/session-info (non-destructive probe: authenticateRequest + auth.sessionExpiresAt) → the shell (use-session-refresh hook) probes once per page load and only POSTs refresh when < 2 days of session remain; normal loads never race their own auth. validateSession now returns sessionExpiresAt (additive AuthResult field).
+- Hook syncs the store: on rotation the response token is written via useAuthStore.getState().setToken (Bearer stays in lockstep with the cookie); a zylod:session-refreshed event is dispatched for future listeners.
+- completion-status CONSUMED: buyer-profile-page dashboard tab gained the "Profile strength" card (data-testid profile-completion-card / completion-pct) — overall % bar + per-section chips (✓/○) from the REAL sections; fetch rides the page's existing token pattern and re-runs with the other profile fetches.
+- DRILL scripts/qa/t124-e2e.mjs — **25/0 on a fresh wipe**: gates (no-token 400, REALLY-presented garbage token 401 — first draft's "garbage" test sent NO cookie and correctly got 400, drill fixed); session-info (anon 401, authed 200 with ~7-day expiresInMs); rotation semantics (200, identity echo, token length, 7-day window, session count STABLE across rotation (destroy+create), the ROTATED cookie authenticates /api/profile/me, second rotation chain holds); device independence (a second login of the same buyer keeps working across device 1's rotations); completion math (delivery_address 0 before → 100 after a REAL address create; overall = exact mean 67===67; supplier branch populated). Drill-side fix: second device must LOGIN not register (409 otherwise).
+- REGRESSION-SAFE: no existing drill touches refresh/session-info/completion-status; tsc 0, eslint 0.
+- BROWSER QA (real UI logins, gateway :81): buyer-profile completion card renders the EXACT drill numbers (67% + ✓ Personal Information / ○ Contact Verification / ✓ Delivery Address — honest per-row truth); END-TO-END ROTATION PROVEN LIVE: the buyer's session row aged to +1 day (SQL), one page reload → the shell probed → rotated → DB shows the old row destroyed and a FRESH 7-day session created → the browser stayed fully authenticated (completion-status 200 via the new cookie, card still rendering, store synced). Console clean, dev.log clean.
+- HONEST NOTE: buyer-profile at 375px shows a pre-existing 3px horizontal overflow (378 vs 375) from an edge SVG icon — present with AND without the completion card; not introduced by this task, recorded for a future styling pass.
+- tsc 0 whole project; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- Zero orphaned endpoints remain from the cohesion audit: every /api route now either has a real consumer or is an externally-called surface (webhooks, native bridge, driver app).
+- Sessions now keep active users alive honestly: near-expiry rotation with single-use semantics, httpOnly cookie completion, store sync, device independence — and the load-time race is designed out, not patched over.
+- REMAINING FAKE/INCOMPLETE: none found this round. Known cosmetic: buyer-profile 3px svg overflow at 375px (pre-existing).
+- Pushed as 9d079e0 with the owner-provided PAT (never stored in tracked files).
