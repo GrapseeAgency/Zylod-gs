@@ -3762,3 +3762,29 @@ Stage Summary:
 - Four endpoints that existed with zero consumers are now consumed, drilled, and browser-proven; the dashboard is the single entry point to all eleven live seller tools.
 - REMAINING FAKE/INCOMPLETE: five placeholder seller pages remain (seller-traffic-sources, seller-customer-insights, seller-tier-benefits, seller-badge-levels, seller-payout-request) — they have NO real data source yet; next rounds must make them honest (real endpoint or honest empty state), never mock.
 - Pushed as b2650d8 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 122
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE LAST PLACEHOLDER SELLER PAGES — Task 121's audit flagged five more dead placeholders (seller-customer-insights, seller-traffic-sources, seller-tier-benefits, seller-badge-levels, seller-payout-request). This round gave each one an HONEST resolution: a new real endpoint where real data exists, honest not-live states where it doesn't, and rail reuse where the flow already exists. No page may say "Content will be populated from the API" anymore.
+
+Work Log:
+- NEW GET /api/supplier/customers — real customer aggregation from the seller's OWN subOrders (status notIn cancelled/returned) joined to orders.buyer: per-buyer ordersCount, totalSpent (post-discount subtotals), delivered/open split, repeat flag, first/last order; summary {totalCustomers, repeatCustomers, avgOrdersPerCustomer (null when nobody), lifetimeValue}; sorted by totalSpent desc, take 100; 401-first → 'supplier-customers' 60/min → profile scope → 403. No demographics, retention curves or loyalty scores — nothing modeled.
+- seller-customer-insights-page REWRITTEN → consumes the new endpoint: 4 summary cards + desktop table / mobile cards with Repeat badges + honest empty state.
+- seller-payout-request-page REWRITTEN → renders the REAL WithdrawMoneyPage component (Task 107/119's user-type-aware rail): one flow, zero duplicated logic — old links land on the real hold→decision rail.
+- seller-traffic-sources-page REWRITTEN → honest: "Traffic tracking isn't live yet" (analytics returns trafficSources: [] BY DESIGN), the four channels that WILL be tracked (search/direct/social/campaigns) as dashed cards, CTA to the analytics that DO have real numbers today.
+- seller-tier-benefits-page REWRITTEN → honest: "The tier program isn't live yet" + the three REAL standing systems (verification KYC, product rankings, performance funnel) with live links. No invented Gold/Silver ladders.
+- seller-badge-levels-page REWRITTEN → honest: the ONE real badge (Verified Supplier, KYC-earned) marked LIVE; level badges declared not-live with the promise they'll be "earned from measured store history, never granted for show"; links to rankings + funnel as the metrics future badges will read.
+- Dashboard: Customers quick-action tile added (12 live seller tools now).
+- tsc caught 2 real type errors in the new route (buyer.email nullable; Map.get narrowing) — fixed with `?? ''` and the fresh/agg pattern.
+- DRILL scripts/qa/t122-e2e.mjs — **25/0 on a fresh wipe, first full run**: gates (anon/buyer 401); honest zero (avg null + lifetime 0); real orders build the rows (buyer1 2 orders wallet-paid one advanced delivered; buyer2 unpaid + a 2×1000 order CANCELLED by the seller) → aggregation exact: totalCustomers 2, repeat 1, avg 1.5, lifetime 3000 with the cancelled ৳2000 EXCLUDED, buyer1 {2500, 2 orders, 1 delivered + 1 open}, buyer2 {500 only, cancelled line gone}, sorted by earned; isolation — seller B honest zero.
+- REGRESSION: t121 57/0 on a fresh wipe (the customers endpoint touched nothing it covers, but the neighbor ledger stays green).
+- BROWSER QA (real UI login, seller QA122 Alpha Merch): customers page renders the EXACT drill numbers (total 2, repeat 1, avg 1.5, LTV ৳3,000, 2 rows, Repeat badge visible); traffic-sources honest state + 4 channel cards + Analytics CTA; tier-benefits honest + 3 live cards; badge-levels honest + "Verified Supplier badge LIVE" + rankings link; payout-request renders the real rail ("Request Payout" + live amount input). MOBILE 375×812 customers: zero horizontal overflow, 2 cards, LTV ৳3,000. Console clean, dev.log clean.
+- ENV note: tsc was OOM-killed twice by the 4GB sandbox (dev server 2.4GB + chrome); recovered with agent-browser close + NODE_OPTIONS="--max-old-space-size=1536" — recorded for future rounds.
+- tsc 0 whole project; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- ZERO placeholder seller pages remain: every seller page now either consumes a real drill-proven endpoint or states honestly why it has no numbers yet. The seller business view is complete: money (payouts/financials), performance (funnel/rankings), customers (new rail), requests (real withdrawal rail), program pages (honest).
+- REMAINING FAKE/INCOMPLETE: none found on these surfaces. Next cohesion candidates from the same audit: /api/auth/refresh and /api/profile/completion-status (no UI consumer yet).
+- Pushed as 4756512 with the owner-provided PAT (never stored in tracked files).
