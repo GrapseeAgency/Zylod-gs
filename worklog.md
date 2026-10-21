@@ -3644,3 +3644,21 @@ Stage Summary:
 - The money story is now proven live at every layer: buyer UI → pending claim (never paid) → seller UI queue → verified success → order PAID with a complete audit before/after — on an order that itself was placed through real browser clicks this round.
 - The Task 56 doctrine survived contact with a real browser-driven adversary path: the buyer's submit could not buy confirmation; only the seller's verification could.
 - Pushed with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 117-b
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE OOM FORENSICS + the dev-server memory cap — root-causing this sandbox lifetime's "silent reaper" and fixing what the repo can fix.
+
+Work Log:
+- FORENSICS: dmesg re-count found THREE kernel OOM kills (not one — the earlier single-kill reading predates the later deaths): next-server killed at ~2.5-2.6GB anon-rss, kernel times 501s / 4902s / 4983s. The 4GB sandbox + headless Chrome (~0.5GB) + Turbopack's in-memory module graphs (every server restart re-compiles every visited route — .next does NOT carry the dev module cache) = the death spiral: restart → cold compiles → ~2.6GB → OOM kill → repeat. Most "silent whole-tree deaths" were these kills (the surviving keep-alive loop then restarted into the same spiral).
+- THE REPO FIX: next.config.ts experimental.turbopackMemoryLimit. First attempt 1536 was TOO TIGHT — Turbopack aborted mid-compile trying to hold it (server died compiling "/" with no OOM, no trace; reproducible). 2560 is the working value: ten of the heaviest page chunks (home, orders, cart, checkout, store-page, seller-order-management, admin-content, order-detail, seller-promotions, mini-games) all compiled and served 200 in ONE server lifetime with next-server RSS measured at 1665 MB — versus the uncapped 2.5-2.6GB that the kernel killed. The OOM class is closed for single-server windows.
+- RESIDUAL (honest, open): a silent no-trace death class remains — the server died once right after the 10-route curl window (no OOM #4, no panic, no crash line) when the browser session opened. Cause not yet isolated (suspect: client-bundle compile bursts on top of the cap, or a Turbopack edge aborting without output). Future rounds: if a no-trace death follows a compile-heavy window, restart and continue — the cap keeps RSS recoverable (~1.6GB) instead of the 2.6GB OOM spiral.
+- ENVIRONMENT LESSON (proven): Turbopack's dev module graph lives in MEMORY ONLY — restarting the dev server does NOT warm-start from .next; every visited route recompiles from scratch per server lifetime. Keep server lifetimes aligned to QA batches.
+- My own footgun, recorded: malformed request URLs ("//?page=...") throw ERR_INVALID_URL inside the request handler (TypeError × N in dev.log) — one burst coincided with a crash window. Never build test URLs with a leading slash on top of a base that already has one.
+- tsc 0 whole project; eslint 0.
+
+Stage Summary:
+- The "silent reaper" is now a solved, documented, PARTLY-fixed environment: the OOM half is fixed in-repo (memory cap, 1665MB proven), the residual no-trace half is documented with the restart-and-continue protocol.
+- Pushed with the owner-provided PAT (never stored in tracked files).

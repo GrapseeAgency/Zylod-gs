@@ -55,6 +55,16 @@ const nextConfig: NextConfig = {
   },
   // Memory optimization for dev server
   experimental: {
+    // Task 117: cap Turbopack's dev-time resident memory. In this 4GB sandbox
+    // the module graphs of the big page chunks pushed next-server past ~2.6GB
+    // and the kernel OOM-killed it mid-round (dmesg: 3 kills at 2.5-2.6GB
+    // anon-rss) — every "silent server death" this session was that kill.
+    // The cap makes Turbopack collect aggressively between compiles so the
+    // dev server survives long browser-QA windows alongside headless Chrome.
+    // 1536 was too tight — Turbopack aborted mid-compile trying to hold it;
+    // 2560 collects before the ~2.6GB kernel-OOM zone while leaving ~1.4GB
+    // for headless Chrome and the OS.
+    turbopackMemoryLimit: 2560,
     optimizePackageImports: [
       'lucide-react',
       'framer-motion',
