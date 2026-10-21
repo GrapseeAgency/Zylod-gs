@@ -355,7 +355,7 @@ export function BuyerProfilePage() {
                 </button>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap justify-end min-w-0 max-w-[60%]">
                 <Button
                   variant="outline"
                   onClick={() => navigate('edit-profile')}
