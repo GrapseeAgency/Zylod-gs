@@ -3509,3 +3509,18 @@ Stage Summary:
 - The spine is provably coherent: 499/499 across thirteen surfaces, and the one human-facing gap (review dialog) is browser-closed.
 - NEXT ROUND PRIORITY: (1) a keep-alive for mini-services (delivery-service died silently once already); (2) if new surface work is wanted, pick from the owner's wholesale vision rather than the dead tables — e.g. per-seller campaign pages (supplierCampaigns) would need a buyer-facing rail AND seller console AND admin tap built together, never one side alone.
 - REMAINING FAKE/INCOMPLETE: none found in this round. Pushed with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 113-b
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE DELIVERY-SERVICE KEEP-ALIVE — the environment gap Task 113 flagged (the socket.io mini-service died silently once; the Next.js supervisor covers :3000 only).
+
+Work Log:
+- /home/z/.qa/delivery-keepalive.sh (environment tooling, outside the repo like wipe.js): probes http://127.0.0.1:3006/health every 20s; on failure restarts the service from its own folder via setsid bun run dev (hot-reload pair), logs to /tmp/delivery-keepalive.log.
+- ROOT-CAUSE LESSON (recorded): the first loop variant died by SUICIDE — its restart line ran `pkill -f "delivery-service/index.ts"` from a `bash -c` one-liner whose OWN cmdline contained that string, so the restart killed the loop itself. The script form avoids self-match (its cmdline is just the script path; the in-script pkill is a harmless no-op because the service's cmdline is 'bun run dev'/'index.ts' without the folder path).
+- PROOF: killed the live service deliberately → keep-alive logged the restart → health back to 200 within one 20s window; loop and service both still alive across subsequent tool invocations (PIDs stable, health 200).
+- Cosmetic (accepted): the health log line can read "000000" (curl prints 000 AND the || echo appends another) — the inequality check still fires correctly.
+
+Stage Summary:
+- The realtime spine now self-heals: socket down → probed → restarted → verified alive. No tracked files touched; DB untouched (still wiped 140×0).
