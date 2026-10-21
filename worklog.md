@@ -3788,3 +3788,25 @@ Stage Summary:
 - ZERO placeholder seller pages remain: every seller page now either consumes a real drill-proven endpoint or states honestly why it has no numbers yet. The seller business view is complete: money (payouts/financials), performance (funnel/rankings), customers (new rail), requests (real withdrawal rail), program pages (honest).
 - REMAINING FAKE/INCOMPLETE: none found on these surfaces. Next cohesion candidates from the same audit: /api/auth/refresh and /api/profile/completion-status (no UI consumer yet).
 - Pushed as 4756512 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 123
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE DELIVERY OPS CONSOLE — the cohesion audit's biggest catch: the live-tracking backend was COMPLETE (driver minting, assignments, GPS authorization, socket broadcast) but had ZERO admin UI — nobody could ever mint a driver or arm tracking. Built the console, and the drill found TWO real platform defects which are now fixed (open assignment lifecycle + a schema that contradicted the supersede design).
+
+Work Log:
+- NEW src/components/pages/admin-deliveries-page.tsx — the admin console: stats strip (drivers / active assignments / assignable sub-orders), Create-driver form (email, min-10 password, optional BD phone, honest "drivers cannot self-register" note), Assign form (sub-order picker fed by GET /api/admin/orders?limit=50 filtered to pending|confirmed|packed|shipped, driver picker from the active roster, "one active driver per sub-order — assigning supersedes" doctrine note), driver roster table, assignment feed with status chips.
+- REGISTERED: page id 'admin-deliveries' in page-loader.ts + chunk-misc.ts (+ loader map); 'Delivery Ops' quick-action tile on the admin dashboard (Truck icon imported).
+- REAL DEFECT #1 (lifecycle): NOTHING ever completed an assignment — supersede was the only exit, so a delivered sub-order kept an ACTIVE assignment forever (the drill's GPS ping on a DELIVERED order was ACCEPTED — proof). FIX: the seller fulfillment PATCH (the real delivery moment) now COMPLETES active deliveryAssignments for the delivered sub-orders inside the same transaction as the escrow release; AND /api/delivery/suborders/[subOrderId]/location refuses pings on delivered/cancelled/returned sub-orders (409, "GPS tracking ends when the shipment does").
+- REAL DEFECT #2 (schema vs route): deliveryAssignments.subOrderId was @unique — the assignment route's supersede logic (cancel old row + create new) could NEVER work (every re-assignment 500'd with P2002). The status vocabulary (active|completed|cancelled) always implied history. FIX: @unique → @@index([subOrderId]) (all consumers verified findFirst/findMany only); db push proven by PRAGMA (index present, unique gone).
+- DRILL scripts/qa/t123-e2e.mjs — **36/0 on a fresh wipe**. Matrix: gates (anon/seller 401 ×6); driver minting (bad email/short password/non-BD phone 400s, duplicate email + duplicate phone 409s, bcrypt 12-round hash verifiable via compare, audit row, list); assignment rules (driver-not-found 404, non-driver 400 naming the userType, sub-order 404, valid → 200 active, suspended-driver 400); THE GPS CHAIN (in-flight ping RECORDED with active assignment → supersede auto-cancels with completedAt → delivery auto-COMPLETES the active assignment → zero active rows remain → delivered sub-order refuses re-assignment AND refuses pings 409); list shapes (supersede history, ?subOrderId filter).
+- REGRESSIONS: t59 65/0 (delivery socket chain), t67 34/0 (order transitions), t115 92/0 (delivered path + escrow release) on fresh wipes.
+- BROWSER QA (real UI admin login via gateway :81): console renders 0/0/2 stats against the t115 fixture; Create-driver form → REAL click → drivers 1 + success message + roster row (email/phone/Active) + driver combobox repopulated; Assign form via the real selects → REAL click → active 1 + feed row; feed-shape fix applied after the first pass showed the raw driver ID (page now renders driver.name from the API's real shape) → driver named, Pending sub-order badge + Active chip + timestamp. MOBILE 375×812: zero horizontal overflow. Console clean, dev.log clean.
+- tsc 0 whole project; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- Live delivery tracking is now REACHABLE end to end: admin mints a driver → assigns an in-transit sub-order → the driver's app can ping GPS → delivery completes the assignment and closes tracking. The admin dashboard has a single Delivery Ops entry point ("eikhane shob kichu admin er satheo connect thakbe").
+- Two real platform defects died this round — found BY the new drill, fixed at the schema and both routes, re-proven green.
+- REMAINING FAKE/INCOMPLETE: none found on this surface. Remaining true orphans from the audit: /api/auth/refresh + /api/profile/completion-status (no UI consumer) — next rounds.
+- Pushed as 29b3d7d with the owner-provided PAT (never stored in tracked files).
