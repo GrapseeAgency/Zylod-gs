@@ -8,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useNativeHost } from '@/lib/native-host'
+import { useSessionRefresh } from '@/hooks/use-session-refresh'
 import { ArrowLeft } from 'lucide-react'
 
 /* ─── Page category helpers (compact) ─── */
@@ -35,6 +36,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile()
   const currentPage = useNavigationStore((s) => s.currentPage)
   const { goBack } = useNavigationStore()
+  // Task 124: one silent session rotation per page load (httpOnly cookie)
+  useSessionRefresh()
   // Deterministic native-host boundary (Phase 1 remediation): inside the
   // Android/iOS shell the app owns navigation chrome (its own bottom bar and
   // back affordances), so the web shell drops its back-bar and the tall

@@ -131,6 +131,7 @@ export function BuyerProfilePage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [savedSuppliers, setSavedSuppliers] = useState<SavedSupplier[]>([])
   const [tradeCredit, setTradeCredit] = useState<TradeCredit | null>(null)
+  const [completion, setCompletion] = useState<{ overallCompletionPct: number; sections: { name: string; label: string; isComplete: boolean }[] } | null>(null)
   const [loadingOrders, setLoadingOrders] = useState(false)
 
   // Uploading avatar
@@ -155,6 +156,21 @@ export function BuyerProfilePage() {
           setProfileData(json.data)
           setAvatarUrl(json.data.avatarUrl || null)
         }
+      }
+    } catch {
+      // Graceful
+    }
+  }, [token])
+
+  const fetchCompletion = useCallback(async () => {
+    if (!token) return
+    try {
+      const res = await fetch('/api/profile/completion-status', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        const json = await res.json()
+        if (json?.data?.sections) setCompletion(json.data)
       }
     } catch {
       // Graceful
@@ -219,7 +235,8 @@ export function BuyerProfilePage() {
     fetchOrders()
     fetchSavedSuppliers()
     fetchTradeCredit()
-  }, [fetchProfile, fetchOrders, fetchSavedSuppliers, fetchTradeCredit])
+    fetchCompletion()
+  }, [fetchProfile, fetchOrders, fetchSavedSuppliers, fetchTradeCredit, fetchCompletion])
 
   // Avatar Upload
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -458,6 +475,45 @@ export function BuyerProfilePage() {
                       color="violet"
                     />
                   </div>
+
+                  {/* Profile completion — real /api/profile/completion-status */}
+                  {completion && (
+                    <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs" data-testid="profile-completion-card">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Profile strength</h2>
+                          <p className="text-sm text-slate-600 mt-1">
+                            {completion.overallCompletionPct >= 100
+                              ? 'Your profile is complete — buyers and suppliers can trust every detail.'
+                              : 'Complete these to build trust with suppliers and speed up checkout.'}
+                          </p>
+                        </div>
+                        <span className="text-2xl font-black text-primary tabular-nums shrink-0" data-testid="completion-pct">
+                          {completion.overallCompletionPct}%
+                        </span>
+                      </div>
+                      <div className="mt-3 h-2 rounded-full bg-slate-100 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-primary transition-all"
+                          style={{ width: `${Math.max(3, completion.overallCompletionPct)}%` }}
+                        />
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {completion.sections.map((s) => (
+                          <span
+                            key={s.name}
+                            className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${
+                              s.isComplete
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                                : 'border-amber-200 bg-amber-50 text-amber-700'
+                            }`}
+                          >
+                            {s.isComplete ? '✓' : '○'} {s.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Procurement Quick Actions */}
                   <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">

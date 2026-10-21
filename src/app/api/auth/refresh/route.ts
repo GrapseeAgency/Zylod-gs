@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { validateSession, createSession, destroySession, getClientIP } from '@/lib/auth'
+import { validateSession, createSession, destroySession, getClientIP, setAuthCookie } from '@/lib/auth'
 import crypto from 'crypto'
 
 /**
@@ -51,7 +51,11 @@ export async function POST(request: NextRequest) {
       })
       .catch(() => {})
 
-    return NextResponse.json({
+    // Task 124: the auth cookie is httpOnly — a JSON-only response could
+    // never complete the rotation. Setting the rotated cookie HERE is what
+    // makes this flow real: the browser's next request carries the fresh
+    // 7-day session, the old token is already destroyed (single-use).
+    const response = NextResponse.json({
       success: true,
       token: newToken,
       expiresIn: 60 * 60 * 24 * 7, // 7 days in seconds
@@ -62,6 +66,8 @@ export async function POST(request: NextRequest) {
         phone: result.user.phone,
       },
     })
+    setAuthCookie(response, newToken)
+    return response
   } catch (error) {
     console.error('Refresh error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

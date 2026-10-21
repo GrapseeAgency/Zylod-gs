@@ -20,6 +20,9 @@ export interface AuthResult {
   authenticated: boolean
   user: AuthUser | null
   error?: string
+  /** Task 124: when authenticated, the current session's expiry — read by
+   * GET /api/auth/session-info so the shell can rotate only near expiry. */
+  sessionExpiresAt?: Date
 }
 
 /* ─── Hash token for storage ─── */
@@ -90,7 +93,7 @@ export async function validateSession(token: string): Promise<AuthResult> {
     return { authenticated: false, user: null, error: 'Account suspended' }
   }
 
-  return { authenticated: true, user: session.user as AuthUser }
+  return { authenticated: true, user: session.user as AuthUser, sessionExpiresAt: session.expiresAt }
 }
 
 /* ─── Destroy a session (logout) ─── */
