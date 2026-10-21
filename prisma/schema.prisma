@@ -2489,6 +2489,22 @@ model dailyCheckins {
   @@index([checkinDate])
 }
 
+// Task 112: server-side game challenges. The memory game is only honest if
+// the SERVER deals the sequence and grades the reproduction — a challenge
+// row carries the dealt sequence, expires, and is consumed exactly once.
+model gameChallenges {
+  id         String   @id @default(cuid())
+  userId     String
+  game       String   // memory_match (the only challenge-based game)
+  payload    String   // JSON: { sequence: string[] } — dealt by the server, graded on submit
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, game])
+  @@index([expiresAt])
+}
+
 model miniGameScores {
   id        String   @id @default(cuid())
   userId    String
