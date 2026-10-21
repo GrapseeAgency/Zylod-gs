@@ -1,15 +1,24 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+/**
+ * EarnCouponsPage — the buyer side of the Task 111 reward rail.
+ * The server PROVES each task from the buyer's real rows before a voucher
+ * exists, so this page shows the honest progress (count / required), the
+ * claimed state, and the server's own refusal wording — no blind Claim
+ * button, no alert() popups (house toasts), no fake success.
+ */
+
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Progress } from '@/components/ui/progress'
+import { toast } from 'sonner'
 import {
   ArrowLeft, Sparkles, Gift, CheckCircle2,
-  Users, ShoppingBag, Star, Flame, ChevronRight
+  ShoppingBag, Star, Heart, Package, Milestone, Flame, LogIn,
 } from 'lucide-react'
 
 interface Task {
@@ -20,6 +29,19 @@ interface Task {
   rewardLabel: string
   rewardBDT: number
   iconColor: string
+  targetCount?: number
+  claimed?: boolean
+  progress?: { count: number; required: number; met: boolean }
+}
+
+const TASK_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  first_order: ShoppingBag,
+  review: Star,
+  wishlist: Heart,
+  bulk: Package,
+  milestone: Milestone,
+  spin: Sparkles,
+  checkin: Flame,
 }
 
 export function EarnCouponsPage() {
@@ -30,58 +52,64 @@ export function EarnCouponsPage() {
   const [loading, setLoading] = useState(true)
   const [completingId, setCompletingId] = useState<string | null>(null)
 
+  const loadTasks = useCallback(async () => {
+    try {
+      const headers: Record<string, string> = {}
+      if (token) headers['Authorization'] = `Bearer ${token}`
+      const res = await fetch('/api/coupons/earn', { headers })
+      const data = await res.json()
+      if (data.success && data.data) {
+        setTasks(data.data)
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }, [token])
+
   useEffect(() => {
-    fetch('/api/coupons/earn')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.data) {
-          setTasks(data.data)
-        }
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+    loadTasks()
+  }, [loadTasks])
 
   const handleCompleteTask = async (task: Task) => {
+    if (!token) {
+      toast.error('Sign in to claim rewards — vouchers are personal')
+      navigate('login')
+      return
+    }
     try {
       setCompletingId(task.id)
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-      if (token) headers['Authorization'] = `Bearer ${token}`
-
       const res = await fetch('/api/coupons/earn', {
         method: 'POST',
-        headers,
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ taskId: task.id }),
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        alert(`Congratulations! You earned ${task.rewardLabel}! The voucher has been added to your vault.`)
-        navigate('my-coupons')
+        toast.success(`Reward unlocked: ${task.rewardLabel} — the voucher is in your vault`)
+        await loadTasks()
       } else {
-        alert(data.error || 'Failed to complete task')
+        toast.error(data.error || 'Could not claim this reward')
       }
     } catch (err) {
       console.error(err)
+      toast.error('Could not reach the rewards service')
     } finally {
       setCompletingId(null)
     }
   }
 
   const getTaskIcon = (type: string) => {
-    switch (type) {
-      case 'first_order': return <ShoppingBag className="w-5 h-5 text-blue-600" />
-      case 'review_photo': return <Star className="w-5 h-5 text-emerald-600" />
-      case 'referral': return <Users className="w-5 h-5 text-amber-600" />
-      case 'checkin': return <Flame className="w-5 h-5 text-purple-600" />
-      default: return <Sparkles className="w-5 h-5 text-red-600" />
-    }
+    const Icon = TASK_ICONS[type] ?? Sparkles
+    return <Icon className="w-5 h-5 text-red-600" />
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition" aria-label="Go back">
             <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
           <div className="flex items-center gap-2">
@@ -120,7 +148,7 @@ export function EarnCouponsPage() {
           </div>
           <h2 className="text-base sm:text-lg md:text-2xl font-bold">Complete Business Milestones to Earn Vouchers</h2>
           <p className="text-xs text-amber-100">
-            Unlock exclusive discounts for order placements, verifying packaging quality, and inviting retailers.
+            Every reward is verified against your real account activity — orders placed, reviews written, check-ins kept — before the voucher lands in your vault.
           </p>
         </div>
 
@@ -139,38 +167,75 @@ export function EarnCouponsPage() {
                 </div>
               ))}
             </div>
+          ) : tasks.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-10 text-center">
+              <Gift className="h-10 w-10 mx-auto text-gray-300 mb-2" />
+              <h3 className="text-sm font-semibold text-gray-700">No reward tasks are live right now</h3>
+              <p className="text-xs text-gray-400 mt-1">Check back soon — new ways to earn are added by the platform team.</p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {tasks.map(task => (
-              <div
-                key={task.id}
-                className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex items-center justify-between gap-4 hover:border-amber-200 transition"
-              >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
-                    {getTaskIcon(task.type)}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 truncate">{task.title}</h3>
-                      <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200 text-[10px] flex-shrink-0">
-                        {task.rewardLabel}
-                      </Badge>
-                    </div>
-                    <p className="text-[11px] text-gray-500 line-clamp-1">{task.description}</p>
-                  </div>
-                </div>
-
-                <Button
-                  size="sm"
-                  disabled={completingId === task.id}
-                  onClick={() => handleCompleteTask(task)}
-                  className="h-8 px-4 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl flex-shrink-0 shadow-sm"
+            {tasks.map(task => {
+              const target = task.targetCount ?? 1
+              const prog = task.progress
+              const claimed = task.claimed === true
+              return (
+                <div
+                  key={task.id}
+                  className={`bg-white rounded-2xl p-4 border shadow-sm flex items-center justify-between gap-4 transition ${
+                    claimed ? 'border-green-200' : 'border-gray-100 hover:border-amber-200'
+                  }`}
                 >
-                  {completingId === task.id ? 'Claiming...' : 'Claim'}
-                </Button>
-              </div>
-            ))}
+                  <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
+                      {getTaskIcon(task.type)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-xs sm:text-sm font-bold text-gray-900">{task.title}</h3>
+                        <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200 text-[10px] flex-shrink-0">
+                          {task.rewardLabel}
+                        </Badge>
+                        {claimed && (
+                          <span className="text-[10px] font-bold uppercase text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded">
+                            Claimed
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5">{task.description}</p>
+                      {prog && !claimed && target > 1 && (
+                        <div className="mt-2 space-y-1">
+                          <Progress value={Math.min(100, Math.round((prog.count / target) * 100))} className="h-1.5" aria-label={`Progress ${prog.count} of ${target}`} />
+                          <p className="text-[10px] text-gray-400">{prog.count} of {target} completed</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {claimed ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => navigate('my-coupons')}
+                      className="h-8 px-4 text-xs font-bold text-green-700 border-green-300 hover:bg-green-50 rounded-xl flex-shrink-0"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> In vault
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      disabled={completingId === task.id}
+                      onClick={() => handleCompleteTask(task)}
+                      className="h-8 px-4 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl flex-shrink-0 shadow-sm"
+                    >
+                      {completingId === task.id ? 'Checking…' : token ? 'Claim' : (
+                        <span className="flex items-center gap-1"><LogIn className="w-3 h-3" /> Sign in</span>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              )
+            })}
             </div>
           )}
         </div>

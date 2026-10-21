@@ -38,8 +38,9 @@ import { AdminBlogManager } from '@/components/admin/admin-blog-manager'
 import { AdminPromotionsManager } from '@/components/admin/admin-promotions-manager'
 import { AdminCompanyManager } from '@/components/admin/admin-company-manager'
 import { AdminPressInvestorManager } from '@/components/admin/admin-press-investor-manager'
+import { AdminRewardTasksManager } from '@/components/admin/admin-reward-tasks-manager'
 import {
-  ArrowRight, Image as ImageIcon, Megaphone, Newspaper, Plus, RefreshCw, Trash2, Zap, CalendarDays, BadgePercent, Scale,
+  ArrowRight, Image as ImageIcon, Megaphone, Newspaper, Plus, RefreshCw, Trash2, Zap, CalendarDays, BadgePercent, Scale, Gift,
 } from 'lucide-react'
 
 /* ─── Types (mirror the API responses verbatim) ─── */
@@ -140,7 +141,7 @@ function localToIso(value: string): string | undefined {
 export function AdminContentPage() {
   const navigate = useNavigationStore((s) => s.navigate)
 
-  const [tab, setTab] = useState<'banners' | 'deals' | 'blog' | 'promotions' | 'company' | 'press'>('banners')
+  const [tab, setTab] = useState<'banners' | 'deals' | 'blog' | 'promotions' | 'company' | 'press' | 'rewards'>('banners')
   const [banners, setBanners] = useState<AdminBanner[]>([])
   const [bannerStats, setBannerStats] = useState<BannerStats | null>(null)
   const [deals, setDeals] = useState<AdminDeal[]>([])
@@ -360,6 +361,9 @@ export function AdminContentPage() {
             <Button variant={tab === 'press' ? 'default' : 'outline'} size="sm" onClick={() => setTab('press')}>
               <Newspaper className="h-4 w-4 mr-1.5" /> Press & investor
             </Button>
+            <Button variant={tab === 'rewards' ? 'default' : 'outline'} size="sm" onClick={() => setTab('rewards')}>
+              <Gift className="h-4 w-4 mr-1.5" /> Rewards
+            </Button>
             <div className="flex-1" />
             <Button variant="ghost" size="sm" onClick={() => load('both')} disabled={refreshing} className="text-muted-foreground">
               <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
@@ -379,6 +383,8 @@ export function AdminContentPage() {
             <AdminCompanyManager />
           ) : tab === 'press' ? (
             <AdminPressInvestorManager />
+          ) : tab === 'rewards' ? (
+            <AdminRewardTasksManager />
           ) : loading ? (
             <div className="space-y-3">
               {[0, 1, 2].map((i) => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}

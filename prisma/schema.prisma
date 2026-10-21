@@ -2323,6 +2323,11 @@ model couponEarningTasks {
   rewardLabel String
   rewardBDT   Float    @default(0)
   iconColor   String   @default("#C8102E")
+  // Task 111: how many real actions the server demands before a claim pays
+  // out (orders placed, reviews written, check-ins...). The claim route
+  // counts the user's REAL rows — a task is money, so completion is proven,
+  // never self-declared.
+  targetCount Int      @default(1)
   isActive    Boolean  @default(true)
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
