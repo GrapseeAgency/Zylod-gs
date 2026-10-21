@@ -3543,3 +3543,18 @@ Stage Summary:
 - 38 of the 47 drill scripts are now regression-proven against the current tree — every surface that guards money, orders, KYC, complaints, returns, RFQ and content has a green drill run AFTER this round's fixes. The 9 unrun scripts (t91-t99 remainder) are the next extension if wanted.
 - The sweep caught 5 real defects the per-task drills could never see (two cross-task contract seams, one cache-staleness class with three sites, one missing env secret) — this is exactly what 'ektar sathe arektar connection rakha' means in practice.
 - REMAINING FAKE/INCOMPLETE: none found this round. Pushed with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 114-b
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE COMPLETE REGRESSION LEDGER — ran the last 9 unrun drills (t91–t99) so that EVERY automated proof in the repository has a current green run.
+
+Work Log:
+- t91 39/0, t92 40/0, t93 29/0, t94 52/0, t95 45/0, t96 17/0, t97 45/0, t98 26/0, t99 29/0 — all green on the FIRST run, no fixes needed (322 assertions).
+- THE LEDGER: **47/47 drill scripts (t59–t112), 1,710 assertions, 0 failures** against the current tree — every surface that guards money, orders, KYC, complaints, returns, RFQ, cache invalidation, content, rewards and games has a passing drill run from this session.
+- Browser sanity after all of today's route changes (fresh wipe): home page renders, earn-coupons serves its honest empty state ("No reward tasks are live right now"), mini-games serves the real-games catalog, console clean. DB wiped 140×0.
+
+Stage Summary:
+- The platform's proof story is total: not a single drill in the repository fails. The five real defects found this session (video upload seam, three cache-staleness sites, missing webhook secret) are fixed AND covered by green drills.
+- REMAINING FAKE/INCOMPLETE: none. Pushed with the owner-provided PAT (never stored in tracked files).
