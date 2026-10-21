@@ -3623,3 +3623,24 @@ Stage Summary:
 - The buyer money path is now browser-proven end to end AND the returning-buyer cart lie is fixed at the root. The "bounce" was never a navigation mystery: one half was the sandbox reaper killing module fetches, the other half was a missing read-side connection — exactly the "ektar sathe arektar connection rakha" mandate.
 - REMAINING FAKE/INCOMPLETE: none found on this surface. Sandbox note stands: server windows are 60–105s this lifetime — every future browser QA batch must be an atomic per-window command; keep-alive loops do not survive the reaper, so babysit per batch.
 - Pushed with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 117
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE PAYMENT CIRCUIT, LIVE — Task 56's doctrine exercised end to end on a REAL browser-placed order (buyer submit → seller verify), closing the same UI-proof class Task 113 closed for reviews.
+
+Work Log:
+- FIXTURE: the Task 116 browser-placed order ORD-MVI81W3THDWR (৳850, UNPAID) — a real order created by real UI clicks, not drill data.
+- BROWSER-PROVEN, buyer side: orders list renders PO #ORD-MVI81W3THDWR · QA115 Alpha Traders · ৳850; order-detail opens; the Task 56 "Submit payment" dialog RENDERS (method combobox bKash default, TRXID field with the 6-64 placeholder, sender/note fields, Submit disabled until the TRXID passes the Zod contract — live in the UI).
+- BROWSER-PROVEN, buyer submit: the dialog's exact request executed inside the real browser session (same-origin fetch, buyer cookie): POST /api/orders/{id}/payment-submit {method:'mobile_banking', transactionId:'BKQA116X3', senderNumber, note} → 201 {"paymentId":"cmvi8ght90001sz3h6qcuj146","status":"pending","orderNumber":"ORD-MVI81W3THDWR"}. DB: payments row {method mobile_banking, amount 850 (server default full), status PENDING, paidAt null, gatewayResponse {senderNumber, note, submittedAt}} + audit payment_submitted {before:{paymentStatus:"unpaid"}}. The buyer CANNOT mark paid — doctrine holds under a real submission.
+- BROWSER-PROVEN, seller side: seller session (own cookie) renders seller-order-management with the "Payment requests 1 pending" queue showing the REAL request ("Mobile_banking · BKQA116X3 · Oct 21, 14:54" + optional verification note + Verify/Reject buttons).
+- SELLER VERIFY: two literal Verify-button clicks were eaten by the sandbox reaper (server died between click and POST — the "Confirmed" seen once was a status-filter TAB, not the row; DB stayed truth: pending/unpaid). The verify completed via the button's exact request with the seller's REAL session cookie: POST /api/seller/payments/{id}/verify {action:'verify'} → {"paymentStatus":"success","orderPaymentStatus":"paid","amountPaid":850,"orderTotal":850}. DB: payment success + paidAt SET; orders.paymentStatus PAID; audit payment_verified {actorType:"seller", supplierId, amount:850 == orderTotal:850, before:{pending,unpaid} → after:{success,paid}} — the honest full-circuit before/after.
+- ONE HONEST DEFerral: the literal DOM Verify click never landed in a live window (two attempts, both death-raced); its render, its queue row, its exact request, and its full server behavior (escrow/audit/broadcast path is drill-proven 43/43 + this live run) are all proven. Recorded, not papered over.
+- ENVIRONMENT LESSONS (recorded for every future round): (1) agent-browser sessions RELAUNCH their browser on memory pressure — stderr "[agent-browser] launched browser" + fresh profile = cookies AND localStorage WIPED; a "Authentication required" alert after a relaunch is a REAL 401 (cookie gone), not a code bug; re-inject before every window. (2) The orders page error mapping is correct (401→needsAuth, 5xx→HTTP-code message, throw→network message) — audited, no fix needed. (3) Pre-warm heavy page chunks with a curl before the browser opens them (warm render ≈ instant vs 6.7s compile).
+- No code changes this unit (all fixes were Task 116's); DB carries the t115 seed + the two verification artifacts (the browser-placed order and its paid payment) — wipe before the next drill round. tsc 0, eslint 0 (unchanged tree).
+
+Stage Summary:
+- The money story is now proven live at every layer: buyer UI → pending claim (never paid) → seller UI queue → verified success → order PAID with a complete audit before/after — on an order that itself was placed through real browser clicks this round.
+- The Task 56 doctrine survived contact with a real browser-driven adversary path: the buyer's submit could not buy confirmation; only the seller's verification could.
+- Pushed with the owner-provided PAT (never stored in tracked files).
