@@ -264,26 +264,31 @@ export async function POST(request: NextRequest) {
           pricedLines.push({ productId: item.productId, totalPrice })
         }
 
-        // Task 100: PLATFORM PROMOTION — automatic, admin-curated, applied
+        // Task 100/115: PROMOTION — automatic, no code, no opt-in — applied
         // BEFORE the coupon (the coupon then reads the promoted total, so the
         // stack is honest: goods → promotion → coupon → + shipping). Every
         // active campaign pinning any of these products is scored on the
         // lines it actually pins; the best discount wins (tie → ends
         // soonest). The usage counter is claimed ATOMICALLY — a campaign
         // exhausted between read and write refuses the order (409) rather
-        // than repricing it behind the buyer's back. Platform-funded: the
-        // supplier subOrders below keep FULL line value — only the buyer's
-        // total shrinks.
-        let appliedPromotion: { id: string; name: string; discount: number } | null = null
+        // than repricing it behind the buyer's back.
+        // TWO OWNERS (Task 115): supplierId NULL = platform-curated,
+        // PLATFORM-FUNDED (subOrders keep full value). supplierId SET = a
+        // seller's own campaign — only that supplier's lines may feed it,
+        // and it is SELLER-FUNDED: the discount also comes off THAT
+        // supplier's subOrder subtotal (seller earns less, honestly).
+        let appliedPromotion: { id: string; name: string; discount: number; supplierId: string | null } | null = null
         {
           const now = new Date()
           const rows = await tx.promotionProducts.findMany({
             where: { product: { id: { in: pricedLines.map((l) => l.productId) } }, promotion: activePromotionFilter(now) },
             include: {
+              product: { select: { supplierId: true } },
               promotion: {
                 select: {
                   id: true, name: true, type: true, value: true, minOrderAmount: true,
                   maxDiscount: true, usageLimit: true, usedCount: true, isActive: true, validFrom: true, validUntil: true,
+                  supplierId: true,
                 },
               },
             },
@@ -291,6 +296,10 @@ export async function POST(request: NextRequest) {
           if (rows.length > 0) {
             const campaigns = new Map<string, { promotion: (typeof rows)[number]['promotion']; pinnedProductIds: Set<string> }>()
             for (const row of rows) {
+              // SUPPLIER GUARD: a seller campaign only ever scores lines
+              // from its own supplier — creation enforces this; the guard
+              // makes it true even if a pin somehow drifts.
+              if (row.promotion.supplierId !== null && row.product.supplierId !== row.promotion.supplierId) continue
               let entry = campaigns.get(row.promotion.id)
               if (!entry) {
                 entry = { promotion: row.promotion, pinnedProductIds: new Set() }
@@ -302,7 +311,14 @@ export async function POST(request: NextRequest) {
             if (best) {
               await claimPromotionUsage(tx, best.promotion)
               totalAmount -= best.discount
-              appliedPromotion = { id: best.promotion.id, name: best.promotion.name, discount: best.discount }
+              const fundingSupplierId = best.promotion.supplierId
+              if (fundingSupplierId && supplierGroups[fundingSupplierId]) {
+                // SELLER-FUNDED: the subOrder subtotal is written
+                // POST-discount — escrow, payouts and every revenue reader
+                // stay consistent without touching them.
+                supplierGroups[fundingSupplierId].subtotal -= best.discount
+              }
+              appliedPromotion = { id: best.promotion.id, name: best.promotion.name, discount: best.discount, supplierId: fundingSupplierId }
               await tx.auditLogs.create({
                 data: {
                   actorId: buyerId,
@@ -316,6 +332,7 @@ export async function POST(request: NextRequest) {
                     value: best.promotion.value,
                     promotedSubtotal: best.promotedSubtotal,
                     discount: best.discount,
+                    funding: best.promotion.supplierId ? 'seller' : 'platform',
                   }),
                 },
               })
@@ -554,6 +571,10 @@ export async function POST(request: NextRequest) {
               orderId: newOrder.id,
               supplierId,
               subtotal: group.subtotal,
+              // Task 115: the stamp that explains subtotal vs the full
+              // orderItems line truth — non-zero only when a SELLER-FUNDED
+              // campaign took its discount off this shipment's goods.
+              campaignDiscount: appliedPromotion?.supplierId === supplierId ? (appliedPromotion?.discount ?? 0) : 0,
               shippingCost: leg ? leg.price : null,
               shippingMethodId: leg?.methodId ?? null,
               shippingMethodName: leg?.methodName ?? null,

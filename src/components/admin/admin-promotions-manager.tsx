@@ -42,6 +42,12 @@ interface Campaign {
   createdAt: string;
   computedStatus: 'live' | 'scheduled' | 'ended' | 'paused';
   pinnedProducts: PinnedProduct[];
+  // Task 115: the owner split — seller rows are created by the seller from
+  // their own console and are SELLER-FUNDED at checkout (their subOrder
+  // subtotal shrinks); platform rows are admin-curated and platform-funded.
+  supplierId?: string | null;
+  ownerType?: 'platform' | 'seller';
+  ownerName?: string;
 }
 
 interface Stats { total: number; live: number; notActive: number }
@@ -367,6 +373,14 @@ export function AdminPromotionsManager() {
                     {c.computedStatus}
                   </span>
                   <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{valueLabel(c)}</span>
+                  {/* Task 115: the owner chip — an admin must see whose pocket the discount comes from. */}
+                  {c.ownerType === 'seller' ? (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300" title={`Seller-funded — ${c.ownerName ?? 'seller'}'s subOrder subtotal carries the discount`}>
+                      Seller: {c.ownerName ?? 'unknown'}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">Platform</span>
+                  )}
                 </div>
                 <div className="text-[11px] text-muted-foreground mt-0.5 truncate">
                   {c.pinnedProducts.length} pinned · {new Date(c.validFrom).toLocaleDateString('en-GB')} → {new Date(c.validUntil).toLocaleDateString('en-GB')}

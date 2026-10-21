@@ -266,7 +266,7 @@ model supplierProfiles {
   // Supplier Enhancements
   warehouseLocations   warehouseLocations[]
   supplierLocations    supplierLocations[]
-  supplierCampaigns    supplierCampaigns[]
+  campaigns            promotions[]
   supplierLoyaltyTiers supplierLoyaltyTiers[]
 
   // Sample Orders
@@ -277,7 +277,6 @@ model supplierProfiles {
 
   // Seller Enhancement Relations
   verificationDocuments sellerVerificationDocuments[]
-  sellerPromotions      sellerPromotions[]
   shippingConfigs       sellerShippingConfigs[]
   returnPolicies        sellerReturnPolicies[]
   supportTickets        sellerSupportTickets[]
@@ -568,6 +567,11 @@ model subOrders {
   orderId            String
   supplierId         String
   subtotal           Float
+  // Task 115: the seller-funded campaign discount taken off THIS
+  // shipment's goods at order time. subtotal is already the POST-discount
+  // value (every escrow/payout/revenue reader stays consistent); the stamp
+  // keeps the delta visible against the full orderItems line truth.
+  campaignDiscount   Float     @default(0)
   shippingCost       Float?
   // Task 95: which shippingMethod the buyer picked for THIS shipment and
   // the name AT ORDER TIME (methods are editable/deactivatable — the
@@ -1007,12 +1011,25 @@ model promotions {
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
 
+  // Task 115 — ONE campaign engine, two owners. supplierId NULL = the
+  // platform's admin-curated promotion (platform-funded: subOrders keep
+  // full line value). supplierId SET = a SELLER's own campaign: created
+  // from the seller console, pinned to that supplier's products only,
+  // SELLER-FUNDED — the discount reduces that supplier's subOrder
+  // subtotal at checkout (the seller gives it from their own pocket).
+  supplierId     String?
+  // Task 115: seller campaign banner (optional; the store-page campaign
+  // rail renders it — images come from the real upload pipeline).
+  bannerImageUrl String?
+
+  supplier supplierProfiles? @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   products promotionProducts[]
 
   @@index([type])
   @@index([isActive])
   @@index([validFrom])
   @@index([validUntil])
+  @@index([supplierId])
 }
 
 model promotionProducts {
@@ -1581,27 +1598,6 @@ model supplierLocations {
   @@index([isActive])
 }
 
-model supplierCampaigns {
-  id         String   @id @default(cuid())
-  supplierId String
-  name       String
-  // type: discount | bogo | free_shipping
-  type       String
-  value      Float
-  validFrom  DateTime
-  validUntil DateTime
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-
-  supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-
-  @@index([supplierId])
-  @@index([type])
-  @@index([isActive])
-  @@index([validFrom])
-  @@index([validUntil])
-}
-
 model supplierLoyaltyTiers {
   id              String   @id @default(cuid())
   supplierId      String
@@ -1614,10 +1610,6 @@ model supplierLoyaltyTiers {
 
   @@index([supplierId])
 }
-
-// ============================================================
-// Cross Border & Customs
-// ============================================================
 
 model crossBorderOrders {
   id                 String   @id @default(cuid())
@@ -1732,39 +1724,6 @@ model sellerVerificationDocuments {
   @@index([supplierId])
   @@index([documentType])
   @@index([status])
-}
-
-model sellerPromotions {
-  id             String   @id @default(cuid())
-  supplierId     String
-  name           String
-  // type: percentage_discount | fixed_discount | buy_one_get_one | free_shipping
-  type           String
-  discountValue  Float    @default(0)
-  startDate      DateTime
-  endDate        DateTime
-  // status: draft | scheduled | active | paused | ended
-  status         String   @default("draft")
-  // applicableTo: all | category | selected
-  applicableTo   String   @default("all")
-  categoryIds    String? // JSON array string
-  productIds     String? // JSON array string
-  minOrderAmount Float    @default(0)
-  maxDiscount    Float    @default(0)
-  usageLimit     Int      @default(0)
-  usageCount     Int      @default(0)
-  budget         Float?
-  spentBudget    Float    @default(0)
-  description    String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-
-  @@index([supplierId])
-  @@index([status])
-  @@index([startDate])
-  @@index([endDate])
 }
 
 model sellerShippingConfigs {

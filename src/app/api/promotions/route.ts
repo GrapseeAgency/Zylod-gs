@@ -19,7 +19,11 @@ export async function GET(request: NextRequest) {
 
     const now = new Date()
     const campaigns = await db.promotions.findMany({
-      where: { isActive: true, validFrom: { lte: now }, validUntil: { gte: now } },
+      // Task 115: this rail stays PLATFORM-ONLY (supplierId null). Seller
+      // campaigns are storefront content of THEIR store page and are served
+      // by /api/suppliers/[id]/campaigns — mixing owners here would make
+      // the platform rail a seller marketing channel.
+      where: { supplierId: null, isActive: true, validFrom: { lte: now }, validUntil: { gte: now } },
       orderBy: { validUntil: 'asc' },
       take: 20,
       include: {

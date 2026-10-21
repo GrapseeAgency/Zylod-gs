@@ -2,12 +2,18 @@ import { PromotionUsageError } from './promotions-errors'
 
 /**
  * Task 100 — PLATFORM PROMOTION PRICING ENGINE (server truth).
+ * Task 115 — ONE ENGINE, TWO OWNERS. The same math now prices both the
+ * platform's admin-curated promotions (supplierId NULL, PLATFORM-FUNDED:
+ * subOrders keep full line value, only the buyer's total shrinks) and a
+ * SELLER's own campaigns (supplierId SET, SELLER-FUNDED: the discount
+ * ALSO reduces that supplier's subOrder subtotal — the seller gives it
+ * from their own pocket). A seller campaign may only pin that supplier's
+ * products (enforced at creation; the checkout guards re-check it).
  *
- * A platform promotion is ADMIN-CURATED and AUTOMATIC: it is pinned to
- * specific products through promotionProducts, and any order line whose
- * product is pinned by an active, in-window campaign gets the discount with
- * NO code and NO buyer opt-in. This is the contractual difference from
- * coupons (Task 74): a coupon is claimed, a promotion is ambient.
+ * A promotion is AUTOMATIC: any order line whose product is pinned by an
+ * active, in-window campaign gets the discount with NO code and NO buyer
+ * opt-in. This is the contractual difference from coupons (Task 74): a
+ * coupon is claimed, a promotion is ambient.
  *
  * Honest scope — the engine only computes discounts it can prove:
  *   percentage → value% off the promoted lines' combined subtotal
@@ -16,12 +22,9 @@ import { PromotionUsageError } from './promotions-errors'
  * quantity or shipping semantics the pricing engine does not own) — the
  * platform never ships a label it cannot compute.
  *
- * Stack order (drill-proven in scripts/qa/t100-e2e.mjs):
+ * Stack order (drill-proven in scripts/qa/t100-e2e.mjs, t115-e2e.mjs):
  *   goods subtotal → promotion discount (this file) → coupon discount →
  *   + shipping = order.totalAmount.
- *
- * Platform-funded: supplier subOrder subtotals and escrow hold FULL line
- * value — only the buyer's totalAmount shrinks.
  */
 
 /** The shape a promotions row must carry for the engine (a tx client returns exactly this). */
@@ -37,6 +40,7 @@ export type PromotionRow = {
   isActive: boolean
   validFrom: Date
   validUntil: Date
+  supplierId: string | null
 }
 
 export type PromotedLine = {
@@ -70,7 +74,8 @@ export function computePromotionDiscount(promotion: PromotionRow, promotedSubtot
  * The real resolver: given every active campaign and the order's lines,
  * returns the winning application (or null). Each campaign is scored on the
  * lines it actually pins — a campaign cannot take a percentage of lines it
- * does not own.
+ * does not own. The CALLER builds pinnedProductIds supplier-aware (a seller
+ * campaign's set must only ever contain that supplier's products).
  */
 export function resolveBestPromotionApplication(
   campaigns: Array<{ promotion: PromotionRow; pinnedProductIds: Set<string> }>,

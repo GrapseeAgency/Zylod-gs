@@ -37,7 +37,12 @@ export async function GET(request: NextRequest) {
     const [promotions, groupBy] = await Promise.all([
       db.promotions.findMany({
         orderBy: { createdAt: 'desc' },
-        include: { products: { include: { product: { select: { id: true, name: true } } } } },
+        include: {
+          products: { include: { product: { select: { id: true, name: true } } } },
+          // Task 115: the owner split — supplierId NULL rows are the
+          // platform's own; SET rows are a seller's campaign (seller-funded).
+          supplier: { select: { companyName: true } },
+        },
       }),
       db.promotions.groupBy({ by: ['isActive'], _count: { isActive: true } }),
     ])
@@ -49,12 +54,15 @@ export async function GET(request: NextRequest) {
     }
     return NextResponse.json({
       success: true,
-      data: promotions.map((p) =>
-        shapePromotion(
+      data: promotions.map((p) => ({
+        ...shapePromotion(
           p,
           p.products.map((pp) => ({ id: pp.product.id, name: pp.product.name }))
-        )
-      ),
+        ),
+        supplierId: p.supplierId,
+        ownerType: p.supplierId ? 'seller' : 'platform',
+        ownerName: p.supplier ? p.supplier.companyName : 'Platform',
+      })),
       stats,
     })
   } catch (error) {

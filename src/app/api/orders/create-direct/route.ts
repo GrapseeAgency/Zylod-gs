@@ -158,7 +158,10 @@ export async function POST(request: NextRequest) {
         // applied BEFORE the order total (goods → promotion → + shipping).
         // Automatic: no code, no opt-in. The usage claim is atomic; a
         // campaign exhausted between read and write refuses the order (409).
-        let appliedPromotion: { id: string; name: string; discount: number } | null = null
+        // Task 115: TWO OWNERS — a seller campaign (supplierId set) may only
+        // score lines from its own supplier; this path is single-product, so
+        // the guard drops foreign campaigns before the resolver sees them.
+        let appliedPromotion: { id: string; name: string; discount: number; supplierId: string | null } | null = null
         {
           const now = new Date()
           const rows = await tx.promotionProducts.findMany({
@@ -168,19 +171,21 @@ export async function POST(request: NextRequest) {
                 select: {
                   id: true, name: true, type: true, value: true, minOrderAmount: true,
                   maxDiscount: true, usageLimit: true, usedCount: true, isActive: true, validFrom: true, validUntil: true,
+                  supplierId: true,
                 },
               },
             },
           })
-          if (rows.length > 0) {
+          const ownRows = rows.filter((row) => row.promotion.supplierId === null || row.promotion.supplierId === supplierId)
+          if (ownRows.length > 0) {
             const best = resolveBestPromotionApplication(
-              rows.map((row) => ({ promotion: row.promotion, pinnedProductIds: new Set([productId]) })),
+              ownRows.map((row) => ({ promotion: row.promotion, pinnedProductIds: new Set([productId]) })),
               [{ productId, totalPrice }],
               now
             )
             if (best) {
               await claimPromotionUsage(tx, best.promotion)
-              appliedPromotion = { id: best.promotion.id, name: best.promotion.name, discount: best.discount }
+              appliedPromotion = { id: best.promotion.id, name: best.promotion.name, discount: best.discount, supplierId: best.promotion.supplierId }
               await tx.auditLogs.create({
                 data: {
                   actorId: buyerId,
@@ -194,6 +199,7 @@ export async function POST(request: NextRequest) {
                     value: best.promotion.value,
                     promotedSubtotal: best.promotedSubtotal,
                     discount: best.discount,
+                    funding: best.promotion.supplierId ? 'seller' : 'platform',
                   }),
                 },
               })
@@ -271,11 +277,18 @@ export async function POST(request: NextRequest) {
           },
         })
 
+        // SELLER-FUNDED (Task 115): a seller campaign's discount comes off
+        // THIS supplier's subOrder subtotal too (the seller gives it from
+        // their own pocket) — subtotal is written POST-discount so escrow,
+        // payouts and every revenue reader stay consistent; campaignDiscount
+        // keeps the delta visible against the full orderItems line truth.
+        const sellerFundedDiscount = appliedPromotion?.supplierId ? (appliedPromotion?.discount ?? 0) : 0
         const subOrder = await tx.subOrders.create({
           data: {
             orderId: newOrder.id,
             supplierId,
-            subtotal: totalPrice,
+            subtotal: totalPrice - sellerFundedDiscount,
+            campaignDiscount: sellerFundedDiscount,
             shippingCost: shippingLeg ? shippingLeg.price : null,
             shippingMethodId: shippingLeg?.methodId ?? null,
             shippingMethodName: shippingLeg?.methodName ?? null,

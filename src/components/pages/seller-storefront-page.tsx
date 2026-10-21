@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
-import { ArrowLeft, Edit, Package, Share2, Star, ImageOff, Store, AlertCircle, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Edit, Package, Share2, Star, ImageOff, Store, AlertCircle, ShieldCheck, BadgePercent } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import StorefrontCertifications, { StorefrontCertRollup } from '@/components/supplier/storefront-certifications';
 import StorefrontWarehouses, { WarehouseRow } from '@/components/supplier/storefront-warehouses';
 import StorefrontReviews, { StorefrontReviewRow } from '@/components/supplier/storefront-reviews';
+import StorefrontCampaigns from '@/components/supplier/storefront-campaigns';
 
 interface StorefrontData {
   id?: string;
@@ -94,6 +95,9 @@ export const SellerStorefrontPage = () => {
 
   const companyName = data?.companyName ?? '';
   const productCount = data?.products?.length ?? 0;
+  // Task 115: the campaign rail needs the supplier's profile id — present
+  // on both the own view (data.id) and the visitor view (param).
+  const campaignSupplierId = data?.id || viewedSupplierId;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-8">
@@ -206,6 +210,9 @@ export const SellerStorefrontPage = () => {
                 <TabsTrigger value="reviews" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                   Reviews{!loading && data?.ratingCount ? ` (${data.ratingCount})` : ''}
                 </TabsTrigger>
+                <TabsTrigger value="campaigns" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                  <span className="flex items-center gap-1"><BadgePercent className="w-3.5 h-3.5" />Campaigns</span>
+                </TabsTrigger>
                 <TabsTrigger value="story" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none" onClick={() => navigate('store-story-about')}>Profile</TabsTrigger>
               </TabsList>
             </div>
@@ -275,6 +282,18 @@ export const SellerStorefrontPage = () => {
                   {/* Task 98: buyers read the ship-from truth; the owner (no
                       supplierId param) manages the full list in the same tab. */}
                   <StorefrontWarehouses ownView={!viewedSupplierId} guestRows={data?.warehouses ?? []} />
+                </div>
+              </TabsContent>
+              <TabsContent value="campaigns" className="mt-0 outline-none">
+                <div aria-label="Store campaigns">
+                  {/* Task 115: the seller's OWN campaigns — live rows from the
+                      real pricing engine (seller-funded discounts that apply
+                      at checkout automatically). */}
+                  {campaignSupplierId ? (
+                    <StorefrontCampaigns supplierId={campaignSupplierId} />
+                  ) : (
+                    <div className="text-center py-10 text-sm text-gray-500">Campaigns load once the store profile resolves.</div>
+                  )}
                 </div>
               </TabsContent>
               <TabsContent value="reviews" className="mt-0 outline-none">

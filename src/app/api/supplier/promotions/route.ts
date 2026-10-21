@@ -1,128 +1,151 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
+import { sellerCampaignCreateSchema, normalizeSellerCampaignInput, shapeSellerCampaign, validateOwnPinnedProducts } from '@/lib/promotions-seller'
+import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 /**
- * GET  /api/supplier/promotions — REAL sellerPromotions rows for the signed-in
- *                              supplier (honest empty when none).
- * POST /api/supplier/promotions — create a promotion row (defaults to
- *                              status 'draft'; real date validation).
+ * Task 115 — THE SELLER CAMPAIGN RAIL, rewritten onto the REAL pricing
+ * engine. The old route wrote `sellerPromotions` rows — a table NO pricing
+ * code ever read: a seller could publish an "active" discount that changed
+ * nothing at checkout, a fake promise with a confident label. That table is
+ * retired (schema dropped this round); campaigns now live on `promotions`
+ * with supplierId set — the SAME engine the platform's promotions use, with
+ * REAL SELLER-FUNDED pricing teeth: the discount reduces this supplier's
+ * subOrder subtotal at checkout.
+ *
+ * House contract: 401-first, profile 403, rate limits, Zod STRICT, pins
+ * validated as OWN+ACTIVE+APPROVED with distinguishable refusals, audit,
+ * seller-room broadcast.
  */
 
-const PROMO_TYPES = ['percentage_discount', 'fixed_discount', 'buy_one_get_one', 'free_shipping'] as const
-const APPLICABLE_TO = ['all', 'category', 'selected'] as const
-
-const createPromotionSchema = z
-  .object({
-    name: z.string().trim().min(1, 'Name is required').max(120),
-    type: z.enum(PROMO_TYPES),
-    discountValue: z.coerce.number().min(0, 'Discount value cannot be negative').default(0),
-    startDate: z.coerce.date(),
-    endDate: z.coerce.date(),
-    applicableTo: z.enum(APPLICABLE_TO).default('all'),
-    categoryIds: z.array(z.string()).optional(),
-    productIds: z.array(z.string()).optional(),
-    minOrderAmount: z.coerce.number().min(0).default(0),
-    maxDiscount: z.coerce.number().min(0).default(0),
-    usageLimit: z.coerce.number().int().min(0).default(0),
-    budget: z.coerce.number().min(0).optional(),
-    description: z.string().max(1000).optional(),
-  })
-  .refine((v) => v.endDate > v.startDate, {
-    message: 'End date must be after the start date',
-    path: ['endDate'],
-  })
-
 export async function GET(request: NextRequest) {
+  const auth = await requireUserType(request, ['supplier', 'admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || (auth.authenticated ? 'Forbidden' : 'Authentication required') }, { status: 401 })
+  }
+  const profile = await resolveSupplierProfile(auth.user)
+  if (!profile) {
+    return NextResponse.json(SUPPLIER_PROFILE_REQUIRED, { status: 403 })
+  }
+  const rl = checkRateLimit(request, 'seller-campaigns-list', 60, 60_000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
-    const rl = checkRateLimit(request, 'supplier-promotions-get', 60, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
-    const auth = await requireUserType(request, ['supplier', 'admin'])
-    if (!auth.authenticated || !auth.user) {
-      return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
-    }
-
-    const profile = await resolveSupplierProfile(auth.user)
-    if (!profile) {
-      return NextResponse.json(SUPPLIER_PROFILE_REQUIRED, { status: 403 })
-    }
-
-    const promotions = await db.sellerPromotions.findMany({
+    const rows = await db.promotions.findMany({
       where: { supplierId: profile.id },
       orderBy: { createdAt: 'desc' },
-      take: 100,
+      include: { products: { include: { product: { select: { id: true, name: true } } } } },
     })
 
-    return NextResponse.json({ success: true, data: promotions })
+    // Honest lifecycle math — the same computed status the admin shape uses.
+    const now = new Date()
+    const stats = { total: rows.length, live: 0, scheduled: 0, ended: 0, paused: 0, totalUses: 0 }
+    for (const r of rows) {
+      stats.totalUses += r.usedCount
+      if (!r.isActive) stats.paused += 1
+      else if (now < r.validFrom) stats.scheduled += 1
+      else if (now > r.validUntil) stats.ended += 1
+      else stats.live += 1
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: rows.map((r) =>
+        shapeSellerCampaign(
+          r,
+          r.products.map((pp) => ({ id: pp.product.id, name: pp.product.name }))
+        )
+      ),
+      stats,
+    })
   } catch (error) {
-    console.error('Supplier promotions GET error:', error)
+    console.error('Seller campaigns GET error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireUserType(request, ['supplier', 'admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || (auth.authenticated ? 'Forbidden' : 'Authentication required') }, { status: 401 })
+  }
+  const profile = await resolveSupplierProfile(auth.user)
+  if (!profile) {
+    return NextResponse.json(SUPPLIER_PROFILE_REQUIRED, { status: 403 })
+  }
+  const rl = checkRateLimit(request, 'seller-campaigns-write', 20, 60_000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
-    const rl = checkRateLimit(request, 'supplier-promotions-post', 20, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
-    const auth = await requireUserType(request, ['supplier', 'admin'])
-    if (!auth.authenticated || !auth.user) {
-      return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
-    }
-
-    const profile = await resolveSupplierProfile(auth.user)
-    if (!profile) {
-      return NextResponse.json(SUPPLIER_PROFILE_REQUIRED, { status: 403 })
-    }
-
-    const parsed = createPromotionSchema.safeParse(await request.json().catch(() => null))
+    const parsed = sellerCampaignCreateSchema.safeParse(await request.json().catch(() => null))
     if (!parsed.success) {
       return NextResponse.json(
-        { error: parsed.error.issues[0]?.message || 'Invalid promotion payload' },
+        { error: parsed.error.issues[0]?.message || 'Invalid campaign payload' },
         { status: 400 }
       )
     }
-    const body = parsed.data
+    const input = normalizeSellerCampaignInput(parsed.data)
 
-    const created = await db.sellerPromotions.create({
-      data: {
-        supplierId: profile.id,
-        name: body.name,
-        type: body.type,
-        discountValue: body.discountValue,
-        startDate: body.startDate,
-        endDate: body.endDate,
-        // New promotions always start as drafts — 'active' is a state the
-        // owner (or admin tooling) moves a row to, never a creation default.
-        status: 'draft',
-        applicableTo: body.applicableTo,
-        categoryIds: body.categoryIds ? JSON.stringify(body.categoryIds) : null,
-        productIds: body.productIds ? JSON.stringify(body.productIds) : null,
-        minOrderAmount: body.minOrderAmount,
-        maxDiscount: body.maxDiscount,
-        usageLimit: body.usageLimit,
-        budget: body.budget ?? null,
-        description: body.description ?? null,
-      },
+    const { ok, phantom, foreign, unavailable } = await validateOwnPinnedProducts(db, profile.id, parsed.data.productIds)
+    if (phantom.length > 0) {
+      return NextResponse.json(
+        { error: `Unknown product${phantom.length > 1 ? 's' : ''}: ${phantom.join(', ')}` },
+        { status: 400 }
+      )
+    }
+    if (foreign.length > 0) {
+      return NextResponse.json(
+        { error: `Campaigns may only pin YOUR products — not product ${foreign.join(', ')}` },
+        { status: 403 }
+      )
+    }
+    if (unavailable.length > 0) {
+      return NextResponse.json(
+        { error: `Pinned product${unavailable.length > 1 ? 's are' : ' is'} hidden or not approved yet: ${unavailable.join(', ')}` },
+        { status: 400 }
+      )
+    }
+    if (ok.length === 0) {
+      return NextResponse.json({ error: 'Pin at least one of your products to this campaign' }, { status: 400 })
+    }
+
+    const created = await db.$transaction(async (tx) => {
+      const row = await tx.promotions.create({ data: { ...input, supplierId: profile.id } })
+      await tx.promotionProducts.createMany({
+        data: ok.map((p) => ({ promotionId: row.id, productId: p.id })),
+      })
+      return row
     })
 
     await db.auditLogs.create({
       data: {
         actorId: auth.user.id,
-        action: 'seller_promotion_created',
-        entityType: 'sellerPromotions',
+        action: 'seller_campaign_created',
+        entityType: 'promotions',
         entityId: created.id,
-        metadata: JSON.stringify({ supplierId: profile.id, name: created.name, type: created.type }),
+        metadata: JSON.stringify({
+          supplierId: profile.id,
+          name: created.name,
+          type: created.type,
+          value: created.value,
+          pinnedCount: ok.length,
+          isActive: created.isActive,
+        }),
       },
     })
+    void broadcastToRoom(`seller:${profile.id}`, 'campaign:changed', {
+      action: 'created',
+      campaignId: created.id,
+      name: created.name,
+      pinnedCount: ok.length,
+    })
 
-    return NextResponse.json({ success: true, data: created }, { status: 201 })
+    return NextResponse.json({ success: true, data: shapeSellerCampaign(created, ok) }, { status: 201 })
   } catch (error) {
-    console.error('Supplier promotions POST error:', error)
+    console.error('Seller campaigns POST error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
