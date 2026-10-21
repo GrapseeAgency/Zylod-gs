@@ -189,7 +189,7 @@ const main = async () => {
   const statusBefore = (sup0.json.data).find((s) => s.id === supId)?.verificationStatus
 
   const kyc = await admin('PATCH', '/api/admin/suppliers', { supplierId: supId, action: 'approve' })
-  ok([200, 201].includes(kyc.status), 'admin approves supplier KYC')
+  ok([200, 201].includes(kyc.status), 'admin approves supplier KYC', `got ${kyc.status} ${JSON.stringify(kyc.json).slice(0, 200)}`)
   const sup1 = await anon('GET', '/api/suppliers')
   const statusAfter = (sup1.json?.data ?? []).find((s) => s.id === supId)?.verificationStatus
   ok(statusAfter === 'approved' && statusBefore !== 'approved', 'public suppliers list serves the NEW status INSTANTLY', `${statusBefore} -> ${statusAfter}`)

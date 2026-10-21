@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 /**
@@ -109,6 +110,9 @@ export async function POST(
           ratingCount: agg._count._all,
         },
       })
+      // Task 113: the public suppliers list caches ratingAvg/ratingCount —
+      // a new review must be reflected the moment it lands.
+      invalidateCacheKeys('suppliers:list:')
       return created
     })
 
@@ -201,6 +205,7 @@ export async function DELETE(
         ratingCount: agg._count._all,
       },
     })
+    invalidateCacheKeys('suppliers:list:')
 
     await db.auditLogs.create({
       data: {

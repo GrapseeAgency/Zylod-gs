@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 
@@ -102,6 +103,9 @@ export async function PUT(request: NextRequest) {
 
       if (Object.keys(spUpdate).length > 0) {
         await db.supplierProfiles.update({ where: { userId }, data: spUpdate })
+        // Task 113: companyName is list-visible — drop the cached public
+        // suppliers list so a rename shows the moment it saves.
+        if (spUpdate.companyName !== undefined) invalidateCacheKeys('suppliers:list:')
       }
     }
 

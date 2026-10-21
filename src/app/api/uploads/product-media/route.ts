@@ -141,15 +141,18 @@ export async function POST(request: NextRequest) {
     const ext = EXT_BY_TYPE[declared]
     const filename = `${crypto.randomUUID()}.${ext}`
 
-    // Env-overridable base dir (mounted volume on Railway); default mirrors kyc.
+    // Task 113 fix: videos live in /uploads/videos/ — the attach route
+    // (POST /api/supplier/products/[id]/videos) validates that space and its
+    // delete unlinks from it, so a video written to /uploads/products/ could
+    // never be attached (the drill caught the seam). Images stay in products/.
     const uploadDir =
-      process.env.PRODUCT_MEDIA_UPLOAD_DIR || path.join(process.cwd(), 'public', 'uploads', 'products')
+      process.env.PRODUCT_MEDIA_UPLOAD_DIR || path.join(process.cwd(), 'public', 'uploads', isVideo ? 'videos' : 'products')
     await mkdir(uploadDir, { recursive: true })
     await writeFile(path.join(uploadDir, filename), Buffer.from(await file.arrayBuffer()))
 
     return NextResponse.json({
       success: true,
-      url: `/uploads/products/${filename}`,
+      url: `/uploads/${isVideo ? 'videos' : 'products'}/${filename}`,
       type: isVideo ? 'video' : 'image',
       sizeBytes,
     })

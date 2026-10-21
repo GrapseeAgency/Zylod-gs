@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { createSession, getClientIP, setAuthCookie } from '@/lib/auth'
+import { invalidateCacheKeys } from '@/lib/api-cache'
 
 /* ─── Rate limiting for registration ─── */
 const registerAttempts = new Map<string, { count: number; lastAttempt: number }>()
@@ -151,6 +152,11 @@ export async function POST(request: NextRequest) {
           verificationStatus: 'pending',
         },
       })
+      // Task 113 fix: a new supplier must be visible to the public list the
+      // moment the row exists — the cached 'suppliers:list:' entries were
+      // only invalidated on KYC decisions, so a fresh profile stayed
+      // invisible (and stale cached ids leaked across database lifetimes).
+      invalidateCacheKeys('suppliers:list:')
     }
 
     // Create real session token stored in DB

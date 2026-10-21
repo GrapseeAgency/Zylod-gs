@@ -116,9 +116,9 @@ function multipart(fields) {
   return { body: Buffer.concat(parts), contentType: `multipart/form-data; boundary=${boundary}` }
 }
 
-async function uploadVideo(session, declared, bytes, name = 'video') {
+async function uploadVideo(session, declared, bytes, name = 'file') {
   const { body, contentType } = multipart({ [name]: { bytes, declared } })
-  const res = await fetch(`${BASE}/api/upload/video`, {
+  const res = await fetch(`${BASE}/api/uploads/product-media`, {
     method: 'POST',
     headers: {
       Cookie: session.cookie || '',
@@ -165,7 +165,7 @@ const main = async () => {
   ok(anonUp.status === 401, 'anon upload → 401', `got ${anonUp.status}`)
   const buyerUp = await uploadVideo(buyer, 'video/mp4', ftypBytes())
   ok(buyerUp.status === 401, 'buyer upload → 401 (requireUserType maps wrong-type to the 401-first convention)', `got ${buyerUp.status}`)
-  const noField = await fetch(`${BASE}/api/upload/video`, {
+  const noField = await fetch(`${BASE}/api/uploads/product-media`, {
     method: 'POST',
     headers: { 'Content-Type': 'multipart/form-data; boundary=----x', Cookie: sellerA.cookie || '' },
     body: '--------x--\r\n',
@@ -173,18 +173,18 @@ const main = async () => {
   ok(noField.status === 400, "upload without 'video' field → 400", `got ${noField.status}`)
 
   const good = await uploadVideo(sellerA, 'video/mp4', ftypBytes())
-  ok(good.status === 200 && typeof good.json?.videoUrl === 'string', 'real mp4 upload → 200 + videoUrl', JSON.stringify(good.json))
-  const videoUrl = good.json?.videoUrl ?? ''
-  ok(videoUrl.startsWith('/uploads/videos/') && videoUrl.endsWith('.mp4'), 'videoUrl lives in /uploads/videos/ with .mp4 ext', videoUrl)
+  ok(good.status === 200 && typeof good.json?.url === 'string', 'real mp4 upload → 200 + url (consolidated product-media contract)', JSON.stringify(good.json))
+  const videoUrl = good.json?.url ?? ''
+  ok(videoUrl.startsWith('/uploads/videos/') && videoUrl.endsWith('.mp4'), 'video lands in /uploads/videos/ (Task 113 space split) with .mp4 ext', videoUrl)
   const served = await fetch(`${BASE}${videoUrl}`)
   ok(served.status === 200, 'uploaded video is publicly served', `GET ${videoUrl} -> ${served.status}`)
   const localPath = path.join(VIDEOS_DIR, path.basename(videoUrl))
   ok(existsSync(localPath) && statSync(localPath).size > 0, 'file REALLY exists on disk under public/uploads/videos')
 
   const mov = await uploadVideo(sellerA, 'video/quicktime', ftypBytes('qt  '))
-  ok(mov.status === 200 && (mov.json?.videoUrl ?? '').endsWith('.mov'), 'declared MOV with ftyp(qt) → 200 + .mov ext', JSON.stringify(mov.json))
+  ok(mov.status === 415 || mov.status === 400, 'declared MOV (quicktime) refused — the honest allowlist is MP4/WebM only', `got ${mov.status} ${JSON.stringify(mov.json).slice(0, 120)}`)
   const webm = await uploadVideo(sellerA, 'video/webm', ebmlBytes())
-  ok(webm.status === 200 && (webm.json?.videoUrl ?? '').endsWith('.webm'), 'real WebM (EBML) → 200 + .webm ext', JSON.stringify(webm.json))
+  ok(webm.status === 200 && (webm.json?.url ?? '').endsWith('.webm'), 'real WebM (EBML) → 200 + .webm ext', JSON.stringify(webm.json))
 
   const lied = await uploadVideo(sellerA, 'video/mp4', Buffer.from('this is definitely not a video', 'utf8'))
   ok(lied.status === 400, 'declared mp4 but text bytes → 400 signature fail', `got ${lied.status}`)
@@ -256,11 +256,11 @@ const main = async () => {
   ok([200, 201].includes(ordApprove.status), 'ordering product approved')
   // rows carrying EXPLICIT sortOrders exactly as the form now sends them
   const ordAttach1 = await sellerA('POST', `/api/supplier/products/${ordProductId}/videos`, { videoUrl: ordLink, sortOrder: 5 })
-  const ordAttach0 = await sellerA('POST', `/api/supplier/products/${ordProductId}/videos`, { videoUrl: ordUpload.json.videoUrl, sortOrder: 2 })
+  const ordAttach0 = await sellerA('POST', `/api/supplier/products/${ordProductId}/videos`, { videoUrl: ordUpload.json.url, sortOrder: 2 })
   ok(ordAttach1.status === 201 && ordAttach0.status === 201, 'attach with explicit sortOrders 5 and 2 → 201')
   const ordPdp = await buyer('GET', `/api/products/${ordProductId}`)
   const ordVids = ordPdp.json?.data?.videos ?? []
-  ok(ordVids.length === 2 && ordVids[0].videoUrl === ordUpload.json.videoUrl && ordVids[1].videoUrl === ordLink, 'PDP lists rows by explicit sortOrder (2 before 5), not insertion order', JSON.stringify(ordVids.map((v) => [v.videoUrl, v.sortOrder])))
+  ok(ordVids.length === 2 && ordVids[0].videoUrl === ordUpload.json.url && ordVids[1].videoUrl === ordLink, 'PDP lists rows by explicit sortOrder (2 before 5), not insertion order', JSON.stringify(ordVids.map((v) => [v.videoUrl, v.sortOrder])))
   // cleanup the ordering test rows + product
   for (const v of ordVids) {
     if (v.videoUrl.startsWith('/uploads/videos/')) {

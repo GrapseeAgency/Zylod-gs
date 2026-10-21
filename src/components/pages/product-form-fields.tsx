@@ -251,7 +251,8 @@ async function uploadProductMedia(file: File): Promise<string> {
 /**
  * Task 55-c two-step video attach — used by the add page (after product
  * create) and the edit page (after PATCH):
- *   1. POST /api/upload/video (multipart 'video' + optional 'title')
+ *   1. POST /api/uploads/product-media (multipart 'file' — Task 50-a's
+ *      consolidated uploader; Task 113 writes videos to /uploads/videos/)
  *   2. POST /api/supplier/products/[id]/videos { videoUrl, title, sortOrder }
  * Every server error is returned verbatim — callers surface honest partial
  * failure (the product exists even when this fails; never fake success).
@@ -265,16 +266,15 @@ export async function uploadAndAttachVideo(
 ): Promise<{ ok: boolean; error?: string }> {
   try {
     const form = new FormData();
-    form.append('video', file);
-    if (title.trim()) form.append('title', title.trim());
-    const upRes = await fetch('/api/upload/video', {
+    form.append('file', file);
+    const upRes = await fetch('/api/uploads/product-media', {
       method: 'POST',
       body: form,
       credentials: 'include',
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
     const upJson = await upRes.json().catch(() => null);
-    if (!upRes.ok || !upJson?.videoUrl) {
+    if (!upRes.ok || !upJson?.url) {
       return { ok: false, error: upJson?.error || `Video upload failed (HTTP ${upRes.status})` };
     }
 
@@ -286,8 +286,8 @@ export async function uploadAndAttachVideo(
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({
-        videoUrl: upJson.videoUrl,
-        ...(title.trim() ? { title: title.trim() } : upJson.title ? { title: String(upJson.title) } : {}),
+        videoUrl: upJson.url,
+        ...(title.trim() ? { title: title.trim() } : {}),
         ...(sortOrder != null ? { sortOrder } : {}),
       }),
     });
