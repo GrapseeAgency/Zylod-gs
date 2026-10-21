@@ -3714,3 +3714,25 @@ Stage Summary:
 - The admin finance console is now FOUR rails in ONE page: buyer payments · wallet top-ups · buyer withdrawals · seller payouts — the whole platform's money story, one screen, nothing fake.
 - REMAINING FAKE/INCOMPLETE: none found on this surface.
 - Pushed as cb54b02 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 120
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE 401-FIRST SWEEP + THE FULL LEDGER — a call-site audit found 23 authenticated API handlers running checkRateLimit BEFORE the auth call (the house mandate is 401 FIRST, rate limit second — an unauthenticated same-IP requester could exhaust a bucket a legit user needs). All 23 fixed with a brace-aware codemod, then the ENTIRE drill ledger re-proven green — which caught two more real cross-task seams.
+
+Work Log:
+- SWEEP: call-site scan (import lines excluded) over every route using checkRateLimit → 23 inversions in 18 files (returns ×3, review-media, supplier payouts/revenue/performance/rankings/reviews/queries/analytics/bulk-upload×2/support×2/return-policies×2/verification×2/shipping×2, delivery room-token + live, orders/[id]/return). Public-optional-auth GETs (product qa/certifications) correctly left alone; their POSTs already auth-first.
+- CODEMOD: scripts/qa-codemods/auth-first.mjs — brace-aware block swap (handles single-line and multi-line 429/401 bodies, keeps params-await middle lines in place), +76/−76 pure moves, verified by re-scan (0 inversions), tsc 0, eslint 0.
+- FULL LEDGER (the Task 114-b standard: every drill in the repo has a CURRENT green run): 50 t*-e2e scripts. First sweep round hit two environment failures mid-run — the no-trace server death class (recovered by the supervisor at 16:36; t96–t99 died with connection errors) and the delivery socket service DOWN (t59/t101/t105 socket taps failed). Socket keepalive re-armed (detached, single copy), guarded re-run batch (health-check + auto-recover between drills) re-ran all casualties.
+- LEDGER RESULTS — 50/50 GREEN this session: t59 65/0, t60 58/0, t61 33/0, t62 22/0, t65 53/0, t66 27/0, t67 34/0, t68 56/0, t69 16/0, t70 28/0, t71 24/0, t74 28/0, t75 32/0, t77 13/0, t79 33/0, t80 26/0, t81 20/0, t82 33/0, t83 33/0, t84 36/0, t86 72/0, t87 40/0, t88 35/0, t89 65/0, t90 52/0, t91 39/0, t92 40/0, t93 29/0, t94 52/0, t95 45/0, t96 17/0, t97 45/0, t98 26/0, t99 29/0, t100 59/0, t101 28/0, t102 10/0, t103 14/0, t104 41/0, t105 43/0, t106 52/0, t107 44/0, t108 29/0, t109 36/0, t110 25/0, t111 69/0, t112 48/0, t115 92/0, t118 66/0, t119 56/0.
+- REAL CATCH #1 (cross-task seam): t70 + t71 still encoded the OLD instant-credit topup contract that Task 118 deliberately killed — their wallet fixtures posted {amount, method} and expected an instant balance. The PLATFORM is right (t118's doctrine is the mandate); the drills were stale. Both migrated to the doctrine via a shared doctrineTopup helper (claim → admin verify → balance credited) — t70 28/0, t71 24/0.
+- REAL CATCH #2 (environment, restored): PAYMENT_WEBHOOK_SECRET was lost with the sandbox rebuild — t68's HMAC webhook section had been running with the honest skip. Re-set in .env (gitignored) + server restart → the signed-webhook path runs LIVE again: t68 56/0 (was 47/1 with skip; 9 more assertions executing).
+- Dependency honesty: t69 is NOT self-registering — its header documents the t68-qa-setup seed; re-proven 16/0 after the proper seed sequence.
+- tsc 0 whole project; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The mandate order (401 FIRST) now holds at every authenticated handler in the platform, proven by a call-site re-scan — and the proof standard is the whole ledger, not a sample: 50/50 drills green, including the two contract seams the sweep shook out.
+- The full money story (t118 topup doctrine → t116 wallet-pay → t119 withdrawal rail) is now consistent across platform AND drills.
+- REMAINING FAKE/INCOMPLETE: none found this round.
+- Pushed as 23686aa with the owner-provided PAT (never stored in tracked files).
