@@ -37,13 +37,13 @@ const EXT_BY_TYPE: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'review-upload', 20, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await requireUserType(request, ['buyer'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'You must be signed in as a buyer to upload review media' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'review-upload', 20, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const form = await request.formData().catch(() => null)
     const file = form?.get('file')

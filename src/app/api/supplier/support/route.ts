@@ -25,13 +25,13 @@ const createTicketSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'supplier-support-get', 60, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await requireUserType(request, ['supplier', 'admin'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'supplier-support-get', 60, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     // Task 76: the responder half — admins see EVERY seller thread (with the
     // filer's identity); a seller keeps their own. Admins have no supplier
@@ -92,13 +92,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'supplier-support-post', 10, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await requireUserType(request, ['supplier', 'admin'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'supplier-support-post', 10, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const profile = await resolveSupplierProfile(auth.user)
     if (!profile) {

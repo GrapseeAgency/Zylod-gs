@@ -30,13 +30,13 @@ const patchSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'supplier-shipping-get', 60, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await requireUserType(request, ['supplier', 'admin'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'supplier-shipping-get', 60, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const profile = await resolveSupplierProfile(auth.user)
     if (!profile) {
@@ -63,13 +63,13 @@ export async function GET(request: NextRequest) {
 
 async function patchHandler(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'supplier-shipping-patch', 30, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await requireUserType(request, ['supplier', 'admin'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'supplier-shipping-patch', 30, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const profile = await resolveSupplierProfile(auth.user)
     if (!profile) {

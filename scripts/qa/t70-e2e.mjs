@@ -87,6 +87,21 @@ const main = async () => {
   const anon = makeSession()
   const ts = Date.now().toString().slice(-6)
 
+  /**
+   * Task 118 doctrine helper: a wallet top-up is a CLAIM — the balance only
+   * moves when an admin verifies. Submit the claim, decide it as admin,
+   * return whether the wallet really got credited.
+   */
+  const doctrineTopup = async (session, amount, ref) => {
+    const claim = await session('POST', '/api/wallet/topup', {
+      amount, method: 'bKash', transactionReference: ref,
+    })
+    if (claim.status !== 201) return { credited: false, claim }
+    const topupId = claim.json?.data?.topupId
+    const decision = await admin('POST', `/api/admin/topups/${topupId}/verify`, { action: 'verify' })
+    return { credited: decision.status === 200, claim, decision }
+  }
+
   section('setup — admin, supplier, two buyers, approved product')
   await registerAndLogin(admin, 'admin', `qa70-admin@qa.local`, PASSWORD)
   await registerAndLogin(seller, 'supplier', `qa70-supa@qa.local`, PASSWORD)
@@ -108,8 +123,8 @@ const main = async () => {
   const anonOrder = await anon('POST', '/api/orders', { items: [{ productId, quantity: 1 }], payWithWallet: true })
   ok(anonOrder.status === 401, 'anonymous wallet order → 401', `got ${anonOrder.status}`)
 
-  const poorTop = await poor('POST', '/api/wallet/topup', { amount: 50, method: 'bKash' })
-  ok([200, 201].includes(poorTop.status), 'poor buyer tops up 50')
+  const poorTop = await doctrineTopup(poor, 50, 'QA70POORTOP1')
+  ok(poorTop.credited, 'poor buyer tops up 50 via the t118 doctrine (claim → admin verify)', JSON.stringify(poorTop.claim?.json))
   const poorOrder = await poor('POST', '/api/orders', { items: [{ productId, quantity: 1 }], payWithWallet: true })
   ok(poorOrder.status === 402, 'insufficient balance → 402 Payment Required', `got ${poorOrder.status}`)
   ok(poorOrder.json?.walletBalance === 50, '402 carries the REAL balance (50)', JSON.stringify(poorOrder.json))
@@ -121,8 +136,8 @@ const main = async () => {
   section('B) the happy wallet leg — order lands PAID')
   const bal0 = await buyer('GET', '/api/wallet/balance')
   const before = bal0.json?.data?.availableBalance ?? 0
-  const top = await buyer('POST', '/api/wallet/topup', { amount: 1000, method: 'bKash' })
-  ok([200, 201].includes(top.status), 'buyer tops up 1000')
+  const top = await doctrineTopup(buyer, 1000, 'QA70HAPPYTOP1')
+  ok(top.credited, 'buyer tops up 1000 via the t118 doctrine (claim → admin verify)', JSON.stringify(top.claim?.json))
 
   const order1 = await buyer('POST', '/api/orders', { items: [{ productId, quantity: 2 }], payWithWallet: true })
   ok(order1.status === 201, 'wallet order created', `got ${order1.status}`)

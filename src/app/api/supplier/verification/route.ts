@@ -33,13 +33,13 @@ const docTypeSchema = z.enum(ALL_DOC_TYPES)
 
 export async function GET(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'supplier-verification-get', 60, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await requireUserType(request, ['supplier', 'admin'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'supplier-verification-get', 60, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const profile = await resolveSupplierProfile(auth.user)
     if (!profile) {
@@ -75,13 +75,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'supplier-verification-post', 10, 5 * 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await requireUserType(request, ['supplier', 'admin'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'supplier-verification-post', 10, 5 * 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const profile = await resolveSupplierProfile(auth.user)
     if (!profile) {

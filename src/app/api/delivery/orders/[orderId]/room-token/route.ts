@@ -23,17 +23,17 @@ export async function GET(
 ) {
   const { orderId } = await params
 
-  const rl = checkRateLimit(request, 'delivery-room-token', 30, 60_000)
-  if (!rl.ok) {
-    return rateLimitResponse(rl)
-  }
-
   const auth = await authenticateRequest(request)
   if (!auth.authenticated || !auth.user) {
     return NextResponse.json(
       { error: auth.error || 'Authentication required' },
       { status: 401 }
     )
+  }
+
+  const rl = checkRateLimit(request, 'delivery-room-token', 30, 60_000)
+  if (!rl.ok) {
+    return rateLimitResponse(rl)
   }
 
   try {

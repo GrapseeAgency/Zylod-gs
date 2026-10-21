@@ -51,13 +51,13 @@ function parseCsv(text: string): { header: string[]; rows: string[][] } | null {
 
 export async function GET(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'supplier-bulk-upload-get', 60, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await requireUserType(request, ['supplier', 'admin'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'supplier-bulk-upload-get', 60, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const profile = await resolveSupplierProfile(auth.user)
     if (!profile) {
@@ -91,13 +91,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'supplier-bulk-upload-post', 5, 60_000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await requireUserType(request, ['supplier', 'admin'])
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'supplier-bulk-upload-post', 5, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const profile = await resolveSupplierProfile(auth.user)
     if (!profile) {

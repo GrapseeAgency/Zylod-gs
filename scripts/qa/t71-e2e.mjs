@@ -81,6 +81,21 @@ const main = async () => {
   const admin = makeSession(), seller = makeSession(), buyer = makeSession()
   const ts = Date.now().toString().slice(-6)
 
+  /**
+   * Task 118 doctrine helper: a wallet top-up is a CLAIM — the balance only
+   * moves when an admin verifies. Submit the claim, decide it as admin,
+   * return whether the wallet really got credited.
+   */
+  const doctrineTopup = async (session, amount, ref) => {
+    const claim = await session('POST', '/api/wallet/topup', {
+      amount, method: 'bKash', transactionReference: ref,
+    })
+    if (claim.status !== 201) return { credited: false, claim }
+    const topupId = claim.json?.data?.topupId
+    const decision = await admin('POST', `/api/admin/topups/${topupId}/verify`, { action: 'verify' })
+    return { credited: decision.status === 200, claim, decision }
+  }
+
   section('setup — admin, supplier, buyer, approved product')
   await registerAndLogin(admin, 'admin', `qa71-admin@qa.local`, PASSWORD)
   await registerAndLogin(seller, 'supplier', `qa71-supa@qa.local`, PASSWORD)
@@ -146,7 +161,8 @@ const main = async () => {
   ok(strangerDetail.status === 200 || strangerDetail.status === 403 || strangerDetail.status === 404, 'other sellers stay scoped by the like-for-like profile check')
 
   section('C) HOLD on wallet-pay + REFUND on force-cancel')
-  await buyer('POST', '/api/wallet/topup', { amount: 1000, method: 'bKash' })
+  const topB = await doctrineTopup(buyer, 1000, 'QA71WALLETTOP1')
+  ok(topB.credited, 'wallet top-up 1000 via the t118 doctrine (claim → admin verify)', JSON.stringify(topB.claim?.json))
   const orderB = await buyer('POST', '/api/orders', { items: [{ productId, quantity: 2 }], payWithWallet: true })
   ok(orderB.status === 201 && orderB.json.data.paymentStatus === 'paid', 'wallet order lands PAID')
   const heldB = await db.escrowAccounts.findFirst({ where: { orderId: orderB.json.data.orderId } })

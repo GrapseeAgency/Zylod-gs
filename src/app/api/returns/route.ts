@@ -15,13 +15,13 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
  */
 export async function GET(request: NextRequest) {
   try {
-    const rl = checkRateLimit(request, 'returns-list', 60, 60 * 1000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await authenticateRequest(request)
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'returns-list', 60, 60 * 1000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const url = new URL(request.url)
     const orderId = url.searchParams.get('orderId') || undefined

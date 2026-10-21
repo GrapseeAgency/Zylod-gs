@@ -24,13 +24,13 @@ export async function GET(
   try {
     const { id } = await params
 
-    const rl = checkRateLimit(request, 'return-detail', 60, 60 * 1000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await authenticateRequest(request)
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'return-detail', 60, 60 * 1000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     const ret = await db.returnRequests.findUnique({
       where: { id },

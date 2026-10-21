@@ -28,13 +28,13 @@ export async function POST(
   try {
     const { id } = await params
 
-    const rl = checkRateLimit(request, 'return-request', 5, 60 * 1000)
-    if (!rl.ok) return rateLimitResponse(rl)
-
     const auth = await authenticateRequest(request)
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'return-request', 5, 60 * 1000)
+    if (!rl.ok) return rateLimitResponse(rl)
 
     let body: unknown
     try {
