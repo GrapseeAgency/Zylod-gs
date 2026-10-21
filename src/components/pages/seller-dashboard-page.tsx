@@ -176,6 +176,7 @@ export const SellerDashboardPage = () => {
     { icon: FileSpreadsheet, label: 'Financials', page: 'seller-financial-statements' },
     { icon: Trophy, label: 'Rankings', page: 'seller-rankings' },
     { icon: Filter, label: 'Funnel', page: 'seller-sales-funnel' },
+    { icon: Users, label: 'Customers', page: 'seller-customer-insights' },
   ];
 
   const maxRevenue = data?.monthlyRevenue?.reduce((m, r) => Math.max(m, r.revenue), 0) ?? 0;
