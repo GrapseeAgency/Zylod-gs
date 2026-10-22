@@ -4110,3 +4110,26 @@ Stage Summary:
 - The doctrine is now closed end-to-end: audited writes create real evidence, and the admin can finally READ it — filterable, expandable, paginated, honest.
 - REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface.
 - Pushed as 35fbaf4 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 140
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE MONEY PRINTER — /api/wallet/refund POST let ANY authenticated user credit their OWN wallet with ANY amount instantly (balance += amount, no verification, no order validation, "credited to your wallet instantly"). The exact fake class the wallet doctrine (Tasks 56/118/128) exists to kill; its sibling survived Task 118. Found by the unaudited-mutation scan this round; two more same-class lies died beside it.
+
+Work Log:
+- THE PRINTER IS DEAD: the POST is retired (405). The REAL path always existed — POST /api/admin/returns/[id]/refund documents money that genuinely moved after an approved return, audit-logged, with the real-world UTR reference — so the self-claim channel was a parallel fake, not a missing feature.
+- GET /api/wallet/refund rebuilt as the buyer's REAL refund ledger (refunds rows where buyerId = me: amount/method/UTR/status/note/date). refund-to-wallet-page rebuilt from the fake claim form ("Instant Wallet Re-Credit" banner + dead amount field) into the honest ledger + the documented 4-step refund path + honest empty state pointing at purchase history.
+- LIE #2: admin reports PATCH responded "successfully executed and logged." while writing NO audit row. Now a real trust_report_verdict row (before/after status + side-effects + notes).
+- LIE #3: freeze_escrow flipped the order's paymentStatus to 'refunded' — fabricating the claim money went back when nothing moved. A hold is not a refund; the hold is recorded in the audit evidence, money state untouched.
+- EVIDENCE: the gateway webhook (payments row + paymentStatus flip + escrow hold) now writes gateway_payment_recorded INSIDE its transaction — the HMAC proves the caller, the audit row proves what the caller changed. .env webhook secret restored after the environment reset ate it (drill now self-sources from .env).
+- DRILL scripts/qa/t140-e2e.mjs — 32/0 on a fresh wipe: the full real chain (order → payment verified → delivered → return → approved → admin refund), POST → 405, zero self-credit ledger rows, wallet honest, buyer sees exactly the real refund with real UTR; verdict audit + REAL side-effect (verificationStatus rejected); freeze leaves paymentStatus unchanged; HMAC webhook → before unpaid / after paid / escrow hold in evidence; the Task-139 admin console serves all of it.
+- REGRESSIONS: t71 24/0 (webhook), t119 56/0 (wallet withdrawals), t139 29/0 (audit reader).
+- BROWSER (real buyer login, gateway :81): refunds page shows the real ৳500 row with UTR + method + doctrine copy; the fake claim form is gone; mobile 375 exact scrollWidth; console clean. Screenshots t140-refunds-real/-mobile.png.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- Money truth is now closed on every path the platform has: manual payments (56), wallet top-ups (118), manual payment verify (128), and now refunds — no route anywhere moves or claims money without either a verified gateway callback or an admin decision, and every one of them leaves evidence the admin console can read.
+- The unaudited-mutation scan remains a standing tool; the documented tier of intentionally-unaudited routes (cart/profile/search/chat — high-volume, low-stakes) is a deliberate choice, not an oversight.
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface.
+- Pushed as 1a0f425 with the owner-provided PAT (never stored in tracked files).
