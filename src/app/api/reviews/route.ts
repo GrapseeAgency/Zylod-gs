@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 /**
  * REAL reviews API — every review is persisted in the `reviews` table.
@@ -50,6 +51,9 @@ export async function POST(request: NextRequest) {
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'You must be signed in as a buyer to write a review' }, { status: 401 })
     }
+    const rl = checkRateLimit(request, 'reviews-create', 5, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const buyerId = auth.user.id
 
     const body = await request.json().catch(() => null)

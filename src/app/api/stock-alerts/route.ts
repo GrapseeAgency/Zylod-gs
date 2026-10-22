@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
 import { sendNotification } from '@/lib/notifications'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 /**
  * GET /api/stock-alerts
@@ -20,6 +21,7 @@ export async function GET(request: NextRequest) {
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+
 
     const { searchParams } = request.nextUrl
     const status = searchParams.get('status') || ''
@@ -102,6 +104,9 @@ export async function POST(request: NextRequest) {
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+    const rl = checkRateLimit(request, 'stock-alerts-create', 10, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const body = await request.json()
     const productId: unknown = body.productId
