@@ -4260,3 +4260,22 @@ Stage Summary:
 - The queries circuit is closed end-to-end: buyer files (routed to the right store by ownership, not by client say-so) → seller inbox (the Task 121 reader finally fed) → seller replies (audited) → buyer is told and reads the thread. Both halves of every hop now exist.
 - Pushed as 698e92b with the owner-provided PAT (never stored in tracked files).
 - REMAINING FAKE/INCOMPLETE (full-app audit continues): delivery location = driver-app surface (external, documented). Everything else on the standing list is now dead: placeholder seller pages (122), rewards teeth (143), sibling voucher teeth (144), live studio (145), query writer (146).
+
+---
+Task ID: 147
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: FULL-APP AUDIT unit 5 — the unaudited-mutation sweep (the Task 140 standing tool, re-run by hand: every POST/PATCH/DELETE handler without an auditLogs write, minus the documented high-volume tier). 69 candidates; the money-adjacent set exposed TWO live fakes: (a) /api/rewards POST — Task 143's exact fake class alive in the sibling redemption rail; (b) creditVerifiedTopup — every gateway-verified wallet credit ran WITHOUT an audit row (the ledger proved money moved, nothing proved who verified what).
+
+Work Log:
+- /api/rewards POST (the loyalty catalog's credit-50/100/250/500): Zod strict, 'rewards-catalog-redeem' 5/min, ONE transaction with the conditional decrement re-checked AT the write (insufficient → 409 with the real balance), the walletTransactions ledger now written in EVERY branch (the old first-time-redeemer branch created a wallet with balance and NO ledger row — untraceable money from the very first credit), balanceAfter from the fresh tx read, auditLogs 'reward_wallet_credit'.
+- creditVerifiedTopup (src/lib/payments/credit.ts — the function the SSLCommerz redirect, IPN, and bKash callbacks all delegate the verified credit to): now writes 'wallet_topup_credited' INSIDE its transaction — reference, gatewayTrxId, amount, balanceBefore/After, provider description. Evidence and credit commit together; idempotency untouched (retry → false, no duplicate evidence).
+- DRILL scripts/qa/t147-e2e.mjs — 26/0 on a fresh wipe, run under bun (the drill imports the credit lib directly to exercise the callback path): gates, the first-time-redeemer circuit (wallet + LEDGER where none existed + audit), THE RACE (one 200 + one 409, balance 0, exactly ONE ledger), rate limit (6th → 429), the topup credit (ledger + audit with before/after verbatim, idempotent retry, no duplicate row).
+- REGRESSIONS on fresh wipes: t118 66/0 (wallet doctrine), t119 56/0 (withdrawals), t143 46/0 (the sibling redeem rail).
+- AUDIT NOTE: the catalog UI block inside generic-info's LoyaltyPointsPage is unreachable dead code — both 'loyalty-points' and 'points-history' resolve to dedicated components; the reachable redemption UI is t143's redeem-points custom card. The POST is doctrine-clean and drilled regardless.
+- DRILL-LESSONS: (1) the in-memory rate limiter retains hits across drill runs within the window — hammer IPs must be STAMP-unique; (2) walletTopups.provider (not .method); (3) the drill importing app libs runs under bun, not node.
+
+Stage Summary:
+- Every point-redemption path and every gateway-verified wallet credit now moves money with the same evidence standard: atomic debit, ledger row always, audit row always, rate-limited, typed.
+- Pushed as 6993fd4 with the owner-provided PAT (never stored in tracked files).
+- REMAINING FAKE/INCOMPLETE (full-app audit continues): delivery location = driver-app surface (external, documented); the unaudited list's non-money tier (support tickets, careers, newsletter, uploads, payment-method/bank-account/card PROFILE changes) is deliberate high-volume/low-stakes or profile-data — candidates for a future doctrine pass if the founder wants evidence there too.
