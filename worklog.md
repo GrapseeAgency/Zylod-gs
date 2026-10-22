@@ -4367,3 +4367,24 @@ Work Log:
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). EVERY mutating handler in the API (275/275 per the call-site sweep) is now throttled — the rate-limit tier is CLOSED; no documented deliberate gaps remain in it.
 - Sweep + drill + regressions + registry doctor all green on fresh wipes; DB returned to vacuum 139×0.
+
+---
+Task ID: 153
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3 continue: full app audit, check everywhere).
+
+Task: FULL-APP AUDIT unit 11 — the security sweep the rate-limit tier pointed at: auth-less mutating handlers (40 found), GET/MUTATING shared tight buckets (the t151 mis-wire class), item-route ownership scoping, token-identity IDOR class, canonical deep links.
+
+Work Log:
+- SHARED-TIGHT-BUCKET scan: 4 real t151-class members (profile language/privacy/theme PATCHes and linked-accounts GET+POST+DELETE shared 30/min budgets with their own list reads — a mutation burst starved the settings console). Split: mutations now carry `-write` buckets, GETs keep the read buckets. Scan now reports 0.
+- AUTH-LESS scan: 40 mutating handlers without any auth call. Triaged: auth bootstrap (/auth/*), public submissions (dmca, careers, investor, newsletter, chatbot, telemetry, guest search/compare) are by-design; the profile PUT/PATCH delegates auth INSIDE their helpers (verified, clean); KYC upload is the pre-registration supplier flow (throttled, type/size-capped, by-design).
+- REAL DEFECT #1 — /api/cart/[itemId] had NO auth and NO ownership check: any anonymous caller could rewrite or delete ANY buyer's cart line by bare id, and BOTH catch blocks returned fake `{success:true}` on failure. Rewritten: requireUserType(['buyer']) 401-first → cart-item-write limiter → ownership scoped via `cart: { buyerId: auth.user.id }` (404 for both not-exists and not-yours) → honest 500 catches; quantity validation matched to the collection route (finite, ≥1, 10k cap).
+- REAL DEFECT #2 — /api/support/faqs POST created isActive:true site-wide FAQ content with NO auth (public help pages render it; no admin console even consumes the rail — pure injection surface). Gated admin-only (requireUserType 401-first, limiter kept); admin POST stays 201 so the rail is alive, not deleted.
+- Token-identity IDOR class: cart GET/POST, orders, rfq, reviews, save-for-later, supplier products/inventory/storefront — all resolve identity from the token (verified one by one; orders' admin ?buyerId impersonation is properly requireUserType-guarded). CLEAN.
+- Deep links: the share dialog + QR canonical format /?page=product-detail&productId=<id> cold-boots straight to the PDP (browser-verified, h1 = product name). My earlier `?n&productId=` probe was a misremembered format, not a defect.
+- t152 DRILL EXTENDED to 29/0 on a fresh wipe: the rate-limit pins + real-session security pins — cart PUT/DELETE anon → 401, ANOTHER buyer → 404, owner PUT qty 2 → 200 real quantity, owner DELETE → 200, cart empty after; FAQ anon → 401, admin → 201. Bootstrap used real register (admin first-admin window) + seller product create + admin approve.
+- REGRESSIONS on fresh wipes: t151 8/0 (re-run after the security fixes). Browser QA (gateway :81, real UI login): PDP add → cart line 5 pcs ৳60 (MOQ enforced) → qty + via rewritten PUT re-priced live (6 pcs ৳72) → Cancel via rewritten DELETE → "Your cart is empty"; the header "1" badge is the notifications count, not cart — console 0 errors, false alarm documented.
+- Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). Both new defects fixed and drilled; the auth-less/IDOR/ownership classes now have scripted scans (sharedbucket + noauth scripts embedded in this round's tooling) reporting zero.
+- tsc 0, eslint 0, sweep 275/275, DB vacuum 139×0 between proofs.

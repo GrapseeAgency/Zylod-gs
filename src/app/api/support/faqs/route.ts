@@ -1,6 +1,7 @@
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { requireUserType } from '@/lib/auth'
 
 /**
  * GET /api/support/faqs?category=...&q=...&lang=en|bn
@@ -49,6 +50,15 @@ export async function GET(request: NextRequest) {
  * POST /api/support/faqs — admin or internal FAQ creator
  */
 export async function POST(request: NextRequest) {
+  // Admin-only: FAQ entries are site-wide support content rendered on the
+  // public help pages. This POST previously had NO auth — anyone on the
+  // internet could publish isActive:true FAQ content instantly (found in the
+  // Task 152 full-app audit).
+  const auth = await requireUserType(request, ['admin'])
+  if (!auth.authenticated || !auth.user) {
+    return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
+  }
+
   const rl = checkRateLimit(request, 'support-faqs-write', 30, 60000)
   if (!rl.ok) return rateLimitResponse(rl)
 

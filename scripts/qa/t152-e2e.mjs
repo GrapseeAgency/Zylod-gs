@@ -19,7 +19,7 @@ const STAMP = Date.now()
 const PW = 't152-Qa-Str0ng1!'
 const IPP = `10.152.${STAMP % 200}.`
 
-async function makeBuyerSession(local, ipLast) {
+async function makeBuyerSession(local, ipLast, userType = 'buyer', fullName = 'T152 buyer') {
   let cookie = ''
   const ip = IPP + ipLast
   const call = async (method, path, body) => {
@@ -27,7 +27,7 @@ async function makeBuyerSession(local, ipLast) {
     for (const c of res.headers.getSetCookie?.() ?? []) { const p = c.split(';')[0]; if (p) cookie = cookie ? `${cookie}; ${p}` : p }
     return { status: res.status, json: await res.json().catch(() => null) }
   }
-  const payload = { userType: 'buyer', authProvider: 'email', email: `${local}-${STAMP}@t152.test`, password: PW, fullName: 'T152 buyer' }
+  const payload = { userType, authProvider: 'email', email: `${local}-${STAMP}@t152.test`, password: PW, fullName, ...(userType === 'supplier' ? { businessName: 'T152 Depot', businessType: 'manufacturer' } : {}) }
   for (let a = 0; a < 4; a++) {
     const r = await call('POST', '/api/auth/register', payload)
     if (r.status === 201 || r.status === 200) break
@@ -121,6 +121,60 @@ async function main() {
     const ip = IPP + '9'
     const blocked = await hammer('POST', '/api/payments/webhook', { garbage: true }, null, ip, 123)
     ok(blocked === 120, `payments-webhook: 121st POST → 429 (blocked at #${blocked === null ? 'none' : blocked + 1})`)
+  }
+
+  // ── SECURITY FIXES from this audit round ──
+  // (1) cart/[itemId] had NO auth and NO ownership check (anonymous cross-buyer
+  //     cart rewrites by bare id); (2) support/faqs POST published site-wide
+  //     content with NO auth. Both closed — pinned here with real sessions.
+  {
+    // bootstrap: admin (fresh wipe → first-admin window open), supplier, category, approved product
+    const admin = await makeBuyerSession('t152-adm', 21, 'admin', 'T152 admin')
+    ok(await (async () => { const r = await admin('PATCH', '/api/admin/products', { productId: 'phantom', action: 'approve' }); return r.status === 404 })(), 'admin session can reach admin rails (404 on phantom, not 401)')
+    const seller = await makeBuyerSession('t152-sel', 22, 'supplier', 'T152 seller')
+    // category + product via admin/seller rails with honest fallbacks
+    const cat = await admin('POST', '/api/admin/categories', { name: 'T152Cat', isActive: true })
+    let categoryId = cat.json?.data?.id ?? cat.json?.id
+    if (!categoryId) categoryId = (await db.categories.findFirst({ where: { name: 'T152Cat' } }))?.id
+    const prod = await seller('POST', '/api/supplier/products', { name: 'T152 Cart Widget', description: 'drill', categoryId, unit: 'pcs', moq: 1, basePrice: 50, currency: 'BDT', stockQuantity: 100, priceTiers: [{ minQty: 1, pricePerUnit: 50 }], images: [{ imageUrl: '/placeholder.svg', sortOrder: 0 }], videos: [] })
+    const productId = prod.json?.data?.id ?? prod.json?.id
+    ok(Boolean(productId), 'seller created product (real API)', JSON.stringify(prod.json)?.slice(0, 140))
+    if (productId) {
+      let appr = null
+      for (let a = 0; a < 4; a++) { appr = await admin('PATCH', '/api/admin/products', { productId, action: 'approve', reason: 'T152' }); if (appr.status === 200) break; await sleep(3000) }
+      ok(appr?.status === 200, 'admin approved the product', JSON.stringify(appr?.json)?.slice(0, 120))
+      // buyer1 owns a real cart line
+      const added = await buyer('POST', '/api/cart', { productId, quantity: 1 })
+      ok(added.status === 201 || added.status === 200, 'buyer1 added a real cart line', JSON.stringify(added.json)?.slice(0, 140))
+      const cartData = await buyer('GET', '/api/cart')
+      const line = (cartData.json?.data?.suppliers?.flatMap((s) => s.items || []) || [])[0]
+      ok(Boolean(line?.id), 'cart line id resolved from the real cart', JSON.stringify(cartData.json)?.slice(0, 100))
+      if (line?.id) {
+        // buyer2 = a SECOND real buyer session (cross-buyer probe)
+        const buyer2 = await makeBuyerSession('t152-b2', 23)
+        const anonPut = await fetch(`${BASE}/api/cart/${line.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': IPP + '24' }, body: JSON.stringify({ quantity: 9 }) })
+        ok(anonPut.status === 401, `cart item PUT anon → 401 (was: silent rewrite) [got ${anonPut.status}]`)
+        const anonDel = await fetch(`${BASE}/api/cart/${line.id}`, { method: 'DELETE', headers: { 'X-Forwarded-For': IPP + '24' } })
+        ok(anonDel.status === 401, `cart item DELETE anon → 401 (was: silent delete) [got ${anonDel.status}]`)
+        const xPut = await buyer2('PUT', `/api/cart/${line.id}`, { quantity: 9 })
+        ok(xPut.status === 404, `cart item PUT by ANOTHER buyer → 404 (ownership scoped) [got ${xPut.status}]`)
+        const xDel = await buyer2('DELETE', `/api/cart/${line.id}`)
+        ok(xDel.status === 404, `cart item DELETE by ANOTHER buyer → 404 [got ${xDel.status}]`)
+        const ownPut = await buyer('PUT', `/api/cart/${line.id}`, { quantity: 2 })
+        ok(ownPut.status === 200 && ownPut.json?.data?.quantity === 2, `owner PUT qty 2 → 200 with quantity 2 [got ${ownPut.status}]`, JSON.stringify(ownPut.json)?.slice(0, 120))
+        const ownDel = await buyer('DELETE', `/api/cart/${line.id}`)
+        ok(ownDel.status === 200, `owner DELETE → 200 [got ${ownDel.status}]`)
+        const after = await buyer('GET', '/api/cart')
+        const afterCount = (after.json?.data?.suppliers?.flatMap((s) => s.items || []) || []).length
+        ok(afterCount === 0, 'cart empty after the owner delete', `count ${afterCount}`)
+      }
+
+      // (2) FAQ content injection closed
+      const faqAnon = await fetch(`${BASE}/api/support/faqs`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': IPP + '25' }, body: JSON.stringify({ category: 'x', questionEn: 'inject?', answerEn: 'injected' }) })
+      ok(faqAnon.status === 401, `FAQ POST anon → 401 (was: instant site-wide publication) [got ${faqAnon.status}]`)
+      const faqAdmin = await admin('POST', '/api/support/faqs', { category: 'general', questionEn: 'T152 admin FAQ?', answerEn: 'The rail stays real for admins.' })
+      ok(faqAdmin.status === 201, `FAQ POST by admin → 201 (admin rail alive) [got ${faqAdmin.status}]`, JSON.stringify(faqAdmin.json)?.slice(0, 140))
+    }
   }
 
   console.log(`\nT152 RESULT: ${PASS} passed, ${FAIL} failed`)

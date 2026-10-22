@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
   }
 
-  const rl = checkRateLimit(request, 'profile-linked-accounts', 30, 60 * 1000)
+  const rl = checkRateLimit(request, 'profile-linked-accounts-write', 30, 60 * 1000)
   if (!rl.ok) return rateLimitResponse(rl)
 
   try {

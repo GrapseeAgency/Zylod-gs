@@ -44,7 +44,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
   }
 
-  const rl = checkRateLimit(request, 'profile-theme', 30, 60 * 1000)
+  const rl = checkRateLimit(request, 'profile-theme-write', 30, 60 * 1000)
   if (!rl.ok) return rateLimitResponse(rl)
 
   try {
