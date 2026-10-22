@@ -4279,3 +4279,21 @@ Stage Summary:
 - Every point-redemption path and every gateway-verified wallet credit now moves money with the same evidence standard: atomic debit, ledger row always, audit row always, rate-limited, typed.
 - Pushed as 6993fd4 with the owner-provided PAT (never stored in tracked files).
 - REMAINING FAKE/INCOMPLETE (full-app audit continues): delivery location = driver-app surface (external, documented); the unaudited list's non-money tier (support tickets, careers, newsletter, uploads, payment-method/bank-account/card PROFILE changes) is deliberate high-volume/low-stakes or profile-data — candidates for a future doctrine pass if the founder wants evidence there too.
+
+---
+Task ID: 148
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: FULL-APP AUDIT unit 6 — the unaudited-mutation sweep's financial-profile tier: payout methods (bank accounts, cards, mobile wallets) changed hands with NO evidence. The withdrawal rail (t119) pays out to exactly these rows — a hijacked session could swap the destination account and nothing would ever show it. The classic hijack vector, closed.
+
+Work Log:
+- src/lib/financial-audit.ts — a shared evidence helper: financial_method_added / removed / updated on paymentMethods, metadata REDACTED BY CONSTRUCTION via maskAccount() (**** + last 4) — the row still carries what the withdrawal rail needs, the audit never carries the full number (the cards rail already tokenized to last4; the bank/wallet rails store the full number on the ROW, which is exactly why the audit must not).
+- Wired into all seven mutation handlers: bank-accounts POST/DELETE/PATCH (the default-account switch — where money lands — is its own evidenced event), cards POST/DELETE, payment-methods POST/DELETE.
+- DRILL scripts/qa/t148-e2e.mjs — 20/0 on a fresh wipe: bank add (row full + audit masked + the redaction proof verbatim), default switch evidenced, removal (evidence survives the row), card add/remove last4 (full PAN nowhere in metadata), bKash add/remove masked, actor isolation.
+- BROWSER: the Task 139 admin Audit Trail console serves the new rows with actor resolution; mobile 375 exact; console clean. Screenshot t148-audit-mobile.png.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- Payout-destination changes are now visible in the admin Audit Trail console with the same evidence standard as every money event — masked, actor-resolved, before/after where it matters.
+- Pushed as ea1f9f0 with the owner-provided PAT (never stored in tracked files).
+- REMAINING FAKE/INCOMPLETE (full-app audit continues): delivery location = driver-app surface (external); the remaining unaudited tier (support tickets, careers, newsletter, uploads, reviews-media) is genuinely high-volume/low-stakes profile content — documented, not hidden.
