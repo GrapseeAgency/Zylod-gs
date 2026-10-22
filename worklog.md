@@ -4329,3 +4329,19 @@ Stage Summary:
 - The audit's mechanical sweeps are now standing tools: orphan-verify (0 live orphans), the unaudited-mutation scan (documented tier), and the registry doctor (proven in both directions).
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). Everything else on every standing list this session is dead: placeholder seller pages, rewards + voucher teeth, live studio, query writer, topup/redeem money doctrine, payout evidence, registry traps.
 - Pushed as part of the ledger above with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 151
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: FULL-APP AUDIT unit 9 — the rate-limit coverage sweep (103 mutating routes without a limiter; triaged by abuse value). WIRED: reviews-create 5/min (fake social proof), coupons-claim 10/min (stock sniping), price-alerts-create + stock-alerts-create 10/min (notification floods). The benign high-volume tier (cart, wallet get-or-create, wishlist) stays deliberate.
+
+Work Log:
+- The first wiring landed two gates inside the GET handlers (price-alerts/stock-alerts' GET and POST share the identical auth-gate shape — s.index found the GET first). CAUGHT by reading the line numbers against the function boundaries, moved into the POSTs, and the drill pins BOTH sides: the POST trips at its limit AND the GET list stays open after the hammer (the console UX the mis-wire would have broken).
+- DRILL scripts/qa/t151-e2e.mjs — 8/0 on a fresh wipe: reviews 6th → 429, claim 11th → 429, price-alerts 11th → 429 + GET open, stock-alerts 11th → 429 + GET open.
+- REGRESSIONS on fresh wipes: t65 53/0 (stock alerts), t138 36/0 (price alerts).
+- Pushed as 8969e55 with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- The abuse surface (fake reviews, coupon sniping, alert flooding) is throttled; the list endpoints the consoles depend on stay open.
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external); the deep rate-limit pass on the remaining ~95 low-stakes routes (support/careers/newsletter/uploads) is documented as a deliberate tier unless the founder wants full coverage.
