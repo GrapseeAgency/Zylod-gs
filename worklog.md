@@ -4424,3 +4424,20 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). Every drill in the suite (72) passes; the financial-evidence race is dead; env restored; the battery tool itself is hardened for future rounds.
+
+---
+Task ID: 156
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3 continue; the standing build order: styling detail + feature depth).
+
+Task: FULL-APP AUDIT unit 14 — the mobile-first visual sweep across the buyer surfaces (the styling-detail mandate served by real defect hunting), after the audit ledger reached zero.
+
+Work Log:
+- 16 surfaces swept through the gateway with a scripted scrollWidth probe: guest (home, daily-deals, flash-sale, clearance-sale, suppliers, cart, checkout, my-orders, track-order, coupon-promo, order-summary) + auth'd (my-orders with real empty state, wallet with real ৳0 balances, points-history with the buyer's real check-in ledger, checkout with a real cart line T143QA × 5 = ৳60 and the honest "No shipping address on file" gate, PDP).
+- MOBILE 375×812: every surface scrollWidth exactly 375 — zero horizontal overflow anywhere. DESKTOP 1280×800 spot check (deals/flash-sale/cart/checkout/wallet): exact width.
+- Deep-link cold boots verified per page: each ?page=<id> lands on its real surface with distinct content; auth'd surfaces show honest states ("Authentication required" / "No orders" / real ledger rows) — no fake data behind login walls.
+- Accumulated browser console across the entire sweep: 0 errors.
+- No defects found on these surfaces this round — the earlier mobile category-rail fix (t152) holds.
+- DB vacuum 126×0; pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The visual layer is as clean as the API layer: 16 surfaces × 2 viewports, zero overflow, zero console errors, every surface honest.
