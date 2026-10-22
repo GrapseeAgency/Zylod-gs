@@ -6,6 +6,7 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { productPayloadSchema } from '@/lib/product-contract'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
 import { notifyBackInStock } from '@/lib/stock-alerts'
+import { notifyPriceDrop } from '@/lib/price-alerts'
 import { invalidateCacheKeys } from '@/lib/api-cache'
 import { z } from 'zod'
 
@@ -312,6 +313,16 @@ export async function PATCH(
       if (updated.stockQuantity > existing.stockQuantity) {
         notifyBackInStock(id)
       }
+    }
+
+    // Task 138: the PRICE mirror of the back-in-stock rail — the only real
+    // price-change writer is this full-replace edit (bulk-upload only
+    // creates), so THIS is where a watched price actually drops. Only a
+    // genuine decrease completes price watches; increases and no-ops never
+    // notify. The evaluator re-reads committed state and race-guards the
+    // flip, and is fire-and-forget like every post-commit courtesy rail.
+    if (updated.basePrice < existing.basePrice) {
+      notifyPriceDrop(id, existing.basePrice, updated.basePrice)
     }
 
     return NextResponse.json({

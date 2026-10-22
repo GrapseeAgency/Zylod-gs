@@ -306,21 +306,41 @@ export function NotificationsPage() {
             <div className="w-16 h-16 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
               <Inbox className="w-8 h-8" />
             </div>
-            <h3 className="text-sm font-bold text-gray-900">No notifications found</h3>
-            <p className="text-xs text-gray-500 max-w-xs mx-auto">
-              {activeTab === 'unread' ? 'You have caught up on all your alerts.' : 'You will be notified about orders, deliveries, price changes, and deals here.'}
-            </p>
-            <div className="pt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => fetchNotifications(1, false)}
-                className="text-xs font-bold gap-1.5"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                Refresh
-              </Button>
-            </div>
+            {!token ? (
+              <>
+                {/* Task 138: signed-out visitors are not "users with zero
+                    notifications" — the API answers 401 for them. Saying
+                    'No notifications found' implied they had an (empty)
+                    inbox; the honest state asks them to sign in. */}
+                <h3 className="text-sm font-bold text-gray-900">Sign in to see your notifications</h3>
+                <p className="text-xs text-gray-500 max-w-xs mx-auto">
+                  Orders, deliveries, price-drop watches, and deal alerts all land here once you are signed in.
+                </p>
+                <div className="pt-2">
+                  <Button size="sm" onClick={() => navigate('login')} className="text-xs font-bold gap-1.5">
+                    Sign In
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="text-sm font-bold text-gray-900">No notifications found</h3>
+                <p className="text-xs text-gray-500 max-w-xs mx-auto">
+                  {activeTab === 'unread' ? 'You have caught up on all your alerts.' : 'You will be notified about orders, deliveries, price changes, and deals here.'}
+                </p>
+                <div className="pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchNotifications(1, false)}
+                    className="text-xs font-bold gap-1.5"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Refresh
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
