@@ -4297,3 +4297,19 @@ Stage Summary:
 - Payout-destination changes are now visible in the admin Audit Trail console with the same evidence standard as every money event — masked, actor-resolved, before/after where it matters.
 - Pushed as ea1f9f0 with the owner-provided PAT (never stored in tracked files).
 - REMAINING FAKE/INCOMPLETE (full-app audit continues): delivery location = driver-app surface (external); the remaining unaudited tier (support tickets, careers, newsletter, uploads, reviews-media) is genuinely high-volume/low-stakes profile content — documented, not hidden.
+
+---
+Task ID: 149
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: FULL-APP AUDIT unit 7 — the registration-trap class gets a standing tool. The lesson hit TWICE this session (t145: seller-live-studio answered "Page not found" because the getChunkForPage seller array was missed; t146: buyer-queries was swallowed by the generic info renderer because getGenericType claims every buyer-* prefix before the chunk fallback and REAL_PAGES did not shield it). Anything that fails twice silently must become a check.
+
+Work Log:
+- scripts/qa/registry-doctor.mjs — scans all 718 mapped page ids across the 10 chunk import maps against the loader's three registries, detecting the two REAL failure classes: (A) a component in a non-misc chunk that the router sends to misc (unreachable code), (B) a generic-claimed prefix id not shielded by REAL_PAGES (the generic renderer wins before the chunk loads).
+- PROVEN IN BOTH DIRECTIONS: a temporary breakage of each class fires the doctor verbatim (class A caught seller-live-studio + live-studio; class B caught buyer-queries); restored, clean 3/0.
+- Run: node scripts/qa/registry-doctor.mjs — add it to the per-unit checklist for any future page registration.
+- Pushed as 6b19848 with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- The registration-trap class is now mechanical: a future mistake fails a tool instead of silently killing a page.
+- REMAINING FAKE/INCOMPLETE (full-app audit continues): delivery location = driver-app surface (external); the remaining unaudited tier (support tickets, careers, newsletter, uploads) is documented low-stakes profile content.
