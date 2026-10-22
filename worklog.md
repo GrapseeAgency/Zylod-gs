@@ -4239,3 +4239,24 @@ Stage Summary:
 - Live shopping is now a closed circuit on BOTH sides: sellers schedule and control real rooms (audited), buyers discover and watch them — the same data, the same truth, connected.
 - Pushed as a3c7135 with the owner-provided PAT (never stored in tracked files).
 - REMAINING FAKE/INCOMPLETE (full-app audit continues): (1) sellerCustomerQueries writer (documented decision pending — the reader exists, no writer feeds it); (2) delivery location = driver-app surface (external).
+
+---
+Task ID: 146
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: FULL-APP AUDIT unit 4 — THE WRITERLESS INBOX (the standing "sellerCustomerQueries writer" REMAINING item, taken). The reader (Task 121) and the reply PATCH (Task 133) existed, but NO buyer path ever created a row — the seller's Queries tile was a permanently empty surface, contradicting the reader's own comment ("customer queries are created by buyers, never by the seller").
+
+Work Log:
+- POST /api/queries — a signed-in BUYER files pre_order / custom_request / complaint to a real store. 'product_question' is refused with a pointer to the PDP Q&A rail (one question, one home). The target resolves SERVER-SIDE: productId → the product's OWN store (products.supplierId IS the profile id — no steering); supplierId direct; both sent → must agree; phantom/invisible → 404. Zod strict, 'buyer-query-create' 5/min, the supplier is TOLD (durable notification + live seller:<id> 'query:new' tap), auditLogs 'buyer_query_created'.
+- GET /api/queries — the buyer's OWN filings with the REAL store name. TRAP CAUGHT BY THE DRILL: sellerCustomerQueries carries productId but has NO product relation — the phantom include was a silent 500; names resolve in a second query.
+- The seller's reply PATCH now TELLS the buyer (durable notification with the reply preview) — a reply the buyer never hears about was a half-circuit.
+- UI: the buyer-facing STORE page gains Ask-the-seller (metrics row, visitor view only) with a type/subject/message dialog; the buyer's 'My Questions' page (buyer-queries / my-queries) lists filings with status badges + the reply in an evidence block; the buyer dashboard gains a My Questions quick action.
+- REGISTRATION LESSON (second sighting): getGenericType claims EVERY 'buyer-*' id for the generic info renderer BEFORE the chunk fallback — the id must be in REAL_PAGES or the page never loads ("Buyer Queries — Zylod information and resources" was the tell).
+- DRILL scripts/qa/t146-e2e.mjs — 26/0 on a fresh wipe: gates (anon 401, seller 401/403, product_question rerouted, no target 400, phantom product/supplier 404, steering 400), the circuit (row addressed to the product's OWN store + audit + seller told), reader isolation (buyer2 none; the Task 121 seller inbox finally has a row), the reply circuit (buyer told with the text; buyer list shows reply + 'replied'), rate limit (6th → 429).
+- BROWSER (real logins, gateway :81): buyer files 'Custom woven labels for resale' through the REAL store-page dialog (DB row open/pre_order), the seller's inbox renders both rows, the buyer's My Questions page shows the drill reply verbatim with the Replied badge; mobile 375 exact on fresh load (a 925px reading mid-viewport-transition settled to 375 — re-measured with a per-element scan, zero overflowing elements); console clean. Screenshots t146-inbox-desktop/-mobile.png.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The queries circuit is closed end-to-end: buyer files (routed to the right store by ownership, not by client say-so) → seller inbox (the Task 121 reader finally fed) → seller replies (audited) → buyer is told and reads the thread. Both halves of every hop now exist.
+- Pushed as 698e92b with the owner-provided PAT (never stored in tracked files).
+- REMAINING FAKE/INCOMPLETE (full-app audit continues): delivery location = driver-app surface (external, documented). Everything else on the standing list is now dead: placeholder seller pages (122), rewards teeth (143), sibling voucher teeth (144), live studio (145), query writer (146).
