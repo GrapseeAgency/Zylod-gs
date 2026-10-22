@@ -401,7 +401,51 @@ export async function POST(request: NextRequest) {
         // transaction (updateMany re-checks usedCount < usageLimit AT the
         // write, so concurrent orders can never overrun the limit).
         let appliedCoupon: { code: string; discount: number } | null = null
+        // Task 144: a free-delivery prize (lucky spin) discounts the QUOTED
+        // shipping fee, not the goods — resolved after shipping is priced.
+        let shippingVoucher: { id: string; savingsBDT: number; code: string } | null = null
+        let shippingDiscount = 0
         if (couponCode) {
+          // Task 144: the buyer's OWN claimed/earned voucher wins the code.
+          // Claim rows carry the platform coupon's code, and claiming already
+          // counted against the platform row's usedCount — consuming the
+          // CLAIM row keeps every counter single-counted. SPIN-/CRATE-/WELCOME-
+          // prefixed prizes exist ONLY in userCoupons. The platform campaign
+          // row remains the path for unclaimed public codes (t74/t131).
+          const mine = await tx.userCoupons.findFirst({
+            where: { code: couponCode, userId: buyerId, status: 'active' },
+          })
+          if (mine) {
+            const nowMine = new Date()
+            if (new Date(mine.validUntil) < nowMine) {
+              throw new CouponError(`Coupon "${couponCode}" has expired`)
+            }
+            if (mine.minOrderBDT && totalAmount < mine.minOrderBDT) {
+              throw new CouponError(
+                `Coupon "${couponCode}" requires a minimum order of ৳${mine.minOrderBDT.toLocaleString()} — this order totals ৳${totalAmount.toLocaleString()}`
+              )
+            }
+            let discount = 0
+            if (mine.discountStyle === 'percentage') {
+              discount = totalAmount * (mine.savingsBDT / 100)
+            } else if (mine.discountStyle === 'free-shipping') {
+              shippingVoucher = { id: mine.id, savingsBDT: mine.savingsBDT, code: mine.code }
+            } else {
+              discount = Math.min(mine.savingsBDT, totalAmount)
+            }
+            totalAmount -= discount
+            appliedCoupon = discount > 0 ? { code: mine.code, discount } : null
+            // Consume the voucher AT the write (the t74 race guard pattern):
+            // only a still-active row can be spent, and concurrent orders
+            // with the same code cannot both win.
+            const consumed = await tx.userCoupons.updateMany({
+              where: { id: mine.id, status: 'active' },
+              data: { status: 'used', usedAt: new Date() },
+            })
+            if (consumed.count === 0) {
+              throw new CouponError(`Coupon "${couponCode}" has already been used`)
+            }
+          } else {
           const coupon = await tx.coupons.findUnique({ where: { code: couponCode } })
           if (!coupon) {
             throw new CouponError(`Coupon code "${couponCode}" does not exist`)
@@ -446,6 +490,7 @@ export async function POST(request: NextRequest) {
           })
           if (counted.count === 0) {
             throw new CouponError(`Coupon "${coupon.code}" has reached its usage limit`)
+          }
           }
         }
 
@@ -517,11 +562,23 @@ export async function POST(request: NextRequest) {
             })
           }
         }
-        // The ORDER total = goods after coupon + quoted shipping. Every
-        // downstream payment math (wallet-pay below, payment-submit
-        // default, seller/admin verify) reads totalAmount, so shipping
-        // rides in the paid amount automatically.
-        const orderTotal = totalAmount + shippingFee
+        // The ORDER total = goods after coupon + quoted shipping − any
+        // free-delivery voucher discount. Every downstream payment math
+        // (wallet-pay below, payment-submit default, seller/admin verify)
+        // reads totalAmount, so everything rides the paid amount together.
+        // Task 144: a free-delivery voucher with NOTHING to discount (the
+        // buyer picked no shipping method) refuses the order — the whole
+        // transaction rolls back, so the voucher is NOT consumed for a
+        // benefit that never existed.
+        if (shippingVoucher) {
+          if (shippingFee <= 0) {
+            throw new CouponError(
+              `Free-delivery voucher "${shippingVoucher.code}" needs a shipping method — select one at checkout so there is a delivery fee to discount`
+            )
+          }
+          shippingDiscount = Math.min(shippingVoucher.savingsBDT, shippingFee)
+        }
+        const orderTotal = totalAmount + shippingFee - shippingDiscount
 
         // Task 70: WALLET-PAY — debit the buyer's REAL balance inside the SAME
         // transaction that prices the order and decrements stock. A balance
@@ -748,7 +805,7 @@ export async function POST(request: NextRequest) {
           await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
         }
 
-        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon, appliedPromotion, shippingLegs, shippingFee, poolSavingsTotal }
+        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon, appliedPromotion, shippingLegs, shippingFee, poolSavingsTotal, shippingDiscount }
       })
 
       // Real-time (Task 51-a): every seller with a slice of this order gets a
@@ -828,6 +885,9 @@ export async function POST(request: NextRequest) {
           walletPaymentId: order.walletPaymentId,
           // Task 74: the honest receipt — what the coupon actually took off.
           couponApplied: order.appliedCoupon,
+          // Task 144: the honest receipt — what the free-delivery voucher
+          // took off the quoted shipping.
+          shippingDiscount: order.shippingDiscount > 0 ? { amount: order.shippingDiscount } : null,
           // Task 100: the honest receipt — the campaign that applied, and
           // the ৳ it actually took off (buyer-paid truth).
           promotionApplied: order.appliedPromotion,
