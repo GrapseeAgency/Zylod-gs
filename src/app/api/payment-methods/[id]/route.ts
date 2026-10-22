@@ -25,7 +25,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Payment method not found' }, { status: 404 })
     }
     await db.paymentMethods.delete({ where: { id } })
-    financialAudit({
+    await financialAudit({
       actorId: auth.user.id,
       action: 'financial_method_removed',
       methodId: id,

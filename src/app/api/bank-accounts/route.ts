@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    financialAudit({
+    await financialAudit({
       actorId: userId,
       action: 'financial_method_added',
       methodId: newAccount.id,

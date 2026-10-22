@@ -32,7 +32,7 @@ export async function DELETE(
 
     await db.paymentMethods.delete({ where: { id } })
 
-    financialAudit({
+    await financialAudit({
       actorId: userId,
       action: 'financial_method_removed',
       methodId: id,
@@ -76,7 +76,7 @@ export async function PATCH(
         where: { id },
         data: { isDefault: true },
       })
-      financialAudit({
+      await financialAudit({
         actorId: userId,
         action: 'financial_method_updated',
         methodId: id,

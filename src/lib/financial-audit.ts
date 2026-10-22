@@ -7,6 +7,13 @@ import { db } from '@/lib/db'
  * REDACTED BY CONSTRUCTION: never the full account number, only the last 4
  * (the cards rail already stores only last4; the bank/wallet rails store the
  * full number on the row, which is exactly why the audit must not).
+ *
+ * Task 153 audit fix: this write used to be fire-and-forget with a SILENT
+ * catch — under SQLite contention the evidence could vanish with no trace,
+ * and the 201 response raced the row's commit (t148's cross-actor pin
+ * flaked on exactly that). The write is now awaited by every call site
+ * (evidence is durable BEFORE the response lands) and failures are LOUD —
+ * still never a gate for the business operation, never silent.
  */
 
 export function maskAccount(n: string | null | undefined): string {
@@ -15,14 +22,14 @@ export function maskAccount(n: string | null | undefined): string {
   return s.length <= 4 ? `****${s}` : `****${s.slice(-4)}`
 }
 
-export function financialAudit(params: {
+export async function financialAudit(params: {
   actorId: string
   action: 'financial_method_added' | 'financial_method_removed' | 'financial_method_updated'
   methodId: string
   summary: Record<string, unknown>
-}): void {
-  db.auditLogs
-    .create({
+}): Promise<void> {
+  try {
+    await db.auditLogs.create({
       data: {
         actorId: params.actorId,
         action: params.action,
@@ -31,5 +38,7 @@ export function financialAudit(params: {
         metadata: JSON.stringify(params.summary),
       },
     })
-    .catch(() => { /* evidence, not a gate */ })
+  } catch (e) {
+    console.error('financial-audit: evidence write FAILED —', params.action, params.methodId, e)
+  }
 }

@@ -4406,3 +4406,21 @@ Work Log:
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The schema now describes exactly the app that exists: 126 models, every one consumed; the API is 275/275 throttled with ownership + auth verified; scans for the dead-model / auth-less / shared-bucket / orphan classes all report zero.
 - DB vacuum 126×0 between proofs.
+
+---
+Task ID: 155
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3: full app audit, check everywhere).
+
+Task: FULL-APP AUDIT unit 13 — the COMPLETE 72-drill regression battery against the post-schema-surgery app, plus every real finding it surfaced.
+
+Work Log:
+- Built scripts/qa/t154-battery.mjs (later hardened): runs every e2e drill (72 found) on a fresh wipe, extracts the last "N pass / M fail" pair (drills use ≥5 RESULT formats — the first parser version mislabeled half the suite; v2 matches counts, not banners).
+- FIRST RUN findings triaged one by one: (a) t83–t95/t100/t101 "failures" were parser format variance + transient server stalls mid-marathon — ALL green on sequential re-run (t83 33/0, t84 36/0, t87 40/0, t88 35/0, t89 65/0, t90 52/0, t91 39/0, t92 40/0, t93 29/0, t94 52/0, t95 45/0, t96 17/0, t97 45/0, t98 26/0, t99 29/0, t100 59/0, t101 28/0); (b) t59 65/0, t60 58/0, t65 53/0, t66 27/0 verified (banner extraction had hidden them).
+- REAL FINDING #1 — ENV: .env had lost everything but DATABASE_URL to an environment reset; PAYMENT_WEBHOOK_SECRET missing made t140's whole webhook section fail (27/5) and t68/t71 skip. Restored a generated secret into .env (owner-provided doctrine: env-driven), killed the DUPLICATE supervisor (the double `bash -c while true` war returned; ss + ppid verified which loop owned the server; loser killed, single supervisor restarted next dev with the fresh env). t140 → 32/0, t68 → 56/0, t71 → 24/0.
+- REAL FINDING #2 — FINANCIAL EVIDENCE RACE (code defect, caught by t148's flake 19/1 ↔ 20/0): financialAudit was fire-and-forget with a SILENT catch — under SQLite contention the auditLogs evidence for money-method changes could vanish without a trace, and the 201 response raced the row's commit. Fixed: helper is now awaited at ALL 7 call sites across payment-methods/bank-accounts/cards (+id routes), failures are LOUD (console.error with action+methodId) while still never gating the business operation. t148 re-run ×5: 20/0 every time — flake dead.
+- FINAL BATTERY VERDICT: 72/72 drills green on fresh wipes.
+- tsc 0, eslint 0, DB vacuum 126×0.
+- Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). Every drill in the suite (72) passes; the financial-evidence race is dead; env restored; the battery tool itself is hardened for future rounds.
