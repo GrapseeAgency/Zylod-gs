@@ -4032,3 +4032,24 @@ Work Log:
 Stage Summary:
 - The session's ledger: Tasks 129–135 all green, all pushed (b41a623, 9ec1d1a, 0b0f98b, a3ecb8a, 579683e, 2ad97b3 + this ledger).
 - No regressions found in the day's changes; three real platform bugs died (fixed-type coupon preview, invoice identity traps ×3 + phantom discount, empty-PATCH fake audit event, chat mark-read ordering, mobile chat id space).
+
+---
+Task ID: 136
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE "UNREAD MESSAGES" LIE — the seller dashboard stat counted ALL messages ever in the supplier's conversations under an "Unread Messages" label (a lifetime volume number under an unread badge), and the tile was a dead end (no navigation into the inbox it reports on). Found as uncommitted work-in-progress from the prior session (UUID commit message); verified, drilled, browser-proven, renamed, pushed.
+
+Work Log:
+- REAL DEFECT: db.messages.count({ conversation.supplierId in scope }) = total volume; the label says UNREAD. Fix: isRead: false AND senderId != me — messages someone else sent to my conversations that I have not read. PendingPayment/paid-order doctrine untouched.
+- UI: the tile now navigates to the chat-list inbox on click (hover shadow + cursor), the surface where those messages actually get read — COHESION: the stat and the inbox are now one circuit.
+- DRILL t134 extended 28 → 31/0 on a fresh wipe: dashboard unread stat = 1 while the supplier reply is unread → 0 after the buyer reads (the lifetime count failed BOTH checkpoints — it read 2 at the first). Conversation/message gates re-proven unchanged.
+- API curl-proven: fresh unread message via the real buyer session → storeStats.messages: 1.
+- BROWSER (real UI seller login, gateway :81): tile renders 1 → click → Messages inbox with the unread row ("T134 buyer / now"). Console clean (filtered). Screenshot /home/z/.qa/shots/t136-unread-tile.png. Layout unchanged (clickability + count truth only) — desktop-only pass justified and recorded.
+- QA tooling rebuilt after another environment reset cleared /home/z/.qa/ (wipe.js per the documented recipe; shots dir).
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The dashboard's every number now says what its label claims, and the first stat with a real destination is one click away from it.
+- The prior session's UUID-message WIP commit is now 87f61dc with the full evidence chain — nothing inherited silently, everything verified before push.
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface. Next rounds: feature depth per the standing build order.
+- Pushed as 87f61dc with the owner-provided PAT (never stored in tracked files).
