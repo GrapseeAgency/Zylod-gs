@@ -4155,3 +4155,22 @@ Stage Summary:
 - A seller's pool is now a real commitment with real consequences, and a buyer's reservation is real money at checkout.
 - REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface.
 - Pushed as 134cc8a with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 142
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: LIVE-SHOPPING HONESTY PASS — three fakes in one route. (1) The id-space trap's fourth sighting: POST wrote a users.id into liveStreams.supplierId (a supplierProfiles column), so the supplier join never matched and every created stream rendered a null supplier. (2) Any authenticated user — buyers included — could broadcast as any store. (3) A scheduled session stamped isLive:true with viewerCount 1 — fake live state with fake viewers.
+
+Work Log:
+- POST rewritten: requireUserType(['supplier','admin']) 401-first → resolveSupplierProfile (the PROFILE id stored — the real store name now resolves), Zod strict, featured products must belong to the host store (403), 5/min rate limit, a schedule is honestly NOT live (isLive false, zero viewers), auditLogs 'live_stream_scheduled'.
+- NEW PATCH /api/live-shopping/[id]: the host's real broadcast control — start → isLive true, end → endedAt stamped; 409 for double-start and end-while-not-live; non-host suppliers 403; admin oversight passes; every transition audited ('live_stream_started'/'live_stream_ended').
+- DRILL scripts/qa/t142-e2e.mjs — 28/0 on a fresh wipe: gates (anon/buyer 401 per the 401-first mandate, strict schema, foreign featured product 403), the profile-id fix proven in DB + the public list ('T142 Live Mill' resolved where null lived forever), honest schedule state, audit rows ×3, the full control matrix, detail resolving the host's real featured products.
+- BROWSER: the live-shopping list renders the real show + real supplier name at 1280, console clean.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The id-space-trap family ledger: receipt route (128), invoice family ×3 (132), mobile chat button (134), live-shopping supplier (142) — each found by reading id semantics against the schema, each drilled.
+- Recorded candidate for a future round: a seller "Go Live" console UI (creation is API-side only; the buyer list/detail surfaces are live).
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface.
+- Pushed as 9dbab68 with the owner-provided PAT (never stored in tracked files).
