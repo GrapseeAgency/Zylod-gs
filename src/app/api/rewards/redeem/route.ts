@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
+    const userId = auth.user.id
     const body = await request.json()
     const { pointsToRedeem, rewardType = 'voucher' } = body
 
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     const reward = await db.buyerRewards.findUnique({
-      where: { buyerId: auth.user.id },
+      where: { buyerId: userId },
     })
 
     if (!reward || reward.pointsBalance < pointsToRedeem) {
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Deduct points
     await db.buyerRewards.update({
-      where: { buyerId: auth.user.id },
+      where: { buyerId: userId },
       data: {
         pointsBalance: { decrement: pointsToRedeem },
         totalRedeemed: { increment: pointsToRedeem },
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Log transaction
     await db.rewardTransactions.create({
       data: {
-        buyerId: auth.user.id,
+        buyerId: userId,
         type: 'redeem',
         points: -pointsToRedeem,
         description: `Redeemed ${pointsToRedeem} points for ৳${cashValueBDT} ${rewardType === 'wallet_credit' ? 'Wallet Credit' : 'Voucher'}`,
@@ -55,47 +56,81 @@ export async function POST(request: NextRequest) {
     let createdCoupon: { id: string; code?: string; discountValue?: number } | null = null
 
     if (rewardType === 'voucher') {
-      const code = `POINTS-${cashValueBDT}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`
-      createdCoupon = await db.userCoupons.create({
+      // Task 143: the voucher is a REAL bound coupon with checkout teeth —
+      // the old write landed in userCoupons, a table NOTHING reads (no
+      // checkout validation, no UI): a promise that could never be honored.
+      // Now: coupons row bound to this buyer, single-use, the validated
+      // preview + order write both honor it, and the notification carries
+      // the REAL code.
+      const code = `POINTS-${cashValueBDT}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
+      createdCoupon = await db.coupons.create({
         data: {
-          userId: auth.user.id,
-          couponId: 'points-redemption',
           code,
-          title: `Points Redemption: ৳${cashValueBDT} Voucher`,
-          discountStyle: 'fixed',
-          discountLabel: `৳${cashValueBDT} FLAT OFF`,
-          status: 'active',
+          userId,
+          discountType: 'fixed',
+          discountPercent: cashValueBDT,
+          minOrderAmount: cashValueBDT * 3,
+          validFrom: new Date(),
           validUntil: new Date(Date.now() + 30 * 86400000),
-          savingsBDT: cashValueBDT,
-          minOrderBDT: cashValueBDT * 3,
-          categoryLabel: 'Loyalty Reward',
-          categoryColor: '#D97706',
+          usageLimit: 1,
+          isActive: true,
         },
       })
+      await db.auditLogs
+        .create({
+          data: {
+            actorId: auth.user.id,
+            action: 'reward_voucher_issued',
+            entityType: 'coupons',
+            entityId: createdCoupon.id,
+            metadata: JSON.stringify({ userId, points: pointsToRedeem, valueBDT: cashValueBDT, code }),
+          },
+        })
+        .catch(() => { /* evidence, not a gate */ })
     } else if (rewardType === 'wallet_credit') {
-      // Find existing wallet first, then update or create
-      const existingWallet = await db.wallets.findFirst({
-        where: { userId: auth.user.id },
+      // Task 143: a wallet movement WITHOUT a ledger row is untraceable
+      // money — every other balance change writes walletTransactions with
+      // the real balanceAfter. The credit now leaves the same evidence.
+      const result = await db.$transaction(async (tx) => {
+        let wallet = await tx.wallets.findFirst({ where: { userId } })
+        if (!wallet) {
+          wallet = await tx.wallets.create({ data: { userId, balance: 0, currency: 'BDT' } })
+        }
+        const balanceAfter = wallet.balance + cashValueBDT
+        await tx.wallets.update({ where: { id: wallet.id }, data: { balance: balanceAfter } })
+        const ledger = await tx.walletTransactions.create({
+          data: {
+            walletId: wallet.id,
+            type: 'cashback',
+            amount: cashValueBDT,
+            balanceAfter,
+            description: `Loyalty points redemption: ${pointsToRedeem} points → ৳${cashValueBDT}`,
+          },
+        })
+        return { ledger, balanceAfter }
       })
-
-      if (existingWallet) {
-        await db.wallets.update({
-          where: { id: existingWallet.id },
-          data: { balance: { increment: cashValueBDT } },
+      await db.auditLogs
+        .create({
+          data: {
+            actorId: auth.user.id,
+            action: 'reward_wallet_credit',
+            entityType: 'wallets',
+            entityId: result.ledger.walletId,
+            metadata: JSON.stringify({ userId, points: pointsToRedeem, valueBDT: cashValueBDT, balanceAfter: result.balanceAfter }),
+          },
         })
-      } else {
-        await db.wallets.create({
-          data: { userId: auth.user.id, balance: cashValueBDT },
-        })
-      }
+        .catch(() => { /* evidence, not a gate */ })
     }
 
-    // Real in-app notification
+    // Real in-app notification — for vouchers it carries the REAL code so
+    // the buyer can actually spend what they earned.
     await sendNotification({
-      userId: auth.user.id,
+      userId,
       type: 'promotion',
       title: `Points Redeemed: ৳${cashValueBDT}`,
-      body: `You exchanged ${pointsToRedeem} loyalty points for ৳${cashValueBDT} wholesale purchasing credit.`,
+      body: createdCoupon?.code
+        ? `You exchanged ${pointsToRedeem} loyalty points for a ৳${cashValueBDT} voucher. Code: ${createdCoupon.code} — enter it at checkout (single use, 30 days, min order ৳${(cashValueBDT * 3).toLocaleString()}).`
+        : `You exchanged ${pointsToRedeem} loyalty points for ৳${cashValueBDT} wallet credit — it is in your wallet with a full ledger entry.`,
     })
 
     return NextResponse.json({

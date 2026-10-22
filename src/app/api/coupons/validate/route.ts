@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { authenticateRequest } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,6 +34,16 @@ export async function POST(request: NextRequest) {
     // Check usage limit
     if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
       return NextResponse.json({ error: 'Coupon usage limit reached', valid: false }, { status: 400 })
+    }
+
+    // Task 143: earned vouchers are personal money promises. The preview
+    // enforces the same binding the order write does — a code bound to
+    // another account never previews as spendable.
+    if (coupon.userId) {
+      const auth = await authenticateRequest(request)
+      if (!auth.authenticated || !auth.user || auth.user.id !== coupon.userId) {
+        return NextResponse.json({ error: 'This voucher belongs to another account', valid: false }, { status: 400 })
+      }
     }
 
     // Check minimum order amount

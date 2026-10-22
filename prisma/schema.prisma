@@ -874,6 +874,10 @@ model auditLogs {
 model coupons {
   id              String   @id @default(cuid())
   code            String   @unique
+  // Task 143: when set, THIS voucher belongs to THIS buyer only — earned
+  // rewards (points, spins, referrals) are personal money promises. Platform
+  // campaigns leave it null (public codes). Both coupon readers enforce it.
+  userId          String?
   // type: percentage | fixed
   discountType    String   @default("percentage")
   discountPercent Float
@@ -887,6 +891,7 @@ model coupons {
 
   @@index([code])
   @@index([isActive])
+  @@index([userId])
   @@index([validFrom])
   @@index([validUntil])
 }

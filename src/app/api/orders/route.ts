@@ -424,6 +424,11 @@ export async function POST(request: NextRequest) {
           if (coupon.usageLimit !== null && coupon.usedCount >= coupon.usageLimit) {
             throw new CouponError(`Coupon "${coupon.code}" has reached its usage limit`)
           }
+          // Task 143: earned vouchers are personal money promises — a code
+          // bound to another account is not yours to spend.
+          if (coupon.userId && coupon.userId !== buyerId) {
+            throw new CouponError(`Coupon "${coupon.code}" belongs to another account`)
+          }
 
           const discount =
             coupon.discountType === 'fixed'
