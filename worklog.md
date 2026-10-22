@@ -4092,3 +4092,21 @@ Stage Summary:
 - The alert family is now symmetric: stock watches fire on restock (Task 65), price watches fire on real drops (this task), both race-guarded, both honest about direction, both wired at the only writers that can move their truth.
 - REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface. The unreproduced console transient is recorded with its replay evidence.
 - Pushed as 1a03d80 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 139
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE INVISIBLE AUDIT TRAIL — the platform has written REAL auditLogs rows on every audited write since the doctrine sweep (the anti-fake evidence: before/after JSON, actor, timestamps), but NO route and NO console could read them. The founder's mandate "everything connects with admin" had a hole exactly where the evidence lived. This task built the reader half of the doctrine.
+
+Work Log:
+- GET /api/admin/audit-logs — 401-first requireUserType(['admin']) → checkRateLimit 'admin-audit-logs' 60/min; Zod-validated query (page/limit≤100/action-contains/entityType/entityId/actorId); newest-first with honest pagination; actor resolved to the REAL profile name + userType (buyerProfile.fullName → supplierProfile.companyName → email chain); byEntityType summary powers the filter datalist. TYPING LESSON: users has NO adminProfile relation — a phantom include silently breaks Prisma's payload inference (the include arg fails to typecheck and the result type loses `actor`); widened users.email as nullable with an honest 'Unknown actor' fallback.
+- admin-audit-logs-page — filter bar (action contains / entity type datalist / entity id), desktop table + mobile cards, row-expandable before/after metadata pretty-printed (the evidence verbatim), honest empty/error states, pagination. Registered in page-loader + chunk-misc; 'Audit Trail' tile on the admin dashboard (18 live admin tools).
+- DRILL scripts/qa/t139-e2e.mjs — 29/0 on a fresh wipe; seed = REAL audited actions through the live APIs (product create + visibility toggle + ৳2,000→৳1,800 edit → 4 audit rows, zero fabricated rows): gates (anon/buyer/seller 401, admin 200), page=0/limit=101 → 400, action filter narrows to product_updated with the REAL before 2000/after 1800, entityType + entityId (full per-product history: created+visibility+updated) + actorId exact, actor name/type resolution, pagination truth (page 2 differs, newest-first), summary present.
+- BROWSER (real admin login, gateway :81): dashboard → Audit Trail console → 4 rows + '4 events' → row expands the evidence JSON (before.basePrice 2000 visible) → filter product_updated narrows live to '1 event' → mobile 375 exact scrollWidth. Console clean. Screenshots t139-audit-desktop/-mobile.png.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The doctrine is now closed end-to-end: audited writes create real evidence, and the admin can finally READ it — filterable, expandable, paginated, honest.
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface.
+- Pushed as 35fbaf4 with the owner-provided PAT (never stored in tracked files).
