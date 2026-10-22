@@ -65,6 +65,11 @@ export async function DELETE(
     )
   }
 
+  const rl = checkRateLimit(request, 'supplier-verification-delete', 20, 60000)
+
+  if (!rl.ok) return rateLimitResponse(rl)
+
+
   try {
     const { docId } = await params
     const supplier = await db.supplierProfiles.findFirst({

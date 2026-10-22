@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { writeFile } from 'fs/promises'
 import path from 'path'
@@ -13,6 +14,11 @@ export async function POST(request: NextRequest) {
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'profile-photo', 10, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const formData = await request.formData()
     const photoFile = (formData.get('photo') || formData.get('avatar')) as File | null

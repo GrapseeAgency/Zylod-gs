@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -49,6 +50,11 @@ export async function POST(
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'support-tickets-msg', 20, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     // Task 75: admins can reply on ANY thread (senderType 'admin'); buyers
     // only on their own. Not-yours stays a no-leak 404.

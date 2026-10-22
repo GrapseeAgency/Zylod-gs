@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
@@ -12,6 +13,9 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
  * Returns: { url: '/uploads/kyc/<kind>-<id>.<ext>' }
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'uploads-kyc', 10, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File | null

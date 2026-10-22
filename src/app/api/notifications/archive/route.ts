@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -63,6 +64,11 @@ export async function DELETE(request: NextRequest) {
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'notifications-archive', 30, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const archiveCutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
 

@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -50,6 +51,9 @@ function normalizeEvent(raw: SyncEventInput) {
 }
 
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'native-offline-sync', 60, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
 

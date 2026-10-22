@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -67,6 +68,11 @@ export async function DELETE(
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'notifications-item-write', 30, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const { id } = await params
 

@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
@@ -18,6 +19,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+    const rl = checkRateLimit(request, 'addresses-item-write', 30, 60000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const { id } = await params
 
     const existing = await db.addresses.findFirst({ where: { id, userId: auth.user.id } })
@@ -74,6 +78,9 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+    const rl = checkRateLimit(request, 'addresses-item-write', 30, 60000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const { id } = await params
 
     const existing = await db.addresses.findFirst({ where: { id, userId: auth.user.id } })

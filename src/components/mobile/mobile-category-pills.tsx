@@ -189,7 +189,7 @@ export function MobileCategoryPills() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3, delay: 0.2 }}
         ref={scrollRef}
-        className="flex gap-1.5 overflow-x-auto no-scrollbar px-4 -mx-4 py-1"
+        className="flex gap-1.5 overflow-x-auto no-scrollbar px-3 -mx-3 py-1"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {loading ? (

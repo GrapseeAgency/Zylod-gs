@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -15,6 +16,11 @@ export async function POST(request: NextRequest) {
     if (!name || !email || !subject || !message) {
       return NextResponse.json({ error: 'Name, email, subject, and message are required' }, { status: 400 })
     }
+
+    const rl = checkRateLimit(request, 'support-contact', 5, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const submission = await db.contactSubmissions.create({
       data: {

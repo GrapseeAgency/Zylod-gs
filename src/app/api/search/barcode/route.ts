@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -112,6 +113,9 @@ export async function GET(request: NextRequest) {
  * For scanning an uploaded image of a barcode
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'search-barcode', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const formData = await request.formData()
     const image = formData.get('image')

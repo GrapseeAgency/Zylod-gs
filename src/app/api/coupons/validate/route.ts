@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -65,6 +66,11 @@ export async function POST(request: NextRequest) {
         })
       }
     }
+
+    const rl = checkRateLimit(request, 'coupons-validate', 30, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     // ── (2) platform campaign codes (unclaimed public codes) ──
     const coupon = await db.coupons.findUnique({ where: { code } })

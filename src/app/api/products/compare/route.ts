@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -194,6 +195,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'products-compare', 60, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { buyerId, productId } = body
@@ -271,6 +275,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const rl = checkRateLimit(request, 'products-compare', 60, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { buyerId, productId } = body

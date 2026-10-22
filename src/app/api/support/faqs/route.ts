@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -48,6 +49,9 @@ export async function GET(request: NextRequest) {
  * POST /api/support/faqs — admin or internal FAQ creator
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'support-faqs-write', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { category, questionEn, answerEn, questionBn, answerBn, sortOrder } = body

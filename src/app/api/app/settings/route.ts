@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -42,6 +43,9 @@ export async function GET(request: NextRequest) {
  * Updates or creates a system setting.
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'app-settings-post', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { key, value, category = 'general', description } = body

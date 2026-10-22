@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -56,6 +57,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const auth = await authenticateRequest(request)
+    const rl = checkRateLimit(request, 'app-storage-stats', 30, 60000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const body = await request.json()
     const { deviceId, cacheCategory = 'all' } = body
 

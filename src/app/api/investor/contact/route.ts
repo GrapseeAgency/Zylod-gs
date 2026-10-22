@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -7,6 +8,9 @@ import { db } from '@/lib/db'
  * Body: { name, email, phone?, company?, inquiryType, message }
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'investor-contact', 5, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { name, email, phone, company, inquiryType, message } = body

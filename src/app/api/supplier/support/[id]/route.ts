@@ -21,6 +21,11 @@ export async function PATCH(
       return NextResponse.json({ error: auth.error || 'Admin authentication required' }, { status: 401 })
     }
 
+    const rl = checkRateLimit(request, 'supplier-support-patch', 30, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
+
     const parsed = patchSchema.safeParse(await request.json().catch(() => null))
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message || 'Invalid status' }, { status: 400 })

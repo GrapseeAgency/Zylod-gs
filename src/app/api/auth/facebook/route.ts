@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import crypto from 'crypto'
@@ -8,6 +9,9 @@ import crypto from 'crypto'
  * Mirrors the Google route: links or creates the account, then returns a session token.
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'auth-oauth', 20, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { facebookId, email, name } = body

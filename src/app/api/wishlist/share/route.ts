@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -25,6 +26,9 @@ export async function POST(request: NextRequest) {
   if (!auth.authenticated || !auth.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
   }
+  const rl = checkRateLimit(request, 'wishlist-share', 10, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json().catch(() => ({}))
     const { expiresIn, allowAddToCart, showPrices } = body
@@ -47,6 +51,9 @@ export async function DELETE(request: NextRequest) {
   if (!auth.authenticated || !auth.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
   }
+  const rl = checkRateLimit(request, 'wishlist-share', 10, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     await (db as any).wishlistShares.deleteMany({ where: { buyerId: auth.user.id } })
     return NextResponse.json({ success: true, message: 'Share link revoked' })

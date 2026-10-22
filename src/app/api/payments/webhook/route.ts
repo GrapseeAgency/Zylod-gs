@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { createHmac, timingSafeEqual } from 'crypto'
 import { db } from '@/lib/db'
@@ -23,6 +24,9 @@ import { holdEscrowInTx } from '@/lib/escrow'
  *   "status": "success" | "failed", "gateway": "bank|bKash|Nagad|..." }
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'payments-webhook', 120, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   const secret = process.env.PAYMENT_WEBHOOK_SECRET
   if (!secret) {
     return NextResponse.json(

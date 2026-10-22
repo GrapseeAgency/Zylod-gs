@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -24,6 +25,11 @@ export async function POST(
     if (!article) {
       return NextResponse.json({ error: 'Article not found' }, { status: 404 })
     }
+
+    const rl = checkRateLimit(request, 'support-articles-feedback', 20, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     await db.feedbackSubmissions.create({
       data: {

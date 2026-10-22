@@ -1,7 +1,11 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { extractToken, destroySession, clearAuthCookie } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'auth-logout', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const token = extractToken(request)
     if (token) {

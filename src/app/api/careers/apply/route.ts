@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { sendNotification } from '@/lib/notifications'
@@ -8,6 +9,9 @@ import { sendNotification } from '@/lib/notifications'
  * Body: { jobId, applicantName, applicantEmail, applicantPhone?, resumeUrl?, coverLetter?, portfolioUrl?, linkedInUrl?, yearsExp? }
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'careers-apply', 5, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const {

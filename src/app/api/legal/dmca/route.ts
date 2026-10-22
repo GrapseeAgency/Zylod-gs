@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -12,6 +13,9 @@ import { sendNotification } from '@/lib/notifications'
  * Lists all DMCA reports with pagination.
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'legal-dmca', 5, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const {

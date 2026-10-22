@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
@@ -117,6 +118,9 @@ export async function POST(request: NextRequest) {
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+    const rl = checkRateLimit(request, 'rfq-create', 10, 60000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const buyerId = auth.user.id
 
     const body = await request.json()

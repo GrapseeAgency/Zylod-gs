@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { validateTransaction } from '@/lib/payments/sslcommerz'
@@ -16,6 +17,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'wallet-callback', 120, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   return handle(request)
 }
 

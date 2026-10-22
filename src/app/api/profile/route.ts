@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { invalidateCacheKeys } from '@/lib/api-cache'
 import { db } from '@/lib/db'
@@ -53,6 +54,9 @@ export async function PUT(request: NextRequest) {
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+    const rl = checkRateLimit(request, 'profile-write', 30, 60000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const userId = auth.user.id
 
     const body = await request.json()

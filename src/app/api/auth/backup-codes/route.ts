@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { db } from '@/lib/db'
@@ -21,6 +22,11 @@ export async function POST(request: NextRequest) {
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'auth-backup-codes', 10, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const userId = auth.user.id
 

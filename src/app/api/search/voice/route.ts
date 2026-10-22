@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -15,6 +16,11 @@ export async function POST(request: NextRequest) {
     if (!query) {
       return NextResponse.json({ error: 'Query is required' }, { status: 400 })
     }
+
+    const rl = checkRateLimit(request, 'search-voice', 20, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     // Save to search history if authenticated
     if (auth.authenticated && auth.user) {

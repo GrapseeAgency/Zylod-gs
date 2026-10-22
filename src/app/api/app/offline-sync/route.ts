@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -80,6 +81,11 @@ export async function POST(request: NextRequest) {
     if (!Array.isArray(queue) || queue.length === 0) {
       return NextResponse.json({ success: true, processedCount: 0, message: 'Queue is empty' })
     }
+
+    const rl = checkRateLimit(request, 'app-offline-sync', 60, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const processed: string[] = []
 

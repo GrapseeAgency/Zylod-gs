@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -31,6 +32,11 @@ export async function POST(
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'order-feedback', 5, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     if (!overallRating || overallRating < 1 || overallRating > 5) {
       return NextResponse.json({ error: 'Overall rating is required (1-5)' }, { status: 400 })

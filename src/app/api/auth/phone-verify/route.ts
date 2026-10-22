@@ -1,8 +1,12 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import crypto from 'crypto'
 
 export async function POST(req: NextRequest) {
+  const rl = checkRateLimit(req, 'auth-phone-verify', 5, 900000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const { phone, countryCode } = await req.json()
 

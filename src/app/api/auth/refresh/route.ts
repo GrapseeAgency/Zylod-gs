@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { validateSession, createSession, destroySession, getClientIP, setAuthCookie } from '@/lib/auth'
@@ -14,6 +15,9 @@ import crypto from 'crypto'
  * the `sessions` table (SHA-256 hashed) and the user must be active.
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'auth-refresh', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json().catch(() => ({}))
     const refreshToken =

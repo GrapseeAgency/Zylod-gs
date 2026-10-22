@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -39,6 +40,9 @@ export async function POST(request: NextRequest) {
   if (!auth.authenticated || !auth.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
   }
+  const rl = checkRateLimit(request, 'support-tickets-create', 5, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { category, subject, description, priority, relatedOrderId } = body

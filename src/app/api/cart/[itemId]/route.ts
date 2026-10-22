@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -5,6 +6,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ itemId: string }> }
 ) {
+  const rl = checkRateLimit(request, 'cart-item-write', 60, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   let itemId = ''
   let quantity = 0
   try {
@@ -41,6 +45,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ itemId: string }> }
 ) {
+  const rl = checkRateLimit(request, 'cart-item-write', 60, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const { itemId } = await params
 

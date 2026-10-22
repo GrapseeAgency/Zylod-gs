@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { createSession, getClientIP } from '@/lib/auth'
@@ -9,6 +10,9 @@ import { createSession, getClientIP } from '@/lib/auth'
  * (stored in the sessions table so authenticateRequest accepts it).
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'auth-oauth', 20, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { googleId, email, name } = body

@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -10,6 +11,9 @@ import { db } from '@/lib/db'
  * Retrieves current consent for a session.
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'cookie-consent', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { userId, sessionId, analyticsAllowed = false, marketingAllowed = false } = body

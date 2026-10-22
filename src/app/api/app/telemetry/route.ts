@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -6,6 +7,9 @@ import { db } from '@/lib/db'
  * Records 404/500 errors, crash logs, and unexpected application states.
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'app-telemetry', 120, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const {

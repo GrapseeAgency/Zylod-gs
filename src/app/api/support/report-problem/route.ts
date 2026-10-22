@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -15,6 +16,11 @@ export async function POST(request: NextRequest) {
     if (!subject || !description) {
       return NextResponse.json({ error: 'Subject and description are required' }, { status: 400 })
     }
+
+    const rl = checkRateLimit(request, 'support-report-problem', 5, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const report = await db.feedbackSubmissions.create({
       data: {

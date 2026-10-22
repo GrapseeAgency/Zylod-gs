@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
@@ -76,6 +77,9 @@ export async function PATCH(
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+    const rl = checkRateLimit(request, 'supplier-queries-patch', 30, 60000)
+    if (!rl.ok) return rateLimitResponse(rl)
+
     const profile = await resolveSupplierProfile(auth.user)
     if (!profile) {
       return NextResponse.json(SUPPLIER_PROFILE_REQUIRED, { status: 403 })

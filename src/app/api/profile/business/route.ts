@@ -179,9 +179,15 @@ async function handleBusinessUpdate(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const rl = checkRateLimit(request, 'profile-business-write', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   return handleBusinessUpdate(request)
 }
 
 export async function PATCH(request: NextRequest) {
+  const rl = checkRateLimit(request, 'profile-business-write', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   return handleBusinessUpdate(request)
 }

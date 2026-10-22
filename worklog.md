@@ -4345,3 +4345,25 @@ Work Log:
 Stage Summary:
 - The abuse surface (fake reviews, coupon sniping, alert flooding) is throttled; the list endpoints the consoles depend on stay open.
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external); the deep rate-limit pass on the remaining ~95 low-stakes routes (support/careers/newsletter/uploads) is documented as a deliberate tier unless the founder wants full coverage.
+
+---
+Task ID: 152
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3: full app audit, final round, check everywhere).
+
+Task: FULL-APP AUDIT unit 10 — closed the last standing audit tier: rate-limit coverage for EVERY mutating handler (275 total; 147 were covered before, 128 bare). The founder's "fix everything if you see check everywhere" resolves the documented "unless the founder wants full coverage" condition — the ~95 low-stakes routes tier is no longer deliberate, it is wired.
+
+Work Log:
+- Built scripts/qa/rate-limit-sweep.mjs: per-HANDLER coverage check (t151's mis-wire lesson made per-file checks insufficient — it later caught admin-shipping/profile-business/profile-tax buckets living in the same files as still-bare PATCH/PUT handlers).
+- Codemod (scripts/qa/t152-wire-limits.mjs) wired 125 handlers from an abuse-value manifest (auth rails 5-10/15min — register/recover/reset/2fa-verify/phone-verify; payments-webhook + sslcommerz callbacks 120/min gate-before-secret so provider retries never drop; search AI rails 20-30/min; support/tickets/contact/reports 5-20/min; cards/banks/payment-methods 10-20/min; cart/wishlist/save 30-60/min; admin writes 20-30/min; telemetry/offline-sync burst tiers). Insertion modes: after-auth-guard (401-first doctrine) or first-statement for public handlers; import at top only.
+- THE SECOND REVIEWS PATH: /api/products/[id]/reviews POST had NO limiter (t151 wired /api/reviews only) — fake social proof was still one script away through the sibling endpoint. Now reviews-product-create 5/min, drilled.
+- CAUGHT AND FIXED ON MYSELF: (1) the codemod's import placement glued the rate-limit import to the bottom of two files (price-alerts/[id], stock-alerts/[id]) and its span check then false-positived the gateless price-alerts DELETE — both files repaired (import at top, gate hand-wired); (2) the sweep hardened to match `checkRateLimit(` call-sites so an import can never mask a bare handler again; (3) 5 auth files take `req` not `request` (phone-verify, recover, reset-password, verify-email ×2) — codemod's blind `request` naming failed tsc, fixed; (4) /profile PATCH does not exist (sweep phantom — codemod correctly refused).
+- DRILL scripts/qa/t152-e2e.mjs — 15/0 on a fresh wipe: single unauth POST → 401 (not 429) on cart/wishlist/reviews (the gate sits AFTER the guard); reviews-product-create 6th → 429; tickets 6th → 429; cart-add 61st → 429 + GET /api/cart stays 200; price-alerts-item PATCH 21st → 429 + GET list stays 200; cookie-consent 31st → 429 (public mode); careers-apply 6th → 429; payments-webhook 121st → 429.
+- REGRESSIONS on fresh wipes: t151 8/0, t65 53/0, t138 36/0, t143 46/0, t144 44/0. (t143/t144 initially crashed because I ran the browser-QA seed first — the t143 drill is self-seeding and needs the first-admin window; standalone runs are the correct procedure.)
+- ORPHAN SCAN + REGISTRY DOCTOR: 10 candidates → all verified consumed or by-design external (payments callbacks, driver-app location, native sync, /api/ descriptor); registry 3/0 (718 page ids). Zero real orphans.
+- BROWSER QA (gateway :81, real UI): guest PDP → Add to Cart ×3 → cart merges to one line qty 3 (৳300 real math); UI login as seeded buyer → auth'd add → cart 4 pcs ৳400, server sync fired; console 0 errors. MOBILE 375×812: found + FIXED a real 4px document overflow on mobile home (category rail `-mx-4` inside a 12px-inset section → `-mx-3 px-3`, exact cancel) — scrollWidth now exactly 375; mobile PDP shows TIERED PRICING + Add to Cart + Buy Now, 375/375.
+- ENV RESTORE: /home/z/.qa wiped again by reset — rebuilt wipe.js + delivery-keepalive.sh per worklog recipe, keepalive re-armed.
+- Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). EVERY mutating handler in the API (275/275 per the call-site sweep) is now throttled — the rate-limit tier is CLOSED; no documented deliberate gaps remain in it.
+- Sweep + drill + regressions + registry doctor all green on fresh wipes; DB returned to vacuum 139×0.

@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import bcrypt from 'bcryptjs'
@@ -10,6 +11,9 @@ const MAX_REGISTER_ATTEMPTS = 5
 const REGISTER_WINDOW = 60 * 60 * 1000 // 1 hour
 
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'auth-register', 8, 900000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   const ip = getClientIP(request)
 
   try {

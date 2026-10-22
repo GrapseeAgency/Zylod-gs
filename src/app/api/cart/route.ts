@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest, requireUserType } from '@/lib/auth'
@@ -150,6 +151,11 @@ export async function POST(request: NextRequest) {
     if (!authResult.authenticated || !authResult.user) {
       return NextResponse.json({ error: authResult.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'cart-add', 60, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const buyerId = authResult.user.id
     const body = await request.json()

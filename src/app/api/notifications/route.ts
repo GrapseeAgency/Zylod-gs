@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -71,6 +72,11 @@ export async function PATCH(request: NextRequest) {
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
     }
+
+    const rl = checkRateLimit(request, 'notifications-write', 30, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const body = await request.json()
 

@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { verifyTOTPCode } from '@/lib/totp'
@@ -5,6 +6,9 @@ import { db } from '@/lib/db'
 import { createSession, getClientIP } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'auth-2fa-verify', 10, 900000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const body = await request.json()
     const { userId, code, method } = body

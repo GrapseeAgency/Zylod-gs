@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { validateTransaction } from '@/lib/payments/sslcommerz'
@@ -11,6 +12,9 @@ import { creditVerifiedTopup } from '@/lib/payments/credit'
  * Respond 200 so SSLCommerz stops retrying.
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'wallet-ipn', 120, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const contentType = request.headers.get('content-type') || ''
     let valId = ''

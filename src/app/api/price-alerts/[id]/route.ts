@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function GET(
   request: NextRequest,
@@ -45,6 +46,8 @@ export async function PATCH(
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+    const rl = checkRateLimit(request, 'price-alerts-item-write', 20, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
     const { id } = await params
     const body = await request.json()
 
@@ -72,6 +75,8 @@ export async function DELETE(
     if (!auth.authenticated || !auth.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+    const rl = checkRateLimit(request, 'price-alerts-item-write', 20, 60_000)
+    if (!rl.ok) return rateLimitResponse(rl)
     const { id } = await params
 
     const existing = await db.priceAlerts.findFirst({ where: { id, userId: auth.user.id } })

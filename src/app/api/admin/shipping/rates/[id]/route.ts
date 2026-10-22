@@ -55,6 +55,11 @@ export async function PATCH(
   const g = await guard(request)
   if (g.early) return g.early
 
+  const rl = checkRateLimit(request, 'admin-shipping-item-write', 30, 60000)
+
+  if (!rl.ok) return rateLimitResponse(rl)
+
+
   try {
     const { id } = await params
     const existing = await db.shippingRates.findUnique({
@@ -130,6 +135,11 @@ export async function DELETE(
 ) {
   const g = await guard(request)
   if (g.early) return g.early
+
+  const rl = checkRateLimit(request, 'admin-shipping-item-write', 30, 60000)
+
+  if (!rl.ok) return rateLimitResponse(rl)
+
 
   try {
     const { id } = await params

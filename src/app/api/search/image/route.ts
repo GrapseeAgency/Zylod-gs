@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { writeFile } from 'fs/promises'
@@ -20,6 +21,9 @@ const MAX_EMBED_PER_REQUEST = 40 // cap cold-start work per search
 const TOP_RESULTS = 24
 
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'search-image', 20, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     let keywords: string[] = []
     let storedUrl: string | null = null

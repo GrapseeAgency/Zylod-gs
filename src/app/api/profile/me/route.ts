@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -152,9 +153,15 @@ async function handleProfileUpdate(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const rl = checkRateLimit(request, 'profile-me-write', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   return handleProfileUpdate(request)
 }
 
 export async function PATCH(request: NextRequest) {
+  const rl = checkRateLimit(request, 'profile-me-write', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   return handleProfileUpdate(request)
 }

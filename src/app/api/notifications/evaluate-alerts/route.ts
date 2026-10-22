@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { notifyPriceDropTriggered, notifyRestockTriggered } from '@/lib/notifications'
@@ -8,6 +9,9 @@ import { notifyPriceDropTriggered, notifyRestockTriggered } from '@/lib/notifica
  * Automatically dispatches real notifications and updates alert status when triggered.
  */
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimit(request, 'evaluate-alerts', 10, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   return evaluateAlerts()
 }
 

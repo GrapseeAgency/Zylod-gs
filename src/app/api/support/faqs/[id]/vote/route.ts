@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -9,6 +10,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const rl = checkRateLimit(request, 'support-faqs-vote', 30, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const { id } = await params
     const body = await request.json()

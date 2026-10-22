@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
@@ -14,6 +15,9 @@ export async function DELETE(
   if (!auth.authenticated || !auth.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
   }
+  const rl = checkRateLimit(request, 'payment-methods-write', 20, 60000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const { id } = await params
     const existing = await db.paymentMethods.findFirst({ where: { id, userId: auth.user.id } })

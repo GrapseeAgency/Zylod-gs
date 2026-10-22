@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { generateTOTPSecret, buildOTPAuthURI } from '@/lib/totp'
@@ -20,6 +21,11 @@ export async function POST(request: NextRequest) {
     if (!auth.authenticated || !auth.user || auth.user.id !== userId) {
       return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
     }
+
+    const rl = checkRateLimit(request, 'auth-2fa-setup', 10, 60000)
+
+    if (!rl.ok) return rateLimitResponse(rl)
+
 
     const user = await db.users.findUnique({ where: { id: userId } })
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })

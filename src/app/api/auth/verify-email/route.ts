@@ -1,3 +1,4 @@
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import crypto from 'crypto'
@@ -35,6 +36,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const rl = checkRateLimit(req, 'auth-verify-email', 10, 900000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const { email } = await req.json()
 
@@ -87,6 +91,9 @@ export async function POST(req: NextRequest) {
 
 // Verify email with token
 export async function PUT(req: NextRequest) {
+  const rl = checkRateLimit(req, 'auth-verify-email', 10, 900000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
     const { token } = await req.json()
 
