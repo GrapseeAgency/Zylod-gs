@@ -3850,3 +3850,26 @@ Work Log:
 Stage Summary:
 - The buyer-profile mobile artifact from Task 124 is closed honestly — measured, root-caused, fixed, re-measured to exactly 375.
 - Pushed as fe374b8 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 126
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE DEFERRED 115 QA + ENVIRONMENT RESTORATION — executed the exact next-round first steps Task 115-b recorded (deferred mobile QA of the campaign surfaces, /home/z/.qa tooling recreation), plus the pulls that revealed Tasks 116–125 had landed remotely while the local context was stale.
+
+Work Log:
+- CRON LEDGER: `cron list` → total 0 — no scheduled jobs exist; the NO-CRON order stands satisfied.
+- ENVIRONMENT: dual-supervisor war re-appeared (two `bash -c` loops, loser EADDRINUSE-looping) — port owner verified via ss (next-server 1107 under supervisor 1067), loser 1261 killed, single supervisor restored. /home/z/.qa had been WIPED by an environment reset: wipe.js recreated from the house recipe (proven 138→139 tables × 0 residue), delivery-keepalive.sh recreated with the documented anti-suicide pattern and started (PID verified, loop alive).
+- DEFERRED BROWSER QA (gateway :81, real UI logins, mobile 375×812, DB seeded through REAL APIs — register/login/category/products/approve/campaign):
+  1. Store Campaigns tab: "12% OFF" chip + "Lamp Season Sale" + "Ends in 7 days" + pinned-product tile; scrollWidth exactly 375.
+  2. PDP campaign badge: first read appeared missing — API curl PROVES activePromotion returns the seller campaign; DOM innerText check finds "Lamp Season Sale — 12% off" present (snapshot-filter artifact, NOT a regression); desktop+mobile components render identically from the same owner-agnostic query.
+  3. Seller campaigns console: stats chips (1 LIVE / 0 SCHEDULED / 0 PAUSED / 0 ENDED / 0 USES / 1 TOTAL), Live badge, park switch, Edit/Analytics/Delete, pinned chip, zero overflow.
+  4. Admin content → Promotions: amber "Seller: QA115B Brass House" owner chip + 1 CAMPAIGNS / 1 ACTIVE stats; verified twice (once after OOM pollution, once console-clean in a fresh session).
+- REAL FIX: /placeholder.svg did not exist — every product seeded with the platform's conventional placeholder URL 404'd (broken-image alt text in tiles). Shipped a house-styled SVG placeholder (200 verified through the gateway); pushed as 2056cbd.
+- ENVIRONMENT LESSONS (recorded): (1) kernel OOM killed the next-server mid-QA (dmesg: anon-rss 2.26GB) after FOUR parallel agent-browser sessions stacked on the dev server — max 1–2 browser sessions in this 4GB sandbox; close sessions when done. The ChunkLoadError storm that followed was the restart churn, not platform code (fresh-session re-verify console-clean). (2) Local DB is gitignored: after pulling schema-changing remote work, `bun run db:push` must run BEFORE trusting local counts (138 vs 139 caught and synced; wiped 139×0 after).
+- Drill-side seed fixture fixed twice (productIds key, isApproved bool) — kept at /home/z/.qa/fixtures/qa115b-seed.mjs (outside the repo), idempotent (register-closed/duplicate fallbacks).
+
+Stage Summary:
+- Every surface Task 115-b deferred is now browser-verified at 375×812 with zero horizontal overflow, and the only defect found (missing placeholder asset) is fixed and pushed.
+- Environment fully restored: one supervisor, keepalive loop live, QA tooling recreated, DB schema-synced at 139 tables × 0 rows.
+- REMAINING FAKE/INCOMPLETE: none found this round.
