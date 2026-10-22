@@ -5,7 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
-import { notifyPaymentVerified } from '@/lib/notifications'
+import { notifyPaymentVerified, notifySellerNewOrder } from '@/lib/notifications'
 import { holdEscrowInTx } from '@/lib/escrow'
 import { roundQty } from '@/lib/product-contract'
 import { buildAddressSnapshot } from '@/lib/addresses'
@@ -819,6 +819,31 @@ export async function POST(request: NextRequest) {
           totalAmount: feed.subtotal,
           createdAt: order.order.createdAt.toISOString(),
         })
+      }
+
+      // Task 159 cohesion fix: the socket push above is TRANSIENT — a seller
+      // who wasn't online never saw the order arrive. Persist a durable
+      // notification row per supplier (one per feed, never per subOrder) so
+      // the seller's notification list records every new order slice.
+      {
+        const supplierIds = order.sellerFeed.map((f) => f.supplierId)
+        const sellerUsers = await db.supplierProfiles.findMany({
+          where: { id: { in: supplierIds } },
+          select: { id: true, userId: true },
+        })
+        const userIdBySupplier = new Map(sellerUsers.map((s) => [s.id, s.userId]))
+        for (const feed of order.sellerFeed) {
+          const sellerUserId = userIdBySupplier.get(feed.supplierId)
+          if (sellerUserId) {
+            await notifySellerNewOrder(
+              sellerUserId,
+              order.order.orderNumber,
+              order.order.id,
+              feed.itemCount,
+              feed.subtotal
+            )
+          }
+        }
       }
 
       // Real-time (Task 56-c): every bought product's PUBLIC PDP room gets the

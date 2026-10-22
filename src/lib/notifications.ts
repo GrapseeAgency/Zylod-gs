@@ -223,6 +223,28 @@ export async function notifyPaymentSubmitted(
   })
 }
 
+/**
+ * Durable seller-side signal for a new order (Task 159 cohesion fix): the
+ * order:create socket push to seller:<supplierId> is transient — a seller
+ * who wasn't online never saw the order arrive. This persists a row so the
+ * seller's notification list records every new order slice, socket or not.
+ */
+export async function notifySellerNewOrder(
+  sellerUserId: string,
+  orderNumber: string,
+  orderId: string,
+  itemCount: number,
+  subtotal: number
+) {
+  return sendNotification({
+    userId: sellerUserId,
+    type: 'order',
+    title: `New Order: ${orderNumber}`,
+    body: `${itemCount} item(s) · ৳${subtotal.toLocaleString()} — order ${orderNumber} arrived and is UNPAID. It becomes actionable once the buyer's payment is verified.`,
+    relatedEntityId: orderId,
+  })
+}
+
 /** Seller/admin verified the payment — honest partial math spelled out. */
 export async function notifyPaymentVerified(
   userId: string,

@@ -4475,3 +4475,19 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). Visual sweep now covers buyer + seller + admin roles: 40 surfaces × 375×812, one real overflow found and fixed, everything else exact.
+
+---
+Task ID: 159
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3 continue; the cohesion mandate: "ektar sathe arektar connection rakha tai hocche main jinish").
+
+Task: FEATURE/COHESION unit 17 — the durable seller-side new-order signal. Unit 15's probe exposed the one-sided circuit: order:create pushed a transient socket event to seller:<supplierId> but persisted NO notification row — a seller who wasn't online never saw the order arrive.
+
+Work Log:
+- New notifySellerNewOrder() in src/lib/notifications.ts (type 'order', honest body: "N item(s) · ৳X — order ORD arrived and is UNPAID. It becomes actionable once the buyer's payment is verified.").
+- Wired into POST /api/orders after commit: one row PER SUPPLIER FEED (never per subOrder), the supplier's userId resolved in ONE findMany; the socket push and the durable row now carry the same event.
+- DRILL scripts/qa/t159-e2e.mjs — 13/0 on a fresh wipe: real admin+seller+buyer bootstrap, real order, the seller's notifications row exists + carries the UNPAID doctrine body + binds to the real order id, exactly ONE row (no per-subOrder duplicates), the seller's authenticated notifications API serves it, and the buyer-doctrine assertion (NO buyer row on a plain UNPAID order — their signal is checkout confirmation + payment events) pins no accidental spam.
+- REGRESSIONS on fresh wipes: t83 33/0, t87 40/0, t152 29/0 (the orders flow untouched except the new post-commit block).
+- tsc 0, eslint 0; DB vacuum 126×0. Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The new-order circuit is now two-sided: transient socket for live consoles + durable row for offline sellers, both proven by drill.
