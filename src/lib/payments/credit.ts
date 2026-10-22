@@ -43,6 +43,26 @@ export async function creditVerifiedTopup(params: {
       data: { status: 'credited', gatewayTrxId: gatewayTrxId || null, creditedAt: new Date() },
     })
 
+    // Task 147: the ledger row proves the money moved; the audit row proves
+    // WHO verified WHAT — the same standard the order webhook (t140) already
+    // meets. Inside the transaction: evidence and credit commit together.
+    await tx.auditLogs.create({
+      data: {
+        actorId: topup.userId,
+        action: 'wallet_topup_credited',
+        entityType: 'wallets',
+        entityId: wallet.id,
+        metadata: JSON.stringify({
+          reference,
+          gatewayTrxId: gatewayTrxId || null,
+          amount: topup.amount,
+          balanceBefore: wallet.balance,
+          balanceAfter: newBalance,
+          providerDescription,
+        }),
+      },
+    })
+
     return true
   })
 }

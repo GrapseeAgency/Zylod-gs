@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
+import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 /**
  * GET /api/rewards — loyalty points balance, tier, and transaction history.
@@ -80,15 +82,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: auth.error || 'Authentication required' }, { status: 401 })
   }
 
+  // Task 147: a money-adjacent redemption rail gets the full doctrine —
+  // rate limit, Zod strict, ONE transaction with the conditional decrement
+  // re-checked AT the write (the t143/t70/t74 race guard), a wallet ledger
+  // row in EVERY branch (the old create-branch credited balance with NO
+  // walletTransactions row — untraceable money), and an audit row.
+  const rl = checkRateLimit(request, 'rewards-catalog-redeem', 5, 60_000)
+  if (!rl.ok) return rateLimitResponse(rl)
+
   try {
-    const { redeemId } = await request.json()
+    const parsed = z
+      .object({ redeemId: z.string().trim().min(1).max(64) })
+      .strict()
+      .safeParse(await request.json().catch(() => null))
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid redemption request' }, { status: 400 })
+    }
+
     const CATALOG: Record<string, { label: string; points: number; type: string; value: number }> = {
       'credit-50': { label: '৳50 Wallet Credit', points: 500, type: 'wallet_credit', value: 50 },
       'credit-100': { label: '৳100 Wallet Credit', points: 1000, type: 'wallet_credit', value: 100 },
       'credit-250': { label: '৳250 Wallet Credit', points: 2500, type: 'wallet_credit', value: 250 },
       'credit-500': { label: '৳500 Wallet Credit', points: 5000, type: 'wallet_credit', value: 500 },
     }
-    const option = CATALOG[redeemId]
+    const option = CATALOG[parsed.data.redeemId]
     if (!option) {
       return NextResponse.json({ error: 'Invalid redemption option' }, { status: 400 })
     }
@@ -96,57 +113,81 @@ export async function POST(request: NextRequest) {
     const buyerId = auth.user.id
     const rewards = await db.buyerRewards.findUnique({ where: { buyerId } })
     if (!rewards || rewards.pointsBalance < option.points) {
-      return NextResponse.json({ error: 'Not enough points' }, { status: 400 })
+      return NextResponse.json(
+        { error: `Not enough points — you have ${rewards?.pointsBalance ?? 0}, this needs ${option.points}` },
+        { status: 400 }
+      )
     }
 
-    // Debit points
-    await db.buyerRewards.update({
-      where: { buyerId },
-      data: {
-        pointsBalance: { decrement: option.points },
-        totalRedeemed: { increment: option.points },
-      },
-    })
+    const { result } = await db.$transaction(async (tx) => {
+      const spent = await tx.buyerRewards.updateMany({
+        where: { buyerId, pointsBalance: { gte: option.points } },
+        data: {
+          pointsBalance: { decrement: option.points },
+          totalRedeemed: { increment: option.points },
+        },
+      })
+      if (spent.count === 0) {
+        const current = await tx.buyerRewards.findUnique({ where: { buyerId } })
+        return { result: { insufficient: true as const, balance: current?.pointsBalance ?? 0 } }
+      }
 
-    // Record transaction
-    await db.rewardTransactions.create({
-      data: {
-        buyerId,
-        type: 'redeem',
-        points: -option.points,
-        description: `Redeemed ${option.label}`,
-        relatedEntityId: redeemId,
-      },
-    })
+      await tx.rewardTransactions.create({
+        data: {
+          buyerId,
+          type: 'redeem',
+          points: -option.points,
+          description: `Redeemed ${option.label}`,
+          relatedEntityId: parsed.data.redeemId,
+        },
+      })
 
-    // Credit wallet for wallet_credit redemptions
-    if (option.type === 'wallet_credit') {
-      const wallet = await db.wallets.findFirst({ where: { userId: buyerId } })
-      if (wallet) {
-        await db.wallets.update({
-          where: { id: wallet.id },
-          data: { balance: { increment: option.value } },
-        })
-        await db.walletTransactions.create({
+      if (option.type === 'wallet_credit') {
+        let wallet = await tx.wallets.findFirst({ where: { userId: buyerId } })
+        if (!wallet) {
+          wallet = await tx.wallets.create({ data: { userId: buyerId, balance: 0, currency: 'BDT' } })
+        }
+        const balanceAfter = wallet.balance + option.value
+        await tx.wallets.update({ where: { id: wallet.id }, data: { balance: balanceAfter } })
+        const ledger = await tx.walletTransactions.create({
           data: {
             walletId: wallet.id,
             type: 'credit',
             amount: option.value,
-            balanceAfter: wallet.balance + option.value,
+            balanceAfter,
             description: `Loyalty points redemption — ${option.label}`,
           },
         })
-      } else {
-        await db.wallets.create({
-          data: { userId: buyerId, balance: option.value },
-        })
+        return { result: { insufficient: false as const, ledgerId: ledger.id, walletId: wallet.id, balanceAfter } }
       }
+
+      return { result: { insufficient: false as const, ledgerId: null, walletId: null, balanceAfter: null } }
+    })
+
+    if (result.insufficient) {
+      return NextResponse.json(
+        { error: `Not enough points — a concurrent redemption spent them first. You have ${result.balance} left.` },
+        { status: 409 }
+      )
     }
+
+    // Evidence: the credit leaves an audit row the admin console can read.
+    await db.auditLogs
+      .create({
+        data: {
+          actorId: auth.user.id,
+          action: 'reward_wallet_credit',
+          entityType: 'wallets',
+          entityId: result.walletId ?? auth.user.id,
+          metadata: JSON.stringify({ userId: buyerId, points: option.points, valueBDT: option.value, balanceAfter: result.balanceAfter }),
+        },
+      })
+      .catch(() => { /* evidence, not a gate */ })
 
     return NextResponse.json({
       success: true,
       message: `Redeemed ${option.label} successfully`,
-      data: { redeemed: option.label, pointsSpent: option.points },
+      data: { redeemed: option.label, pointsSpent: option.points, walletBalanceAfter: result.balanceAfter },
     })
   } catch (error) {
     console.error('Rewards POST error:', error)
