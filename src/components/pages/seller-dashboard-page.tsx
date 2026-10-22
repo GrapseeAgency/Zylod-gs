@@ -161,7 +161,7 @@ export const SellerDashboardPage = () => {
     { label: "Awaiting Payment", value: data ? `৳${data.stats.pendingPaymentBDT.toLocaleString(undefined, { maximumFractionDigits: 2 })}` : '0', icon: AlertTriangle, color: "text-orange-600" },
     { label: "Pending Orders", value: data ? data.stats.pendingOrders : 0, icon: ShoppingCart, color: "text-blue-600" },
     { label: "Low Stock Alerts", value: data ? data.stats.lowStockCount : 0, icon: AlertTriangle, color: "text-red-600" },
-    { label: "Unread Messages", value: data ? data.storeStats.messages : 0, icon: MessageCircle, color: "text-yellow-600" },
+    { label: "Unread Messages", value: data ? data.storeStats.messages : 0, icon: MessageCircle, color: "text-yellow-600", page: 'chat-list' as string | undefined },
   ];
 
   /* Quick actions point ONLY at real, rendered pages. */
@@ -232,8 +232,8 @@ export const SellerDashboardPage = () => {
           <>
             {/* Overview Metrics — real aggregates */}
             <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, idx) => (
-                <Card key={idx} className="border-none shadow-sm dark:bg-gray-800">
+              {stats.map((stat, idx) => {
+                const inner = (
                   <CardContent className="p-4 flex flex-col items-start gap-2">
                     <div className={`p-2 rounded-full bg-gray-100 dark:bg-gray-700 ${stat.color}`}>
                       <stat.icon className="w-5 h-5" />
@@ -247,8 +247,17 @@ export const SellerDashboardPage = () => {
                       <div className="text-xs text-gray-500 font-medium">{stat.label}</div>
                     </div>
                   </CardContent>
-                </Card>
-              ))}
+                )
+                // Task 136: a stat with a real destination is clickable — the
+                // unread-messages tile opens the chat inbox directly.
+                return stat.page ? (
+                  <Card key={idx} className="border-none shadow-sm dark:bg-gray-800 cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(stat.page!)} data-testid="stat-unread-messages">
+                    {inner}
+                  </Card>
+                ) : (
+                  <Card key={idx} className="border-none shadow-sm dark:bg-gray-800">{inner}</Card>
+                )
+              })}
             </div>
 
             {/* Restock Demand — REAL active watch counts per product (Task 62) */}

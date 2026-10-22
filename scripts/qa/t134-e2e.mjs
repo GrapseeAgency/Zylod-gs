@@ -76,6 +76,9 @@ ok(r.status === 201, 'messages POST: buyer message lands')
 const msgId = r.json?.data?.id
 r = await seller('POST', `/api/chat/conversations/${convId}/messages`, { messageText: 'Yes — nationwide courier, 3-5 days for 500 units.' })
 ok(r.status === 201, 'messages POST: supplier reply lands')
+// Task 136: the dashboard unread stat must see the unread reply BEFORE the buyer reads.
+r = await seller('GET', '/api/supplier/dashboard')
+ok(r.json?.data?.storeStats?.messages === 1, 'dashboard: unread stat = 1 while the supplier reply is unread', JSON.stringify(r.json?.data?.storeStats))
 // The buyer's UNREAD badge is checked BEFORE the buyer reads the thread
 // (reading marks read — the drill order must respect its own assertion).
 r = await buyer('GET', '/api/chat/conversations?role=buyer')
@@ -98,6 +101,12 @@ ok(mine?.otherPartyName?.includes('T134 buyer') && mine?.messageCount === 2 && m
 r = await buyer('GET', '/api/chat/conversations?role=buyer')
 const mineB = (r.json?.data ?? []).find((c) => c.id === convId)
 ok(mineB?.unreadCount === 0, 'inbox: buyer unread is 0 after reading')
+
+// Task 136: the seller dashboard's "Unread Messages" stat must count UNREAD
+// (was: all messages ever — a lifetime number under an unread label).
+r = await seller('GET', '/api/supplier/dashboard')
+ok(r.status === 200, 'dashboard: seller dashboard loads')
+ok(r.json?.data?.storeStats?.messages === 0, 'dashboard: unread stat is 0 after the buyer read the thread', JSON.stringify(r.json?.data?.storeStats))
 
 console.log(`\nT134 RESULT: ${PASS} pass / ${FAIL} fail`)
 await db.$disconnect()

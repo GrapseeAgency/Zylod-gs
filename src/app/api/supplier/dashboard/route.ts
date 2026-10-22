@@ -112,7 +112,18 @@ export async function GET(request: NextRequest) {
       /* RFQ truth: rfqRequests is the real chain (quoteRequests model was dead
          and purged in Task 52). Count = RFQs this supplier has quoted on. */
       db.rfqRequests.count({ where: { quotes: { some: { supplierId: { in: supplierScopeIds } } } } }),
-      db.messages.count({ where: { conversation: { supplierId: { in: supplierScopeIds } } } }),
+      /* Task 136 honest-numbers: the dashboard tile says "Unread Messages" —
+         the count must be UNREAD (isRead=false, not sent by me) in my
+         conversations, not the total message volume (the old count made the
+         tile show a lifetime number under an unread label). conversations.
+         supplierId is a users.id, so the auth user id scopes it. */
+      db.messages.count({
+        where: {
+          conversation: { supplierId: { in: supplierScopeIds } },
+          isRead: false,
+          senderId: { not: supplierId },
+        },
+      }),
       /* Revenue truth: 'paid' only — consistent with /api/supplier/analytics.
          Booked-but-unpaid volume is reported separately as pendingPaymentBDT
          so the seller sees both numbers honestly. */
