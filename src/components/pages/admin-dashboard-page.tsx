@@ -14,7 +14,7 @@ import {
   LayoutDashboard, DollarSign, Users, Clock, ShoppingCart, TrendingUp, Package,
   ChevronRight, AlertCircle, BarChart3, Server, Database, Wifi, AlertTriangle,
   UserPlus, Star, MapPin, ArrowRight, ShieldAlert, ShieldCheck, RotateCcw, LayoutGrid, Settings, LifeBuoy,
-  ClipboardList, Warehouse, MessageSquareQuote, Megaphone, ClipboardCheck, Route, Truck,
+  ClipboardList, Warehouse, MessageSquareQuote, Megaphone, ClipboardCheck, Route, Truck, ScrollText,
 } from 'lucide-react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
@@ -96,6 +96,7 @@ const QUICK_ADMIN_ACTIONS = [
   { title: 'Support Threads', description: 'Reply to buyer support tickets as the platform', icon: LifeBuoy, page: 'admin-support-tickets', badgeKey: null as string | null },
   { title: 'System Settings', description: 'Platform settings incl. return window', icon: Settings, page: 'admin-settings', badgeKey: null as string | null },
   { title: 'Trust & Safety Reports', description: 'Review buyer/seller fraud & violations', icon: ShieldAlert, page: 'admin-reports', badgeKey: null as string | null },
+  { title: 'Audit Trail', description: 'Every audited write with its before/after evidence', icon: ScrollText, page: 'admin-audit-logs', badgeKey: null as string | null },
 ]
 
 // ─── Component ────────────────────────────────────────────────
