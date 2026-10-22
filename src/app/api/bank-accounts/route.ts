@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { financialAudit, maskAccount } from '@/lib/financial-audit'
 
 export async function GET(request: NextRequest) {
   const auth = await authenticateRequest(request)
@@ -68,6 +69,13 @@ export async function POST(request: NextRequest) {
         expiry: routingNumber || 'N/A',
         isDefault: Boolean(isDefault),
       },
+    })
+
+    financialAudit({
+      actorId: userId,
+      action: 'financial_method_added',
+      methodId: newAccount.id,
+      summary: { method: 'bank', bankName: newAccount.label, accountMasked: maskAccount(newAccount.accountNumber), holderName: newAccount.holderName, isDefault: newAccount.isDefault },
     })
 
     return NextResponse.json({

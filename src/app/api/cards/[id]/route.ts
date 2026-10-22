@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { financialAudit, maskAccount } from '@/lib/financial-audit'
 
 export async function DELETE(
   request: NextRequest,
@@ -24,6 +25,13 @@ export async function DELETE(
     }
 
     await db.paymentMethods.delete({ where: { id } })
+
+    financialAudit({
+      actorId: userId,
+      action: 'financial_method_removed',
+      methodId: id,
+      summary: { method: 'card', network: existing.cardNetwork, accountMasked: maskAccount(existing.accountNumber) },
+    })
 
     return NextResponse.json({
       success: true,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { financialAudit, maskAccount } from '@/lib/financial-audit'
 
 export async function DELETE(
   request: NextRequest,
@@ -24,6 +25,13 @@ export async function DELETE(
     }
 
     await db.paymentMethods.delete({ where: { id } })
+
+    financialAudit({
+      actorId: userId,
+      action: 'financial_method_removed',
+      methodId: id,
+      summary: { method: 'bank', bankName: existing.label, accountMasked: maskAccount(existing.accountNumber) },
+    })
 
     return NextResponse.json({
       success: true,
@@ -56,6 +64,12 @@ export async function PATCH(
       await db.paymentMethods.update({
         where: { id },
         data: { isDefault: true },
+      })
+      financialAudit({
+        actorId: userId,
+        action: 'financial_method_updated',
+        methodId: id,
+        summary: { method: 'bank', change: 'default payout account switched', isDefault: true },
       })
     }
 

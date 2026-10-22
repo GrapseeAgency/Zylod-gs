@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { financialAudit, maskAccount } from '@/lib/financial-audit'
 
 export async function GET(request: NextRequest) {
   const auth = await authenticateRequest(request)
@@ -72,6 +73,13 @@ export async function POST(request: NextRequest) {
         cardNetwork: brand || 'Visa',
         isDefault: Boolean(isDefault),
       },
+    })
+
+    financialAudit({
+      actorId: userId,
+      action: 'financial_method_added',
+      methodId: card.id,
+      summary: { method: 'card', network: card.cardNetwork, accountMasked: maskAccount(card.accountNumber), holderName: card.holderName, isDefault: card.isDefault },
     })
 
     return NextResponse.json({

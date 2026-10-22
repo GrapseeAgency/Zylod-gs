@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { financialAudit, maskAccount } from '@/lib/financial-audit'
 
 /**
  * GET /api/payment-methods — list the user's saved payment methods.
@@ -76,6 +77,13 @@ export async function POST(request: NextRequest) {
         cardNetwork: cardNetwork || null,
         isDefault: isFirst,
       },
+    })
+
+    financialAudit({
+      actorId: auth.user.id,
+      action: 'financial_method_added',
+      methodId: method.id,
+      summary: { method: method.type, label: method.label, accountMasked: maskAccount(method.accountNumber), isDefault: method.isDefault },
     })
 
     return NextResponse.json({ success: true, data: method }, { status: 201 })

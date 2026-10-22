@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { financialAudit, maskAccount } from '@/lib/financial-audit'
 
 /**
  * DELETE /api/payment-methods/[id] — remove a saved payment method.
@@ -20,6 +21,12 @@ export async function DELETE(
       return NextResponse.json({ error: 'Payment method not found' }, { status: 404 })
     }
     await db.paymentMethods.delete({ where: { id } })
+    financialAudit({
+      actorId: auth.user.id,
+      action: 'financial_method_removed',
+      methodId: id,
+      summary: { method: existing.type, label: existing.label, accountMasked: maskAccount(existing.accountNumber) },
+    })
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Payment method DELETE error:', error)
