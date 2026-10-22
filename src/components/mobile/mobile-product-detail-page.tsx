@@ -61,7 +61,7 @@ interface ApiProduct {
     minOrderAmount: number | null; maxDiscount: number | null; validUntil: string
   } | null
   category: { id: string; name: string; slug: string; parentId: string | null }
-  supplier: { id: string; companyName: string; slug: string; city: string; ratingAvg: number; ratingCount: number; verificationStatus: string }
+  supplier: { id: string; userId: string; companyName: string; slug: string; city: string; ratingAvg: number; ratingCount: number; verificationStatus: string }
   images: { id: string; imageUrl: string; sortOrder: number }[]
   priceTiers: { id: string; minQty: number; maxQty: number | null; pricePerUnit: number }[]
   variants: { id: string; variantName: string; variantValue: string; stockQuantity: number; priceOverride: number | null }[]
@@ -740,11 +740,21 @@ export function MobileProductDetailPage() {
 
         {/* Action Buttons */}
         <div className="mt-4 space-y-2">
-          {/* Message supplier — chat about this product */}
+          {/* Task 134 REAL FIX: the old button navigated to 'chat-detail' with
+              conversationId = product.supplier.id — a supplierProfile id where
+              the thread expects a CONVERSATION id, so the thread 403'd forever.
+              The platform convention (supplier profile pages, line-1248 flows)
+              passes supplierId + productId and the chat page auto-creates (or
+              reuses) the real conversation. */}
           {product?.supplier?.id && (
             <button
-              onClick={() => navigate('chat-detail', { conversationId: product.supplier.id })}
+              onClick={() => navigate('chat-detail', {
+                supplierId: product.supplier.id,
+                productId: product.id,
+                supplierName: product.supplier.companyName,
+              })}
               className="w-full h-9 flex items-center justify-center gap-1.5 rounded-lg border border-[#E53935]/30 bg-[#E53935]/5 text-xs font-semibold text-[#E53935] active:bg-[#E53935]/10 transition-colors"
+              data-testid="mobile-message-supplier"
             >
               <MessageCircle className="w-3.5 h-3.5" />
               Message Supplier

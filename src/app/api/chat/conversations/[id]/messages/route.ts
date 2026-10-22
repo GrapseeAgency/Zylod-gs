@@ -33,6 +33,13 @@ export async function GET(
 
     const skip = (page - 1) * limit
 
+    // Task 134: mark BEFORE fetching — the old order returned the PRE-update
+    // isRead values, so the first read always showed stale unread flags.
+    await db.messages.updateMany({
+      where: { conversationId: id, isRead: false, senderId: { not: userId } },
+      data: { isRead: true },
+    })
+
     const [messages, total] = await Promise.all([
       db.messages.findMany({
         where: { conversationId: id },
@@ -53,12 +60,6 @@ export async function GET(
       }),
       db.messages.count({ where: { conversationId: id } }),
     ])
-
-    // Mark unread messages as read for this user
-    await db.messages.updateMany({
-      where: { conversationId: id, isRead: false, senderId: { not: userId } },
-      data: { isRead: true },
-    })
 
     // Resolve sender names in bulk
     const senderIds = [...new Set(messages.map(m => m.senderId))]

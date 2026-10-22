@@ -179,6 +179,7 @@ export const SellerDashboardPage = () => {
     { icon: Filter, label: 'Funnel', page: 'seller-sales-funnel' },
     { icon: Users, label: 'Customers', page: 'seller-customer-insights' },
     { icon: MessagesSquare, label: 'Queries', page: 'customer-queries' },
+    { icon: MessageCircle, label: 'Messages', page: 'chat-list' },
   ];
 
   const maxRevenue = data?.monthlyRevenue?.reduce((m, r) => Math.max(m, r.revenue), 0) ?? 0;

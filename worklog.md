@@ -3974,3 +3974,23 @@ Stage Summary:
 - Every invoice document is now real on both sides: sellers can finally see their money documents (list + Mushak + tax invoice), buyers see server-computed truthful totals, and the invoice family's endpoints each have a distinct, drilled consumer.
 - REMAINING FAKE/INCOMPLETE: /api/supplier/queries/[id] GET/PATCH (query detail + status updates have no UI — the list is consumed); that is the last known true orphan from the scan.
 - Pushed as a3ecb8a with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 133
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE QUERIES CONSOLE — the scan's last known true orphan (/api/supplier/queries/[id] GET+PATCH) turned out to sit behind a HARD-CODED PLACEHOLDER page (fake "Can you do 500 units by next week?" bubble, dead input, dead Send button, real query id ignored) AND an unreachable console (no dashboard tile, no nav link anywhere in src). The circuit existed on neither side.
+
+Work Log:
+- PLACEHOLDER KILLED: customer-query-detail-page rebuilt as the real consumer — GET renders buyer-of-record (resolved name), product name, queryType chip, the buyer's ACTUAL message, any existing seller reply with its timestamp; the composer really PATCHes { replyMessage } (server stamps repliedAt + flips status to 'replied', audit-logged); Mark resolved / Reopen / Close are real status PATCHes with the composer honestly hidden on resolved/closed; guards for 401/404/error/retry; testids throughout.
+- REAL ROUTE BUG: PATCH {} (no fields) used to 200 and write an auditLogs row claiming an update happened — a fake event. Now 400 "Nothing to update — send replyMessage and/or status."
+- REACHABILITY: seller dashboard gained the "Queries" quick-action tile (13 live seller tools now); list rows gained status badges on both mobile cards and the desktop table (the status column simply never rendered before); the list's empty state now names where buyer questions ACTUALLY arrive today (product Q&A, RFQ inbox, chat) instead of vaguely promising.
+- WRITER-LESS TRUTH (recorded, not fabricated): NOTHING in src or mini-services writes sellerCustomerQueries — verified. The distinct semantics (private pre_order/custom_request/complaint) already route through real surfaces (RFQ/quote-request, chat, productQas, dispute-center), so building a duplicate buyer-creation flow would invent a parallel channel. The read/admin circuit (list → detail → reply → status) is now complete, reachable, drilled, and will light up if/when a creation path lands. The empty states say exactly that.
+- DRILL scripts/qa/t133-e2e.mjs — **27/0 on a fresh wipe**: the query row seeded via Prisma (the documented fixture pattern for a writer-less table); list gates (anon/buyer 401, owner 200, foreign-seller scoped zero); detail gates (owner 200 with resolved buyer+product names, foreign 404 no-leak, missing 404, admin-without-profile 403 = route design); PATCH gates (empty 400, whitespace reply 400, invalid status 400, foreign 404); reply → status 'replied' + repliedAt + REAL auditLogs row; resolved/reopen/close transitions.
+- BROWSER QA (real UI seller login, gateway :81): dashboard → Queries tile → list row (status badge, real subject) → detail (real buyer message + product, fake placeholder text GONE) → live reply typed and sent → toast + REPLIED chip + YOUR REPLY bubble with timestamp + "No reply yet" gone → Mark resolved → RESOLVED chip + composer hidden + Reopen available. Mobile 375×812: scrollWidth exactly 375. Console clean. Screenshots t133-query-detail.png.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- Zero dead placeholder pages remain in the seller surface: every seller page consumes real endpoints or states honestly why it has no numbers. The queries console is reachable, honest, and fully interactive on the read/reply/status side.
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries has no writer (documented decision pending); delivery location remains the driver-app external surface. No other true orphans are known — the next rounds move to feature depth (styling/detail passes, more functionality) per the standing build order.
+- Pushed as 579683e with the owner-provided PAT (never stored in tracked files).
