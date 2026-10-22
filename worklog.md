@@ -4197,3 +4197,24 @@ Stage Summary:
 - Loyalty points are now real money with real teeth end-to-end: earned → redeemed (atomic, rate-limited, typed) → bound single-use voucher → validated preview → honored at checkout → consumed in the vault → counted in savings. No path deducts without granting; no voucher is spendable but invisible, or visible but unspendable.
 - Pushed as 555f27c (with the verified WIP 4d1160e beneath it) using the owner-provided PAT (never stored in tracked files).
 - REMAINING FAKE/INCOMPLETE (full-app audit, next units): (1) SIBLING voucher writers still write ONLY userCoupons — spin prizes, mystery-box drops, referral rewards, earn/claim coupons are NOT spendable at checkout (same fake class this task killed for redeem; fix = same bound-coupons pattern or checkout honoring userCoupons — decide per-writer with drills); (2) sellerCustomerQueries writer (documented decision pending); (3) delivery location = driver-app surface (external); (4) t142 candidate: a seller "Go Live" console UI.
+
+---
+Task ID: 144
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: FULL-APP AUDIT unit 2 — THE UNSPENDABLE PRIZE EMPIRE. Task 143 gave redeem vouchers teeth; this task found the SAME fake still alive across the whole reward ecosystem: spin prizes, mystery-crate drops, referral welcomes, earn/claim coupons ALL write userCoupons rows whose codes the order engine refused as "does not exist" (it read ONLY tx.coupons). Every prize the platform ever granted was an unspendable promise displayed as active in the vault.
+
+Work Log:
+- ORDER WRITE: the buyer's OWN active claim row now wins the code (consumed AT the write via updateMany status:'active' re-check — the t74 race guard — with usedAt stamped); the platform campaigns row remains the fallback for unclaimed public codes. The claim row wins BECAUSE claiming already counted the platform row's usedCount (the claim route's own documented semantics) — consuming the claim keeps every counter single-counted.
+- VALIDATE PREVIEW: mirrors the SAME precedence; response carries source 'personal'|'platform'.
+- FREE-DELIVERY PRIZES GET HONEST SEMANTICS: discountStyle 'free-shipping' (lucky spin's "Free Cargo Delivery") discounts the QUOTED shipping fee (min(voucher, fee); receipt carries shippingDiscount ৳); with no shipping choice the order refuses 409 and the whole transaction rolls back — the voucher is NOT consumed for a benefit that never existed.
+- DRILL scripts/qa/t144-e2e.mjs — 44/0 on a fresh wipe: claim circuit, preview precedence (personal wins for owner, platform fallback for strangers), THE SINGLE-COUNT PROOF (claim spent → platform usedCount untouched; the spent code still works via the still-public campaign — documented semantics), percentage math, the deterministic referral welcome, free-delivery refusal + rollback verbatim in DB, then the capped shipping discount (1,500 + 420 − 300 = ৳1,620), THE RACE INVARIANT (two concurrent orders: the claim row consumed EXACTLY once with usedAt; the loser's legitimate public use single-counted — usedCount 2 = 1 claim-time + 1 public use; each discount backed by exactly one consumption).
+- REGRESSIONS on fresh wipes: t115 92/0 (the order monolith), t74 28/0, t131 31/0.
+- BROWSER (real UI, gateway :81): PDP → Add to Cart → Proceed to Checkout → T144QA100 applied in the preview → Place Order → "Order ORD-MVJYV3KKHYBZ Created — Coupon T144QA100 saved you ৳100" → the vault's Used tab lists the spent voucher. Mobile 375 scrollWidth exact; console clean. Screenshots /home/z/.qa/shots/t144-vault-used.png + -mobile.png.
+- Deep-link lesson: PDP takes ?page=product-detail&productId=<id> (NOT &id=).
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The voucher system is now ONE honest circuit: every grant path (redeem/claim/spin/crate/referral) produces spendable money with a real consumption trail — previewed by the same precedence the order enforces, consumed exactly once per row, refused honestly when its benefit cannot exist.
+- Pushed as 66a0e2b with the owner-provided PAT (never stored in tracked files).
+- REMAINING FAKE/INCOMPLETE (full-app audit continues): (1) sellerCustomerQueries writer (documented decision pending); (2) delivery location = driver-app surface (external); (3) t142 candidate: seller "Go Live" console UI; (4) the spin/box/crate UIs could surface the code + terms in their win toasts (minor, the vault now carries everything).
