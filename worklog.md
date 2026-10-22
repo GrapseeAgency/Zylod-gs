@@ -3916,3 +3916,19 @@ Stage Summary:
 - REMAINING FAKE/INCOMPLETE: none from Task 128's list. NEW candidate recorded for a future round: the desktop PDP Trust Signals "Bulk Discounts — Up to {savingsPercent}% off" showed "Up to 0% off" on a product whose tiers DO give 10% at 200+ pcs (savingsPercent calc reads the wrong tier or base-vs-base) — an honest-numbers violation to pin down next.
 - delivery location remains a documented driver-app external surface.
 - Pushed as b41a623 (together with the stranded 1e6a8fe) with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 130
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE "Up to 0% off" LIE — the candidate Task 129 recorded. The desktop PDP's Bulk Discounts Trust tile claimed "Up to {savingsPercent}% off", but savingsPercent measures the discount at the CURRENT quantity — always 0% at MOQ — so a product whose tiers genuinely give 10% at 200+ pcs displayed "Up to 0% off".
+
+Work Log:
+- ROOT CAUSE: line 541's savingsPercent = (basePrice − applicablePrice)/basePrice where applicablePrice follows the CURRENT quantity (canonical wholesale rule). Correct for the inline "Save X%" badge (line 999, which properly hides at 0) — wrong semantics for a tile promising the product's maximum.
+- FIX: new maxSavingsPercent useMemo sweeps the WHOLE priceTiers ladder vs basePrice (clamped ≥ 0) — the real maximum a bulk buyer can reach. Tile now shows "Up to {maxSavingsPercent}% off", and when the product genuinely has no discounts it says the honest "No tiered discounts set" instead of a nonsensical "Up to 0% off". The inline badge keeps current-quantity semantics.
+- VERIFIED: tsc 0, eslint 0. Seed re-run on a fresh wipe (both products approved via real APIs). Desktop browser 1280×800: tile reads "Up to 10% off" (tiers 10–99 @ ৳1,200 / 200+ @ ৳1,080 vs base ৳1,200 — exact math), RelatedProductsRail renders alongside (1 real card). One transient: the rail's fetch raced a dev-server recompile and honestly rendered nothing; reload → rail present — the honest no-op behaved as designed. scrollWidth exactly 1280. Console clean. Screenshot /home/z/.qa/shots/t130-bulk-discounts-fixed.png.
+- DB wiped 139×0 before commit.
+
+Stage Summary:
+- Every number on the PDP now tells the truth about its own semantics: current-quantity savings in the badge, whole-ladder maximum in the Trust tile, honest copy when there is nothing to discount.
+- Pushed as 9ec1d1a with the owner-provided PAT (never stored in tracked files).

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
@@ -98,9 +98,13 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   // Task 74: coupon application — the API honors couponCode and now refuses
   // invalid ones with the real reason; this input is the half that was
   // missing on the buyer side.
+  // Task 131: Apply now validates against the LIVE endpoint
+  // (/api/coupons/validate — formula mirrors the order write, fixed +
+  // percentage), previews the REAL ৳ and re-validates when the cart changes.
   const [couponInput, setCouponInput] = useState('')
-  const [couponApplied, setCouponApplied] = useState<{ code: string; discount: number } | null>(null)
+  const [couponApplied, setCouponApplied] = useState<{ code: string; discount: number; discountType: string } | null>(null)
   const [couponError, setCouponError] = useState('')
+  const [couponChecking, setCouponChecking] = useState(false)
 
   // Task 95: live shipping quotes per supplier shipment + the buyer's picks.
   const [quotes, setQuotes] = useState<Record<string, QuoteState>>({})
@@ -272,21 +276,64 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   )
   const hasShippingChoice = supplierGroups.some((g) => !!shippingChoices[g.supplierId])
   const orderTotal = subtotal + shippingFee
+  // Task 131: the ONE payable number every money label on this page quotes —
+  // goods + shipping − the validated coupon discount (server re-confirms at
+  // the write; Task 74 remains the source of truth).
+  const payableTotal = Math.max(0, orderTotal - (couponApplied?.discount ?? 0))
 
-  const walletCanCover = walletBalance !== null && walletBalance >= orderTotal - (couponApplied?.discount ?? 0)
+  const walletCanCover = walletBalance !== null && walletBalance >= payableTotal
 
-  const applyCoupon = () => {
-    setCouponError('')
-    const code = couponInput.trim().toUpperCase()
+  // Tracks the goods subtotal the current coupon was validated against.
+  const couponSubtotalRef = useRef(subtotal)
+
+  const applyCoupon = async (codeArg?: string) => {
+    const code = (codeArg ?? couponInput).trim().toUpperCase()
     if (!code) {
       setCouponError('Enter a coupon code first.')
       return
     }
-    // Client-side attach only — the server re-validates EVERYTHING at order
-    // time (existence, window, minimum, usage limit) and refuses honestly;
-    // the REAL discount arrives on the order receipt.
-    setCouponApplied({ code, discount: 0 })
+    // Task 131: LIVE validation — the route mirrors the order write's rules
+    // (existence, window, minimum, usage limit) AND its exact discount
+    // formula. The preview is honest; the server still re-confirms at the
+    // write (Task 74) — the receipt stays the source of truth.
+    setCouponChecking(true)
+    setCouponError('')
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ code, orderAmount: subtotal }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.valid) {
+        setCouponApplied(null)
+        setCouponError(data?.error || `Coupon could not be validated (HTTP ${res.status}).`)
+        return
+      }
+      setCouponApplied({
+        code: data.data.code,
+        discount: typeof data.data.discountAmount === 'number' ? data.data.discountAmount : 0,
+        discountType: data.data.discountType || 'percentage',
+      })
+      couponSubtotalRef.current = subtotal
+    } catch {
+      setCouponError('Network error while validating the coupon. Check your connection and retry.')
+    } finally {
+      setCouponChecking(false)
+    }
   }
+
+  // Task 131: the cart is alive — qty changes, shipping choices, promotions —
+  // so a validated coupon is re-checked whenever the goods subtotal moves.
+  // A stale preview would be a fake number; a now-invalid coupon clears
+  // itself with the endpoint's real reason.
+  useEffect(() => {
+    if (!couponApplied) return
+    if (couponSubtotalRef.current === subtotal) return
+    couponSubtotalRef.current = subtotal
+    void applyCoupon(couponApplied.code)
+  }, [subtotal, couponApplied?.code])
 
   const handlePlaceOrder = async () => {
     setError('')
@@ -739,7 +786,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
               <span className="text-xs">
                 {walletCanCover ? (
                   <>
-                    <span className="font-bold text-slate-900">Pay {formatPrice(orderTotal)} from wallet balance</span>
+                    {/* Task 131: the wallet label quotes the SAME payable the summary
+                        shows (orderTotal − validated coupon discount) — never a
+                        different number on one screen. */}
+                    <span className="font-bold text-slate-900">Pay {formatPrice(payableTotal)} from wallet balance</span>
                     <span className="block text-[10px] text-slate-500">
                       Balance {formatPrice(walletBalance)} — the order is marked PAID instantly, no verification wait.
                     </span>
@@ -748,7 +798,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                   <>
                     <span className="font-bold text-slate-500">Wallet balance {formatPrice(walletBalance)}</span>
                     <span className="block text-[10px] text-slate-400">
-                      Not enough for this order ({formatPrice(orderTotal)}) — top up from the wallet page, or pay manually below.
+                      Not enough for this order ({formatPrice(payableTotal)}) — top up from the wallet page, or pay manually below.
                     </span>
                   </>
                 )}
@@ -797,11 +847,19 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex justify-between items-baseline">
-            <span className="text-xs font-bold text-slate-800">{hasShippingChoice ? 'Total (goods + shipping)' : 'Goods total'}</span>
-            <div className="text-xl md:text-2xl font-black text-primary">
-              {formatPrice(orderTotal)}
+          <div className="pt-2 border-t border-slate-100 space-y-1.5">
+            <div className="flex justify-between items-baseline">
+              <span className="text-xs font-bold text-slate-800">{hasShippingChoice ? 'Total (goods + shipping)' : 'Goods total'}</span>
+              <div className="text-xl md:text-2xl font-black text-primary">
+                {formatPrice(payableTotal)}
+              </div>
             </div>
+            {couponApplied && couponApplied.discount > 0 && (
+              <div className="flex justify-between text-[10px] font-bold text-emerald-600">
+                <span>Coupon {couponApplied.code}</span>
+                <span>− {formatPrice(couponApplied.discount)}</span>
+              </div>
+            )}
           </div>
 
           {/* Task 74: coupon attach — validated and discounted server-side. */}
@@ -815,7 +873,9 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                 <span className="text-xs font-bold text-emerald-700 truncate">
                   Coupon {couponApplied.code}
                   <span className="block text-[10px] font-medium text-emerald-600 normal-case">
-                    Attached — the server confirms the final discount when you place the order.
+                    {couponApplied.discount > 0
+                      ? `Validated — ${formatPrice(couponApplied.discount)} off this cart. The server re-confirms the exact ৳ on the receipt.`
+                      : 'Validated — the server confirms the exact ৳ on the receipt.'}
                   </span>
                 </span>
                 <button
@@ -832,6 +892,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                 <input
                   value={couponInput}
                   onChange={(e) => { setCouponInput(e.target.value); setCouponError('') }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void applyCoupon() } }}
                   placeholder="Coupon code"
                   aria-label="Coupon code"
                   maxLength={24}
@@ -840,10 +901,11 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={applyCoupon}
+                  onClick={() => void applyCoupon()}
+                  disabled={couponChecking}
                   className="h-9 px-4 rounded-xl text-xs font-bold border-slate-200 text-slate-700 hover:bg-slate-50"
                 >
-                  Apply
+                  {couponChecking ? 'Checking…' : 'Apply'}
                 </Button>
               </div>
             )}

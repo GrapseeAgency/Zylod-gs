@@ -40,13 +40,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Minimum order amount is ${coupon.minOrderAmount} BDT`, valid: false }, { status: 400 })
     }
 
-    // Calculate discount
+    // Calculate discount — Task 131: the formula now mirrors POST /api/orders
+    // (the authoritative money path) EXACTLY, including discountType 'fixed'
+    // (where discountPercent holds the flat ৳ amount). The old block always
+    // computed percentage math, so a fixed coupon previewed the wrong ৳.
     let discountAmount = 0
-    if (orderAmount) {
-      discountAmount = orderAmount * (coupon.discountPercent / 100)
-      if (coupon.maxDiscount) {
-        discountAmount = Math.min(discountAmount, coupon.maxDiscount)
-      }
+    if (coupon.discountType === 'fixed') {
+      discountAmount = orderAmount
+        ? Math.min(coupon.discountPercent, orderAmount)
+        : coupon.discountPercent
+    } else if (orderAmount) {
+      discountAmount = Math.min(
+        orderAmount * (coupon.discountPercent / 100),
+        coupon.maxDiscount ?? Number.POSITIVE_INFINITY
+      )
     }
 
     return NextResponse.json({
@@ -54,6 +61,7 @@ export async function POST(request: NextRequest) {
       valid: true,
       data: {
         code: coupon.code,
+        discountType: coupon.discountType,
         discountPercent: coupon.discountPercent,
         maxDiscount: coupon.maxDiscount,
         minOrderAmount: coupon.minOrderAmount,
