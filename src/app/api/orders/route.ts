@@ -5,7 +5,7 @@ import { requireUserType } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { resolveUnitPrice, PricingError } from '@/lib/wholesale-pricing'
 import { broadcastToRoom } from '@/lib/realtime-broadcast'
-import { notifyPaymentVerified, notifySellerNewOrder } from '@/lib/notifications'
+import { notifyPaymentVerified, notifySellerNewOrder, notifyAdminNewOrder } from '@/lib/notifications'
 import { holdEscrowInTx } from '@/lib/escrow'
 import { roundQty } from '@/lib/product-contract'
 import { buildAddressSnapshot } from '@/lib/addresses'
@@ -843,6 +843,24 @@ export async function POST(request: NextRequest) {
               feed.subtotal
             )
           }
+        }
+      }
+
+      // Task 159 cohesion fix (admin half): admins run the payment-verification
+      // gate — a plain UNPAID order previously produced NO admin signal. Push
+      // order:new to every admin room AND persist a durable row per admin.
+      {
+        const admins = await db.users.findMany({ where: { userType: 'admin' }, select: { id: true } })
+        const totalItemCount = order.sellerFeed.reduce((s, f) => s + f.itemCount, 0)
+        for (const a of admins) {
+          void broadcastToRoom(`admin:${a.id}`, 'order:new', {
+            orderId: order.order.id,
+            orderNumber: order.order.orderNumber,
+            itemCount: totalItemCount,
+            totalAmount: order.order.totalAmount,
+            createdAt: order.order.createdAt.toISOString(),
+          })
+          await notifyAdminNewOrder(a.id, order.order.orderNumber, order.order.id, totalItemCount, order.order.totalAmount)
         }
       }
 

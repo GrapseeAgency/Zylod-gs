@@ -80,6 +80,18 @@ async function main() {
   const buyerRows = await db.notifications.count({ where: { userId: buyerUser.id, relatedEntityId: ord.json?.data?.orderId } })
   ok(buyerRows === 0, 'buyer gets NO notification row on a plain UNPAID order (doctrine unchanged)', `rows ${buyerRows}`)
 
+  // ── Task 159 admin half: admins run the verification gate — they now get a
+  // durable row (and an order:new socket push) for every new order.
+  const admins = await db.users.findMany({ where: { userType: 'admin' }, select: { id: true } })
+  ok(admins.length === 1, 'exactly one admin (first-admin window)')
+  for (const a of admins) {
+    const aNotif = await db.notifications.findFirst({ where: { userId: a.id, type: 'order', title: { contains: orderNumber } }, orderBy: { createdAt: 'desc' } })
+    ok(!!aNotif && aNotif.title.includes('Awaiting Verification'), `DURABLE: admin row exists ("Awaiting Verification")`, JSON.stringify(aNotif)?.slice(0, 140))
+    ok(!!aNotif && aNotif.body.includes('UNPAID') && aNotif.body.includes('Verify'), 'admin row carries the verification-gate doctrine body', aNotif?.body?.slice(0, 120))
+    const aCount = await db.notifications.count({ where: { userId: a.id, title: { contains: orderNumber } } })
+    ok(aCount === 1, `exactly one admin row (got ${aCount})`)
+  }
+
   // seller sees it through the authenticated notifications API
   const list = await seller('GET', '/api/notifications')
   const listed = (list.json?.data?.notifications ?? list.json?.data ?? []).find?.((n) => n.title?.includes?.(orderNumber))

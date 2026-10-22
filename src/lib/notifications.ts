@@ -245,6 +245,29 @@ export async function notifySellerNewOrder(
   })
 }
 
+/**
+ * Durable admin-side signal for a new order (Task 159 cohesion fix, admin
+ * half): admins run the payment-verification gate for every manual payment —
+ * a plain UNPAID order previously produced NO admin signal at all (socket or
+ * row). Every admin now gets one row so the verification console's queue is
+ * discoverable without polling.
+ */
+export async function notifyAdminNewOrder(
+  adminUserId: string,
+  orderNumber: string,
+  orderId: string,
+  itemCount: number,
+  total: number
+) {
+  return sendNotification({
+    userId: adminUserId,
+    type: 'order',
+    title: `Order Awaiting Verification: ${orderNumber}`,
+    body: `${itemCount} item(s) · ৳${total.toLocaleString()} — order ${orderNumber} was placed and is UNPAID. Verify the buyer's submitted payment to unlock processing.`,
+    relatedEntityId: orderId,
+  })
+}
+
 /** Seller/admin verified the payment — honest partial math spelled out. */
 export async function notifyPaymentVerified(
   userId: string,
