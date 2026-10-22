@@ -4441,3 +4441,22 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The visual layer is as clean as the API layer: 16 surfaces × 2 viewports, zero overflow, zero console errors, every surface honest.
+
+---
+Task ID: 157
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3: check everywhere).
+
+Task: FULL-APP AUDIT unit 15 — the complete CHECKOUT MONEY PATH end-to-end at 375×812 through the real UI (the one flow where a mobile defect would be critical).
+
+Work Log:
+- Guest → UI login → PDP (Add to Cart, MOQ-merge to Qty 10 × ৳12 = ৳120 across two adds) → checkout.
+- Checkout at 375: real line, honest "no weight on file — shipping settles directly with the supplier" warning, honest wallet gate ("৳0 — Not enough for this order — top up or pay manually"), platform-promotion note, server-side recompute note.
+- Address form: validation fired correctly (empty country → "Country/Region is required"), Bangladesh selected via real combobox, saved → DEFAULT badge, checkout bound to it, shipping "TO DHAKA".
+- Place Order → REAL order ORD-MVK55TWIK6IF created with the honest doctrine text ("Status: UNPAID. The order is NOT confirmed until payment is verified. The supplier sees it now.").
+- DB truth: order paymentStatus=unpaid, total=120, 1 subOrder bound to the seller's profile, 0 payment rows (buyer hasn't paid — correct per the payment doctrine).
+- COHESION verified: the seller visibility circuit is real — subOrders.supplierId matches the seller profile (console lists it) AND broadcastToRoom(`seller:${supplierId}`, 'order:new') fires on create (token-gated room).
+- my-orders at 375: PO #ORD-MVK55TWIK6IF, PROCESSING, ৳120, UNPAID badge, supplier card, View Details — no overflow.
+- DB vacuum 126×0; pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The money path is browser-proven end-to-end at mobile: cart merge → address validation → honest gates → UNPAID order → seller-side visibility, all with zero console errors and zero overflow.
