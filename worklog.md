@@ -4460,3 +4460,18 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The money path is browser-proven end-to-end at mobile: cart merge → address validation → honest gates → UNPAID order → seller-side visibility, all with zero console errors and zero overflow.
+
+---
+Task ID: 158
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3 continue; standing build order).
+
+Task: FULL-APP AUDIT unit 16 — the seller + admin console sweeps at 375×812 (completing the visual sweep: buyer done in unit 14, now the other two roles).
+
+Work Log:
+- SELLER (12 surfaces, real UI login as the seeded supplier): dashboard, orders (Live), inventory, listings, storefront (T143QA Depot), analytics, payouts (honest ৳0.00 zero states + the settlement doctrine text), verification hub (real 0/4 progress), customer queries, campaigns, rankings, live studio — scrollWidth exactly 375 on ALL; every surface real content.
+- ADMIN (12 surfaces, real UI login as the seeded admin): dashboard (hard reload shows DB truth: Users 3, Suppliers 1 — the earlier "1" was stale in-session SPA state, not a data defect; the API queries db.users.count() directly), orders fulfillment, users, payments (tabbed managers incl. AdminPayoutsManager), complaints, returns, shipping, categories — all 375-exact.
+- REAL DEFECT FOUND + FIXED: the buyer `coupons` page had a 20px document overflow at 375 — the mobile sticky header (title + Earn Vouchers + My Vault) didn't fit; `flex-wrap gap-2` added → scrollWidth exactly 375 re-verified. (Also probed: five admin deep links I guessed hit the generic fallback — those managers are tabs inside real surfaces, my wrong ids, not platform defects.)
+- Console 0 errors across both sweeps. DB vacuum 126×0. Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). Visual sweep now covers buyer + seller + admin roles: 40 surfaces × 375×812, one real overflow found and fixed, everything else exact.

@@ -133,7 +133,7 @@ export function CouponsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex flex-wrap items-center justify-between gap-2 shadow-sm md:hidden">
         <div className="flex items-center gap-3">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700" />
