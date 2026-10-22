@@ -4072,3 +4072,23 @@ Stage Summary:
 - The route graph's tooling now tells the truth in both directions: nothing live is buried under false-alarm noise, and nothing dead masquerades as work.
 - REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface. Zero live orphans confirmed by the improved tool.
 - Pushed as 14a00a3 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 138
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE PRICE-DROP WATCH THAT NEVER FIRED — the priceAlerts family had complete WRITE rails (PDP price-alert create + the alerts console) and a full-sweep engine (/api/notifications/evaluate-alerts) reachable ONLY from a buried manual button in push-notification-settings. The stock family (Task 65) evaluates inline in every stock-restoring writer; the price family had NO equivalent — when the seller actually dropped the price, subscribed buyers learned never, and the NO-CRON doctrine meant no poller would ever save them.
+
+Work Log:
+- src/lib/price-alerts.ts — notifyPriceDrop(productId, previousPrice, newPrice), the exact doctrine mirror of stock-alerts.ts: gated on the products row (active) + a GENUINE decrease (increases and no-ops never notify — "price dropped" that is not a drop is a lie), re-reads committed state (not the request), flip-first updateMany race guard (a concurrent evaluator can never double-notify), one real 'price_drop' notification per subscriber whose targetPrice the NEW price actually meets, fire-and-forget — never blocks or fails the write it follows.
+- WIRED into the ONE real price-change writer: the supplier full-replace PATCH (audited: bulk-upload only creates; instant inventory tx is stock-only). Sits beside the existing product:stock broadcast + notifyBackInStock wiring. The full sweep stays as the on-demand backstop.
+- DRILL scripts/qa/t138-e2e.mjs — 36/0 on a fresh wipe: write-rail gates re-proven (anon 401, targetPrice 0 → 400, phantom 404, duplicate 409, confirmation row); price UP → silent; decrease above target → silent; genuine drop → status triggered + lastNotifiedAt + REAL currentPrice + deep-linked notification row (relatedEntityId = product) served by the live list API; second drop → triggered row untouched (flip scope = active only) + NO second notification; buyer2's watch created mid-sequence fires on the same drop; full sweep → ZERO duplicates for already-triggered rows.
+- BROWSER golden path (real logins, gateway :81): buyer creates the watch through the UI form via the price-alert-create deep link (product pre-selected, suggested 90% target) → seller PATCH ৳2,000→৳1,400 via the real API → bell shows "Price Drop Alert: T138 Wholesale Jacket — dropped to ৳1,400, meeting your alert target of ৳1,500" → detail page (PRICE DROP chip, Delivered & Read, "View Discounted Product →") → lands on the PDP showing ৳1,400. Mobile 375: scrollWidth exactly 375 on both surfaces. Console clean on 3 replays with network capture; one unreproduced HTML-JSON console transient recorded honestly (no non-2xx request ever captured).
+- HONEST-STATE FIX found by the QA pass: signed-out visitors on the notifications page saw "No notifications found" — a fake empty inbox for people who cannot have one (the API answers them 401). Now "Sign in to see your notifications" + a real Sign In button. Documented the cookie-vs-authstore desync: clearing localStorage keeps the httpOnly session alive server-side (header showed "Login" while the API still served the user's rows — cookie is server truth).
+- TOOLING: agent-browser viewport command discovered (`set viewport 375 812`), recorded for future rounds.
+- REGRESSIONS: t124 25/0 (session rotation + notifications surface). tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The alert family is now symmetric: stock watches fire on restock (Task 65), price watches fire on real drops (this task), both race-guarded, both honest about direction, both wired at the only writers that can move their truth.
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface. The unreproduced console transient is recorded with its replay evidence.
+- Pushed as 1a03d80 with the owner-provided PAT (never stored in tracked files).
