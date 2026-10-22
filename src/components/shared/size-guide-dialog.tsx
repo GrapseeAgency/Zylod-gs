@@ -15,15 +15,16 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Ruler, Loader2, Info, CheckCircle2 } from 'lucide-react'
 
 interface SizeGuideData {
-  guide: {
+  guide?: {
     category: string
     unit: string
     sizes: Array<Record<string, string | number>>
     measurementGuide: Array<{ step: number; instruction: string }>
     tips: string[]
   }
-  category: string
+  category?: string
   note?: string
+  availableGuides?: Array<{ key: string; category: string }>
 }
 
 export function SizeGuideButton({ productId, className }: { productId: string; className?: string }) {
@@ -52,8 +53,14 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
     }
   }
 
-  const columns = data?.guide.sizes?.length
-    ? Object.keys(data.guide.sizes[0]).filter((k) => k !== 'size')
+  // First column label + key follow the guide's own row shape: garments key by
+  // `size`, textiles/home-textiles key by `type` — never render "undefined".
+  const firstKey = data?.guide?.sizes?.length
+    ? (['size', 'type'].find((k) => k in data.guide!.sizes[0]) ?? Object.keys(data.guide.sizes[0])[0])
+    : 'size'
+  const firstLabel = firstKey === 'size' ? 'Size' : firstKey === 'type' ? 'Type' : firstKey
+  const columns = data?.guide?.sizes?.length
+    ? Object.keys(data.guide.sizes[0]).filter((k) => k !== firstKey)
     : []
 
   return (
@@ -71,7 +78,7 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
         <DialogContent className="max-w-lg rounded-3xl max-h-[85vh] overflow-y-auto" data-testid="size-guide-dialog">
           <DialogHeader>
             <DialogTitle className="text-sm font-black flex items-center gap-2">
-              <Ruler className="h-4 w-4 text-primary" /> Size guide{data ? ` — ${data.guide.category}` : ''}
+              <Ruler className="h-4 w-4 text-primary" /> Size guide{data?.guide ? ` — ${data.guide.category}` : ''}
             </DialogTitle>
             <DialogDescription className="text-xs">
               Real reference measurements. For bulk orders, confirm sizing with a sample before committing volume.
@@ -90,7 +97,23 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
             </div>
           )}
 
-          {!loading && !error && data && (
+          {!loading && !error && data && !data.guide && (
+            <div className="space-y-3">
+              <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400 font-bold bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-xl px-3 py-2">
+                <Info className="h-4 w-4 shrink-0 mt-0.5" /> No size guide exists for this product yet. Reference guides on the platform:
+              </div>
+              {(data.availableGuides ?? []).map((g) => (
+                <div key={g.key} className="text-[11px] text-slate-600 dark:text-slate-400 font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3 w-3 text-slate-400 shrink-0" /> {g.category}
+                </div>
+              ))}
+              <p className="text-[11px] text-slate-400 font-bold">
+                Ask the supplier for measurements via “Request Quote” before ordering quantities that depend on sizing.
+              </p>
+            </div>
+          )}
+
+          {!loading && !error && data?.guide && (
             <div className="space-y-3">
               {data.note && (
                 <p className="flex items-start gap-1.5 text-[11px] text-amber-700 dark:text-amber-400 font-bold bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-xl px-3 py-2">
@@ -104,15 +127,15 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
                     <table className="w-full text-[11px]">
                       <thead className="bg-slate-50 dark:bg-slate-950 sticky top-0">
                         <tr className="text-left text-[9px] font-black uppercase tracking-wider text-slate-400">
-                          {['Size', ...columns].map((c) => (
-                            <th key={c} className="px-3 py-2 whitespace-nowrap">{c}</th>
+                          {[firstLabel, ...columns].map((c) => (
+                            <th key={c} className="px-3 py-2 whitespace-nowrap capitalize">{c}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
                         {data.guide.sizes.map((row, i) => (
                           <tr key={i} className="border-t border-slate-50 dark:border-slate-800">
-                            <td className="px-3 py-1.5 font-black text-slate-700 dark:text-slate-300">{String(row.size)}</td>
+                            <td className="px-3 py-1.5 font-black text-slate-700 dark:text-slate-300">{String(row[firstKey] ?? '—')}</td>
                             {columns.map((c) => (
                               <td key={c} className="px-3 py-1.5 text-slate-600 dark:text-slate-400 font-bold whitespace-nowrap">{String(row[c])}</td>
                             ))}

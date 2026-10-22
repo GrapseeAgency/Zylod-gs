@@ -14,6 +14,8 @@ import { useWishlistStore } from '@/store/wishlist-store'
 import { toast } from 'sonner'
 import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room'
 import { BackInStockButton } from '@/components/shared/back-in-stock-button'
+import { RelatedProductsRail } from '@/components/shared/related-products-rail'
+import { SizeGuideButton } from '@/components/shared/size-guide-dialog'
 import { SampleRequestDialog } from '@/components/product/sample-request-dialog'
 import { ProductCertifications } from '@/components/product/product-certifications'
 import { ProductQas } from '@/components/product/product-qas'
@@ -718,8 +720,8 @@ export function MobileProductDetailPage() {
 
         {/* Quantity Selector */}
         <div className="mt-4 flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">Quantity (MOQ: {product.moq})</span>
-          <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+          <span className="text-xs text-muted-foreground">Quantity (MOQ: {formatQty(product.moq)})</span>
+          <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden ml-auto">
             <button onClick={() => handleQuantityChange(-10)} className="w-8 h-8 flex items-center justify-center text-foreground active:bg-gray-100 transition-colors" aria-label="Decrease">
               <Minus className="w-3.5 h-3.5" />
             </button>
@@ -729,6 +731,11 @@ export function MobileProductDetailPage() {
             </button>
           </div>
           <span className="text-xs text-muted-foreground">{product.unit}</span>
+        </div>
+
+        {/* Task 129: real size reference — lazy dialog from the live endpoint */}
+        <div className="mt-2 flex justify-end">
+          <SizeGuideButton productId={productId} className="h-8 px-2.5" />
         </div>
 
         {/* Action Buttons */}
@@ -918,6 +925,11 @@ export function MobileProductDetailPage() {
             )}
           </AnimatePresence>
         </div>
+      </div>
+
+      {/* ─── Related Products Rail (Task 129: real endpoint, honest no-op when empty) ─── */}
+      <div className="bg-white mt-2 px-4 py-4">
+        <RelatedProductsRail productId={productId} />
       </div>
 
       {/* ─── 5. Supplier Section ─── */}

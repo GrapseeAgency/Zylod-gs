@@ -1042,9 +1042,11 @@ function DesktopProductDetailPage() {
 
           {/* ─── Quantity Selector ─── */}
           <div className="space-y-2">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <Label className="text-sm font-semibold shrink-0">Quantity ({unit})</Label>
               <Badge variant="secondary" className="text-xs">MOQ: {moq} {unit}</Badge>
+              {/* Task 129: real size reference for garment/textile buys — lazy dialog from the live endpoint */}
+              <SizeGuideButton productId={product.id} className="ml-auto h-8" />
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center border rounded-lg overflow-hidden">
@@ -1727,6 +1729,9 @@ function DesktopProductDetailPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* ─── Related Products Rail (Task 129: real endpoint, real source reasons — honest no-op when empty) ─── */}
+      <RelatedProductsRail productId={product.id} />
 
       {/* ─── Trust Signals ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

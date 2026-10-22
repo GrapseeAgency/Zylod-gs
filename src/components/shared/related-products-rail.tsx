@@ -85,7 +85,6 @@ export function RelatedProductsRail({ productId }: { productId: string }) {
             data-testid="related-product-card"
           >
             <div className="aspect-square bg-slate-50 dark:bg-slate-950 overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={p.image || '/placeholder.svg'}
                 alt={p.name}
