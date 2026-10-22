@@ -12,12 +12,18 @@ import {
   CheckCircle2, AlertCircle, ChevronRight
 } from 'lucide-react'
 
+// Task 143 audit: the min-order copy MUST state the API's real rule —
+// /api/rewards/redeem issues every voucher with minOrder = 3 × cash value
+// and checkout enforces exactly that (drilled t143). The old copy claimed
+// ৳500/৳1,000/৳2,500/৳5,000 minimums that checkout would never ask for.
+// The ৳1,000 tier is honestly a WALLET CREDIT (no minimum — it is balance,
+// not a voucher).
 const REDEEM_OPTIONS = [
-  { points: 500, bdt: 50, label: '৳50 Wholesale Voucher', minOrder: 500 },
-  { points: 1000, bdt: 100, label: '৳100 Wholesale Voucher', minOrder: 1000 },
-  { points: 2500, bdt: 250, label: '৳250 Wholesale Voucher', minOrder: 2500 },
-  { points: 5000, bdt: 500, label: '৳500 Wholesale Voucher', minOrder: 5000 },
-  { points: 10000, bdt: 1000, label: '৳1,000 Wholesale Voucher', minOrder: 0 },
+  { points: 500, bdt: 50, label: '৳50 Wholesale Voucher', minOrder: 150 },
+  { points: 1000, bdt: 100, label: '৳100 Wholesale Voucher', minOrder: 300 },
+  { points: 2500, bdt: 250, label: '৳250 Wholesale Voucher', minOrder: 750 },
+  { points: 5000, bdt: 500, label: '৳500 Wholesale Voucher', minOrder: 1500 },
+  { points: 10000, bdt: 1000, label: '৳1,000 Wallet Credit', minOrder: 0 },
 ]
 
 export function RedeemPointsPage() {
@@ -28,6 +34,8 @@ export function RedeemPointsPage() {
   const [pointsBalance, setPointsBalance] = useState(0)
   const [loading, setLoading] = useState(true)
   const [redeeming, setRedeeming] = useState<number | null>(null)
+  const [customPoints, setCustomPoints] = useState('')
+  const [customBusy, setCustomBusy] = useState(false)
 
   useEffect(() => {
     const headers: Record<string, string> = {}
@@ -68,7 +76,12 @@ export function RedeemPointsPage() {
       if (res.ok && data.success) {
         setPointsBalance(prev => prev - option.points)
         soundEffects.playByName('chime')
-        alert(`Redemption successful! ${option.label} has been added to your account.`)
+        const code = data.data?.coupon?.code
+        alert(
+          code
+            ? `${option.label} issued! Code: ${code} — single use, valid 30 days, minimum order ${formatPrice(option.bdt * 3)}. It is in your coupon vault.`
+            : `${option.label} has been added to your wallet.`
+        )
         navigate('my-coupons')
       } else {
         alert(data.error || 'Failed to redeem points')
@@ -77,6 +90,49 @@ export function RedeemPointsPage() {
       console.error(err)
     } finally {
       setRedeeming(null)
+    }
+  }
+
+  // Task 143: the API honors ANY redemption ≥ 100 points (৳ value = points ÷
+  // 10, voucher minimum order = 3 × value) — the UI now exposes that freedom
+  // instead of forcing buyers to wait for a fixed tier.
+  const customValue = Math.floor(Number(customPoints) / 10)
+  const customValid = Number.isInteger(Number(customPoints)) && Number(customPoints) >= 100 && Number(customPoints) <= pointsBalance
+
+  const handleCustomRedeem = async () => {
+    const pts = Number(customPoints)
+    if (!customValid) {
+      alert(`Enter a whole number of points between 100 and ${pointsBalance}.`)
+      return
+    }
+    try {
+      setCustomBusy(true)
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (token) headers['Authorization'] = `Bearer ${token}`
+      const res = await fetch('/api/rewards/redeem', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ pointsToRedeem: pts, rewardType: 'voucher' }),
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setPointsBalance(prev => prev - pts)
+        setCustomPoints('')
+        soundEffects.playByName('chime')
+        const code = data.data?.coupon?.code
+        alert(
+          code
+            ? `৳${customValue} voucher issued! Code: ${code} — single use, valid 30 days, minimum order ${formatPrice(customValue * 3)}. It is in your coupon vault.`
+            : 'Redemption successful.'
+        )
+        navigate('my-coupons')
+      } else {
+        alert(data.error || 'Failed to redeem points')
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setCustomBusy(false)
     }
   }
 
@@ -165,6 +221,40 @@ export function RedeemPointsPage() {
               </div>
             )
           })}
+
+          {/* Custom redemption — the API's real freedom, now reachable */}
+          <div className="bg-white rounded-3xl p-5 border border-dashed border-amber-300 shadow-sm md:col-span-2">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+                <Tag className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-sm font-bold text-gray-900">Custom Voucher</h4>
+                <p className="text-[11px] text-gray-500">Any amount from 100 points — ৳1 per 10 points, min order 3× the voucher value</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={100}
+                step={1}
+                value={customPoints}
+                onChange={(e) => setCustomPoints(e.target.value)}
+                placeholder={pointsBalance >= 100 ? `e.g. ${Math.min(pointsBalance, 1000)} (you have ${pointsBalance.toLocaleString()} pts)` : 'Earn more points first'}
+                disabled={pointsBalance < 100}
+                className="flex-1 h-10 px-3.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 disabled:bg-gray-50 disabled:text-gray-400 min-w-0"
+                aria-label="Custom points to redeem"
+              />
+              <Button
+                size="sm"
+                disabled={!customValid || customBusy || loading}
+                onClick={handleCustomRedeem}
+                className="h-10 px-5 text-xs font-bold rounded-xl flex-shrink-0 shadow-sm bg-amber-500 hover:bg-amber-600 text-white disabled:bg-gray-100 disabled:text-gray-400"
+              >
+                {customBusy ? 'Redeeming...' : customValid && customValue > 0 ? `Get ৳${customValue} voucher` : 'Redeem'}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

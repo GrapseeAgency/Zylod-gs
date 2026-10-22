@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
       recentSearches,
       spendingByMonth,
       couponSavings,
+      boundCouponSavings,
     ] = await Promise.all([
       db.orders.count({ where: { buyerId: userId } }),
       db.orders.aggregate({ where: { buyerId: userId }, _sum: { totalAmount: true } }),
@@ -104,6 +105,14 @@ export async function GET(request: NextRequest) {
         _sum: { savingsBDT: true },
         _count: { _all: true },
       }),
+      // Task 143: earned bound vouchers (points redemption) live in the
+      // coupons table — used ones are single-use rows with usedCount ≥ 1.
+      // Face-value savings convention matches the userCoupons stat above.
+      db.coupons.aggregate({
+        where: { userId, usageLimit: { not: null }, usedCount: { gte: 1 } },
+        _sum: { discountPercent: true },
+        _count: { _all: true },
+      }),
     ])
 
     // Favorite suppliers
@@ -159,7 +168,7 @@ export async function GET(request: NextRequest) {
           totalSpentBDT: totalSpentAgg._sum.totalAmount || 0,
           activeOrders: activeOrdersCount,
           wishlistCount,
-          totalSavingsBDT: couponSavings._sum.savingsBDT || 0,
+          totalSavingsBDT: (couponSavings._sum.savingsBDT || 0) + (boundCouponSavings._sum.discountPercent || 0),
         },
         recentOrders: recentOrders.map((o) => ({
           id: o.id,
