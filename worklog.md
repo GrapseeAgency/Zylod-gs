@@ -4133,3 +4133,25 @@ Stage Summary:
 - The unaudited-mutation scan remains a standing tool; the documented tier of intentionally-unaudited routes (cart/profile/search/chat — high-volume, low-stakes) is a deliberate choice, not an oversight.
 - REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface.
 - Pushed as 1a0f425 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 141
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: GROUP-BUY POOLS THAT NEVER PAID OFF — the pool page promised "reserved N units at the volume rate of ৳X" but nothing honored it: anyone could create a campaign at any price for any product, joins raced, completion did nothing, and no order path consumed the pool rate. The wholesale-pooling pillar was a promise without teeth. Built the teeth.
+
+Work Log:
+- CREATION is a seller pricing commitment: only the product's OWN supplier opens a pool (ownership 403; buyers 403 SUPPLIER_PROFILE_REQUIRED), Zod strict, the rate must be a real discount (above factory rate → 422 "that would be a fake discount"), target ≥ MOQ, 5/min, auditLogs 'group_buy_created'. SELLER UI: a Pool action + dialog on every approved listing row (target/rate/duration).
+- JOINS are atomic and honest: participant + counter in ONE transaction (compound-unique per buyer; re-joining tops up the SAME row); over-target joins refused 409 with the REAL remaining units; a filled pool answers 409 "already filled — N of M" (not the lying 404); completion fans out real notifications to every participant + the supplier.
+- THE TEETH: the order engine prices participants' lines at the pool rate up to their reservation — plain lines only, blended unitPrice on straddling lines (line identity unitPrice × qty === totalPrice preserved), redemption increments in the SAME transaction (never double-spent, never survives a failed order), only ever a discount, receipt surfaces groupPoolDiscount.
+- Schema: groupBuyParticipants.redeemedQty + @@unique([campaignId, userId]) (db:push).
+- DRILL scripts/qa/t141-e2e.mjs — 41/0 on a fresh wipe: creation gates ×6, audit row, join gates, same-row top-up, fill, filled-409, fan-out rows, THE MONEY (40-unit order at ৳800 + receipt ৳8,000; straddle blended ৳68,000/৳850 + receipt ৳12,000; capped at 100; consumed pool grants nothing; non-participant pays rule price).
+- REGRESSIONS: t115 92/0 (the order monolith), t74 28/0 (coupon order-write), t131 31/0 (coupon validate).
+- BROWSER (real logins, gateway :81): seller opens the pool through the NEW listings dialog (real row + toast), buyer joins through the REAL detail page → "Total Reserved: 20 / 20 — 100% Target Achieved" + "Pool filled … locked at ৳800 each" notification; the join form is replaced by the honest filled-state on completed pools; mobile 375 exact. Screenshots t141-pool-filled/-mobile.png.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The pricing engine now honors FOUR honest layers in one order: variant override → tier → base → group-pool reservation — each with real money semantics and an audit trail.
+- A seller's pool is now a real commitment with real consequences, and a buyer's reservation is real money at checkout.
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface.
+- Pushed as 134cc8a with the owner-provided PAT (never stored in tracked files).
