@@ -4313,3 +4313,19 @@ Work Log:
 Stage Summary:
 - The registration-trap class is now mechanical: a future mistake fails a tool instead of silently killing a page.
 - REMAINING FAKE/INCOMPLETE (full-app audit continues): delivery location = driver-app surface (external); the remaining unaudited tier (support tickets, careers, newsletter, uploads) is documented low-stakes profile content.
+
+---
+Task ID: 150
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: FULL-APP AUDIT unit 8 — the GET-auth sweep + the cross-unit stability batch. Sweep: every GET handler referencing user-scoped data without an auth call — after filtering, the hits were all legitimate surfaces (wishlist/shared = share-token capability access, legal/cookie-consent = anonymous session consent, suppliers = public directory, auth/verify-email = token-gated). NO personal-data leak found. Stability: the three heaviest drills untouched this session re-run green on fresh wipes — t141 41/0 (group-buy pools), t142 28/0 (live-shopping), t115 92/0 (the order monolith) — confirming the six new units (143–148) regressed nothing.
+
+Work Log:
+- GET-auth sweep run and documented (clean).
+- Stability batch: t141 41/0, t142 28/0, t115 92/0 on fresh wipes.
+- Session ledger so far (all pushed): 143 (rewards teeth, 555f27c/6f3a8f6), 144 (userCoupons voucher teeth, 66a0e2b/c91a922), 145 (seller Live Studio, a3c7135/f1c1848), 146 (buyer→seller query circuit, 698e92b/0254b7b), 147 (sibling redemption rail + topup audit, 6993fd4/6f023b5), 148 (payout-method evidence, ea1f9f0/ca342d3), 149 (registry doctor, 6b19848/082e5b6).
+
+Stage Summary:
+- The audit's mechanical sweeps are now standing tools: orphan-verify (0 live orphans), the unaudited-mutation scan (documented tier), and the registry doctor (proven in both directions).
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). Everything else on every standing list this session is dead: placeholder seller pages, rewards + voucher teeth, live studio, query writer, topup/redeem money doctrine, payout evidence, registry traps.
+- Pushed as part of the ledger above with the owner-provided PAT (never stored in tracked files).
