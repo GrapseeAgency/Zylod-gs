@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { requireUserType } from '@/lib/auth'
 import { resolveSupplierProfile, SUPPLIER_PROFILE_REQUIRED } from '@/lib/supplier-scope'
+import { sendNotification } from '@/lib/notifications'
 
 /* Ownership scoping (Task 50-b): every method resolves the session's
  * supplierProfile and only touches rows where supplierId matches. A foreign
@@ -126,6 +127,19 @@ export async function PATCH(
         metadata: JSON.stringify({ supplierId: profile.id, status: updated.status, replied: body.replyMessage !== undefined }),
       },
     })
+
+    // Task 146: a reply the buyer never hears about is a half-circuit — the
+    // asker is TOLD (durable notification; the full thread is on their
+    // queries page).
+    if (body.replyMessage !== undefined) {
+      await sendNotification({
+        userId: existing.buyerId,
+        type: 'system',
+        title: 'The seller replied to your question',
+        body: `"${existing.subject}" — ${body.replyMessage.slice(0, 140)}${body.replyMessage.length > 140 ? '…' : ''}`,
+        relatedEntityId: id,
+      }).catch(() => { /* telling is best-effort; the row is the truth */ })
+    }
 
     return NextResponse.json({ success: true, data: updated, message: 'Query updated' })
   } catch (error) {

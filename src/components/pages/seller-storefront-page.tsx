@@ -2,10 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
-import { ArrowLeft, Edit, Package, Share2, Star, ImageOff, Store, AlertCircle, ShieldCheck, BadgePercent } from 'lucide-react';
+import { ArrowLeft, Edit, Package, Share2, Star, ImageOff, Store, AlertCircle, ShieldCheck, BadgePercent, MessageCircleQuestion, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 import StorefrontCertifications, { StorefrontCertRollup } from '@/components/supplier/storefront-certifications';
 import StorefrontWarehouses, { WarehouseRow } from '@/components/supplier/storefront-warehouses';
 import StorefrontReviews, { StorefrontReviewRow } from '@/components/supplier/storefront-reviews';
@@ -61,6 +66,14 @@ export const SellerStorefrontPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Task 146: the buyer→seller query circuit — a visitor asks THIS store a
+  // structured pre-order / custom-request / complaint question.
+  const [askOpen, setAskOpen] = useState(false);
+  const [askType, setAskType] = useState<'pre_order' | 'custom_request' | 'complaint'>('pre_order');
+  const [askSubject, setAskSubject] = useState('');
+  const [askMessage, setAskMessage] = useState('');
+  const [asking, setAsking] = useState(false);
+
   // Viewing a specific supplier's storefront (e.g. via "Visit store" on a
   // product page) vs. the signed-in supplier's own storefront.
   const viewedSupplierId = pageParams.supplierId || '';
@@ -92,6 +105,42 @@ export const SellerStorefrontPage = () => {
   useEffect(() => {
     fetchStore();
   }, [fetchStore]);
+
+  const submitAsk = async () => {
+    if (askSubject.trim().length < 3 || askMessage.trim().length < 5) {
+      toast.error('A real question needs a subject (3+) and a message (5+).');
+      return;
+    }
+    try {
+      setAsking(true);
+      const res = await fetch('/api/queries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          supplierId: campaignSupplierId,
+          queryType: askType,
+          subject: askSubject.trim(),
+          message: askMessage.trim(),
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      if (res.status === 201) {
+        toast.success(json?.message || 'Query filed — the seller has been notified.');
+        setAskOpen(false);
+        setAskSubject('');
+        setAskMessage('');
+      } else if (res.status === 401) {
+        toast.error('Sign in as a buyer to ask this store a question.');
+      } else {
+        toast.error(json?.error || `Could not file the question (${res.status}).`);
+      }
+    } catch {
+      toast.error('Network error filing the question.');
+    } finally {
+      setAsking(false);
+    }
+  };
 
   const companyName = data?.companyName ?? '';
   const productCount = data?.products?.length ?? 0;
@@ -192,6 +241,22 @@ export const SellerStorefrontPage = () => {
                 <div className="text-sm font-bold dark:text-white">{loading ? '-' : data?.ratingCount ?? 0}</div>
                 <div className="text-[10px] text-gray-500 uppercase">Reviews</div>
               </div>
+              {/* Task 146: the buyer→seller query rail — visitor view only */}
+              {viewedSupplierId && (
+                <>
+                  <div className="w-px h-8 bg-gray-200 dark:bg-gray-700" />
+                  <button
+                    onClick={() => setAskOpen(true)}
+                    className="text-center group"
+                    aria-label="Ask this seller a question"
+                  >
+                    <div className="text-sm font-bold text-gray-700 dark:text-gray-200 flex items-center gap-1 group-hover:text-primary transition">
+                      <MessageCircleQuestion className="w-4 h-4" /> Ask
+                    </div>
+                    <div className="text-[10px] text-gray-500 uppercase">the seller</div>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -314,6 +379,46 @@ export const SellerStorefrontPage = () => {
           </Tabs>
         </>
       )}
+
+      {/* Task 146: the ask dialog */}
+      <Dialog open={askOpen} onOpenChange={setAskOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ask {companyName || 'this store'}</DialogTitle>
+            <DialogDescription>
+              Pre-order terms, custom requests, complaints — the seller is notified the moment you file.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="ask-type">What is this about?</Label>
+              <select
+                id="ask-type"
+                value={askType}
+                onChange={(e) => setAskType(e.target.value as typeof askType)}
+                className="w-full h-10 rounded-md border border-input bg-transparent px-3 text-sm"
+              >
+                <option value="pre_order">Pre-order question</option>
+                <option value="custom_request">Custom order request</option>
+                <option value="complaint">Complaint</option>
+              </select>
+              <p className="text-[11px] text-gray-500">Product questions belong on the product page's Q&amp;A.</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ask-subject">Subject</Label>
+              <Input id="ask-subject" value={askSubject} onChange={(e) => setAskSubject(e.target.value)} placeholder="Bulk order for 500 units — custom packaging?" maxLength={160} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ask-message">Message</Label>
+              <Textarea id="ask-message" value={askMessage} onChange={(e) => setAskMessage(e.target.value)} rows={4} maxLength={2000} placeholder="Give the seller what they need to answer well" />
+            </div>
+            <Button onClick={submitAsk} disabled={asking} className="w-full h-10">
+              {asking ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <MessageCircleQuestion className="w-4 h-4 mr-1" />}
+              Send to the seller
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

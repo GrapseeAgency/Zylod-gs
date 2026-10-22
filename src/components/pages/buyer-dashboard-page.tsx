@@ -13,7 +13,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import {
   ShoppingCart, Package, CreditCard, TrendingUp, Heart, Star, Clock,
   ArrowRight, MapPin, Award, BarChart3, Truck, Tag, Search, FileText,
-  ChevronRight, Percent, Wallet,
+  ChevronRight, Percent, Wallet, MessageCircleQuestion,
 } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
@@ -71,6 +71,7 @@ const QUICK_ACTION_CARDS = [
   { title: 'Request Quote', description: 'Get custom pricing from suppliers', icon: FileText, page: 'rfq-list' },
   { title: 'Browse Deals', description: 'Check daily deals & flash sales', icon: Tag, page: 'daily-deals' },
   { title: 'Track Orders', description: 'Monitor active deliveries', icon: Truck, page: 'buyer-orders' },
+  { title: 'My Questions', description: 'What you asked stores — and their replies', icon: MessageCircleQuestion, page: 'buyer-queries' },
 ]
 
 const getStatusColor = (status: string) => {
