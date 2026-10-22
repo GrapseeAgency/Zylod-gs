@@ -4388,3 +4388,21 @@ Work Log:
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). Both new defects fixed and drilled; the auth-less/IDOR/ownership classes now have scripted scans (sharedbucket + noauth scripts embedded in this round's tooling) reporting zero.
 - tsc 0, eslint 0, sweep 275/275, DB vacuum 139×0 between proofs.
+
+---
+Task ID: 154
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3: full app audit, check everywhere).
+
+Task: FULL-APP AUDIT unit 12 — the SCHEMA audit: every Prisma model × every consumer (the "table nothing reads" class). Rule3's final round extends to the schema itself.
+
+Work Log:
+- Built the model-consumption scan: 139 models × db.<model> call sites across src. 16 showed ZERO direct consumers; refined with any-context mention scan + nested-write verification: productImages/productPriceTiers/rfqItems are ALIVE via nested creates (the userCoupons false-alarm lesson applied — no death declared without relation check).
+- 13 models had ZERO mentions anywhere in the application — src, mini-services (delivery-service is DB-free, verified), scripts: supplierAgreements, productTags, productTagRelations, contentPages, apiKeys, reportedIssues, supplierLocations, supplierLoyaltyTiers, crossBorderOrders, customsDocuments, marketReports, searchSuggestions, deliveryAlerts. Dead schema = fake surface (features that do not exist); removed all 13 model blocks + their incoming relation fields (users: deliveryAlerts/reportedIssues/apiKeys; supplierProfiles: agreements/locations/loyaltyTiers; categories: marketReports; products: tagRelations; orders: crossBorderOrder) with tombstone comments at the removal sites.
+- prisma validate ok; db:push in sync; TABLES 139 → 126; modelscan now: 123 consumed + 3 relation-alive = every remaining model has a real consumer.
+- FULL REGRESSION BATTERY on fresh wipes (the highest-risk change of the session): t152 29/0 (incl. the new security pins), t151 8/0, t143 46/0, t144 44/0, t65 53/0, t138 36/0.
+- tsc 0 (client regenerated), eslint 0. Browser sanity through the gateway: home renders real product tiles, 0 console errors, no overflow; products API returns real data.
+- Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The schema now describes exactly the app that exists: 126 models, every one consumed; the API is 275/275 throttled with ownership + auth verified; scans for the dead-model / auth-less / shared-bucket / orphan classes all report zero.
+- DB vacuum 126×0 between proofs.

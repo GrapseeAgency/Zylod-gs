@@ -48,7 +48,6 @@ model users {
   notificationPrefs notificationPreferences?
   priceAlerts       priceAlerts[]
   stockAlerts       stockAlerts[]
-  deliveryAlerts    deliveryAlerts[]
   conversations     conversations[]
   conversations2    conversations[]          @relation("SupplierConversations")
   messages          messages[]
@@ -89,10 +88,8 @@ model users {
   paymentMethods paymentMethods[]
   walletTopups   walletTopups[]
   buyerPayouts   buyerPayouts[]
-  reportedIssues reportedIssues[] @relation("IssueReporter")
 
   // Admin & Content
-  apiKeys    apiKeys[]
   pushTokens pushTokens[]
 
   // Search & Navigation
@@ -261,14 +258,11 @@ model supplierProfiles {
   user               users                @relation(fields: [userId], references: [id], onDelete: Cascade)
   warehouseAddress   addresses?           @relation("SupplierWarehouse", fields: [warehouseAddressId], references: [id])
   products           products[]
-  supplierAgreements supplierAgreements[]
   supplierReviews    supplierReviews[]
 
   // Supplier Enhancements
   warehouseLocations   warehouseLocations[]
-  supplierLocations    supplierLocations[]
   campaigns            promotions[]
-  supplierLoyaltyTiers supplierLoyaltyTiers[]
 
   // Sample Orders
   sampleOrders sampleOrders[] @relation("SupplierSampleOrders")
@@ -289,20 +283,6 @@ model supplierProfiles {
   @@index([verificationStatus])
 }
 
-model supplierAgreements {
-  id            String    @id @default(cuid())
-  supplierId    String
-  // agreementType: terms_of_service | nda | supplier_contract | quality_agreement
-  agreementType String
-  documentUrl   String
-  signedAt      DateTime
-  expiresAt     DateTime?
-
-  supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-
-  @@index([supplierId])
-}
-
 // ============================================================
 // Catalog
 // ============================================================
@@ -320,9 +300,6 @@ model categories {
   parent   categories?  @relation("CategoryTree", fields: [parentId], references: [id])
   children categories[] @relation("CategoryTree")
   products products[]
-
-  // Market Insights
-  marketReports marketReports[]
 
   @@index([parentId])
   @@index([isActive])
@@ -389,7 +366,6 @@ model products {
 
   // Product Enhancement
   specifications productSpecifications[]
-  tagRelations   productTagRelations[]
   videos         productVideos[]
   certifications productCertifications[]
   qas            productQas[]
@@ -547,9 +523,6 @@ model orders {
   shippingAddress addresses?  @relation(fields: [shippingAddressId], references: [id])
   subOrders       subOrders[]
   payments        payments[]
-
-  // Cross Border & Customs
-  crossBorderOrder crossBorderOrders?
 
   // Escrow
   escrowAccounts escrowAccounts[]
@@ -1098,29 +1071,6 @@ model productSpecifications {
   @@index([productId])
 }
 
-model productTags {
-  id   String @id @default(cuid())
-  name String
-  slug String @unique
-
-  tagRelations productTagRelations[]
-
-  @@index([slug])
-}
-
-model productTagRelations {
-  id        String @id @default(cuid())
-  productId String
-  tagId     String
-
-  product products    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  tag     productTags @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@unique([productId, tagId])
-  @@index([productId])
-  @@index([tagId])
-}
-
 model productVideos {
   id           String  @id @default(cuid())
   productId    String
@@ -1565,145 +1515,13 @@ model adminSettings {
   @@index([category])
 }
 
-model contentPages {
-  id              String    @id @default(cuid())
-  slug            String    @unique
-  title           String
-  content         String
-  metaDescription String?
-  isPublished     Boolean   @default(false)
-  publishedAt     DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  @@index([slug])
-  @@index([isPublished])
-}
-
-model apiKeys {
-  id          String    @id @default(cuid())
-  userId      String
-  keyHash     String
-  name        String
-  // permissions: JSON string of permission names
-  permissions String?
-  lastUsedAt  DateTime?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-
-  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([keyHash])
-  @@index([isActive])
-}
-
-model reportedIssues {
-  id          String    @id @default(cuid())
-  reporterId  String
-  // entityType: product | review | user | message | order
-  entityType  String
-  entityId    String
-  reason      String
-  description String?
-  // status: open | investigating | resolved | dismissed
-  status      String    @default("open")
-  resolvedBy  String?
-  resolvedAt  DateTime?
-  createdAt   DateTime  @default(now())
-
-  reporter users @relation("IssueReporter", fields: [reporterId], references: [id])
-
-  @@index([reporterId])
-  @@index([entityType])
-  @@index([status])
-  @@index([createdAt])
-}
-
 // ============================================================
 // Supplier Enhancements
 // ============================================================
 
-model supplierLocations {
-  id             String  @id @default(cuid())
-  supplierId     String
-  lat            Float
-  lng            Float
-  coverageRadius Float? // in km
-  isActive       Boolean @default(true)
-
-  supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-
-  @@index([supplierId])
-  @@index([isActive])
-}
-
-model supplierLoyaltyTiers {
-  id              String   @id @default(cuid())
-  supplierId      String
-  tierName        String
-  minPurchase     Float
-  discountPercent Float
-  createdAt       DateTime @default(now())
-
-  supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-
-  @@index([supplierId])
-}
-
-model crossBorderOrders {
-  id                 String   @id @default(cuid())
-  orderId            String   @unique
-  originCountry      String
-  destinationCountry String   @default("Bangladesh")
-  hsCode             String?
-  declaredValue      Float
-  // customsStatus: pending | cleared | held | rejected
-  customsStatus      String   @default("pending")
-  // customsDocuments: JSON string of document metadata
-  customsDocuments   String?
-  createdAt          DateTime @default(now())
-
-  order     orders             @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  documents customsDocuments[]
-
-  @@index([orderId])
-  @@index([customsStatus])
-}
-
-model customsDocuments {
-  id                 String   @id @default(cuid())
-  crossBorderOrderId String
-  // documentType: commercial_invoice | packing_list | bill_of_lading | certificate_of_origin | customs_declaration
-  documentType       String
-  documentUrl        String
-  uploadedAt         DateTime @default(now())
-
-  crossBorderOrder crossBorderOrders @relation(fields: [crossBorderOrderId], references: [id], onDelete: Cascade)
-
-  @@index([crossBorderOrderId])
-  @@index([documentType])
-}
-
-// ============================================================
-// Market Insights
-// ============================================================
-
-model marketReports {
-  id           String   @id @default(cuid())
-  categorySlug String?
-  title        String
-  summary      String?
-  // reportData: JSON string containing structured report data
-  reportData   String
-  publishedAt  DateTime @default(now())
-  createdAt    DateTime @default(now())
-
-  category categories? @relation(fields: [categorySlug], references: [slug])
-
-  @@index([categorySlug])
-  @@index([publishedAt])
-}
+// (supplierLocations / supplierLoyaltyTiers / crossBorderOrders /
+//  customsDocuments removed in the Task 153 schema audit: zero consumers
+//  anywhere in the application — src, mini-services, scripts.)
 
 // ============================================================
 // Notification Enhancement
@@ -1724,22 +1542,9 @@ model pushTokens {
 }
 
 // ============================================================
-// Product Search
+// Product Search (searchSuggestions removed in the Task 153 schema audit:
+// zero consumers anywhere in the application)
 // ============================================================
-
-model searchSuggestions {
-  id          String   @id @default(cuid())
-  query       String   @unique
-  // type: product | category | supplier
-  type        String
-  resultCount Int      @default(0)
-  clickCount  Int      @default(0)
-  createdAt   DateTime @default(now())
-
-  @@index([query])
-  @@index([type])
-  @@index([clickCount])
-}
 
 // ============================================================
 // Seller/Supplier Enhancement Models
@@ -2261,25 +2066,8 @@ model stockAlerts {
   @@index([variantId])
 }
 
-model deliveryAlerts {
-  id             String    @id @default(cuid())
-  userId         String
-  orderId        String
-  trackingNumber String?
-  // status: pending | dispatched | out_for_delivery | delivered | failed
-  status         String    @default("pending")
-  carrier        String? // e.g., "Pathao", "RedX", "Sundarban"
-  estimatedDate  DateTime?
-  lastNotifiedAt DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([orderId])
-  @@index([status])
-}
+// (deliveryAlerts removed in the Task 153 schema audit: zero consumers
+//  anywhere in the application — src, mini-services, scripts.)
 
 // ============================================================
 // Coupon & Rewards Extensions
