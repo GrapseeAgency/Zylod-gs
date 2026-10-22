@@ -539,6 +539,19 @@ function DesktopProductDetailPage() {
   const totalPrice = applicablePrice * quantity
   const basePrice = product?.basePrice || 0
   const savingsPercent = basePrice > 0 ? Math.round(((basePrice - applicablePrice) / basePrice) * 100) : 0
+  // Task 130 honest-numbers fix: the Trust tile's "Up to X% off" must state the
+  // REAL maximum a buyer can reach across the WHOLE tier ladder — not the
+  // savings at the current quantity, which is 0% at MOQ and made the tile
+  // claim "Up to 0% off" on products whose tiers DO discount at volume.
+  const maxSavingsPercent = useMemo(() => {
+    if (basePrice <= 0) return 0
+    let max = 0
+    for (const tier of product?.priceTiers ?? []) {
+      const pct = Math.round(((basePrice - tier.pricePerUnit) / basePrice) * 100)
+      if (pct > max) max = pct
+    }
+    return max
+  }, [product?.priceTiers, basePrice])
   const unit = product?.unit || 'pcs'
   // Task 55-c bundle semantics: bundleSize > 1 ⇒ the price is PER BUNDLE and
   // the effective per-unit kom-dam price is displayed next to it. Pricing
@@ -1760,7 +1773,9 @@ function DesktopProductDetailPage() {
           <Tag className="h-5 w-5 text-[primary] shrink-0" />
           <div>
             <p className="font-medium text-xs">Bulk Discounts</p>
-            <p className="text-muted-foreground text-[10px]">Up to {savingsPercent}% off</p>
+            <p className="text-muted-foreground text-[10px]">
+              {maxSavingsPercent > 0 ? `Up to ${maxSavingsPercent}% off` : 'No tiered discounts set'}
+            </p>
           </div>
         </div>
       </div>
