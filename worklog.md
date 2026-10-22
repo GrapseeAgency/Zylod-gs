@@ -3994,3 +3994,41 @@ Stage Summary:
 - Zero dead placeholder pages remain in the seller surface: every seller page consumes real endpoints or states honestly why it has no numbers. The queries console is reachable, honest, and fully interactive on the read/reply/status side.
 - REMAINING FAKE/INCOMPLETE: sellerCustomerQueries has no writer (documented decision pending); delivery location remains the driver-app external surface. No other true orphans are known — the next rounds move to feature depth (styling/detail passes, more functionality) per the standing build order.
 - Pushed as 579683e with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 134
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE CHAT CIRCUIT AUDIT — following the id-space thread from the PDP's "Message Supplier" button. Started as "chat-detail has no loader entry", ended as a lesson in reading the WHOLE resolution chain before building.
+
+Work Log:
+- HONEST CORRECTION (recorded for every future audit): my first conclusion — "'chat-detail'/'chat-list' have no loader entry → every chat button dead-ends" — was WRONG. The generic-info renderer carries a FULL ChatListPage + ChatDetailPage (attachments, reply-to, conversation auto-create, quick-reply chips) and the genericType fallback path serves those page ids. I built duplicate thread/inbox pages + a meta route before browser QA exposed the real UI; ALL duplicate scaffolding was DELETED the same round (no double source of truth). The real, reproducible defect was narrower: the MOBILE PDP's button.
+- REAL DEFECT FIXED: the mobile PDP navigated to chat-detail with conversationId = product.supplier.id — a supplierProfiles.id where the thread expects a CONVERSATION id — so the mobile chat thread 403'd forever (the SAME id-space trap family as Tasks 128/132, third sighting). Now follows the platform convention of the two proven callers (supplier-profile flows): navigate with { supplierId (profile id), productId, supplierName } → the chat page resolves the supplier USER id from the public /api/suppliers/[id] projection (curl-proven: userId present) and auto-creates or reuses the real conversation.
+- REAL API FIX: GET messages ran mark-read AFTER the fetch — the first read always returned stale unread flags (unread badges lived one refresh too long). Marks before fetching now; drilled both directions.
+- REACHABILITY: seller dashboard gained the "Messages" tile → the chat-list inbox (previously reachable only by URL); the buyer-side quick-reply chips + thread were already live.
+- DRILL scripts/qa/t134-e2e.mjs — **28/0 on a fresh wipe**: conversation create-or-get (anon 401, phantom supplier/product 400, real → 201, repeat → SAME id 200, different buyer → different id); messages (anon 401, non-participant 403, empty 400, 5001 chars 400, both sides land, ascending order, resolved sender names); the unread lifecycle end-to-end (buyer unread=1 pre-read → thread read marks it → unread=0; supplier row unread=0); inbox rows carry other party/product/messageCount.
+- BROWSER: the chat-detail deep link renders the REAL thread live (drill messages, header with the supplier + Shop link, MOQ/Unit price/Shipping/Sample quick-reply chips). HONEST TOOLING NOTE: the in-SPA button click could not be pinned this round — the agent-browser tab kept drifting pages between evals (SPA re-render races + auto-navigation); the param convention is code-verified identical to the two proven callers, the underlying fetch chain is curl/drill-proven end-to-end.
+- ALSO OBSERVED (candidate, not acted on): the first-run onboarding welcome re-shows on bare-root loads when its localStorage flag is unset, while ?page= deep links bypass it by design; the flag set by Skip does persist when the real button is clicked. Buyer-verification banner gates the desktop Chat button ("Complete your verification to start chatting") — honest gating, noted.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The chat circuit is now honest on both ends and both id spaces: buyers reach real conversations from the mobile PDP, sellers reach their inbox from the dashboard, and the unread badge tells the truth on first read.
+- The anti-fake ledger's id-space-trap family is now: receipt route (128), invoice family ×3 (132), mobile chat button (134) — each found by reading id semantics against the schema, each drilled.
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented, decision pending); delivery location = driver-app surface. No other true orphans known.
+- Pushed as 2ad97b3 with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 135
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE DAY'S REGRESSION LEDGER — every surface touched this session (coupons/validate + checkout UI, invoice family ×3 routes, queries PATCH, chat messages mark-read order, PDP chat buttons) closed against its neighbor drills on fresh wipes.
+
+Work Log:
+- t95 (shipping quotes + fee truth): 45/0.
+- t115 (the 92-check product/order/delivery/escrow monolith): 92/0.
+- Earlier this session, on their own final code states: t74 28/0 (coupon order-write), t131 31/0 (coupon validate circuit), t132 35/0 (invoice family), t133 27/0 (queries circuit), t134 28/0 (chat circuit).
+- DB wiped 139×0 between every drill run; every unit pushed immediately with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- The session's ledger: Tasks 129–135 all green, all pushed (b41a623, 9ec1d1a, 0b0f98b, a3ecb8a, 579683e, 2ad97b3 + this ledger).
+- No regressions found in the day's changes; three real platform bugs died (fixed-type coupon preview, invoice identity traps ×3 + phantom discount, empty-PATCH fake audit event, chat mark-read ordering, mobile chat id space).
