@@ -111,6 +111,28 @@ export async function POST(request: NextRequest) {
       // Task 71: verified webhook money is HELD in escrow per supplier.
       await holdEscrowInTx(tx, order.id, order.buyerId)
     }
+    // Task 140: gateway money events leave the same evidence trail as the
+    // manual verify paths — an auditLogs row INSIDE the transaction, with the
+    // before/after paymentStatus and the real gateway transaction id. The
+    // HMAC already proved the caller; this proves what the caller changed.
+    await tx.auditLogs.create({
+      data: {
+        actorId: null,
+        action: 'gateway_payment_recorded',
+        entityType: 'payments',
+        entityId: payment.id,
+        metadata: JSON.stringify({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          transactionId,
+          amount,
+          status,
+          before: { paymentStatus: order.paymentStatus },
+          after: { paymentStatus: status === 'success' ? 'paid' : order.paymentStatus },
+          escrowHold: status === 'success',
+        }),
+      },
+    })
   })
 
   // Task 68-c: the webhook is the THIRD money path — its decision reaches the

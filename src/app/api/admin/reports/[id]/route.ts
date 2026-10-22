@@ -122,15 +122,36 @@ export async function PATCH(
       // Task 68: a store suspension just changed the supplier's public KYC
       // status — drop the cached suppliers list.
       invalidateCacheKeys('suppliers:list:')
-    } else if (actionType === 'freeze_escrow') {
-      // Mark pending orders as refund requested / under review if linked
-      if (existing.relatedOrderId) {
-        await db.orders.update({
-          where: { id: existing.relatedOrderId },
-          data: { paymentStatus: 'refunded' },
-        }).catch(() => {})
-      }
+    } else if (actionType === 'freeze_escrow' && existing.relatedOrderId) {
+      // Task 140 honesty fix: a freeze is a HOLD, not a refund — the old code
+      // flipped paymentStatus to 'refunded', fabricating the financial claim
+      // that money went back to the buyer when nothing moved (the money
+      // doctrine: paymentStatus transitions only via verified webhook or the
+      // admin verify rail, which write the real ledger). A hold is recorded
+      // in the audit row instead; no paymentStatus mutation happens here.
     }
+
+    // Task 140: the verdict — and every side-effect it caused — is now a
+    // REAL auditLogs row. The old response message claimed the action was
+    // 'logged' while this route wrote nothing: a fake claim about evidence.
+    await db.auditLogs.create({
+      data: {
+        actorId: auth.user.id,
+        action: 'trust_report_verdict',
+        entityType: 'reportedUsers',
+        entityId: id,
+        metadata: JSON.stringify({
+          before: { status: existing.status, adminNotes: existing.adminNotes },
+          after: { status: updated.status },
+          actionType: actionType || 'none',
+          sideEffects: {
+            storeSuspended: actionType === 'suspend_store',
+            escrowHoldRecorded: actionType === 'freeze_escrow' && Boolean(existing.relatedOrderId),
+          },
+          adminNotes: adminNotes || null,
+        }),
+      },
+    }).catch(() => { /* the verdict itself is committed; audit is evidence, not a gate */ })
 
     // Send real resolution notification to reporter
     await sendNotification({
