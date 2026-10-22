@@ -210,6 +210,8 @@ export async function POST(request: NextRequest) {
         let totalAmount = 0
         // Task 100: the priced lines (server truth) feed the promotion engine.
         const pricedLines: Array<{ productId: string; totalPrice: number }> = []
+        // Task 141: the ৳ the completed pools actually took off this order.
+        let poolSavingsTotal = 0
 
         for (const item of items) {
           const product = await tx.products.findUnique({ where: { id: item.productId } })
@@ -240,7 +242,57 @@ export async function POST(request: NextRequest) {
           // MOQ and maxOrderQty are enforced here too (PricingError 422).
           const resolved = await resolveUnitPrice(tx, item.productId, item.quantity, variantRef)
 
-          const totalPrice = resolved.unitPrice * item.quantity
+          // Task 141: a COMPLETED pool's promise is real money. If this buyer
+          // holds unredeemed reservations on a completed pool for THIS
+          // product, up to min(lineQty, remaining) units price at the pool
+          // rate; the rest price by the canonical rule (a blended unitPrice
+          // when the line straddles the reservation). Plain lines only —
+          // pools are product-level commitments, variants keep rule pricing.
+          // The redemption counter increments in the SAME transaction, so a
+          // reservation can never be double-spent or survive a failed order.
+          let poolUnits = 0
+          let poolSavings = 0
+          if (!item.variantId) {
+            // Plain-FK world: find the product's completed pool, then this
+            // buyer's reservation on it (compound-unique per buyer).
+            const completedPool = await tx.groupBuyCampaigns.findFirst({
+              where: { productId: item.productId, status: 'completed' },
+              orderBy: { updatedAt: 'desc' },
+              select: { id: true, discountedPrice: true },
+            })
+            const participation = completedPool
+              ? await tx.groupBuyParticipants.findUnique({
+                  where: { campaignId_userId: { campaignId: completedPool.id, userId: buyerId } },
+                  select: { id: true, quantity: true, redeemedQty: true },
+                })
+              : null
+            const poolRate = completedPool?.discountedPrice ?? null
+            if (participation) {
+              const remaining = participation.quantity - participation.redeemedQty
+              if (remaining > 0) {
+                const units = Math.min(item.quantity, remaining)
+                // Only ever a DISCOUNT — if the pool rate somehow sits above
+                // the rule price (seller raised basePrice after the pool),
+                // the buyer pays the rule price and the pool is left intact.
+                if (poolRate != null && poolRate < resolved.unitPrice) {
+                  poolUnits = units
+                  poolSavings = units * (resolved.unitPrice - poolRate)
+                  await tx.groupBuyParticipants.update({
+                    where: { id: participation.id },
+                    data: { redeemedQty: { increment: poolUnits } },
+                  })
+                }
+              }
+            }
+          }
+
+          const totalPrice = resolved.unitPrice * item.quantity - poolSavings
+          poolSavingsTotal += poolSavings
+          // Task 141: the line's unitPrice must keep the LINE IDENTITY
+          // (unitPrice × quantity === totalPrice) — a pool-discounted line
+          // records the BLENDED per-unit price, never the rule price beside
+          // a pool-adjusted total.
+          const lineUnitPrice = item.quantity > 0 ? totalPrice / item.quantity : resolved.unitPrice
 
           const supplierId = product.supplierId
           if (!supplierGroups[supplierId]) {
@@ -250,7 +302,7 @@ export async function POST(request: NextRequest) {
             productId: item.productId,
             variantId: item.variantId || null,
             quantity: item.quantity,
-            unitPrice: resolved.unitPrice,
+            unitPrice: lineUnitPrice,
             totalPrice,
             // unit/bundleSize ride along for the product:stock broadcast
             unit: product.unit,
@@ -691,7 +743,7 @@ export async function POST(request: NextRequest) {
           await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
         }
 
-        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon, appliedPromotion, shippingLegs, shippingFee }
+        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon, appliedPromotion, shippingLegs, shippingFee, poolSavingsTotal }
       })
 
       // Real-time (Task 51-a): every seller with a slice of this order gets a
@@ -774,6 +826,9 @@ export async function POST(request: NextRequest) {
           // Task 100: the honest receipt — the campaign that applied, and
           // the ৳ it actually took off (buyer-paid truth).
           promotionApplied: order.appliedPromotion,
+          // Task 141: the honest receipt — what the completed group pools
+          // actually took off this order.
+          groupPoolDiscount: order.poolSavingsTotal > 0 ? { amount: order.poolSavingsTotal } : null,
         },
       }, { status: 201 })
     } catch (txError) {

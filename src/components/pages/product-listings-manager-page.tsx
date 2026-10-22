@@ -14,8 +14,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, Search, Plus, Edit, Eye, EyeOff, Trash2, RefreshCw,
-  AlertTriangle, LogIn, Package, UploadCloud,
-} from 'lucide-react';
+  AlertTriangle, LogIn, Package, UploadCloud, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useAuthStore } from '@/store/auth-store';
@@ -23,6 +22,7 @@ import { useCurrencyStore } from '@/store/currency-store';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 interface ApiProduct {
   id: string;
@@ -86,6 +86,61 @@ export function ProductListingsManagerPage() {
   const [actingId, setActingId] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<ApiProduct | null>(null);
   const [deleting, setDeleting] = useState(false);
+  // Task 141: open a group-buy volume pool straight from the listing row.
+  const [poolProduct, setPoolProduct] = useState<ApiProduct | null>(null);
+  const [poolTarget, setPoolTarget] = useState('');
+  const [poolRate, setPoolRate] = useState('');
+  const [poolHours, setPoolHours] = useState('48');
+  const [poolBusy, setPoolBusy] = useState(false);
+
+  const openPoolDialog = (product: ApiProduct) => {
+    setPoolProduct(product);
+    setPoolTarget('');
+    setPoolRate('');
+    setPoolHours('48');
+  };
+
+  const handleOpenPool = async () => {
+    if (!poolProduct || poolBusy) return;
+    const target = Number(poolTarget);
+    const rate = Number(poolRate);
+    if (!target || target <= 0 || !rate || rate <= 0) {
+      toast.error('Enter a real target quantity and pool rate.');
+      return;
+    }
+    if (rate > poolProduct.basePrice) {
+      toast.error(`The pool rate must not exceed the factory rate (${formatPrice(poolProduct.basePrice)}) — that would be a fake discount.`);
+      return;
+    }
+    setPoolBusy(true);
+    try {
+      const res = await fetch('/api/group-buy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          productId: poolProduct.id,
+          targetQty: target,
+          discountedPrice: rate,
+          durationHours: Number(poolHours) || 48,
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      if (res.status === 201) {
+        toast.success(`Pool opened: ${target} units at ${formatPrice(rate)} — buyers can now reserve.`);
+        setPoolProduct(null);
+      } else {
+        toast.error(json?.error || `Could not open the pool (HTTP ${res.status})`);
+      }
+    } catch {
+      toast.error('Network error — pool not opened.');
+    } finally {
+      setPoolBusy(false);
+    }
+  };
   const seqRef = useRef(0);
 
   const fetchProducts = useCallback(async (background = false) => {
@@ -369,7 +424,7 @@ export function ProductListingsManagerPage() {
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-3 gap-2">
+                <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-4 gap-2">
                   <button
                     onClick={() => navigate('seller-edit-product', { productId: product.id })}
                     className="min-h-11 flex flex-col items-center justify-center p-2 text-gray-600 hover:bg-gray-50 rounded-lg"
@@ -384,6 +439,15 @@ export function ProductListingsManagerPage() {
                   >
                     {product.isActive ? <EyeOff className="w-4 h-4 mb-1" /> : <Eye className="w-4 h-4 mb-1" />}
                     <span className="text-xs font-medium">{product.isActive ? 'Hide' : 'Show'}</span>
+                  </button>
+                  <button
+                    onClick={() => openPoolDialog(product)}
+                    disabled={!product.isApproved || !product.isActive}
+                    className="min-h-11 flex flex-col items-center justify-center p-2 text-gray-600 hover:bg-gray-50 rounded-lg disabled:opacity-40"
+                    title={product.isApproved && product.isActive ? 'Open a group-buy volume pool for this product' : 'Approved, visible listings only'}
+                  >
+                    <Users className="w-4 h-4 mb-1" />
+                    <span className="text-xs font-medium">Pool</span>
                   </button>
                   <button
                     onClick={() => setConfirmDelete(product)}
@@ -414,6 +478,75 @@ export function ProductListingsManagerPage() {
       </div>
 
       {/* Soft-delete confirmation — order history is preserved; the listing is hidden */}
+      {/* Task 141: open a group-buy volume pool for this listing */}
+      <Dialog open={poolProduct !== null} onOpenChange={(open) => !open && setPoolProduct(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Open a group-buy volume pool</DialogTitle>
+            <DialogDescription>
+              Buyers reserve units at your pool rate. When the pool reaches its target, every
+              participant can order their reserved units at that rate — the checkout honors it
+              automatically. Factory rate for “{poolProduct?.name}” is {poolProduct ? formatPrice(poolProduct.basePrice) : ''}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-1">
+            <div>
+              <label htmlFor="pool-target" className="text-xs font-bold text-gray-600 block mb-1">Target quantity (units)</label>
+              <Input
+                id="pool-target"
+                type="number"
+                min="1"
+                value={poolTarget}
+                onChange={(e) => setPoolTarget(e.target.value)}
+                placeholder="e.g. 100"
+                className="h-10"
+              />
+            </div>
+            <div>
+              <label htmlFor="pool-rate" className="text-xs font-bold text-gray-600 block mb-1">Pool rate per unit (must be below the factory rate)</label>
+              <Input
+                id="pool-rate"
+                type="number"
+                min="1"
+                value={poolRate}
+                onChange={(e) => setPoolRate(e.target.value)}
+                placeholder={poolProduct ? `e.g. ${Math.round(poolProduct.basePrice * 0.8)}` : ''}
+                className="h-10"
+              />
+            </div>
+            <div>
+              <label htmlFor="pool-hours" className="text-xs font-bold text-gray-600 block mb-1">Runs for (hours)</label>
+              <Input
+                id="pool-hours"
+                type="number"
+                min="1"
+                max="720"
+                value={poolHours}
+                onChange={(e) => setPoolHours(e.target.value)}
+                className="h-10"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setPoolProduct(null)}
+              className="min-h-11 px-4 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleOpenPool}
+              disabled={poolBusy}
+              className="min-h-11 px-4 bg-primary text-white rounded-lg text-sm font-bold hover:opacity-90 disabled:opacity-50"
+            >
+              {poolBusy ? 'Opening…' : 'Open pool'}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={confirmDelete !== null} onOpenChange={(open) => !open && setConfirmDelete(null)}>
         <DialogContent>
           <DialogHeader>

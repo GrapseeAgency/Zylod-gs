@@ -2432,10 +2432,15 @@ model groupBuyParticipants {
   campaignId String
   userId     String
   quantity   Float    @default(1)
+  // Task 141: how many of the reserved units the buyer has already ordered
+  // at the pool rate (a completed pool's promise is real — it is consumed by
+  // the order engine, never double-spent).
+  redeemedQty Float   @default(0)
   // status: joined | paid | refunded
   status     String   @default("joined")
   createdAt  DateTime @default(now())
 
+  @@unique([campaignId, userId])
   @@index([campaignId])
   @@index([userId])
 }

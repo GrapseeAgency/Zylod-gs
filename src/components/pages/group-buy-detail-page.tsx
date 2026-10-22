@@ -129,26 +129,39 @@ export function GroupBuyDetailPage() {
               </div>
             </div>
 
-            {/* Join Form */}
-            <div className="space-y-3 pt-2 border-t border-gray-100">
-              <label className="text-xs font-bold text-gray-700">How many units to reserve in this pool?</label>
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  min="1"
-                  value={quantity}
-                  onChange={e => setQuantity(e.target.value)}
-                  className="font-bold text-sm"
-                />
-                <Button
-                  onClick={handleJoin}
-                  disabled={joining}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-6 rounded-xl shadow-md"
-                >
-                  {joining ? 'Reserving...' : 'Join Pool'}
-                </Button>
+            {/* Join Form — Task 141 honesty: a filled/expired pool offers no
+                reservation control; it states the truth instead of a form the
+                API would refuse with 409. */}
+            {campaign.status === 'active' && new Date(campaign.expiresAt) > new Date() ? (
+              <div className="space-y-3 pt-2 border-t border-gray-100">
+                <label className="text-xs font-bold text-gray-700">How many units to reserve in this pool?</label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={e => setQuantity(e.target.value)}
+                    className="font-bold text-sm"
+                  />
+                  <Button
+                    onClick={handleJoin}
+                    disabled={joining}
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-6 rounded-xl shadow-md"
+                  >
+                    {joining ? 'Reserving...' : 'Join Pool'}
+                  </Button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="pt-2 border-t border-gray-100" data-testid="pool-closed-state">
+                <p className="text-sm font-black text-gray-900 dark:text-gray-100">
+                  {campaign.status === 'completed' ? 'This pool is filled — participants can now order their reserved units at the pool rate.' : 'This pool has ended.'}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Reserved units are honored automatically at checkout, up to each participant's reservation.
+                </p>
+              </div>
+            )}
 
             </div>
 
