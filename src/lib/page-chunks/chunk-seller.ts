@@ -25,6 +25,7 @@ export const CHUNK_SELLER = new Set([
   'bulk-upload-products', 'seller-bulk-upload',
   'product-performance',
   'customer-queries', 'seller-customer-queries',
+  'seller-live-studio', 'live-studio',
   'seller-rankings',
   'store-customization', 'seller-store-customization',
 
@@ -161,6 +162,8 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
 
     // 148. Customer Queries (Seller)
     'customer-queries': () => import('@/components/pages/customer-queries-page'),
+    'seller-live-studio': () => import('@/components/pages/seller-live-studio-page'),
+    'live-studio': () => import('@/components/pages/seller-live-studio-page'),
     'seller-customer-queries': () => import('@/components/pages/customer-queries-page'),
 
     // 149. Seller Rankings

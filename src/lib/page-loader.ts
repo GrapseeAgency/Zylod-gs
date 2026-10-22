@@ -67,6 +67,7 @@ const REAL_PAGES = new Set([
   'bulk-upload-products', 'seller-bulk-upload',
   'product-performance',
   'customer-queries', 'seller-customer-queries',
+  'seller-live-studio', 'live-studio',
   'seller-rankings',
   'store-customization', 'seller-store-customization',
   // Seller Sub-pages
@@ -325,6 +326,7 @@ export function getChunkForPage(pageId: string): string | null {
     'bulk-upload-template', 'bulk-upload-history', 'bulk-price-update',
     'customer-query-detail', 'customer-rfq-inbox', 'store-theme-customizer',
     'seller-quick-actions', 'seller-notifications-center',
+    'seller-live-studio', 'live-studio',
   ].includes(pageId)) return 'seller'
   if ([
     'search-home', 'search',

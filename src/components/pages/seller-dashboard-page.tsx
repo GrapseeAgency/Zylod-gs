@@ -7,7 +7,7 @@ import {
   Package, ShoppingCart, AlertTriangle, DollarSign, MessageCircle,
   Plus, Truck, Store, BarChart3, ChevronRight, LayoutList, Users, PackageSearch,
   BellRing, PackageOpen, BadgePercent, Wallet, FileSpreadsheet, Trophy, Filter,
-  MessagesSquare
+  MessagesSquare, Radio
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -179,6 +179,7 @@ export const SellerDashboardPage = () => {
     { icon: Filter, label: 'Funnel', page: 'seller-sales-funnel' },
     { icon: Users, label: 'Customers', page: 'seller-customer-insights' },
     { icon: MessagesSquare, label: 'Queries', page: 'customer-queries' },
+    { icon: Radio, label: 'Live Studio', page: 'seller-live-studio' },
     { icon: MessageCircle, label: 'Messages', page: 'chat-list' },
   ];
 
