@@ -3953,3 +3953,24 @@ Stage Summary:
 - Coupons are now a REAL buyer surface: live honest validation, live honest preview, one payable number across the page, and the server (Task 74) remains the untrusted-client's final gate — drilled end-to-end including the fixed-type bug that would have shipped a lying preview.
 - REMAINING FAKE/INCOMPLETE: /api/invoices/[id] + /api/orders/[id]/invoice (true orphans, document task); /api/supplier/queries/[id] PATCH (query status updates have no UI). Buy-now flow has no coupon box by design (express path) — recorded, not broken.
 - Pushed as 0b0f98b with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 132
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE INVOICE FAMILY — Task 131's two deferred true orphans (/api/invoices/[id], /api/orders/[id]/invoice) plus the list route. Reading the money paths before wiring found the receipt-route identity trap ALIVE IN ALL THREE ROUTES, and the browser pass exposed a phantom-discount lie in the tax invoice's own math.
+
+Work Log:
+- THREE REAL AUTHZ BUGS (same supplierProfiles.id vs users.id trap Task 128 documented in the receipt route, still alive here): (1) GET /api/invoices where-clause `subOrders.some(supplierId: userId)` could NEVER match → sellers saw an EMPTY invoice list forever; (2) GET /api/invoices/[id] same clause → sellers 404 on their own Mushak documents; (3) GET /api/orders/[id]/invoice `product.supplierId === user.id` → sellers 403 on their own orders' tax invoices. All three now resolveSupplierProfile + compare profile ids; admins pass; foreign sellers stay 404/403 (no-leak).
+- PHANTOM-DISCOUNT LIE: the tax-invoice endpoint derived `discount = subtotal + shipping + VAT − totalAmount`, so EVERY undiscounted order reported a fake commercial discount equal to its own VAT (browser-screenshot proof: "Discounts applied − ৳600" on a full-price ৳4,000 order). Fixed: discount = subtotal + shipping − totalAmount (real money only — campaign/coupon effects already live in the priced lines); VAT renders as a labeled "regulatory reference" that is never summed into the renamed "Total (as charged)". Money identity drilled: subtotal + shipping − discount === grandTotal.
+- order-invoice-page.tsx SWITCHED to the purpose-built endpoint: server-computed totals, company identity block (address/TIN from the endpoint, not hardcoded), per-line supplier names, and the BILLED-TO bug dies — the old page showed the VIEWER's name (a supplier viewing a buyer's invoice saw themselves); now the real buyer of record. New honest guard state for 403.
+- invoice-management-page.tsx: rows now open the Mushak 6.3 document DIALOG consuming /api/invoices/[id] (zero consumers since it shipped — a genuinely different document: NBR 5% VAT + MUSHAK-6.3 number vs the 15% company tax invoice), with the full-invoice page as the secondary action on both mobile cards and the desktop table.
+- DRILL scripts/qa/t132-e2e.mjs — **35/0 on a fresh wipe**: gates ×3 routes (anon 401; buyer/seller/admin/outsider matrix; the three supplier fixes each proven 200-from-locked-out); Mushak by order id AND orderNumber; 5% VAT math (৳200 on ৳4,000); tax-invoice money identity + no-phantom gate; list totals = order truth.
+- DRILL FIXTURE LESSON (hardened the house recipe): the categories-cache-outlives-wipe trap bites in BOTH directions — a stale-positive cache ALSO skips creation (t132's first runs failed "Selected category does not exist" then skipped the POST). Fixtures now treat Prisma as the ONLY authority: create via the API when the row is genuinely absent, read the id back from Prisma, never trust the cached list. Fail-fast guards added after every seeding step with the raw response in the message.
+- BROWSER QA (real UI logins, gateway :81): seller → invoice-management shows the REAL row (INV-…, ৳4,000 — the list was empty forever before) → Mushak 6.3 dialog renders invoiceNumber/MUSHAK-6.3/5.0% VAT ৳200/৳4,000; buyer → tax invoice at 1280×800 AND 375×812: TAX INVOICE + PAID chip, company block, real BILLED TO, per-line supplier, "Total (as charged) ৳4,000", VAT reference note, NO phantom discount, scrollWidth exactly 375/1280. Console clean (filtered). Screenshots t132-mushak-dialog/-tax-invoice-buyer/-invoice-final/-invoice-mobile.png.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- Every invoice document is now real on both sides: sellers can finally see their money documents (list + Mushak + tax invoice), buyers see server-computed truthful totals, and the invoice family's endpoints each have a distinct, drilled consumer.
+- REMAINING FAKE/INCOMPLETE: /api/supplier/queries/[id] GET/PATCH (query detail + status updates have no UI — the list is consumed); that is the last known true orphan from the scan.
+- Pushed as a3ecb8a with the owner-provided PAT (never stored in tracked files).

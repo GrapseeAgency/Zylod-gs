@@ -89,6 +89,15 @@ export async function PATCH(
     }
     const body = parsed.data
 
+    // Task 133: an empty PATCH is refused — a no-op that used to 200 AND
+    // write an auditLogs row claiming an update happened (a fake event).
+    if (body.replyMessage === undefined && body.status === undefined) {
+      return NextResponse.json(
+        { error: 'Nothing to update — send replyMessage and/or status.' },
+        { status: 400 }
+      )
+    }
+
     const { id } = await params
     const existing = await db.sellerCustomerQueries.findFirst({
       where: { id, supplierId: profile.id },
