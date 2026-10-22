@@ -4218,3 +4218,24 @@ Stage Summary:
 - The voucher system is now ONE honest circuit: every grant path (redeem/claim/spin/crate/referral) produces spendable money with a real consumption trail — previewed by the same precedence the order enforces, consumed exactly once per row, refused honestly when its benefit cannot exist.
 - Pushed as 66a0e2b with the owner-provided PAT (never stored in tracked files).
 - REMAINING FAKE/INCOMPLETE (full-app audit continues): (1) sellerCustomerQueries writer (documented decision pending); (2) delivery location = driver-app surface (external); (3) t142 candidate: seller "Go Live" console UI; (4) the spin/box/crate UIs could surface the code + terms in their win toasts (minor, the vault now carries everything).
+
+---
+Task ID: 145
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: FULL-APP AUDIT unit 3 — THE ORPHANED CONTROL ROOM (the Task 142 candidate, taken). PATCH /api/live-shopping/[id] existed with its full start/end/409 matrix and audit trail, but NO UI consumed any of it: a seller could not schedule, go live, or end a broadcast anywhere in the product. The live-shopping pillar was buyer-surface-only; the control room was orphaned.
+
+Work Log:
+- GET /api/supplier/live-shopping — the SESSION supplier's own broadcasts: 401-first requireUserType(['supplier','admin']), 'supplier-live-list' 60/min, resolveSupplierProfile scope keyed by the PROFILE id (the Task 142 id-space rule), featured product ids resolved to REAL rows (name/price/approval state), honest isLive/viewerCount/scheduledAt/endedAt.
+- seller-live-studio-page — the console: doctrine strip ("a schedule is a promise, not a live state"), stream cards with LIVE-pulse / SCHEDULED / ENDED badges, viewer counts on live rows, featured product chips, Go Live / End Broadcast driving the audited PATCH (409s surface as toasts), View-buyer-room deep link, Schedule dialog (title/description/datetime/streamUrl + featured-product multi-select from the seller's OWN approved items).
+- Seller Hub gains a Live Studio tile (Radio icon) in the quick actions.
+- REGISTRATION LESSON: page ids live in THREE places (REAL_PAGES list, the chunk Set + import map, AND the getChunkForPage seller array) — the first push hit only two and the browser answered "Page not found: seller-live-studio"; fixed by adding the id to the getChunkForPage seller array.
+- API-shape lesson: /api/supplier/products returns data.items (not data.products) — the dialog's multi-select read nothing until fixed.
+- DRILL scripts/qa/t145-e2e.mjs — 28/0 on a fresh wipe: list gates (anon/buyer 401, honest empty list), schedule via the SAME POST contract the dialog uses (foreign featured product 403, buyer refused), scope proof (exactly MY stream; seller2 sees none), honest schedule state (not live, zero viewers), the full control matrix THROUGH the console's PATCH consumer (non-host 403, end-while-not-live 409, start → isLive + audit, double-start 409, the list shows what buyers see, end → endedAt + audit).
+- BROWSER (real seller login, gateway :81): Seller Hub → Live Studio tile → console → Schedule dialog (real product checkbox picked) → SCHEDULED row → Go Live → LIVE pulse + DB isLive true with honest zero viewers → End Broadcast → ENDED; auditLogs live_stream_started/ended verbatim; mobile 375 scrollWidth exact; console clean. Screenshots t145-studio-desktop/-mobile.png.
+- tsc 0; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- Live shopping is now a closed circuit on BOTH sides: sellers schedule and control real rooms (audited), buyers discover and watch them — the same data, the same truth, connected.
+- Pushed as a3c7135 with the owner-provided PAT (never stored in tracked files).
+- REMAINING FAKE/INCOMPLETE (full-app audit continues): (1) sellerCustomerQueries writer (documented decision pending — the reader exists, no writer feeds it); (2) delivery location = driver-app surface (external).
