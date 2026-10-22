@@ -58,7 +58,7 @@ export async function POST(
     }
 
     await db.$transaction(async (tx) => {
-      await tx.payments.create({
+      const created = await tx.payments.create({
         data: {
           orderId: order.id,
           method,
@@ -72,6 +72,26 @@ export async function POST(
       await tx.orders.update({
         where: { id: order.id },
         data: { paymentStatus: 'paid' },
+      })
+      // Real audit row — the header's "audit-logged with the verifier's id"
+      // claim is now a DB fact (same pattern as payment-submit's ledger).
+      await tx.auditLogs.create({
+        data: {
+          actorId: auth.user!.id,
+          action: 'payment_admin_verified',
+          entityType: 'payments',
+          entityId: created.id,
+          metadata: JSON.stringify({
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            transactionId,
+            method,
+            amount,
+            ...(note ? { note } : {}),
+            before: { paymentStatus: order.paymentStatus },
+            after: { paymentStatus: 'paid' },
+          }),
+        },
       })
     })
 

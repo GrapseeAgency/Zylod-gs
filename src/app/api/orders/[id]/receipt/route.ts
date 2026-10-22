@@ -54,12 +54,16 @@ export async function GET(
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    // Authorization
+    // Authorization. supplierId on products/OrderItems is a supplierProfiles.id
+    // (NOT a users.id) — comparing it to auth.user.id can never match (the same
+    // identity-mismatch trap orders/[id]/route.ts already fixed). Resolve the
+    // caller's supplier profile first, then compare profile ids.
     const isBuyer = order.buyerId === auth.user.id
     const isAdmin = auth.user.userType === 'admin'
     if (!isBuyer && !isAdmin) {
-      const supplierOnOrder = order.subOrders.some((so) =>
-        so.items.some((it) => it.product.supplierId === auth.user!.id)
+      const profile = await db.supplierProfiles.findUnique({ where: { userId: auth.user!.id } })
+      const supplierOnOrder = Boolean(profile) && order.subOrders.some((so) =>
+        so.items.some((it) => it.product.supplierId === profile!.id)
       )
       if (!supplierOnOrder) {
         return NextResponse.json({ error: 'Not authorized' }, { status: 403 })

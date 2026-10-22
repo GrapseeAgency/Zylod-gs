@@ -15,7 +15,7 @@ import { InspectionCard } from '@/components/shared/inspection-card'
 import {
   ArrowLeft, HelpCircle, Check, Package, Truck, Home,
   Download, AlertTriangle, MapPin, CreditCard, FileText, RefreshCw, XCircle,
-  Wallet, Hourglass
+  Wallet, Hourglass, Loader2, ReceiptText, Landmark, Info
 } from 'lucide-react'
 
 // ── Real API types (GET /api/orders/[id]) ──────────────────────────────
@@ -61,6 +61,22 @@ interface ApiSubOrder {
   tracking: ApiTracking[]
 }
 interface ApiPayment { id: string; method: string; amount: number; status: string; transactionId: string | null; paidAt: string | null }
+
+/** Real shape of GET /api/orders/[id]/receipt (Task 128-c). */
+interface ReceiptData {
+  orderNumber: string
+  orderDate: string
+  paymentMethod: string
+  paymentStatus: string
+  items: { id: string; productName: string; sku: string; quantity: number; unitPrice: number; total: number }[]
+  subtotal: number
+  shipping: number
+  tax: number
+  total: number
+  currency: string
+  buyer: { name: string; businessName: string | null }
+  shippingAddress: { address: string; city: string; district: string; country: string } | null
+}
 interface ApiOrderDetail {
   id: string
   orderNumber: string
@@ -230,6 +246,17 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const [payNote, setPayNote] = useState('')
   const [paySubmitting, setPaySubmitting] = useState(false)
   const [payError, setPayError] = useState('')
+  // Task 128-a: real receiving-account instructions (POST payments/initiate)
+  // fetched for the selected transfer method — where the money actually goes.
+  const [payInstructions, setPayInstructions] = useState<Record<string, string> | null>(null)
+  const [payInstructionsLoading, setPayInstructionsLoading] = useState(false)
+  const [payInstructionsError, setPayInstructionsError] = useState('')
+  const instructionsCacheRef = useRef<Record<string, Record<string, string>>>({})
+  // Task 128-c: real receipt (GET orders/[id]/receipt) rendered in a dialog.
+  const [receiptOpen, setReceiptOpen] = useState(false)
+  const [receiptLoading, setReceiptLoading] = useState(false)
+  const [receiptError, setReceiptError] = useState('')
+  const [receipt, setReceipt] = useState<ReceiptData | null>(null)
 
   // ── Cancel-order state (Task 57-a/58) ────────────────────────────────
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
@@ -313,7 +340,84 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
     setPaySender('')
     setPayNote('')
     setPayError('')
+    setPayInstructions(null)
+    setPayInstructionsError('')
     setPayDialogOpen(true)
+  }
+
+  // Task 128-a: fetch the REAL payment instructions for the selected method.
+  // The initiate route reuses an existing pending payment for the same method,
+  // so repeated opens never stack rows. Unset env accounts produce an honest
+  // 503 — shown verbatim, never papered over.
+  const fetchPayInstructions = useCallback(async (method: 'bank_transfer' | 'mobile_banking') => {
+    if (!order) return
+    const cached = instructionsCacheRef.current[method]
+    if (cached) {
+      setPayInstructions(cached)
+      setPayInstructionsError('')
+      return
+    }
+    setPayInstructionsLoading(true)
+    setPayInstructionsError('')
+    try {
+      const res = await fetch(`/api/orders/${encodeURIComponent(order.id)}/payments/initiate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ method }),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) {
+        setPayInstructions(null)
+        setPayInstructionsError(json?.error || `Could not load payment details (HTTP ${res.status})`)
+        return
+      }
+      const data = json?.data
+      if (data?.instructions && typeof data.instructions === 'object') {
+        instructionsCacheRef.current[method] = data.instructions as Record<string, string>
+        setPayInstructions(data.instructions as Record<string, string>)
+      } else {
+        setPayInstructionsError('Payment details response was malformed — try again.')
+      }
+    } catch {
+      setPayInstructionsError('Network error while loading payment details. Check your connection and retry.')
+    } finally {
+      setPayInstructionsLoading(false)
+    }
+  }, [order])
+
+  // The instructions rail only covers the two real transfer methods — COD,
+  // wallet and card legs need no receiving-account details.
+  useEffect(() => {
+    if (!payDialogOpen) return
+    const selected = PAYMENT_METHOD_OPTIONS[payMethodIdx]
+    if (selected && (selected.value === 'bank_transfer' || selected.value === 'mobile_banking')) {
+      void fetchPayInstructions(selected.value)
+    } else {
+      setPayInstructions(null)
+      setPayInstructionsError('')
+    }
+  }, [payDialogOpen, payMethodIdx, fetchPayInstructions])
+
+  // Task 128-c: load the real receipt document for paid / partially-paid orders.
+  const openReceipt = async () => {
+    if (!order) return
+    setReceiptOpen(true)
+    setReceiptLoading(true)
+    setReceiptError('')
+    try {
+      const res = await fetch(`/api/orders/${encodeURIComponent(order.id)}/receipt`, { credentials: 'include' })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) {
+        setReceiptError(json?.error || `Could not load the receipt (HTTP ${res.status})`)
+        return
+      }
+      setReceipt((json?.data as ReceiptData) ?? null)
+    } catch {
+      setReceiptError('Network error while loading the receipt. Check your connection and retry.')
+    } finally {
+      setReceiptLoading(false)
+    }
   }
 
   const submitPayment = async () => {
@@ -854,6 +958,19 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               View Invoice
             </Button>
 
+            {/* Task 128-c: real receipt from GET orders/[id]/receipt — shown
+                once money has actually moved (paid / partial). */}
+            {(order?.paymentStatus === 'paid' || order?.paymentStatus === 'partial') && (
+              <Button
+                variant="outline"
+                onClick={openReceipt}
+                className="w-full bg-white dark:bg-slate-900 hover:bg-slate-50 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+              >
+                <ReceiptText className="h-4 w-4" />
+                View Receipt
+              </Button>
+            )}
+
             <div className="grid grid-cols-2 gap-2 pt-1">
               <button
                 onClick={() => navigate('submit-ticket', { orderId })}
@@ -970,6 +1087,40 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               </select>
             </div>
 
+            {/* Task 128-a: REAL receiving-account details for the selected
+                transfer method — from POST payments/initiate (env-built).
+                COD / wallet / card legs show nothing: they need no transfer. */}
+            {(PAYMENT_METHOD_OPTIONS[payMethodIdx]?.value === 'bank_transfer' || PAYMENT_METHOD_OPTIONS[payMethodIdx]?.value === 'mobile_banking') && (
+              <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50/60 dark:bg-emerald-950/30 px-3 py-2.5 space-y-1.5">
+                <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                  <Landmark className="h-3.5 w-3.5" /> Where to send the money
+                </span>
+                {payInstructionsLoading && (
+                  <span className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-bold py-1">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading payment details…
+                  </span>
+                )}
+                {!payInstructionsLoading && payInstructionsError && (
+                  <span className="flex items-start gap-1.5 text-[11px] text-amber-700 dark:text-amber-400 font-bold">
+                    <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" /> {payInstructionsError}
+                  </span>
+                )}
+                {!payInstructionsLoading && payInstructions && (
+                  <div className="space-y-1">
+                    {Object.entries(payInstructions).map(([channel, detail]) => (
+                      <div key={channel} className="flex items-start justify-between gap-2 text-[11px]">
+                        <span className="font-black text-slate-700 dark:text-slate-300 shrink-0">{channel}</span>
+                        <span className="text-right text-slate-600 dark:text-slate-400 font-bold break-all">{detail}</span>
+                      </div>
+                    ))}
+                    <p className="text-[10px] text-slate-500 dark:text-slate-500 font-bold pt-1 border-t border-emerald-100 dark:border-emerald-900">
+                      Payment is confirmed only when the gateway/webhook or a site admin verifies the transaction — the order stays UNPAID until then.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Transaction / reference ID *</label>
               <Input
@@ -1023,6 +1174,94 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               {paySubmitting ? 'Submitting…' : 'Submit payment'}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Task 128-c: real receipt dialog — every number from GET orders/[id]/receipt */}
+      <Dialog open={receiptOpen} onOpenChange={(open) => { if (!open) { setReceiptOpen(false); setReceiptError('') } }}>
+        <DialogContent className="max-w-lg rounded-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-black flex items-center gap-2">
+              <ReceiptText className="h-4 w-4 text-primary" /> Receipt — order #{receipt?.orderNumber || order?.orderNumber || '--'}
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Payment receipt with the real items, totals and payment status of this order.
+            </DialogDescription>
+          </DialogHeader>
+
+          {receiptLoading && (
+            <div className="flex items-center justify-center gap-2 py-8 text-xs font-bold text-slate-500">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading receipt…
+            </div>
+          )}
+
+          {!receiptLoading && receiptError && (
+            <div className="flex items-start gap-2 text-xs text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-xl px-3 py-2">
+              <XCircle className="h-4 w-4 shrink-0 mt-0.5" /> {receiptError}
+            </div>
+          )}
+
+          {!receiptLoading && !receiptError && receipt && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                  <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Buyer</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">{receipt.buyer.name}</span>
+                  {receipt.buyer.businessName && (
+                    <span className="block text-slate-500">{receipt.buyer.businessName}</span>
+                  )}
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                  <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400">Payment</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200 capitalize">{receipt.paymentMethod.replace(/_/g, ' ')}</span>
+                  <span className={`block font-black uppercase ${receipt.paymentStatus === 'paid' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                    {receipt.paymentStatus}
+                  </span>
+                </div>
+              </div>
+
+              {receipt.shippingAddress && (
+                <div className="text-[11px] text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                  <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 mb-0.5">Ship to</span>
+                  <span className="font-bold">{receipt.shippingAddress.address}, {receipt.shippingAddress.city}, {receipt.shippingAddress.district}, {receipt.shippingAddress.country}</span>
+                </div>
+              )}
+
+              <div className="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden">
+                <div className="max-h-56 overflow-y-auto">
+                  <table className="w-full text-[11px]">
+                    <thead className="bg-slate-50 dark:bg-slate-950 sticky top-0">
+                      <tr className="text-left text-[9px] font-black uppercase tracking-wider text-slate-400">
+                        <th className="px-3 py-2">Item</th>
+                        <th className="px-2 py-2 text-right">Qty</th>
+                        <th className="px-3 py-2 text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {receipt.items.map((it) => (
+                        <tr key={it.id} className="border-t border-slate-50 dark:border-slate-800">
+                          <td className="px-3 py-2 font-bold text-slate-700 dark:text-slate-300">
+                            {it.productName}
+                            <span className="block text-[9px] font-normal text-slate-400">{it.sku}</span>
+                          </td>
+                          <td className="px-2 py-2 text-right text-slate-500">{it.quantity}</td>
+                          <td className="px-3 py-2 text-right font-bold text-slate-800 dark:text-slate-200">{formatPrice(it.total)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 px-3 py-2 space-y-1 text-[11px]">
+                  <div className="flex justify-between text-slate-500"><span>Subtotal</span><span className="font-bold">{formatPrice(receipt.subtotal)}</span></div>
+                  <div className="flex justify-between text-slate-500"><span>Shipping</span><span className="font-bold">{formatPrice(receipt.shipping)}</span></div>
+                  <div className="flex justify-between text-slate-500"><span>VAT (15%)</span><span className="font-bold">{formatPrice(receipt.tax)}</span></div>
+                  <div className="flex justify-between text-slate-900 dark:text-slate-100 font-black pt-1 border-t border-slate-200 dark:border-slate-800">
+                    <span>Total</span><span>{formatPrice(receipt.total)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 

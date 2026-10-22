@@ -25,12 +25,13 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   ShieldCheck, Search, RefreshCw, AlertTriangle, CheckCircle2, Package,
-  ShoppingBag, Truck, Boxes, ChevronDown, ChevronUp, Ban,
+  ShoppingBag, Truck, Boxes, ChevronDown, ChevronUp, Ban, BadgeCheck,
 } from 'lucide-react'
 
 // ── Real API types (GET /api/admin/orders) ─────────────────────────────
@@ -121,6 +122,18 @@ export function AdminOrdersPage() {
   const [forceReason, setForceReason] = useState('')
   const [forceBusy, setForceBusy] = useState(false)
 
+  // ── Record verified payment (Task 128-b) — the other real admin lever ──
+  // POST /api/admin/orders/[id]/verify-payment: admin CONFIRMED the money
+  // arrived (paper-receipt B2B flow) and records it — payments row 'success',
+  // order flips PAID, audit-logged. Amount is ALWAYS the order total
+  // (server-enforced ±0.01); the transactionId is globally unique.
+  const [verifyTarget, setVerifyTarget] = useState<ApiOrder | null>(null)
+  const [verifyTrxId, setVerifyTrxId] = useState('')
+  const [verifyMethod, setVerifyMethod] = useState<'bank_transfer' | 'mobile_banking'>('bank_transfer')
+  const [verifyNote, setVerifyNote] = useState('')
+  const [verifyBusy, setVerifyBusy] = useState(false)
+  const [verifyError, setVerifyError] = useState('')
+
   const loadOrders = useCallback(async (opts?: { status?: string; q?: string; page?: number }) => {
     const useStatus = opts?.status ?? statusTab
     const useQ = opts?.q ?? q
@@ -186,6 +199,50 @@ export function AdminOrdersPage() {
       setForceBusy(false)
     }
   }, [forceTarget, forceReason, loadOrders])
+
+  // Task 128-b: record a VERIFIED payment on an unpaid order — the paper-
+  // receipt B2B leg of the payment doctrine. Fires only with a valid
+  // transaction reference; the server enforces amount === order.totalAmount
+  // and globally-unique transactionIds, and audit-logs the verifier's id.
+  const confirmVerifyPayment = useCallback(async () => {
+    if (!verifyTarget) return
+    const trx = verifyTrxId.trim()
+    if (!/^[A-Za-z0-9\-_]{6,64}$/.test(trx)) {
+      setVerifyError('Transaction ID must be 6-64 characters (letters, numbers, dash or underscore).')
+      return
+    }
+    setVerifyBusy(true)
+    setVerifyError('')
+    try {
+      const res = await fetch(`/api/admin/orders/${encodeURIComponent(verifyTarget.id)}/verify-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          transactionId: trx,
+          method: verifyMethod,
+          amount: verifyTarget.totalAmount,
+          ...(verifyNote.trim() ? { note: verifyNote.trim() } : {}),
+        }),
+      })
+      const body = await res.json().catch(() => null)
+      if (!res.ok) {
+        setVerifyError(body?.error || `Verification failed (HTTP ${res.status})`)
+        return
+      }
+      toast.success(`Order #${body?.data?.orderNumber ?? verifyTarget.orderNumber} marked PAID`, {
+        description: `Transaction ${trx} recorded — audit-logged with your admin id.`,
+      })
+      setVerifyTarget(null)
+      setVerifyTrxId('')
+      setVerifyNote('')
+      loadOrders()
+    } catch {
+      setVerifyError('Network error while recording the payment. Check your connection and retry.')
+    } finally {
+      setVerifyBusy(false)
+    }
+  }, [verifyTarget, verifyTrxId, verifyMethod, verifyNote, loadOrders])
 
   const switchStatus = (s: string) => {
     setStatusTab(s)
@@ -353,6 +410,17 @@ export function AdminOrdersPage() {
                         </Button>
                       </div>
                     )}
+                    {(o.paymentStatus === 'unpaid' || o.paymentStatus === 'partial') && (
+                      <div className="pt-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => { setVerifyTrxId(''); setVerifyMethod('bank_transfer'); setVerifyNote(''); setVerifyError(''); setVerifyTarget(o) }}
+                          className="h-9 px-4 rounded-xl text-xs font-bold gap-1.5 border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                        >
+                          <BadgeCheck className="h-3.5 w-3.5" /> Record verified payment
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -406,6 +474,81 @@ export function AdminOrdersPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Task 128-b: record a VERIFIED payment — paper-receipt B2B leg of the
+          payment doctrine. Only after the money has actually arrived. */}
+      <Dialog open={verifyTarget !== null} onOpenChange={(open) => { if (!open && !verifyBusy) setVerifyTarget(null) }}>
+        <DialogContent className="max-w-md rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-black flex items-center gap-2">
+              <BadgeCheck className="h-4 w-4 text-emerald-600" /> Record verified payment — #{verifyTarget?.orderNumber ?? ''}
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Record this only after you have CONFIRMED the money arrived in the company account (bank transfer with a paper receipt, or a mobile-wallet transfer). The order is marked PAID immediately and the action is audit-logged with your admin id.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-3 flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-500">Order total (recorded amount must match exactly)</span>
+              <span className="text-lg font-black text-primary">{formatPrice(verifyTarget?.totalAmount ?? 0)}</span>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Method *</label>
+              <select
+                value={verifyMethod}
+                onChange={(e) => setVerifyMethod(e.target.value as 'bank_transfer' | 'mobile_banking')}
+                className="h-10 w-full rounded-xl border border-input bg-white dark:bg-slate-900 px-3 text-xs font-bold"
+              >
+                <option value="bank_transfer">Bank transfer</option>
+                <option value="mobile_banking">Mobile banking</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Transaction / reference ID *</label>
+              <Input
+                value={verifyTrxId}
+                onChange={(e) => setVerifyTrxId(e.target.value)}
+                placeholder="e.g. bank reference or bKash TrxID (6-64)"
+                className="h-10 rounded-xl text-xs"
+                maxLength={64}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Note (optional)</label>
+              <Input
+                value={verifyNote}
+                onChange={(e) => setVerifyNote(e.target.value)}
+                placeholder="e.g. paper receipt #4821 verified at branch"
+                className="h-10 rounded-xl text-xs"
+                maxLength={300}
+              />
+            </div>
+
+            {verifyError && (
+              <div className="flex items-start gap-2 text-xs text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-xl px-3 py-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" /> {verifyError}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" disabled={verifyBusy} onClick={() => setVerifyTarget(null)} className="h-10 px-4 rounded-xl text-xs font-bold">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => void confirmVerifyPayment()}
+              disabled={verifyBusy || !verifyTrxId.trim()}
+              className="h-10 px-5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {verifyBusy ? 'Recording…' : 'Record & mark PAID'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
