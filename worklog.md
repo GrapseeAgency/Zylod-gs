@@ -4053,3 +4053,22 @@ Stage Summary:
 - The prior session's UUID-message WIP commit is now 87f61dc with the full evidence chain — nothing inherited silently, everything verified before push.
 - REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface. Next rounds: feature depth per the standing build order.
 - Pushed as 87f61dc with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 137
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE ORPHAN-VERIFY TOOL LIED IN BOTH DIRECTIONS — it printed "REAL ORPHAN" for (a) routes RETIRED in Task 127-a whose files no longer exist (orders/*/invoices, linked-accounts connect/disconnect), and (b) routes consumed through dynamic template URLs (fetch(`/api/admin/${kind}/${id}`) in the press-investor and app-status admin managers) that a static path regex cannot see. A future round reading that report would either chase dead files or, worse, delete LIVE admin sub-routes ([id] PATCH/DELETE for media-kit/investor-docs/maintenance) believing them orphans.
+
+Work Log:
+- Four honest verdict classes: RETIRED (route file gone — stays dead by design; existence proof-checked per candidate by walking src/app/api segments), DOCUMENTED (external surface or dynamic template), CONSUMED (consumer found), ORPHAN (live) — the only actionable class.
+- Scanner scope gained src/lib (helper modules are real consumers — press-investor.ts / app-status.ts pattern).
+- DOCUMENTED claims are self-proving: DYNAMIC-CONSUMED verdicts re-verify the `${kind}/${id}` template exists in consumer code at EVERY run — if a refactor breaks the template, the route degrades to ORPHAN (live) instead of hiding behind its documentation. Regex negative/positive sanity-tested (static path false, template true).
+- External-surface verdicts recorded verbatim from Task 128: native/offline-sync (native app), payments/webhook (gateway HMAC callback, drilled t71), wallet/ipn/sslcommerz (gateway IPN), delivery suborder location (driver app).
+- Fresh run: 26 candidates → 0 live orphans, matching the standing ledger exactly.
+- eslint 0; DB wiped 139×0.
+
+Stage Summary:
+- The route graph's tooling now tells the truth in both directions: nothing live is buried under false-alarm noise, and nothing dead masquerades as work.
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface. Zero live orphans confirmed by the improved tool.
+- Pushed as 14a00a3 with the owner-provided PAT (never stored in tracked files).
