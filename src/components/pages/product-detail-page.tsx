@@ -21,6 +21,8 @@ import { MobileProductDetailPage } from '@/components/mobile/mobile-product-deta
 import { ProductQRCodeDialog } from '@/components/shared/product-qr-code'
 import { ProductShareDialog } from '@/components/shared/product-share-dialog'
 import { BackInStockButton } from '@/components/shared/back-in-stock-button'
+import { RelatedProductsRail } from '@/components/shared/related-products-rail'
+import { SizeGuideButton } from '@/components/shared/size-guide-dialog'
 import { SampleRequestDialog } from '@/components/product/sample-request-dialog'
 import { ProductCertifications } from '@/components/product/product-certifications'
 import { ProductQas } from '@/components/product/product-qas'
