@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { resolveSupplierProfile } from '@/lib/supplier-scope'
 
 export async function GET(
   request: NextRequest,
@@ -16,12 +17,7 @@ export async function GET(
     const userId = auth.user.id
 
     const order = await db.orders.findFirst({
-      where: {
-        OR: [{ id }, { orderNumber: id }],
-        AND: {
-          OR: [{ buyerId: userId }, { subOrders: { some: { supplierId: userId } } }],
-        },
-      },
+      where: { OR: [{ id }, { orderNumber: id }] },
       include: {
         buyer: {
           select: {
@@ -45,6 +41,21 @@ export async function GET(
     })
 
     if (!order) {
+      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+    }
+
+    // Task 132 REAL BUG (receipt-route identity trap): subOrders.supplierId
+    // is a supplierProfiles.id, NOT a users.id — the old where-clause could
+    // never match, locking sellers out of their own Mushak documents
+    // forever. Resolve the profile and compare profile ids; admins pass.
+    const isBuyer = order.buyerId === userId
+    const isAdmin = auth.user.userType === 'admin'
+    let isSeller = false
+    if (!isBuyer && !isAdmin) {
+      const profile = await resolveSupplierProfile(auth.user)
+      isSeller = !!profile && order.subOrders.some((so) => so.supplierId === profile.id)
+    }
+    if (!isBuyer && !isAdmin && !isSeller) {
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
     }
 

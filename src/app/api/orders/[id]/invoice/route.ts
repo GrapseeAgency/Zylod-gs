@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { resolveSupplierProfile } from '@/lib/supplier-scope'
 
 // Platform billing identity (single source of truth — not user-editable).
 const COMPANY = Object.freeze({
@@ -70,9 +71,13 @@ export async function GET(
     const isBuyer = order.buyerId === auth.user.id
     const isAdmin = auth.user.userType === 'admin'
     if (!isBuyer && !isAdmin) {
-      // For suppliers, confirm one of the subOrders belongs to them.
-      const supplierOnOrder = order.subOrders.some(
-        (so) => so.items.some((it) => it.product.supplierId === auth.user!.id)
+      // Task 132 REAL BUG (receipt-route identity trap): product.supplierId is
+      // a supplierProfiles.id, NOT a users.id — comparing it to the user id
+      // could NEVER match, so suppliers were 403-locked out of their own
+      // orders' invoices. Resolve the profile and compare profile ids.
+      const profile = await resolveSupplierProfile(auth.user)
+      const supplierOnOrder = !!profile && order.subOrders.some(
+        (so) => so.items.some((it) => it.product.supplierId === profile.id)
       )
       if (!supplierOnOrder) {
         return NextResponse.json({ error: 'Not authorized to view this invoice' }, { status: 403 })
@@ -95,8 +100,12 @@ export async function GET(
     const subtotal = invoiceItems.reduce((sum, item) => sum + item.total, 0)
     const shipping = order.subOrders.reduce((sum, so) => sum + (so.shippingCost || 0), 0)
     const tax = subtotal * VAT_RATE
-    // Derived discount: whatever isn't subtotal + shipping + tax.
-    const discount = Math.max(0, subtotal + shipping + tax - order.totalAmount)
+    // Task 132 honest-numbers fix: the REAL order-level discount is whatever
+    // the buyer did NOT pay of goods+shipping (campaign/coupon effects already
+    // live in the priced lines and totalAmount). The old derivation added the
+    // VAT artifact into the gap, so every undiscounted order reported a
+    // phantom "discount" equal to its own VAT.
+    const discount = Math.max(0, subtotal + shipping - order.totalAmount)
 
     const invoice = {
       invoiceNumber: `INV-${order.orderNumber}`,

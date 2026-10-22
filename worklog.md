@@ -3932,3 +3932,24 @@ Work Log:
 Stage Summary:
 - Every number on the PDP now tells the truth about its own semantics: current-quantity savings in the badge, whole-ladder maximum in the Trust tile, honest copy when there is nothing to discount.
 - Pushed as 9ec1d1a with the owner-provided PAT (never stored in tracked files).
+
+---
+Task ID: 131
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE COUPON CIRCUIT — the orphan scan's biggest true orphan. /api/coupons/validate (a complete validation engine: active/window/usage-limit/min-order/discount math) had ZERO consumers: the checkout input attached codes client-side with discount 0, so buyers got NO live feedback and NO discount preview — bad codes only surfaced after the order refused (Task 74), and the buyer never saw what a coupon was worth before paying.
+
+Work Log:
+- ORPHAN VERDICTS (fresh scan, 14 candidates → 4 new): /api/coupons/validate TRUE (this task); /api/invoices/[id] + /api/orders/[id]/invoice TRUE but deferred (the order-invoice page builds from GET /api/orders/[id] — wiring them is a document task, next rounds); /api/supplier/queries/[id] PARTIAL (list consumed by customer-queries-page, the [id] GET/PATCH not — next rounds); the other 10 were Task 128's already-settled FALSE/EXTERNAL verdicts.
+- REAL ROUTE BUG (found by reading the money path before wiring): validate ALWAYS computed percentage math and ignored discountType — the schema has percentage|fixed where 'fixed' stores the flat ৳ in discountPercent, and POST /api/orders pays `min(discountPercent, totalAmount)` for fixed. A fixed coupon previewed the wrong ৳ (or ৳0). Fixed: the formula now mirrors the order write EXACTLY (fixed → min(flat, orderAmount); percentage → orderAmount × pct capped by maxDiscount ?? ∞) and the response carries discountType.
+- CHECKOUT WIRING: Apply → POST /api/coupons/validate { code, orderAmount: subtotal } (goods-only base matches the server's coupon base — shipping and promotions enter later server-side); failure shows the route's REAL reason verbatim; success sets { code, discount, discountType }, renders the emerald chip "Validated — ৳X off this cart…", a summary discount line, and the payableTotal. STALE-PROOF: a ref-tracked subtotal re-validates whenever the goods subtotal moves (qty changes) — a coupon that stops being valid clears itself with the endpoint's real reason. Enter submits; Apply shows "Checking…" while in flight.
+- ONE-NUMBER RULE: new payableTotal = max(0, orderTotal − discount) — the Order Summary total, the "Pay ৳X from wallet balance" label, and the insufficient-balance copy ALL quote the same figure (browser caught the wallet label showing ৳1,000 beside a ৳900 summary — fixed before commit).
+- DRILL scripts/qa/t131-e2e.mjs — **31/0 on a fresh wipe**: 6 coupon fixtures (percentage+cap, fixed, min-order, usage-limit-1, future window, expired — the expired one DB-written since the create route refuses already-dead windows); validate gates (no code 400, unknown 404 valid:false, expired/not-yet-valid/min-order 400 with real reasons); math parity (10% of 1000 = 100; 10% of 5000 → capped 200; fixed 100; fixed vs ৳50 order → 50); THE REAL ORDER PATH (wallet-paid orders: T131WELCOME → total ৳900 + usedCount 1; T131FLAT → ৳900; T131ONCE first ok then 409 usage limit; T131MIN2K → 409 names ৳2,000 minimum; T131DEAD/NOSUCH → 409 with real reasons).
+- REGRESSION: t74 (the coupon order-write drill) 28/0 on a fresh wipe.
+- BROWSER QA (real UI login, gateway :81): desktop 1280×800 — apply T131WELCOME → chip + "− ৳100" line + Goods total ৳900 + "Pay ৳900 from wallet balance" (one number everywhere); apply T131DEAD → red "Coupon has expired" alert, total unchanged; mobile 375×812 — same states, scrollWidth exactly 375. Console clean. Screenshots t131-coupon-applied/-checkout/-mobile.png.
+- tsc 0; eslint 0 (one unused directive removed); DB wiped 139×0 before commit.
+
+Stage Summary:
+- Coupons are now a REAL buyer surface: live honest validation, live honest preview, one payable number across the page, and the server (Task 74) remains the untrusted-client's final gate — drilled end-to-end including the fixed-type bug that would have shipped a lying preview.
+- REMAINING FAKE/INCOMPLETE: /api/invoices/[id] + /api/orders/[id]/invoice (true orphans, document task); /api/supplier/queries/[id] PATCH (query status updates have no UI). Buy-now flow has no coupon box by design (express path) — recorded, not broken.
+- Pushed as 0b0f98b with the owner-provided PAT (never stored in tracked files).

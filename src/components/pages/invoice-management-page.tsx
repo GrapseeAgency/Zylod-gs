@@ -1,15 +1,16 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   ArrowLeft, FileText, Download, Printer,
   CheckCircle2, Clock, ChevronRight, Loader2,
-  Building2, Receipt, ShieldCheck
+  Building2, Receipt, ShieldCheck, X
 } from 'lucide-react'
 
 interface InvoiceItem {
@@ -28,6 +29,26 @@ interface InvoiceItem {
   itemsCount: number
 }
 
+// Task 132: the Mushak 6.3 document from GET /api/invoices/[id] — a DIFFERENT
+// real document from the order invoice (NBR-style 5% VAT + MUSHAK number vs
+// the 15% VAT company invoice on the order-invoice page).
+interface MushakDoc {
+  invoiceNumber: string
+  mushakNumber: string
+  orderNumber: string
+  date: string
+  buyer: { name: string; email: string | null; phone: string | null; address: string; tin: string }
+  seller: { name: string; tin: string; bin: string; address: string }
+  items: Array<{ name: string; quantity: number; unitPrice: number; totalPrice: number; unit: string }>
+  subtotal: number
+  vatRate: string
+  vatAmount: number
+  shippingCost: number
+  grandTotal: number
+  paymentStatus: string
+  paymentMethod: string
+}
+
 export function InvoiceManagementPage() {
   const { goBack, navigate } = useNavigationStore()
   const { token } = useAuthStore()
@@ -36,6 +57,33 @@ export function InvoiceManagementPage() {
   const [invoices, setInvoices] = useState<InvoiceItem[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+
+  // Task 132: the Mushak 6.3 detail dialog — consumes GET /api/invoices/[id],
+  // which had ZERO consumers since it shipped.
+  const [mushakDoc, setMushakDoc] = useState<MushakDoc | null>(null)
+  const [mushakLoading, setMushakLoading] = useState(false)
+  const [mushakError, setMushakError] = useState('')
+
+  const openMushak = useCallback(async (orderId: string) => {
+    setMushakDoc(null)
+    setMushakError('')
+    setMushakLoading(true)
+    try {
+      const res = await fetch(`/api/invoices/${encodeURIComponent(orderId)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json?.success) {
+        setMushakError(json?.error || `Could not load the Mushak document (HTTP ${res.status}).`)
+        return
+      }
+      setMushakDoc(json.data as MushakDoc)
+    } catch {
+      setMushakError('Network error while loading the Mushak document. Check your connection and retry.')
+    } finally {
+      setMushakLoading(false)
+    }
+  }, [token])
 
   useEffect(() => {
     async function loadInvoices() {
@@ -151,18 +199,19 @@ export function InvoiceManagementPage() {
 
                     <div className="flex gap-2">
                       <Button
-                        onClick={() => navigate('order-invoice', { orderId: inv.id })}
+                        onClick={() => openMushak(inv.id)}
                         className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold h-10 rounded-xl text-xs flex items-center justify-center gap-1.5"
                       >
-                        <FileText className="h-3.5 w-3.5" />
-                        View Mushak 6.3 Invoice
+                        <Receipt className="h-3.5 w-3.5" />
+                        View Mushak 6.3
                       </Button>
                       <Button
-                        onClick={() => navigate('order-invoice-download', { orderId: inv.id })}
+                        onClick={() => navigate('order-invoice', { orderId: inv.id })}
                         variant="outline"
                         className="h-10 px-3 rounded-xl border-slate-200 text-xs font-bold text-slate-700"
+                        title="Full tax invoice"
                       >
-                        <Download className="h-3.5 w-3.5" />
+                        <FileText className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </div>
@@ -202,18 +251,19 @@ export function InvoiceManagementPage() {
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <Button
-                              onClick={() => navigate('order-invoice', { orderId: inv.id })}
+                              onClick={() => openMushak(inv.id)}
                               className="bg-primary hover:bg-primary/90 text-white font-bold h-8 px-3 rounded-xl text-xs flex items-center gap-1.5"
                             >
-                              <FileText className="h-3.5 w-3.5" />
-                              View
+                              <Receipt className="h-3.5 w-3.5" />
+                              Mushak 6.3
                             </Button>
                             <Button
-                              onClick={() => navigate('order-invoice-download', { orderId: inv.id })}
+                              onClick={() => navigate('order-invoice', { orderId: inv.id })}
                               variant="outline"
                               className="h-8 px-2.5 rounded-xl border-slate-200 text-slate-700"
+                              title="Full tax invoice"
                             >
-                              <Download className="h-3.5 w-3.5" />
+                              <FileText className="h-3.5 w-3.5" />
                             </Button>
                           </div>
                         </td>
@@ -231,6 +281,92 @@ export function InvoiceManagementPage() {
           )}
         </div>
       </main>
+
+      {/* Task 132: Mushak 6.3 document dialog — the /api/invoices/[id] consumer */}
+      <Dialog open={mushakLoading || !!mushakDoc || !!mushakError} onOpenChange={(o) => { if (!o) { setMushakDoc(null); setMushakError('') } }}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto" data-testid="mushak-dialog">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-black flex items-center gap-2">
+              <Receipt className="h-4 w-4 text-primary" /> Mushak 6.3 — Commercial Invoice
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              NBR-compliant tax document for corporate audit filing.
+            </DialogDescription>
+          </DialogHeader>
+
+          {mushakLoading && (
+            <div className="flex items-center justify-center gap-2 py-8 text-xs font-bold text-slate-500">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading document…
+            </div>
+          )}
+
+          {!mushakLoading && mushakError && (
+            <div className="text-xs text-red-600 font-bold bg-red-50 border border-red-200 rounded-xl px-3 py-2" role="alert">
+              {mushakError}
+            </div>
+          )}
+
+          {!mushakLoading && mushakDoc && (
+            <div className="space-y-4 text-xs" data-testid="mushak-doc">
+              <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <p className="font-black text-sm">{mushakDoc.invoiceNumber}</p>
+                  <p className="text-[10px] text-slate-400 font-mono">{mushakDoc.mushakNumber} · PO #{mushakDoc.orderNumber}</p>
+                  <p className="text-[10px] text-slate-400">Issued {new Date(mushakDoc.date).toLocaleDateString()}</p>
+                </div>
+                <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border uppercase ${mushakDoc.paymentStatus === 'paid' ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-amber-700 bg-amber-50 border-amber-100'}`}>
+                  {mushakDoc.paymentStatus}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-slate-50 rounded-xl p-3 space-y-0.5">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Seller</p>
+                  <p className="font-bold">{mushakDoc.seller.name}</p>
+                  <p className="text-[10px] text-slate-500">{mushakDoc.seller.address}</p>
+                  <p className="text-[10px] text-slate-400">TIN {mushakDoc.seller.tin} · BIN {mushakDoc.seller.bin}</p>
+                </div>
+                <div className="bg-slate-50 rounded-xl p-3 space-y-0.5">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Buyer</p>
+                  <p className="font-bold">{mushakDoc.buyer.name}</p>
+                  <p className="text-[10px] text-slate-500">{mushakDoc.buyer.address}</p>
+                  <p className="text-[10px] text-slate-400">TIN {mushakDoc.buyer.tin}</p>
+                </div>
+              </div>
+
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left text-[9px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                    <th className="py-1.5">Item</th>
+                    <th className="py-1.5 text-right">Qty</th>
+                    <th className="py-1.5 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mushakDoc.items.map((it, i) => (
+                    <tr key={i} className="border-b border-slate-50">
+                      <td className="py-1.5 font-bold">{it.name}<span className="block text-[10px] text-slate-400">৳{it.unitPrice} / {it.unit}</span></td>
+                      <td className="py-1.5 text-right font-semibold">{it.quantity}</td>
+                      <td className="py-1.5 text-right font-bold">{formatPrice(it.totalPrice)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="space-y-1.5 pt-2 border-t border-slate-100 text-slate-600">
+                <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold text-slate-900">{formatPrice(mushakDoc.subtotal)}</span></div>
+                <div className="flex justify-between"><span>Shipping</span><span className="font-semibold text-slate-900">{formatPrice(mushakDoc.shippingCost)}</span></div>
+                <div className="flex justify-between"><span>VAT ({mushakDoc.vatRate})</span><span className="font-semibold text-slate-900">{formatPrice(mushakDoc.vatAmount)}</span></div>
+                <div className="flex justify-between items-baseline pt-1.5 border-t border-slate-200">
+                  <span className="font-bold text-slate-900">Grand Total</span>
+                  <span className="text-lg font-black text-primary">{formatPrice(mushakDoc.grandTotal)}</span>
+                </div>
+                <p className="text-[10px] text-slate-400 pt-1">Payment method: {mushakDoc.paymentMethod || '—'} · status {mushakDoc.paymentStatus}.</p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

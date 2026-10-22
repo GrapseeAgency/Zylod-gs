@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { resolveSupplierProfile } from '@/lib/supplier-scope'
 
 export async function GET(request: NextRequest) {
   const auth = await authenticateRequest(request)
@@ -13,8 +14,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
 
-    const whereClause: any = {
-      OR: [{ buyerId: userId }, { subOrders: { some: { supplierId: userId } } }],
+    // Task 132 REAL BUG (same identity trap Task 128 killed in the receipt
+    // route): subOrders.supplierId stores a supplierProfiles.id, NOT a
+    // users.id — the old `supplierId: userId` could NEVER match, so sellers
+    // saw an empty invoice list forever. Admins see the full book.
+    const whereClause: any =
+      auth.user.userType === 'admin' ? {} : { OR: [{ buyerId: userId }] }
+
+    if (auth.user.userType !== 'admin') {
+      const profile = await resolveSupplierProfile(auth.user)
+      if (profile) {
+        whereClause.OR.push({ subOrders: { some: { supplierId: profile.id } } })
+      }
     }
 
     if (status && status !== 'all') {
