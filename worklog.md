@@ -4549,3 +4549,21 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented); the logistics-suite informational pages carry one decorative control each (noted); everything else swept so far is real.
+
+---
+Task ID: 163
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3: check everywhere).
+
+Task: FULL-APP AUDIT unit 21 — the remaining logistics theater replaced with real circuits (warehouse directory, freight tracking, import/export tracker).
+
+Work Log:
+- NEW PUBLIC RAIL — GET /api/warehouses: the real warehouseLocations rows (Task 98 supplier rail, previously writable but publicly unread) of APPROVED suppliers only, joined with companyName/ratingAvg/verificationStatus, honest q= search across real fields, district list derived from live rows. Rate-limited, read-only, no auth by design (pre-order public information).
+- REAL DEFECT #1 — warehouse-locator: hard-coded fictional facilities ("Dhaka Central Mega-Hub, 3.2 km, 85% Utilized" + invented cold/hazmat chips). Rebuilt on the new endpoint: real cards (company, address, district, verified badge, rating line), live search + district chips, honest empty/loading/error, cards link to the real seller storefront. No fabricated distances/utilization/capabilities the model cannot know.
+- REAL DEFECT #2 — freight-tracking: fake SHP-89234-A + fake SVG map (Shanghai→Dhaka, pulsing dot) + fake cargo stats + fake In-Transit badge + fake Download Manifest (=window.print). Rebuilt on the real order circuit (?orderId=): real slices (status/supplier/shipping method/carrier reference/estimated delivery/live-quoted freight) + each slice's REAL orderTracking events; honest no-id/404/401 gates; honest note that the driver app reports milestones, not continuous coordinates.
+- REAL DEFECT #3 — import-export-tracker: fake PO-2023-8942A + fabricated vessel + fake 65% progress bar + decorative toggle. Rebuilt on the same circuit: real stage stepper from slice statuses, real chronological journey, real line-item manifest with per-supplier attribution, cross-links to the per-shipment view and full order.
+- DRILL scripts/qa/t163-e2e.mjs — 17/0 on a fresh wipe: approval gate (unverified supplier's row EXCLUDED), real fields served, no fabricated tokens in the payload, district chips real, honest search + honest empty, deactivation leaves the directory. (Drill note: it requires the fresh-wipe first-admin window — sequential runs after other drills must wipe first.)
+- Browser QA (gateway :81): locator renders real rows, live search narrows at 375 exact; freight page shows the real SHIPPED slice + 2 real tracking events; import tracker shows real journey + manifest; no fake tokens anywhere; console 0 errors. Seed recipe: t162 drill → admin approves the T162 supplier → seller posts warehouses → PATCH /api/supplier/orders/<orderId> {status, subOrderId} (the timeline auto-fills location/note — the body takes no location).
+- tsc 0, eslint 0. DB vacuum 127×0. Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The logistics suite is now real end-to-end: live quotes from the zone book, real reschedule requests, real warehouse directory, real tracking. No fake tokens remain on any swept surface.
