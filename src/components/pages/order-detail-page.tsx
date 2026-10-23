@@ -15,7 +15,7 @@ import { InspectionCard } from '@/components/shared/inspection-card'
 import {
   ArrowLeft, HelpCircle, Check, Package, Truck, Home,
   Download, AlertTriangle, MapPin, CreditCard, FileText, RefreshCw, XCircle,
-  Wallet, Hourglass, Loader2, ReceiptText, Landmark, Info
+  Wallet, Hourglass, Loader2, ReceiptText, Landmark, Info, CalendarClock
 } from 'lucide-react'
 
 // ── Real API types (GET /api/orders/[id]) ──────────────────────────────
@@ -957,6 +957,20 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               <Download className="h-4 w-4" />
               View Invoice
             </Button>
+
+            {/* Audit unit 20: the real reschedule circuit — buyer-owned
+                requests land in orderReschedules + the seller's feed. Hidden
+                once every slice is delivered/closed (nothing to reschedule). */}
+            {!statuses.every((s) => ['delivered', 'cancelled', 'returned'].includes(s)) && (
+              <Button
+                variant="outline"
+                onClick={() => navigate('reschedule-delivery', { orderId })}
+                className="w-full bg-white dark:bg-slate-900 hover:bg-slate-50 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+              >
+                <CalendarClock className="h-4 w-4" />
+                Reschedule Delivery
+              </Button>
+            )}
 
             {/* Task 128-c: real receipt from GET orders/[id]/receipt — shown
                 once money has actually moved (paid / partial). */}

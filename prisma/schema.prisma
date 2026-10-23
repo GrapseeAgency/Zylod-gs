@@ -43,6 +43,7 @@ model users {
   backupCodes       backupCodes[]
   carts             carts[]
   orders            orders[]
+  orderReschedules  orderReschedules[]
   wishlists         wishlists[]
   notifications     notifications[]
   notificationPrefs notificationPreferences?
@@ -523,6 +524,7 @@ model orders {
   shippingAddress addresses?  @relation(fields: [shippingAddressId], references: [id])
   subOrders       subOrders[]
   payments        payments[]
+  reschedules     orderReschedules[]
 
   // Escrow
   escrowAccounts escrowAccounts[]
@@ -534,6 +536,29 @@ model orders {
   @@index([orderNumber])
   @@index([paymentStatus])
   @@index([placedAt])
+}
+
+// Audit unit 20: the delivery-reschedule circuit (the reschedule page used
+// to fake a confirmation with a setTimeout). One row per buyer request —
+// seller/admin visibility rides the notifications rows the API writes.
+model orderReschedules {
+  id           String   @id @default(cuid())
+  orderId      String
+  buyerId      String
+  requestedDate DateTime
+  // window: morning | afternoon
+  window       String
+  instructions String?
+  // status: pending | acknowledged | rejected | applied | superseded
+  status       String   @default("pending")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  order orders @relation(fields: [orderId], references: [id])
+  buyer users  @relation(fields: [buyerId], references: [id])
+
+  @@index([orderId])
+  @@index([buyerId])
 }
 
 model subOrders {

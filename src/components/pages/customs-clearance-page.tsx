@@ -1,32 +1,42 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import React from 'react'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
-import { useCurrencyStore } from '@/store/currency-store'
 import {
-  ArrowLeft, MoreVertical, Download, Check, Hourglass,
-  Info, Upload, FileText, AlertCircle, ShieldCheck,
-  Truck, Warehouse, Calculator, User, MessageSquare
+  ArrowLeft, FileText, Info, ShieldCheck, Truck, Calculator, Check,
 } from 'lucide-react'
 
-export function CustomsClearancePage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
-  const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
-  const { formatPrice } = useCurrencyStore()
-  const pageParams = _pageParams || storeParams || {}
-  const shipmentId = pageParams.shipmentId || 'SHP-84729-X'
+/**
+ * Customs clearance — HONEST informational guide (audit unit 20). The old
+ * page was pure theater: a fake shipment id (SHP-84729-X), a fake broker
+ * ("Apex Logistics Co."), a fake "Under Review" pipeline with a pulsing
+ * live badge, a fake "Estimated Completion: Tomorrow, 14:00", fake duties
+ * (৳4,250.00), and an upload button whose setTimeout fabricated "Revised
+ * Invoice Submitted to Broker!" — none of it existed in any table (the
+ * schema audit removed the dead customsDocuments model; no customs rails
+ * exist on the platform). This page now says exactly that, and keeps only
+ * what is real: a genuinely useful document checklist and process guide for
+ * buyers whose freight forwarder handles clearance OUTSIDE the platform.
+ */
 
-  const [uploading, setUploading] = useState(false)
-  const [uploaded, setUploaded] = useState(false)
+const DOC_CHECKLIST: Array<{ name: string; why: string }> = [
+  { name: 'Bill of Lading (BOL)', why: 'Issued by your carrier — proves title to the goods at the port.' },
+  { name: 'Commercial Invoice', why: 'Declares value for duty; the HS code on it must match the packing list.' },
+  { name: 'Packing List', why: 'Per-carton contents and weights — customs reconciles it against the invoice.' },
+  { name: 'HS Code Classification', why: 'The single most common clearance delay — classify before shipping, not at the port.' },
+  { name: 'Import Permit / BIN (Bangladesh)', why: 'Your IRC/BIN registration must be valid for the declared consignment.' },
+]
 
-  const handleUpload = () => {
-    setUploading(true)
-    setTimeout(() => {
-      setUploading(false)
-      setUploaded(true)
-    }, 1000)
-  }
+const PROCESS_STEPS: Array<{ title: string; body: string }> = [
+  { title: '1. Arrival & manifest filing', body: 'The carrier files the manifest at Chittagong Port / Dhaka Airport once the vessel or flight arrives.' },
+  { title: '2. Bill of entry by your agent', body: 'Your licensed customs agent (C&F agent) files the bill of entry against your BIN with the supporting documents.' },
+  { title: '3. Assessment & duty payment', body: 'Customs assesses duty per the HS code; your agent pays it and collects the release order.' },
+  { title: '4. Release & delivery', body: 'The port releases the consignment to your agent\'s trucker; hand-off to your warehouse is your last mile.' },
+]
+
+export function CustomsClearancePage() {
+  const { goBack, navigate } = useNavigationStore()
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24 md:pb-8 text-slate-900">
@@ -35,198 +45,101 @@ export function CustomsClearancePage({ pageParams: _pageParams }: { pageParams?:
         <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
-        <span className="text-xl font-black tracking-tight text-primary">Logistics Suite</span>
-        <button className="p-1 text-slate-700 hover:text-slate-900" title="More">
-          <MoreVertical className="h-5 w-5" />
-        </button>
+        <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
+        <span className="w-6" />
       </header>
 
-      <main className="px-4 py-4 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg lg:max-w-5xl mx-auto">
-        {/* Title & Export */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-lg md:text-2xl font-black text-slate-900 tracking-tight">
-              Customs Clearance Status
-            </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Shipment #{shipmentId} • Origin: Shenzhen, CN
+      <main className="px-4 py-4 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg lg:max-w-4xl mx-auto">
+        {/* Title */}
+        <div>
+          <h1 className="text-lg md:text-2xl font-black text-slate-900 tracking-tight">Customs Clearance Guide</h1>
+          <p className="text-xs text-slate-500 mt-0.5">What to expect when your wholesale consignment crosses the border.</p>
+        </div>
+
+        {/* The honest banner — no live process is bound to this view */}
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-3xl flex items-start gap-3">
+          <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="text-xs leading-relaxed text-amber-900 space-y-1">
+            <p className="font-black">No live customs process is attached to this view.</p>
+            <p className="text-amber-800">
+              Zylod does not clear customs — cross-border consignments are cleared by your own
+              freight forwarder / C&amp;F agent outside the platform, and your supplier ships EXW/FOB/CIF
+              per your agreed incoterm. There is intentionally NO fake status, broker, duty figure, or
+              upload button here: those would be numbers the platform cannot know.
             </p>
           </div>
-
-          <Button
-            variant="outline"
-            onClick={() => window.print()}
-            className="h-9 px-3 rounded-xl text-xs font-bold text-slate-700 border-slate-200 flex items-center gap-1.5 shrink-0"
-          >
-            <Download className="h-3.5 w-3.5" />
-            Export PDF
-          </Button>
         </div>
 
-        {/* Current Stage Card */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                CURRENT STAGE
-              </span>
-              <h2 className="text-base font-black text-slate-900 mt-0.5">
-                Under Review
-              </h2>
-            </div>
-
-            <span className="bg-rose-50 text-primary border border-rose-100 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
-              In Progress
-            </span>
+        {/* What the platform DOES track */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs">
+            <Truck className="h-5 w-5 text-primary mb-2" />
+            <p className="text-xs font-black text-slate-900">Shipment status</p>
+            <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+              Real order slices and tracking events live on each order&apos;s detail page — seller transitions and driver milestones, live.
+            </p>
           </div>
-
-          {/* 3-Step Progress */}
-          <div className="grid grid-cols-3 gap-2 text-center pt-1">
-            {/* Step 1: Completed */}
-            <div className="space-y-1.5 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-md shadow-primary/20">
-                <Check className="h-5 w-5 stroke-[2.5]" />
-              </div>
-              <span className="text-[10px] font-bold text-slate-700 leading-tight">
-                Documentation<br />Pending
-              </span>
-            </div>
-
-            {/* Step 2: Under Review */}
-            <div className="space-y-1.5 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-white border-2 border-primary text-primary flex items-center justify-center shadow-md">
-                <Hourglass className="h-5 w-5 animate-pulse" />
-              </div>
-              <span className="text-[10px] font-black text-primary leading-tight">
-                Under<br />Review
-              </span>
-            </div>
-
-            {/* Step 3: Cleared */}
-            <div className="space-y-1.5 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center border border-slate-200">
-                <Check className="h-5 w-5" />
-              </div>
-              <span className="text-[10px] font-semibold text-slate-400 leading-tight">
-                Cleared
-              </span>
-            </div>
+          <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs">
+            <ShieldCheck className="h-5 w-5 text-primary mb-2" />
+            <p className="text-xs font-black text-slate-900">Delivery windows</p>
+            <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+              Reschedule a real order&apos;s delivery from the order page — the request lands in the supplier&apos;s feed.
+            </p>
           </div>
-
-          {/* Estimated Completion Notice */}
-          <div className="p-3.5 bg-slate-100/80 rounded-2xl border border-slate-200 flex items-start gap-2.5 text-xs text-slate-600">
-            <Info className="h-4 w-4 text-slate-600 shrink-0 mt-0.5" />
-            <div className="space-y-0.5">
-              <p className="font-bold text-slate-900">Estimated Completion: Tomorrow, 14:00</p>
-              <p className="text-[11px] text-slate-500 leading-relaxed">
-                Customs agents are currently reviewing the commercial invoice discrepancies.
-              </p>
-            </div>
+          <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs">
+            <Calculator className="h-5 w-5 text-primary mb-2" />
+            <p className="text-xs font-black text-slate-900">Live freight quotes</p>
+            <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+              The freight calculator quotes the operators&apos; real zone book — the same rates checkout charges.
+            </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-start">
-        {/* Key Details Card */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
-            Key Details
-          </h2>
-
-          <div className="space-y-2 text-xs divide-y divide-slate-50">
-            <div className="flex justify-between py-1">
-              <span className="text-slate-500">Broker</span>
-              <span className="font-bold text-slate-900">Apex Logistics Co.</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-500">Port of Entry</span>
-              <span className="font-semibold text-slate-900">Chittagong Port, BD</span>
-            </div>
-            <div className="flex justify-between py-1">
-              <span className="text-slate-500">Est. Duties</span>
-              <span className="font-black text-primary font-mono">{formatPrice(4250.00)}</span>
-            </div>
-          </div>
-
-          {/* Action Required Banner */}
-          <div className="pt-2">
-            <span className="text-[9px] font-black uppercase tracking-wider text-primary block mb-2">
-              ACTION REQUIRED
-            </span>
-
-            {uploaded ? (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs font-bold text-emerald-800 flex items-center justify-center gap-2">
-                <Check className="h-4 w-4 text-emerald-600" />
-                <span>Revised Invoice Submitted to Broker!</span>
-              </div>
-            ) : (
-              <Button
-                onClick={handleUpload}
-                disabled={uploading}
-                className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs shadow-md flex items-center justify-center gap-2"
-              >
-                <Upload className="h-4 w-4" />
-                {uploading ? 'Submitting to Customs...' : 'Upload Revised Invoice'}
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* Required Documents List */}
+        {/* Document checklist — genuinely real guidance */}
         <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
-              Required Documents
-            </h2>
-            <span className="text-[10px] font-bold text-slate-400">SUBMITTED DATE</span>
-          </div>
-
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Document Checklist</h2>
           <div className="space-y-2">
-            {/* Bill of Lading */}
-            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700">
+            {DOC_CHECKLIST.map((doc) => (
+              <div key={doc.name} className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 shrink-0">
                   <FileText className="h-4 w-4" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-slate-900">Bill of Lading (BOL)</h3>
-                  <p className="text-[10px] text-slate-400 font-mono">BOL-992-A</p>
+                <div className="min-w-0">
+                  <h3 className="text-xs font-bold text-slate-900">{doc.name}</h3>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">{doc.why}</p>
                 </div>
               </div>
-              <span className="text-[11px] text-slate-500 font-medium">Oct 12, 2023</span>
-            </div>
-
-            {/* Commercial Invoice with HS Code Mismatch */}
-            <div className="p-3 bg-rose-50/70 rounded-2xl border border-rose-100 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center">
-                  <AlertCircle className="h-4 w-4" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900">Commercial Invoice</h3>
-                  <p className="text-[10px] font-bold text-primary">HS Code Mismatch</p>
-                </div>
-              </div>
-              <span className="text-[11px] text-slate-500 font-medium">Oct 12, 2023</span>
-            </div>
-
-            {/* Packing List */}
-            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700">
-                  <FileText className="h-4 w-4" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900">Packing List</h3>
-                  <p className="text-[10px] text-slate-400 font-mono">PL-4432</p>
-                </div>
-              </div>
-              <span className="text-[11px] text-slate-500 font-medium">Oct 14, 2023</span>
-            </div>
+            ))}
           </div>
         </div>
+
+        {/* Process steps */}
+        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">The Process, Step by Step</h2>
+          <div className="space-y-2">
+            {PROCESS_STEPS.map((step) => (
+              <div key={step.title} className="p-3 rounded-2xl border border-slate-100 flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-rose-50 text-primary flex items-center justify-center shrink-0 border border-rose-100">
+                  <Check className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-slate-900">{step.title}</h3>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">{step.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+
+        <Button
+          onClick={() => navigate('my-orders')}
+          className="w-full md:w-auto md:px-8 bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs shadow-md"
+        >
+          Track a real order instead
+        </Button>
       </main>
     </div>
   )
 }
+
+export default CustomsClearancePage
