@@ -4,14 +4,17 @@ import { useNavigationStore } from '@/store/navigation-store';
 import { motion } from 'framer-motion';
 import { Star, AlertCircle, MessageSquare, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useRealtimeRoom } from '@/hooks/use-realtime-room';
 
 interface SellerReview {
   id: string;
+  kind?: 'product' | 'store';
+  supplierId?: string;
   rating: number;
   comment: string | null;
   verifiedPurchase: boolean;
   createdAt: string;
-  productName: string;
+  productName: string | null;
   buyerName: string;
 }
 
@@ -20,6 +23,8 @@ export function SellerReviewsPage() {
   const [reviews, setReviews] = useState<SellerReview[]>([]);
   const [averageRating, setAverageRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
+  const [storeAverageRating, setStoreAverageRating] = useState(0);
+  const [storeTotalReviews, setStoreTotalReviews] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -33,6 +38,8 @@ export function SellerReviewsPage() {
         setReviews(json.data.reviews || []);
         setAverageRating(json.data.averageRating ?? 0);
         setTotalReviews(json.data.totalReviews ?? 0);
+        setStoreAverageRating(json.data.storeAverageRating ?? 0);
+        setStoreTotalReviews(json.data.storeTotalReviews ?? 0);
       } else {
         setError(json.error || 'Could not load reviews');
       }
@@ -46,6 +53,19 @@ export function SellerReviewsPage() {
   useEffect(() => {
     load();
   }, []);
+
+  // ─── Real-time review tap (cohesion): a buyer's new store review is
+  // broadcast to the token-gated seller room (POST /api/suppliers/[id]/reviews).
+  // The room id is the real supplierProfiles.id the server returned with the
+  // rows; the room-token endpoint re-verifies ownership, and a denial degrades
+  // honestly to the manual refresh — never a faked live state.
+  const reviewRoom = reviews[0]?.supplierId ? `seller:${reviews[0].supplierId}` : null;
+  useRealtimeRoom(reviewRoom ? [reviewRoom] : [], {
+    // optionsRef keeps this fresh every render, so calling `load` inline is safe.
+    onEvent: (message) => {
+      if (message.event === 'supplier:reviewed') void load();
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -74,13 +94,20 @@ export function SellerReviewsPage() {
               <h2 className="text-lg font-bold">Rating Overview</h2>
               <div className="flex items-center space-x-2 mt-2">
                 <Star className="text-yellow-500" />
-                {/* Real average from the supplier's own reviews — no
+                {/* Real average from the supplier's own product reviews — no
                     fabricated default when there are none. */}
                 <span className="text-2xl font-bold">
                   {totalReviews > 0 ? averageRating.toFixed(1) : '—'}
                 </span>
-                <span className="text-gray-500">({totalReviews} review{totalReviews !== 1 ? 's' : ''})</span>
+                <span className="text-gray-500">({totalReviews} product review{totalReviews !== 1 ? 's' : ''})</span>
               </div>
+              {storeTotalReviews > 0 && (
+                <div className="flex items-center space-x-2 mt-1">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  <span className="text-sm font-semibold">{storeAverageRating.toFixed(1)}</span>
+                  <span className="text-xs text-gray-500">({storeTotalReviews} store review{storeTotalReviews !== 1 ? 's' : ''})</span>
+                </div>
+              )}
             </div>
             <div className="space-y-4">
               {reviews.length === 0 ? (
@@ -97,9 +124,14 @@ export function SellerReviewsPage() {
                     <div className="flex justify-between items-start">
                       <div>
                         <span className="font-bold">{review.buyerName}</span>
-                        <p className="text-xs text-gray-500">{review.productName}</p>
+                        <p className="text-xs text-gray-500">
+                          {review.productName ?? 'Store review'}
+                        </p>
                       </div>
                       <div className="flex items-center gap-2">
+                        {review.kind === 'store' && (
+                          <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">Store</span>
+                        )}
                         <span className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-200'}`} />

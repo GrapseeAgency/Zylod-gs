@@ -10,6 +10,7 @@ import {
   MessagesSquare, Radio
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -87,6 +88,9 @@ export const SellerDashboardPage = () => {
   const [totalWatchers, setTotalWatchers] = useState(0);
   const [demandPulse, setDemandPulse] = useState<'none' | 'watcher' | 'restock'>('none');
   const [campaigns, setCampaigns] = useState<CampaignParticipation[]>([]);
+  // Realtime-tap reload counter: events that change the dashboard aggregates
+  // (moderation decisions, new reviews) bump this to refetch — no polling loop.
+  const [reloadTick, setReloadTick] = useState(0);
 
   const fetchDemand = useCallback(async () => {
     try {
@@ -122,7 +126,7 @@ export const SellerDashboardPage = () => {
     };
     fetchDashboard();
     fetchDemand();
-  }, [fetchDemand]);
+  }, [fetchDemand, reloadTick]);
 
   /* Task 102: the platform campaigns this supplier's products are pinned
      into — the seller side of the admin's promotion console. Real rows
@@ -152,6 +156,42 @@ export const SellerDashboardPage = () => {
         setDemandPulse(msg.event === 'stock:watch' ? 'watcher' : 'restock');
         fetchDemand();
         setTimeout(() => setDemandPulse('none'), 3000);
+        return;
+      }
+      // Cohesion taps — the server already persisted the row before emitting;
+      // these only surface it live (the durable notification row is separate).
+      if (msg.event === 'moderation:decision') {
+        const d = (typeof msg.data === 'object' && msg.data !== null ? msg.data : {}) as {
+          entityType?: unknown;
+          decision?: unknown;
+          reason?: unknown;
+        };
+        const reason = typeof d.reason === 'string' && d.reason ? d.reason : undefined;
+        if (d.entityType === 'product') {
+          if (d.decision === 'approved') {
+            toast.success('Product approved — buyers can see it now', { description: reason });
+          } else {
+            toast.error('Product rejected by review', { description: reason });
+          }
+        } else if (d.entityType === 'supplier') {
+          toast.message(`Verification update: ${String(d.decision ?? 'reviewed')}`, { description: reason });
+        }
+        setReloadTick((t) => t + 1); // aggregates (products count, verification) resync from DB truth
+        return;
+      }
+      if (msg.event === 'supplier:reviewed') {
+        const d = (typeof msg.data === 'object' && msg.data !== null ? msg.data : {}) as { rating?: unknown };
+        const rating = typeof d.rating === 'number' ? d.rating : null;
+        toast.message('New store review received', {
+          description: rating !== null ? `Rated ${rating} out of 5.` : 'A buyer just reviewed your store.',
+        });
+        setReloadTick((t) => t + 1);
+        return;
+      }
+      if (msg.event === 'qa:new') {
+        toast.message('New product question', {
+          description: 'A buyer asked about one of your products — answer it from Queries.',
+        });
       }
     }, [fetchDemand]),
   });

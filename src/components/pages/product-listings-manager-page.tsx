@@ -10,7 +10,7 @@
  * (isActive PATCH), Remove (SOFT delete — order history is preserved). The old
  * View/Duplicate/Trash buttons did nothing at all and are gone.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, Search, Plus, Edit, Eye, EyeOff, Trash2, RefreshCw,
@@ -18,6 +18,7 @@ import {
 import { toast } from 'sonner';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useAuthStore } from '@/store/auth-store';
+import { useRealtimeRoom, type RealtimeRoomMessage } from '@/hooks/use-realtime-room';
 import { useCurrencyStore } from '@/store/currency-store';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
@@ -32,6 +33,7 @@ interface ApiProduct {
   stockQuantity: number;
   isActive: boolean;
   isApproved: boolean;
+  supplierId?: string;
   thumbnailUrl: string | null;
   category: { id: string; name: string; slug: string } | null;
 }
@@ -186,6 +188,43 @@ export function ProductListingsManagerPage() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  // ─── Real-time moderation tap (cohesion): an admin's approve/reject on THIS
+  // supplier's products is broadcast to the token-gated seller room by PATCH
+  // /api/admin/products. The room id is the real supplierProfiles.id carried
+  // by the server rows; GET /api/realtime/room-token re-verifies ownership
+  // before minting, and a denial degrades honestly to the manual Refresh —
+  // a live connection is never faked.
+  const sellerRoom = useMemo(
+    () => (!needsAuth && products[0]?.supplierId ? `seller:${products[0].supplierId}` : null),
+    [needsAuth, products]
+  );
+  const handleLiveModeration = useCallback(
+    (msg: RealtimeRoomMessage) => {
+      if (msg.event !== 'moderation:decision') return;
+      const d = (typeof msg.data === 'object' && msg.data !== null ? msg.data : {}) as {
+        entityType?: unknown;
+        decision?: unknown;
+        reason?: unknown;
+      };
+      if (d.entityType !== 'product') return;
+      const approved = d.decision === 'approved';
+      if (approved) {
+        toast.success('A product was approved — it is live for buyers now', {
+          description: typeof d.reason === 'string' && d.reason ? d.reason : undefined,
+        });
+      } else {
+        toast.error('A product was rejected by review', {
+          description: typeof d.reason === 'string' && d.reason ? d.reason : 'Check the admin notes on your dashboard.',
+        });
+      }
+      // Background resync — the chip states come from the server's isApproved
+      // truth, never from the optimistic toast.
+      void fetchProducts(true);
+    },
+    [fetchProducts]
+  );
+  useRealtimeRoom(!needsAuth && sellerRoom ? [sellerRoom] : [], { onEvent: handleLiveModeration });
 
   const handleToggleVisibility = async (product: ApiProduct) => {
     if (actingId) return;

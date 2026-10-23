@@ -346,6 +346,14 @@ export function RfqListPage() {
           description: 'This quote request was converted to a real order.',
         })
         refreshRef.current()
+      } else if (message.event === 'rfq:status') {
+        // Cohesion: an admin closed the RFQ (PATCH /api/admin/rfqs/[id] emits
+        // rfq:status into this token-gated room). Resync so the status chip
+        // and further quoting/acting gates reflect the closure immediately.
+        toast.message('Quote request closed', {
+          description: 'This request was closed by the platform — it no longer accepts quotes.',
+        })
+        refreshRef.current()
       }
     },
   })
