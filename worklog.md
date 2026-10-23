@@ -4584,3 +4584,23 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The payment-methods loop is closed end-to-end: add → tokenize → list — all real rows, all audited, all honest.
+
+---
+Task ID: 165
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order.
+
+Task: THE GO-LIVE CONSOLE THAT DIDN'T EXIST — Task 142 made the broadcast rails honest (POST /api/live-shopping schedule + PATCH start/end control) but left them with ZERO seller UI: creation was API-side only, no supplier-scoped read existed, and the only surfaces were buyer-facing. A store could not schedule a session, could not see its own sessions, could not start or end its own broadcast without raw API calls. Task 142's recorded candidate, built.
+
+Work Log:
+- NEW GET /api/supplier/live-streams — the host's own console feed: 401-first requireUserType(['supplier','admin']) → 'supplier-live-streams' 60/min → resolveSupplierProfile → 403 SUPPLIER_PROFILE_REQUIRED without one → only THIS store's sessions (supplierId = profile.id, the id-space-trap lesson applied), isLive-desc/scheduledAt-desc, take 50; featured products resolved from the REAL catalog in one query (own-store filter); honest counters {liveNow, scheduled, ended} from the real rows.
+- NEW src/components/pages/seller-live-console-page.tsx — the house skeleton: mobile sticky header + desktop h1, honest 401 sign-in card / error / empty / loaded states; stats strip (Live now / Scheduled / Ended); the schedule form (title, description, datetime-local, streamUrl, thumbnailUrl, featured-product picker fed by the seller's OWN active catalog /api/supplier/products?status=active — checkbox list, selection count badge); per-stream cards with honest state chips (LIVE pulse + red ring + viewer count, SCHEDULED, ENDED + endedAt), Start/End buttons hitting PATCH /api/live-shopping/[id], Public room link into the buyer detail, toasts for every transition.
+- REGISTRATION LESSON: the first tile edit landed on supplier-dashboard-page.tsx — a DEAD component (both 'seller-dashboard' and 'supplier-dashboard' ids map to seller-dashboard-page.tsx in chunk-seller). Caught in browser QA (tile missing), reverted, re-landed on the REAL Seller Hub quickActions (Radio icon, 15 live seller tools now). Page registered 'seller-live-console' + alias 'go-live' in page-loader REAL_PAGES + getChunkForPage + chunk-seller set and import map; deep link ?page=seller-live-console verified.
+- DRILL scripts/qa/t165-e2e.mjs — 34/0 on a fresh wipe: gates (anon/buyer 401 on the scoped rail), honest zero (no invented counters before the first broadcast), the console flow through the REAL rails (schedule ×2, one with featured product), stats exactness (2 scheduled → 1 live + 1 scheduled → 1 ended), featuredProducts resolve the host store REAL product (id+name+price), ISOLATION (rival store's scoped rail sees ZERO host sessions while the public list still serves buyers; non-host PATCH 403), the full control matrix (buyer 401, double-start 409, end-while-not-live 409, endedAt stamped), audit rows ×3 through the console path, public detail resolving the host name.
+- REGRESSION: t142 28/0 on a fresh wipe (the public rails untouched — re-proven on the MERGED tree after the remote divergence).
+- BROWSER QA (real seller login, gateway :3000): dashboard shows the Go Live tile → console renders the drill's real data (0 live / 1 scheduled / 1 ended, ENDED card with real featured product ৳750.00 + archived state, SCHEDULED card with Go live) → Go live click → toast "You are LIVE — the public room is open", stats 1/0/1, red-ring LIVE card with viewer count → End broadcast → archived → schedule form: title + description + product picker (checkbox → "1 selected") → submit → toast + new SCHEDULED card with the resolved featured product, stats 0/1/2 → Public room opens the buyer detail hosted by "T143 Console Mill" → MOBILE 375×812: scrollWidth exactly 375 → page errors 0 → signed-out deep link shows the honest "Seller sign-in required" card with real Sign In (header shows Login — cookie is server truth).
+- tsc 0 whole project; eslint 0; DB wiped 139×0 before commit.
+
+Stage Summary:
+- The broadcast story is now closed on BOTH sides: buyers discover live rooms (list/detail, Task 142) and sellers run them (schedule, monitor state, start/end — this task) — every rail drilled, every state honest, nothing API-side-only anymore.
+- The dead-component trap (supplier-dashboard-page.tsx unreachable; seller-dashboard-page.tsx is the real hub) recorded for future rounds: verify the RENDERED component, not the filename.
+- REMAINING FAKE/INCOMPLETE: sellerCustomerQueries writer (documented decision pending); delivery location = driver-app surface.

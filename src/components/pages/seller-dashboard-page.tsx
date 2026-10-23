@@ -218,6 +218,7 @@ export const SellerDashboardPage = () => {
     { icon: Trophy, label: 'Rankings', page: 'seller-rankings' },
     { icon: Filter, label: 'Funnel', page: 'seller-sales-funnel' },
     { icon: Users, label: 'Customers', page: 'seller-customer-insights' },
+    { icon: Radio, label: 'Go Live', page: 'seller-live-console' },
     { icon: MessagesSquare, label: 'Queries', page: 'customer-queries' },
     { icon: Radio, label: 'Live Studio', page: 'seller-live-studio' },
     { icon: MessageCircle, label: 'Messages', page: 'chat-list' },
