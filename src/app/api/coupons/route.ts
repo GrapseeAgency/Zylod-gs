@@ -1,15 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import { requireUserType } from '@/lib/auth'
+import { requireUserType, authenticateRequest } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 /**
  * GET /api/coupons
- * List all active platform & supplier coupons.
+ * List active platform & supplier coupons. Task 143 scoping (audit unit 19):
+ * personal vouchers are PRIVATE money promises — a row with a userId set is
+ * served ONLY to that buyer (anonymous callers see public rows only). The
+ * apply rail enforces the same binding at spend time.
  */
 export async function GET(request: NextRequest) {
   try {
+    // Session-aware scoping WITHOUT a login wall: anonymous callers get the
+    // public list; a signed-in session additionally sees their own rows.
+    const session = await authenticateRequest(request)
+    const meId = session.authenticated && session.user ? session.user.id : null
+
     const { searchParams } = request.nextUrl
     const page = Math.max(1, Number(searchParams.get('page') || 1))
     const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit') || 30)))
@@ -18,6 +26,7 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = {
       isActive: true,
       validUntil: { gte: new Date() },
+      OR: meId ? [{ userId: null }, { userId: meId }] : [{ userId: null }],
     }
 
     const [coupons, total] = await Promise.all([
