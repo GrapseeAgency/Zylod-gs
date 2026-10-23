@@ -3,25 +3,42 @@
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { toast } from 'sonner'
 import { useNavigationStore } from '@/store/navigation-store'
 import {
   ArrowLeft, CreditCard, Smartphone, Building2,
-  Save, ShieldCheck, CheckCircle2
+  Save, ShieldCheck, Loader2,
 } from 'lucide-react'
+
+/**
+ * REAL add-payment-method (audit unit 22). The old page faked the save with
+ * a setTimeout "success" — the card/wallet/bank went NOWHERE. All three real
+ * rails exist and are wired here now, each with the server's honest verdict:
+ *   - Wallets  → POST /api/payment-methods/mobile-banking (provider + number)
+ *   - Cards    → POST /api/payment-methods (TOKENIZED: last 4 digits only —
+ *                the API refuses full PANs, so this form never collects one;
+ *                the old full-number+CVV inputs were a security smell with
+ *                nowhere to send them)
+ *   - Bank     → POST /api/bank-accounts (bank/routing/holder, audited via
+ *                the financial-audit trail)
+ * Unauthenticated visitors get the honest sign-in gate — a payment method
+ * always belongs to an account.
+ */
 
 type TabType = 'card' | 'mfs' | 'bank'
 
 export function AddPaymentMethodPage() {
   const { navigate, goBack } = useNavigationStore()
-  const [activeTab, setActiveTab] = useState<TabType>('card')
+  const [activeTab, setActiveTab] = useState<TabType>('mfs')
   const [saving, setSaving] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  // Card form state
-  const [cardNumber, setCardNumber] = useState('')
+  // Card form state (tokenized — last 4 only)
+  const [cardLast4, setCardLast4] = useState('')
   const [cardHolder, setCardHolder] = useState('')
   const [expiry, setExpiry] = useState('')
-  const [cvv, setCvv] = useState('')
+  const [cardNetwork, setCardNetwork] = useState<'visa' | 'mastercard' | 'amex' | 'other'>('visa')
+  const [cardType, setCardType] = useState<'debit' | 'credit'>('debit')
 
   // MFS form state
   const [mfsProvider, setMfsProvider] = useState<'bkash' | 'nagad' | 'rocket'>('bkash')
@@ -31,18 +48,111 @@ export function AddPaymentMethodPage() {
   const [bankName, setBankName] = useState('')
   const [accountNumber, setAccountNumber] = useState('')
   const [routingNumber, setRoutingNumber] = useState('')
+  const [branchName, setBranchName] = useState('')
   const [accountHolder, setAccountHolder] = useState('')
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleAuthFail = () => {
+    toast.error('Sign in first', { description: 'A payment method always belongs to an account.' })
+    navigate('login')
+  }
+
+  const saveMfs = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (saving) return
     setSaving(true)
-    setTimeout(() => {
-      setSaving(false)
-      setSuccess(true)
-      setTimeout(() => {
+    setError(null)
+    try {
+      const res = await fetch('/api/payment-methods/mobile-banking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ provider: mfsProvider, accountNumber: mfsNumber.trim() }),
+      })
+      const json = await res.json().catch(() => null)
+      if (res.status === 201 || res.status === 200) {
+        toast.success(`${mfsProvider === 'bkash' ? 'bKash' : mfsProvider === 'nagad' ? 'Nagad' : 'Rocket'} account linked`)
         navigate('payment-method')
-      }, 1000)
-    }, 800)
+        return
+      }
+      if (res.status === 401) return handleAuthFail()
+      setError(json?.error || `The server refused (HTTP ${res.status}).`)
+    } catch {
+      setError('Network error — the wallet was NOT linked. Please retry.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const saveCard = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (saving) return
+    const last4 = cardLast4.replace(/\D/g, '')
+    if (last4.length !== 4) {
+      setError('Enter exactly the last 4 digits of the card.')
+      return
+    }
+    setSaving(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/payment-methods', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          type: cardType,
+          label: `${cardNetwork === 'other' ? 'Card' : cardNetwork[0].toUpperCase() + cardNetwork.slice(1)} ••${last4}`,
+          accountNumber: last4,
+          holderName: cardHolder.trim(),
+          expiry: expiry.trim() || undefined,
+          cardNetwork,
+        }),
+      })
+      const json = await res.json().catch(() => null)
+      if (res.status === 201 || res.status === 200) {
+        toast.success('Card tokenized and linked')
+        navigate('payment-method')
+        return
+      }
+      if (res.status === 401) return handleAuthFail()
+      setError(json?.error || `The server refused (HTTP ${res.status}).`)
+    } catch {
+      setError('Network error — the card was NOT linked. Please retry.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const saveBank = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (saving) return
+    setSaving(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/bank-accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          bankName: bankName.trim(),
+          accountNumber: accountNumber.trim(),
+          accountHolderName: accountHolder.trim(),
+          branchName: branchName.trim() || undefined,
+          routingNumber: routingNumber.trim() || undefined,
+        }),
+      })
+      const json = await res.json().catch(() => null)
+      if (res.status === 201 || res.status === 200) {
+        toast.success('Bank account linked')
+        navigate('payment-method')
+        return
+      }
+      if (res.status === 401) return handleAuthFail()
+      setError(json?.error || `The server refused (HTTP ${res.status}).`)
+    } catch {
+      setError('Network error — the account was NOT linked. Please retry.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -89,57 +199,89 @@ export function AddPaymentMethodPage() {
           </button>
         </div>
 
-        {/* Card Form */}
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-2xl text-xs font-semibold text-red-800">
+            {error}
+          </div>
+        )}
+
+        {/* Card Form — tokenized */}
         {activeTab === 'card' && (
-          <form onSubmit={handleSave} className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
+          <form onSubmit={saveCard} className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Debit / Credit / Corporate Card</h2>
 
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-[11px] text-slate-600 leading-relaxed">
+              The platform tokenizes cards: it stores ONLY the last 4 digits, network, expiry, and holder — never a
+              full card number or CVV. Actual charges run through the gateways at checkout.
+            </div>
+
+            <div className="flex gap-2">
+              {(['debit', 'credit'] as const).map((t) => (
+                <button
+                  type="button"
+                  key={t}
+                  onClick={() => setCardType(t)}
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors ${
+                    cardType === t ? 'bg-rose-50 text-primary border-primary' : 'bg-slate-50 text-slate-600 border-slate-200'
+                  }`}
+                >
+                  {t === 'debit' ? 'Debit card' : 'Credit card'}
+                </button>
+              ))}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-700">Card Number</label>
-              <Input
-                placeholder="4000 1234 5678 9010"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
-                required
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-700">Cardholder Name</label>
-              <Input
-                placeholder="e.g. John Doe / Acme Corp"
-                value={cardHolder}
-                onChange={(e) => setCardHolder(e.target.value)}
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
-                required
-              />
-            </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Expiry Date</label>
+                <label htmlFor="pm-last4" className="text-xs font-semibold text-slate-700">Last 4 digits</label>
                 <Input
-                  placeholder="MM/YY"
-                  value={expiry}
-                  onChange={(e) => setExpiry(e.target.value)}
+                  id="pm-last4"
+                  placeholder="9010"
+                  inputMode="numeric"
+                  maxLength={4}
+                  value={cardLast4}
+                  onChange={(e) => setCardLast4(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold font-mono"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="pm-holder" className="text-xs font-semibold text-slate-700">Cardholder name</label>
+                <Input
+                  id="pm-holder"
+                  placeholder="e.g. John Doe / Acme Corp"
+                  value={cardHolder}
+                  onChange={(e) => setCardHolder(e.target.value)}
                   className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
                   required
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">CVV / CVC</label>
+                <label htmlFor="pm-expiry" className="text-xs font-semibold text-slate-700">Expiry (MM/YY)</label>
                 <Input
-                  placeholder="123"
-                  type="password"
-                  maxLength={4}
-                  value={cvv}
-                  onChange={(e) => setCvv(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
-                  required
+                  id="pm-expiry"
+                  placeholder="09/28"
+                  value={expiry}
+                  onChange={(e) => setExpiry(e.target.value)}
+                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold font-mono"
                 />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="pm-network" className="text-xs font-semibold text-slate-700">Network</label>
+                <select
+                  id="pm-network"
+                  value={cardNetwork}
+                  onChange={(e) => setCardNetwork(e.target.value as typeof cardNetwork)}
+                  className="h-11 w-full rounded-2xl bg-slate-50 border border-slate-200 px-3 text-xs font-semibold text-slate-800"
+                >
+                  <option value="visa">Visa</option>
+                  <option value="mastercard">Mastercard</option>
+                  <option value="amex">Amex</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
             </div>
 
@@ -148,27 +290,27 @@ export function AddPaymentMethodPage() {
               disabled={saving}
               className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs shadow-md mt-2 flex items-center justify-center gap-2"
             >
-              <Save className="h-4 w-4" />
-              {saving ? 'Verifying Card...' : 'Save & Link Card'}
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {saving ? 'Linking…' : 'Tokenize & Link Card'}
             </Button>
           </form>
         )}
 
         {/* MFS Form */}
         {activeTab === 'mfs' && (
-          <form onSubmit={handleSave} className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
+          <form onSubmit={saveMfs} className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Mobile Financial Services</h2>
 
             <div className="flex gap-2">
               {[
-                { id: 'bkash', label: 'bKash Merchant' },
-                { id: 'nagad', label: 'Nagad Business' },
-                { id: 'rocket', label: 'DBBL Rocket' },
+                { id: 'bkash', label: 'bKash' },
+                { id: 'nagad', label: 'Nagad' },
+                { id: 'rocket', label: 'Rocket' },
               ].map((prov) => (
                 <button
                   type="button"
                   key={prov.id}
-                  onClick={() => setMfsProvider(prov.id as any)}
+                  onClick={() => setMfsProvider(prov.id as typeof mfsProvider)}
                   className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors ${
                     mfsProvider === prov.id
                       ? 'bg-rose-50 text-primary border-primary'
@@ -181,8 +323,9 @@ export function AddPaymentMethodPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-700">Account Number / Wallet No.</label>
+              <label htmlFor="pm-mfs-number" className="text-xs font-semibold text-slate-700">Wallet number</label>
               <Input
+                id="pm-mfs-number"
                 placeholder="01XXXXXXXXX"
                 type="tel"
                 value={mfsNumber}
@@ -190,7 +333,9 @@ export function AddPaymentMethodPage() {
                 className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
                 required
               />
-              <p className="text-[10px] text-slate-400 mt-1">A verification OTP will be sent to link this wallet.</p>
+              <p className="text-[10px] text-slate-400 mt-1">
+                The server validates the Bangladeshi mobile format — an invalid number is refused with the real reason.
+              </p>
             </div>
 
             <Button
@@ -198,61 +343,75 @@ export function AddPaymentMethodPage() {
               disabled={saving}
               className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs shadow-md mt-2"
             >
-              {saving ? 'Linking Wallet...' : 'Verify & Link Wallet'}
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : 'Link Wallet'}
             </Button>
           </form>
         )}
 
         {/* Bank Form */}
         {activeTab === 'bank' && (
-          <form onSubmit={handleSave} className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
+          <form onSubmit={saveBank} className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Corporate Bank Account / L/C</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-700">Bank Name</label>
-              <Input
-                placeholder="e.g. Eastern Bank Ltd. / City Bank Corporate"
-                value={bankName}
-                onChange={(e) => setBankName(e.target.value)}
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
-                required
-              />
-            </div>
+              <div className="space-y-1">
+                <label htmlFor="pm-bank" className="text-xs font-semibold text-slate-700">Bank name</label>
+                <Input
+                  id="pm-bank"
+                  placeholder="e.g. Eastern Bank Ltd."
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                  required
+                />
+              </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-700">Account Title / Company</label>
-              <Input
-                placeholder="e.g. Acme Industrial Supplies Ltd."
-                value={accountHolder}
-                onChange={(e) => setAccountHolder(e.target.value)}
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
-                required
-              />
-            </div>
+              <div className="space-y-1">
+                <label htmlFor="pm-acc-holder" className="text-xs font-semibold text-slate-700">Account title / company</label>
+                <Input
+                  id="pm-acc-holder"
+                  placeholder="e.g. Acme Industrial Supplies Ltd."
+                  value={accountHolder}
+                  onChange={(e) => setAccountHolder(e.target.value)}
+                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                  required
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Account Number</label>
+                <label htmlFor="pm-acc-no" className="text-xs font-semibold text-slate-700">Account number</label>
                 <Input
+                  id="pm-acc-no"
                   placeholder="100XXXXXXXXX"
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold font-mono"
                   required
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Routing Number</label>
+                <label htmlFor="pm-routing" className="text-xs font-semibold text-slate-700">Routing number</label>
                 <Input
-                  placeholder="09027XXXX"
+                  id="pm-routing"
+                  placeholder="090270000"
                   value={routingNumber}
                   onChange={(e) => setRoutingNumber(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
-                  required
+                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold font-mono"
                 />
               </div>
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="pm-branch" className="text-xs font-semibold text-slate-700">Branch <span className="text-slate-400 font-normal">(optional)</span></label>
+              <Input
+                id="pm-branch"
+                placeholder="e.g. Gulshan Corporate Branch"
+                value={branchName}
+                onChange={(e) => setBranchName(e.target.value)}
+                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+              />
             </div>
 
             <Button
@@ -260,7 +419,7 @@ export function AddPaymentMethodPage() {
               disabled={saving}
               className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs shadow-md mt-2"
             >
-              {saving ? 'Linking Bank Account...' : 'Link Bank Account'}
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : 'Link Bank Account'}
             </Button>
           </form>
         )}
@@ -268,7 +427,7 @@ export function AddPaymentMethodPage() {
         {/* Security badge */}
         <div className="bg-white rounded-2xl p-3 border border-slate-200 flex items-center gap-2.5 text-[11px] text-slate-600">
           <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
-          <span>Payment details are securely encrypted and verified through central payment gateways.</span>
+          <span>Every link above is a real database row with a financial-audit entry — the server&apos;s verdict is shown verbatim, success is never faked.</span>
         </div>
       </main>
     </div>

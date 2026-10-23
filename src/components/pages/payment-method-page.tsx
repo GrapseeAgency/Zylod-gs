@@ -1,15 +1,91 @@
 'use client'
 
-import { Smartphone, Building2, Info } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Smartphone, Building2, Info, CreditCard, Wallet, Plus, Loader2, RefreshCw } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 
-// HONESTY NOTE: this page previously showed fabricated saved payment methods
-// (a "Corporate Visa ending in 4242 — Acme Corp", invented bKash/Nagad numbers,
-// an L/C with named banks, and a fake Net-30 credit limit) plus a "Govt.
-// verified escrow checkout" claim. Zylod stores no saved payment instruments
-// and has no escrow — payments are made per order via the real routes below.
+// HONESTY HISTORY: this page previously showed fabricated saved methods
+// (a "Corporate Visa ending in 4242 — Acme Corp", invented bKash/Nagad
+// numbers, an L/C with named banks, a fake Net-30 credit limit) and was
+// stripped to a static "nothing is stored" note. Audit unit 22 corrected
+// the over-correction: the platform GENUINELY stores tokenized payment
+// methods (last-4 cards, MFS wallets with BD-format validation, bank
+// accounts — all financial-audited), so this page now LISTS the buyer's
+// real rows from GET /api/payment-methods + GET /api/bank-accounts, links
+// to the real add-page, and keeps an honest empty state for accounts that
+// genuinely have none. The escrow line stays because it is still true.
+
+interface MethodRow {
+  id: string
+  type: string
+  label: string
+  accountNumber: string
+  isDefault: boolean
+}
+
+function maskAccount(num: string): string {
+  if (num.length <= 4) return `••${num}`
+  return `${num.slice(0, 2)}••••${num.slice(-4)}`
+}
+
+function typeIcon(type: string) {
+  const t = type.toLowerCase()
+  if (['bkash', 'nagad', 'rocket', 'upay'].includes(t)) return Smartphone
+  if (t === 'bank') return Building2
+  return CreditCard
+}
+
 export function PaymentMethodPage() {
   const { navigate, goBack } = useNavigationStore()
+  const [methods, setMethods] = useState<MethodRow[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [needsAuth, setNeedsAuth] = useState(false)
+
+  const load = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const [pm, bank] = await Promise.all([
+        fetch('/api/payment-methods', { credentials: 'include' }),
+        fetch('/api/bank-accounts', { credentials: 'include' }),
+      ])
+      if (pm.status === 401 || bank.status === 401) {
+        setNeedsAuth(true)
+        setLoading(false)
+        return
+      }
+      const pmJson = await pm.json().catch(() => null)
+      const bankJson = await bank.json().catch(() => null)
+      const rows: MethodRow[] = []
+      if (pm.ok && pmJson?.success) {
+        const arr = pmJson.data ?? pmJson.methods ?? []
+        if (Array.isArray(arr)) {
+          for (const m of arr) {
+            rows.push({ id: m.id, type: m.type, label: m.label, accountNumber: m.accountNumber, isDefault: Boolean(m.isDefault) })
+          }
+        }
+      }
+      // bank rows are a separate projection of the same table — de-dup by id
+      if (bank.ok && bankJson?.success && Array.isArray(bankJson.data)) {
+        for (const b of bankJson.data) {
+          if (!rows.some((r) => r.id === b.id)) {
+            rows.push({ id: b.id, type: 'bank', label: b.bankName, accountNumber: b.accountNumber, isDefault: Boolean(b.isDefault) })
+          }
+        }
+      }
+      setMethods(rows)
+    } catch {
+      setError('Network error. Please retry.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    load()
+  }, [])
 
   const routes = [
     {
@@ -39,11 +115,61 @@ export function PaymentMethodPage() {
       <main className="px-4 py-5 space-y-4 max-w-lg mx-auto md:max-w-3xl md:px-6 md:py-6 lg:max-w-4xl">
         <h1 className="hidden md:block text-2xl font-bold text-slate-900">My Payment Methods</h1>
 
-        <div className="flex items-start gap-3 p-4 bg-white rounded-2xl border border-slate-200 text-[11px] text-slate-600 leading-relaxed">
-          <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-          <p>
-            Zylod does not store cards or wallets yet, so there are no saved payment instruments to list — and nothing to select here. Payments are made per order using the routes below. Card saving and trade credit are not available.
-          </p>
+        {/* The buyer's REAL saved instruments */}
+        <div className="space-y-2">
+          {loading ? (
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 text-center">
+              <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
+            </div>
+          ) : needsAuth ? (
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 text-center space-y-3">
+              <p className="text-sm font-bold text-slate-800">Sign in to see your saved methods</p>
+              <Button onClick={() => navigate('login')} className="w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl">
+                Sign in
+              </Button>
+            </div>
+          ) : error ? (
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 text-center space-y-3">
+              <p className="text-sm font-semibold text-slate-700">{error}</p>
+              <Button variant="outline" size="sm" onClick={load}><RefreshCw className="h-4 w-4 mr-1" /> Retry</Button>
+            </div>
+          ) : methods.length === 0 ? (
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 text-center space-y-2">
+              <Wallet className="h-7 w-7 text-slate-300 mx-auto" />
+              <p className="text-sm font-bold text-slate-800">No saved payment instruments yet</p>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Link a wallet, tokenize a card (last 4 only), or add a bank account — every entry is a real
+                database row with a financial-audit trail. Payments themselves are made per order below.
+              </p>
+            </div>
+          ) : (
+            methods.map((m) => {
+              const Icon = typeIcon(m.type)
+              return (
+                <div key={m.id} className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
+                    <Icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-black text-slate-900 truncate">{m.label}</p>
+                    <p className="text-[11px] text-slate-500 font-mono">{maskAccount(m.accountNumber)}</p>
+                  </div>
+                  <span className="shrink-0 text-[9px] font-black uppercase tracking-wide text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                    {m.type}
+                  </span>
+                </div>
+              )
+            })
+          )}
+          {!loading && !needsAuth && (
+            <Button
+              onClick={() => navigate('add-payment-method')}
+              variant="outline"
+              className="w-full bg-white hover:bg-slate-50 text-primary border-slate-300 font-bold h-11 rounded-2xl text-xs"
+            >
+              <Plus className="h-4 w-4 mr-2" /> Add a payment method
+            </Button>
+          )}
         </div>
 
         {/* Real payment routes */}

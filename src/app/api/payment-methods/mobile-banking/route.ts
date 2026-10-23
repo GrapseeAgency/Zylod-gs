@@ -56,6 +56,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Provider and mobile account number are required' }, { status: 400 })
     }
 
+    // Audit unit 22: the unified /api/payment-methods rail validates the
+    // Bangladeshi mobile format; this rail silently accepted anything
+    // ("12345" became a wallet row). Same contract here — and a provider
+    // whitelist so the type column only ever holds real MFS brands.
+    const PROVIDERS = ['bKash', 'Nagad', 'Rocket', 'Upay']
+    const providerKey = String(provider).toLowerCase()
+    const providerName = { bkash: 'bKash', nagad: 'Nagad', rocket: 'Rocket', upay: 'Upay' }[providerKey]
+    if (!providerName || !PROVIDERS.includes(providerName)) {
+      return NextResponse.json({ error: 'Provider must be one of bKash, Nagad, Rocket, Upay' }, { status: 400 })
+    }
+    const phone = String(accountNumber || '').replace(/\s+/g, '')
+    if (!/^(\+8801|8801|01)[3-9]\d{8}$/.test(phone)) {
+      return NextResponse.json({ error: 'Enter a valid Bangladeshi mobile number (e.g. 01XXXXXXXXX)' }, { status: 400 })
+    }
+
     if (isDefault) {
       await db.paymentMethods.updateMany({
         where: { userId, type: { in: ['bKash', 'Nagad', 'Rocket', 'Upay'] } },
@@ -66,9 +81,9 @@ export async function POST(request: NextRequest) {
     const newMFS = await db.paymentMethods.create({
       data: {
         userId,
-        type: provider,
-        label: `${provider} Account`,
-        accountNumber,
+        type: providerName,
+        label: `${providerName} Account`,
+        accountNumber: phone,
         holderName: accountType || 'Merchant/Personal',
         isDefault: Boolean(isDefault),
       },
@@ -76,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `${provider} account linked successfully`,
+      message: `${providerName} account linked successfully`,
       data: {
         id: newMFS.id,
         provider: newMFS.type,
