@@ -4511,3 +4511,22 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The realtime backbone is now audited end-to-end (issuance, enforcement, payloads, producer×consumer matrix all green) and four dead circuits are live with drill proof.
+
+---
+Task ID: 161
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3: check everywhere).
+
+Task: FULL-APP AUDIT unit 19 — input-validation sweep (mass-assignment class) + the coupon money rails (claim/list) hardened; a fake-data page purged.
+
+Work Log:
+- Mass-assignment sweep across 194 JSON-parsing routes: ZERO raw `...body` spreads into prisma writes — every spread is a server-built object from Zod-parsed data (return-policies, promotions verified line by line). The 88 hand-validated write routes (no zod import) triaged: all carry auth + rate limits; money routes hand-checked — topup initiate bounds ৳10..100,000 + provider routing, withdraw is Zod + server availability math, coupon-earn is best-in-class (strict keys, transactional one-claim-forever, server-counted proof).
+- REAL DEFECT #1 — POST /api/coupons/claim: check-then-create OUTSIDE any transaction with NO unique backstop on userCoupons → two concurrent claims mint duplicate active vouchers (double money promises); usageLimit never enforced at claim (display-only counter); Task 143 personal-voucher binding ignored (any buyer could collect another's earned code). Rebuilt: ONE transaction with in-tx re-checks (the earn route's blessed pattern) + coupons.usageLimit 409 + foreign-personal 403 + strict body keys.
+- Caught live by the drill: N concurrent tx claims contended for SQLite's write lock until the 5s interactive-transaction timeout → 500 storm. Fix: per-code in-process claim queue (module-scope promise chain, self-cleaning) BEFORE any tx + 10s tx timeout. t161 storm now: exactly 1×201, 5×409, ZERO 5xx.
+- REAL DEFECT #2 (fake-data class) — coupon-promo page hard-coded three promo tiles (TIER310 / FREESHIPB2B / NEWVENDOR5) that exist in NO table, promised "Use Code" discounts checkout would refuse, and its Apply box answered ANY input (including garbage) with a fabricated "applied successfully to your active order". Rebuilt on GET /api/coupons: real tiles with real terms (min order, validity, remaining-of-cap, max-discount cap), honest Collect → POST /api/coupons/claim with the server's 201/409/403/401 verdicts as toasts, honest empty/error/loading states, typed-code box CLAIMS to the vault instead of faking an order discount.
+- REAL DEFECT #3 — GET /api/coupons served OTHER buyers' personal voucher codes to everyone (Task 143 binding only enforced at apply). Now session-scoped without a login wall: anonymous → public rows only; signed-in → public + their own.
+- DRILL scripts/qa/t161-e2e.mjs — 23/0 fresh wipe: anon 401; strict keys 400; claim/duplicate 201→409; 6-claim concurrent storm → exactly 1 voucher + zero 5xx; usageLimit-1 coupon: second buyer 409 + no row; personal code: foreign 403 + no row + owner 201; list scoping (anon excludes personal, foreign buyer excludes, owner includes).
+- REGRESSIONS on fresh wipes: t74 28/0 (twice — bracketing the queue fix), t152 29/0, t95 45/0.
+- Browser QA gateway :81 (real UI login as buyer): rebuilt page 375-exact + desktop 1280; Collect on an unclaimed tile → POST 201 → DB row + usedCount advanced (dev.log); Collect on an owned tile → honest 409 toast; typed-code duplicate → honest 409; console 0 errors. DB vacuum 126×0. Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The input-validation class is swept clean; the coupon claim/list rails now match the apply rail's rigor; another fake-data page is gone.
