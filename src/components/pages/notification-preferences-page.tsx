@@ -51,13 +51,13 @@ function CategoryCard({
         onClick={() => setExpanded((e) => !e)}
         className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 transition-colors"
       >
-        <div className="flex items-center gap-3.5">
+        <div className="flex items-center gap-3.5 min-w-0 flex-1">
           <div className={`w-11 h-11 rounded-2xl border flex items-center justify-center shrink-0 ${category.iconBg}`}>
             <Icon className={`h-5 w-5 ${category.iconColor}`} />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <h3 className="text-xs font-black text-slate-900">{category.label}</h3>
-            <p className="text-[11px] text-slate-400 mt-0.5 leading-snug max-w-[220px] md:max-w-none">{category.description}</p>
+            <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">{category.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -451,7 +451,7 @@ export function NotificationPreferencesPage() {
           </div>
 
           {/* Master controls */}
-          <div className="flex items-center gap-2 pt-2 border-t border-white/10 mt-2">
+          <div className="flex items-center gap-2 pt-2 border-t border-white/10 mt-2 flex-wrap">
             <Button
               onClick={masterMute ? enableAll : muteAll}
               className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${

@@ -555,7 +555,7 @@ export function TwoFactorAuthPage() {
                   <InputOTPSlot
                     key={index}
                     index={index}
-                    className="h-12 w-12 text-lg border-[#E0E0E0] data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 rounded-lg"
+                    className="h-12 w-9 text-lg border-[#E0E0E0] data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 rounded-lg sm:w-12"
                   />
                 ))}
               </InputOTPGroup>

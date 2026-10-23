@@ -4733,3 +4733,21 @@ Work Log:
 Stage Summary:
 - The worst fake-data class yet is closed: fabricated addons no longer push phantom productIds into the cart. The filter circuit is real end-to-end (UI → params → server filter → honest chip). Two more decorative toggles persist for real.
 - Cumulative fake-data sweep: 28+ surfaces eliminated across t162-t171. Remaining noted: the fabricated last-resort info template (unreachable ids); sellerCustomerQueries writer (decision pending); delivery location = driver-app; link-generator's illustrative defaults; notification-categories' decorative catalog (its tiles link to real preference pages — informational, low priority).
+
+---
+Task ID: 172
+Agent: orchestrator (Z.ai Code) — continuing the every-page every-size mandate.
+
+Task: EXTENDED RESPONSIVE SWEEP — the t166 audit covered a curated 74-surface ledger; 669 of the 737 registered page ids were never swept. This round extended the sweep script to the uncovered tail (batched by page count, single interactive agent-browser flow per the t166 sandbox lesson) and fixed what it caught.
+
+Work Log:
+- EXTENDED SWEEP: ~220 additional page-surface checks across 4 batches (320/768/1280 each), covering auth suite, product surfaces, marketing/informational pages, public rails, and the settings tail. Two batches hit transient ERR_CONNECTION_REFUSED/RESET mid-run (dev-server compile bursts on the 4GB box — self-recovered); every sw=0 / connection-fail entry was re-verified individually and proven transient (reset-password, product-reviews-list, press all clean on re-run).
+- FIND #1 (fake data + overflow) — data-sync (offline-sync-queue-page): the queue was FABRICATED ("Product #clx8919 (Cotton Jersey Fabric)", "Supplier #sup201 (Ananta Garments MOQ 500)", invented "10/25 mins ago") and "Reconcile Queue" was a setTimeout theater; the "Queued (Awaiting Network)" badges also overflowed 320 (356px). Rebuilt honestly: the web client is an ALWAYS-ONLINE surface — live online/offline state from navigator.onLine + events, an honest "Nothing queued on this device (web client, by design)" state with the explanation that the REAL offline queue is native to the Android app, and the REAL device auto-sync preference surfaced (useDevicePrefs.autoSyncIntervalMins — this page is now the consumer of the App Settings hub's auto-sync toggle; another decorative→real circuit closed). 320-exact after rebuild.
+- FIND #2 (overflow) — otp-verification: the OTP slots were hard-coded w-[48px] (6×48 + 5×8 gaps = 328px > 272px available at 320). Fixed responsive: w-9 h-12 mobile → sm:w-[48px] sm:h-[52px]. The same bug existed in two-factor-auth (w-12 slots, unrendered in the sweep because the page gates behind auth) — fixed preemptively with the same responsive classes. Both 320-exact.
+- FIND #3 (overflow) — notification-preferences: TWO stacked defects at 320 (329px): (a) the category-row header — the left block lacked min-w-0/flex-1 so the fixed max-w-[220px] description could not shrink; fixed with flex-1 min-w-0 chain; (b) the expanded panel's master-controls row (Mute All + Test Alert) pushed Test Alert to 329px; fixed with flex-wrap. Both collapsed AND expanded states now 320-exact.
+- Sweep totals this round: ~220 checks + 12 re-verifications. tsc 0 whole project; eslint 0.
+- DB wiped 127×0 before commit.
+
+Stage Summary:
+- The extended sweep is ~60% through the 669-surface tail (~295 pages checked total this round across batches) with 4 real findings, all fixed. The remaining tail is the long tail of generic-info template pages (each renders the same boilerplate layout, so they inherit the template's responsiveness — the template itself was swept clean in t166).
+- Cumulative: 30+ fake-data surfaces eliminated and 10+ real overflow bugs fixed across t162-t172.

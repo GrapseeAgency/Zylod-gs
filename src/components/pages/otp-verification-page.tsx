@@ -311,7 +311,7 @@ export default function OtpVerificationPage() {
             <InputOTPSlot
               key={index}
               index={index}
-              className="h-[52px] w-[48px] rounded-xl border-[#E0E0E0] text-lg font-semibold text-[#1A1A1A] data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 shadow-sm"
+              className="h-12 w-9 rounded-xl border-[#E0E0E0] text-lg font-semibold text-[#1A1A1A] data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 shadow-sm sm:h-[52px] sm:w-[48px]"
             />
           ))}
         </InputOTPGroup>
