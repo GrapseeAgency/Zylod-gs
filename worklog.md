@@ -4530,3 +4530,22 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The input-validation class is swept clean; the coupon claim/list rails now match the apply rail's rigor; another fake-data page is gone.
+
+---
+Task ID: 162
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3: check everywhere).
+
+Task: FULL-APP AUDIT unit 20 — the logistics-suite fakes replaced with real circuits (reschedule delivery, freight calculator, customs page).
+
+Work Log:
+- Fake-data hunt across large zero-fetch pages found a theater cluster; fixed the three worst, triaged the rest (import-export-tracker/freight-tracking/warehouse-locator are informational; their one fake control each — a decorative notifications toggle, a print button — noted for a later honesty pass).
+- REAL DEFECT #1 — reschedule-delivery: setTimeout "Delivery Rescheduled" + hard-coded WS-992834-A + fake 2023 dates; zero persistence, zero seller signal. BUILT the real circuit: orderReschedules model (db:push, tables 126→127, every field consumed) + POST/GET /api/orders/[id]/reschedule — buyer 401-first, foreign=phantom SAME 404, all-slices-final 409 (status lives on subOrders — the initial orders.status read was a mirage caught by tsc), future-date-only 400, strict Zod, one-pending-per-order 409, auditLogs 'delivery_reschedule_requested', durable notifications row per supplier feed (subOrders.supplierId → supplierProfiles.findMany, the t159 pattern). Page rebuilt: REAL order binding (honest no-order-id gate), slice statuses + estimated dates, pending-notice blocks a second submit, request history, real success screen; order-detail gained the Reschedule Delivery entry (hidden when every slice is closed).
+- REAL DEFECT #2 — freight calculator: hard-coded $1.25/kg + invented hazmat/insurance fees + fabricated "2-3 Business Days" + fake "Book Freight". Now quotes the LIVE zone book (GET /api/shipping/quote — Task 94's public rail): real price per lane, real estimatedDays, freeAbove crossings render FREE with basePrice preserved, uncovered districts get an honest empty state, and the dimensions row is a real labeled volumetric helper (L×W×H÷5000). Admin-configured rates are now the source of a public surface (the cohesion mandate).
+- REAL DEFECT #3 — customs-clearance: fake broker, fake ETA, fake duties, fake pipeline badge, fake upload ("Submitted to Broker!" via setTimeout). Converted to an honestly-labeled informational guide (unit 12 already removed the dead customsDocuments model — no customs rails exist) with a real document checklist + process steps and a banner stating no live process is attached.
+- DRILL scripts/qa/t162-e2e.mjs — 33/0 fresh wipe: anon 401; foreign 404; past/today 400; bad window + unknown keys 400; valid 201 with DB row + audit + seller notification (title/body/binding pinned); per-ORDER pending rule proven from a FRESH IP bucket (the first 6th-call attempt hit the honest 429 — the limiter is pinned as an asset); owner/foreign list scoping; shipping-quote happy path, freeAbove crossing, honest empty.
+- Browser QA (gateway :81, real UI): order-detail → Reschedule Delivery → REAL order number (no fake id) → date/window/note → Send → POST 201 → success screen with the real date → DB row + seller notification + audit all present. Two UI bugs caught and fixed live: "Invalid Date" (T00:00:00 glued onto already-ISO strings) and the View-order param name. 375-exact + desktop spot check, console 0 errors.
+- REGRESSIONS on fresh wipes: t159 17/0, t95 45/0 (the shipping-fee order math under the same quote rail), t152 29/0.
+- tsc 0, eslint 0. DB vacuum 127×0. Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented); the logistics-suite informational pages carry one decorative control each (noted); everything else swept so far is real.
