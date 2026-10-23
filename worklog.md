@@ -4567,3 +4567,20 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The logistics suite is now real end-to-end: live quotes from the zone book, real reschedule requests, real warehouse directory, real tracking. No fake tokens remain on any swept surface.
+
+---
+Task ID: 164
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3: check everywhere).
+
+Task: FULL-APP AUDIT unit 22 — the payment-method surfaces wired to the real rails.
+
+Work Log:
+- REAL DEFECT #1 — add-payment-method: handleSave was setTimeout(800) → fake success → navigate; card/wallet/bank went NOWHERE. Rebuilt on the three real rails: wallets → /api/payment-methods/mobile-banking, cards → /api/payment-methods (TOKENIZED — the form no longer collects a full PAN or CVV at all; last-4 + network + MM/YY + holder only, with an explanation of why), bank → /api/bank-accounts. Server verdicts surfaced verbatim; honest 401 → sign-in gates.
+- REAL DEFECT #2 (caught by the drill) — /api/payment-methods/mobile-banking accepted ANY account number ('12345' became a wallet row) and any provider string. Now: the same BD mobile format the unified rail enforces + a provider whitelist (bKash/Nagad/Rocket/Upay) + normalized stored type/number.
+- REAL DEFECT #3 — payment-method-page over-corrected a previous honesty fix into a NEW lie ("Zylod does not store cards or wallets yet" — while tokenized rows genuinely existed). Rebuilt LIVE: lists the buyer's real rows from GET /api/payment-methods + GET /api/bank-accounts (masked ••••last4, type chips, de-duped by id), links the real add-page, honest empty/auth/error states; the escrow line stays (still true).
+- DRILL scripts/qa/t164-e2e.mjs — 16/0 fresh wipe: anon 401 ×3; invalid BD phone 400; FULL PAN 400 + zero PAN rows anywhere; bad MM/YY 400; missing bankName 400; all three instruments linked and served by their list APIs; ≥2 financial-audit rows. REGRESSIONS: t148 20/0 (the financial-evidence drill).
+- Browser QA (gateway :81, real UI): linked a wallet through the rebuilt form → 201 → DB row → payment-method page lists all real masked methods at 375-exact; console 0. A transient stale-HMR ChunkLoadError appeared in the long-lived session and verified CLEAN in a fresh session (the standing recipe — session staleness, not a code defect).
+- tsc 0, eslint 0. DB vacuum 127×0. Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The payment-methods loop is closed end-to-end: add → tokenize → list — all real rows, all audited, all honest.
