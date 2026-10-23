@@ -153,7 +153,7 @@ export default function RegisterSupplierPage() {
       toast.success('Account created! Your profile is pending verification.')
 
       // Navigate to verification status page
-      navigate('supplier-verification-status', { supplierId: data.user?.id || '' })
+      navigate('seller-verification')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.')
     } finally {

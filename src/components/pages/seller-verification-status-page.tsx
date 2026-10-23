@@ -51,32 +51,34 @@ export function SellerVerificationStatusPage() {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 pb-20 md:pb-8">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-neutral-900/90 backdrop-blur border-b border-neutral-800 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate('seller-verification')}
-            className="p-2 -ml-2 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <h1 className="font-bold text-base sm:text-lg flex items-center gap-2">
-              <Clock className="w-5 h-5 text-sky-400" />
-              Compliance Review Timeline
-            </h1>
-            <p className="text-xs text-neutral-400">Real-time status of merchant vetting process</p>
+      <div className="sticky top-0 z-30 bg-neutral-900/90 backdrop-blur border-b border-neutral-800 px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => navigate('seller-verification')}
+              className="p-2 -ml-2 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 transition-colors shrink-0"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div className="min-w-0">
+              <h1 className="font-bold text-base sm:text-lg flex items-center gap-2">
+                <Clock className="w-5 h-5 text-sky-400 shrink-0" />
+                Compliance Review Timeline
+              </h1>
+              <p className="text-xs text-neutral-400">Real-time status of merchant vetting process</p>
+            </div>
           </div>
+          <Button
+            onClick={() => navigate('seller-create-ticket')}
+            variant="outline"
+            size="sm"
+            className="hidden sm:inline-flex border-neutral-700 text-xs text-neutral-300 hover:bg-neutral-800 shrink-0"
+          >
+            <MessageSquare className="w-4 h-4 mr-1 text-[#C8102E]" />
+            Contact Support
+          </Button>
         </div>
-
-        <Button
-          onClick={() => navigate('seller-create-ticket')}
-          variant="outline"
-          size="sm"
-          className="border-neutral-700 text-xs text-neutral-300 hover:bg-neutral-800"
-        >
-          <MessageSquare className="w-4 h-4 mr-1 text-[#C8102E]" />
-          Contact Support
-        </Button>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 md:max-w-2xl md:px-6 md:py-6">
@@ -131,17 +133,28 @@ export function SellerVerificationStatusPage() {
         </div>
 
         {/* Action Callout */}
-        <div className="flex items-center justify-between bg-neutral-900/60 border border-neutral-800 p-4 rounded-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-neutral-900/60 border border-neutral-800 p-4 rounded-xl">
           <div className="text-xs text-neutral-400">
             Need to update an uploaded document or add a missing certificate?
           </div>
-          <Button
-            size="sm"
-            onClick={() => navigate('seller-verification-upload')}
-            className="bg-[#C8102E] hover:bg-[#A00D24] text-white text-xs shrink-0"
-          >
-            Upload More
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => navigate('seller-create-ticket')}
+              className="sm:hidden border-neutral-700 text-xs text-neutral-300 hover:bg-neutral-800 flex-1"
+            >
+              <MessageSquare className="w-4 h-4 mr-1 text-[#C8102E]" />
+              Support
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => navigate('seller-verification-upload')}
+              className="bg-[#C8102E] hover:bg-[#A00D24] text-white text-xs shrink-0 flex-1 sm:flex-none"
+            >
+              Upload More
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -686,6 +686,9 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   'chat-list': { name: 'Messages', description: 'Chat with your suppliers and buyers', icon: <MessageSquare className="h-8 w-8 text-white" />, sections: [
     { title: 'Conversations', content: 'All your business conversations in one place.', icon: <MessageSquare className="h-4 w-4" /> },
   ], specialType: 'chat-list' },
+  'messages': { name: 'Messages', description: 'Chat with your suppliers and buyers', icon: <MessageSquare className="h-8 w-8 text-white" />, sections: [
+    { title: 'Conversations', content: 'All your business conversations in one place.', icon: <MessageSquare className="h-4 w-4" /> },
+  ], specialType: 'chat-list' },
   'chat-detail': { name: 'Chat', description: 'Conversation with supplier', icon: <MessageSquare className="h-8 w-8 text-white" />, sections: [
     { title: 'Thread', content: 'Send messages, share offers, and close deals directly with suppliers.', icon: <MessageSquare className="h-4 w-4" /> },
   ], specialType: 'chat-detail' },

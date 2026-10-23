@@ -53,7 +53,7 @@ export function VerificationBanner() {
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Button size="sm" variant="outline" onClick={() => navigate('supplier-verification-status')}>
+            <Button size="sm" variant="outline" onClick={() => navigate('seller-verification')}>
               View Status
             </Button>
             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDismissed(true)}>

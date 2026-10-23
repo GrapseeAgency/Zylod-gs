@@ -134,17 +134,17 @@ export function SellerVerificationPage() {
                   className="bg-neutral-900 border-neutral-800 hover:border-neutral-700 transition-colors"
                 >
                   <CardContent className="p-4 flex items-center justify-between gap-3">
-                    <div className="flex items-start gap-3 min-w-0">
+                    <div className="flex items-start gap-3 min-w-0 flex-1">
                       <div className="w-9 h-9 rounded-lg bg-neutral-950 border border-neutral-800 flex items-center justify-center shrink-0 mt-0.5">
                         <FileText className="w-4 h-4 text-neutral-400" />
                       </div>
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
                           <p className="font-semibold text-xs sm:text-sm text-neutral-200 truncate">
                             {type.label}
                           </p>
                           {type.required && (
-                            <span className="text-[10px] text-red-400 font-bold">*Required</span>
+                            <span className="text-[10px] text-red-400 font-bold shrink-0">*Required</span>
                           )}
                         </div>
                         {uploadedDoc ? (
@@ -199,9 +199,9 @@ export function SellerVerificationPage() {
             variant="ghost"
             className="w-full justify-between bg-neutral-900/60 border border-neutral-800 hover:bg-neutral-900 text-neutral-300 text-xs sm:text-sm py-5"
           >
-            <span className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-sky-400" />
-              View Full Compliance Review Timeline & Audit Logs
+            <span className="flex items-center gap-2 min-w-0">
+              <Clock className="w-4 h-4 text-sky-400 shrink-0" />
+              <span className="truncate">View Full Compliance Review Timeline & Audit Logs</span>
             </span>
             <ChevronRight className="w-4 h-4 text-neutral-500" />
           </Button>

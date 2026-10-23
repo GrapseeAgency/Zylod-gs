@@ -326,7 +326,7 @@ export default function BuyerDashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2"><Heart className="h-5 w-5 text-primary" /> Wishlist</CardTitle>
-              <Button size="sm" variant="outline" className="border-primary text-primary hover:bg-red-50" onClick={() => navigate('buyer-wishlist')}>View All</Button>
+              <Button size="sm" variant="outline" className="border-primary text-primary hover:bg-red-50" onClick={() => navigate('wishlist')}>View All</Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-3 max-h-[400px] overflow-y-auto">
