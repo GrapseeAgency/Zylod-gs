@@ -84,15 +84,18 @@ export async function POST(request: NextRequest) {
     })
 
     // Audit log — platform config writes are sensitive.
-    await db.auditLogs.create({
-      data: {
-        actorId: auth.user.id,
-        action: 'app_settings_updated',
-        entityType: 'appSystemSettings',
-        entityId: setting.id,
-        metadata: JSON.stringify({ key, value: String(value), category }),
-      },
-    })
+    const adminId = auth.user?.id
+    if (adminId) {
+      await db.auditLogs.create({
+        data: {
+          actorId: adminId,
+          action: 'app_settings_updated',
+          entityType: 'appSystemSettings',
+          entityId: setting.id,
+          metadata: JSON.stringify({ key, value: String(value), category }),
+        },
+      })
+    }
 
     return NextResponse.json({
       success: true,

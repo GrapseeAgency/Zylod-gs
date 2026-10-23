@@ -1,178 +1,336 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { useNavigationStore } from '@/store/navigation-store'
 import {
-  ArrowLeft, MoreVertical, Crosshair, Truck, MapPin,
-  Clock, RotateCw, Warehouse, Calculator, User, MessageSquare
+  ArrowLeft, Truck, Package, CheckCircle2, Clock, MapPin, LogIn,
+  Search, AlertCircle, Loader2, MessageSquare, ArrowRight,
 } from 'lucide-react'
 
-export function ShippingTrackerPage() {
-  const { navigate, goBack } = useNavigationStore()
-  const [courierPos, setCourierPos] = useState({ x: 190, y: 140 })
+/**
+ * REAL shipment tracking — replaces the fabricated "Courier #8492" map.
+ *
+ * Data source: GET /api/orders/[id]/track (credentials: 'include').
+ *   - The driver app pushes real milestones (dispatched, in-transit,
+ *     delivered) into orderTracking; continuous GPS pings are NOT shown
+ *     here (they exist only in the live delivery websocket room).
+ *   - No fabricated map, no invented courier id, no fake ETA.
+ *
+ * pageParams.orderId is required; without it the page shows an honest
+ * "open an order" prompt instead of invented content.
+ */
+
+interface ApiTrackingEvent {
+  id: string
+  status: string
+  location: string | null
+  note: string | null
+  trackedAt: string
+}
+interface ApiSubOrder {
+  id: string
+  status: string
+  trackingNumber: string | null
+  estimatedDelivery: string | null
+  latest: ApiTrackingEvent | null
+  timeline: ApiTrackingEvent[]
+}
+interface ApiData {
+  orderId: string
+  orderNumber: string
+  subOrders: ApiSubOrder[]
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  pending: 'Pending',
+  confirmed: 'Confirmed',
+  processing: 'Processing',
+  packed: 'Packed',
+  shipped: 'In Transit',
+  delivered: 'Delivered',
+  returned: 'Returned',
+  cancelled: 'Cancelled',
+}
+
+function formatDate(iso: string | null): string {
+  if (!iso) return '—'
+  try {
+    return new Date(iso).toLocaleString('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    })
+  } catch {
+    return iso
+  }
+}
+
+export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
+  const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
+  const pageParams = _pageParams || storeParams || {}
+  const orderId = pageParams.orderId || pageParams.id || ''
+
+  const [data, setData] = useState<ApiData | null>(null)
+  const [status, setStatus] = useState<'loading' | 'anon' | 'notfound' | 'error' | 'ready'>('loading')
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const load = React.useCallback(async () => {
+    if (!orderId) { setStatus('notfound'); return }
+    setStatus('loading')
+    try {
+      const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}/track`, { credentials: 'include' })
+      if (res.status === 401) { setStatus('anon'); return }
+      const json = await res.json().catch(() => null)
+      if (res.status === 404) { setStatus('notfound'); return }
+      if (!res.ok) { setStatus('error'); setErrorMsg(json?.error || `HTTP ${res.status}`); return }
+      setData(json?.data ?? null)
+      setStatus('ready')
+    } catch {
+      setStatus('error'); setErrorMsg('Network error — check your connection and retry.')
+    }
+  }, [orderId])
+
+  useEffect(() => { load() }, [load])
+
+  // ── Honest no-order gate ──
+  if (!orderId) {
+    return (
+      <div className="min-h-[60vh] bg-slate-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full rounded-3xl border-slate-200 shadow-sm">
+          <CardContent className="p-8 text-center space-y-3">
+            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center">
+              <Search className="h-6 w-6 text-slate-500" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">No shipment selected</h2>
+            <p className="text-xs text-slate-500">
+              Open an order from your order history and choose <span className="font-semibold">Track shipment</span> to
+              see its real delivery milestones here.
+            </p>
+            <Button onClick={() => navigate('orders-history')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
+              <Package className="h-4 w-4" /> Go to orders
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // ── 401 gate ──
+  if (status === 'anon') {
+    return (
+      <div className="min-h-[60vh] bg-slate-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full rounded-3xl border-slate-200 shadow-sm">
+          <CardContent className="p-8 text-center space-y-3">
+            <div className="mx-auto h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
+              <LogIn className="h-6 w-6 text-amber-600" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Sign in to track</h2>
+            <p className="text-xs text-slate-500">
+              Shipment milestones are visible only to the order's buyer, its suppliers, or an admin.
+            </p>
+            <Button onClick={() => navigate('login')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
+              <LogIn className="h-4 w-4" /> Sign in
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // ── 404 / not-found ──
+  if (status === 'notfound') {
+    return (
+      <div className="min-h-[60vh] bg-slate-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full rounded-3xl border-slate-200 shadow-sm">
+          <CardContent className="p-8 text-center space-y-3">
+            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center">
+              <Package className="h-6 w-6 text-slate-500" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Order not found</h2>
+            <p className="text-xs text-slate-500">
+              We couldn't find this order. It may have been removed, or the link may be stale.
+            </p>
+            <Button onClick={() => navigate('orders-history')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
+              <Package className="h-4 w-4" /> Go to orders
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // ── error ──
+  if (status === 'error') {
+    return (
+      <div className="min-h-[60vh] bg-slate-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full rounded-3xl border-slate-200 shadow-sm">
+          <CardContent className="p-8 text-center space-y-3">
+            <div className="mx-auto h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+              <AlertCircle className="h-6 w-6 text-red-600" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Couldn't load tracking</h2>
+            <p className="text-xs text-slate-500 break-words">{errorMsg}</p>
+            <Button onClick={load} variant="outline" className="text-xs font-bold gap-2">
+              <Loader2 className="h-4 w-4" /> Retry
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // ── loading ──
+  if (status === 'loading' || !data) {
+    return (
+      <div className="min-h-[60vh] bg-slate-50 flex items-center justify-center p-4">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  const anyShipped = data.subOrders.some(s => (s.status || '').toLowerCase() === 'shipped')
+  const allDelivered = data.subOrders.length > 0 && data.subOrders.every(s => (s.status || '').toLowerCase() === 'delivered')
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
-      {/* Top Header */}
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      {/* Mobile sticky header */}
       <header className="md:hidden sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between">
         <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-base font-black text-primary">Tracking</h1>
-        <button className="p-1 text-slate-700 hover:text-slate-900" title="More">
-          <MoreVertical className="h-5 w-5" />
-        </button>
+        <h1 className="text-base font-black text-primary truncate">Tracking</h1>
+        <span className="w-6" />
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">Tracking</h1>
 
-      {/* Main Map Container */}
-      <div className="relative flex-1 min-h-[380px] bg-slate-200 overflow-hidden">
-        {/* Dynamic Dhaka / BD City Map Layout (SVG Grid & Streets) */}
-        <div className="absolute inset-0 bg-[#F1F5F9]">
-          <svg className="w-full h-full object-cover" viewBox="0 0 400 380" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* City block buildings */}
-            {Array.from({ length: 16 }).map((_, i) => (
-              <rect
-                key={i}
-                x={(i % 4) * 95 + 10}
-                y={Math.floor(i / 4) * 90 + 10}
-                width="75"
-                height="70"
-                rx="6"
-                fill="#E2E8F0"
-                stroke="#CBD5E1"
-                strokeWidth="1"
-              />
-            ))}
-
-            {/* Major Arteries / Roads */}
-            <line x1="0" y1="95" x2="400" y2="95" stroke="#FFFFFF" strokeWidth="16" />
-            <line x1="0" y1="185" x2="400" y2="185" stroke="#FFFFFF" strokeWidth="20" />
-            <line x1="0" y1="275" x2="400" y2="275" stroke="#FFFFFF" strokeWidth="16" />
-            <line x1="95" y1="0" x2="95" y2="380" stroke="#FFFFFF" strokeWidth="16" />
-            <line x1="190" y1="0" x2="190" y2="380" stroke="#FFFFFF" strokeWidth="20" />
-            <line x1="285" y1="0" x2="285" y2="380" stroke="#FFFFFF" strokeWidth="16" />
-
-            {/* Active Route Path in Red */}
-            <path
-              d="M 190 320 L 190 185 L 340 185"
-              stroke="#E11D48"
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {/* Dashed line from Courier to Warehouse */}
-            <line
-              x1="190"
-              y1="185"
-              x2="280"
-              y2="115"
-              stroke="#E11D48"
-              strokeWidth="3"
-              strokeDasharray="6 6"
-            />
-
-            {/* City Label */}
-            <text x="220" y="160" fill="#64748B" fontSize="18" fontWeight="bold" fontFamily="sans-serif" opacity="0.6">
-              Dhaka North Hub
-            </text>
-            <text x="230" y="200" fill="#94A3B8" fontSize="10" fontWeight="bold" fontFamily="sans-serif">
-              Tejgaon Industrial Ave
-            </text>
-          </svg>
-        </div>
-
-        {/* GPS Locate Button */}
-        <button
-          onClick={() => setCourierPos({ x: 190, y: 140 })}
-          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white text-slate-700 shadow-md flex items-center justify-center border border-slate-200"
-          title="Locate Courier"
-        >
-          <Crosshair className="h-5 w-5" />
-        </button>
-
-        {/* Warehouse A Destination Marker */}
-        <div className="absolute top-[100px] left-[260px] flex flex-col items-center">
-          <div className="w-6 h-6 rounded-full border-2 border-primary bg-white flex items-center justify-center shadow-md">
-            <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+      <main className="px-4 py-4 md:px-6 md:py-8 max-w-3xl mx-auto space-y-4">
+        <div className="hidden md:flex items-center justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold text-slate-900">Shipment tracking</h1>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Order <span className="font-mono font-semibold">{data.orderNumber}</span> · {data.subOrders.length} shipment{data.subOrders.length === 1 ? '' : 's'}
+            </p>
           </div>
-          <span className="bg-white text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs border border-slate-200 mt-1 whitespace-nowrap">
-            Warehouse A
-          </span>
+          <Badge
+            className={
+              allDelivered ? 'bg-emerald-600 text-white'
+              : anyShipped ? 'bg-primary text-white'
+              : 'bg-slate-200 text-slate-700'
+            }
+          >
+            {allDelivered ? 'Delivered' : anyShipped ? 'In transit' : 'Processing'}
+          </Badge>
         </div>
 
-        {/* Courier Marker */}
-        <div className="absolute top-[165px] left-[165px] flex flex-col items-center z-10">
-          <div className="w-11 h-11 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/30 border-2 border-white">
-            <Truck className="h-5 w-5" />
-          </div>
-          <span className="bg-white text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-md shadow border border-slate-200 mt-1 whitespace-nowrap">
-            Courier #8492
-          </span>
-        </div>
-      </div>
-
-      {/* Bottom Sheet Status Card */}
-      <div className="bg-white rounded-t-3xl border-t border-slate-200 p-5 shadow-2xl space-y-4 max-w-lg mx-auto w-full z-20 pb-24">
-        {/* Grab Handle */}
-        <div className="w-10 h-1 bg-slate-300 rounded-full mx-auto" />
-
-        {/* Estimated Arrival Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-              ESTIMATED ARRIVAL
-            </span>
-            <div className="text-2xl font-black text-primary tracking-tight mt-0.5">
-              14:30 <span className="text-xs font-bold text-slate-500">BST</span>
-            </div>
-          </div>
-
-          <span className="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full border border-slate-200 flex items-center gap-1.5">
-            <RotateCw className="h-3 w-3 text-primary animate-spin" />
-            In Transit
-          </span>
+        {/* Honest note about live GPS */}
+        <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+          <Truck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+          <p className="text-[11px] text-slate-600 leading-relaxed">
+            Milestones below come from the driver app (dispatched, in-transit, delivered).
+            Continuous live GPS is shown only inside the active delivery chat room — this view
+            shows the verified timeline.
+          </p>
         </div>
 
-        {/* Delivery Status Timeline */}
-        <div className="space-y-3 pt-2">
-          <h2 className="text-xs font-bold text-slate-900">Delivery Status</h2>
-
-          <div className="space-y-4 pl-1 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-            {/* Step 1: Dispatched */}
-            <div className="relative flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full border-2 border-primary bg-white flex items-center justify-center shrink-0 z-10">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-              </div>
-              <div>
-                <h3 className="text-xs font-bold text-slate-900">Dispatched</h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">Tejgaon Central Hub • 08:15 AM</p>
-              </div>
-            </div>
-
-            {/* Step 2: In Transit */}
-            <div className="relative flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center text-[10px] font-bold shrink-0 z-10 shadow-xs">
-                <Truck className="h-3 w-3" />
-              </div>
-              <div className="flex-1 flex justify-between items-center">
-                <div>
-                  <h3 className="text-xs font-black text-primary">In Transit</h3>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Estimated delivery at Gate 4</p>
+        {/* Per-shipment cards */}
+        {data.subOrders.map((so, idx) => {
+          const stage = (so.status || 'pending').toLowerCase()
+          return (
+            <Card key={so.id} className="rounded-3xl border-slate-200 shadow-sm overflow-hidden">
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                      Shipment {idx + 1}
+                    </span>
+                    <h3 className="text-sm font-bold text-slate-900 mt-0.5">
+                      {STATUS_LABEL[stage] || stage}
+                    </h3>
+                    {so.trackingNumber && (
+                      <p className="text-[11px] text-slate-500 font-mono mt-0.5 break-all">
+                        AWB: {so.trackingNumber}
+                      </p>
+                    )}
+                  </div>
+                  {so.estimatedDelivery && (
+                    <div className="text-right">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                        Est. delivery
+                      </span>
+                      <span className="text-xs font-bold text-slate-900">{formatDate(so.estimatedDelivery)}</span>
+                    </div>
+                  )}
                 </div>
-                <Button
-                  onClick={() => navigate('delivery-chat')}
-                  className="h-8 px-3 text-[11px] font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-xs"
-                >
-                  Chat Driver
-                </Button>
-              </div>
-            </div>
-          </div>
+
+                {/* Timeline */}
+                {so.timeline.length === 0 ? (
+                  <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 text-center">
+                    <Clock className="h-5 w-5 text-slate-400 mx-auto mb-1" />
+                    <p className="text-xs text-slate-500">
+                      No milestones yet. The seller hasn't dispatched this shipment.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 pl-1 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                    {so.timeline.map((t, i) => {
+                      const isLatest = i === 0
+                      return (
+                        <div key={t.id} className="relative flex items-start gap-3">
+                          <div
+                            className={
+                              'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 z-10 ' +
+                              (isLatest
+                                ? 'bg-primary border-primary text-white'
+                                : 'bg-white border-slate-300 text-slate-400')
+                            }
+                          >
+                            {isLatest ? <Truck className="h-2.5 w-2.5" /> : <CheckCircle2 className="h-2.5 w-2.5" />}
+                          </div>
+                          <div className="min-w-0 flex-1 pt-0.5">
+                            <h4 className={'text-xs ' + (isLatest ? 'font-black text-primary' : 'font-bold text-slate-800')}>
+                              {STATUS_LABEL[(t.status || '').toLowerCase()] || t.status}
+                            </h4>
+                            {t.location && (
+                              <p className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+                                <MapPin className="h-3 w-3 shrink-0" /> {t.location}
+                              </p>
+                            )}
+                            {t.note && <p className="text-[11px] text-slate-600 mt-0.5 break-words">{t.note}</p>}
+                            <p className="text-[10px] text-slate-400 mt-0.5">{formatDate(t.trackedAt)}</p>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Chat driver — only when there's an active shipment */}
+                {(stage === 'shipped') && (
+                  <Button
+                    onClick={() => navigate('delivery-chat', { orderId, subOrderId: so.id })}
+                    variant="outline"
+                    className="w-full text-xs font-bold gap-2 rounded-2xl"
+                  >
+                    <MessageSquare className="h-4 w-4" /> Chat driver
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          )
+        })}
+
+        <div className="pt-2 flex justify-center">
+          <Button
+            onClick={() => navigate('order-detail', { orderId })}
+            variant="ghost"
+            className="text-xs font-semibold text-slate-600 gap-1.5"
+          >
+            View full order <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
+export default ShippingTrackerPage

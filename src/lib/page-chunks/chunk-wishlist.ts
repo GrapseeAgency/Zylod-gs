@@ -8,7 +8,7 @@ export const CHUNK_WISHLIST = new Set([
   'wishlist', 'favorites', 'save-for-later', 'recently-viewed', 'recently-searched',
   'collections', 'create-collection', 'shared-wishlist',
   // Sub-pages
-  'wishlist-detail', 'wishlist-share', 'wishlist-sort-filter',
+  'wishlist-detail', 'wishlist-share',
   'favorite-suppliers', 'favorite-products', 'favorite-categories',
   'save-for-later-detail',
   'collection-detail', 'edit-collection', 'collection-shared',
@@ -30,7 +30,6 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     // Sub-pages
     'wishlist-detail': () => import('@/components/pages/wishlist-detail-page'),
     'wishlist-share': () => import('@/components/pages/wishlist-share-page'),
-    'wishlist-sort-filter': () => import('@/components/pages/wishlist-sort-filter-page'),
     'favorite-suppliers': () => import('@/components/pages/favorite-suppliers-page'),
     'favorite-products': () => import('@/components/pages/favorite-products-page'),
     'favorite-categories': () => import('@/components/pages/favorite-categories-page'),
