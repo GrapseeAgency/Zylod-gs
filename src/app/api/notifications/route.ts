@@ -5,8 +5,17 @@ import { authenticateRequest } from '@/lib/auth'
 
 /**
  * GET /api/notifications — fetch the authenticated user's notification feed.
- * Query params: page, limit, unreadOnly (boolean)
+ * Query params:
+ *   page, limit, unreadOnly (boolean)
+ *   types        — comma-separated type filter (order|payment|promotion|system|chat|review|delivery);
+ *                  unknown tokens are ignored (an all-unknown list means "no filter")
+ *   startDate    — inclusive ISO date lower bound on createdAt
+ *   endDate      — inclusive ISO date upper bound on createdAt
+ * (Task 171: the notification-filter page's Apply now filters server-side —
+ * the old page navigated with params the rail silently ignored.)
  */
+const NOTIFICATION_TYPES = ['order', 'payment', 'promotion', 'system', 'chat', 'review', 'delivery']
+
 export async function GET(request: NextRequest) {
   try {
     const auth = await authenticateRequest(request)
@@ -19,8 +28,37 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit') || 20)))
     const unreadOnly = searchParams.get('unreadOnly') === 'true'
 
+    const typesParam = (searchParams.get('types') || '').trim()
+    const typeList = typesParam
+      ? typesParam.split(',').map(t => t.trim().toLowerCase()).filter(t => NOTIFICATION_TYPES.includes(t))
+      : []
+
+    let startDate: Date | undefined
+    let endDate: Date | undefined
+    const startDateRaw = (searchParams.get('startDate') || '').trim()
+    const endDateRaw = (searchParams.get('endDate') || '').trim()
+    if (startDateRaw) {
+      const d = new Date(startDateRaw)
+      if (!Number.isNaN(d.getTime())) startDate = d
+    }
+    if (endDateRaw) {
+      const d = new Date(endDateRaw)
+      if (!Number.isNaN(d.getTime())) {
+        // Inclusive end: extend to the last millisecond of that day.
+        d.setHours(23, 59, 59, 999)
+        endDate = d
+      }
+    }
+
     const where: Record<string, unknown> = { userId: auth.user.id }
     if (unreadOnly) where.isRead = false
+    if (typeList.length > 0) where.type = { in: typeList }
+    if (startDate || endDate) {
+      where.createdAt = {
+        ...(startDate ? { gte: startDate } : {}),
+        ...(endDate ? { lte: endDate } : {}),
+      }
+    }
 
     const skip = (page - 1) * limit
 

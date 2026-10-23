@@ -31,6 +31,9 @@ export type DevicePrefs = {
   // Image cache
   imageQuality: 'ultra' | 'high' | 'medium'
   imageCacheMaxMb: number
+  // Cache settings (Task 171)
+  swPrecache: boolean
+  memoryQueryCache: boolean
 }
 
 export const DEFAULT_DEVICE_PREFS: DevicePrefs = {
@@ -43,6 +46,8 @@ export const DEFAULT_DEVICE_PREFS: DevicePrefs = {
   dnsOverHttps: true,
   imageQuality: 'high',
   imageCacheMaxMb: 200,
+  swPrecache: true,
+  memoryQueryCache: true,
 }
 
 function readRaw(): DevicePrefs {

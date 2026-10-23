@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import {
   RefreshCw,
   Zap,
@@ -11,19 +11,26 @@ import {
   Sparkles,
   Layers,
   Image as ImageIcon,
-  Cpu
+  Cpu,
+  Smartphone
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useDevicePrefs, useLocalStorageUsageBytes } from '@/hooks/use-device-prefs'
 
 export function CacheSettingsPage() {
   const { navigate } = useNavigationStore()
-  const [swPrecache, setSwPrecache] = useState(true)
-  const [memoryCache, setMemoryCache] = useState(true)
-  const [cleared, setCleared] = useState(false)
+  // Task 171: the two strategy toggles are device-local preferences —
+  // persisted for real via useDevicePrefs (the old ones were decorative
+  // useState that flipped nowhere). The Purge action was ALREADY real
+  // (browser caches API + native bridge).
+  const { prefs, update } = useDevicePrefs()
+  const usageBytes = useLocalStorageUsageBytes()
+  const usageKb = Math.round(usageBytes / 1024)
+  const [cleared, setCleared] = React.useState(false)
 
   const handlePurge = () => {
     if (typeof window !== 'undefined' && 'caches' in window) {
@@ -35,7 +42,7 @@ export function CacheSettingsPage() {
       (window as any).ZylodNativeBridge.clearLocalAppCache()
     }
     setCleared(true)
-    setTimeout(() => setCleared(false), 3000)
+    window.setTimeout(() => setCleared(false), 3000)
   }
 
   return (
@@ -82,20 +89,28 @@ export function CacheSettingsPage() {
             <CardDescription className="text-xs">Cache-first strategy for static JS, CSS, and fonts</CardDescription>
           </CardHeader>
           <CardContent className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="space-y-0.5 min-w-0">
                 <div className="font-semibold text-sm">Background Asset Pre-caching</div>
                 <p className="text-xs text-muted-foreground">Preload next likely wholesale pages in background</p>
               </div>
-              <Switch checked={swPrecache} onCheckedChange={setSwPrecache} />
+              <Switch
+                checked={prefs.swPrecache}
+                onCheckedChange={(v) => update('swPrecache', v)}
+                aria-label="Toggle background asset pre-caching"
+              />
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t">
-              <div className="space-y-0.5">
+            <div className="flex items-center justify-between pt-3 border-t gap-3">
+              <div className="space-y-0.5 min-w-0">
                 <div className="font-semibold text-sm">Client In-Memory Query Cache</div>
                 <p className="text-xs text-muted-foreground">5-minute stale-while-revalidate for product lists</p>
               </div>
-              <Switch checked={memoryCache} onCheckedChange={setMemoryCache} />
+              <Switch
+                checked={prefs.memoryQueryCache}
+                onCheckedChange={(v) => update('memoryQueryCache', v)}
+                aria-label="Toggle client in-memory query cache"
+              />
             </div>
           </CardContent>
         </Card>

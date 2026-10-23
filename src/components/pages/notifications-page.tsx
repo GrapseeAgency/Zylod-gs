@@ -29,7 +29,21 @@ interface NotificationItem {
 }
 
 export function NotificationsPage() {
-  const { navigate, goBack } = useNavigationStore()
+  const { navigate, goBack, pageParams } = useNavigationStore()
+
+  // Task 171: the notification-filter page's Apply lands here as pageParams —
+  // a real server-side filter (the rail supports types/unreadOnly/dates now),
+  // not the ignored-payload dead end it used to be.
+  const [activeFilter, setActiveFilter] = useState<{
+    types: string; unreadOnly: boolean; startDate: string; endDate: string
+  }>(() => ({
+    types: (pageParams?.filter || '').trim(),
+    unreadOnly: pageParams?.unreadOnly === 'true',
+    startDate: (pageParams?.startDate || '').trim(),
+    endDate: (pageParams?.endDate || '').trim(),
+  }))
+  const filterActive = Boolean(activeFilter.types || activeFilter.unreadOnly || activeFilter.startDate || activeFilter.endDate)
+
   const { token, user } = useAuthStore()
 
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'order' | 'promotion' | 'delivery' | 'system'>('all')
@@ -46,8 +60,14 @@ export function NotificationsPage() {
       const headers: Record<string, string> = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
 
+      // An applied filter (from the filter page) overrides the tab switcher.
       let url = `/api/notifications?page=${pageNum}&limit=20`
-      if (activeTab === 'unread') {
+      if (filterActive) {
+        if (activeFilter.types) url += `&types=${encodeURIComponent(activeFilter.types)}`
+        if (activeFilter.unreadOnly) url += '&unreadOnly=true'
+        if (activeFilter.startDate) url += `&startDate=${encodeURIComponent(activeFilter.startDate)}`
+        if (activeFilter.endDate) url += `&endDate=${encodeURIComponent(activeFilter.endDate)}`
+      } else if (activeTab === 'unread') {
         url += '&unreadOnly=true'
       } else if (activeTab !== 'all') {
         url = `/api/notifications/by-type?type=${activeTab}&page=${pageNum}&limit=20`
@@ -67,7 +87,7 @@ export function NotificationsPage() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [token, activeTab])
+  }, [token, activeTab, filterActive, activeFilter])
 
   useEffect(() => {
     setPage(1)
@@ -285,6 +305,28 @@ export function NotificationsPage() {
           </button>
         ))}
       </div>
+
+      {/* Task 171: active filter chip — the filter page's Apply is a REAL
+          server-side filter now; show it and let the user clear it. */}
+      {filterActive && (
+        <div className="bg-amber-50 border-b border-amber-100 px-4 py-2 flex items-center justify-between gap-3">
+          <p className="text-[11px] font-semibold text-amber-800 truncate">
+            Filter active:{' '}
+            {[
+              activeFilter.types ? `types: ${activeFilter.types}` : null,
+              activeFilter.unreadOnly ? 'unread only' : null,
+              activeFilter.startDate ? `from ${activeFilter.startDate}` : null,
+              activeFilter.endDate ? `to ${activeFilter.endDate}` : null,
+            ].filter(Boolean).join(' · ')}
+          </p>
+          <button
+            onClick={() => { setActiveFilter({ types: '', unreadOnly: false, startDate: '', endDate: '' }); setPage(1) }}
+            className="text-[11px] font-bold text-amber-900 hover:underline shrink-0"
+          >
+            Clear
+          </button>
+        </div>
+      )}
 
       {/* Notification List Content */}
       <div className="flex-1 px-4 py-4 md:px-6 md:py-6 max-w-3xl mx-auto lg:max-w-5xl w-full space-y-3 md:space-y-4 pb-24 md:pb-8">
