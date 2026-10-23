@@ -4491,3 +4491,23 @@ Work Log:
 
 Stage Summary:
 - REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The new-order circuit is now two-sided: transient socket for live consoles + durable row for offline sellers, both proven by drill.
+
+---
+Task ID: 160
+Agent: orchestrator (Z.ai Code) — solo, non-stop per owner order (Rule2/Rule3: check everywhere).
+
+Task: FULL-APP AUDIT unit 18 — the realtime layer itself: room-token issuance, socket enforcement, broadcast payloads, and the produced-event × client-consumer cohesion matrix.
+
+Work Log:
+- Room-token issuance re-verified route by route: 401-first, rate limit second, per-prefix authorization (seller own-profile-or-admin 403, rfq buyer-owner/admin/quoted-supplier, user own-id-only for every type, admin own-id-only; order rooms correctly delegated to the delivery endpoint 404, product rooms correctly public 404).
+- Socket subscribe enforcement re-verified in mini-services/delivery-service: ROOM_PATTERN gate, product-only public path, HMAC verifyRoomToken (exp + claims.r === room binding), per-socket subscribe rate limit with disconnect. CLEAN.
+- All 22 broadcast event names enumerated across src/app/api; public product-room payloads audited one by one (product:stock / inventory:updated / product:qa / product:certifications carry public-parity fields only; question content goes to the gated seller room). CLEAN.
+- COHESION MATRIX (every produced event × client listeners): 4 events PRODUCED with ZERO consumers — moderation:decision, rfq:status, supplier:reviewed, qa:new (the exact one-sided class the mandate targets; wallet/payout candidates were false alarms — consumers exist in admin managers).
+- WIRED: product-listings-manager (sellerRoom derived from server rows' supplierId; moderation:decision → toast + honest background refetch), seller-dashboard (moderation/review/QA toasts + reloadTick DB resync), rfq-list-page (rfq:status → closure toast + refresh), seller-reviews-page (supplier:reviewed → silent resync).
+- REAL DB DEFECT under it: GET /api/supplier/reviews read db.reviews (product reviews) while the store-review rail (Task 105) writes supplierReviews — sellers could NEVER see store reviews on ANY surface. Fixed: the API now serves BOTH rails merged newest-first (kind 'product'|'store'), per-kind honest aggregates (storeAverageRating/storeTotalReviews); the page renders a Store chip, store aggregates line, and Verified purchase for store rows (the writer's gate makes them verified by construction).
+- DRILL scripts/qa/t160-e2e.mjs — 27/0 on a fresh wipe: real socket.io connections with minted tokens join seller:<id> and rfq:<id>; all 4 events LIVE-land (moderation:decision approved payload, qa:new with the question text, supplier:reviewed with the rating, rfq:status closed); room-gate negatives (buyer mint 401, foreign supplier 403); the review verified-purchase gate holds (403 before a real order); GET /api/supplier/products items and GET /api/supplier/reviews rows carry supplierId (the rooms' source of truth).
+- REGRESSIONS on fresh wipes: t105 43/0, t159 17/0, t152 29/0.
+- tsc 0, eslint 0. Browser QA through gateway :81 (real UI login as the seeded seller): seller-reviews shows the store review with chip + aggregates at 375 exact and desktop 1280 exact; listings manager + dashboard render real data at 375 exact; console 0 errors. DB vacuum 126×0. Pushed with the owner-provided PAT (never stored in tracked files).
+
+Stage Summary:
+- REMAINING FAKE/INCOMPLETE: delivery location = driver-app surface (external, documented). The realtime backbone is now audited end-to-end (issuance, enforcement, payloads, producer×consumer matrix all green) and four dead circuits are live with drill proof.
