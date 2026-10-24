@@ -70,10 +70,10 @@ export function MobileTopNav() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('barcode-scanner')}
-            className="p-1 rounded-lg active:scale-95 transition-transform"
+            className="p-2.5 rounded-lg active:scale-95 transition-transform"
             aria-label="Scan QR Code"
           >
-            <QrCode className="w-[18px] h-[18px] text-primary" />
+            <QrCode className="w-5 h-5 text-primary" />
           </button>
           <img
             src="/zylod-logo.svg"
@@ -86,10 +86,10 @@ export function MobileTopNav() {
         <div className="flex items-center gap-0.5">
           <button
             onClick={() => navigate('notifications')}
-            className="relative p-2 rounded-lg active:scale-95 transition-transform"
+            className="relative p-2.5 rounded-lg active:scale-95 transition-transform"
             aria-label="Notifications"
           >
-            <Bell className="w-[18px] h-[18px] text-muted-foreground" />
+            <Bell className="w-5 h-5 text-muted-foreground" />
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 bg-primary text-primary-foreground text-[8px] font-bold rounded-full flex items-center justify-center px-0.5">
                 {unreadCount > 99 ? '99+' : unreadCount}
@@ -99,10 +99,10 @@ export function MobileTopNav() {
           {/* 3-line hamburger menu */}
           <button
             onClick={openServicesMenu}
-            className="p-2 rounded-lg active:scale-95 transition-transform"
+            className="p-2.5 rounded-lg active:scale-95 transition-transform"
             aria-label="Menu"
           >
-            <Menu className="w-[18px] h-[18px] text-muted-foreground" />
+            <Menu className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
       </header>

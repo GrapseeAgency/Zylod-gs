@@ -66,7 +66,7 @@ export function PointsHistoryPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-2 flex items-center gap-2 md:px-6">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-2 flex items-center gap-2 overflow-x-auto md:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {[
           { key: '', label: 'All Transactions' },
           { key: 'earn', label: 'Points Earned' },
@@ -75,7 +75,7 @@ export function PointsHistoryPage() {
           <button
             key={tab.key}
             onClick={() => setActiveType(tab.key)}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold transition ${
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition shrink-0 ${
               activeType === tab.key
                 ? 'bg-amber-500 text-white shadow-sm'
                 : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'

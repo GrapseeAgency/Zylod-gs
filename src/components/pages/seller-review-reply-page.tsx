@@ -46,7 +46,7 @@ export function SellerReviewReplyPage({ id }: { id?: string }) {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 p-4">
       <header className="md:hidden flex items-center mb-6">
-        <button onClick={goBack} className="mr-4">←</button>
+        <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform" aria-label="Go back">←</button>
         <h1 className="text-xl font-bold">Reply to Review</h1>
       </header>
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Reply to Review</h1>

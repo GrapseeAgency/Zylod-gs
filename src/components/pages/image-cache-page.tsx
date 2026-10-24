@@ -96,7 +96,7 @@ export function ImageCachePage() {
             </Select>
           </div>
 
-          <div className="flex items-center justify-between pt-3 border-t">
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t">
             <Badge variant="outline" className="text-[10px] font-mono py-1">
               Prefs blob: {usageKb} KB
             </Badge>

@@ -304,7 +304,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
           <Button
             onClick={handleUpdate}
             disabled={saving}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs shadow-md flex items-center justify-center gap-2"
+            className="w-full md:w-auto md:flex-1 bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-2xl text-xs shadow-md flex items-center justify-center gap-2"
           >
             <Save className="h-4 w-4" />
             {saving ? 'Updating...' : 'Update Address'}
@@ -313,7 +313,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
             variant="ghost"
             onClick={handleDelete}
             disabled={deleting}
-            className="w-full bg-transparent hover:bg-red-50 text-red-500 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2 border border-red-100"
+            className="w-full md:w-auto md:flex-1 bg-transparent hover:bg-red-50 text-red-500 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2 border border-red-100"
           >
             <Trash2 className="h-4 w-4" />
             {deleting ? 'Deleting...' : 'Delete'}

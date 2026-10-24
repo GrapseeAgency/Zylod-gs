@@ -189,7 +189,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs print:hidden md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 active:scale-95 transition-transform" aria-label="Go back">
               ←
             </button>
             <span className="text-xl font-black tracking-tight text-primary">Zylod</span>

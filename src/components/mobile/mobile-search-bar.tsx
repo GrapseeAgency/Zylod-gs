@@ -225,10 +225,10 @@ export function MobileSearchBar() {
             <button
               type="button"
               onClick={() => navigate('image-search')}
-              className="p-0.5 hover:text-primary transition-colors"
+              className="p-2.5 -my-1.5 rounded-lg hover:text-primary transition-colors"
               aria-label="Photo search"
             >
-              <Camera className="w-4 h-4 text-muted-foreground" />
+              <Camera className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
         </div>

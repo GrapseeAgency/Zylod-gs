@@ -266,14 +266,14 @@ export function NotificationDetailPage() {
             <div className="flex flex-col md:flex-row gap-3 pt-2">
               <Button
                 onClick={handleAction}
-                className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-md transition text-xs sm:text-sm"
+                className="w-full md:w-auto md:flex-1 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl shadow-md transition text-xs sm:text-sm"
               >
                 {getActionLabel()}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => navigate('notifications')}
-                className="w-full py-3 rounded-2xl text-xs font-bold"
+                className="w-full md:w-auto md:flex-1 py-3 rounded-2xl text-xs font-bold"
               >
                 Back to All Notifications
               </Button>

@@ -91,10 +91,10 @@ export function PressMediaPage() {
           <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
             Stay updated with corporate milestones, funding announcements, product innovations, and strategic logistics partnerships across Bangladesh.
           </p>
-          <div className="flex gap-2 pt-1">
+          <div className="flex flex-col sm:flex-row gap-2 pt-1 [&>button]:w-full sm:[&>button]:w-auto">
             <Button
               onClick={() => navigate('media-kit')}
-              className="bg-primary hover:bg-primary/90 text-gray-900 dark:text-white rounded-xl text-xs font-bold py-2"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-xs font-bold py-2"
             >
               <Download className="w-3.5 h-3.5 mr-1.5" /> Download Media Kit
             </Button>

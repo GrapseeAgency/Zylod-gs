@@ -73,7 +73,7 @@ export function AboutUsPage() {
           <>
             {/* Hero Card */}
             <div className="relative overflow-hidden bg-gradient-to-br from-slate-100 via-slate-100 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 rounded-3xl p-6 text-gray-900 dark:text-white space-y-3">
-              <Badge className="bg-primary/10 text-primary/60 border-primary/30 text-xs font-semibold">
+              <Badge className="bg-primary/10 text-primary/60 border-primary/30 text-xs font-semibold max-w-full whitespace-normal text-center leading-relaxed">
                 {data.companyInfo.hq} · B2B Wholesale Marketplace
               </Badge>
               <h2 className="text-xl md:text-2xl font-black leading-tight">

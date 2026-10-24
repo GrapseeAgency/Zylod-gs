@@ -208,7 +208,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       <header className="bg-white dark:bg-gray-900 p-4 flex items-center justify-between border-b md:hidden">
         <div className="flex items-center">
-          <button onClick={goBack} className="mr-3" aria-label="Back">←</button>
+          <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform" aria-label="Go back">←</button>
           <h1 className="font-bold text-sm">Query thread</h1>
         </div>
         <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${STATUS_STYLES[query.status] || 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'}`}>

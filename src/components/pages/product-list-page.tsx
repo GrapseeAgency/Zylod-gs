@@ -218,7 +218,7 @@ export function ProductListPage() {
           />
           <button
             onClick={() => navigate('barcode-scanner')}
-            className="absolute right-3 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400"
+            className="absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-md text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400 transition-colors"
             aria-label="Scan QR code in search bar"
           >
             <QrCode className="h-4 w-4" />
@@ -341,7 +341,7 @@ export function ProductListPage() {
                     ) : null}
                     <button
                       onClick={(e) => handleToggleWishlist(e, product)}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white dark:bg-gray-900/80 backdrop-blur-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+                      className="absolute top-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-white dark:bg-gray-900/80 backdrop-blur-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
                     >
                       <Heart className={`h-3.5 w-3.5 ${inWish ? 'fill-primary text-primary' : ''}`} />
                     </button>

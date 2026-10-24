@@ -78,7 +78,7 @@ export function Error500Page() {
         {ticketRef && (
           <div className="inline-flex items-center gap-2 p-2 px-3 bg-muted/40 rounded-xl border font-mono text-xs text-muted-foreground">
             <span>Incident Reference: <strong className="text-foreground">{ticketRef}</strong></span>
-            <button onClick={copyRef} className="hover:text-foreground text-primary transition-colors">
+            <button onClick={copyRef} aria-label="Copy incident reference" className="flex h-8 w-8 items-center justify-center rounded-md hover:text-foreground text-primary transition-colors">
               {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
           </div>

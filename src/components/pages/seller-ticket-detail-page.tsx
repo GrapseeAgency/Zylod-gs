@@ -115,12 +115,12 @@ export function SellerTicketDetailPage({ pageParams: _pageParams }: { pageParams
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       <header className="bg-white dark:bg-gray-900 p-4 md:px-6 flex items-center justify-between border-b sticky top-0 z-20">
         <div className="flex items-center min-w-0">
-          <button onClick={goBack} className="md:hidden mr-3 text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100" aria-label="Back">←</button>
+          <button onClick={goBack} className="md:hidden flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100" aria-label="Go back">←</button>
           <h1 className="font-bold truncate">{thread?.subject ?? 'Ticket'}</h1>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={loadThread} className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300" aria-label="Refresh">
-            <RefreshCw className="w-4 h-4" />
+          <button onClick={loadThread} className="flex h-9 w-9 items-center justify-center rounded-md text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:text-slate-300 transition-colors" aria-label="Refresh">
+            <RefreshCw className="w-5 h-5" />
           </button>
           {thread && (
             <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-full border ${STATUS_STYLES[thread.status] ?? STATUS_STYLES.open}`}>

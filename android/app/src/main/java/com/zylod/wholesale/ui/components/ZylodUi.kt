@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -327,9 +328,16 @@ fun AuthScaffold(
                 Spacer(Modifier.weight(1f))
                 Spacer(Modifier.width(48.dp))
             }
+            // t184: IME-aware + scrollable. With enableEdgeToEdge + zeroed
+            // contentWindowInsets, adjustResize alone does NOT lift the content —
+            // without imePadding the keyboard covers the password field and the
+            // Login button on every auth screen. imePadding BEFORE verticalScroll
+            // shrinks the scroll viewport to above the keyboard so the whole form
+            // stays reachable (scroll to the CTA while typing).
             Column(
                 Modifier
                     .fillMaxSize()
+                    .imePadding()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp)
                     .padding(bottom = 32.dp),

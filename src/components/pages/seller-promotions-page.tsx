@@ -199,7 +199,7 @@ export function SellerPromotionsPage() {
       {/* Mobile header (red) */}
       <header className="md:hidden bg-primary text-white p-4 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center">
-          <button onClick={goBack} className="mr-4" aria-label="Go back">←</button>
+          <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform" aria-label="Go back">←</button>
           <h1 className="text-xl font-bold">Campaigns</h1>
         </div>
         <button

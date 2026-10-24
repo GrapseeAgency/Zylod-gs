@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -396,6 +397,10 @@ fun WebScreen(pageId: String, query: String) {
                     },
                     modifier = Modifier
                         .fillMaxSize()
+                        // t184: with enableEdgeToEdge the system won't resize the
+                        // WebView for the IME — without this pad the keyboard covers
+                        // every login/search/chat input in the website shell.
+                        .imePadding()
                         .alpha(if (suppressContent) 0f else 1f),
                 )
             }

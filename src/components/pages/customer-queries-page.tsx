@@ -47,7 +47,7 @@ export function CustomerQueriesPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       <header className="bg-primary text-white p-4 flex items-center md:hidden">
-        <button onClick={goBack} className="mr-4">←</button>
+        <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform" aria-label="Go back">←</button>
         <h1 className="text-xl font-bold">Customer Queries</h1>
       </header>
       <main className="flex-1 p-4 md:px-6 md:py-8 md:max-w-5xl md:w-full md:mx-auto">

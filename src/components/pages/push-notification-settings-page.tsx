@@ -215,7 +215,7 @@ export function PushNotificationSettingsPage() {
               <p className="text-xs text-red-100 leading-relaxed">
                 Receive instant popups for incoming wholesale orders, factory bid responses, and courier deliveries even when Zylod is in the background.
               </p>
-              <div className="pt-1 flex gap-2">
+              <div className="pt-1 flex flex-col sm:flex-row gap-2 [&>button]:w-full sm:[&>button]:w-auto">
                 <Button
                   onClick={async () => {
                     if (hasNativeNotifications()) {

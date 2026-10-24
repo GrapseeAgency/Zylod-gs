@@ -130,9 +130,10 @@ export function MyWalletPage() {
             </div>
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white p-1"
+              className="flex h-9 w-9 items-center justify-center rounded-md text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              aria-label={showBalance ? 'Hide balance' : 'Show balance'}
             >
-              {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              {showBalance ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
             </button>
           </div>
 
