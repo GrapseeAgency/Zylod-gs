@@ -23,7 +23,10 @@ import { useNavigationStore } from '@/store/navigation-store'
 export function DeepLinkHandlerPage() {
   const { navigate } = useNavigationStore()
   const [routes, setRoutes] = useState<any[]>([])
-  const [testUrl, setTestUrl] = useState('zylod://product/clx8919')
+  // Honest default — seeded with a REAL product id on mount (no fabricated
+  // `clx8919`-style phantom). Until the seed lands, the input shows a clearly
+  // templated placeholder so nobody tests a phantom id by accident.
+  const [testUrl, setTestUrl] = useState('zylod://product/{id}')
   const [resolveResult, setResolveResult] = useState<any>(null)
   const [resolving, setResolving] = useState(false)
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null)
@@ -35,10 +38,25 @@ export function DeepLinkHandlerPage() {
         if (json.data) setRoutes(json.data)
       })
       .catch(console.error)
+    // Seed the simulator with a REAL product id so the first "Simulate Intent"
+    // click resolves to a page that actually exists.
+    fetch('/api/products?limit=1')
+      .then(res => res.json())
+      .then(json => {
+        const list: any[] = json?.data?.products ?? json?.data ?? []
+        if (list.length > 0 && list[0]?.id) {
+          setTestUrl(`zylod://product/${list[0].id}`)
+        }
+      })
+      .catch(() => { /* templated placeholder stays — no phantom invented */ })
   }, [])
 
   const handleTestResolve = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!testUrl.trim() || testUrl.includes('{id}')) {
+      setResolveResult(null)
+      return
+    }
     setResolving(true)
     try {
       const res = await fetch(`/api/app/deep-links?url=${encodeURIComponent(testUrl)}`)

@@ -58,7 +58,7 @@ export function ShippingFaqPage() {
           </div>
         )}
 
-        <Button onClick={() => navigate('shipping-policy')} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold py-3">
+        <Button onClick={() => navigate('shipping-policy')} className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-3">
           Back to Shipping Policy
         </Button>
       </div>
