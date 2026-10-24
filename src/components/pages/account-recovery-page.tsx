@@ -74,11 +74,11 @@ export function AccountRecoveryPage() {
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
         aria-label="Go back"
       >
-        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        <ArrowLeft className="w-5 h-5 text-primary" />
       </button>
       <span className="text-lg font-bold text-[#1A1A1A] dark:text-white">Account Recovery</span>
       <button onClick={() => navigate("notifications")} className="p-1.5 rounded-lg" aria-label="Notifications">
-        <Bell className="w-5 h-5 text-[#C8102E]" />
+        <Bell className="w-5 h-5 text-primary" />
       </button>
     </header>
   )
@@ -92,11 +92,11 @@ export function AccountRecoveryPage() {
           className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+          <ArrowLeft className="w-5 h-5 text-primary" />
         </button>
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Account Recovery</h1>
         <button onClick={() => navigate("notifications")} className="ml-auto p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors" aria-label="Notifications">
-          <Bell className="w-5 h-5 text-[#C8102E]" />
+          <Bell className="w-5 h-5 text-primary" />
         </button>
       </div>
     </header>
@@ -112,7 +112,7 @@ export function AccountRecoveryPage() {
       className="flex flex-col items-center pt-8 pb-2"
     >
       <div className="w-28 h-28 rounded-full bg-[#FEE2E2] dark:bg-red-950/30 flex items-center justify-center">
-        <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
+        <ShieldCheck className="w-14 h-14 text-primary" strokeWidth={1.5} />
       </div>
     </motion.div>
   )
@@ -148,10 +148,10 @@ export function AccountRecoveryPage() {
       <div className="flex items-center justify-between">
         {/* Step 1 - Active */}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="w-9 h-9 rounded-full bg-[#C8102E] flex items-center justify-center">
+          <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
             <span className="text-white text-sm font-bold">1</span>
           </div>
-          <span className="text-[10px] font-bold text-[#C8102E] tracking-wider">
+          <span className="text-[10px] font-bold text-primary tracking-wider">
             VERIFY EMAIL
           </span>
         </div>
@@ -206,7 +206,7 @@ export function AccountRecoveryPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. name@company.com"
-              className="h-11 pl-10 rounded-xl border-[#E0E0E0] dark:border-gray-800 text-[14px] focus-visible:border-[#C8102E] focus-visible:ring-[#C8102E]/20"
+              className="h-11 pl-10 rounded-xl border-[#E0E0E0] dark:border-gray-800 text-[14px] focus-visible:border-primary focus-visible:ring-[#C8102E]/20"
             />
           </div>
           <p className="text-[12px] text-[#6B7280] dark:text-gray-400 leading-relaxed">
@@ -235,13 +235,13 @@ export function AccountRecoveryPage() {
         onClick={() => setSelectedMethod('identity')}
         className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'identity'
-            ? 'border-[#C8102E] bg-[#FFF5F5] dark:bg-red-950/30 shadow-md'
+            ? 'border-primary bg-[#FFF5F5] dark:bg-red-950/30 shadow-md'
             : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         }`}
       >
         <div className="flex items-start gap-3">
           <div className="w-11 h-11 rounded-lg bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center shrink-0">
-            <IdCard className="w-5 h-5 text-[#C8102E]" />
+            <IdCard className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[14px] font-semibold text-[#1A1A1A] dark:text-white">
@@ -252,15 +252,15 @@ export function AccountRecoveryPage() {
               identity. Fast and secure.
             </p>
             <div className="flex items-center gap-1.5 mt-2">
-              <IdCard className="w-3.5 h-3.5 text-[#C8102E]" />
-              <span className="text-[11px] font-semibold text-[#C8102E]">
+              <IdCard className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[11px] font-semibold text-primary">
                 Requires Photo ID Upload
               </span>
             </div>
           </div>
           <div className="shrink-0 ml-2 mt-1">
             {selectedMethod === 'identity' ? (
-              <div className="w-5 h-5 rounded-full bg-[#C8102E] flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                 <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
               </div>
             ) : (
@@ -275,7 +275,7 @@ export function AccountRecoveryPage() {
         onClick={() => setSelectedMethod('security-team')}
         className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'security-team'
-            ? 'border-[#C8102E] bg-[#FFF5F5] dark:bg-red-950/30 shadow-md'
+            ? 'border-primary bg-[#FFF5F5] dark:bg-red-950/30 shadow-md'
             : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         }`}
       >
@@ -294,7 +294,7 @@ export function AccountRecoveryPage() {
           </div>
           <div className="shrink-0 ml-2 mt-1">
             {selectedMethod === 'security-team' ? (
-              <div className="w-5 h-5 rounded-full bg-[#C8102E] flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                 <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
               </div>
             ) : (
@@ -316,7 +316,7 @@ export function AccountRecoveryPage() {
       className="px-4 pt-4"
     >
       <div className="flex items-start gap-3 bg-white dark:bg-gray-900 rounded-xl p-4 border-l-4 border-l-[#C8102E] shadow-sm">
-        <Info className="w-5 h-5 text-[#C8102E] shrink-0 mt-0.5" />
+        <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
         <div>
           <p className="text-[13px] font-bold text-[#1A1A1A] dark:text-white">Verification Notice:</p>
           <p className="text-[12px] text-[#6B7280] dark:text-gray-400 mt-1 leading-relaxed">
@@ -340,7 +340,7 @@ export function AccountRecoveryPage() {
       <Button
         onClick={handleRecover}
         disabled={!email.trim() || isSubmitting}
-        className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A50D25] text-white rounded-xl text-base font-semibold gap-2 disabled:opacity-50"
+        className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold gap-2 disabled:opacity-50"
       >
         {isSubmitting ? 'Processing...' : 'Start Recovery Process'}
         {!isSubmitting && <ArrowRight className="w-5 h-5" />}

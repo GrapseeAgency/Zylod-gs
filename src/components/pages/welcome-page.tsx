@@ -71,12 +71,12 @@ function ShieldIllustration() {
         initial={{ rotate: 0 }}
         animate={{ rotate: -6 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="w-[85%] h-[75%] rounded-2xl bg-gradient-to-br from-[#C8102E]/10 via-[#C8102E]/5 to-transparent flex items-center justify-center shadow-xl border border-[#C8102E]/10"
+        className="w-[85%] h-[75%] rounded-2xl bg-gradient-to-br from-[#C8102E]/10 via-[#C8102E]/5 to-transparent flex items-center justify-center shadow-xl border border-primary/10"
       >
         <div className="relative">
           {/* Background glow */}
-          <div className="absolute inset-0 bg-[#C8102E]/10 rounded-full blur-3xl scale-150" />
-          <Shield className="w-28 h-28 text-[#C8102E] relative z-10" strokeWidth={1.2} />
+          <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl scale-150" />
+          <Shield className="w-28 h-28 text-primary relative z-10" strokeWidth={1.2} />
           {/* Checkmark inside shield */}
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
@@ -102,9 +102,9 @@ function ShieldIllustration() {
           </motion.div>
         </div>
         {/* Decorative floating elements */}
-        <div className="absolute top-4 right-6 w-3 h-3 rounded-full bg-[#C8102E]/30" />
-        <div className="absolute bottom-6 left-8 w-2 h-2 rounded-full bg-[#C8102E]/20" />
-        <div className="absolute top-1/2 right-4 w-1.5 h-1.5 rounded-full bg-[#C8102E]/25" />
+        <div className="absolute top-4 right-6 w-3 h-3 rounded-full bg-primary/30" />
+        <div className="absolute bottom-6 left-8 w-2 h-2 rounded-full bg-primary/20" />
+        <div className="absolute top-1/2 right-4 w-1.5 h-1.5 rounded-full bg-primary/25" />
       </motion.div>
     </div>
   )
@@ -117,12 +117,12 @@ function TrendingIllustration() {
         initial={{ rotate: 0 }}
         animate={{ rotate: -6 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="w-[85%] h-[75%] rounded-2xl bg-gradient-to-br from-[#C8102E]/10 via-[#C8102E]/5 to-transparent flex items-center justify-center shadow-xl border border-[#C8102E]/10"
+        className="w-[85%] h-[75%] rounded-2xl bg-gradient-to-br from-[#C8102E]/10 via-[#C8102E]/5 to-transparent flex items-center justify-center shadow-xl border border-primary/10"
       >
         <div className="relative">
           {/* Background glow */}
-          <div className="absolute inset-0 bg-[#C8102E]/10 rounded-full blur-3xl scale-150" />
-          <TrendingUp className="w-28 h-28 text-[#C8102E] relative z-10" strokeWidth={1.2} />
+          <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl scale-150" />
+          <TrendingUp className="w-28 h-28 text-primary relative z-10" strokeWidth={1.2} />
           {/* Arrow accent */}
           <motion.div
             initial={{ y: 10, opacity: 0 }}
@@ -130,7 +130,7 @@ function TrendingIllustration() {
             transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
             className="absolute -top-2 -right-4 z-20"
           >
-            <div className="w-8 h-8 rounded-full bg-[#C8102E] flex items-center justify-center shadow-lg">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M12 4v16m0-16l-4 4m4-4l4 4" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -138,9 +138,9 @@ function TrendingIllustration() {
           </motion.div>
         </div>
         {/* Decorative floating elements */}
-        <div className="absolute top-8 left-6 w-3 h-3 rounded-full bg-[#C8102E]/20" />
-        <div className="absolute bottom-8 right-6 w-2 h-2 rounded-full bg-[#C8102E]/30" />
-        <div className="absolute top-1/3 left-4 w-1.5 h-1.5 rounded-full bg-[#C8102E]/25" />
+        <div className="absolute top-8 left-6 w-3 h-3 rounded-full bg-primary/20" />
+        <div className="absolute bottom-8 right-6 w-2 h-2 rounded-full bg-primary/30" />
+        <div className="absolute top-1/3 left-4 w-1.5 h-1.5 rounded-full bg-primary/25" />
       </motion.div>
     </div>
   )
@@ -199,7 +199,7 @@ function IllustrationCircle({ slide }: { slide: Slide }) {
   return (
     <div className="relative w-[75%] aspect-square mx-auto rounded-full bg-gradient-to-br from-[#FDE8EC] via-[#FFF0F3] to-[#F8F9FA] flex items-center justify-center shadow-lg">
       {/* Inner subtle ring */}
-      <div className="absolute inset-3 rounded-full border border-[#C8102E]/10" />
+      <div className="absolute inset-3 rounded-full border border-primary/10" />
       <div className="w-[85%] h-[85%] relative">
         <AnimatePresence mode="wait">
           {slide.illustration === 'ship' && (
@@ -299,7 +299,7 @@ export function WelcomePage() {
       >
         {/* Brand Header */}
         <div className="pt-12 pb-4 text-center">
-          <h1 className="text-2xl font-bold text-[#C8102E] tracking-tight">
+          <h1 className="text-2xl font-bold text-primary tracking-tight">
             Zylod
           </h1>
         </div>
@@ -341,7 +341,7 @@ export function WelcomePage() {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={handleNext}
-            className="w-full h-[54px] rounded-xl bg-[#C8102E] text-white font-semibold text-[16px] flex items-center justify-center gap-2 shadow-md active:shadow-sm transition-shadow"
+            className="w-full h-[54px] rounded-xl bg-primary text-white font-semibold text-[16px] flex items-center justify-center gap-2 shadow-md active:shadow-sm transition-shadow"
           >
             {isLastSlide ? 'Get Started' : 'Next'}
             <ArrowRight className="w-5 h-5" />
@@ -385,7 +385,7 @@ export function WelcomePage() {
       >
         {/* Brand Header */}
         <div className="pt-10 pb-4 text-center">
-          <h1 className="text-2xl font-bold text-[#C8102E] tracking-tight">
+          <h1 className="text-2xl font-bold text-primary tracking-tight">
             Zylod
           </h1>
         </div>
@@ -425,7 +425,7 @@ export function WelcomePage() {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={handleNext}
-            className="w-full h-[54px] rounded-xl bg-[#C8102E] text-white font-semibold text-[16px] flex items-center justify-center gap-2 shadow-md hover:bg-[#B00E28] active:shadow-sm transition-all"
+            className="w-full h-[54px] rounded-xl bg-primary text-white font-semibold text-[16px] flex items-center justify-center gap-2 shadow-md hover:bg-[#B00E28] active:shadow-sm transition-all"
           >
             {isLastSlide ? 'Get Started' : 'Next'}
             <ArrowRight className="w-5 h-5" />

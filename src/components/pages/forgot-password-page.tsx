@@ -189,9 +189,9 @@ export function ForgotPasswordPage() {
         className="p-2 rounded-lg hover:bg-[#F8F9FA] dark:bg-gray-950 transition-colors active:scale-95"
         aria-label="Go back to login"
       >
-        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        <ArrowLeft className="w-5 h-5 text-primary" />
       </button>
-      <h1 className="text-base font-bold text-[#C8102E]">Zylod</h1>
+      <h1 className="text-base font-bold text-primary">Zylod</h1>
       <button
         type="button"
         onClick={() => navigate('help-center')}
@@ -215,10 +215,10 @@ export function ForgotPasswordPage() {
       <motion.div variants={itemVariants} custom={1} className="flex flex-col items-center mb-6">
         <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center mb-5 shadow-sm">
           <div className="relative">
-            <KeyRound className="w-12 h-12 text-[#C8102E]" strokeWidth={1.8} />
+            <KeyRound className="w-12 h-12 text-primary" strokeWidth={1.8} />
             {/* Circular arrow overlay indicating reset */}
             <svg
-              className="absolute -top-1 -right-1 w-5 h-5 text-[#C8102E]"
+              className="absolute -top-1 -right-1 w-5 h-5 text-primary"
               viewBox="0 0 20 20"
               fill="none"
               stroke="currentColor"
@@ -244,12 +244,12 @@ export function ForgotPasswordPage() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="w-full bg-[#FEF2F2] dark:bg-red-950/30 border border-[#C8102E]/20 rounded-lg p-4 mb-4"
+            className="w-full bg-[#FEF2F2] dark:bg-red-950/30 border border-primary/20 rounded-lg p-4 mb-4"
           >
             <div className="flex items-start gap-3">
-              <ShieldAlert className="w-5 h-5 text-[#C8102E] shrink-0 mt-0.5" />
+              <ShieldAlert className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-sm font-semibold text-[#C8102E]">Too Many Requests</h3>
+                <h3 className="text-sm font-semibold text-primary">Too Many Requests</h3>
                 <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">
                   You&apos;ve exceeded the maximum number of reset requests. Please try again later.
                 </p>
@@ -292,7 +292,7 @@ export function ForgotPasswordPage() {
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(null) }}
               disabled={isLoading || isSuccess || isRateLimitedLocal}
-              className="pl-10 h-11 bg-[#F8F9FA] dark:bg-gray-950 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+              className="pl-10 h-11 bg-[#F8F9FA] dark:bg-gray-950 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-primary"
             />
           </div>
         </div>
@@ -316,7 +316,7 @@ export function ForgotPasswordPage() {
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              className="text-sm text-[#C8102E] bg-[#C8102E]/5 rounded-lg px-3 py-2"
+              className="text-sm text-primary bg-primary/5 rounded-lg px-3 py-2"
             >
               {error}
             </motion.p>
@@ -332,7 +332,7 @@ export function ForgotPasswordPage() {
             className="space-y-2"
           >
             <div className="flex items-center gap-2 text-sm font-medium text-[#1A1A1A] dark:text-white">
-              <ShieldAlert className="w-3.5 h-3.5 text-[#C8102E]" />
+              <ShieldAlert className="w-3.5 h-3.5 text-primary" />
               <span>Verify you&apos;re human</span>
             </div>
             <div className="flex items-center gap-3">
@@ -345,7 +345,7 @@ export function ForgotPasswordPage() {
                   placeholder="Answer"
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
-                  className="w-20 h-8 border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                  className="w-20 h-8 border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-primary"
                 />
               </div>
               <button
@@ -363,7 +363,7 @@ export function ForgotPasswordPage() {
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="text-xs text-[#C8102E] flex items-center gap-1"
+                  className="text-xs text-primary flex items-center gap-1"
                 >
                   <AlertTriangle className="w-3 h-3" />
                   Wrong answer. A new question has been generated.
@@ -377,7 +377,7 @@ export function ForgotPasswordPage() {
         <Button
           type="submit"
           disabled={isLoading || isSuccess || isRateLimitedLocal}
-          className="w-full h-[50px] bg-[#C8102E] hover:bg-[#A00D24] text-white font-semibold text-base rounded-lg shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-[50px] bg-primary hover:bg-primary/90 text-white font-semibold text-base rounded-lg shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">
@@ -405,7 +405,7 @@ export function ForgotPasswordPage() {
         <button
           type="button"
           onClick={() => navigate('login')}
-          className="text-sm font-semibold text-[#C8102E] hover:text-[#A00D24] transition-colors"
+          className="text-sm font-semibold text-primary hover:text-[#A00D24] transition-colors"
         >
           Back to Login
         </button>
@@ -482,9 +482,9 @@ export function ForgotPasswordPage() {
               className="p-2 rounded-lg hover:bg-[#F8F9FA] dark:bg-gray-950 transition-colors"
               aria-label="Go back to login"
             >
-              <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+              <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
-            <h1 className="text-base font-bold text-[#C8102E]">Zylod</h1>
+            <h1 className="text-base font-bold text-primary">Zylod</h1>
             <button
               type="button"
               onClick={() => navigate('help-center')}

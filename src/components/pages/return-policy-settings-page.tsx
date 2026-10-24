@@ -118,7 +118,7 @@ export function ReturnPolicySettingsPage() {
         <button 
           onClick={handleSave}
           disabled={saving || policies.length === 0}
-          className="flex items-center gap-1 bg-[#C8102E] text-white px-3 py-1.5 rounded-lg text-sm font-medium disabled:opacity-50"
+          className="flex items-center gap-1 bg-primary text-white px-3 py-1.5 rounded-lg text-sm font-medium disabled:opacity-50"
         >
           <Save className="w-4 h-4" /> {saving ? 'Saving…' : 'Save'}
         </button>
@@ -156,7 +156,7 @@ export function ReturnPolicySettingsPage() {
               >
                 <div className="flex items-center justify-between mb-4 text-gray-900 dark:text-gray-100 font-semibold">
                   <div className="flex items-center gap-2">
-                    <RefreshCcw className="w-5 h-5 text-[#C8102E]" />
+                    <RefreshCcw className="w-5 h-5 text-primary" />
                     <h2>{POLICY_LABELS[policy.policyType] || policy.policyType}</h2>
                   </div>
                   <label className="flex items-center gap-1.5 text-xs font-normal text-gray-500 dark:text-gray-400 dark:text-gray-500">
@@ -219,7 +219,7 @@ export function ReturnPolicySettingsPage() {
                         checked={policy.exchangeAllowed}
                         onChange={(e) => updatePolicy(policy.policyType, { exchangeAllowed: e.target.checked })}
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#C8102E]"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                   </div>
                 </div>
@@ -228,7 +228,7 @@ export function ReturnPolicySettingsPage() {
 
             <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
               <div className="flex items-center gap-2 mb-2 text-gray-900 dark:text-gray-100 font-semibold">
-                <ShieldCheck className="w-5 h-5 text-[#C8102E]" />
+                <ShieldCheck className="w-5 h-5 text-primary" />
                 <h2>How this works</h2>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">

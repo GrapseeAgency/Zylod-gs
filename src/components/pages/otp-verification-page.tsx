@@ -266,14 +266,14 @@ export default function OtpVerificationPage() {
   const getIcon = () => {
     switch (purpose) {
       case 'phone_verify':
-        return <Phone className="h-10 w-10 text-[#C8102E]" strokeWidth={1.8} />
+        return <Phone className="h-10 w-10 text-primary" strokeWidth={1.8} />
       case 'login':
       case 'register':
-        return <Smartphone className="h-10 w-10 text-[#C8102E]" strokeWidth={1.8} />
+        return <Smartphone className="h-10 w-10 text-primary" strokeWidth={1.8} />
       case 'email_verify':
       case 'reset_password':
       default:
-        return <Mail className="h-10 w-10 text-[#C8102E]" strokeWidth={1.8} />
+        return <Mail className="h-10 w-10 text-primary" strokeWidth={1.8} />
     }
   }
 
@@ -311,7 +311,7 @@ export default function OtpVerificationPage() {
             <InputOTPSlot
               key={index}
               index={index}
-              className="h-12 w-9 rounded-xl border-[#E0E0E0] dark:border-gray-800 text-lg font-semibold text-[#1A1A1A] dark:text-white data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 shadow-sm sm:h-[52px] sm:w-[48px]"
+              className="h-12 w-9 rounded-xl border-[#E0E0E0] dark:border-gray-800 text-lg font-semibold text-[#1A1A1A] dark:text-white data-[active=true]:border-primary data-[active=true]:ring-[#C8102E]/20 shadow-sm sm:h-[52px] sm:w-[48px]"
             />
           ))}
         </InputOTPGroup>
@@ -336,7 +336,7 @@ export default function OtpVerificationPage() {
       <p className="text-sm text-[#6B7280] dark:text-gray-400">
         Didn&apos;t receive the code?{' '}
         {isRunning ? (
-          <span className="text-[#C8102E] font-semibold">
+          <span className="text-primary font-semibold">
             Resend in {formatted}
           </span>
         ) : (
@@ -344,7 +344,7 @@ export default function OtpVerificationPage() {
             type="button"
             onClick={handleResend}
             disabled={isResending}
-            className="text-[#C8102E] font-semibold hover:underline disabled:opacity-50"
+            className="text-primary font-semibold hover:underline disabled:opacity-50"
           >
             {isResending ? 'Sending...' : 'Resend Code'}
           </button>
@@ -358,7 +358,7 @@ export default function OtpVerificationPage() {
     <Button
       onClick={() => handleVerify()}
       disabled={isLoading || otp.length < 6}
-      className="w-full h-[54px] bg-[#C8102E] hover:bg-[#A50D25] text-white text-base font-semibold rounded-xl shadow-lg shadow-red-200/50 transition-all disabled:opacity-50"
+      className="w-full h-[54px] bg-primary hover:bg-primary/90 text-white text-base font-semibold rounded-xl shadow-lg shadow-red-200/50 transition-all disabled:opacity-50"
     >
       {isLoading ? (
         <>
@@ -402,7 +402,7 @@ export default function OtpVerificationPage() {
           >
             <ArrowLeft className="h-5 w-5 text-[#1A1A1A] dark:text-white" />
           </button>
-          <h1 className="text-lg font-bold text-[#C8102E]">Zylod</h1>
+          <h1 className="text-lg font-bold text-primary">Zylod</h1>
           <button
             onClick={() => navigate('help-center')}
             className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
@@ -425,7 +425,7 @@ export default function OtpVerificationPage() {
               <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
                 <div className="relative">
                   {getIcon()}
-                  <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#C8102E] flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
                     <span className="text-white text-[8px] font-bold">1</span>
                   </div>
                 </div>
@@ -487,7 +487,7 @@ export default function OtpVerificationPage() {
             >
               <ArrowLeft className="h-5 w-5 text-[#1A1A1A] dark:text-white" />
             </button>
-            <h1 className="text-lg font-bold text-[#C8102E]">Zylod</h1>
+            <h1 className="text-lg font-bold text-primary">Zylod</h1>
             <button
               onClick={() => navigate('help-center')}
               className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
@@ -503,7 +503,7 @@ export default function OtpVerificationPage() {
               <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
                 <div className="relative">
                   {getIcon()}
-                  <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#C8102E] flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
                     <span className="text-white text-[8px] font-bold">1</span>
                   </div>
                 </div>

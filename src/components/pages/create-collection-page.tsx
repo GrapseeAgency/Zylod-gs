@@ -144,7 +144,7 @@ export function CreateCollectionPage() {
         <button 
           onClick={handleSave}
           disabled={!name.trim() || isSaving}
-          className="text-[#C8102E] font-medium disabled:opacity-50 px-2 py-1"
+          className="text-primary font-medium disabled:opacity-50 px-2 py-1"
         >
           {isSaving ? 'Saving...' : 'Save'}
         </button>
@@ -156,7 +156,7 @@ export function CreateCollectionPage() {
         <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
           <div>
             <div className="flex justify-between text-sm mb-1">
-              <label className="font-medium text-gray-700 dark:text-gray-300">Collection Name <span className="text-[#C8102E]">*</span></label>
+              <label className="font-medium text-gray-700 dark:text-gray-300">Collection Name <span className="text-primary">*</span></label>
               <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">{name.length}/50</span>
             </div>
             <input 
@@ -165,7 +165,7 @@ export function CreateCollectionPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Summer Inventory 2025"
-              className="w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-[#C8102E] outline-none text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-primary outline-none text-gray-900 dark:text-gray-100"
             />
           </div>
 
@@ -180,7 +180,7 @@ export function CreateCollectionPage() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Add an optional description"
               rows={3}
-              className="w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-[#C8102E] outline-none text-gray-900 dark:text-gray-100 resize-none"
+              className="w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-primary outline-none text-gray-900 dark:text-gray-100 resize-none"
             />
           </div>
         </div>
@@ -200,7 +200,7 @@ export function CreateCollectionPage() {
                 onClick={() => setPrivacy(opt.id)}
                 className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all ${
                   privacy === opt.id 
-                    ? 'border-[#C8102E] bg-red-50 text-[#C8102E]' 
+                    ? 'border-primary bg-red-50 text-primary' 
                     : 'border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:border-gray-200'
                 }`}
               >
@@ -253,7 +253,7 @@ export function CreateCollectionPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search your wishlist to add..."
-              className="w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-[#C8102E] outline-none text-sm"
+              className="w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#C8102E] focus:border-primary outline-none text-sm"
             />
           </div>
 
@@ -290,7 +290,7 @@ export function CreateCollectionPage() {
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{w.product.name}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">৳{w.product.basePrice} / {w.product.unit}</p>
                     </div>
-                    <span className={`w-6 h-6 rounded-full flex items-center justify-center border ${picked ? 'bg-[#C8102E] border-[#C8102E] text-white' : 'border-gray-300 text-transparent'}`} aria-hidden="true">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center border ${picked ? 'bg-primary border-primary text-white' : 'border-gray-300 text-transparent'}`} aria-hidden="true">
                       <Check className="w-4 h-4" />
                     </span>
                   </button>
@@ -325,7 +325,7 @@ export function CreateCollectionPage() {
         <button
           onClick={handleSave}
           disabled={!name.trim() || isSaving}
-          className="w-full md:w-auto md:px-10 bg-[#C8102E] text-white py-3.5 rounded-xl font-bold disabled:opacity-50 active:scale-[0.98] transition-transform"
+          className="w-full md:w-auto md:px-10 bg-primary text-white py-3.5 rounded-xl font-bold disabled:opacity-50 active:scale-[0.98] transition-transform"
         >
           {isSaving ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Collection')}
         </button>

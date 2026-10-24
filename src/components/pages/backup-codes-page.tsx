@@ -134,7 +134,7 @@ export function BackupCodesPage() {
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
         aria-label="Go back"
       >
-        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        <ArrowLeft className="w-5 h-5 text-primary" />
       </button>
       <span className="text-lg font-bold text-[#1A1A1A] dark:text-white">Backup Codes</span>
       <button
@@ -142,7 +142,7 @@ export function BackupCodesPage() {
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
         aria-label="Notifications"
       >
-        <Bell className="w-5 h-5 text-[#C8102E]" />
+        <Bell className="w-5 h-5 text-primary" />
       </button>
     </header>
   )
@@ -156,7 +156,7 @@ export function BackupCodesPage() {
           className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+          <ArrowLeft className="w-5 h-5 text-primary" />
         </button>
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Backup Codes</h1>
         <button
@@ -164,7 +164,7 @@ export function BackupCodesPage() {
           className="ml-auto p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Notifications"
         >
-          <Bell className="w-5 h-5 text-[#C8102E]" />
+          <Bell className="w-5 h-5 text-primary" />
         </button>
       </div>
     </header>
@@ -180,7 +180,7 @@ export function BackupCodesPage() {
       className="flex flex-col items-center pt-8 pb-2"
     >
       <div className="w-28 h-28 rounded-full bg-[#FEE2E2] dark:bg-red-950/30 flex items-center justify-center">
-        <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
+        <ShieldCheck className="w-14 h-14 text-primary" strokeWidth={1.5} />
       </div>
     </motion.div>
   )
@@ -221,13 +221,13 @@ export function BackupCodesPage() {
         <CardContent className="p-5">
           {isLoading ? (
             <div className="flex flex-col items-center gap-3 py-10">
-              <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
+              <Loader2 className="w-7 h-7 text-primary animate-spin" />
               <p className="text-sm text-[#6B7280] dark:text-gray-400">Generating secure codes...</p>
             </div>
           ) : loadError ? (
             <div className="flex flex-col items-center gap-3 py-8">
-              <AlertTriangle className="w-7 h-7 text-[#C8102E]" />
-              <p className="text-sm text-[#C8102E] text-center">{loadError}</p>
+              <AlertTriangle className="w-7 h-7 text-primary" />
+              <p className="text-sm text-primary text-center">{loadError}</p>
               <Button
                 variant="outline"
                 size="sm"
@@ -308,7 +308,7 @@ export function BackupCodesPage() {
       <Button
         onClick={handleSaved}
         disabled={!hasCodes}
-        className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A50D25] text-white rounded-xl text-base font-semibold gap-2 disabled:opacity-50"
+        className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold gap-2 disabled:opacity-50"
       >
         I&apos;ve Saved These
       </Button>
@@ -325,9 +325,9 @@ export function BackupCodesPage() {
       className="px-4 pt-6 pb-8"
     >
       <div className="flex items-start gap-3 bg-[#FFF5F5] dark:bg-red-950/30 rounded-xl p-4 border border-[#FEE2E2]">
-        <AlertTriangle className="w-5 h-5 text-[#C8102E] shrink-0 mt-0.5" />
+        <AlertTriangle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
         <div>
-          <p className="text-[13px] font-bold text-[#C8102E] uppercase tracking-wider">
+          <p className="text-[13px] font-bold text-primary uppercase tracking-wider">
             High Security Zone
           </p>
           <p className="text-[12px] text-[#6B7280] dark:text-gray-400 italic mt-1 leading-relaxed">

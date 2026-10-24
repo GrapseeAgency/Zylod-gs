@@ -246,12 +246,12 @@ export function LinkGeneratorPage() {
                     <Loader2 className="h-4 w-4 animate-spin" /> Loading live {destCfg.label.toLowerCase()}s…
                   </div>
                 ) : optionsError ? (
-                  <div className="flex items-start gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">
+                  <div className="flex items-start gap-2 text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl p-3">
                     <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                     <span>{optionsError}</span>
                   </div>
                 ) : options.length === 0 ? (
-                  <div className="flex items-start gap-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                  <div className="flex items-start gap-2 text-xs text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-xl p-3">
                     <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                     <span>No {destCfg.label.toLowerCase()}s exist on the platform yet. Create one first — the generator will not invent an id.</span>
                   </div>
@@ -303,7 +303,7 @@ export function LinkGeneratorPage() {
                 className="text-xs font-mono"
               />
               {selectedOption && (
-                <p className="text-[11px] text-emerald-700">
+                <p className="text-[11px] text-emerald-700 dark:text-emerald-300">
                   Linked to: <span className="font-bold">{selectedOption.label}</span>
                 </p>
               )}

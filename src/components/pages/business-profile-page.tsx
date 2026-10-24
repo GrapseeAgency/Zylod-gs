@@ -203,7 +203,7 @@ export function BusinessProfilePage() {
               <MapPin className="h-4 w-4 text-primary" />
               Registered Commercial Address
             </h2>
-            <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+            <p className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-xl px-3 py-2">
               Address fields are not implemented yet — the platform has no storage for them, so what you
               type here is not saved. Only the business name, trade license, and category persist.
             </p>
@@ -274,7 +274,7 @@ export function BusinessProfilePage() {
             </div>
           )}
           {notPersisted.length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-3xl px-4 py-3 flex items-start gap-2">
+            <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-3xl px-4 py-3 flex items-start gap-2">
               <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
               <p className="text-xs font-bold text-amber-700">
                 Not saved (no backend storage yet): {notPersisted.join(', ')}.

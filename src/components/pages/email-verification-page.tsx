@@ -42,9 +42,9 @@ function HeaderBar({ onBack }: { onBack: () => void }) {
         className="p-2 -ml-2 rounded-lg active:scale-95 transition-transform"
         aria-label="Go back"
       >
-        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        <ArrowLeft className="w-5 h-5 text-primary" />
       </button>
-      <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+      <span className="text-lg font-bold text-primary">Zylod</span>
       <button
         onClick={() => navigate('help-center')}
         className="p-2 -mr-2 rounded-lg active:scale-95 transition-transform"
@@ -66,7 +66,7 @@ function DesktopHeader({ onBack }: { onBack: () => void }) {
         className="p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         aria-label="Go back"
       >
-        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        <ArrowLeft className="w-5 h-5 text-primary" />
       </button>
       <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Email Verification</h1>
       <div className="ml-auto">
@@ -278,7 +278,7 @@ export default function EmailVerificationPage() {
             priority
           />
           {/* Floating badge circle */}
-          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full bg-[#C8102E] flex items-center justify-center shadow-lg">
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg">
             {isVerified ? (
               <CheckCircle2 className="w-7 h-7 text-white" />
             ) : (
@@ -321,7 +321,7 @@ export default function EmailVerificationPage() {
         <motion.div variants={fadeSlideUp}>
           <Button
             onClick={() => navigate('home')}
-            className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A50D24] text-white rounded-xl text-base font-semibold shadow-lg"
+            className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold shadow-lg"
             size="lg"
           >
             Go to Home
@@ -334,7 +334,7 @@ export default function EmailVerificationPage() {
             <Button
               onClick={handleContinueToReset}
               disabled={!flowToken}
-              className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A50D24] text-white rounded-xl text-base font-semibold shadow-lg disabled:opacity-50"
+              className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold shadow-lg disabled:opacity-50"
               size="lg"
             >
               <KeyRound className="w-5 h-5 mr-2" />
@@ -345,7 +345,7 @@ export default function EmailVerificationPage() {
               <Button
                 onClick={() => handleVerifyWithToken(flowToken)}
                 disabled={isSendingInitial || !flowToken || isVerifying}
-                className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A50D24] text-white rounded-xl text-base font-semibold shadow-lg disabled:opacity-50"
+                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold shadow-lg disabled:opacity-50"
                 size="lg"
               >
                 {isVerifying ? (
@@ -392,7 +392,7 @@ export default function EmailVerificationPage() {
             <button
               onClick={handleResendEmail}
               disabled={isResending || isRunning}
-              className="flex items-center gap-1.5 text-sm font-semibold text-[#C8102E] hover:text-[#A50D24] transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-[#A50D24] transition-colors disabled:opacity-50"
               type="button"
             >
               {isResending ? (
@@ -420,13 +420,13 @@ export default function EmailVerificationPage() {
         className="grid grid-cols-2 gap-3 mt-7"
       >
         <FeatureBadge
-          icon={<Shield className="w-5 h-5 text-[#C8102E]" />}
+          icon={<Shield className="w-5 h-5 text-primary" />}
           title="Secure B2B"
           subtitle="Encrypted Link"
           delay={0.15}
         />
         <FeatureBadge
-          icon={<Zap className="w-5 h-5 text-[#C8102E]" />}
+          icon={<Zap className="w-5 h-5 text-primary" />}
           title="Fast Sync"
           subtitle="Instant Delivery"
           delay={0.25}

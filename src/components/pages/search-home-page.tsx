@@ -140,13 +140,13 @@ export function SearchHomePage() {
           </div>
           <button
             onClick={() => navigate('voice-search')}
-            className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 hover:bg-red-50 transition"
+            className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
           >
             <Mic className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
           </button>
           <button
             onClick={() => navigate('image-search')}
-            className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 hover:bg-red-50 transition"
+            className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
           >
             <Camera className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
           </button>
@@ -228,7 +228,7 @@ export function SearchHomePage() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => handleSearch(item.query)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-900 hover:bg-red-50 hover:text-red-700 rounded-full text-sm text-gray-700 dark:text-gray-300 transition"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-900 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-700 dark:hover:text-red-300 rounded-full text-sm text-gray-700 dark:text-gray-300 transition"
                 >
                   <TrendingUp className="w-3 h-3" />
                   <span>{item.query}</span>
@@ -283,11 +283,11 @@ export function SearchHomePage() {
 
         {/* Search tip */}
         <div className="px-4 pt-6 pb-4">
-          <div className="bg-red-50 rounded-xl p-3 flex items-start gap-3">
-            <Search className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+          <div className="bg-red-50 dark:bg-red-950/40 rounded-xl p-3 flex items-start gap-3">
+            <Search className="w-4 h-4 text-red-500 dark:text-red-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-xs font-medium text-red-700">Wholesale Search Tips</p>
-              <p className="text-xs text-red-600 mt-0.5">Try searching by product name, SKU, brand, or supplier name. Use filters on results to narrow by MOQ, price, and certifications.</p>
+              <p className="text-xs font-medium text-red-700 dark:text-red-200">Wholesale Search Tips</p>
+              <p className="text-xs text-red-600 dark:text-red-300 mt-0.5">Try searching by product name, SKU, brand, or supplier name. Use filters on results to narrow by MOQ, price, and certifications.</p>
             </div>
           </div>
         </div>

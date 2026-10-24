@@ -86,18 +86,18 @@ export function AdminReportsPage() {
   }
 
   const reasonColors: Record<string, string> = {
-    scam: 'bg-red-50 text-red-700 border-red-200',
-    counterfeit: 'bg-orange-50 text-orange-700 border-orange-200',
-    fake_listing: 'bg-amber-50 text-amber-700 border-amber-200',
+    scam: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900/60',
+    counterfeit: 'bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-900/60',
+    fake_listing: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900/60',
     harassment: 'bg-purple-50 text-purple-700 border-purple-200',
-    non_delivery: 'bg-rose-50 text-rose-700 border-rose-200',
+    non_delivery: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900/60',
     other: 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-800',
   }
 
   const statusBadges: Record<string, { label: string; class: string }> = {
     pending: { label: 'Pending Review', class: 'bg-yellow-50 text-yellow-800 border-yellow-200' },
     under_review: { label: 'Under Investigation', class: 'bg-primary/5 text-primary border-primary/30' },
-    action_taken: { label: 'Action Taken', class: 'bg-green-50 text-green-800 border-green-200' },
+    action_taken: { label: 'Action Taken', class: 'bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-200 border-green-200 dark:border-green-900/60' },
     dismissed: { label: 'Dismissed', class: 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800' },
   }
 
@@ -133,12 +133,12 @@ export function AdminReportsPage() {
             <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Reports</p>
             <p className="text-xl font-black text-gray-900 dark:text-gray-100">{metrics.total}</p>
           </div>
-          <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-200 shadow-sm space-y-1">
-            <p className="text-[11px] font-semibold text-amber-700 uppercase tracking-wider">Pending Action</p>
-            <p className="text-xl font-black text-amber-900">{metrics.pending}</p>
+          <div className="bg-amber-50/50 dark:bg-amber-950/30 p-4 rounded-2xl border border-amber-200 dark:border-amber-900/60 shadow-sm space-y-1">
+            <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-300 uppercase tracking-wider">Pending Action</p>
+            <p className="text-xl font-black text-amber-900 dark:text-amber-100">{metrics.pending}</p>
           </div>
-          <div className="bg-green-50/50 p-4 rounded-2xl border border-green-200 shadow-sm space-y-1">
-            <p className="text-[11px] font-semibold text-green-700 uppercase tracking-wider">Penalized / Actioned</p>
+          <div className="bg-green-50/50 dark:bg-green-950/30 p-4 rounded-2xl border border-green-200 dark:border-green-900/60 shadow-sm space-y-1">
+            <p className="text-[11px] font-semibold text-green-700 dark:text-green-300 uppercase tracking-wider">Penalized / Actioned</p>
             <p className="text-xl font-black text-green-900">{metrics.actionTaken}</p>
           </div>
           <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-1">
@@ -241,7 +241,7 @@ export function AdminReportsPage() {
                     </div>
 
                     {rep.adminNotes && (
-                      <div className="text-[11px] text-green-800 bg-green-50 p-2.5 rounded-xl border border-green-200">
+                      <div className="text-[11px] text-green-800 dark:text-green-200 bg-green-50 dark:bg-green-950/40 p-2.5 rounded-xl border border-green-200 dark:border-green-900/60">
                         <strong>Resolution Note:</strong> {rep.adminNotes}
                       </div>
                     )}
@@ -285,7 +285,7 @@ export function AdminReportsPage() {
             </div>
 
             {actionSuccess ? (
-              <div className="text-center py-6 space-y-2 text-green-600">
+              <div className="text-center py-6 space-y-2 text-green-600 dark:text-green-400">
                 <CheckCircle2 className="w-12 h-12 mx-auto" />
                 <p className="text-sm font-bold">{actionSuccess}</p>
               </div>

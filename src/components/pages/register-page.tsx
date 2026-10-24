@@ -35,23 +35,23 @@ function RoleCard({ icon, title, description, selected, onClick }: RoleCardProps
       onClick={onClick}
       className={`flex-1 flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all cursor-pointer text-center ${
         selected
-          ? 'border-[#C8102E] bg-[#C8102E]/5 shadow-sm'
-          : 'border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-[#C8102E]/30 hover:bg-[#C8102E]/[0.02]'
+          ? 'border-primary bg-primary/5 shadow-sm'
+          : 'border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-primary/30 hover:bg-primary/[0.02]'
       }`}
     >
       <div
         className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-          selected ? 'bg-[#C8102E]/10' : 'bg-[#F3F4F6] dark:bg-gray-900'
+          selected ? 'bg-primary/10' : 'bg-[#F3F4F6] dark:bg-gray-900'
         }`}
       >
-        <div className={selected ? 'text-[#C8102E]' : 'text-[#6B7280] dark:text-gray-400'}>
+        <div className={selected ? 'text-primary' : 'text-[#6B7280] dark:text-gray-400'}>
           {icon}
         </div>
       </div>
       <div>
         <h3
           className={`text-[15px] font-semibold transition-colors ${
-            selected ? 'text-[#C8102E]' : 'text-[#1A1A1A] dark:text-white'
+            selected ? 'text-primary' : 'text-[#1A1A1A] dark:text-white'
           }`}
         >
           {title}
@@ -155,7 +155,7 @@ export function RegisterPage() {
         className="mb-6 space-y-2"
       >
         <div className="flex items-center gap-2 text-sm font-medium text-[#1A1A1A] dark:text-white">
-          <ShieldAlert className="w-3.5 h-3.5 text-[#C8102E]" />
+          <ShieldAlert className="w-3.5 h-3.5 text-primary" />
           <span>Verify you&apos;re human</span>
         </div>
         <div className="flex items-center gap-3">
@@ -168,7 +168,7 @@ export function RegisterPage() {
               placeholder="Answer"
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
-              className="w-20 h-8 border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+              className="w-20 h-8 border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-primary"
             />
           </div>
           <button
@@ -186,7 +186,7 @@ export function RegisterPage() {
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="text-xs text-[#C8102E] flex items-center gap-1"
+              className="text-xs text-primary flex items-center gap-1"
             >
               <AlertTriangle className="w-3 h-3" />
               Wrong answer. A new question has been generated.
@@ -207,14 +207,14 @@ export function RegisterPage() {
             id="terms"
             checked={termsAccepted}
             onCheckedChange={(checked) => setTermsAccepted(checked === true)}
-            className="mt-0.5 data-[state=checked]:bg-[#C8102E] data-[state=checked]:border-[#C8102E]"
+            className="mt-0.5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
           />
           <label htmlFor="terms" className="text-sm text-[#6B7280] dark:text-gray-400 leading-snug cursor-pointer">
             I agree to the{' '}
             <button
               type="button"
               onClick={() => navigate('terms')}
-              className="text-[#C8102E] font-semibold hover:underline"
+              className="text-primary font-semibold hover:underline"
             >
               Terms of Service
             </button>
@@ -222,7 +222,7 @@ export function RegisterPage() {
             <button
               type="button"
               onClick={() => navigate('privacy')}
-              className="text-[#C8102E] font-semibold hover:underline"
+              className="text-primary font-semibold hover:underline"
             >
               Privacy Policy
             </button>
@@ -240,7 +240,7 @@ export function RegisterPage() {
         disabled={!canContinue}
         className={`w-full h-[52px] rounded-xl font-semibold text-[16px] flex items-center justify-center transition-all ${
           canContinue
-            ? 'bg-[#C8102E] text-white shadow-md active:shadow-sm'
+            ? 'bg-primary text-white shadow-md active:shadow-sm'
             : 'bg-[#E8A0A8] text-white/80 cursor-not-allowed'
         }`}
       >
@@ -257,7 +257,7 @@ export function RegisterPage() {
         Already have an account?{' '}
         <button
           onClick={() => navigate('login')}
-          className="text-[#C8102E] font-semibold hover:underline"
+          className="text-primary font-semibold hover:underline"
         >
           Log In
         </button>
@@ -283,7 +283,7 @@ export function RegisterPage() {
           >
             <ArrowLeft className="w-5 h-5 text-[#1A1A1A] dark:text-white" />
           </button>
-          <h1 className="text-lg font-bold text-[#C8102E] tracking-tight">
+          <h1 className="text-lg font-bold text-primary tracking-tight">
             Zylod
           </h1>
           <button
@@ -337,7 +337,7 @@ export function RegisterPage() {
           >
             <ArrowLeft className="w-5 h-5 text-[#1A1A1A] dark:text-white" />
           </button>
-          <h1 className="text-lg font-bold text-[#C8102E] tracking-tight">
+          <h1 className="text-lg font-bold text-primary tracking-tight">
             Zylod
           </h1>
           <button

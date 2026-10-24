@@ -63,14 +63,14 @@ export function PaymentFailedPage() {
 
       <main className="max-w-lg md:max-w-2xl mx-auto px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6">
         {/* Banner */}
-        <div className="bg-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2 border border-rose-800">
+        <div className="bg-rose-50 dark:bg-rose-950 rounded-3xl p-5 text-rose-900 dark:text-white shadow-xl space-y-2 border border-rose-200 dark:border-rose-800">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center">
               <AlertTriangle className="h-6 w-6 text-rose-400" />
             </div>
             <div>
-              <h1 className="text-base md:text-xl font-black text-white">Payment Authorizations Required</h1>
-              <p className="text-xs text-rose-200">
+              <h1 className="text-base md:text-xl font-black text-rose-950 dark:text-white">Payment Authorizations Required</h1>
+              <p className="text-xs text-rose-700 dark:text-rose-200">
                 Transactions that could not be completed by your banking gateway.
               </p>
             </div>

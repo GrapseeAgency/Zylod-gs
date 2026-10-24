@@ -112,9 +112,9 @@ export function CategoryBrowserPage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+          <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
-        <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+        <span className="text-lg font-bold text-primary">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -145,20 +145,20 @@ export function CategoryBrowserPage() {
             placeholder="Search wholesale categories..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 bg-white dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 rounded-xl text-xs text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-[#C8102E] shadow-sm"
+            className="w-full h-10 pl-10 pr-4 bg-white dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 rounded-xl text-xs text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-primary shadow-sm"
           />
         </div>
 
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
+            <Loader2 className="w-7 h-7 text-primary animate-spin" />
             <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading categories...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
+            <AlertTriangle className="w-8 h-8 text-primary" />
             <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}

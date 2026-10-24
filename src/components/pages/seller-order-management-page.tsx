@@ -462,7 +462,7 @@ export function SellerOrderManagementPage() {
           <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4">Sign in with a seller account to view your orders.</p>
           <button
             onClick={() => navigate('login')}
-            className="min-h-11 px-6 bg-[#C8102E] text-white rounded-lg font-medium w-full"
+            className="min-h-11 px-6 bg-primary text-white rounded-lg font-medium w-full"
           >
             Sign in
           </button>
@@ -487,7 +487,7 @@ export function SellerOrderManagementPage() {
         </h1>
         <button
           onClick={exportCsv}
-          className="min-h-11 text-[#C8102E] font-medium text-sm flex items-center gap-1"
+          className="min-h-11 text-primary font-medium text-sm flex items-center gap-1"
         >
           <Download className="w-4 h-4" /> Export CSV
         </button>
@@ -501,7 +501,7 @@ export function SellerOrderManagementPage() {
               onClick={() => setActiveTab(tab.value)}
               className={`min-h-11 px-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                 activeTab === tab.value
-                  ? 'border-[#C8102E] text-[#C8102E]'
+                  ? 'border-primary text-primary'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
               }`}
             >
@@ -519,10 +519,10 @@ export function SellerOrderManagementPage() {
             className="min-h-11 w-full px-4 py-3 flex items-center justify-between text-left"
           >
             <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
-              <Wallet className="w-4 h-4 text-[#C8102E]" />
+              <Wallet className="w-4 h-4 text-primary" />
               Payment requests
               {payments.length > 0 && (
-                <span className="text-xs bg-[#C8102E] text-white px-2 py-0.5 rounded-full font-medium">{payments.length} pending</span>
+                <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full font-medium">{payments.length} pending</span>
               )}
             </span>
             {paymentsOpen ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
@@ -548,7 +548,7 @@ export function SellerOrderManagementPage() {
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-sm font-bold text-[#C8102E]">৳{p.amount?.toLocaleString()}</p>
+                        <p className="text-sm font-bold text-primary">৳{p.amount?.toLocaleString()}</p>
                         <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">of ৳{p.orderTotal?.toLocaleString()}</p>
                       </div>
                     </div>
@@ -603,10 +603,10 @@ export function SellerOrderManagementPage() {
             className="min-h-11 w-full px-4 py-3 flex items-center justify-between text-left"
           >
             <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
-              <Undo2 className="w-4 h-4 text-[#C8102E]" />
+              <Undo2 className="w-4 h-4 text-primary" />
               Returns queue
               {returns.length > 0 && (
-                <span className="text-xs bg-[#C8102E] text-white px-2 py-0.5 rounded-full font-medium">{returns.length}</span>
+                <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full font-medium">{returns.length}</span>
               )}
             </span>
             {returnsOpen ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
@@ -637,7 +637,7 @@ export function SellerOrderManagementPage() {
                           <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium capitalize ${RETURN_STATUS_CHIP[r.status] || 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300'}`}>
                             {r.status}
                           </span>
-                          <p className="text-xs font-bold text-[#C8102E] mt-1">৳{r.sellerShare?.toLocaleString()} <span className="font-normal text-gray-400 dark:text-gray-500 dark:text-gray-400">your share</span></p>
+                          <p className="text-xs font-bold text-primary mt-1">৳{r.sellerShare?.toLocaleString()} <span className="font-normal text-gray-400 dark:text-gray-500 dark:text-gray-400">your share</span></p>
                         </div>
                       </div>
                       <div className="space-y-1.5">
@@ -794,7 +794,7 @@ export function SellerOrderManagementPage() {
                         {order.items?.length} line(s) • {order.moqPackCount} units
                         {order.items?.[0]?.unit ? ` • per ${order.items[0].unit}` : ''}
                       </p>
-                      <p className="text-[#C8102E] font-semibold text-sm mt-1">
+                      <p className="text-primary font-semibold text-sm mt-1">
                         ৳{order.totalAmount?.toLocaleString()}
                       </p>
                     </div>
@@ -817,13 +817,13 @@ export function SellerOrderManagementPage() {
                   {order.status === 'pending' && (
                     <>
                       <button
-                        className="min-h-11 py-2 px-4 bg-white dark:bg-gray-900 border border-[#C8102E] text-[#C8102E] text-sm font-medium rounded-lg"
+                        className="min-h-11 py-2 px-4 bg-white dark:bg-gray-900 border border-primary text-primary text-sm font-medium rounded-lg"
                         onClick={() => navigate('seller-order-cancellation', { orderId: order.id })}
                       >
                         Reject
                       </button>
                       <button
-                        className="min-h-11 py-2 px-4 bg-[#C8102E] text-white text-sm font-medium rounded-lg"
+                        className="min-h-11 py-2 px-4 bg-primary text-white text-sm font-medium rounded-lg"
                         onClick={() => void acceptOrder(order.id)}
                       >
                         Accept Order
@@ -832,7 +832,7 @@ export function SellerOrderManagementPage() {
                   )}
                   {(order.status === 'confirmed' || order.status === 'packed') && (
                     <button
-                      className="col-span-2 min-h-11 py-2 px-4 bg-[#C8102E] text-white text-sm font-medium rounded-lg"
+                      className="col-span-2 min-h-11 py-2 px-4 bg-primary text-white text-sm font-medium rounded-lg"
                       onClick={() => navigate('seller-order-fulfillment', { orderId: order.id })}
                     >
                       Book Courier

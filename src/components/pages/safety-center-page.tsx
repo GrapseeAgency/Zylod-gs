@@ -102,7 +102,7 @@ export function SafetyCenterPage() {
                 onClick={() => navigate(p.page)}
                 className="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:border-red-200 transition text-left group"
               >
-                <div className="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-2.5 group-hover:bg-red-600 group-hover:text-white transition">
+                <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center mb-2.5 group-hover:bg-red-600 group-hover:text-white transition">
                   <Icon className="w-5 h-5" />
                 </div>
                 <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-red-600 transition">{p.title}</p>
@@ -118,7 +118,7 @@ export function SafetyCenterPage() {
         {/* Essential Safety Guidelines */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
           <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-3">
-            <CheckCircle2 className="w-4 h-4 text-green-600" />
+            <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
             Safety Rules for Wholesale Buyers
           </h2>
 
@@ -134,7 +134,7 @@ export function SafetyCenterPage() {
                     <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                       {language === 'bn' ? tip.titleBn : tip.titleEn}
                     </p>
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:text-red-300">
                       {tip.importance}
                     </span>
                   </div>
@@ -148,10 +148,10 @@ export function SafetyCenterPage() {
         </div>
 
         {/* Report Suspicious Activity CTA */}
-        <div className="bg-red-50 border border-red-200 rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-1 text-center sm:text-left">
-            <p className="text-sm font-bold text-red-900">Spotted a Suspicious Seller or Scam?</p>
-            <p className="text-xs text-red-700">
+            <p className="text-sm font-bold text-red-900 dark:text-red-100">Spotted a Suspicious Seller or Scam?</p>
+            <p className="text-xs text-red-700 dark:text-red-300">
               Help keep the marketplace clean by reporting off-platform payment solicitations.
             </p>
           </div>

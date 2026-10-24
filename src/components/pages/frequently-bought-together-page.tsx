@@ -234,7 +234,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
         </div>
 
         {/* Bundle Summary Card */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border-2 border-rose-100 shadow-sm space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border-2 border-rose-100 dark:border-rose-900/60 shadow-sm space-y-3">
           <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Bundle Summary</h2>
 
           <div className="space-y-2 text-xs divide-y divide-slate-50">
@@ -280,7 +280,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
           </div>
 
           {/* Expedited shipping note */}
-          <div className="bg-rose-50/70 border border-rose-100 rounded-2xl p-3 flex items-start gap-2.5 text-[10px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
+          <div className="bg-rose-50/70 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/60 rounded-2xl p-3 flex items-start gap-2.5 text-[10px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
             <Truck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               Ordering this bundle qualifies for <strong className="text-primary font-bold">expedited warehouse processing</strong>.

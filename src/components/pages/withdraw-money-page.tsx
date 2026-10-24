@@ -214,7 +214,7 @@ export function WithdrawMoneyPage() {
                     onClick={() => setMethod(id as 'bank' | 'bKash' | 'Nagad' | 'Rocket')}
                     className={`p-3.5 rounded-2xl border text-left space-y-1 transition-all ${
                       isSelected
-                        ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
+                        ? 'border-primary bg-rose-50/60 dark:bg-rose-950/40 ring-2 ring-primary/20 shadow-xs'
                         : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                   >
@@ -271,7 +271,7 @@ export function WithdrawMoneyPage() {
           </div>
 
           {errorMsg && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs font-bold text-rose-600 flex items-center gap-2">
+            <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-2xl text-xs font-bold text-rose-600 dark:text-rose-300 flex items-center gap-2">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {errorMsg}
             </div>

@@ -299,9 +299,9 @@ export function TwoFactorAuthPage() {
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
         aria-label="Go back"
       >
-        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        <ArrowLeft className="w-5 h-5 text-primary" />
       </button>
-      <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+      <span className="text-lg font-bold text-primary">Zylod</span>
       <button
         onClick={() => navigate('help-center')}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
@@ -321,7 +321,7 @@ export function TwoFactorAuthPage() {
           className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+          <ArrowLeft className="w-5 h-5 text-primary" />
         </button>
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Two-Factor Authentication</h1>
         <button
@@ -346,8 +346,8 @@ export function TwoFactorAuthPage() {
     >
       <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
         <div className="relative">
-          <Shield className="w-12 h-12 text-[#C8102E]" />
-          <Lock className="w-5 h-5 text-[#C8102E] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+          <Shield className="w-12 h-12 text-primary" />
+          <Lock className="w-5 h-5 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         </div>
       </div>
     </motion.div>
@@ -403,13 +403,13 @@ export function TwoFactorAuthPage() {
         onClick={() => setSelectedMethod('authenticator')}
         className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'authenticator'
-            ? 'border-[#C8102E] shadow-md'
+            ? 'border-primary shadow-md'
             : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         }`}
         type="button"
       >
         <div className="w-12 h-12 rounded-lg bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center shrink-0">
-          <Smartphone className="w-6 h-6 text-[#C8102E]" />
+          <Smartphone className="w-6 h-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0 text-left">
           <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">Authenticator App</p>
@@ -419,7 +419,7 @@ export function TwoFactorAuthPage() {
         </div>
         <div className="shrink-0 ml-2">
           {selectedMethod === 'authenticator' ? (
-            <div className="w-5 h-5 rounded-full bg-[#C8102E] flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
               <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
             </div>
           ) : (
@@ -434,7 +434,7 @@ export function TwoFactorAuthPage() {
         disabled={!availableMethods.includes('sms')}
         className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'sms'
-            ? 'border-[#C8102E] shadow-md'
+            ? 'border-primary shadow-md'
             : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         } ${!availableMethods.includes('sms') ? 'opacity-50 cursor-not-allowed' : ''}`}
         type="button"
@@ -452,7 +452,7 @@ export function TwoFactorAuthPage() {
         </div>
         <div className="shrink-0 ml-2">
           {selectedMethod === 'sms' ? (
-            <div className="w-5 h-5 rounded-full bg-[#C8102E] flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
               <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
             </div>
           ) : (
@@ -465,7 +465,7 @@ export function TwoFactorAuthPage() {
       <Button
         onClick={handleSetup}
         disabled={isSettingUp}
-        className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A50D25] text-white rounded-xl text-base font-semibold disabled:opacity-50"
+        className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold disabled:opacity-50"
       >
         {isSettingUp ? (
           <>
@@ -496,7 +496,7 @@ export function TwoFactorAuthPage() {
               <QRCodeSVG value={otpauthUri} size={168} level="M" />
             ) : (
               <div className="w-[168px] h-[168px] flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-[#C8102E] animate-spin" />
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
               </div>
             )}
           </div>
@@ -531,7 +531,7 @@ export function TwoFactorAuthPage() {
       {/* Continue to Verify Button */}
       <Button
         onClick={() => setStep('verify')}
-        className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A50D25] text-white rounded-xl text-base font-semibold"
+        className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold"
       >
         I&apos;ve Set Up My Authenticator
       </Button>
@@ -556,12 +556,12 @@ export function TwoFactorAuthPage() {
             </p>
             {selectedMethod === 'sms' ? (
               smsIsRunning ? (
-                <span className="text-[13px] text-[#C8102E] font-semibold">
+                <span className="text-[13px] text-primary font-semibold">
                   Resend in {smsFormatted}
                 </span>
               ) : (
                 <button
-                  className="text-[13px] font-semibold text-[#C8102E] hover:underline"
+                  className="text-[13px] font-semibold text-primary hover:underline"
                   onClick={handleResendSms}
                   disabled={isSettingUp}
                   type="button"
@@ -571,7 +571,7 @@ export function TwoFactorAuthPage() {
               )
             ) : (
               <button
-                className="text-[13px] font-semibold text-[#C8102E] hover:underline"
+                className="text-[13px] font-semibold text-primary hover:underline"
                 onClick={() => setOtp('')}
                 type="button"
               >
@@ -593,7 +593,7 @@ export function TwoFactorAuthPage() {
                   <InputOTPSlot
                     key={index}
                     index={index}
-                    className="h-12 w-9 text-lg border-[#E0E0E0] dark:border-gray-800 data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 rounded-lg sm:w-12"
+                    className="h-12 w-9 text-lg border-[#E0E0E0] dark:border-gray-800 data-[active=true]:border-primary data-[active=true]:ring-[#C8102E]/20 rounded-lg sm:w-12"
                   />
                 ))}
               </InputOTPGroup>
@@ -634,7 +634,7 @@ export function TwoFactorAuthPage() {
       <Button
         onClick={handleVerify}
         disabled={otp.length < 6 || isSubmitting}
-        className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A50D25] text-white rounded-xl text-base font-semibold gap-2 disabled:opacity-50"
+        className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold gap-2 disabled:opacity-50"
       >
         {isSubmitting ? (
           <>

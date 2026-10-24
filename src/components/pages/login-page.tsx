@@ -79,17 +79,17 @@ function LockoutOverlay({ remainingMs }: { remainingMs: number }) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="bg-[#FEF2F2] dark:bg-red-950/30 border border-[#C8102E]/20 rounded-xl p-4 mb-4"
+      className="bg-[#FEF2F2] dark:bg-red-950/30 border border-primary/20 rounded-xl p-4 mb-4"
     >
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-full bg-[#C8102E]/10 flex items-center justify-center shrink-0">
-          <ShieldAlert className="w-5 h-5 text-[#C8102E]" />
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+          <ShieldAlert className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-[#C8102E]">Account Temporarily Locked</h3>
+          <h3 className="text-sm font-semibold text-primary">Account Temporarily Locked</h3>
           <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">
             Too many failed login attempts. Please try again in{' '}
-            <span className="font-mono font-bold text-[#C8102E]">{formatted}</span>
+            <span className="font-mono font-bold text-primary">{formatted}</span>
           </p>
         </div>
       </div>
@@ -394,7 +394,7 @@ export function LoginPage() {
               onClick={() => setActiveTab('buyer')}
               className={`flex-1 pb-2.5 text-sm font-semibold text-center transition-colors relative ${
                 activeTab === 'buyer'
-                  ? 'text-[#C8102E]'
+                  ? 'text-primary'
                   : 'text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white'
               }`}
             >
@@ -402,7 +402,7 @@ export function LoginPage() {
               {activeTab === 'buyer' && (
                 <motion.div
                   layoutId="login-tab-underline"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8102E] rounded-full"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
@@ -412,7 +412,7 @@ export function LoginPage() {
               onClick={() => setActiveTab('supplier')}
               className={`flex-1 pb-2.5 text-sm font-semibold text-center transition-colors relative ${
                 activeTab === 'supplier'
-                  ? 'text-[#C8102E]'
+                  ? 'text-primary'
                   : 'text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white'
               }`}
             >
@@ -420,7 +420,7 @@ export function LoginPage() {
               {activeTab === 'supplier' && (
                 <motion.div
                   layoutId="login-tab-underline"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8102E] rounded-full"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
@@ -444,7 +444,7 @@ export function LoginPage() {
                 value={emailOrPhone}
                 onChange={(e) => { setEmailOrPhone(e.target.value); setError(null) }}
                 disabled={isLoading || rateLimitState.limited}
-                className="pl-10 h-11 bg-[#F8F9FA] dark:bg-gray-950 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                className="pl-10 h-11 bg-[#F8F9FA] dark:bg-gray-950 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-primary"
               />
             </div>
           </div>
@@ -463,7 +463,7 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setError(null) }}
                 disabled={isLoading || rateLimitState.limited}
-                className="pl-10 pr-10 h-11 bg-[#F8F9FA] dark:bg-gray-950 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                className="pl-10 pr-10 h-11 bg-[#F8F9FA] dark:bg-gray-950 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-primary"
               />
               <button
                 type="button"
@@ -490,7 +490,7 @@ export function LoginPage() {
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="text-sm text-[#C8102E] bg-[#C8102E]/5 rounded-lg px-3 py-2"
+                className="text-sm text-primary bg-primary/5 rounded-lg px-3 py-2"
               >
                 {error}
               </motion.p>
@@ -519,7 +519,7 @@ export function LoginPage() {
                 className="space-y-2"
               >
                 <Label className="text-sm font-medium text-[#1A1A1A] dark:text-white flex items-center gap-1.5">
-                  <ShieldAlert className="w-3.5 h-3.5 text-[#C8102E]" />
+                  <ShieldAlert className="w-3.5 h-3.5 text-primary" />
                   Verify you&apos;re human
                 </Label>
                 <div className="flex items-center gap-3">
@@ -532,7 +532,7 @@ export function LoginPage() {
                       placeholder="Answer"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      className="w-20 h-8 border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                      className="w-20 h-8 border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-primary"
                     />
                   </div>
                   <button
@@ -550,7 +550,7 @@ export function LoginPage() {
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      className="text-xs text-[#C8102E] flex items-center gap-1"
+                      className="text-xs text-primary flex items-center gap-1"
                     >
                       <AlertTriangle className="w-3 h-3" />
                       Wrong answer. A new question has been generated.
@@ -566,7 +566,7 @@ export function LoginPage() {
             <button
               type="button"
               onClick={() => navigate('forgot-password')}
-              className="text-sm font-medium text-[#C8102E] hover:text-[#A00D24] transition-colors"
+              className="text-sm font-medium text-primary hover:text-[#A00D24] transition-colors"
             >
               Forgot Password?
             </button>
@@ -576,7 +576,7 @@ export function LoginPage() {
           <Button
             type="submit"
             disabled={isLoading || rateLimitState.limited}
-            className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A00D24] text-white font-semibold text-base rounded-lg shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white font-semibold text-base rounded-lg shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
@@ -640,7 +640,7 @@ export function LoginPage() {
             <button
               type="button"
               onClick={() => navigate('register')}
-              className="text-[#C8102E] font-semibold hover:text-[#A00D24] transition-colors"
+              className="text-primary font-semibold hover:text-[#A00D24] transition-colors"
             >
               Register Now
             </button>
@@ -652,7 +652,7 @@ export function LoginPage() {
           <button
             type="button"
             onClick={() => navigate('help-center')}
-            className="flex items-center gap-1.5 text-xs text-[#6B7280] dark:text-gray-400 hover:text-[#C8102E] transition-colors"
+            className="flex items-center gap-1.5 text-xs text-[#6B7280] dark:text-gray-400 hover:text-primary transition-colors"
           >
             <HelpCircle className="w-3.5 h-3.5" />
             Need help logging in?

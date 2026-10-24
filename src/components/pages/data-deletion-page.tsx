@@ -57,12 +57,12 @@ export function DataDeletionPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 items-start">
-            <div className="bg-red-50 border border-red-200 rounded-3xl p-5 space-y-2">
-              <div className="flex items-center gap-2 text-red-700">
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-3xl p-5 space-y-2">
+              <div className="flex items-center gap-2 text-red-700 dark:text-red-300">
                 <AlertTriangle className="w-5 h-5 flex-shrink-0" />
                 <h3 className="text-sm font-bold">Important Notice Regarding Account Deletion</h3>
               </div>
-              <p className="text-xs text-red-800 leading-relaxed">
+              <p className="text-xs text-red-800 dark:text-red-200 leading-relaxed">
                 Deleting your account will forfeit all active VIP membership points, reward vouchers, affiliate commissions, and saved supplier quotation history. This action cannot be reversed.
               </p>
             </div>

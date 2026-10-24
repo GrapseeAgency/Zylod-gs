@@ -52,9 +52,9 @@ function HeaderBar({ onBack }: { onBack: () => void }) {
         className="p-2 -ml-2 rounded-lg active:scale-95 transition-transform"
         aria-label="Go back"
       >
-        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        <ArrowLeft className="w-5 h-5 text-primary" />
       </button>
-      <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+      <span className="text-lg font-bold text-primary">Zylod</span>
       <button
         onClick={() => navigate('help-center')}
         className="p-2 -mr-2 rounded-lg active:scale-95 transition-transform"
@@ -76,7 +76,7 @@ function DesktopHeader({ onBack }: { onBack: () => void }) {
         className="p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         aria-label="Go back"
       >
-        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        <ArrowLeft className="w-5 h-5 text-primary" />
       </button>
       <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Phone Verification</h1>
       <div className="ml-auto">
@@ -297,7 +297,7 @@ export default function PhoneVerificationPage() {
     <Button
       onClick={handleSendCode}
       disabled={isLoading || !isPhoneValid}
-      className="w-full h-[50px] bg-[#C8102E] hover:bg-[#A50D24] text-white rounded-xl text-base font-semibold shadow-md disabled:opacity-50"
+      className="w-full h-[50px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold shadow-md disabled:opacity-50"
       size="lg"
     >
       {isLoading ? (
@@ -318,13 +318,13 @@ export default function PhoneVerificationPage() {
   const featureCards = (
     <div className="mt-6 space-y-3">
       <FeatureCard
-        icon={<Truck className="w-5 h-5 text-[#C8102E]" />}
+        icon={<Truck className="w-5 h-5 text-primary" />}
         title="Secure Shipping"
         description="Couriers use this number to coordinate large-scale wholesale deliveries directly to your warehouse."
         delay={0.1}
       />
       <FeatureCard
-        icon={<ShieldCheck className="w-5 h-5 text-[#C8102E]" />}
+        icon={<ShieldCheck className="w-5 h-5 text-primary" />}
         title="Fraud Prevention"
         description="A verified number protects your account from unauthorized bulk orders and ensures business identity."
         delay={0.2}
@@ -372,7 +372,7 @@ export default function PhoneVerificationPage() {
           {/* Hero Section */}
           <motion.div variants={fadeSlideUp} className="flex flex-col items-center mt-6 mb-6">
             <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center mb-5">
-              <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
+              <ShieldCheck className="w-14 h-14 text-primary" strokeWidth={1.5} />
             </div>
             <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white text-center">
               Verify your number
@@ -416,7 +416,7 @@ export default function PhoneVerificationPage() {
             {/* Hero Section */}
             <div className="flex flex-col items-center mt-4 mb-6">
               <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center mb-5">
-                <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
+                <ShieldCheck className="w-14 h-14 text-primary" strokeWidth={1.5} />
               </div>
               <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white text-center">
                 Verify your number

@@ -94,7 +94,7 @@ export function BulkPricingGuidePage() {
                   <span className={`text-[10px] font-bold text-white px-2 py-0.5 rounded-md bg-gradient-to-r ${tier.color}`}>
                     {tier.badge}
                   </span>
-                  <span className="text-xs font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-md">
+                  <span className="text-xs font-bold text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/40 px-2 py-0.5 rounded-md">
                     {tier.discount} OFF
                   </span>
                 </div>
@@ -117,7 +117,7 @@ export function BulkPricingGuidePage() {
           <ul className="space-y-2.5 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-2.5 md:space-y-0">
             {rules.map((rule, i) => (
               <li key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
-                <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
                 <span>{rule}</span>
               </li>
             ))}
@@ -125,9 +125,9 @@ export function BulkPricingGuidePage() {
         </div>
 
         {/* MOQ Info Banner */}
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-3">
-          <Tag className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <div className="text-xs text-amber-800 leading-relaxed">
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-2xl p-4 flex gap-3">
+          <Tag className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
             <p className="font-bold mb-1">What is MOQ?</p>
             <p>
               Minimum Order Quantity (MOQ) is the smallest number of units a supplier will sell per order. It is set by each manufacturer individually. Zylod enforces MOQ compliance during checkout — your cart must meet each supplier's MOQ before the order can be placed.
@@ -145,7 +145,7 @@ export function BulkPricingGuidePage() {
           </button>
           <button
             onClick={() => navigate('search-home')}
-            className="px-6 py-2.5 bg-white dark:bg-gray-900 border border-red-200 hover:bg-red-50 text-red-700 rounded-xl text-xs font-bold shadow-sm transition"
+            className="px-6 py-2.5 bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900/60 hover:bg-red-50 text-red-700 dark:text-red-300 rounded-xl text-xs font-bold shadow-sm transition"
           >
             Search Wholesale Products →
           </button>

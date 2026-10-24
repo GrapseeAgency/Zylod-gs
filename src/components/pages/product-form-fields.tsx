@@ -228,7 +228,7 @@ export function computeTierErrors(tiers: TierRow[], basePrice: number): { rowErr
 }
 
 const inputClass =
-  'w-full min-h-11 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent';
+  'w-full min-h-11 px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent';
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;

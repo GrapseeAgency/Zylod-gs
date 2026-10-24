@@ -129,9 +129,9 @@ export function NewArrivalsPage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+          <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
-        <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+        <span className="text-lg font-bold text-primary">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -154,7 +154,7 @@ export function NewArrivalsPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
             <div className="absolute top-4 left-4">
-              <span className="bg-[#C8102E] text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
+              <span className="bg-primary text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded">
                 Fresh from Factory
               </span>
             </div>
@@ -180,7 +180,7 @@ export function NewArrivalsPage() {
                 onClick={() => setActiveTab(tab.slug)}
                 className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-[#C8102E] text-white shadow-sm'
+                    ? 'bg-primary text-white shadow-sm'
                     : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0] dark:bg-gray-800'
                 }`}
               >
@@ -193,13 +193,13 @@ export function NewArrivalsPage() {
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
+            <Loader2 className="w-7 h-7 text-primary animate-spin" />
             <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading fresh listings...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
+            <AlertTriangle className="w-8 h-8 text-primary" />
             <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
@@ -220,7 +220,7 @@ export function NewArrivalsPage() {
               <h2 className="text-base md:text-lg font-bold text-[#1A1A1A] dark:text-white">Featured Arrivals</h2>
               <button
                 onClick={() => navigate('category-products', { filter: 'new' })}
-                className="text-xs font-bold text-[#C8102E] flex items-center gap-1 hover:underline"
+                className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
               >
                 See All <ArrowRight className="h-3 w-3" />
               </button>
@@ -240,16 +240,16 @@ export function NewArrivalsPage() {
                   alt={heroArrival.name}
                   className="w-full h-full object-cover"
                 />
-                <span className="absolute top-3 left-3 bg-white dark:bg-gray-900/95 text-[#C8102E] font-serif italic text-xs font-bold px-2 py-0.5 rounded shadow-sm">
+                <span className="absolute top-3 left-3 bg-white dark:bg-gray-900/95 text-primary font-serif italic text-xs font-bold px-2 py-0.5 rounded shadow-sm">
                   New
                 </span>
                 <button
                   onClick={(e) => toggleWishlist(e, heroArrival)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white dark:bg-gray-900 shadow-sm flex items-center justify-center text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-[#C8102E]"
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white dark:bg-gray-900 shadow-sm flex items-center justify-center text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-primary"
                   aria-label="Save for later"
                 >
                   <Bookmark
-                    className={`h-4 w-4 ${isInWishlist(heroArrival.id) ? 'fill-[#C8102E] text-[#C8102E]' : ''}`}
+                    className={`h-4 w-4 ${isInWishlist(heroArrival.id) ? 'fill-[#C8102E] text-primary' : ''}`}
                   />
                 </button>
               </div>
@@ -262,7 +262,7 @@ export function NewArrivalsPage() {
                   {heroArrival.name}
                 </h3>
 
-                <div className="text-base font-bold text-[#C8102E] mt-1">
+                <div className="text-base font-bold text-primary mt-1">
                   {formatPrice(heroArrival.basePrice)}
                   <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400"> / {heroArrival.unit || 'unit'}</span>
                 </div>
@@ -297,7 +297,7 @@ export function NewArrivalsPage() {
                       alt={item.name}
                       className="w-full h-full object-cover"
                     />
-                    <span className="absolute top-2 left-2 bg-white dark:bg-gray-900/95 text-[#C8102E] font-serif italic text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                    <span className="absolute top-2 left-2 bg-white dark:bg-gray-900/95 text-primary font-serif italic text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">
                       New
                     </span>
                   </div>
@@ -307,7 +307,7 @@ export function NewArrivalsPage() {
                       {item.name}
                     </h4>
                     <div className="mt-2">
-                      <div className="text-sm font-bold text-[#C8102E]">
+                      <div className="text-sm font-bold text-primary">
                         {formatPrice(item.basePrice)}
                         <span className="text-[10px] font-normal text-[#6B7280] dark:text-gray-400"> / {item.unit || 'unit'}</span>
                       </div>
@@ -340,12 +340,12 @@ export function NewArrivalsPage() {
                   {/* Timeline dot */}
                   <div
                     className={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white ${
-                      idx === 0 ? 'bg-[#C8102E]' : 'bg-gray-300'
+                      idx === 0 ? 'bg-primary' : 'bg-gray-300'
                     }`}
                   />
 
                   <div className="flex items-center justify-between gap-2">
-                    <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white line-clamp-1 group-hover:text-[#C8102E] transition-colors">
+                    <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
                       {item.name}
                     </h4>
                     <span className="text-[10px] font-semibold bg-gray-100 dark:bg-gray-900 text-[#4B5563] dark:text-gray-300 px-2 py-0.5 rounded whitespace-nowrap">

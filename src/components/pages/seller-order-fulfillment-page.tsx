@@ -108,7 +108,7 @@ export function SellerOrderFulfillmentPage() {
           <AlertTriangle className="w-10 h-10 mx-auto text-amber-500 mb-3" />
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Supplier sign-in required</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4">Sign in with a seller account to fulfill orders.</p>
-          <button onClick={() => goBack()} className="min-h-11 px-6 bg-[#C8102E] text-white rounded-lg font-medium w-full">
+          <button onClick={() => goBack()} className="min-h-11 px-6 bg-primary text-white rounded-lg font-medium w-full">
             Back
           </button>
         </div>
@@ -149,7 +149,7 @@ export function SellerOrderFulfillmentPage() {
               tracking page updates live.
             </p>
             <div className="pt-6">
-              <button onClick={goBack} className="min-h-11 w-full py-3 bg-[#C8102E] text-white rounded-xl font-medium">
+              <button onClick={goBack} className="min-h-11 w-full py-3 bg-primary text-white rounded-xl font-medium">
                 Back to Order
               </button>
             </div>
@@ -169,14 +169,14 @@ export function SellerOrderFulfillmentPage() {
             {canPack && (
               <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-3">
                 <div className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-[#C8102E]" />
+                  <Package className="w-5 h-5 text-primary" />
                   <h2 className="font-semibold text-gray-900 dark:text-gray-100">Step 1 — Pack the order</h2>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Confirm every item is packed and quality-checked before dispatch.</p>
                 <button
                   onClick={() => void markPacked()}
                   disabled={busy}
-                  className="min-h-11 w-full py-3 bg-[#C8102E] text-white rounded-xl font-medium disabled:opacity-50"
+                  className="min-h-11 w-full py-3 bg-primary text-white rounded-xl font-medium disabled:opacity-50"
                 >
                   {busy ? 'Updating…' : 'Mark as Packed'}
                 </button>
@@ -186,7 +186,7 @@ export function SellerOrderFulfillmentPage() {
             {!canPack && !allShipped && (
               <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-3">
                 <div className="flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-[#C8102E]" />
+                  <Truck className="w-5 h-5 text-primary" />
                   <h2 className="font-semibold text-gray-900 dark:text-gray-100">Dispatch</h2>
                 </div>
                 <div>
@@ -202,7 +202,7 @@ export function SellerOrderFulfillmentPage() {
                 <button
                   onClick={() => void dispatch()}
                   disabled={!trackingNumber.trim() || busy}
-                  className="min-h-11 w-full py-3 bg-[#C8102E] text-white rounded-xl font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="min-h-11 w-full py-3 bg-primary text-white rounded-xl font-medium disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   <Truck className="w-5 h-5" /> {busy ? 'Dispatching…' : 'Dispatch Order'}
                 </button>

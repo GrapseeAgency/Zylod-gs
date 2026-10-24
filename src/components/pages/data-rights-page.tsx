@@ -75,7 +75,7 @@ export function DataRightsPage() {
                   onClick={() => setSelectedType(r.type)}
                   className={`p-4 rounded-3xl border transition cursor-pointer flex items-start gap-3.5 ${
                     selectedType === r.type
-                      ? 'bg-emerald-50/50 border-emerald-500 shadow-sm'
+                      ? 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-500 dark:border-emerald-700 shadow-sm'
                       : 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-200'
                   }`}
                 >

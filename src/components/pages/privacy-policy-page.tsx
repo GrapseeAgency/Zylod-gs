@@ -52,7 +52,7 @@ export function PrivacyPolicyPage() {
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-5 pb-24 md:px-6 md:py-8 md:space-y-8 md:pb-10 lg:max-w-4xl">
         {loading ? (
-          <div className="space-y-3 animate-pulse">{[1,2,3].map(i => <div key={i} className="h-20 bg-gray-200 rounded-2xl" />)}</div>
+          <div className="space-y-3 animate-pulse">{[1,2,3].map(i => <div key={i} className="h-20 bg-gray-200 dark:bg-gray-800 rounded-2xl" />)}</div>
         ) : (
           <>
             {/* Hero */}
@@ -77,7 +77,7 @@ export function PrivacyPolicyPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {dataCategories.map(cat => (
                   <div key={cat.label} className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 space-y-1">
-                    <cat.icon className="w-4 h-4 text-emerald-600" />
+                    <cat.icon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{cat.label}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{cat.desc}</p>
                   </div>

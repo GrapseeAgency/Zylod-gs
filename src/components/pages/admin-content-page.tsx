@@ -119,9 +119,9 @@ const POSITIONS = [
 ] as const
 
 const STATUS_STYLES: Record<string, string> = {
-  live: 'bg-green-100 text-green-800 border-green-200',
-  scheduled: 'bg-amber-100 text-amber-800 border-amber-200',
-  upcoming: 'bg-amber-100 text-amber-800 border-amber-200',
+  live: 'bg-green-100 text-green-800 dark:text-green-200 border-green-200 dark:border-green-900/60',
+  scheduled: 'bg-amber-100 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-900/60',
+  upcoming: 'bg-amber-100 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-900/60',
   expired: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700',
   inactive: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700',
 }
@@ -335,9 +335,9 @@ export function AdminContentPage() {
       </div>
 
       {needsAuth ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-center">
-          <p className="font-semibold text-amber-900">Admin access required</p>
-          <p className="text-sm text-amber-800 mt-1">Sign in with an admin account to manage storefront content.</p>
+        <div className="rounded-lg border border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/40 p-6 text-center">
+          <p className="font-semibold text-amber-900 dark:text-amber-100">Admin access required</p>
+          <p className="text-sm text-amber-800 dark:text-amber-200 mt-1">Sign in with an admin account to manage storefront content.</p>
         </div>
       ) : (
         <>
@@ -372,7 +372,7 @@ export function AdminContentPage() {
           </div>
 
           {refreshError && (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{refreshError}</div>
+            <div className="rounded-md border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-300">{refreshError}</div>
           )}
 
           {tab === 'blog' ? (
@@ -764,7 +764,7 @@ function DealsTab({ deals, stats, busyId, onToggle, onDelete, onCreated }: {
                   <p className="font-medium text-sm truncate">{d.product?.name || '(deleted product)'}</p>
                   <Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[d.status]}`}>{d.status}</Badge>
                   {d.type === 'flash'
-                    ? <Badge variant="outline" className="text-[10px] text-orange-700 border-orange-200 bg-orange-50"><Zap className="h-3 w-3 mr-0.5" />flash</Badge>
+                    ? <Badge variant="outline" className="text-[10px] text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-900/60 bg-orange-50 dark:bg-orange-950/40"><Zap className="h-3 w-3 mr-0.5" />flash</Badge>
                     : <Badge variant="outline" className="text-[10px] text-teal-700 border-teal-200 bg-teal-50"><CalendarDays className="h-3 w-3 mr-0.5" />daily</Badge>}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -904,7 +904,7 @@ function DealsTab({ deals, stats, busyId, onToggle, onDelete, onCreated }: {
 /* ─── Shared bits ─── */
 
 function StatChip({ label, value, tone }: { label: string; value?: number; tone?: 'green' | 'amber' }) {
-  const toneCls = tone === 'green' ? 'text-green-700' : tone === 'amber' ? 'text-amber-700' : ''
+  const toneCls = tone === 'green' ? 'text-green-700 dark:text-green-300' : tone === 'amber' ? 'text-amber-700 dark:text-amber-300' : ''
   return (
     <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 bg-background">
       <span className="text-muted-foreground">{label}</span>

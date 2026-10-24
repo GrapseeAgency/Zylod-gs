@@ -260,7 +260,7 @@ export default function ResetPasswordPage() {
       <Button
         type="submit"
         disabled={isLoading || !newPassword || !confirmPassword}
-        className="w-full h-[50px] bg-[#C8102E] hover:bg-[#A50D25] text-white text-base font-semibold rounded-xl shadow-lg shadow-red-200/50 transition-all disabled:opacity-50"
+        className="w-full h-[50px] bg-primary hover:bg-primary/90 text-white text-base font-semibold rounded-xl shadow-lg shadow-red-200/50 transition-all disabled:opacity-50"
       >
         {isLoading ? (
           <>
@@ -293,7 +293,7 @@ export default function ResetPasswordPage() {
       <button
         type="button"
         onClick={() => navigate('privacy')}
-        className="hover:text-[#C8102E] transition-colors underline underline-offset-2"
+        className="hover:text-primary transition-colors underline underline-offset-2"
       >
         Privacy Policy
       </button>
@@ -301,7 +301,7 @@ export default function ResetPasswordPage() {
       <button
         type="button"
         onClick={() => navigate('help-center')}
-        className="hover:text-[#C8102E] transition-colors underline underline-offset-2"
+        className="hover:text-primary transition-colors underline underline-offset-2"
       >
         Help Center
       </button>
@@ -319,9 +319,9 @@ export default function ResetPasswordPage() {
             className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
             aria-label="Go back"
           >
-            <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+            <ArrowLeft className="h-5 w-5 text-primary" />
           </button>
-          <h1 className="text-lg font-bold text-[#C8102E]">Zylod</h1>
+          <h1 className="text-lg font-bold text-primary">Zylod</h1>
           <div className="w-9" />
         </div>
 
@@ -337,8 +337,8 @@ export default function ResetPasswordPage() {
             <div className="relative mb-6">
               <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
                 <div className="relative">
-                  <Lock className="h-10 w-10 text-[#C8102E]" strokeWidth={1.8} />
-                  <RefreshCw className="h-5 w-5 text-[#C8102E] absolute -bottom-1 -right-2" strokeWidth={2} />
+                  <Lock className="h-10 w-10 text-primary" strokeWidth={1.8} />
+                  <RefreshCw className="h-5 w-5 text-primary absolute -bottom-1 -right-2" strokeWidth={2} />
                 </div>
               </div>
             </div>
@@ -385,9 +385,9 @@ export default function ResetPasswordPage() {
               className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
               aria-label="Go back"
             >
-              <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+              <ArrowLeft className="h-5 w-5 text-primary" />
             </button>
-            <h1 className="text-lg font-bold text-[#C8102E]">Zylod</h1>
+            <h1 className="text-lg font-bold text-primary">Zylod</h1>
             <div className="w-9" />
           </div>
 
@@ -396,8 +396,8 @@ export default function ResetPasswordPage() {
             <div className="relative mb-5">
               <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
                 <div className="relative">
-                  <Lock className="h-10 w-10 text-[#C8102E]" strokeWidth={1.8} />
-                  <RefreshCw className="h-5 w-5 text-[#C8102E] absolute -bottom-1 -right-2" strokeWidth={2} />
+                  <Lock className="h-10 w-10 text-primary" strokeWidth={1.8} />
+                  <RefreshCw className="h-5 w-5 text-primary absolute -bottom-1 -right-2" strokeWidth={2} />
                 </div>
               </div>
             </div>

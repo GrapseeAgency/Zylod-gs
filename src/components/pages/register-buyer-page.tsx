@@ -145,7 +145,7 @@ export default function RegisterBuyerPage() {
     >
       <div className="text-center space-y-2">
         <div className="flex justify-center">
-          <div className="h-12 w-12 rounded-lg bg-[#C8102E] text-white font-bold text-lg flex items-center justify-center">
+          <div className="h-12 w-12 rounded-lg bg-primary text-white font-bold text-lg flex items-center justify-center">
             <Building2 className="h-6 w-6" />
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function RegisterBuyerPage() {
                 type="button"
                 onClick={() => setUsePhone(true)}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                  usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] dark:bg-gray-950 text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
+                  usePhone ? 'bg-primary text-white' : 'bg-[#F8F9FA] dark:bg-gray-950 text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
                 }`}
               >
                 <Phone className="w-3.5 h-3.5 inline mr-1" />
@@ -204,7 +204,7 @@ export default function RegisterBuyerPage() {
                 type="button"
                 onClick={() => setUsePhone(false)}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                  !usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] dark:bg-gray-950 text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
+                  !usePhone ? 'bg-primary text-white' : 'bg-[#F8F9FA] dark:bg-gray-950 text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
                 }`}
               >
                 <Mail className="w-3.5 h-3.5 inline mr-1" />
@@ -272,7 +272,7 @@ export default function RegisterBuyerPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-[#C8102E] hover:bg-[#A50D25] text-white" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -310,7 +310,7 @@ export default function RegisterBuyerPage() {
           <div className="mt-4 text-center">
             <p className="text-sm text-[#6B7280] dark:text-gray-400">
               Already have an account?{' '}
-              <Button variant="link" size="sm" className="text-[#C8102E]" onClick={() => navigate('login')}>
+              <Button variant="link" size="sm" className="text-primary" onClick={() => navigate('login')}>
                 Log In
               </Button>
             </p>

@@ -87,14 +87,14 @@ export function DeleteAccountPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-start">
         <div className="space-y-4 md:space-y-6">
         {/* Caution Banner */}
-        <div className="bg-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2 border border-rose-800">
+        <div className="bg-rose-50 dark:bg-rose-950 rounded-3xl p-5 text-rose-900 dark:text-white shadow-xl space-y-2 border border-rose-200 dark:border-rose-800">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center">
               <AlertTriangle className="h-6 w-6 text-rose-400" />
             </div>
             <div>
-              <h1 className="text-base font-black text-white">Permanent Account Termination</h1>
-              <p className="text-xs text-rose-200">
+              <h1 className="text-base font-black text-rose-950 dark:text-white">Permanent Account Termination</h1>
+              <p className="text-xs text-rose-700 dark:text-rose-200">
                 This action is irreversible. All catalog listings and trade ratings will be permanently erased.
               </p>
             </div>

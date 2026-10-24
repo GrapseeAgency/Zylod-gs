@@ -164,7 +164,7 @@ export function CollectionDetailPage() {
         <div className="flex items-center gap-1 shrink-0">
           <button 
             onClick={() => navigate('create-collection', { collectionId: collection.id })}
-            className="p-2 text-[#C8102E] font-medium text-sm rounded-full active:bg-gray-100 dark:bg-gray-900"
+            className="p-2 text-primary font-medium text-sm rounded-full active:bg-gray-100 dark:bg-gray-900"
           >
             Edit
           </button>
@@ -225,7 +225,7 @@ export function CollectionDetailPage() {
             <button 
               onClick={toggleBatchMode}
               className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${
-                isBatchMode ? 'bg-red-50 text-[#C8102E] border border-red-200' : 'text-gray-600 dark:text-gray-400 border border-transparent'
+                isBatchMode ? 'bg-red-50 text-primary border border-red-200' : 'text-gray-600 dark:text-gray-400 border border-transparent'
               }`}
             >
               <CheckSquare className="w-4 h-4" />
@@ -258,13 +258,13 @@ export function CollectionDetailPage() {
               className="flex flex-col items-center justify-center text-center mt-12 bg-white dark:bg-gray-900 p-8 rounded-2xl border border-dashed border-gray-300"
             >
               <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
-                <Plus className="w-8 h-8 text-[#C8102E]" />
+                <Plus className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Collection is empty</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-6">Start adding products to this collection.</p>
               <button
                 onClick={() => navigate('create-collection', { collectionId: collection.id })}
-                className="bg-[#C8102E] text-white px-6 py-2.5 rounded-lg font-medium shadow-sm active:scale-95"
+                className="bg-primary text-white px-6 py-2.5 rounded-lg font-medium shadow-sm active:scale-95"
               >
                 Add Products
               </button>
@@ -288,12 +288,12 @@ export function CollectionDetailPage() {
                     }}
                     className={`bg-white dark:bg-gray-900 rounded-xl border overflow-hidden relative ${
                       viewMode === 'list' ? 'flex' : 'flex flex-col'
-                    } ${isSelected ? 'border-[#C8102E] ring-1 ring-[#C8102E]' : 'border-gray-200 dark:border-gray-800'}`}
+                    } ${isSelected ? 'border-primary ring-1 ring-[#C8102E]' : 'border-gray-200 dark:border-gray-800'}`}
                   >
                     {isBatchMode && (
                       <div className="absolute top-2 left-2 z-10 bg-white dark:bg-gray-900 rounded-full">
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                          isSelected ? 'bg-[#C8102E] border-[#C8102E]' : 'border-gray-300'
+                          isSelected ? 'bg-primary border-primary' : 'border-gray-300'
                         }`}>
                           {isSelected && <CheckSquare className="w-3.5 h-3.5 text-white" />}
                         </div>
@@ -311,7 +311,7 @@ export function CollectionDetailPage() {
                     <div className={`p-3 flex flex-col justify-between flex-1 ${viewMode === 'list' ? '' : 'min-h-[110px]'}`}>
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm line-clamp-2 leading-tight mb-1">{prod.name}</h4>
-                        <p className="text-[#C8102E] font-bold text-sm">
+                        <p className="text-primary font-bold text-sm">
                           {prod.currency} {prod.basePrice.toLocaleString()}
                         </p>
                       </div>
@@ -323,7 +323,7 @@ export function CollectionDetailPage() {
                           <button 
                             onClick={(e) => { e.stopPropagation(); addLineToCart(prod) }}
                             aria-label={`Add ${prod.name} to cart`}
-                            className="bg-[#C8102E] text-white p-1.5 rounded-full shadow-sm active:scale-95"
+                            className="bg-primary text-white p-1.5 rounded-full shadow-sm active:scale-95"
                           >
                             <Plus className="w-4 h-4" />
                           </button>
@@ -360,7 +360,7 @@ export function CollectionDetailPage() {
               setSelectedItems([])
               setIsBatchMode(false)
             }}
-            className="flex-1 bg-[#C8102E] text-white py-3 rounded-xl font-semibold shadow-md shadow-red-200"
+            className="flex-1 bg-primary text-white py-3 rounded-xl font-semibold shadow-md shadow-red-200"
           >
             Add to Cart
           </button>

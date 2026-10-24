@@ -407,7 +407,7 @@ export function MobileProductDetailPage() {
           <button onClick={() => navigate('cart')} className="relative flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="Cart">
             <ShoppingCart className="w-[17px] h-[17px] text-foreground" />
             {cartItemCount > 0 && (
-              <span className="absolute top-0.5 right-0.5 min-w-[14px] h-3.5 bg-[#E53935] text-white text-[8px] font-bold rounded-full flex items-center justify-center px-0.5">
+              <span className="absolute top-0.5 right-0.5 min-w-[14px] h-3.5 bg-primary text-white text-[8px] font-bold rounded-full flex items-center justify-center px-0.5">
                 {cartItemCount > 99 ? '99+' : cartItemCount}
               </span>
             )}
@@ -446,7 +446,7 @@ export function MobileProductDetailPage() {
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
             {productImages.map((_, i) => (
               <button key={i} onClick={() => setCurrentImageIndex(i)}
-                className={`w-2 h-2 rounded-full transition-all ${i === currentImageIndex ? 'bg-[#E53935] w-4' : 'bg-gray-300'}`}
+                className={`w-2 h-2 rounded-full transition-all ${i === currentImageIndex ? 'bg-primary w-4' : 'bg-gray-300'}`}
                 aria-label={`Image ${i + 1}`}
               />
             ))}
@@ -459,7 +459,7 @@ export function MobileProductDetailPage() {
         <div className="flex items-start gap-2">
           <h2 className="flex-1 text-lg font-bold text-foreground leading-snug">{product.name}</h2>
           <button onClick={handleToggleWishlist} className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full active:scale-95 transition-transform" aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}>
-            <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? 'fill-[#E53935] text-[#E53935]' : 'text-gray-400'}`} />
+            <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? 'fill-[#E53935] text-primary' : 'text-gray-400'}`} />
           </button>
         </div>
 
@@ -477,10 +477,10 @@ export function MobileProductDetailPage() {
         {/* Task 55-c: main price + bundle semantics (the mobile page previously had no main price row) */}
         <div className="mt-3">
           <div className="flex items-baseline gap-1.5 flex-wrap">
-            <span className="text-xl font-bold text-[#E53935]">{formatPrice(currentPrice)}</span>
+            <span className="text-xl font-bold text-primary">{formatPrice(currentPrice)}</span>
             <span className="text-xs text-muted-foreground">/ {priceUnitLabel}</span>
             {isBundle && (
-              <span className="text-[10px] font-medium text-[#E53935] bg-[#E53935]/5 border border-[#E53935]/30 rounded px-1.5 py-0.5">
+              <span className="text-[10px] font-medium text-primary bg-primary/5 border border-primary/30 rounded px-1.5 py-0.5">
                 1 bundle = {formatQty(bundleSize ?? 0)} {product.unit === 'bundle' ? 'pcs' : product.unit}
               </span>
             )}
@@ -563,7 +563,7 @@ export function MobileProductDetailPage() {
                       aria-selected={isSelected}
                       className={`shrink-0 snap-start whitespace-nowrap rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
                         isSelected
-                          ? 'border-[#E53935] bg-[#E53935] text-white'
+                          ? 'border-primary bg-primary text-white'
                           : 'border-gray-300 bg-white dark:bg-gray-900 text-foreground active:bg-gray-50 dark:bg-gray-950'
                       } ${variant.stockQuantity === 0 && !isSelected ? 'opacity-80' : ''}`}
                     >
@@ -595,7 +595,7 @@ export function MobileProductDetailPage() {
                       aria-selected={isSelected}
                       className={`max-w-full rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
                         isSelected
-                          ? 'border-[#E53935] bg-[#E53935] text-white'
+                          ? 'border-primary bg-primary text-white'
                           : 'border-gray-300 bg-white dark:bg-gray-900 text-foreground active:bg-gray-50 dark:bg-gray-950'
                       } ${variant.stockQuantity === 0 && !isSelected ? 'opacity-80' : ''}`}
                     >
@@ -646,7 +646,7 @@ export function MobileProductDetailPage() {
           className="w-full h-11 mt-3 text-sm"
           onClick={() => setSampleOpen(true)}
         >
-          <PackageOpen className="w-4 h-4 mr-1.5 text-[#E53935]" />
+          <PackageOpen className="w-4 h-4 mr-1.5 text-primary" />
           Order a sample first
         </Button>
 
@@ -669,7 +669,7 @@ export function MobileProductDetailPage() {
                       ? Math.round((1 - tier.pricePerUnit / product.basePrice) * 100)
                       : 0
                     return (
-                      <tr key={i} className={`border-t border-gray-100 ${isActive ? 'bg-[#E53935]/5' : 'bg-white dark:bg-gray-900'}`}>
+                      <tr key={i} className={`border-t border-gray-100 ${isActive ? 'bg-primary/5' : 'bg-white dark:bg-gray-900'}`}>
                         <td className="px-3 py-2.5 text-foreground">
                           {formatQty(tier.minQty)}{tier.maxQty === null ? '+' : `-${formatQty(tier.maxQty)}`} {isBundle ? 'bundles' : product.unit}
                         </td>
@@ -769,7 +769,7 @@ export function MobileProductDetailPage() {
                 productId: product.id,
                 supplierName: product.supplier.companyName,
               })}
-              className="w-full h-9 flex items-center justify-center gap-1.5 rounded-lg border border-[#E53935]/30 bg-[#E53935]/5 text-xs font-semibold text-[#E53935] active:bg-[#E53935]/10 transition-colors"
+              className="w-full h-9 flex items-center justify-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 text-xs font-semibold text-primary active:bg-primary/10 transition-colors"
               data-testid="mobile-message-supplier"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -779,7 +779,7 @@ export function MobileProductDetailPage() {
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
-              className="flex-1 h-10 border-[#E53935] text-[#E53935] hover:bg-[#E53935]/5 text-sm font-semibold disabled:opacity-50"
+              className="flex-1 h-10 border-primary text-primary hover:bg-primary/5 text-sm font-semibold disabled:opacity-50"
               onClick={handleAddToCart}
               disabled={currentVariantStock === 0}
             >
@@ -790,7 +790,7 @@ export function MobileProductDetailPage() {
               )}
             </Button>
             <Button
-              className="flex-[1.5] h-10 bg-[#E53935] hover:bg-[#E53935]/90 text-white text-sm font-semibold disabled:opacity-50"
+              className="flex-[1.5] h-10 bg-primary hover:bg-primary/90 text-white text-sm font-semibold disabled:opacity-50"
               onClick={handleBuyNow}
               disabled={currentVariantStock === 0 || quantity < product.moq}
             >
@@ -805,11 +805,11 @@ export function MobileProductDetailPage() {
         <div className="flex border-b border-gray-200 dark:border-gray-800 overflow-x-auto scrollbar-hide">
           {tabs.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={`relative flex-shrink-0 px-3 py-3 text-xs font-medium whitespace-nowrap transition-colors ${activeTab === tab.id ? 'text-[#E53935]' : 'text-muted-foreground'}`}
+              className={`relative flex-shrink-0 px-3 py-3 text-xs font-medium whitespace-nowrap transition-colors ${activeTab === tab.id ? 'text-primary' : 'text-muted-foreground'}`}
             >
               {tab.label}
               {activeTab === tab.id && (
-                <motion.div layoutId="tab-underline" className="absolute bottom-0 left-3 right-3 h-0.5 bg-[#E53935] rounded-full" />
+                <motion.div layoutId="tab-underline" className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />
               )}
             </button>
           ))}
@@ -909,7 +909,7 @@ export function MobileProductDetailPage() {
                     product.reviews.map(review => (
                       <div key={review.id} className="bg-gray-50 dark:bg-gray-950 rounded-lg p-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-[#E53935]/10 text-[#E53935] flex items-center justify-center text-xs font-bold">
+                          <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
                             {(review.buyer?.buyerProfile?.fullName || 'A').charAt(0).toUpperCase()}
                           </div>
                           <div className="flex-1">
@@ -961,8 +961,8 @@ export function MobileProductDetailPage() {
       {/* ─── 5. Supplier Section ─── */}
       <div className="bg-white dark:bg-gray-900 mt-2 px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#E53935]/10 flex items-center justify-center">
-            <Store className="w-5 h-5 text-[#E53935]" />
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <Store className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
@@ -973,7 +973,7 @@ export function MobileProductDetailPage() {
             </div>
             <p className="text-[10px] text-muted-foreground">{product.supplier.city || '—'}</p>
           </div>
-          <Button variant="outline" size="sm" className="text-[#E53935] border-[#E53935] hover:bg-[#E53935]/5 text-xs h-7"
+          <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/5 text-xs h-7"
             onClick={() => navigate('supplier-profile', { supplierId: product.supplier.id })}>
             Visit Store
           </Button>

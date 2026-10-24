@@ -10,7 +10,7 @@ const LeafletMap = dynamic(() => import('./live-tracking-map'), {
   loading: () => (
     <div className="w-full h-48 bg-gray-100 dark:bg-gray-900 rounded-xl flex items-center justify-center">
       <div className="flex flex-col items-center gap-1.5">
-        <Truck className="h-6 w-6 text-[#E53935] animate-pulse" />
+        <Truck className="h-6 w-6 text-primary animate-pulse" />
         <span className="text-xs text-muted-foreground">Loading live map...</span>
       </div>
     </div>
@@ -69,7 +69,7 @@ export default function LiveTracking({
           </div>
           {isLive && gpsPoints.length > 0 && (
             <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
-              <Navigation className="h-2.5 w-2.5 inline mr-1 text-[#E53935]" />
+              <Navigation className="h-2.5 w-2.5 inline mr-1 text-primary" />
               {gpsPoints[gpsPoints.length - 1].location || 'Driver en route'}
               {gpsPoints[gpsPoints.length - 1].speed != null && ` · ${Math.round(gpsPoints[gpsPoints.length - 1].speed!)} km/h`}
             </p>

@@ -151,9 +151,9 @@ export function ExplorePage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors md:hidden"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+          <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
-        <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+        <span className="text-lg font-bold text-primary">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -197,7 +197,7 @@ export function ExplorePage() {
             onClick={() => setActiveCategory(null)}
             className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
               activeCategory === null
-                ? 'bg-[#C8102E] text-white shadow-sm'
+                ? 'bg-primary text-white shadow-sm'
                 : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0] dark:bg-gray-800'
             }`}
           >
@@ -209,7 +209,7 @@ export function ExplorePage() {
               onClick={() => setActiveCategory(cat.slug)}
               className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                 activeCategory === cat.slug
-                  ? 'bg-[#C8102E] text-white shadow-sm'
+                  ? 'bg-primary text-white shadow-sm'
                   : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0] dark:bg-gray-800'
               }`}
             >
@@ -225,7 +225,7 @@ export function ExplorePage() {
             <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white">Personalized for You</h2>
             <button
               onClick={() => navigate('recommended')}
-              className="text-xs font-bold text-[#C8102E] hover:underline"
+              className="text-xs font-bold text-primary hover:underline"
             >
               See All
             </button>
@@ -234,13 +234,13 @@ export function ExplorePage() {
           {/* Loading / Error / Empty States */}
           {isLoading && (
             <div className="flex flex-col items-center gap-3 py-14">
-              <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
+              <Loader2 className="w-7 h-7 text-primary animate-spin" />
               <p className="text-sm text-[#6B7280] dark:text-gray-400">Finding picks for you...</p>
             </div>
           )}
           {!isLoading && loadError && (
             <div className="flex flex-col items-center gap-3 py-14">
-              <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
+              <AlertTriangle className="w-8 h-8 text-primary" />
               <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
             </div>
           )}
@@ -276,7 +276,7 @@ export function ExplorePage() {
                   >
                     <Heart
                       className={`h-5 w-5 ${
-                        isInWishlist(heroProduct.id) ? 'fill-[#C8102E] text-[#C8102E]' : 'text-gray-400 dark:text-gray-500'
+                        isInWishlist(heroProduct.id) ? 'fill-[#C8102E] text-primary' : 'text-gray-400 dark:text-gray-500'
                       }`}
                     />
                   </button>
@@ -286,7 +286,7 @@ export function ExplorePage() {
                   <h3 className="font-bold text-[#1A1A1A] dark:text-white text-base leading-snug mb-1 line-clamp-2">
                     {heroProduct.name}
                   </h3>
-                  <div className="flex items-baseline gap-1 text-[#C8102E] font-bold text-lg">
+                  <div className="flex items-baseline gap-1 text-primary font-bold text-lg">
                     {formatPrice(heroProduct.basePrice)}
                     <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400">/ {heroProduct.unit || 'unit'}</span>
                   </div>
@@ -300,7 +300,7 @@ export function ExplorePage() {
                         e.stopPropagation()
                         navigate('product-detail', { productId: heroProduct.id })
                       }}
-                      className="px-4 py-2 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-semibold rounded-lg shadow-sm transition-colors"
+                      className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors"
                     >
                       View & Contact Supplier
                     </button>
@@ -328,7 +328,7 @@ export function ExplorePage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-semibold text-[#1A1A1A] dark:text-white truncate">{item.name}</h4>
-                      <p className="text-sm font-bold text-[#C8102E] mt-0.5">
+                      <p className="text-sm font-bold text-primary mt-0.5">
                         {formatPrice(item.basePrice)}
                         <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400"> / {item.unit || 'unit'}</span>
                       </p>
@@ -351,7 +351,7 @@ export function ExplorePage() {
                 <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white">Supplier Spotlight</h2>
                 <button
                   onClick={() => navigate('suppliers')}
-                  className="text-xs font-bold text-[#C8102E] hover:underline"
+                  className="text-xs font-bold text-primary hover:underline"
                 >
                   See All
                 </button>
@@ -362,17 +362,17 @@ export function ExplorePage() {
                   <div
                     key={sup.id}
                     onClick={() => navigate('seller-storefront', { supplierId: sup.id })}
-                    className="bg-white dark:bg-gray-900 rounded-xl p-3 flex flex-col items-center text-center border border-[#E0E0E0] dark:border-gray-800 shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer group"
+                    className="bg-white dark:bg-gray-900 rounded-xl p-3 flex flex-col items-center text-center border border-[#E0E0E0] dark:border-gray-800 shadow-sm hover:border-primary/40 transition-all cursor-pointer group"
                   >
                     <div className="w-12 h-12 rounded-full border-2 border-red-100 flex items-center justify-center mb-2 bg-gray-50 dark:bg-gray-950 group-hover:scale-105 transition-transform">
-                      <span className="text-sm font-black text-[#C8102E]">
+                      <span className="text-sm font-black text-primary">
                         {sup.companyName.slice(0, 2).toUpperCase()}
                       </span>
                     </div>
-                    <span className="text-xs font-bold text-[#1A1A1A] dark:text-white line-clamp-1 group-hover:text-[#C8102E] transition-colors">
+                    <span className="text-xs font-bold text-[#1A1A1A] dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
                       {sup.companyName}
                     </span>
-                    <div className="flex items-center gap-1 mt-1 text-[11px] font-semibold text-[#C8102E]">
+                    <div className="flex items-center gap-1 mt-1 text-[11px] font-semibold text-primary">
                       {sup.ratingAvg !== null && sup.ratingAvg > 0 ? (
                         <>
                           <Star className="h-3 w-3 fill-[#C8102E]" />

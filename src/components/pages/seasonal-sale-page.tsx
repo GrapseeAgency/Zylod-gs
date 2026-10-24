@@ -114,9 +114,9 @@ export function SeasonalSalePage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+          <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
-        <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+        <span className="text-lg font-bold text-primary">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -138,7 +138,7 @@ export function SeasonalSalePage() {
         <div className="absolute inset-0 bg-white dark:bg-gray-900/70 backdrop-blur-[2px]" />
 
         <div className="relative z-10 max-w-sm">
-          <div className="w-12 h-12 rounded-full bg-[#C8102E]/10 text-[#C8102E] flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-3">
             {seasonIcon('h-6 w-6')}
           </div>
           <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white tracking-tight">
@@ -155,13 +155,13 @@ export function SeasonalSalePage() {
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
+            <Loader2 className="w-7 h-7 text-primary animate-spin" />
             <p className="text-sm text-[#6B7280] dark:text-gray-400">Gathering seasonal picks...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
+            <AlertTriangle className="w-8 h-8 text-primary" />
             <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
@@ -181,7 +181,7 @@ export function SeasonalSalePage() {
               <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white">Curated Kits</h2>
               <button
                 onClick={() => navigate('category-products', { filter: 'seasonal' })}
-                className="text-xs font-bold text-[#C8102E] hover:underline"
+                className="text-xs font-bold text-primary hover:underline"
               >
                 See All
               </button>
@@ -224,7 +224,7 @@ export function SeasonalSalePage() {
                           e.stopPropagation()
                           navigate('category-products', { category: kit.slug })
                         }}
-                        className="px-4 py-1.5 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg shadow-sm transition-colors"
+                        className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-sm transition-colors"
                       >
                         View Kit
                       </button>

@@ -70,9 +70,9 @@ export function SuppliersDirectoryPage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+          <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
-        <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+        <span className="text-lg font-bold text-primary">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -96,20 +96,20 @@ export function SuppliersDirectoryPage() {
             placeholder="Search suppliers..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-11 pl-10 pr-4 bg-white dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 rounded-xl text-sm text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-[#C8102E] shadow-sm"
+            className="w-full h-11 pl-10 pr-4 bg-white dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 rounded-xl text-sm text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-primary shadow-sm"
           />
         </div>
 
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
+            <Loader2 className="w-7 h-7 text-primary animate-spin" />
             <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading suppliers...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
+            <AlertTriangle className="w-8 h-8 text-primary" />
             <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
@@ -134,7 +134,7 @@ export function SuppliersDirectoryPage() {
               className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-4 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
             >
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FFE4E6] to-[#FECDD3] flex items-center justify-center shrink-0">
-                <span className="text-sm font-black text-[#C8102E]">
+                <span className="text-sm font-black text-primary">
                   {sup.companyName.slice(0, 2).toUpperCase()}
                 </span>
               </div>
@@ -148,7 +148,7 @@ export function SuppliersDirectoryPage() {
                 </div>
                 <div className="flex items-center gap-3 mt-1 text-xs text-[#6B7280] dark:text-gray-400">
                   {sup.ratingAvg !== null && sup.ratingAvg > 0 ? (
-                    <span className="flex items-center gap-1 font-semibold text-[#C8102E]">
+                    <span className="flex items-center gap-1 font-semibold text-primary">
                       <Star className="h-3 w-3 fill-[#C8102E]" />
                       {sup.ratingAvg.toFixed(1)}
                     </span>

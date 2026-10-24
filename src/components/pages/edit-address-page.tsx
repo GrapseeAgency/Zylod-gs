@@ -139,7 +139,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
       </header>
 
       {/* Map Thumbnail (decorative / real map if Google Maps API present) */}
-      <div className="relative h-36 md:h-48 bg-slate-200 overflow-hidden">
+      <div className="relative h-36 md:h-48 bg-slate-200 dark:bg-slate-800 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-200 to-slate-300">
           {/* Grid lines to simulate map look */}
           <div className="absolute inset-0 grid grid-cols-6 grid-rows-4 opacity-30">

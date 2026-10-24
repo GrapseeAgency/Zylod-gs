@@ -47,7 +47,7 @@ export function PaymentMethodsDetailPage() {
                   <h3 className="text-xs md:text-sm font-bold text-gray-900 dark:text-gray-100">{m.name}</h3>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 font-semibold">{m.category}</p>
                 </div>
-                <div className="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-950/40 text-violet-600 flex items-center justify-center shrink-0">
                   <m.icon className="w-4 h-4" />
                 </div>
               </div>
@@ -56,7 +56,7 @@ export function PaymentMethodsDetailPage() {
           ))}
         </div>
 
-        <div className="bg-violet-50 rounded-2xl p-4 border border-violet-100 text-xs text-violet-900 leading-relaxed">
+        <div className="bg-violet-50 dark:bg-violet-950/40 rounded-2xl p-4 border border-violet-100 dark:border-violet-900/60 text-xs text-violet-900 dark:text-violet-100 leading-relaxed">
           Zylod does not hold payments in escrow — your bank or mobile-money provider may charge its own transfer fees. Card payments and wallet top-ups are not available yet. An order stays UNPAID until your payment is verified.
         </div>
 

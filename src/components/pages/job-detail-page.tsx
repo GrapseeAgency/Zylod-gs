@@ -39,7 +39,7 @@ export function JobDetailPage() {
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-4 pb-24 md:px-6 md:py-6 md:pb-8 md:space-y-6 lg:max-w-4xl">
         {loading ? (
           <div className="space-y-3 animate-pulse">
-            {[1, 2, 3].map(i => <div key={i} className="h-32 bg-gray-200 rounded-3xl" />)}
+            {[1, 2, 3].map(i => <div key={i} className="h-32 bg-gray-200 dark:bg-gray-800 rounded-3xl" />)}
           </div>
         ) : !job ? (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 text-center text-gray-400 dark:text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-800">
@@ -66,7 +66,7 @@ export function JobDetailPage() {
                   {job.employmentType?.replace('_', ' ').toUpperCase()}
                 </span>
                 {job.salaryMin && (
-                  <span className="font-bold text-emerald-700">
+                  <span className="font-bold text-emerald-700 dark:text-emerald-300">
                     ৳{(job.salaryMin / 1000).toFixed(0)}k - {(job.salaryMax / 1000).toFixed(0)}k / month
                   </span>
                 )}

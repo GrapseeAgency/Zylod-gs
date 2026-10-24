@@ -130,9 +130,9 @@ export function AccountSuspendedPage() {
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
         aria-label="Go back"
       >
-        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        <ArrowLeft className="w-5 h-5 text-primary" />
       </button>
-      <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+      <span className="text-lg font-bold text-primary">Zylod</span>
       <button
         onClick={() => navigate('help-center')}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
@@ -152,7 +152,7 @@ export function AccountSuspendedPage() {
           className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+          <ArrowLeft className="w-5 h-5 text-primary" />
         </button>
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Account Suspended</h1>
         <button
@@ -176,7 +176,7 @@ export function AccountSuspendedPage() {
       className="flex flex-col items-center pt-8 pb-4"
     >
       <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
-        <AlertCircle className="w-14 h-14 text-[#C8102E]" strokeWidth={3} />
+        <AlertCircle className="w-14 h-14 text-primary" strokeWidth={3} />
       </div>
     </motion.div>
   )
@@ -213,7 +213,7 @@ export function AccountSuspendedPage() {
           {/* Section 1: Reason for Suspension */}
           <div className="flex gap-3">
             <div className="mt-0.5 shrink-0">
-              <Shield className="w-5 h-5 text-[#C8102E]" />
+              <Shield className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white mb-1">
@@ -238,7 +238,7 @@ export function AccountSuspendedPage() {
           {/* Section 2: Current Status */}
           <div className="flex gap-3">
             <div className="mt-0.5 shrink-0">
-              <Clock className="w-5 h-5 text-[#C8102E]" />
+              <Clock className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white mb-1">
@@ -276,7 +276,7 @@ export function AccountSuspendedPage() {
         <Button
           onClick={handleContactSupport}
           disabled={supportState === 'sending'}
-          className="w-full h-[52px] bg-[#C8102E] hover:bg-[#A50D25] text-white rounded-xl text-base font-semibold gap-2 disabled:opacity-50"
+          className="w-full h-[52px] bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold gap-2 disabled:opacity-50"
         >
           {supportState === 'sending' ? (
             <>
@@ -305,7 +305,7 @@ export function AccountSuspendedPage() {
     >
       <button
         onClick={() => navigate('terms')}
-        className="flex items-center gap-1.5 text-[#C8102E] text-sm font-semibold hover:underline"
+        className="flex items-center gap-1.5 text-primary text-sm font-semibold hover:underline"
       >
         Review Policy
         <ExternalLink className="w-4 h-4" />

@@ -171,7 +171,7 @@ export default function RegisterSupplierPage() {
     >
       <div className="text-center space-y-2">
         <div className="flex justify-center">
-          <div className="h-12 w-12 rounded-lg bg-[#C8102E] text-white font-bold text-lg flex items-center justify-center">
+          <div className="h-12 w-12 rounded-lg bg-primary text-white font-bold text-lg flex items-center justify-center">
             <Store className="h-6 w-6" />
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function RegisterSupplierPage() {
         <Progress value={progressPct} className="h-2" />
         <div className="flex justify-between">
           {STEPS.map((s, i) => (
-            <div key={i} className={`flex items-center gap-1 text-xs ${step > i + 1 ? 'text-[#C8102E]' : step === i + 1 ? 'text-[#1A1A1A] dark:text-white font-medium' : 'text-[#6B7280] dark:text-gray-400'}`}>
+            <div key={i} className={`flex items-center gap-1 text-xs ${step > i + 1 ? 'text-primary' : step === i + 1 ? 'text-[#1A1A1A] dark:text-white font-medium' : 'text-[#6B7280] dark:text-gray-400'}`}>
               <s.icon className="h-3 w-3" />
               <span className="hidden sm:inline">{s.label}</span>
               <span className="sm:hidden">{i + 1}</span>
@@ -276,7 +276,7 @@ export default function RegisterSupplierPage() {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-[#C8102E] hover:bg-[#A50D25] text-white">
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white">
                 Next: NID Upload <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </form>
@@ -305,7 +305,7 @@ export default function RegisterSupplierPage() {
                         <div className="p-2 text-sm text-center text-[#6B7280] dark:text-gray-400">Click to change</div>
                       </div>
                     ) : (
-                      <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-[#C8102E]/50 transition-colors">
+                      <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
                         <Upload className="h-8 w-8 mx-auto text-[#6B7280] dark:text-gray-400 mb-2" />
                         <p className="text-sm text-[#6B7280] dark:text-gray-400">Click or drag to upload NID front photo</p>
                       </div>
@@ -330,7 +330,7 @@ export default function RegisterSupplierPage() {
                         <div className="p-2 text-sm text-center text-[#6B7280] dark:text-gray-400">Click to change</div>
                       </div>
                     ) : (
-                      <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-[#C8102E]/50 transition-colors">
+                      <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
                         <Upload className="h-8 w-8 mx-auto text-[#6B7280] dark:text-gray-400 mb-2" />
                         <p className="text-sm text-[#6B7280] dark:text-gray-400">Click or drag to upload NID back photo</p>
                       </div>
@@ -339,14 +339,14 @@ export default function RegisterSupplierPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F8F9FA] dark:bg-gray-950 text-sm">
-                <Shield className="h-4 w-4 text-[#C8102E] shrink-0" />
+                <Shield className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-[#6B7280] dark:text-gray-400">Your NID will be verified by our admin team before you can start selling.</span>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setStep(1)} className="w-1/3">
                   <ArrowLeft className="h-4 w-4 mr-1" /> Back
                 </Button>
-                <Button type="submit" className="flex-1 bg-[#C8102E] hover:bg-[#A50D25] text-white">
+                <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-white">
                   Next: Trade License <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
@@ -376,7 +376,7 @@ export default function RegisterSupplierPage() {
                         <div className="p-2 text-sm text-center text-[#6B7280] dark:text-gray-400">Click to change</div>
                       </div>
                     ) : (
-                      <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-[#C8102E]/50 transition-colors">
+                      <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
                         <Upload className="h-8 w-8 mx-auto text-[#6B7280] dark:text-gray-400 mb-2" />
                         <p className="text-sm text-[#6B7280] dark:text-gray-400">Upload trade license document (optional)</p>
                       </div>
@@ -392,7 +392,7 @@ export default function RegisterSupplierPage() {
                 <Button variant="outline" onClick={() => setStep(2)} className="w-1/3">
                   <ArrowLeft className="h-4 w-4 mr-1" /> Back
                 </Button>
-                <Button type="submit" className="flex-1 bg-[#C8102E] hover:bg-[#A50D25] text-white">
+                <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-white">
                   Next: Bank Details <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
@@ -418,14 +418,14 @@ export default function RegisterSupplierPage() {
                 <Input id="bankBranch" placeholder="Branch name" value={bankBranch} onChange={(e) => setBankBranch(e.target.value)} />
               </div>
               <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F8F9FA] dark:bg-gray-950 text-sm">
-                <Banknote className="h-4 w-4 text-[#C8102E] shrink-0" />
+                <Banknote className="h-4 w-4 text-primary shrink-0" />
                 <span className="text-[#6B7280] dark:text-gray-400">Your bank details will be used for receiving payments from buyer orders.</span>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setStep(3)} className="w-1/3">
                   <ArrowLeft className="h-4 w-4 mr-1" /> Back
                 </Button>
-                <Button type="submit" className="flex-1 bg-[#C8102E] hover:bg-[#A50D25] text-white" disabled={isLoading}>
+                <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-white" disabled={isLoading}>
                   {isLoading ? 'Creating Account...' : 'Create Account & Submit'}
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
@@ -438,7 +438,7 @@ export default function RegisterSupplierPage() {
           <div className="mt-4 text-center">
             <p className="text-sm text-[#6B7280] dark:text-gray-400">
               Already have an account?{' '}
-              <Button variant="link" size="sm" className="text-[#C8102E]" onClick={() => navigate('login')}>Log In</Button>
+              <Button variant="link" size="sm" className="text-primary" onClick={() => navigate('login')}>Log In</Button>
             </p>
           </div>
         </CardContent>

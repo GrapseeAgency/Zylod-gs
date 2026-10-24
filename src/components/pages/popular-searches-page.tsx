@@ -77,12 +77,12 @@ export function PopularSearchesPage() {
         {categories.length > 0 && (
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
             <button onClick={() => setSelectedCategory(null)}
-              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs transition ${!selectedCategory ? 'bg-gray-800 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
+              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs transition ${!selectedCategory ? 'bg-primary text-primary-foreground' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
               All
             </button>
             {categories.map(cat => (
               <button key={cat} onClick={() => setSelectedCategory(cat === selectedCategory ? null : cat)}
-                className={`flex-shrink-0 px-3 py-1 rounded-full text-xs transition capitalize ${selectedCategory === cat ? 'bg-gray-800 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
+                className={`flex-shrink-0 px-3 py-1 rounded-full text-xs transition capitalize ${selectedCategory === cat ? 'bg-primary text-primary-foreground' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
                 {cat}
               </button>
             ))}

@@ -62,8 +62,8 @@ export function DataCollectionPage() {
                   </li>
                 ))}
               </ul>
-              <div className="p-2.5 bg-emerald-50 rounded-2xl">
-                <p className="text-[11px] text-emerald-800 font-medium">
+              <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl">
+                <p className="text-[11px] text-emerald-800 dark:text-emerald-200 font-medium">
                   <strong>Why we need this:</strong> {c.reason}
                 </p>
               </div>

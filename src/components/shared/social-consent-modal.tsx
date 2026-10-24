@@ -136,7 +136,7 @@ export function SocialConsentModal() {
                   value={state.email}
                   onChange={(e) => setState((s) => ({ ...s, email: e.target.value }))}
                   onKeyDown={(e) => { if (e.key === 'Enter' && state.email.includes('@')) confirm() }}
-                  className="w-full h-11 px-3 rounded-lg border border-[#DADCE0] dark:border-gray-700 text-sm text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#C8102E] focus:ring-2 focus:ring-[#C8102E]/20"
+                  className="w-full h-11 px-3 rounded-lg border border-gray-300 dark:border-gray-700 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
                 <label htmlFor="social-name" className="text-xs font-semibold text-[#6B7280] dark:text-gray-400 uppercase tracking-wide block pt-1">
                   Full name
@@ -147,7 +147,7 @@ export function SocialConsentModal() {
                   placeholder="Your full name"
                   value={state.name}
                   onChange={(e) => setState((s) => ({ ...s, name: e.target.value }))}
-                  className="w-full h-11 px-3 rounded-lg border border-[#DADCE0] dark:border-gray-700 text-sm text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#C8102E] focus:ring-2 focus:ring-[#C8102E]/20"
+                  className="w-full h-11 px-3 rounded-lg border border-gray-300 dark:border-gray-700 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -169,7 +169,7 @@ export function SocialConsentModal() {
 
               <div className="flex items-start gap-2 pt-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#6B7280] dark:text-gray-400 shrink-0 mt-0.5" />
-                <p className="text-[11px] text-[#9CA3AF] leading-relaxed">
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
                   Zylod never posts on your behalf or shares your contacts. You can revoke access at any time from your {meta.label} account settings.
                 </p>
               </div>

@@ -81,9 +81,9 @@ export function TrendingProductsPage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+          <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
-        <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+        <span className="text-lg font-bold text-primary">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -97,10 +97,10 @@ export function TrendingProductsPage() {
       <div className="bg-[#F8ECEE] dark:bg-primary/5 px-5 py-6 border-b border-[#F0D5D8] dark:border-primary/20">
         <div className="flex items-center gap-2 mb-1.5">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C8102E] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#C8102E]"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
           </span>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#C8102E]">
+          <span className="text-xs font-bold uppercase tracking-wider text-primary">
             Live Market Data
           </span>
         </div>
@@ -116,7 +116,7 @@ export function TrendingProductsPage() {
         {/* ─── Loading State ─── */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-16">
-            <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
+            <Loader2 className="w-7 h-7 text-primary animate-spin" />
             <p className="text-sm text-[#6B7280] dark:text-gray-400">Ranking top movers...</p>
           </div>
         )}
@@ -124,7 +124,7 @@ export function TrendingProductsPage() {
         {/* ─── Error / Empty States ─── */}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-16">
-            <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
+            <AlertTriangle className="w-8 h-8 text-primary" />
             <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
@@ -225,7 +225,7 @@ export function TrendingProductsPage() {
                 <h3 className="font-bold text-[#1A1A1A] dark:text-white text-sm leading-snug line-clamp-1">
                   {item.name}
                 </h3>
-                <div className="text-base font-bold text-[#C8102E] mt-1">
+                <div className="text-base font-bold text-primary mt-1">
                   {formatPrice(item.basePrice)}
                   <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400"> / {item.unit || 'unit'}</span>
                 </div>
@@ -247,9 +247,9 @@ export function TrendingProductsPage() {
         {products.length > 0 && (
           <div
             onClick={() => navigate('category-products', { filter: 'trending' })}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-6 text-center shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-6 text-center shadow-sm hover:border-primary/40 transition-all cursor-pointer"
           >
-            <div className="w-14 h-14 rounded-full bg-[#FFE4E6] dark:bg-primary/10 text-[#C8102E] flex items-center justify-center mx-auto mb-3">
+            <div className="w-14 h-14 rounded-full bg-[#FFE4E6] dark:bg-primary/10 text-primary flex items-center justify-center mx-auto mb-3">
               <ArrowRight className="h-6 w-6" />
             </div>
             <h3 className="font-bold text-base text-[#1A1A1A] dark:text-white">View All Trending</h3>

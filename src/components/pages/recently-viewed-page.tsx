@@ -325,7 +325,7 @@ export function RecentlyViewedPage() {
             Recently viewed products are saved to your account, so you can pick up where you left off on any device.
           </p>
           <Button
-            className="bg-[#C8102E] hover:bg-[#A30D25] text-white px-8"
+            className="bg-primary hover:bg-[#A30D25] text-white px-8"
             onClick={() => navigate('login')}
           >
             Sign in
@@ -367,7 +367,7 @@ export function RecentlyViewedPage() {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No recently viewed products</h2>
           <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-6">Your browsing history will appear here.</p>
           <Button
-            className="bg-[#C8102E] hover:bg-[#A30D25] text-white px-8"
+            className="bg-primary hover:bg-[#A30D25] text-white px-8"
             onClick={() => navigate('home')}
           >
             Start exploring
@@ -425,7 +425,7 @@ export function RecentlyViewedPage() {
                           </div>
                           <div className="flex items-center justify-between mt-2">
                             <div>
-                              <span className="text-[#C8102E] font-bold text-sm">
+                              <span className="text-primary font-bold text-sm">
                                 {item.product.currency} {displayPrice(item.product).toFixed(2)}
                               </span>
                               <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 ml-1">
@@ -434,7 +434,7 @@ export function RecentlyViewedPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               <button
-                                className={`p-1.5 rounded-full transition-colors ${wished ? 'text-[#C8102E] bg-red-50' : 'text-gray-400 dark:text-gray-500 hover:text-[#C8102E] hover:bg-red-50'}`}
+                                className={`p-1.5 rounded-full transition-colors ${wished ? 'text-primary bg-red-50' : 'text-gray-400 dark:text-gray-500 hover:text-primary hover:bg-red-50'}`}
                                 disabled={!!busyIds[`w-${item.id}`]}
                                 aria-label={wished ? 'Remove from wishlist' : 'Add to wishlist'}
                                 onClick={(e) => { e.stopPropagation(); toggleWishlist(item); }}
@@ -442,7 +442,7 @@ export function RecentlyViewedPage() {
                                 <Heart className={`w-4 h-4 ${wished ? 'fill-current' : ''}`} />
                               </button>
                               <button
-                                className="p-1.5 bg-[#C8102E] text-white rounded-full shadow-sm hover:bg-[#A30D25] transition-colors"
+                                className="p-1.5 bg-primary text-white rounded-full shadow-sm hover:bg-[#A30D25] transition-colors"
                                 aria-label="Add MOQ to cart"
                                 onClick={(e) => { e.stopPropagation(); addToCart(item); }}
                               >
@@ -460,7 +460,7 @@ export function RecentlyViewedPage() {
           ))}
 
           <div ref={observerTarget} className="h-4 w-full flex justify-center py-4">
-            {loadingMore && <Loader2 className="w-6 h-6 animate-spin text-[#C8102E]" />}
+            {loadingMore && <Loader2 className="w-6 h-6 animate-spin text-primary" />}
           </div>
         </div>
       )}

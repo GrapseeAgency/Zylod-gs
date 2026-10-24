@@ -64,7 +64,7 @@ export function RecentlySearchedPage() {
         <div className="hidden md:flex items-center justify-between md:max-w-3xl md:mx-auto">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Recent Searches</h1>
           {history.length > 0 && (
-            <button onClick={clearAll} className="text-sm font-medium text-[#C8102E]">Clear all</button>
+            <button onClick={clearAll} className="text-sm font-medium text-primary">Clear all</button>
           )}
         </div>
         <div className="flex items-center justify-between md:hidden">
@@ -75,7 +75,7 @@ export function RecentlySearchedPage() {
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Search</h1>
           </div>
           {history.length > 0 && (
-            <button onClick={clearAll} className="text-sm font-medium text-[#C8102E]">
+            <button onClick={clearAll} className="text-sm font-medium text-primary">
               Clear all
             </button>
           )}
@@ -88,7 +88,7 @@ export function RecentlySearchedPage() {
           <input
             autoFocus
             type="text"
-            className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl leading-5 bg-gray-50 dark:bg-gray-950 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:bg-white dark:bg-gray-900 focus:ring-1 focus:ring-[#C8102E] focus:border-[#C8102E] sm:text-sm transition-colors"
+            className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-gray-800 rounded-xl leading-5 bg-gray-50 dark:bg-gray-950 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:bg-white dark:bg-gray-900 focus:ring-1 focus:ring-[#C8102E] focus:border-primary sm:text-sm transition-colors"
             placeholder="Search products, suppliers, or categories..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}

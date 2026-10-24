@@ -57,11 +57,11 @@ export function CustomsClearancePage() {
         </div>
 
         {/* The honest banner — no live process is bound to this view */}
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-3xl flex items-start gap-3">
-          <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-          <div className="text-xs leading-relaxed text-amber-900 space-y-1">
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-3xl flex items-start gap-3">
+          <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="text-xs leading-relaxed text-amber-900 dark:text-amber-100 space-y-1">
             <p className="font-black">No live customs process is attached to this view.</p>
-            <p className="text-amber-800">
+            <p className="text-amber-800 dark:text-amber-200">
               Zylod does not clear customs — cross-border consignments are cleared by your own
               freight forwarder / C&amp;F agent outside the platform, and your supplier ships EXW/FOB/CIF
               per your agreed incoterm. There is intentionally NO fake status, broker, duty figure, or
@@ -119,7 +119,7 @@ export function CustomsClearancePage() {
           <div className="space-y-2">
             {PROCESS_STEPS.map((step) => (
               <div key={step.title} className="p-3 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-rose-50 text-primary flex items-center justify-center shrink-0 border border-rose-100">
+                <div className="w-6 h-6 rounded-full bg-rose-50 dark:bg-rose-950/40 text-primary flex items-center justify-center shrink-0 border border-rose-100 dark:border-rose-900/60">
                   <Check className="h-3.5 w-3.5" />
                 </div>
                 <div>

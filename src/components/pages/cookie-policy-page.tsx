@@ -54,8 +54,8 @@ export function CookiePolicyPage() {
 
   const cookieTypes = [
     { type: 'Strictly Necessary', icon: Shield, color: 'text-primary', bg: 'bg-primary/5', desc: 'Essential for platform operation — authentication, cart, security', required: true },
-    { type: 'Analytics', icon: BarChart3, color: 'text-amber-600', bg: 'bg-amber-50', desc: 'Help us understand platform usage patterns to improve your experience', required: false },
-    { type: 'Marketing', icon: Megaphone, color: 'text-rose-600', bg: 'bg-rose-50', desc: 'Personalise wholesale deals, promotions, and recommendations', required: false },
+    { type: 'Analytics', icon: BarChart3, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950/40', desc: 'Help us understand platform usage patterns to improve your experience', required: false },
+    { type: 'Marketing', icon: Megaphone, color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-950/40', desc: 'Personalise wholesale deals, promotions, and recommendations', required: false },
   ]
 
   return (

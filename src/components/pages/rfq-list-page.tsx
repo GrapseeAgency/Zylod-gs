@@ -363,14 +363,14 @@ export function RfqListPage() {
     return (
       <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center p-4">
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-8 flex flex-col items-center gap-3 text-center shadow-sm max-w-sm w-full">
-          <LogIn className="w-8 h-8 text-[#C8102E]" />
+          <LogIn className="w-8 h-8 text-primary" />
           <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">Sign in to view your quote requests</p>
           <p className="text-xs text-[#6B7280] dark:text-gray-400 max-w-[260px]">
             Your RFQ history and supplier quotes are tied to your account.
           </p>
           <button
             onClick={() => navigate('login')}
-            className="mt-1 px-6 min-h-11 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
+            className="mt-1 px-6 min-h-11 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg"
           >
             Sign In
           </button>
@@ -398,9 +398,9 @@ export function RfqListPage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+          <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
-        <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+        <span className="text-lg font-bold text-primary">Zylod</span>
         <div className="flex items-center">
           <button
             onClick={() => navigate('help-center')}
@@ -414,7 +414,7 @@ export function RfqListPage() {
             className="p-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
             aria-label="New quote request"
           >
-            <Plus className="h-5 w-5 text-[#C8102E]" />
+            <Plus className="h-5 w-5 text-primary" />
           </button>
         </div>
       </header>
@@ -428,7 +428,7 @@ export function RfqListPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate('quote-request')}
-              className="inline-flex items-center gap-1.5 min-h-11 px-4 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
+              className="inline-flex items-center gap-1.5 min-h-11 px-4 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg"
             >
               <Plus className="h-4 w-4" />
               New RFQ
@@ -450,17 +450,17 @@ export function RfqListPage() {
         {/* ─── Loading / Error States ─── */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
+            <Loader2 className="w-7 h-7 text-primary animate-spin" />
             <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading requests...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-8">
-            <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
+            <AlertTriangle className="w-8 h-8 text-primary" />
             <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
             <button
               onClick={() => { setIsLoading(true); setLoadError(null); void loadList() }}
-              className="mt-1 px-6 min-h-11 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
+              className="mt-1 px-6 min-h-11 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg"
             >
               Retry
             </button>
@@ -475,7 +475,7 @@ export function RfqListPage() {
             </p>
             <button
               onClick={() => navigate('quote-request')}
-              className="mt-1 inline-flex items-center gap-1.5 px-6 min-h-11 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
+              className="mt-1 inline-flex items-center gap-1.5 px-6 min-h-11 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg"
             >
               <Plus className="h-4 w-4" />
               New RFQ
@@ -617,7 +617,7 @@ export function RfqListPage() {
 
                           {detailLoading && (
                             <div className="flex items-center gap-2 py-6 justify-center">
-                              <Loader2 className="w-4 h-4 text-[#C8102E] animate-spin" />
+                              <Loader2 className="w-4 h-4 text-primary animate-spin" />
                               <p className="text-xs text-[#6B7280] dark:text-gray-400">Loading quotes...</p>
                             </div>
                           )}
@@ -714,8 +714,8 @@ export function RfqListPage() {
                                           disabled={isActing}
                                           className={`flex-1 min-h-11 rounded-lg text-xs font-bold border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                                             isArmed && armed?.action === 'reject'
-                                              ? 'bg-[#C8102E] text-white border-[#C8102E] hover:bg-[#A50D24]'
-                                              : 'bg-white dark:bg-gray-900 text-[#C8102E] border-[#FECDD3] hover:bg-[#FFF1F2] dark:bg-rose-950/30'
+                                              ? 'bg-primary text-white border-primary hover:bg-primary/90'
+                                              : 'bg-white dark:bg-gray-900 text-primary border-[#FECDD3] hover:bg-[#FFF1F2] dark:bg-rose-950/30'
                                           }`}
                                           aria-label={isArmed && armed?.action === 'reject' ? 'Confirm reject quote' : 'Reject quote'}
                                         >
@@ -752,7 +752,7 @@ export function RfqListPage() {
                           ) : acceptedQuote && rfq.productId ? (
                             <button
                               onClick={() => openConvertDialog(rfq.id, acceptedQuote, rfq)}
-                              className="w-full inline-flex items-center justify-center gap-1.5 min-h-11 px-4 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg transition-colors"
+                              className="w-full inline-flex items-center justify-center gap-1.5 min-h-11 px-4 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg transition-colors"
                               aria-label="Convert accepted quote to order"
                             >
                               <ShoppingBag className="h-4 w-4" />
@@ -789,7 +789,7 @@ export function RfqListPage() {
           <DialogContent className="max-w-sm rounded-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-sm font-black text-[#1A1A1A] dark:text-white">
-                <ShoppingBag className="h-4 w-4 text-[#C8102E]" />
+                <ShoppingBag className="h-4 w-4 text-primary" />
                 Convert to order
               </DialogTitle>
               <DialogDescription className="text-xs text-[#6B7280] dark:text-gray-400">
@@ -814,7 +814,7 @@ export function RfqListPage() {
                   </div>
                   <div className="flex items-center justify-between gap-3 border-t border-gray-200 dark:border-gray-800 pt-1.5">
                     <span className="text-[#6B7280] dark:text-gray-400">Order total</span>
-                    <span className="font-black text-[#C8102E]">
+                    <span className="font-black text-primary">
                       {formatBDT(roundQty(convertTarget.quantity * convertTarget.quote.pricePerUnit))}
                     </span>
                   </div>
@@ -840,9 +840,9 @@ export function RfqListPage() {
                 </p>
                 {convertError && (
                   <div className="rounded-lg border border-[#FECDD3] bg-[#FFF1F2] dark:bg-rose-950/30 px-3 py-2 space-y-0.5">
-                    <p className="text-[11px] font-semibold text-[#C8102E]">{convertError}</p>
+                    <p className="text-[11px] font-semibold text-primary">{convertError}</p>
                     {convertAvailable != null && (
-                      <p className="text-[11px] text-[#C8102E]">
+                      <p className="text-[11px] text-primary">
                         Only {convertAvailable.toLocaleString()} {convertTarget.unit} available right now.
                       </p>
                     )}
@@ -862,7 +862,7 @@ export function RfqListPage() {
               <button
                 onClick={() => void executeConvert()}
                 disabled={converting}
-                className="inline-flex items-center justify-center gap-1.5 min-h-11 px-4 rounded-lg bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center gap-1.5 min-h-11 px-4 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {converting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Place order'}
               </button>

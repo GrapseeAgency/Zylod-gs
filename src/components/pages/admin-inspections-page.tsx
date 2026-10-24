@@ -43,10 +43,10 @@ interface AdminInspectionRow {
 type Stats = { total: number; pending?: number; scheduled?: number; completed?: number; failed?: number }
 
 const STATUS_STYLES: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-800 border-amber-200',
+  pending: 'bg-amber-100 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-900/60',
   scheduled: 'bg-primary/5 text-primary border-primary/30',
-  completed: 'bg-green-100 text-green-800 border-green-200',
-  failed: 'bg-red-50 text-red-700 border-red-200',
+  completed: 'bg-green-100 text-green-800 dark:text-green-200 border-green-200 dark:border-green-900/60',
+  failed: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900/60',
 }
 
 function fmt(iso: string | null): string {
@@ -208,18 +208,18 @@ export function AdminInspectionsPage() {
       </div>
 
       {needsAuth ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-center">
-          <p className="font-semibold text-amber-900">Admin access required</p>
-          <p className="text-sm text-amber-800 mt-1">Sign in with an admin account to run inspections.</p>
+        <div className="rounded-lg border border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/40 p-6 text-center">
+          <p className="font-semibold text-amber-900 dark:text-amber-100">Admin access required</p>
+          <p className="text-sm text-amber-800 dark:text-amber-200 mt-1">Sign in with an admin account to run inspections.</p>
         </div>
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Total</span><span className="font-semibold tabular-nums">{stats?.total ?? '…'}</span></span>
-            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Pending</span><span className="font-semibold tabular-nums text-amber-700">{stats?.pending ?? 0}</span></span>
+            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Pending</span><span className="font-semibold tabular-nums text-amber-700 dark:text-amber-300">{stats?.pending ?? 0}</span></span>
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Scheduled</span><span className="font-semibold tabular-nums text-primary">{stats?.scheduled ?? 0}</span></span>
-            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Completed</span><span className="font-semibold tabular-nums text-green-700">{stats?.completed ?? 0}</span></span>
-            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Failed</span><span className="font-semibold tabular-nums text-red-700">{stats?.failed ?? 0}</span></span>
+            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Completed</span><span className="font-semibold tabular-nums text-green-700 dark:text-green-300">{stats?.completed ?? 0}</span></span>
+            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Failed</span><span className="font-semibold tabular-nums text-red-700 dark:text-red-300">{stats?.failed ?? 0}</span></span>
             <div className="flex-1" />
             <Button variant="ghost" size="sm" onClick={() => load(tab)} disabled={refreshing} className="text-muted-foreground">
               <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
@@ -235,7 +235,7 @@ export function AdminInspectionsPage() {
             ))}
           </div>
 
-          {error && <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+          {error && <div className="rounded-md border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-sm text-red-700 dark:text-red-300">{error}</div>}
 
           {loading ? (
             <div className="space-y-3">

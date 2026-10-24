@@ -261,7 +261,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
                   <tr
                     key={t.id}
                     className={`transition-colors ${
-                      isActive ? 'bg-rose-50/60 font-bold' : 'text-slate-700 dark:text-slate-300'
+                      isActive ? 'bg-rose-50/60 dark:bg-rose-950/40 font-bold' : 'text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     <td className="p-3">{t.label}</td>
@@ -284,7 +284,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
         </div>
 
         {/* Order Summary Card */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border-2 border-rose-100 shadow-sm space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border-2 border-rose-100 dark:border-rose-900/60 shadow-sm space-y-3">
           <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Order Summary</h3>
 
           <div className="space-y-2 text-xs divide-y divide-slate-50">
@@ -308,7 +308,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
 
           {/* Total Savings Highlight */}
           {savings > 0 && (
-            <div className="bg-rose-50/70 border border-rose-100 rounded-2xl p-3 text-center">
+            <div className="bg-rose-50/70 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/60 rounded-2xl p-3 text-center">
               <span className="text-[10px] font-black uppercase text-primary tracking-wider block">
                 Total Savings
               </span>
@@ -342,7 +342,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
         {/* Trust Badges */}
         <div className="space-y-2 pt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <span>Trade Assurance protects your orders.</span>
           </div>
           <div className="flex items-center gap-2">

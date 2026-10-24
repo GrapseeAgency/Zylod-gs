@@ -118,9 +118,9 @@ export function ClearanceSalePage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors md:hidden"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
+          <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
-        <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
+        <span className="text-lg font-bold text-primary">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -133,14 +133,14 @@ export function ClearanceSalePage() {
       <div className="max-w-md mx-auto px-4 pt-4 space-y-4 md:px-6 md:pt-6 md:space-y-6 lg:max-w-5xl">
         {/* ─── Clearance Banner Card ─── */}
         <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 text-center shadow-sm border border-[#F5D0D6]">
-          <h1 className="text-2xl md:text-4xl font-black tracking-tight text-[#C8102E] uppercase">
+          <h1 className="text-2xl md:text-4xl font-black tracking-tight text-primary uppercase">
             Clearance Sale
           </h1>
           <p className="text-xs text-[#4B5563] dark:text-gray-300 mt-2 max-w-[280px] mx-auto leading-relaxed">
             End-of-line wholesale inventory moving at clearance prices. Once it&apos;s gone, it&apos;s gone.
           </p>
 
-          <div className="mt-4 inline-flex items-center gap-2 px-6 py-2.5 bg-[#C8102E] text-white text-xs font-black uppercase tracking-wider rounded-full shadow-sm">
+          <div className="mt-4 inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white text-xs font-black uppercase tracking-wider rounded-full shadow-sm">
             <Percent className="h-3.5 w-3.5" />
             {items.length > 0 ? `${items.length} lots clearing now` : 'Loading lots...'}
           </div>
@@ -157,7 +157,7 @@ export function ClearanceSalePage() {
                   onClick={() => setActiveTab(tab.slug)}
                   className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                     isActive
-                      ? 'bg-[#C8102E] text-white shadow-sm'
+                      ? 'bg-primary text-white shadow-sm'
                       : 'bg-white dark:bg-gray-900 text-[#4B5563] dark:text-gray-300 border border-[#E5E7EB] dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                 >
@@ -171,13 +171,13 @@ export function ClearanceSalePage() {
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
+            <Loader2 className="w-7 h-7 text-primary animate-spin" />
             <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading clearance lots...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
-            <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
+            <AlertTriangle className="w-8 h-8 text-primary" />
             <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
@@ -205,7 +205,7 @@ export function ClearanceSalePage() {
                 alt={heroItem.name}
                 className="w-full h-full object-cover"
               />
-              <span className="absolute top-3 left-3 bg-[#C8102E] text-white text-xs font-black px-2.5 py-0.5 rounded shadow">
+              <span className="absolute top-3 left-3 bg-primary text-white text-xs font-black px-2.5 py-0.5 rounded shadow">
                 CLEARANCE
               </span>
             </div>
@@ -216,7 +216,7 @@ export function ClearanceSalePage() {
               </h3>
 
               <div className="flex items-baseline gap-2 mt-1.5">
-                <span className="text-lg font-bold text-[#C8102E]">
+                <span className="text-lg font-bold text-primary">
                   {formatPrice(heroItem.basePrice)}
                 </span>
                 <span className="text-xs text-[#6B7280] dark:text-gray-400">/ {heroItem.unit || 'unit'}</span>
@@ -230,7 +230,7 @@ export function ClearanceSalePage() {
 
                 <button
                   onClick={(e) => handleQuickAdd(e, heroItem)}
-                  className="w-9 h-9 rounded-full bg-[#F3F4F6] dark:bg-gray-900 hover:bg-[#FFE4E6] dark:bg-primary/10 text-[#C8102E] flex items-center justify-center transition-colors shadow-sm"
+                  className="w-9 h-9 rounded-full bg-[#F3F4F6] dark:bg-gray-900 hover:bg-[#FFE4E6] dark:bg-primary/10 text-primary flex items-center justify-center transition-colors shadow-sm"
                   title="Add to Cart"
                 >
                   <ShoppingCart className="h-4 w-4" />
@@ -259,7 +259,7 @@ export function ClearanceSalePage() {
                     alt={item.name}
                     className="w-full h-full object-cover"
                   />
-                  <span className="absolute top-2 left-2 bg-[#C8102E] text-white text-[10px] font-black px-1.5 py-0.5 rounded shadow">
+                  <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded shadow">
                     CLEARANCE
                   </span>
                 </div>
@@ -268,7 +268,7 @@ export function ClearanceSalePage() {
                   <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white line-clamp-2 leading-tight">
                     {item.name}
                   </h4>
-                  <div className="text-sm font-bold text-[#C8102E] mt-1.5">
+                  <div className="text-sm font-bold text-primary mt-1.5">
                     {formatPrice(item.basePrice)}
                     <span className="text-[10px] font-normal text-[#6B7280] dark:text-gray-400"> / {item.unit || 'unit'}</span>
                   </div>
@@ -279,7 +279,7 @@ export function ClearanceSalePage() {
                 <span>MOQ: {item.moq}</span>
                 <button
                   onClick={(e) => handleQuickAdd(e, item)}
-                  className="text-[#C8102E] hover:text-[#A50D24] p-1"
+                  className="text-primary hover:text-[#A50D24] p-1"
                   title="Add to Cart"
                 >
                   <ShoppingCart className="h-4 w-4" />
@@ -304,7 +304,7 @@ export function ClearanceSalePage() {
                 alt={bottomDeal.name}
                 className="w-full h-full object-cover"
               />
-              <span className="absolute top-1 left-1 bg-[#C8102E] text-white text-[9px] font-black px-1 py-0.2 rounded">
+              <span className="absolute top-1 left-1 bg-primary text-white text-[9px] font-black px-1 py-0.2 rounded">
                 LAST CALL
               </span>
             </div>
@@ -312,7 +312,7 @@ export function ClearanceSalePage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline justify-between gap-1">
                 <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white truncate">{bottomDeal.name}</h4>
-                <span className="font-bold text-xs text-[#C8102E] whitespace-nowrap">
+                <span className="font-bold text-xs text-primary whitespace-nowrap">
                   {formatPrice(bottomDeal.basePrice)}
                 </span>
               </div>
@@ -320,14 +320,14 @@ export function ClearanceSalePage() {
               <div className="flex items-center justify-between text-[11px] text-[#6B7280] dark:text-gray-400 mt-1">
                 <div>
                   <span>MOQ: {bottomDeal.moq} {bottomDeal.unit || 'units'}</span>
-                  <span className="block text-[#C8102E] font-bold mt-0.5">
+                  <span className="block text-primary font-bold mt-0.5">
                     Only {bottomDeal.stockQuantity} left
                   </span>
                 </div>
 
                 <button
                   onClick={(e) => handleQuickAdd(e, bottomDeal)}
-                  className="px-3 py-1.5 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg transition-colors"
+                  className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg transition-colors"
                 >
                   Add to Cart
                 </button>

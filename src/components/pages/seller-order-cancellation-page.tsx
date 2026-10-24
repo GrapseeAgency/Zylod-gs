@@ -60,9 +60,9 @@ export function SellerOrderCancellationPage() {
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Cancel Order</h1>
 
       <div className="p-4 space-y-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-orange-50 border border-orange-200 p-4 rounded-xl flex gap-3">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/60 p-4 rounded-xl flex gap-3">
           <AlertTriangle className="w-6 h-6 text-orange-500 flex-shrink-0" />
-          <p className="text-sm text-orange-800">
+          <p className="text-sm text-orange-800 dark:text-orange-200">
             Cancelling an order may negatively impact your seller metrics. Only cancel if absolutely necessary.
           </p>
         </motion.div>
@@ -78,7 +78,7 @@ export function SellerOrderCancellationPage() {
                   value={r} 
                   checked={reason === r} 
                   onChange={() => setReason(r)} 
-                  className="w-4 h-4 text-[#C8102E]" 
+                  className="w-4 h-4 text-primary" 
                 />
                 <span className="text-sm text-gray-800 dark:text-gray-200">{r}</span>
               </label>
@@ -99,7 +99,7 @@ export function SellerOrderCancellationPage() {
         <button 
           onClick={handleCancel}
           disabled={!reason || cancelling}
-          className="w-full py-3 bg-[#C8102E] text-white rounded-xl font-medium disabled:opacity-50"
+          className="w-full py-3 bg-primary text-white rounded-xl font-medium disabled:opacity-50"
         >
           {cancelling ? 'Cancelling...' : 'Confirm Cancellation'}
         </button>

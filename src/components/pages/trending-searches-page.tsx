@@ -76,7 +76,7 @@ export function TrendingSearchesPage() {
         <div className="flex gap-2">
           {(['products', 'categories'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
-              className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition ${tab === t ? 'bg-gray-800 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
+              className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition ${tab === t ? 'bg-primary text-primary-foreground' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
               {t.charAt(0).toUpperCase() + t.slice(1)}
             </button>
           ))}

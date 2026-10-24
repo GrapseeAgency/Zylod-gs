@@ -135,7 +135,7 @@ export function SellerOrderDetailPage() {
             </div>
             <div className="flex justify-between font-bold text-gray-900 dark:text-gray-100 pt-2 border-t border-gray-100 dark:border-gray-800 text-base">
               <span>Total</span>
-              <span className="text-[#C8102E]">৳{order.totalAmount?.toLocaleString()}</span>
+              <span className="text-primary">৳{order.totalAmount?.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -173,7 +173,7 @@ export function SellerOrderDetailPage() {
                 }
               }}
               disabled={accepting}
-              className="flex-1 py-3 px-4 bg-[#C8102E] text-white font-medium rounded-xl shadow-sm disabled:opacity-60"
+              className="flex-1 py-3 px-4 bg-primary text-white font-medium rounded-xl shadow-sm disabled:opacity-60"
               aria-label="Accept this order"
             >
               {accepting ? 'Accepting…' : 'Accept Order'}
@@ -182,7 +182,7 @@ export function SellerOrderDetailPage() {
         )}
         {order.status === 'processing' && (
           <button 
-            className="w-full py-3 px-4 bg-[#C8102E] text-white font-medium rounded-xl shadow-sm"
+            className="w-full py-3 px-4 bg-primary text-white font-medium rounded-xl shadow-sm"
             onClick={() => navigate('seller-order-fulfillment', { orderId: order.id })}
           >
             Fulfill Order

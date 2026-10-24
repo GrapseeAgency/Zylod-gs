@@ -108,7 +108,7 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#C8102E]"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
           <p className="text-sm text-gray-400 dark:text-gray-500">Loading...</p>
         </div>
       </div>
@@ -173,7 +173,7 @@ function GenericPageRenderer({ genericType, pageId, pageParams }: { genericType:
   if (loading || !Comp) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#C8102E]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     )
   }

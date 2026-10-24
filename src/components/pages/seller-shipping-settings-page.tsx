@@ -116,7 +116,7 @@ export function SellerShippingSettingsPage() {
         <button 
           onClick={handleSave}
           disabled={saving || configs.length === 0}
-          className="flex items-center gap-1 bg-[#C8102E] text-white px-3 py-1.5 rounded-lg text-sm font-medium disabled:opacity-50"
+          className="flex items-center gap-1 bg-primary text-white px-3 py-1.5 rounded-lg text-sm font-medium disabled:opacity-50"
         >
           <Save className="w-4 h-4" /> {saving ? 'Saving…' : 'Save'}
         </button>
@@ -149,7 +149,7 @@ export function SellerShippingSettingsPage() {
           )}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-2 mb-4 text-gray-900 dark:text-gray-100 font-semibold">
-              <MapPin className="w-5 h-5 text-[#C8102E]" />
+              <MapPin className="w-5 h-5 text-primary" />
               <h2>Divisional Shipping Rates</h2>
             </div>
             <div className="space-y-4">

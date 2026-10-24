@@ -105,7 +105,7 @@ export function CollectionSharedPage() {
         <button onClick={goBack} className="p-2 -ml-2 rounded-full active:bg-gray-100 dark:bg-gray-900 md:hidden" aria-label="Go back">
           <ArrowLeft className="w-5 h-5 text-gray-800 dark:text-gray-200" />
         </button>
-        <Link2 className="w-4 h-4 text-[#C8102E]" aria-hidden="true" />
+        <Link2 className="w-4 h-4 text-primary" aria-hidden="true" />
         <h1 className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{collection.name}</h1>
         <span className="ml-auto text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/5 border border-primary/20 px-2 py-1 rounded-full">
           Shared
@@ -153,7 +153,7 @@ export function CollectionSharedPage() {
                     </div>
                     <div className="p-3">
                       <h3 className="font-medium text-sm line-clamp-2 text-gray-900 dark:text-gray-100 mb-1">{prod.name}</h3>
-                      <div className="text-[#C8102E] font-bold text-sm">
+                      <div className="text-primary font-bold text-sm">
                         ৳{prod.basePrice?.toLocaleString()} <span className="text-xs font-normal text-gray-500 dark:text-gray-400 dark:text-gray-500">/ {prod.unit}</span>
                       </div>
                       {prod.supplier?.companyName && (

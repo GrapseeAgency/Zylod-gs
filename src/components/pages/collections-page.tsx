@@ -51,7 +51,7 @@ export function CollectionsPage() {
           onClick={() => navigate('create-collection')}
           className="p-2 -mr-2 rounded-full active:bg-gray-100 dark:bg-gray-900"
         >
-          <Plus className="w-6 h-6 text-[#C8102E]" />
+          <Plus className="w-6 h-6 text-primary" />
         </button>
       </header>
 
@@ -64,7 +64,7 @@ export function CollectionsPage() {
               onClick={() => setSortOption(opt)}
               className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 sortOption === opt 
-                  ? 'bg-[#C8102E] text-white' 
+                  ? 'bg-primary text-white' 
                   : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-800'
               }`}
             >
@@ -101,7 +101,7 @@ export function CollectionsPage() {
             <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-6 text-sm">Create your first collection to organize products.</p>
             <button 
               onClick={() => navigate('create-collection')}
-              className="bg-[#C8102E] text-white px-6 py-2.5 rounded-lg font-medium shadow-sm active:scale-95 transition-transform"
+              className="bg-primary text-white px-6 py-2.5 rounded-lg font-medium shadow-sm active:scale-95 transition-transform"
             >
               Create Collection
             </button>
@@ -168,7 +168,7 @@ export function CollectionsPage() {
       {!isLoading && collections.length > 0 && (
         <button
           onClick={() => navigate('create-collection')}
-          className="fixed bottom-24 md:bottom-8 right-6 w-14 h-14 bg-[#C8102E] rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-20"
+          className="fixed bottom-24 md:bottom-8 right-6 w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-20"
         >
           <Plus className="w-6 h-6 text-white" />
         </button>

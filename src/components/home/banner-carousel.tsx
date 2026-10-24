@@ -105,7 +105,7 @@ export function BannerCarousel() {
   return (
     <section
       aria-label="Promotional banners"
-      className="relative w-full h-32 sm:h-44 rounded-xl overflow-hidden group bg-neutral-900"
+      className="relative w-full h-32 sm:h-44 rounded-xl overflow-hidden group bg-slate-100 dark:bg-neutral-900"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={(e) => {

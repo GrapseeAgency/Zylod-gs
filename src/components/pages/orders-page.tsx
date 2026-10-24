@@ -157,10 +157,10 @@ export function OrdersPage() {
   )
 
   const errorState = (
-    <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3" role="alert">
+    <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-2xl p-4 flex items-start gap-3" role="alert">
       <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-bold text-red-700">{error}</p>
+        <p className="text-xs font-bold text-red-700 dark:text-red-300">{error}</p>
         <div className="mt-2.5 flex items-center gap-2">
           <Button
             onClick={loadOrders}
@@ -300,7 +300,7 @@ export function OrdersPage() {
                         </span>
                       </div>
                       {order.paymentStatus && order.paymentStatus !== 'paid' && (
-                        <span className="text-[10px] font-bold text-amber-600 uppercase mt-0.5 block">
+                        <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase mt-0.5 block">
                           {order.paymentStatus}
                         </span>
                       )}
