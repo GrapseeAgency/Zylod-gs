@@ -950,7 +950,7 @@ function DesktopProductDetailPage() {
                     size="sm"
                     onClick={() => setSelectedVariantId(variant.id)}
                     aria-pressed={selectedVariantId === variant.id}
-                    className={`text-sm ${selectedVariantId === variant.id ? 'bg-[primary] hover:bg-[#C62828]' : 'hover:border-[primary] hover:text-[primary]'} ${variant.stockQuantity === 0 ? 'opacity-80' : ''}`}
+                    className={`text-sm ${selectedVariantId === variant.id ? 'bg-[primary] hover:bg-[#C62828] dark:hover:bg-primary/90' : 'hover:border-[primary] hover:text-[primary]'} ${variant.stockQuantity === 0 ? 'opacity-80' : ''}`}
                   >
                     {variant.variantName}: {variant.variantValue}
                     {variant.priceOverride != null && (

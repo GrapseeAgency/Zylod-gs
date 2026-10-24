@@ -594,11 +594,11 @@ export function LoginPage() {
 
         {/* ─── Divider ─── */}
         <motion.div variants={itemVariants} custom={3} className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-[#E0E0E0]" />
+          <div className="flex-1 h-px bg-[#E0E0E0] dark:bg-gray-800" />
           <span className="text-xs font-medium text-[#6B7280] dark:text-gray-400 tracking-wider uppercase">
             Or continue with
           </span>
-          <div className="flex-1 h-px bg-[#E0E0E0]" />
+          <div className="flex-1 h-px bg-[#E0E0E0] dark:bg-gray-800" />
         </motion.div>
 
         {/* ─── Social Login Buttons ─── */}

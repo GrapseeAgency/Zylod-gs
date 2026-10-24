@@ -204,7 +204,7 @@ export function AdminInspectionsPage() {
             <p className="text-muted-foreground text-sm">Buyers asking for quality checks before accepting bulk orders</p>
           </div>
         </div>
-        <Badge className="bg-primary hover:bg-[#C62828] text-white">Admin Panel</Badge>
+        <Badge className="bg-primary hover:bg-[#C62828] dark:hover:bg-primary/90 text-white">Admin Panel</Badge>
       </div>
 
       {needsAuth ? (

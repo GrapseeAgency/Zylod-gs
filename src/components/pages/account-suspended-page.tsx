@@ -233,7 +233,7 @@ export function AccountSuspendedPage() {
             </div>
           </div>
 
-          <Separator className="my-4 bg-[#E0E0E0]" />
+          <Separator className="my-4 bg-[#E0E0E0] dark:bg-gray-800" />
 
           {/* Section 2: Current Status */}
           <div className="flex gap-3">

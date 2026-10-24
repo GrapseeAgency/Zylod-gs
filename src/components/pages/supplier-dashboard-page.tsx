@@ -130,9 +130,9 @@ export function SupplierDashboardPage() {
         </div>
         <div className="flex gap-2 flex-wrap">
           {data?.supplier.verificationStatus === 'approved' && (
-            <Badge className="bg-primary hover:bg-[#C62828] text-white"><Star className="h-3 w-3 mr-1 fill-white" /> Verified Supplier</Badge>
+            <Badge className="bg-primary hover:bg-[#C62828] dark:hover:bg-primary/90 text-white"><Star className="h-3 w-3 mr-1 fill-white" /> Verified Supplier</Badge>
           )}
-          <Button className="bg-primary hover:bg-[#C62828] text-white gap-2" onClick={() => navigate('supplier-add-product')}>
+          <Button className="bg-primary hover:bg-[#C62828] dark:hover:bg-primary/90 text-white gap-2" onClick={() => navigate('supplier-add-product')}>
             <PlusCircle className="h-4 w-4" /> Add New Product
           </Button>
         </div>

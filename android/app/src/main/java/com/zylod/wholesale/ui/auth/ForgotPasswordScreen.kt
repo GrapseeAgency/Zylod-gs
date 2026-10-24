@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.Security
@@ -229,11 +230,14 @@ fun ForgotPasswordScreen(
                     Spacer(Modifier.width(8.dp))
                     Text("=", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(Modifier.width(8.dp))
+                    // t178-a: weighted width (was 130.dp fixed) — captcha row overflows
+                    // on 320dp screens (~256dp available). weight(1f) lets the answer
+                    // field shrink on narrow phones, Refresh button stays anchored end.
                     ZylodTextField(
                         value = captchaAnswer,
                         onValueChange = { captchaAnswer = it.filter(Char::isDigit) },
                         label = "Answer",
-                        modifier = Modifier.width(130.dp),
+                        modifier = Modifier.weight(1f).widthIn(max = 140.dp),
                         keyboardType = KeyboardType.Number,
                     )
                     Spacer(Modifier.width(6.dp))

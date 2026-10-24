@@ -198,7 +198,7 @@ export function ExplorePage() {
             className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
               activeCategory === null
                 ? 'bg-[#C8102E] text-white shadow-sm'
-                : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0]'
+                : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0] dark:bg-gray-800'
             }`}
           >
             All Categories
@@ -210,7 +210,7 @@ export function ExplorePage() {
               className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                 activeCategory === cat.slug
                   ? 'bg-[#C8102E] text-white shadow-sm'
-                  : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0]'
+                  : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0] dark:bg-gray-800'
               }`}
             >
               {cat.label}

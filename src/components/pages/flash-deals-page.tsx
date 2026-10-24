@@ -144,7 +144,7 @@ export function FlashDealsPage() {
 
       <div className="max-w-md mx-auto md:max-w-2xl lg:max-w-6xl px-4 md:px-6 pt-4 md:pt-6 space-y-4 md:space-y-6">
         {/* ─── Dark Flash Deals Header Card ─── */}
-        <div className="bg-[#1E1E1E] border border-[#2E2E2E] rounded-2xl p-5 text-center shadow-lg relative overflow-hidden">
+        <div className="bg-[#1E1E1E] dark:bg-gray-900 border border-[#2E2E2E] dark:border-gray-800 rounded-2xl p-5 text-center shadow-lg relative overflow-hidden">
           {/* Subtle background glow */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-20 bg-[#C8102E]/20 blur-3xl pointer-events-none" />
 
@@ -231,7 +231,7 @@ export function FlashDealsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
               onClick={() => navigate('product-detail', { productId: deal.productId })}
-              className="bg-[#1E1E1E] border border-[#2E2E2E] rounded-2xl overflow-hidden shadow-md cursor-pointer hover:border-[#FF4D6D]/40 transition-colors"
+              className="bg-[#1E1E1E] dark:bg-gray-900 border border-[#2E2E2E] dark:border-gray-800 rounded-2xl overflow-hidden shadow-md cursor-pointer hover:border-[#FF4D6D]/40 transition-colors"
             >
               {/* Product image with badge */}
               <div className="relative aspect-[16/9] w-full bg-[#121212]">

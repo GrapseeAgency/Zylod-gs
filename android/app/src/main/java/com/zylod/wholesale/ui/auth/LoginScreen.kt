@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
@@ -491,11 +492,16 @@ fun LoginScreen(
                         Spacer(Modifier.width(8.dp))
                         Text("=", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(Modifier.width(8.dp))
+                        // t178-a: weighted width (was 130.dp fixed) — the captcha row
+                        // sums to ~300dp and overflows on 320dp screens (only ~256dp
+                        // available after AuthScaffold + Surface padding). weight(1f)
+                        // lets the answer field shrink on narrow phones while the
+                        // Refresh button stays anchored to the end.
                         ZylodTextField(
                             value = captchaAnswer,
                             onValueChange = { captchaAnswer = it.filter(Char::isDigit) },
                             label = "Answer",
-                            modifier = Modifier.width(130.dp),
+                            modifier = Modifier.weight(1f).widthIn(max = 140.dp),
                             keyboardType = KeyboardType.Number,
                         )
                         Spacer(Modifier.width(6.dp))

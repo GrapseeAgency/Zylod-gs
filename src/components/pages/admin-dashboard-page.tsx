@@ -141,7 +141,7 @@ export function AdminDashboardPage() {
             <p className="text-muted-foreground text-sm">Platform overview & management</p>
           </div>
         </div>
-        <Badge className="bg-primary hover:bg-[#C62828] text-white">Admin Panel</Badge>
+        <Badge className="bg-primary hover:bg-[#C62828] dark:hover:bg-primary/90 text-white">Admin Panel</Badge>
       </div>
 
       {/* KPI Cards */}

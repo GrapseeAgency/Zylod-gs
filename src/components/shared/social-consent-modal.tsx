@@ -109,15 +109,15 @@ export function SocialConsentModal() {
                 >
                   {meta.label}
                 </span>
-                <span className="text-sm text-[#6B7280]">Sign in</span>
+                <span className="text-sm text-[#6B7280] dark:text-gray-400">Sign in</span>
               </div>
               <button
                 onClick={() => close(true)}
-                className="p-1.5 rounded-full hover:bg-[#F3F4F6] transition-colors"
+                className="p-1.5 rounded-full hover:bg-[#F3F4F6] dark:bg-gray-800 transition-colors"
                 aria-label="Cancel sign-in"
                 disabled={state.submitting}
               >
-                <X className="w-4 h-4 text-[#6B7280]" />
+                <X className="w-4 h-4 text-[#6B7280] dark:text-gray-400" />
               </button>
             </div>
 
@@ -125,7 +125,7 @@ export function SocialConsentModal() {
               <p className="text-sm text-[#374151] leading-relaxed">{meta.hint}</p>
 
               <div className="space-y-2">
-                <label htmlFor="social-email" className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">
+                <label htmlFor="social-email" className="text-xs font-semibold text-[#6B7280] dark:text-gray-400 uppercase tracking-wide">
                   Your {meta.label} email
                 </label>
                 <input
@@ -136,9 +136,9 @@ export function SocialConsentModal() {
                   value={state.email}
                   onChange={(e) => setState((s) => ({ ...s, email: e.target.value }))}
                   onKeyDown={(e) => { if (e.key === 'Enter' && state.email.includes('@')) confirm() }}
-                  className="w-full h-11 px-3 rounded-lg border border-[#DADCE0] text-sm text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#C8102E] focus:ring-2 focus:ring-[#C8102E]/20"
+                  className="w-full h-11 px-3 rounded-lg border border-[#DADCE0] dark:border-gray-700 text-sm text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#C8102E] focus:ring-2 focus:ring-[#C8102E]/20"
                 />
-                <label htmlFor="social-name" className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide block pt-1">
+                <label htmlFor="social-name" className="text-xs font-semibold text-[#6B7280] dark:text-gray-400 uppercase tracking-wide block pt-1">
                   Full name
                 </label>
                 <input
@@ -147,7 +147,7 @@ export function SocialConsentModal() {
                   placeholder="Your full name"
                   value={state.name}
                   onChange={(e) => setState((s) => ({ ...s, name: e.target.value }))}
-                  className="w-full h-11 px-3 rounded-lg border border-[#DADCE0] text-sm text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#C8102E] focus:ring-2 focus:ring-[#C8102E]/20"
+                  className="w-full h-11 px-3 rounded-lg border border-[#DADCE0] dark:border-gray-700 text-sm text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#C8102E] focus:ring-2 focus:ring-[#C8102E]/20"
                 />
               </div>
 
@@ -168,7 +168,7 @@ export function SocialConsentModal() {
               </button>
 
               <div className="flex items-start gap-2 pt-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#6B7280] shrink-0 mt-0.5" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#6B7280] dark:text-gray-400 shrink-0 mt-0.5" />
                 <p className="text-[11px] text-[#9CA3AF] leading-relaxed">
                   Zylod never posts on your behalf or shares your contacts. You can revoke access at any time from your {meta.label} account settings.
                 </p>

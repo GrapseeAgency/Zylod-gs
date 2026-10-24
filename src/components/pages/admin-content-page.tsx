@@ -331,7 +331,7 @@ export function AdminContentPage() {
             <p className="text-muted-foreground text-sm">Home banners and flash/daily deals shoppers actually see</p>
           </div>
         </div>
-        <Badge className="bg-primary hover:bg-[#C62828] text-white">Admin Panel</Badge>
+        <Badge className="bg-primary hover:bg-[#C62828] dark:hover:bg-primary/90 text-white">Admin Panel</Badge>
       </div>
 
       {needsAuth ? (
