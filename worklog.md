@@ -4902,3 +4902,43 @@ Stage Summary:
 - 6 misc showcase/fake pages eliminated. The user's complaint that these pages "are nothing but a showcasing" is resolved: (1) return-claim-detail now loads the REAL return via /api/returns/[id] and wires the seller's only canonical action (Confirm Receipt → POST /api/seller/returns/[id]/confirm-receipt) with a real toast verdict; the admin-only Approve/Reject and the buyer-only Upload Inspection Photos buttons are honestly disabled with the reason. (2) offline-orders is an honest empty state — the web client is always online; no fabricated ORD-98214 / ORD-97810 orders. (3) seller-notifications-center now loads the REAL /api/notifications feed with type-aware icons, mark-all-read, pagination; the fabricated "New Order #1029" blue card is gone. (4) seller-bulk-order-inquiry now loads the REAL /api/supplier/rfqs inbox and wires Send Quote to POST /api/supplier/rfqs/[id]/quote with real success/409 verdicts; the Message button is honestly disabled (no RFQ-scoped chat rail). (5) storage-breakdown is an honest empty state for Android sandbox storage + shows the REAL localStorage usage bytes via the t167 hook; the fabricated Room SQLite / Glide & Coil / PDF / Font figures are gone. (6) terms-history is an honest empty state matching the update-changelog pattern; the fabricated v2.4/v2.0/v1.2/v1.0 amendment descriptions are gone.
 - MISSING RAILS (honestly handled, not fabricated): (1) PATCH /api/admin/returns/[id] is admin-only — Approve/Reject disabled for the seller console. (2) POST /api/returns/[id]/evidence is buyer-only — Upload Inspection Photos disabled for the seller console (no seller-side photo rail exists yet). (3) /api/chat/conversations is product-scoped, not RFQ-scoped — Message button disabled on the RFQ detail. (4) No Android-sandbox-storage-inspection rail exists for the web — storage-breakdown shows real localStorage bytes only. (5) No termsHistory rail exists — terms-history is an honest empty state.
 - Cumulative fake-data sweep: 56+ surfaces eliminated across t162-t175b + this task.
+
+---
+Task ID: 175
+Agent: orchestrator (Z.ai Code) — continuing the every-page every-size + honesty mandate.
+
+Task: SHOWCASE PAGE PURGE — the user's "so many page are nothing but a showcasing" complaint. Three parallel subagent sweeps eliminated 17 fake-form / showcase pages across the product-management, inventory/shipping, and misc clusters. Every page now either wires to a real API rail with real toast verdicts, or honestly disables the action with the reason.
+
+Work Log:
+- DEFECT CLUSTER #1 (product-management fake forms, subagent 175-a): 4 pages fixed.
+  - product-spec-editor: fake "Material Grade" seed → GET /api/products/[id]/specifications (real read). Save honestly disabled (no writer rail — draft only, not faked).
+  - product-variant-matrix: fake "Color: Red/Blue/Black" → GET /api/supplier/products/[id] (real variants grouped by variantName). Save wires to PATCH full-replace with 409 handling.
+  - product-pricing-tiers: literal gray "Discount Curve Chart Area" rectangle → real bar chart from real priceTiers (bar per tier, dashed list-price reference line, discount % badges). Apply Rules wires to PATCH.
+  - product-media-gallery: 3 hardcoded gray placeholder boxes → real images + videos from GET /api/supplier/products/[id]. Real drag-drop upload (POST /api/uploads/product-media), real video attach/delete rails.
+
+- DEFECT CLUSTER #2 (inventory/shipping fake forms, subagent 175-b): 7 pages fixed.
+  - shipping-zone-editor: fabricated "Dhaka Inside 1000-1299" → GET/POST /api/admin/shipping/zones + PATCH/DELETE [id]. Real zones, real rateCount, 409 conflict handling. Non-admin → honest 401.
+  - self-pickup-settings: hardcoded "09:00/18:00" → GET/POST /api/supplier/warehouses + PATCH [id]. Real warehouses, real fields. Hours/contact shown as drafts (schema has no columns — not faked).
+  - bulk-price-update: hardcoded "SHIRT-01/$450/MOQ 50" → GET /api/supplier/products (paginated+search) + PATCH [id] full-replace. Real product table, batched Save All, per-row 409 handling.
+  - inventory-restock: intake form no onClick → GET /api/supplier/inventory + PATCH with delta (canonical restock writer — triggers back-in-stock notifications + audit). PO/Supplier/Batch shown as drafts (no schema columns).
+  - inventory-alerts: hardcoded "Threshold=20" → GET /api/seller/stock-watches (real demand) + PATCH threshold updates. Auto-pause toggle honestly disabled (isActive is managed in listings).
+  - inventory-warehouse-locations: fabricated "Dhaka Hub 80%" → GET /api/supplier/warehouses (real addresses, real geo coords). No fabricated utilization bars.
+  - inventory-audit-log: fabricated "Cotton T-Shirt SKU-1001 +500" → GET /api/admin/audit-logs (Task 139). Real audit trail with filters + pagination. Non-admin → honest 401.
+
+- DEFECT CLUSTER #3 (misc showcase, subagent 175-c): 6 pages fixed.
+  - return-claim-detail: fabricated "#RTN-5512" → GET /api/returns/[id] (real returnNumber, items, evidence). Confirm Receipt POSTs to /api/seller/returns/[id]/confirm-receipt. Approve/Reject honestly disabled (admin-only). Upload Photos honestly disabled (buyer-only rail).
+  - offline-orders: fabricated "ORD-98214 Beximco" → honest empty state (web client is always-online per t172; offline caching is native to Android app).
+  - seller-notifications-center: fabricated "New Order #1029" → GET /api/notifications (real rail, type-aware icons, mark-all-read, pagination).
+  - seller-bulk-order-inquiry: fabricated "rfq_1001" → GET /api/supplier/rfqs (real RFQ inbox) + POST /api/supplier/rfqs/[id]/quote (real quote with server-computed totalPrice). Message honestly disabled (chat is product-scoped).
+  - storage-breakdown: fabricated "Room SQLite 3.4 MB" → honest empty state (web can't know Android sandbox) + real localStorage usage bytes via useLocalStorageUsageBytes.
+  - terms-history: fabricated v2.4/v2.0/v1.2/v1.0 amendments → honest empty state matching update-changelog pattern.
+
+- MISSING RAILS (honestly handled, never fabricated): productSpecifications writer (Save disabled — draft only); warehouse operating-hours/contact columns (drafts with amber notice); inventory PO/Supplier/Batch columns (drafts); auto-pause-on-zero rail (toggle disabled); warehouse capacity column (utilization bars removed); seller return approve/reject (admin-only — disabled); seller evidence upload (buyer-only — disabled); RFQ-scoped chat (disabled — chat is product-scoped).
+
+- VERIFICATION: zero "will be populated from the API" strings remain; zero "placeholder: true" patterns remain; tsc 0; eslint 0. Browser QA @320 dark mode: product-pricing-tiers, shipping-zone-editor, inventory-audit-log, return-claim-detail, seller-notifications-center, seller-bulk-order-inquiry — all themeLeak=false, hasPhantom=false, scrollWidth=320.
+- DB wiped 127×0 before commit.
+
+Stage Summary:
+- 17 more fake/showcase pages eliminated in t175 (4 product-management + 7 inventory/shipping + 6 misc). Every page now either renders real data from a real rail, or shows an honest empty state / honest "not available yet" with the reason. No fabricated data, no decorative Save buttons, no alert() theater remains in these clusters.
+- Cumulative: 52+ fake-data surfaces eliminated across t162-t175; 297 theme leaks fixed; 11 mobile-chrome leaks fixed.
+- REMAINING (next audit targets): page-suggestions-page (fabricated category counts); seller-quick-actions-page + seller-flash-sale-nomination-page (stubs); the generic-info-page template may have theme gaps; a long tail of smaller informational pages to spot-check. The user's core complaints — theme leaks, mobile chrome on desktop, showcase pages — are now substantively addressed.
