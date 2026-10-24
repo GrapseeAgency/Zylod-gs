@@ -131,16 +131,16 @@ export function CouponsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex flex-wrap items-center justify-between gap-2 shadow-sm md:hidden">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex flex-wrap items-center justify-between gap-2 shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Tag className="w-5 h-5 text-red-600" />
-            <h1 className="font-bold text-gray-900 text-base">Wholesale Coupons</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Wholesale Coupons</h1>
           </div>
         </div>
 
@@ -181,20 +181,20 @@ export function CouponsPage() {
       <div className="flex-1 px-4 py-4 md:px-6 md:py-6 max-w-3xl mx-auto w-full space-y-4 md:space-y-5 pb-24 md:pb-8 lg:max-w-5xl">
         {/* Task 74: ADMIN creation panel — admin-only, collapsed by default. */}
         {isAdmin && (
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
             <button
               type="button"
               onClick={() => setShowCreate((v) => !v)}
-              className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-slate-50 transition"
+              className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition"
               aria-expanded={showCreate}
             >
-              <span className="text-xs font-black uppercase tracking-wider text-slate-500">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Admin — Create Coupon
               </span>
               <span className="text-xs font-bold text-primary">{showCreate ? 'Hide' : 'Open'}</span>
             </button>
             {showCreate && (
-              <div className="px-5 pb-5 space-y-3 border-t border-slate-100 pt-4">
+              <div className="px-5 pb-5 space-y-3 border-t border-slate-100 dark:border-slate-800 pt-4">
                 <div className="grid grid-cols-2 gap-2">
                   <input
                     value={form.code}
@@ -202,13 +202,13 @@ export function CouponsPage() {
                     placeholder="CODE"
                     aria-label="Coupon code"
                     maxLength={24}
-                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs font-bold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs font-bold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <select
                     value={form.discountType}
                     onChange={(e) => setForm((f) => ({ ...f, discountType: e.target.value }))}
                     aria-label="Discount type"
-                    className="h-10 rounded-xl border border-slate-200 px-2 text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-2 text-xs font-bold bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
                   >
                     <option value="percentage">Percentage %</option>
                     <option value="fixed">Fixed ৳</option>
@@ -219,7 +219,7 @@ export function CouponsPage() {
                     placeholder={form.discountType === 'percentage' ? 'Discount %' : 'Discount ৳'}
                     aria-label="Discount amount"
                     inputMode="decimal"
-                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <input
                     value={form.minOrderAmount}
@@ -227,7 +227,7 @@ export function CouponsPage() {
                     placeholder="Min order ৳ (optional)"
                     aria-label="Minimum order amount"
                     inputMode="decimal"
-                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <input
                     value={form.maxDiscount}
@@ -235,7 +235,7 @@ export function CouponsPage() {
                     placeholder="Max discount ৳ (optional)"
                     aria-label="Maximum discount"
                     inputMode="decimal"
-                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <input
                     value={form.usageLimit}
@@ -243,16 +243,16 @@ export function CouponsPage() {
                     placeholder="Usage limit"
                     aria-label="Usage limit"
                     inputMode="numeric"
-                    className="h-10 rounded-xl border border-slate-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Valid until
                   <input
                     type="datetime-local"
                     value={form.validUntil}
                     onChange={(e) => setForm((f) => ({ ...f, validUntil: e.target.value }))}
-                    className="mt-1 w-full h-10 rounded-xl border border-slate-200 px-3 text-xs font-normal normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="mt-1 w-full h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs font-normal normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </label>
                 {createError && <p className="text-[11px] font-bold text-red-600" role="alert">{createError}</p>}
@@ -272,7 +272,7 @@ export function CouponsPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-3xl p-5 border border-gray-100 animate-pulse space-y-3">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 animate-pulse space-y-3">
                 <Skeleton className="h-5 w-1/3 rounded" />
                 <Skeleton className="h-4 w-full rounded" />
                 <Skeleton className="h-10 w-full rounded-2xl" />
@@ -280,9 +280,9 @@ export function CouponsPage() {
             ))}
           </div>
         ) : coupons.length === 0 ? (
-          <div className="text-center py-16 text-gray-500 space-y-2">
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 space-y-2">
             <Gift className="w-12 h-12 text-gray-300 mx-auto" />
-            <p className="font-bold text-sm text-gray-800">No public coupons active right now</p>
+            <p className="font-bold text-sm text-gray-800 dark:text-gray-200">No public coupons active right now</p>
             <p className="text-xs">Check back soon or earn vouchers by completing tasks.</p>
           </div>
         ) : (
@@ -299,7 +299,7 @@ export function CouponsPage() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
-                className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md hover:border-red-200 transition"
+                className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden hover:shadow-md hover:border-red-200 transition"
               >
                 <div className="p-5 space-y-3">
                   <div className="flex items-start justify-between gap-3">
@@ -312,24 +312,24 @@ export function CouponsPage() {
                           Wholesale
                         </Badge>
                       </div>
-                      <p className="text-xs text-gray-600">
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
                         {coupon.minOrderAmount
                           ? `Valid on bulk orders of ${formatPrice(coupon.minOrderAmount)} or more`
                           : 'Valid on all wholesale purchases'}
                       </p>
                     </div>
 
-                    <span className="text-[11px] text-gray-400 flex items-center gap-1 flex-shrink-0">
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1 flex-shrink-0">
                       <Clock className="w-3 h-3" />
                       Exp: {new Date(coupon.validUntil).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
 
                   {/* Coupon Code Strip */}
-                  <div className="bg-slate-50 rounded-2xl p-3 border border-dashed border-gray-200 flex items-center justify-between gap-3">
+                  <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-dashed border-gray-200 dark:border-gray-800 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 min-w-0">
                       <Tag className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="font-mono font-bold text-xs sm:text-sm text-gray-900 tracking-wider truncate">
+                      <span className="font-mono font-bold text-xs sm:text-sm text-gray-900 dark:text-gray-100 tracking-wider truncate">
                         {coupon.code}
                       </span>
                     </div>
@@ -339,7 +339,7 @@ export function CouponsPage() {
                         size="sm"
                         variant="ghost"
                         onClick={() => copyCode(coupon.code)}
-                        className="h-8 px-2.5 text-xs font-bold text-gray-700 hover:text-gray-900"
+                        className="h-8 px-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900"
                       >
                         {copiedCode === coupon.code ? (
                           <>

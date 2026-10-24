@@ -74,7 +74,7 @@ export function PromotionAnalyticsPage({ id: idProp }: { id?: string }) {
   const daysLeft = row ? Math.ceil((new Date(row.validUntil).getTime() - Date.now()) / 86_400_000) : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 dark:bg-gray-900 flex flex-col">
       {/* Mobile header (red) */}
       <header className="md:hidden bg-primary text-white p-4 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center">
@@ -84,8 +84,8 @@ export function PromotionAnalyticsPage({ id: idProp }: { id?: string }) {
       </header>
       {/* Desktop header */}
       <header className="hidden md:flex sticky top-0 z-20 items-center gap-3 px-6 h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Go back">
-          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700 transition" aria-label="Go back">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-xl font-bold text-primary">Campaign Analytics</h1>
       </header>
@@ -96,51 +96,51 @@ export function PromotionAnalyticsPage({ id: idProp }: { id?: string }) {
             <Skeleton className="h-40 rounded-xl" />
           </div>
         ) : error || !row ? (
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl text-center shadow border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-6 rounded-xl text-center shadow border border-gray-100 dark:border-gray-800 dark:border-gray-700">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-300">{error || 'Campaign not found'}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error || 'Campaign not found'}</p>
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 dark:border-gray-700">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="font-bold text-lg text-gray-900 dark:text-white">{row.name}</h2>
+                <h2 className="font-bold text-lg text-gray-900 dark:text-gray-100 dark:text-white">{row.name}</h2>
                 <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold">{campaignLabel(row)}</span>
-                <span className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs font-bold capitalize text-gray-600 dark:text-gray-300">{status}</span>
+                <span className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-700 text-xs font-bold capitalize text-gray-600 dark:text-gray-400 dark:text-gray-300">{status}</span>
               </div>
-              {row.description ? <p className="text-sm text-gray-500 mt-1">{row.description}</p> : null}
+              {row.description ? <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{row.description}</p> : null}
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <MousePointerClick className="w-4 h-4 text-gray-400 mb-1" />
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">{row.usedCount}</div>
-                <div className="text-[11px] uppercase tracking-wide text-gray-500">Orders priced</div>
+              <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 dark:border-gray-700">
+                <MousePointerClick className="w-4 h-4 text-gray-400 dark:text-gray-500 mb-1" />
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">{row.usedCount}</div>
+                <div className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Orders priced</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <BarChart3 className="w-4 h-4 text-gray-400 mb-1" />
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 dark:border-gray-700">
+                <BarChart3 className="w-4 h-4 text-gray-400 dark:text-gray-500 mb-1" />
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
                   {row.usageLimit ? `${row.usedCount}/${row.usageLimit}` : '∞'}
                 </div>
-                <div className="text-[11px] uppercase tracking-wide text-gray-500">Usage cap</div>
+                <div className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Usage cap</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <CalendarClock className="w-4 h-4 text-gray-400 mb-1" />
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 dark:border-gray-700">
+                <CalendarClock className="w-4 h-4 text-gray-400 dark:text-gray-500 mb-1" />
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
                   {status === 'live' ? (daysLeft > 0 ? daysLeft : 0) : '—'}
                 </div>
-                <div className="text-[11px] uppercase tracking-wide text-gray-500">{status === 'live' ? 'Days left' : 'Not running'}</div>
+                <div className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">{status === 'live' ? 'Days left' : 'Not running'}</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <Package className="w-4 h-4 text-gray-400 mb-1" />
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">{row.pinnedProducts.length}</div>
-                <div className="text-[11px] uppercase tracking-wide text-gray-500">Products pinned</div>
+              <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 dark:border-gray-700">
+                <Package className="w-4 h-4 text-gray-400 dark:text-gray-500 mb-1" />
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">{row.pinnedProducts.length}</div>
+                <div className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Products pinned</div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">How the money works</h3>
-              <ul className="text-xs text-gray-500 space-y-1.5 list-disc pl-4">
+            <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 dark:border-gray-700">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-2">How the money works</h3>
+              <ul className="text-xs text-gray-500 dark:text-gray-400 space-y-1.5 list-disc pl-4">
                 <li>This campaign is <span className="font-semibold text-gray-700 dark:text-gray-300">seller-funded</span>: every order priced under it takes the discount off YOUR subOrder subtotal.</li>
                 {row.minOrderAmount ? <li>Only order lines pinned here and totaling at least ৳{row.minOrderAmount.toLocaleString()} are eligible.</li> : <li>No minimum order floor.</li>}
                 {row.maxDiscount ? <li>The discount never exceeds ৳{row.maxDiscount.toLocaleString()} per order.</li> : null}
@@ -149,16 +149,16 @@ export function PromotionAnalyticsPage({ id: idProp }: { id?: string }) {
               </ul>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
-                <Tag className="w-3.5 h-3.5 text-gray-400" /> Pinned products
+            <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 dark:border-gray-700">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-2 flex items-center gap-1.5">
+                <Tag className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> Pinned products
               </h3>
               {row.pinnedProducts.length === 0 ? (
-                <p className="text-xs text-gray-500">No products pinned — this campaign cannot price anything until you pin products.</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">No products pinned — this campaign cannot price anything until you pin products.</p>
               ) : (
                 <div className="flex flex-wrap gap-1.5">
                   {row.pinnedProducts.map((p) => (
-                    <span key={p.id} className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300">
+                    <span key={p.id} className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-900 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300">
                       {p.name || p.id}
                     </span>
                   ))}

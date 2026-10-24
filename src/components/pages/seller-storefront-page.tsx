@@ -52,7 +52,7 @@ function StoreInitials({ name, className }: { name: string; className: string })
     .join('') || '?';
   return (
     <div
-      className={`${className} flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-black select-none`}
+      className={`${className} flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 dark:text-gray-300 font-black select-none`}
       aria-label={name}
     >
       {initials}
@@ -149,7 +149,7 @@ export const SellerStorefrontPage = () => {
   const campaignSupplierId = data?.id || viewedSupplierId;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 dark:bg-gray-900 pb-20 md:pb-8">
       {/* Banner Area — neutral gradient when no real banner is set */}
       <div className="relative h-48 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-800 dark:to-gray-700">
         {loading ? (
@@ -185,22 +185,22 @@ export const SellerStorefrontPage = () => {
         <div className="px-4 py-16 text-center">
           <AlertCircle className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
           <h2 className="text-base font-bold text-gray-800 dark:text-gray-200">Store profile not available</h2>
-          <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">{error}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs mx-auto">{error}</p>
           <Button onClick={goBack} className="mt-4">Go Back</Button>
         </div>
       ) : (
         <>
           {/* Profile Header */}
-          <div className="px-4 relative pt-12 pb-4 bg-white dark:bg-gray-800 shadow-sm mb-2">
+          <div className="px-4 relative pt-12 pb-4 bg-white dark:bg-gray-900 dark:bg-gray-800 shadow-sm mb-2">
             <div className="absolute -top-10 left-4">
               {loading ? (
                 <Skeleton className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800" />
               ) : data?.storeCustomization?.logoUrl ? (
-                <img src={data.storeCustomization.logoUrl} alt="Logo" className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 object-cover bg-white" />
+                <img src={data.storeCustomization.logoUrl} alt="Logo" className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 object-cover bg-white dark:bg-gray-900" />
               ) : companyName ? (
                 <StoreInitials name={companyName} className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 text-2xl" />
               ) : (
-                <div className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500">
+                <div className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400">
                   <Store className="w-8 h-8" />
                 </div>
               )}
@@ -208,10 +208,10 @@ export const SellerStorefrontPage = () => {
 
             <div className="flex justify-between items-start mb-2">
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white flex items-center gap-2">
                   {loading ? <Skeleton className="w-32 h-6" /> : companyName || 'Unnamed store'}
                 </h1>
-                <div className="flex items-center text-sm text-gray-500 mt-1 gap-3">
+                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-1 gap-3">
                   {/* Verified only reflects the real KYC verification status */}
                   {data?.verificationStatus === 'approved' && (
                     <span className="flex items-center gap-1 text-green-600">Verified</span>
@@ -223,7 +223,7 @@ export const SellerStorefrontPage = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 mt-4 py-3 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-4 mt-4 py-3 border-t border-gray-100 dark:border-gray-800 dark:border-gray-700">
               {/* Only real, sourced metrics are displayed */}
               <div className="text-center">
                 <div className="text-sm font-bold dark:text-white flex items-center gap-1">
@@ -234,12 +234,12 @@ export const SellerStorefrontPage = () => {
                       : '—'}
                   <Star className="w-3 h-3 inline text-amber-400 mb-0.5" fill="currentColor" />
                 </div>
-                <div className="text-[10px] text-gray-500 uppercase">Rating</div>
+                <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase">Rating</div>
               </div>
               <div className="w-px h-8 bg-gray-200 dark:bg-gray-700" />
               <div className="text-center">
                 <div className="text-sm font-bold dark:text-white">{loading ? '-' : data?.ratingCount ?? 0}</div>
-                <div className="text-[10px] text-gray-500 uppercase">Reviews</div>
+                <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase">Reviews</div>
               </div>
               {/* Task 146: the buyer→seller query rail — visitor view only */}
               {viewedSupplierId && (
@@ -250,10 +250,10 @@ export const SellerStorefrontPage = () => {
                     className="text-center group"
                     aria-label="Ask this seller a question"
                   >
-                    <div className="text-sm font-bold text-gray-700 dark:text-gray-200 flex items-center gap-1 group-hover:text-primary transition">
+                    <div className="text-sm font-bold text-gray-700 dark:text-gray-300 dark:text-gray-200 flex items-center gap-1 group-hover:text-primary transition">
                       <MessageCircleQuestion className="w-4 h-4" /> Ask
                     </div>
-                    <div className="text-[10px] text-gray-500 uppercase">the seller</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase">the seller</div>
                   </button>
                 </>
               )}
@@ -262,8 +262,8 @@ export const SellerStorefrontPage = () => {
 
           {/* Tabs Content */}
           <Tabs defaultValue="products" className="w-full">
-            <div className="bg-white dark:bg-gray-800 px-4 pt-2 sticky top-0 z-10 shadow-sm">
-              <TabsList className="w-full h-auto p-0 bg-transparent gap-6 flex justify-start overflow-x-auto scrollbar-hide border-b border-gray-200 dark:border-gray-700 rounded-none">
+            <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 px-4 pt-2 sticky top-0 z-10 shadow-sm">
+              <TabsList className="w-full h-auto p-0 bg-transparent gap-6 flex justify-start overflow-x-auto scrollbar-hide border-b border-gray-200 dark:border-gray-800 dark:border-gray-700 rounded-none">
                 <TabsTrigger value="products" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">All Products</TabsTrigger>
                 <TabsTrigger value="featured" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">Featured</TabsTrigger>
                 <TabsTrigger value="certifications" className="p-0 pb-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none">
@@ -291,16 +291,16 @@ export const SellerStorefrontPage = () => {
                     <div className="col-span-full text-center py-10">
                       <Package className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
                       <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No products listed yet</h3>
-                      <p className="text-xs text-gray-500 mt-1">This store has not published any approved products.</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This store has not published any approved products.</p>
                     </div>
                   ) : (
                     data?.products?.map((prod) => (
                       <div
                         key={prod.id}
                         onClick={() => navigate('product-detail', { productId: prod.id })}
-                        className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer"
+                        className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 dark:border-gray-700 cursor-pointer"
                       >
-                        <div className="w-full aspect-square bg-gray-100 dark:bg-gray-700">
+                        <div className="w-full aspect-square bg-gray-100 dark:bg-gray-900 dark:bg-gray-700">
                           {prod.thumbnailUrl ? (
                             <img src={prod.thumbnailUrl} alt={prod.name} className="w-full aspect-square object-cover" />
                           ) : (
@@ -311,8 +311,8 @@ export const SellerStorefrontPage = () => {
                         </div>
                         <div className="p-3">
                           <h3 className="font-medium text-sm line-clamp-2 dark:text-white mb-1">{prod.name}</h3>
-                          <div className="font-bold text-primary">৳{prod.basePrice} <span className="text-xs font-normal text-gray-500">/ {prod.unit}</span></div>
-                          <div className="text-xs text-gray-500 mt-1">Min. {prod.moq} {prod.unit}</div>
+                          <div className="font-bold text-primary">৳{prod.basePrice} <span className="text-xs font-normal text-gray-500 dark:text-gray-400">/ {prod.unit}</span></div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Min. {prod.moq} {prod.unit}</div>
                         </div>
                       </div>
                     ))
@@ -323,13 +323,13 @@ export const SellerStorefrontPage = () => {
                 {viewedSupplierId ? (
                   <div className="text-center py-10">
                     <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <h3 className="text-gray-500 font-medium mb-1">No featured collection published</h3>
-                    <p className="text-xs text-gray-400">This store has not set up featured products yet.</p>
+                    <h3 className="text-gray-500 dark:text-gray-400 font-medium mb-1">No featured collection published</h3>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">This store has not set up featured products yet.</p>
                   </div>
                 ) : (
                   <div className="text-center py-10">
                     <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-gray-500 font-medium mb-4">Set up featured collections</h3>
+                    <h3 className="text-gray-500 dark:text-gray-400 font-medium mb-4">Set up featured collections</h3>
                     <Button onClick={() => navigate('store-featured-products')}>Manage Featured Products</Button>
                   </div>
                 )}
@@ -357,7 +357,7 @@ export const SellerStorefrontPage = () => {
                   {campaignSupplierId ? (
                     <StorefrontCampaigns supplierId={campaignSupplierId} />
                   ) : (
-                    <div className="text-center py-10 text-sm text-gray-500">Campaigns load once the store profile resolves.</div>
+                    <div className="text-center py-10 text-sm text-gray-500 dark:text-gray-400">Campaigns load once the store profile resolves.</div>
                   )}
                 </div>
               </TabsContent>
@@ -402,7 +402,7 @@ export const SellerStorefrontPage = () => {
                 <option value="custom_request">Custom order request</option>
                 <option value="complaint">Complaint</option>
               </select>
-              <p className="text-[11px] text-gray-500">Product questions belong on the product page's Q&amp;A.</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">Product questions belong on the product page's Q&amp;A.</p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="ask-subject">Subject</Label>

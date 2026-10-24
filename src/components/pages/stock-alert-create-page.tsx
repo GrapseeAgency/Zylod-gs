@@ -84,23 +84,23 @@ export function StockAlertCreatePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <span className="font-bold text-gray-900 text-base">Back in Stock Notification</span>
+        <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Back in Stock Notification</span>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">Back in Stock Notification</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Back in Stock Notification</h1>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24">
         {success ? (
-          <div className="bg-white rounded-3xl p-8 border border-teal-100 text-center space-y-4 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-teal-100 text-center space-y-4 shadow-sm">
             <div className="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">Restock Alert Enabled!</h2>
-            <p className="text-xs text-gray-600">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Restock Alert Enabled!</h2>
+            <p className="text-xs text-gray-600 dark:text-gray-400">
               We will notify you immediately once <strong>{selectedProduct?.name}</strong> is back in stock at supplier factories.
             </p>
             <div className="pt-3 flex gap-3 justify-center">
@@ -113,10 +113,10 @@ export function StockAlertCreatePage() {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
             {!selectedProduct ? (
               <>
-                <h2 className="text-sm font-bold text-gray-900">Select Out of Stock Product</h2>
+                <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Select Out of Stock Product</h2>
                 <div className="flex gap-2">
                   <Input
                     placeholder="Search product..."
@@ -139,19 +139,19 @@ export function StockAlertCreatePage() {
                     <div
                       key={p.id}
                       onClick={() => setSelectedProduct(p)}
-                      className="p-3 bg-slate-50 hover:bg-teal-50 rounded-2xl border border-gray-100 flex items-center justify-between cursor-pointer transition"
+                      className="p-3 bg-slate-50 dark:bg-slate-950 hover:bg-teal-50 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between cursor-pointer transition"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
                           {p.thumbnailUrl ? (
                             <img src={p.thumbnailUrl} alt={p.name} className="w-full h-full object-cover" />
                           ) : (
-                            <Package className="w-5 h-5 text-gray-400" />
+                            <Package className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                           )}
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-gray-900 line-clamp-1">{p.name}</p>
-                          <p className="text-[11px] text-gray-500">{formatPrice(p.basePrice)} • Stock: {p.stockQuantity}</p>
+                          <p className="text-xs font-bold text-gray-900 dark:text-gray-100 line-clamp-1">{p.name}</p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400">{formatPrice(p.basePrice)} • Stock: {p.stockQuantity}</p>
                         </div>
                       </div>
                       <span className="text-xs font-bold text-teal-600">Select →</span>
@@ -162,7 +162,7 @@ export function StockAlertCreatePage() {
             ) : (
               <>
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-gray-900">Selected Product</h2>
+                  <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Selected Product</h2>
                   <button
                     onClick={() => setSelectedProduct(null)}
                     className="text-xs font-bold text-teal-600 hover:underline"
@@ -171,17 +171,17 @@ export function StockAlertCreatePage() {
                   </button>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-gray-100 flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-white border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
                     {selectedProduct.thumbnailUrl ? (
                       <img src={selectedProduct.thumbnailUrl} alt={selectedProduct.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Package className="w-6 h-6 text-gray-400" />
+                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-gray-900 truncate">{selectedProduct.name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{selectedProduct.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       Wholesale Rate: {formatPrice(selectedProduct.basePrice)}
                     </p>
                   </div>

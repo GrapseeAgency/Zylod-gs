@@ -37,7 +37,7 @@ const STATUS_STYLES: Record<string, string> = {
   open: 'bg-amber-50 text-amber-700 border-amber-200',
   replied: 'bg-sky-50 text-sky-700 border-sky-200',
   resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  closed: 'bg-slate-100 text-slate-600 border-slate-200',
+  closed: 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800',
 };
 
 export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: string; pageParams?: Record<string, string> }) {
@@ -140,11 +140,11 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
   // ── Honest guard states ──
   if (!loading && !queryId) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
           <Inbox className="w-10 h-10 text-gray-300 mx-auto" />
-          <h3 className="text-sm font-bold text-gray-700">No query selected</h3>
-          <p className="text-xs text-gray-500">Open a query from the Customer Queries list.</p>
+          <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No query selected</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Open a query from the Customer Queries list.</p>
           <Button onClick={goBack} variant="outline" className="h-9 text-xs font-bold">Go back</Button>
         </div>
       </div>
@@ -153,11 +153,11 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
 
   if (!loading && needsAuth) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
           <AlertCircle className="w-10 h-10 text-amber-400 mx-auto" />
-          <h3 className="text-sm font-bold text-gray-700">Sign in required</h3>
-          <p className="text-xs text-gray-500">Only the seller who owns this query (or an admin) can view it.</p>
+          <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">Sign in required</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Only the seller who owns this query (or an admin) can view it.</p>
         </div>
       </div>
     );
@@ -165,11 +165,11 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
 
   if (!loading && notFound) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
           <Inbox className="w-10 h-10 text-gray-300 mx-auto" />
-          <h3 className="text-sm font-bold text-gray-700">Query not found</h3>
-          <p className="text-xs text-gray-500">It may have been removed, or it belongs to another seller.</p>
+          <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">Query not found</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400">It may have been removed, or it belongs to another seller.</p>
         </div>
       </div>
     );
@@ -177,10 +177,10 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
 
   if (!loading && error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
           <AlertCircle className="w-10 h-10 text-red-400 mx-auto" />
-          <h3 className="text-sm font-bold text-gray-700">Could not load the query</h3>
+          <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">Could not load the query</h3>
           <p className="text-xs text-red-600 break-words">{error}</p>
           <Button onClick={load} variant="outline" className="h-9 text-xs font-bold gap-1.5">
             <RefreshCw className="h-3.5 w-3.5" /> Retry
@@ -192,8 +192,8 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+        <div className="flex items-center gap-2 text-xs font-bold text-gray-400 dark:text-gray-500">
           <Loader2 className="h-4 w-4 animate-spin" /> Loading query thread…
         </div>
       </div>
@@ -205,34 +205,34 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
   const isClosed = query.status === 'closed' || query.status === 'resolved';
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white p-4 flex items-center justify-between border-b md:hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
+      <header className="bg-white dark:bg-gray-900 p-4 flex items-center justify-between border-b md:hidden">
         <div className="flex items-center">
           <button onClick={goBack} className="mr-3" aria-label="Back">←</button>
           <h1 className="font-bold text-sm">Query thread</h1>
         </div>
-        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${STATUS_STYLES[query.status] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${STATUS_STYLES[query.status] || 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'}`}>
           {query.status}
         </span>
       </header>
 
       <main className="flex-1 p-4 md:px-6 md:py-8 space-y-4 md:space-y-5 md:max-w-3xl md:w-full md:mx-auto pb-40 md:pb-32">
         {/* Query facts */}
-        <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm space-y-3" data-testid="query-detail-card">
+        <div className="bg-white dark:bg-gray-900 p-4 md:p-5 rounded-2xl shadow-sm space-y-3" data-testid="query-detail-card">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div className="min-w-0">
-              <h2 className="text-sm font-black text-gray-900">{query.subject}</h2>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <h2 className="text-sm font-black text-gray-900 dark:text-gray-100">{query.subject}</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                 {query.buyerName} · {new Date(query.createdAt).toLocaleString()}
               </p>
             </div>
-            <span className={`hidden md:inline-flex text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${STATUS_STYLES[query.status] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+            <span className={`hidden md:inline-flex text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${STATUS_STYLES[query.status] || 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'}`}>
               {query.status}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] text-gray-500 flex-wrap">
-            <span className="font-bold uppercase tracking-wide text-[9px] bg-gray-100 rounded px-1.5 py-0.5">{query.queryType.replace(/_/g, ' ')}</span>
+          <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 flex-wrap">
+            <span className="font-bold uppercase tracking-wide text-[9px] bg-gray-100 dark:bg-gray-900 rounded px-1.5 py-0.5">{query.queryType.replace(/_/g, ' ')}</span>
             {query.productName && (
               <span className="flex items-center gap-1 truncate">
                 <Package className="h-3 w-3 shrink-0" /> {query.productName}
@@ -241,11 +241,11 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
           </div>
 
           {/* The buyer's real message */}
-          <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3.5" data-testid="query-buyer-message">
-            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1.5">
+          <div className="bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl p-3.5" data-testid="query-buyer-message">
+            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1.5">
               <MessageCircle className="h-3 w-3" /> {query.buyerName}
             </div>
-            <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">{query.message}</p>
+            <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{query.message}</p>
           </div>
 
           {/* The seller's real reply, when one exists */}
@@ -255,7 +255,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
                 <span>Your reply</span>
                 {query.repliedAt && <span>{new Date(query.repliedAt).toLocaleString()}</span>}
               </div>
-              <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">{query.replyMessage}</p>
+              <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{query.replyMessage}</p>
             </div>
           ) : (
             <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2" data-testid="query-awaiting-reply">
@@ -287,7 +287,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
               <Button
                 variant="outline" size="sm" disabled={statusMoving}
                 onClick={() => moveStatus('closed')}
-                className="h-8 text-[11px] font-bold gap-1.5 border-slate-200 text-slate-600 hover:bg-slate-50"
+                className="h-8 text-[11px] font-bold gap-1.5 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <XCircle className="h-3.5 w-3.5" /> Close
               </Button>
@@ -298,7 +298,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
 
       {/* Reply composer — the real PATCH */}
       {!isClosed && (
-        <footer className="fixed bottom-0 inset-x-0 bg-white border-t p-3 md:px-6 md:py-4" data-testid="query-reply-composer">
+        <footer className="fixed bottom-0 inset-x-0 bg-white dark:bg-gray-900 border-t p-3 md:px-6 md:py-4" data-testid="query-reply-composer">
           <div className="flex w-full md:max-w-3xl md:mx-auto gap-2">
             <textarea
               value={reply}
@@ -307,7 +307,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
               rows={2}
               maxLength={2000}
               aria-label="Reply message"
-              className="flex-1 border border-gray-200 rounded-xl p-2.5 text-xs resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="flex-1 border border-gray-200 dark:border-gray-800 rounded-xl p-2.5 text-xs resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
             <Button
               onClick={sendReply}

@@ -83,7 +83,7 @@ function FeatureCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className="flex gap-3 p-4 rounded-xl bg-white border border-[#E0E0E0]"
+      className="flex gap-3 p-4 rounded-xl bg-white dark:bg-gray-900 border border-[#E0E0E0]"
     >
       <div className="flex-shrink-0 w-11 h-11 rounded-full bg-[#F3F4F6] flex items-center justify-center">
         {icon}
@@ -179,7 +179,7 @@ export default function PhoneVerificationPage() {
 
   /* ─── Phone Input Card ─── */
   const phoneInputCard = (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#E0E0E0]">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-sm border border-[#E0E0E0]">
       <Label className="text-sm font-medium text-[#1A1A1A] mb-2.5 block">
         Phone Number
       </Label>
@@ -196,7 +196,7 @@ export default function PhoneVerificationPage() {
             <ChevronDown className="w-4 h-4 text-[#6B7280]" />
           </button>
           {isDropdownOpen && (
-            <div className="absolute top-12 left-0 z-10 bg-white rounded-lg shadow-lg border border-[#E0E0E0] py-1 min-w-[140px]">
+            <div className="absolute top-12 left-0 z-10 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-[#E0E0E0] py-1 min-w-[140px]">
               {COUNTRY_CODES.map((country) => (
                 <button
                   key={country.code}
@@ -418,7 +418,7 @@ export default function PhoneVerificationPage() {
       <div className="animate-pulse flex flex-col items-center gap-4">
         <div className="w-28 h-28 rounded-full bg-[#FFE4E6]" />
         <div className="h-8 w-48 bg-gray-200 rounded" />
-        <div className="h-4 w-64 bg-gray-100 rounded" />
+        <div className="h-4 w-64 bg-gray-100 dark:bg-gray-900 rounded" />
       </div>
     </div>
   )

@@ -156,10 +156,10 @@ export function LinkedAccountsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Linked Accounts</span>
@@ -183,10 +183,10 @@ export function LinkedAccountsPage() {
         </div>
 
         {needsAuth ? (
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-2xs text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-amber-500 mx-auto" />
             <h2 className="text-sm font-black">Sign in to manage your linked accounts</h2>
-            <p className="text-xs text-slate-500">Linked contact handles are stored on your account.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Linked contact handles are stored on your account.</p>
             <Button onClick={() => navigate('login')} className="h-11 px-6 rounded-xl text-xs font-bold">Sign In</Button>
           </div>
         ) : (
@@ -205,11 +205,11 @@ export function LinkedAccountsPage() {
             )}
 
             {/* Add form */}
-            <form onSubmit={addAccount} className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
+            <form onSubmit={addAccount} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Link a contact handle</h2>
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Link a contact handle</h2>
                 {!loading && (
-                  <span className="text-[10px] font-bold text-slate-400">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
                     {accounts.length}/{LINKED_ACCOUNTS_LIMIT} linked
                     {configured ? '' : ' · platform default — nothing linked yet'}
                   </span>
@@ -227,17 +227,17 @@ export function LinkedAccountsPage() {
                       className={`p-3 rounded-2xl border flex items-center gap-2 text-left transition-all ${
                         isSelected
                           ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                          : 'border-slate-200 bg-white hover:bg-slate-50'
+                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                       }`}
                     >
-                      <Icon className={`h-4 w-4 shrink-0 ${isSelected ? 'text-primary' : 'text-slate-400'}`} />
-                      <span className={`text-xs font-bold ${isSelected ? 'text-primary' : 'text-slate-900'}`}>{p.label}</span>
+                      <Icon className={`h-4 w-4 shrink-0 ${isSelected ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
+                      <span className={`text-xs font-bold ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>{p.label}</span>
                     </button>
                   )
                 })}
               </div>
               <div>
-                <label htmlFor="linked-handle" className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1.5">
+                <label htmlFor="linked-handle" className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-1.5">
                   Handle / number
                 </label>
                 <Input
@@ -268,20 +268,20 @@ export function LinkedAccountsPage() {
             {/* Real linked accounts list */}
             <div ref={listRef}>
               {loading ? (
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs p-8 flex items-center justify-center text-slate-400">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs p-8 flex items-center justify-center text-slate-400 dark:text-slate-500">
                   <Loader2 className="h-5 w-5 animate-spin" />
                   <span className="text-xs font-bold ml-2">Loading your linked accounts…</span>
                 </div>
               ) : accounts.length === 0 ? (
-                <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-2xs text-center space-y-2">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-2">
                   <LinkIcon className="h-8 w-8 text-slate-300 mx-auto" />
                   <h3 className="text-sm font-black">No contact handles linked yet</h3>
-                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                     Add a WhatsApp number or a social handle above so buyers know how to reach your business.
                   </p>
                 </div>
               ) : (
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden divide-y divide-slate-100">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
                   {accounts.map((acc) => {
                     const meta = providerMeta(acc.provider)
                     const Icon = meta.icon
@@ -294,13 +294,13 @@ export function LinkedAccountsPage() {
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="text-xs md:text-sm font-bold text-slate-900">{meta.label}</h3>
+                              <h3 className="text-xs md:text-sm font-bold text-slate-900 dark:text-slate-100">{meta.label}</h3>
                               <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-full">
                                 LINKED
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-500 mt-0.5 truncate font-mono">{acc.handle}</p>
-                            <p className="text-[10px] text-slate-400">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate font-mono">{acc.handle}</p>
+                            <p className="text-[10px] text-slate-400 dark:text-slate-500">
                               Linked {acc.linkedAt && acc.linkedAt !== '1970-01-01T00:00:00.000Z' ? new Date(acc.linkedAt).toLocaleDateString() : '—'}
                             </p>
                           </div>
@@ -309,7 +309,7 @@ export function LinkedAccountsPage() {
                           variant="outline"
                           onClick={() => removeAccount(acc)}
                           disabled={removingId !== null}
-                          className="h-10 min-h-11 w-11 p-0 rounded-xl text-slate-500 hover:text-red-600 hover:border-red-200 shrink-0"
+                          className="h-10 min-h-11 w-11 p-0 rounded-xl text-slate-500 dark:text-slate-400 hover:text-red-600 hover:border-red-200 shrink-0"
                           aria-label={`Remove ${meta.label} handle ${acc.handle}`}
                         >
                           {isRemoving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
@@ -330,12 +330,12 @@ export function LinkedAccountsPage() {
             )}
 
             {/* Honest scope note */}
-            <div className="bg-slate-100 rounded-2xl p-4 border border-slate-200 text-xs text-slate-600 space-y-1">
-              <span className="font-bold text-slate-800 flex items-center gap-1.5">
+            <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 space-y-1">
+              <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                 <Lock className="h-3.5 w-3.5 text-primary" />
                 What these links are — and are not
               </span>
-              <p className="text-[11px] text-slate-500 leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                 These are contact handles displayed for buyer outreach. Zylod does not offer OAuth
                 sign-in through them, and payment-settlement integrations (bKash / Nagad) do not exist
                 yet — they will only appear here when a real integration ships.

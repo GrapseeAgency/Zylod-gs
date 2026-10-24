@@ -85,10 +85,10 @@ export function BankAccountsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Commercial Bank Accounts</span>
@@ -104,7 +104,7 @@ export function BankAccountsPage() {
       <main className="max-w-lg mx-auto md:max-w-3xl px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 w-full">
         {/* Desktop page title */}
         <div className="hidden md:flex items-center justify-between">
-          <h1 className="text-2xl font-black tracking-tight text-slate-900">Commercial Bank Accounts</h1>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">Commercial Bank Accounts</h1>
           <Button
             onClick={() => navigate('add-bank-account')}
             size="sm"
@@ -133,7 +133,7 @@ export function BankAccountsPage() {
         {/* Bank List */}
         <div className="space-y-3">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400">
+            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="text-xs font-bold">Loading Bank Accounts...</span>
             </div>
@@ -142,7 +142,7 @@ export function BankAccountsPage() {
               {accounts.map((acc) => (
               <div
                 key={acc.id}
-                className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3 relative overflow-hidden"
+                className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 relative overflow-hidden"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -151,14 +151,14 @@ export function BankAccountsPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-xs font-bold text-slate-900">{acc.bankName}</h3>
+                        <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{acc.bankName}</h3>
                         {acc.isDefault && (
                           <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
                             PRIMARY
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-slate-400 font-mono block mt-0.5">
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono block mt-0.5">
                         A/C: •••• {acc.accountNumber.slice(-4)}
                       </span>
                     </div>
@@ -167,20 +167,20 @@ export function BankAccountsPage() {
                   <button
                     onClick={() => handleDelete(acc.id)}
                     disabled={actionLoading === acc.id}
-                    className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors"
+                    className="text-slate-400 dark:text-slate-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
 
-                <div className="bg-slate-50 rounded-2xl p-3 text-xs divide-y divide-slate-100">
+                <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 text-xs divide-y divide-slate-100 dark:divide-slate-800">
                   <div className="pb-1.5 flex justify-between">
-                    <span className="text-slate-400 font-medium">Beneficiary</span>
-                    <span className="font-bold text-slate-800">{acc.accountHolderName}</span>
+                    <span className="text-slate-400 dark:text-slate-500 font-medium">Beneficiary</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200">{acc.accountHolderName}</span>
                   </div>
                   <div className="pt-1.5 flex justify-between">
-                    <span className="text-slate-400 font-medium">Branch</span>
-                    <span className="font-semibold text-slate-700">{acc.branchName}</span>
+                    <span className="text-slate-400 dark:text-slate-500 font-medium">Branch</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">{acc.branchName}</span>
                   </div>
                 </div>
 
@@ -189,7 +189,7 @@ export function BankAccountsPage() {
                     onClick={() => handleSetDefault(acc.id)}
                     disabled={actionLoading === acc.id}
                     variant="outline"
-                    className="w-full h-9 rounded-xl border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                    className="w-full h-9 rounded-xl border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                   >
                     {actionLoading === acc.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Set as Primary Payout Account'}
                   </Button>
@@ -198,10 +198,10 @@ export function BankAccountsPage() {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 text-center space-y-3">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
               <Landmark className="h-10 w-10 mx-auto text-slate-300 stroke-[1.5]" />
-              <span className="text-xs font-bold text-slate-700 block">No bank accounts linked</span>
-              <p className="text-xs text-slate-400 max-w-xs mx-auto">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">No bank accounts linked</span>
+              <p className="text-xs text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
                 Add a corporate bank account to enable direct wholesale withdrawals.
               </p>
             </div>

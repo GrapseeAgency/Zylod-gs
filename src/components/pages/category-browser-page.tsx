@@ -106,10 +106,10 @@ export function CategoryBrowserPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-8">
       {/* ─── Top Header ─── */}
-      <header className="sticky top-0 z-40 bg-white border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -117,7 +117,7 @@ export function CategoryBrowserPage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -139,13 +139,13 @@ export function CategoryBrowserPage() {
 
         {/* ─── Search Bar ─── */}
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             placeholder="Search wholesale categories..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 bg-white border border-[#E0E0E0] rounded-xl text-xs text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-[#C8102E] shadow-sm"
+            className="w-full h-10 pl-10 pr-4 bg-white dark:bg-gray-900 border border-[#E0E0E0] rounded-xl text-xs text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-[#C8102E] shadow-sm"
           />
         </div>
 
@@ -164,7 +164,7 @@ export function CategoryBrowserPage() {
         )}
         {!isLoading && !loadError && filteredCategories.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <Layers className="w-8 h-8 text-gray-400" />
+            <Layers className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               No categories match &ldquo;{search}&rdquo;.
             </p>

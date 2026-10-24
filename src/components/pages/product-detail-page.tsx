@@ -874,7 +874,7 @@ function DesktopProductDetailPage() {
             )}
             {/* Task 95: the filed shipping weight — buyers see what couriers quote against */}
             {product.weightKg != null && (
-              <Badge variant="outline" className="text-xs border-slate-300 text-slate-600">
+              <Badge variant="outline" className="text-xs border-slate-300 text-slate-600 dark:text-slate-400">
                 <Truck className="h-3 w-3 mr-1" />
                 {formatQty(product.weightKg)} kg per {isBundle ? 'bundle' : unit === 'pcs' ? 'pc' : unit}
               </Badge>
@@ -917,7 +917,7 @@ function DesktopProductDetailPage() {
                 </div>
               </div>
               {/* Stock progress bar (maxStock 0 → 0%, never NaN) */}
-              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-gray-100 dark:bg-gray-900 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${stockStatus.barColor}`}
                   style={{ width: `${maxStock > 0 ? Math.min(100, (currentVariantStock / maxStock) * 100) : 0}%` }}
@@ -986,7 +986,7 @@ function DesktopProductDetailPage() {
                     const isActive = quantity >= tier.minQty && (tier.maxQty === null || quantity <= tier.maxQty)
                     return (
                       <div key={tier.id} className={`flex items-center justify-between p-2.5 rounded-lg text-sm ${
-                        isActive ? 'bg-[primary]/10 border border-[primary]/30 font-medium' : 'bg-gray-50'
+                        isActive ? 'bg-[primary]/10 border border-[primary]/30 font-medium' : 'bg-gray-50 dark:bg-gray-950'
                       }`}>
                         <span className={isActive ? 'text-[primary]' : 'text-muted-foreground'}>
                           {formatQty(tier.minQty)} - {tier.maxQty === null ? '∞' : formatQty(tier.maxQty)} {isBundle ? 'bundles' : unit}
@@ -1290,8 +1290,8 @@ function DesktopProductDetailPage() {
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <p className="font-bold text-gray-900 text-[11px]">Order stays UNPAID until payment is verified</p>
-                <p className="text-[10px] text-gray-500">Pay only via the bank transfer or bKash/Nagad details shown for your order — the supplier ships once Zylod verifies the payment.</p>
+                <p className="font-bold text-gray-900 dark:text-gray-100 text-[11px]">Order stays UNPAID until payment is verified</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">Pay only via the bank transfer or bKash/Nagad details shown for your order — the supplier ships once Zylod verifies the payment.</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-[11px] font-semibold text-red-600">
@@ -1439,7 +1439,7 @@ function DesktopProductDetailPage() {
                       <div key={stars} className="flex items-center gap-2 text-xs">
                         <span className="w-3 text-right">{stars}</span>
                         <Star className="h-3 w-3 fill-[primary] text-[primary]" />
-                        <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-900 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-[primary] rounded-full"
                             style={{ width: `${productReviewCount > 0 ? (count / productReviewCount) * 100 : 0}%` }}
@@ -1635,7 +1635,7 @@ function DesktopProductDetailPage() {
                             ? 'bg-green-100 text-green-600'
                             : item.status === 'current'
                               ? 'bg-[primary]/10 text-[primary] ring-2 ring-[primary]/30'
-                              : 'bg-gray-100 text-gray-400'
+                              : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
                         }`}
                       >
                         {item.icon}
@@ -1657,13 +1657,13 @@ function DesktopProductDetailPage() {
                               ? 'bg-green-50 text-green-600'
                               : item.status === 'current'
                                 ? 'bg-[primary]/10 text-[primary]'
-                                : 'bg-gray-50 text-gray-400'
+                                : 'bg-gray-50 dark:bg-gray-950 text-gray-400 dark:text-gray-500'
                           }`}>
                             {item.date}
                           </span>
                         </div>
                         <p className={`text-xs mt-0.5 ${
-                          item.status === 'upcoming' ? 'text-gray-400' : 'text-muted-foreground'
+                          item.status === 'upcoming' ? 'text-gray-400 dark:text-gray-500' : 'text-muted-foreground'
                         }`}>
                           {item.description}
                         </p>
@@ -1870,7 +1870,7 @@ function DesktopProductDetailPage() {
                                 ? 'bg-green-100 text-green-600'
                                 : stage.status === 'current'
                                   ? 'bg-[primary]/10 text-[primary] ring-2 ring-[primary]/30'
-                                  : 'bg-gray-100 text-gray-400'
+                                  : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
                             }`}
                           >
                             {stageIcon}
@@ -1893,7 +1893,7 @@ function DesktopProductDetailPage() {
                               )}
                             </div>
                             <p className={`text-xs mt-0.5 ${
-                              stage.status === 'upcoming' ? 'text-gray-400' : 'text-muted-foreground'
+                              stage.status === 'upcoming' ? 'text-gray-400 dark:text-gray-500' : 'text-muted-foreground'
                             }`}>
                               {stage.description}
                             </p>

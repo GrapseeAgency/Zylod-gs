@@ -89,12 +89,12 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center">
         <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
           <CheckCircle2 className="h-10 w-10" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900">Review Submitted!</h2>
-        <p className="text-xs text-slate-500 mt-2 max-w-xs">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Review Submitted!</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs">
           Thank you for sharing your experience. Your feedback helps other enterprise buyers source with confidence.
         </p>
         <Button
@@ -108,23 +108,23 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 md:pb-10 text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-base font-bold text-slate-900">Write a Review</h1>
+          <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Write a Review</h1>
         </div>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">Write a Review</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Write a Review</h1>
 
       <main className="px-4 py-4 max-w-lg mx-auto">
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Star Rating Section */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-2xs text-center">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-2xs text-center">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
               Overall Quality Rating
             </h3>
             <div className="flex items-center justify-center gap-2 py-2">
@@ -147,27 +147,27 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
                 </button>
               ))}
             </div>
-            <p className="text-xs font-bold text-slate-700 mt-1">
+            <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">
               {rating === 5 ? 'Exceptional Quality' : rating === 4 ? 'Very Good' : rating === 3 ? 'Average' : 'Below Expectation'}
             </p>
           </div>
 
           {/* Review Title & Content */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-2xs space-y-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-2xs space-y-4">
             <div>
-              <label className="text-xs font-bold text-slate-800 block mb-1.5">
+              <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block mb-1.5">
                 Review Headline
               </label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g., Exceptional build quality and fast lead time"
-                className="h-11 rounded-xl text-xs font-medium bg-slate-50 border-slate-200"
+                className="h-11 rounded-xl text-xs font-medium bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-800 block mb-1.5">
+              <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block mb-1.5">
                 Detailed Feedback
               </label>
               <Textarea
@@ -175,18 +175,18 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Share specific details regarding durability, packaging, shipment handling, or tolerances..."
                 rows={4}
-                className="rounded-xl text-xs font-medium bg-slate-50 border-slate-200 resize-none"
+                className="rounded-xl text-xs font-medium bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 resize-none"
               />
             </div>
 
             {/* Quick Upload Media Tile CTA */}
             <div
               onClick={() => navigate('upload-review-photos', { productId })}
-              className="border-2 border-dashed border-slate-200 hover:border-primary/50 bg-slate-50/50 rounded-2xl p-4 text-center cursor-pointer transition-colors"
+              className="border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-primary/50 bg-slate-50/50 dark:bg-slate-950/50 rounded-2xl p-4 text-center cursor-pointer transition-colors"
             >
               <Camera className="h-6 w-6 mx-auto text-primary mb-1.5" />
-              <p className="text-xs font-bold text-slate-800">Add Photos or Video</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Showcase real warehouse usage and tolerances</p>
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Add Photos or Video</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Showcase real warehouse usage and tolerances</p>
             </div>
           </div>
 

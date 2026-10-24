@@ -137,16 +137,16 @@ export function RedeemPointsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Gift className="w-5 h-5 text-amber-500" />
-            <h1 className="font-bold text-gray-900 text-base">Redeem Points</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Redeem Points</h1>
           </div>
         </div>
 
@@ -160,7 +160,7 @@ export function RedeemPointsPage() {
         <div className="hidden md:flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Gift className="w-6 h-6 text-amber-500" />
-            <h1 className="text-2xl font-bold text-gray-900">Redeem Points</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Redeem Points</h1>
           </div>
           <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full text-xs font-bold text-amber-700">
             <Coins className="w-3.5 h-3.5" />
@@ -177,7 +177,7 @@ export function RedeemPointsPage() {
 
         {/* Options List */}
         <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
             Redemption Rewards
           </h3>
 
@@ -187,7 +187,7 @@ export function RedeemPointsPage() {
               <div
                 key={opt.points}
                 className={`bg-white rounded-3xl p-5 border shadow-sm flex items-center justify-between gap-4 transition ${
-                  canAfford ? 'border-gray-100 hover:border-amber-300' : 'border-gray-100 opacity-60'
+                  canAfford ? 'border-gray-100 dark:border-gray-800 hover:border-amber-300' : 'border-gray-100 dark:border-gray-800 opacity-60'
                 }`}
               >
                 <div className="flex items-center gap-3.5 min-w-0">
@@ -198,8 +198,8 @@ export function RedeemPointsPage() {
                   </div>
 
                   <div className="min-w-0">
-                    <h4 className="text-xs sm:text-sm font-bold text-gray-900 truncate">{opt.label}</h4>
-                    <p className="text-[11px] text-gray-500">
+                    <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{opt.label}</h4>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400">
                       Cost: <strong className="text-amber-600">{opt.points.toLocaleString()} Points</strong>
                       {opt.minOrder > 0 && ` • Min Order ${formatPrice(opt.minOrder)}`}
                     </p>
@@ -213,7 +213,7 @@ export function RedeemPointsPage() {
                   className={`h-9 px-4 text-xs font-bold rounded-xl flex-shrink-0 shadow-sm ${
                     canAfford
                       ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                      : 'bg-gray-100 text-gray-400'
+                      : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
                   }`}
                 >
                   {redeeming === opt.points ? 'Redeeming...' : canAfford ? 'Redeem' : 'Need Pts'}
@@ -223,14 +223,14 @@ export function RedeemPointsPage() {
           })}
 
           {/* Custom redemption — the API's real freedom, now reachable */}
-          <div className="bg-white rounded-3xl p-5 border border-dashed border-amber-300 shadow-sm md:col-span-2">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-dashed border-amber-300 shadow-sm md:col-span-2">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
                 <Tag className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-sm font-bold text-gray-900">Custom Voucher</h4>
-                <p className="text-[11px] text-gray-500">Any amount from 100 points — ৳1 per 10 points, min order 3× the voucher value</p>
+                <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">Custom Voucher</h4>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">Any amount from 100 points — ৳1 per 10 points, min order 3× the voucher value</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -242,7 +242,7 @@ export function RedeemPointsPage() {
                 onChange={(e) => setCustomPoints(e.target.value)}
                 placeholder={pointsBalance >= 100 ? `e.g. ${Math.min(pointsBalance, 1000)} (you have ${pointsBalance.toLocaleString()} pts)` : 'Earn more points first'}
                 disabled={pointsBalance < 100}
-                className="flex-1 h-10 px-3.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 disabled:bg-gray-50 disabled:text-gray-400 min-w-0"
+                className="flex-1 h-10 px-3.5 rounded-xl border border-gray-200 dark:border-gray-800 text-sm font-semibold text-gray-900 dark:text-gray-100 placeholder:text-gray-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 disabled:bg-gray-50 disabled:text-gray-400 min-w-0"
                 aria-label="Custom points to redeem"
               />
               <Button

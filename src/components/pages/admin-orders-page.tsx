@@ -73,7 +73,7 @@ const paymentStatusChip: Record<string, string> = {
   unpaid: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
   partial: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-900',
   paid: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
-  refunded: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+  refunded: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
 }
 
 const subOrderStatusChip: Record<string, string> = {
@@ -83,7 +83,7 @@ const subOrderStatusChip: Record<string, string> = {
   shipped: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-400 dark:border-violet-900',
   delivered: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   cancelled: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
-  returned: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+  returned: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
 }
 
 function PaymentChip({ status }: { status: string }) {
@@ -257,7 +257,7 @@ export function AdminOrdersPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">This fulfillment view is restricted to Zylod admins. Sign in with an admin account to audit orders across the platform.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">This fulfillment view is restricted to Zylod admins. Sign in with an admin account to audit orders across the platform.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -273,10 +273,10 @@ export function AdminOrdersPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Orders — Fulfillment View</h1>
-            <p className="text-[11px] text-slate-400">Every order on the platform with its real per-shipment status. Fulfillment moves happen seller-side; this is the admin oversight view.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">Every order on the platform with its real per-shipment status. Fulfillment moves happen seller-side; this is the admin oversight view.</p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => loadOrders()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700">
+        <Button variant="outline" onClick={() => loadOrders()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
           <RefreshCw className="h-3.5 w-3.5" /> Refresh
         </Button>
       </div>
@@ -287,13 +287,13 @@ export function AdminOrdersPage() {
           <button
             key={t.key}
             onClick={() => switchStatus(t.key)}
-            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'}`}
+            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
           >
             {t.label}
           </button>
         ))}
         <div className="relative flex-1 min-w-[200px] max-w-sm ml-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
           <Input
             value={q}
             onChange={(e) => { setQ(e.target.value) }}
@@ -308,11 +308,11 @@ export function AdminOrdersPage() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-20 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load orders</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -321,24 +321,24 @@ export function AdminOrdersPage() {
           </Button>
         </div>
       ) : orders.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           {q ? (
             <>
               <Package className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No orders match &quot;{q}&quot;</h2>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">Search matches the order number and the buyer&apos;s email. Try a different term or clear the search.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Search matches the order number and the buyer&apos;s email. Try a different term or clear the search.</p>
             </>
           ) : statusTab !== 'all' ? (
             <>
               <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
               <h2 className="text-sm font-black">No {statusTab} shipments</h2>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">No order currently has a shipment in the &quot;{statusTab}&quot; state. Sellers move shipments through pending → confirmed → packed → shipped → delivered; cancelled and returned are terminal.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">No order currently has a shipment in the &quot;{statusTab}&quot; state. Sellers move shipments through pending → confirmed → packed → shipped → delivered; cancelled and returned are terminal.</p>
             </>
           ) : (
             <>
               <Package className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No orders yet</h2>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">Orders appear here the moment buyers check out. Nothing has been ordered platform-wide yet.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Orders appear here the moment buyers check out. Nothing has been ordered platform-wide yet.</p>
             </>
           )}
         </div>
@@ -348,11 +348,11 @@ export function AdminOrdersPage() {
             const isExpanded = expandedId === o.id
             const subOrders = Array.isArray(o.subOrders) ? o.subOrders : []
             return (
-              <div key={o.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={o.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 {/* Row */}
                 <div className="p-4 flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2 min-w-[160px]">
-                    <ShoppingBag className="h-4 w-4 text-slate-400 shrink-0" />
+                    <ShoppingBag className="h-4 w-4 text-slate-400 dark:text-slate-500 shrink-0" />
                     <span className="text-xs font-black">#{o.orderNumber}</span>
                   </div>
                   <div className="min-w-[150px] text-xs text-slate-500 dark:text-slate-400">
@@ -367,14 +367,14 @@ export function AdminOrdersPage() {
                     <span className={chipClass}>{o.itemCount} item{o.itemCount === 1 ? '' : 's'}</span>
                     <span className={chipClass}>{o.subOrderCount} shipment{o.subOrderCount === 1 ? '' : 's'}</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 min-w-[90px]">
+                  <div className="text-[10px] text-slate-400 dark:text-slate-500 min-w-[90px]">
                     {new Date(o.placedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     <span className="block">placed</span>
                   </div>
                   <Button
                     variant="outline"
                     onClick={() => setExpandedId(isExpanded ? null : o.id)}
-                    className="h-9 px-4 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700"
+                    className="h-9 px-4 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700"
                   >
                     {isExpanded ? <><ChevronUp className="h-3.5 w-3.5" /> Hide shipments</> : <><ChevronDown className="h-3.5 w-3.5" /> Shipments</>}
                   </Button>
@@ -383,9 +383,9 @@ export function AdminOrdersPage() {
                 {/* Per-subOrder status summary */}
                 {isExpanded && (
                   <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Per-shipment status (real subOrders.status)</p>
+                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Per-shipment status (real subOrders.status)</p>
                     {subOrders.length === 0 ? (
-                      <p className="text-xs text-slate-500">This order has no shipments recorded — it may predate the split-order model.</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">This order has no shipments recorded — it may predate the split-order model.</p>
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         {subOrders.map((s) => (
@@ -395,7 +395,7 @@ export function AdminOrdersPage() {
                         ))}
                       </div>
                     )}
-                    <p className="text-[10px] text-slate-400 flex items-center gap-1.5 pt-1">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1.5 pt-1">
                       <Boxes className="h-3 w-3" /> {o.subOrderCount} shipment{o.subOrderCount === 1 ? '' : 's'} · {o.itemCount} item{o.itemCount === 1 ? '' : 's'} across all shipments
                       <Truck className="h-3 w-3 ml-2" /> status changes are made by the selling supplier and appear here after their next edit
                     </p>
@@ -430,7 +430,7 @@ export function AdminOrdersPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400">{total} order{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500">{total} order{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const np = page - 1; setPage(np); loadOrders({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const np = page + 1; setPage(np); loadOrders({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>
@@ -490,16 +490,16 @@ export function AdminOrdersPage() {
 
           <div className="space-y-3">
             <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-3 flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500">Order total (recorded amount must match exactly)</span>
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Order total (recorded amount must match exactly)</span>
               <span className="text-lg font-black text-primary">{formatPrice(verifyTarget?.totalAmount ?? 0)}</span>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Method *</label>
+              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Method *</label>
               <select
                 value={verifyMethod}
                 onChange={(e) => setVerifyMethod(e.target.value as 'bank_transfer' | 'mobile_banking')}
-                className="h-10 w-full rounded-xl border border-input bg-white dark:bg-slate-900 px-3 text-xs font-bold"
+                className="h-10 w-full rounded-xl border border-input bg-white dark:bg-gray-900 dark:bg-slate-900 px-3 text-xs font-bold"
               >
                 <option value="bank_transfer">Bank transfer</option>
                 <option value="mobile_banking">Mobile banking</option>
@@ -507,7 +507,7 @@ export function AdminOrdersPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Transaction / reference ID *</label>
+              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Transaction / reference ID *</label>
               <Input
                 value={verifyTrxId}
                 onChange={(e) => setVerifyTrxId(e.target.value)}
@@ -518,7 +518,7 @@ export function AdminOrdersPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Note (optional)</label>
+              <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Note (optional)</label>
               <Input
                 value={verifyNote}
                 onChange={(e) => setVerifyNote(e.target.value)}

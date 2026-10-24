@@ -83,11 +83,11 @@ export function DeliveryMethodPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-[calc(var(--bottom-nav-h)+140px)] text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-[calc(var(--bottom-nav-h)+140px)] text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
-          <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -98,15 +98,15 @@ export function DeliveryMethodPage() {
       <main className="px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg mx-auto lg:max-w-3xl">
         {/* Page Title */}
         <div>
-          <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Select Delivery Method</h1>
-          <p className="text-xs text-slate-500 mt-1">Choose how you want your wholesale order delivered.</p>
+          <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Select Delivery Method</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Choose how you want your wholesale order delivered.</p>
         </div>
 
         {/* Delivery Option Cards */}
         {loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-3xl p-5 border border-slate-200 h-24 animate-pulse" />
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 h-24 animate-pulse" />
             ))}
           </div>
         )}
@@ -130,15 +130,15 @@ export function DeliveryMethodPage() {
                 <button
                   key={method.id}
                   onClick={() => setSelected(method.id)}
-                  className={`w-full text-left bg-white rounded-3xl p-5 border transition-all shadow-2xs ${
+                  className={`w-full text-left bg-white dark:bg-gray-900 rounded-3xl p-5 border transition-all shadow-2xs ${
                     isSelected
                       ? 'border-primary ring-2 ring-primary/20'
-                      : 'border-slate-200 hover:border-slate-300'
+                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-start gap-4">
                     {/* Icon circle */}
-                    <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center shrink-0">
                       <Icon type={method.icon} />
                     </div>
 
@@ -146,8 +146,8 @@ export function DeliveryMethodPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <h3 className="text-sm font-bold text-slate-900">{method.name}</h3>
-                          <p className="text-[11px] text-slate-500 mt-0.5">{method.description}</p>
+                          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">{method.name}</h3>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{method.description}</p>
                         </div>
 
                         {/* Price */}
@@ -155,7 +155,7 @@ export function DeliveryMethodPage() {
                           {method.isFree ? (
                             <span className="text-sm font-black text-primary">Free</span>
                           ) : (
-                            <span className="text-sm font-black text-slate-900">
+                            <span className="text-sm font-black text-slate-900 dark:text-slate-100">
                               {formatPrice(method.price)}
                             </span>
                           )}
@@ -169,7 +169,7 @@ export function DeliveryMethodPage() {
                             className={`text-[10px] font-bold px-2.5 py-1 rounded-md inline-block ${
                               method.badgeVariant === 'fastest'
                                 ? 'bg-primary text-white'
-                                : 'bg-slate-100 text-slate-700 border border-slate-200'
+                                : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'
                             }`}
                           >
                             {method.badge}
@@ -179,7 +179,7 @@ export function DeliveryMethodPage() {
 
                       {/* Pickup address if available */}
                       {method.pickupAddress && (
-                        <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 leading-relaxed">
                           {method.pickupAddress}
                         </p>
                       )}
@@ -193,7 +193,7 @@ export function DeliveryMethodPage() {
       </main>
 
       {/* Sticky Continue Button */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white border-t border-slate-100 p-4 shadow-xl z-30">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30">
         <div className="max-w-lg mx-auto lg:max-w-3xl">
           <Button
             onClick={() => navigate('payment-method')}

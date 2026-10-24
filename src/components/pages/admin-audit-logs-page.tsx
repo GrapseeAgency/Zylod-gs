@@ -247,7 +247,7 @@ export function AdminAuditLogsPage() {
                         <td className="px-4 py-2.5">
                           <div className="flex items-center gap-2 min-w-0">
                             <span className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate max-w-40">{r.actor?.name ?? 'System'}</span>
-                            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${USER_TYPE_STYLES[r.actor?.userType ?? ''] ?? 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+                            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${USER_TYPE_STYLES[r.actor?.userType ?? ''] ?? 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800'}`}>
                               {r.actor?.userType ?? 'system'}
                             </Badge>
                           </div>
@@ -255,12 +255,12 @@ export function AdminAuditLogsPage() {
                         <td className="px-4 py-2.5 text-xs font-mono font-bold text-gray-800 dark:text-gray-200">{r.action}</td>
                         <td className="px-4 py-2.5 text-xs text-gray-600 dark:text-gray-400">
                           <span className="font-bold">{r.entityType}</span>
-                          {r.entityId && <span className="block font-mono text-[10px] text-gray-400 truncate max-w-48">{r.entityId}</span>}
+                          {r.entityId && <span className="block font-mono text-[10px] text-gray-400 dark:text-gray-500 truncate max-w-48">{r.entityId}</span>}
                         </td>
                         <td className="px-4 py-2.5 text-right">
                           {expandedId === r.id
-                            ? <ChevronDown className="h-4 w-4 inline text-gray-400" />
-                            : <ChevronRight className="h-4 w-4 inline text-gray-400" />}
+                            ? <ChevronDown className="h-4 w-4 inline text-gray-400 dark:text-gray-500" />
+                            : <ChevronRight className="h-4 w-4 inline text-gray-400 dark:text-gray-500" />}
                         </td>
                       </tr>
                       {expandedId === r.id && (
@@ -285,12 +285,12 @@ export function AdminAuditLogsPage() {
                   <button className="w-full text-left space-y-2" onClick={() => setExpandedId(expandedId === r.id ? null : r.id)}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs font-mono font-bold text-gray-800 dark:text-gray-200 truncate">{r.action}</span>
-                      <Badge variant="outline" className={`text-[10px] px-1.5 py-0 shrink-0 ${USER_TYPE_STYLES[r.actor?.userType ?? ''] ?? 'bg-gray-100 text-gray-600 border-gray-200'}`}>
+                      <Badge variant="outline" className={`text-[10px] px-1.5 py-0 shrink-0 ${USER_TYPE_STYLES[r.actor?.userType ?? ''] ?? 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800'}`}>
                         {r.actor?.userType ?? 'system'}
                       </Badge>
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{r.actor?.name ?? 'System'} · <span className="font-bold">{r.entityType}</span></p>
-                    <p className="text-[10px] text-gray-400 font-mono">{fmt(r.createdAt)}</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-mono">{fmt(r.createdAt)}</p>
                   </button>
                   {expandedId === r.id && (
                     <pre className="mt-2.5 pt-2.5 border-t border-gray-100 dark:border-gray-800 text-[10px] leading-relaxed font-mono text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-all max-h-56 overflow-y-auto" data-testid="audit-metadata-mobile">

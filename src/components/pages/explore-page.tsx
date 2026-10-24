@@ -145,10 +145,10 @@ export function ExplorePage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-8">
       {/* ─── Top Nav Bar ─── */}
-      <header className="sticky top-0 z-40 bg-white border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors md:hidden"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -156,7 +156,7 @@ export function ExplorePage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -171,7 +171,7 @@ export function ExplorePage() {
 
         {/* Search Bar with QR Scanner */}
         <form onSubmit={handleSearchSubmit} className="relative max-w-md mx-auto md:max-w-xl">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500 pointer-events-none" />
           <input
             type="text"
             placeholder="Search categories, suppliers, ..."
@@ -182,7 +182,7 @@ export function ExplorePage() {
           <button
             type="button"
             onClick={() => navigate('barcode-scanner')}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 p-1"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-800 p-1"
             title="Scan QR / Barcode"
           >
             <QrCode className="h-5 w-5" />
@@ -246,7 +246,7 @@ export function ExplorePage() {
           )}
           {!isLoading && !loadError && products.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-14 text-center">
-              <Search className="w-8 h-8 text-gray-400" />
+              <Search className="w-8 h-8 text-gray-400 dark:text-gray-500" />
               <p className="text-sm text-[#6B7280] max-w-[260px]">
                 Nothing listed in this category yet — try another one.
               </p>
@@ -259,10 +259,10 @@ export function ExplorePage() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => navigate('product-detail', { productId: heroProduct.id })}
               >
-                <div className="relative aspect-[16/10] bg-gray-100">
+                <div className="relative aspect-[16/10] bg-gray-100 dark:bg-gray-900">
                   { }
                   <img
                     src={heroProduct.images?.[0]?.imageUrl || heroProduct.thumbnailUrl || '/placeholder-product.svg'}
@@ -271,12 +271,12 @@ export function ExplorePage() {
                   />
                   <button
                     onClick={(e) => toggleWishlist(e, heroProduct)}
-                    className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center hover:scale-105 transition-transform"
+                    className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white dark:bg-gray-900 shadow-md flex items-center justify-center hover:scale-105 transition-transform"
                     aria-label="Save to wishlist"
                   >
                     <Heart
                       className={`h-5 w-5 ${
-                        isInWishlist(heroProduct.id) ? 'fill-[#C8102E] text-[#C8102E]' : 'text-gray-400'
+                        isInWishlist(heroProduct.id) ? 'fill-[#C8102E] text-[#C8102E]' : 'text-gray-400 dark:text-gray-500'
                       }`}
                     />
                   </button>
@@ -316,9 +316,9 @@ export function ExplorePage() {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     onClick={() => navigate('product-detail', { productId: item.id })}
-                    className="bg-white rounded-xl border border-[#E0E0E0] p-3 flex items-center gap-3 hover:border-gray-300 transition-colors cursor-pointer shadow-sm"
+                    className="bg-white dark:bg-gray-900 rounded-xl border border-[#E0E0E0] p-3 flex items-center gap-3 hover:border-gray-300 transition-colors cursor-pointer shadow-sm"
                   >
-                    <div className="w-16 h-16 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                    <div className="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-900 overflow-hidden shrink-0">
                       { }
                       <img
                         src={item.images?.[0]?.imageUrl || item.thumbnailUrl || '/placeholder-product.svg'}
@@ -362,9 +362,9 @@ export function ExplorePage() {
                   <div
                     key={sup.id}
                     onClick={() => navigate('seller-storefront', { supplierId: sup.id })}
-                    className="bg-white rounded-xl p-3 flex flex-col items-center text-center border border-[#E0E0E0] shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer group"
+                    className="bg-white dark:bg-gray-900 rounded-xl p-3 flex flex-col items-center text-center border border-[#E0E0E0] shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer group"
                   >
-                    <div className="w-12 h-12 rounded-full border-2 border-red-100 flex items-center justify-center mb-2 bg-gray-50 group-hover:scale-105 transition-transform">
+                    <div className="w-12 h-12 rounded-full border-2 border-red-100 flex items-center justify-center mb-2 bg-gray-50 dark:bg-gray-950 group-hover:scale-105 transition-transform">
                       <span className="text-sm font-black text-[#C8102E]">
                         {sup.companyName.slice(0, 2).toUpperCase()}
                       </span>

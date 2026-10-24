@@ -185,7 +185,7 @@ export function StoreCustomizationPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center" role="status" aria-label="Loading store settings">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center" role="status" aria-label="Loading store settings">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -193,17 +193,17 @@ export function StoreCustomizationPage() {
 
   if (needsAuth) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-        <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+        <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Store Customization</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Store Customization</h1>
         </div>
         <div className="p-4 max-w-3xl mx-auto md:p-6 md:pt-10">
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center space-y-4">
-            <LogIn className="w-8 h-8 text-gray-400 mx-auto" />
-            <p className="text-sm text-gray-700">Sign in as a supplier to customize your store.</p>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-4">
+            <LogIn className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
+            <p className="text-sm text-gray-700 dark:text-gray-300">Sign in as a supplier to customize your store.</p>
             <button onClick={() => navigate('login')} className="min-h-11 px-4 bg-primary text-white rounded-lg text-sm font-medium">
               Sign in
             </button>
@@ -215,17 +215,17 @@ export function StoreCustomizationPage() {
 
   if (needsRegistration) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-        <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+        <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Store Customization</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Store Customization</h1>
         </div>
         <div className="p-4 max-w-3xl mx-auto md:p-6 md:pt-10">
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center space-y-4">
-            <Store className="w-8 h-8 text-gray-400 mx-auto" />
-            <p className="text-sm text-gray-700">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-4">
+            <Store className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               No seller store found for this account. Complete seller registration to customize a storefront.
             </p>
             <button onClick={() => navigate('seller-onboarding')} className="min-h-11 px-4 bg-primary text-white rounded-lg text-sm font-medium">
@@ -238,18 +238,18 @@ export function StoreCustomizationPage() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-      <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+      <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
+        <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <h1 className="text-lg font-bold text-gray-900">Store Customization</h1>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Store Customization</h1>
       </div>
 
       <div className="p-4 max-w-3xl mx-auto space-y-6 md:p-6 md:pt-6">
         <div>
-          <h1 className="hidden md:block text-2xl font-bold text-gray-900">Store Customization</h1>
-          {companyName && <p className="text-sm text-gray-500 mt-1">Branding for “{companyName}” — changes apply to your public storefront after you save.</p>}
+          <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100">Store Customization</h1>
+          {companyName && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Branding for “{companyName}” — changes apply to your public storefront after you save.</p>}
         </div>
 
         {fetchError && (
@@ -263,23 +263,23 @@ export function StoreCustomizationPage() {
         )}
 
         {/* Banner */}
-        <section className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-3">
-          <h2 className="font-semibold text-gray-900">Store banner</h2>
+        <section className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <h2 className="font-semibold text-gray-900 dark:text-gray-100">Store banner</h2>
           {bannerUrl ? (
-            <div className="relative rounded-lg overflow-hidden border border-gray-100">
+            <div className="relative rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800">
               { }
               <img src={bannerUrl} alt="Store banner" className="w-full h-36 object-cover" />
               <button
                 type="button"
                 aria-label="Remove banner"
                 onClick={() => setBannerUrl(null)}
-                className="absolute top-2 right-2 min-h-11 min-w-11 p-2 bg-white/90 border border-gray-200 rounded-full text-red-500 hover:bg-red-50 flex items-center justify-center"
+                className="absolute top-2 right-2 min-h-11 min-w-11 p-2 bg-white/90 border border-gray-200 dark:border-gray-800 rounded-full text-red-500 hover:bg-red-50 flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           ) : (
-            <p className="text-xs text-gray-500">No banner set — your storefront shows a plain header until you upload one.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">No banner set — your storefront shows a plain header until you upload one.</p>
           )}
           <div className="flex items-center gap-3">
             <input
@@ -294,20 +294,20 @@ export function StoreCustomizationPage() {
               type="button"
               onClick={() => bannerInputRef.current?.click()}
               disabled={uploading !== ''}
-              className="min-h-11 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50 disabled:opacity-60"
+              className="min-h-11 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-60"
             >
               {uploading === 'banner' ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
               {bannerUrl ? 'Replace banner' : 'Upload banner'}
             </button>
-            <span className="text-xs text-gray-500">PNG, JPG, WebP up to 5MB</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, WebP up to 5MB</span>
           </div>
         </section>
 
         {/* Logo */}
-        <section className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-3">
-          <h2 className="font-semibold text-gray-900">Store logo</h2>
+        <section className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <h2 className="font-semibold text-gray-900 dark:text-gray-100">Store logo</h2>
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-xl border border-gray-100 bg-gray-50 overflow-hidden flex items-center justify-center shrink-0">
+            <div className="w-20 h-20 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 overflow-hidden flex items-center justify-center shrink-0">
               {logoUrl ? (
                  
                 <img src={logoUrl} alt="Store logo" className="w-full h-full object-cover" />
@@ -328,7 +328,7 @@ export function StoreCustomizationPage() {
                 type="button"
                 onClick={() => logoInputRef.current?.click()}
                 disabled={uploading !== ''}
-                className="min-h-11 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50 disabled:opacity-60"
+                className="min-h-11 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-60"
               >
                 {uploading === 'logo' ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
                 {logoUrl ? 'Replace logo' : 'Upload logo'}
@@ -347,10 +347,10 @@ export function StoreCustomizationPage() {
         </section>
 
         {/* Storefront section toggles — schema-backed, persisted by the real PATCH */}
-        <section className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-3">
-          <h2 className="font-semibold text-gray-900">Storefront sections</h2>
+        <section className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <h2 className="font-semibold text-gray-900 dark:text-gray-100">Storefront sections</h2>
           <label className="flex items-center justify-between min-h-11 cursor-pointer">
-            <span className="text-sm text-gray-700">Show product ratings</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Show product ratings</span>
             <input
               type="checkbox"
               checked={showRatings}
@@ -359,7 +359,7 @@ export function StoreCustomizationPage() {
             />
           </label>
           <label className="flex items-center justify-between min-h-11 cursor-pointer">
-            <span className="text-sm text-gray-700">Show contact info</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Show contact info</span>
             <input
               type="checkbox"
               checked={showContactInfo}
@@ -368,7 +368,7 @@ export function StoreCustomizationPage() {
             />
           </label>
           <label className="flex items-center justify-between min-h-11 cursor-pointer">
-            <span className="text-sm text-gray-700">Show product categories</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Show product categories</span>
             <input
               type="checkbox"
               checked={showCategories}

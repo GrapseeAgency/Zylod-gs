@@ -1551,7 +1551,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
             </div>
           ) : groups.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-2">
-              <div className="h-14 w-14 rounded-full bg-white shadow-sm flex items-center justify-center">
+              <div className="h-14 w-14 rounded-full bg-white dark:bg-gray-900 shadow-sm flex items-center justify-center">
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <p className="text-sm font-medium text-muted-foreground">Say hello to start the conversation!</p>
@@ -1594,7 +1594,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
                           className={`group relative text-left block max-w-full px-3.5 py-2 rounded-2xl text-xs leading-relaxed shadow-sm transition-all hover:shadow-md ${
                             mine
                               ? 'bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-br-md'
-                              : 'bg-white text-foreground rounded-bl-md'
+                              : 'bg-white dark:bg-gray-900 text-foreground rounded-bl-md'
                           }`}
                         >
                           {m.attachmentUrl && m.attachmentType === 'image' && (
@@ -1613,7 +1613,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
                           <span className={`block text-[9px] mt-1 flex items-center gap-1 ${mine ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                             {formatTime(m.sentAt)}
                           </span>
-                          <span className={`absolute -top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity ${mine ? 'bg-white text-foreground' : 'bg-primary text-primary-foreground'} text-[9px] px-2 py-0.5 rounded-full shadow text-[10px]`}>
+                          <span className={`absolute -top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity ${mine ? 'bg-white dark:bg-gray-900 text-foreground' : 'bg-primary text-primary-foreground'} text-[9px] px-2 py-0.5 rounded-full shadow text-[10px]`}>
                             Reply
                           </span>
                         </button>
@@ -1643,7 +1643,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
 
       {/* Attachment preview */}
       {attachment && (
-        <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-white border border-border rounded-2xl shadow-sm">
+        <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-white dark:bg-gray-900 border border-border rounded-2xl shadow-sm">
           {attachment.file.type.startsWith('image/') ? (
              
             <img src={attachment.preview} alt="preview" className="h-10 w-10 object-cover rounded-lg" />
@@ -2132,7 +2132,7 @@ function SellerStorefrontPage() {
             <img src={storefront.customization.bannerUrl} alt="Banner" className="w-full h-full object-cover" />
           )}
           <div className="absolute bottom-3 left-4 flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow-lg">
+            <div className="h-12 w-12 rounded-full bg-white dark:bg-gray-900 flex items-center justify-center shadow-lg">
               {storefront?.customization?.logoUrl ? (
                 <img src={storefront.customization.logoUrl} alt="Logo" className="h-10 w-10 rounded-full object-cover" />
               ) : (
@@ -2438,7 +2438,7 @@ function SearchHomePage({ navigate }: { navigate: (page: string, params?: Record
           placeholder="Search products, suppliers, categories..."
           value={query}
           onChange={e => setQuery(e.target.value)}
-          className="pl-10 text-sm rounded-xl bg-white border-border"
+          className="pl-10 text-sm rounded-xl bg-white dark:bg-gray-900 border-border"
           autoFocus
         />
       </form>
@@ -2836,7 +2836,7 @@ function SpinWinPage() {
 
       <Card className="border border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
         <CardContent className="p-6 text-center space-y-5">
-          <div className={`h-32 w-32 rounded-full border-8 border-primary/30 bg-white mx-auto flex items-center justify-center transition-transform duration-1000 ${spinning ? 'animate-spin' : ''}`}>
+          <div className={`h-32 w-32 rounded-full border-8 border-primary/30 bg-white dark:bg-gray-900 mx-auto flex items-center justify-center transition-transform duration-1000 ${spinning ? 'animate-spin' : ''}`}>
             {result && !spinning ? (
               <div className="text-center">
                 <Award className="h-8 w-8 text-primary mx-auto" />
@@ -2947,7 +2947,7 @@ function ReferralProgramPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-white rounded-lg border-2 border-dashed border-primary/40 px-3 py-2.5 text-center">
+            <div className="flex-1 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-primary/40 px-3 py-2.5 text-center">
               <p className="font-mono font-bold text-primary tracking-wider">{data?.code || '—'}</p>
             </div>
             <Button size="sm" onClick={handleCopy} className="shrink-0">

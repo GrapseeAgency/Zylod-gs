@@ -45,14 +45,14 @@ export function CustomerQueriesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       <header className="bg-primary text-white p-4 flex items-center md:hidden">
         <button onClick={goBack} className="mr-4">←</button>
         <h1 className="text-xl font-bold">Customer Queries</h1>
       </header>
       <main className="flex-1 p-4 md:px-6 md:py-8 md:max-w-5xl md:w-full md:mx-auto">
         <div className="flex space-x-4 mb-6">
-          <button onClick={() => navigate('customer-rfq-inbox')} className="flex-1 md:flex-none md:px-8 bg-white border border-primary text-primary py-2 rounded font-bold">
+          <button onClick={() => navigate('customer-rfq-inbox')} className="flex-1 md:flex-none md:px-8 bg-white dark:bg-gray-900 border border-primary text-primary py-2 rounded font-bold">
             View RFQ Inbox
           </button>
         </div>
@@ -61,15 +61,15 @@ export function CustomerQueriesPage() {
             <div className="h-20 bg-gray-200 rounded"></div>
           </div>
         ) : error ? (
-          <div className="bg-white p-6 rounded text-center shadow">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded text-center shadow">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{error}</p>
           </div>
         ) : queries.length === 0 ? (
-          <div className="bg-white p-8 rounded text-center shadow">
+          <div className="bg-white dark:bg-gray-900 p-8 rounded text-center shadow">
             <Inbox className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-gray-700">No customer queries yet</h3>
-            <p className="text-xs text-gray-500 mt-1">
+            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No customer queries yet</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Direct buyer queries — pre-order asks, custom requests, complaints — will land here.
               Today most buyer questions arrive through product Q&amp;A, the RFQ inbox, and chat.
             </p>
@@ -78,38 +78,38 @@ export function CustomerQueriesPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             <div className="space-y-4 md:hidden">
               {queries.map(q => (
-                <div key={q.id} onClick={() => navigate('customer-query-detail', { id: q.id })} className="bg-white p-4 rounded shadow cursor-pointer flex items-start">
-                  <div className="bg-gray-100 p-3 rounded-full mr-4">
-                    <MessageCircle className="w-6 h-6 text-gray-500" />
+                <div key={q.id} onClick={() => navigate('customer-query-detail', { id: q.id })} className="bg-white dark:bg-gray-900 p-4 rounded shadow cursor-pointer flex items-start">
+                  <div className="bg-gray-100 dark:bg-gray-900 p-3 rounded-full mr-4">
+                    <MessageCircle className="w-6 h-6 text-gray-500 dark:text-gray-400" />
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between items-center gap-2">
                       <h3 className="font-bold">{q.buyerName}</h3>
-                      <span className="text-xs text-gray-500">{new Date(q.createdAt).toLocaleDateString()}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(q.createdAt).toLocaleDateString()}</span>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1 truncate">{q.subject}: {q.lastMessage}</p>
-                    <span className="inline-block mt-1.5 text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full border bg-gray-50 text-gray-600 border-gray-200">{q.status}</span>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">{q.subject}: {q.lastMessage}</p>
+                    <span className="inline-block mt-1.5 text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full border bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800">{q.status}</span>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="hidden md:block bg-white border rounded-lg overflow-hidden">
+            <div className="hidden md:block bg-white dark:bg-gray-900 border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-red-50/50 text-left">
-                    <th className="px-4 py-3 font-medium text-gray-700">Buyer</th>
-                    <th className="px-4 py-3 font-medium text-gray-700">Last Message</th>
-                    <th className="px-4 py-3 font-medium text-gray-700">Status</th>
-                    <th className="px-4 py-3 font-medium text-gray-700">Date</th>
+                    <th className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Buyer</th>
+                    <th className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Last Message</th>
+                    <th className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Status</th>
+                    <th className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {queries.map(q => (
                     <tr key={q.id} onClick={() => navigate('customer-query-detail', { id: q.id })} className="border-t cursor-pointer hover:bg-red-50/30">
                       <td className="px-4 py-3 font-bold">{q.buyerName}</td>
-                      <td className="px-4 py-3 text-gray-600 max-w-md truncate">{q.subject}: {q.lastMessage}</td>
-                      <td className="px-4 py-3"><span className="text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full border bg-gray-50 text-gray-600 border-gray-200">{q.status}</span></td>
-                      <td className="px-4 py-3 text-xs text-gray-500">{new Date(q.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-md truncate">{q.subject}: {q.lastMessage}</td>
+                      <td className="px-4 py-3"><span className="text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full border bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800">{q.status}</span></td>
+                      <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400">{new Date(q.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>

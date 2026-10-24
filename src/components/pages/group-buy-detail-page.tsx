@@ -72,59 +72,59 @@ export function GroupBuyDetailPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="font-bold text-gray-900 text-base">Group Buy Pooling Pool</h1>
+          <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Group Buy Pooling Pool</h1>
         </div>
       </div>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24 md:max-w-4xl md:px-6 md:py-8 md:pb-8">
         {loading ? (
-          <div className="p-8 text-center text-gray-400">Loading campaign details...</div>
+          <div className="p-8 text-center text-gray-400 dark:text-gray-500">Loading campaign details...</div>
         ) : !campaign ? (
-          <div className="bg-white rounded-3xl p-8 text-center text-gray-500 space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 text-center text-gray-500 dark:text-gray-400 space-y-3">
             <p>Campaign not found</p>
             <Button onClick={() => navigate('group-buy')} className="rounded-xl text-xs font-bold bg-red-600 text-white">
               Back to Group Buys
             </Button>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm lg:p-8">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm lg:p-8">
             <div className="space-y-5 lg:grid lg:grid-cols-3 lg:gap-8 lg:space-y-0">
             <div className="lg:col-span-2 space-y-5">
             <div className="space-y-1">
               <Badge className="bg-red-50 text-red-700 font-bold uppercase text-[10px]">
                 Active Wholesale Pool
               </Badge>
-              <h2 className="text-base sm:text-lg md:text-2xl font-black text-gray-900">{campaign.title}</h2>
-              <p className="text-xs text-gray-500">
+              <h2 className="text-base sm:text-lg md:text-2xl font-black text-gray-900 dark:text-gray-100">{campaign.title}</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Expires on {new Date(campaign.expiresAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}
               </p>
             </div>
 
             {/* Price Card */}
-            <div className="p-4 bg-slate-50 rounded-2xl border border-gray-100 flex items-center justify-between">
+            <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-400">Group Pool Rate</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Group Pool Rate</p>
                 <p className="text-2xl md:text-3xl font-black text-red-600">{formatPrice(campaign.discountedPrice)}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-gray-400">Regular Factory Rate</p>
-                <p className="text-sm line-through text-gray-500">{formatPrice(campaign.originalPrice)}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Regular Factory Rate</p>
+                <p className="text-sm line-through text-gray-500 dark:text-gray-400">{formatPrice(campaign.originalPrice)}</p>
               </div>
             </div>
 
             {/* Progress */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-xs font-bold text-gray-700">
+              <div className="flex justify-between text-xs font-bold text-gray-700 dark:text-gray-300">
                 <span>Total Reserved: {campaign.currentQty} / {campaign.targetQty} Units</span>
                 <span className="text-red-600">{campaign.progressPercent}% Target Achieved</span>
               </div>
-              <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+              <div className="w-full bg-gray-100 dark:bg-gray-900 h-3 rounded-full overflow-hidden">
                 <div className="bg-red-600 h-full rounded-full" style={{ width: `${campaign.progressPercent}%` }} />
               </div>
             </div>
@@ -133,8 +133,8 @@ export function GroupBuyDetailPage() {
                 reservation control; it states the truth instead of a form the
                 API would refuse with 409. */}
             {campaign.status === 'active' && new Date(campaign.expiresAt) > new Date() ? (
-              <div className="space-y-3 pt-2 border-t border-gray-100">
-                <label className="text-xs font-bold text-gray-700">How many units to reserve in this pool?</label>
+              <div className="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-800">
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300">How many units to reserve in this pool?</label>
                 <div className="flex gap-2">
                   <Input
                     type="number"
@@ -153,11 +153,11 @@ export function GroupBuyDetailPage() {
                 </div>
               </div>
             ) : (
-              <div className="pt-2 border-t border-gray-100" data-testid="pool-closed-state">
+              <div className="pt-2 border-t border-gray-100 dark:border-gray-800" data-testid="pool-closed-state">
                 <p className="text-sm font-black text-gray-900 dark:text-gray-100">
                   {campaign.status === 'completed' ? 'This pool is filled — participants can now order their reserved units at the pool rate.' : 'This pool has ended.'}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Reserved units are honored automatically at checkout, up to each participant's reservation.
                 </p>
               </div>
@@ -167,13 +167,13 @@ export function GroupBuyDetailPage() {
 
             {/* Participants list */}
             <div className="space-y-2 pt-2 lg:pt-0">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                 Joined Merchants ({campaign.totalParticipants})
               </h3>
               <div className="space-y-1.5 max-h-40 overflow-y-auto">
                 {campaign.participants?.map((p: any) => (
-                  <div key={p.id} className="p-2.5 bg-slate-50 rounded-xl flex items-center justify-between text-xs">
-                    <span className="font-medium text-gray-800">{p.userEmailMasked}</span>
+                  <div key={p.id} className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-between text-xs">
+                    <span className="font-medium text-gray-800 dark:text-gray-200">{p.userEmailMasked}</span>
                     <span className="font-bold text-red-600">Reserved {p.quantity} units</span>
                   </div>
                 ))}

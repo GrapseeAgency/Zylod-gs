@@ -13,21 +13,21 @@ export function InventoryAlertsPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="overflow-x-hidden min-h-screen bg-gray-50 pb-20 md:pb-8"
+      className="overflow-x-hidden min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
     >
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between md:hidden">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-2 hover:bg-gray-100 rounded-full">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Stock Alerts</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Stock Alerts</h1>
         </div>
       </div>
 
       <div className="p-4 md:max-w-3xl md:mx-auto md:p-6 md:pb-8">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900 mb-6">Stock Alerts</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Stock Alerts</h1>
         <div className="space-y-6">
-        <div className="bg-white p-4 md:p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-gray-900 p-4 md:p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
            <div className="flex items-center gap-2 text-orange-600 mb-2">
              <Bell className="w-5 h-5" />
              <h2 className="font-semibold md:text-lg">Notification Rules</h2>
@@ -36,16 +36,16 @@ export function InventoryAlertsPage() {
            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
              <div className="flex items-center justify-between">
                <div>
-                 <p className="font-medium text-gray-900 text-sm">Low Stock Threshold</p>
-                 <p className="text-xs text-gray-500">Notify when stock drops below</p>
+                 <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">Low Stock Threshold</p>
+                 <p className="text-xs text-gray-500 dark:text-gray-400">Notify when stock drops below</p>
                </div>
                <input type="number" defaultValue={20} className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm text-center" />
              </div>
              
              <div className="flex items-center justify-between">
                <div>
-                 <p className="font-medium text-gray-900 text-sm">Auto-pause Listing</p>
-                 <p className="text-xs text-gray-500">When stock reaches zero</p>
+                 <p className="font-medium text-gray-900 dark:text-gray-100 text-sm">Auto-pause Listing</p>
+                 <p className="text-xs text-gray-500 dark:text-gray-400">When stock reaches zero</p>
                </div>
                <label className="relative inline-flex items-center cursor-pointer">
                  <input type="checkbox" className="sr-only peer" defaultChecked />

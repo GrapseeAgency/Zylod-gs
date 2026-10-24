@@ -180,7 +180,7 @@ export function CreatePromotionPage() {
     selected.size > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 dark:bg-gray-900 flex flex-col">
       {/* Mobile header (red) */}
       <header className="md:hidden bg-primary text-white p-4 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center">
@@ -190,13 +190,13 @@ export function CreatePromotionPage() {
       </header>
       {/* Desktop header */}
       <header className="hidden md:flex sticky top-0 z-20 items-center gap-3 px-6 h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Go back">
-          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700 transition" aria-label="Go back">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-xl font-bold text-primary">Create Campaign</h1>
       </header>
       <main className="flex-1 p-4 md:p-6 md:max-w-3xl md:mx-auto md:w-full space-y-4 pb-20 md:pb-8">
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 space-y-4 md:p-6">
+        <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 dark:border-gray-700 space-y-4 md:p-6">
           <div>
             <Label htmlFor="cp-name">Campaign name</Label>
             <Input id="cp-name" placeholder="e.g. Eid wholesale bonanza" value={name} onChange={(e) => setName(e.target.value)} />
@@ -212,7 +212,7 @@ export function CreatePromotionPage() {
                   <SelectItem value="fixed">Fixed ৳ off</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-[11px] text-gray-400 mt-1">
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
                 The engine computes exactly these — buy-one-get-one and free-shipping are refused because nothing can prove them.
               </p>
             </div>
@@ -259,7 +259,7 @@ export function CreatePromotionPage() {
           <div>
             <Label>Campaign banner (optional)</Label>
             {bannerUrl ? (
-              <div className="relative mt-2 h-28 w-full max-w-md rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+              <div className="relative mt-2 h-28 w-full max-w-md rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 dark:border-gray-700">
                 <img src={bannerUrl} alt="Campaign banner" className="w-full h-full object-cover" />
                 <button
                   onClick={() => setBannerUrl('')}
@@ -270,7 +270,7 @@ export function CreatePromotionPage() {
                 </button>
               </div>
             ) : (
-              <label className="mt-2 flex items-center justify-center gap-2 h-16 w-full max-w-md rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-pointer text-sm text-gray-500 hover:border-primary/50">
+              <label className="mt-2 flex items-center justify-center gap-2 h-16 w-full max-w-md rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-pointer text-sm text-gray-500 dark:text-gray-400 hover:border-primary/50">
                 {bannerUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
                 {bannerUploading ? 'Uploading…' : 'Upload a banner image'}
                 <input type="file" accept="image/*" className="hidden" onChange={onBanner} disabled={bannerUploading} />
@@ -280,7 +280,7 @@ export function CreatePromotionPage() {
 
           <div>
             <Label>Pin products ({selected.size} selected)</Label>
-            <p className="text-[11px] text-gray-400 mb-2">Only YOUR approved, visible products can be pinned — a campaign on someone else's product is refused.</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-2">Only YOUR approved, visible products can be pinned — a campaign on someone else's product is refused.</p>
             <Input placeholder="Search your products…" value={search} onChange={(e) => setSearch(e.target.value)} className="mb-2" />
             {products === null ? (
               <div className="space-y-2" aria-busy="true">
@@ -292,10 +292,10 @@ export function CreatePromotionPage() {
             ) : filtered.length === 0 ? (
               <div className="text-center py-6 border border-dashed rounded-lg">
                 <PackageSearch className="w-8 h-8 text-gray-300 mx-auto mb-1" />
-                <p className="text-xs text-gray-500">No approved products found — approve products first, then pin them here.</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">No approved products found — approve products first, then pin them here.</p>
               </div>
             ) : (
-              <div className="max-h-72 overflow-y-auto rounded-lg border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+              <div className="max-h-72 overflow-y-auto rounded-lg border border-gray-100 dark:border-gray-800 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-800 dark:divide-gray-700">
                 {filtered.map((p) => {
                   const isSel = selected.has(p.id);
                   return (
@@ -303,17 +303,17 @@ export function CreatePromotionPage() {
                       key={p.id}
                       type="button"
                       onClick={() => togglePin(p.id)}
-                      className={`w-full flex items-center gap-3 p-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 ${isSel ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''}`}
+                      className={`w-full flex items-center gap-3 p-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-700/50 ${isSel ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''}`}
                       aria-pressed={isSel}
                     >
-                      <div className="w-10 h-10 rounded bg-gray-100 dark:bg-gray-700 overflow-hidden shrink-0">
+                      <div className="w-10 h-10 rounded bg-gray-100 dark:bg-gray-900 dark:bg-gray-700 overflow-hidden shrink-0">
                         {p.images?.[0]?.imageUrl ? (
                           <img src={p.images[0].imageUrl} alt="" className="w-full h-full object-cover" />
                         ) : null}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white truncate">{p.name}</div>
-                        <div className="text-xs text-gray-500">৳{p.basePrice} / {p.unit}</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white truncate">{p.name}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">৳{p.basePrice} / {p.unit}</div>
                       </div>
                       <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${isSel ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-gray-300 dark:border-gray-500'}`}>
                         {isSel ? <Check className="w-3 h-3" /> : null}
@@ -325,10 +325,10 @@ export function CreatePromotionPage() {
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800 dark:border-gray-700">
             <div>
               <Label htmlFor="cp-live">Publish live immediately</Label>
-              <p className="text-[11px] text-gray-400">Live campaigns are visible on your store page and price matching orders automatically.</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500">Live campaigns are visible on your store page and price matching orders automatically.</p>
             </div>
             <Switch id="cp-live" checked={isActive} onCheckedChange={setIsActive} />
           </div>

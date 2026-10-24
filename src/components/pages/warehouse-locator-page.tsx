@@ -82,10 +82,10 @@ export function WarehouseLocatorPage() {
   })
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 md:pb-10 text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -95,21 +95,21 @@ export function WarehouseLocatorPage() {
       <main className="px-4 py-4 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg lg:max-w-4xl mx-auto">
         {/* Title */}
         <div>
-          <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Warehouse Directory</h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Warehouse Directory</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Ship-from locations suppliers publish on Zylod — real rows, no invented distances.
           </p>
         </div>
 
         {/* Search */}
-        <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by warehouse, company, city, or district…"
-              className="h-11 pl-10 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+              className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
             />
           </div>
           {districts.length > 0 && (
@@ -117,7 +117,7 @@ export function WarehouseLocatorPage() {
               <button
                 onClick={() => setActiveDistrict(null)}
                 className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wide border whitespace-nowrap ${
-                  activeDistrict === null ? 'bg-primary text-white border-primary' : 'bg-white text-slate-600 border-slate-200'
+                  activeDistrict === null ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                 }`}
               >
                 All ({total})
@@ -127,7 +127,7 @@ export function WarehouseLocatorPage() {
                   key={d}
                   onClick={() => setActiveDistrict(activeDistrict === d ? null : d)}
                   className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wide border whitespace-nowrap ${
-                    activeDistrict === d ? 'bg-primary text-white border-primary' : 'bg-white text-slate-600 border-slate-200'
+                    activeDistrict === d ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                   }`}
                 >
                   {d}
@@ -143,20 +143,20 @@ export function WarehouseLocatorPage() {
             <Loader2 className="h-7 w-7 animate-spin text-primary" />
           </div>
         ) : error ? (
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 text-center">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
             <AlertCircle className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-slate-700">{error}</p>
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{error}</p>
             <Button variant="outline" size="sm" onClick={load} className="mt-3">
               <RefreshCw className="h-4 w-4 mr-1" /> Retry
             </Button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 text-center">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
             <Warehouse className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm font-bold text-slate-800">
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
               {total === 0 ? 'No warehouses published yet' : 'Nothing matches that search'}
             </p>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               {total === 0
                 ? 'Suppliers publish their ship-from locations from their console — the directory fills as they do. Nothing is invented here.'
                 : 'Try a different name, city, or district — or clear the filters.'}
@@ -168,12 +168,12 @@ export function WarehouseLocatorPage() {
               <button
                 key={f.id}
                 onClick={() => navigate('seller-storefront', { supplierId: f.supplierId })}
-                className="w-full text-left bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs hover:border-slate-300 transition-colors"
+                className="w-full text-left bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-slate-300 transition-colors"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="text-xs font-black text-slate-900 truncate">{f.name}</h3>
-                    <p className="text-[11px] text-slate-500 font-semibold truncate">{f.companyName}</p>
+                    <h3 className="text-xs font-black text-slate-900 dark:text-slate-100 truncate">{f.name}</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold truncate">{f.companyName}</p>
                   </div>
                   {f.verificationStatus === 'approved' && (
                     <span className="shrink-0 flex items-center gap-1 text-[9px] font-black uppercase tracking-wide text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
@@ -181,20 +181,20 @@ export function WarehouseLocatorPage() {
                     </span>
                   )}
                 </div>
-                <div className="mt-2 flex items-start gap-1.5 text-[11px] text-slate-600">
-                  <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" />
+                <div className="mt-2 flex items-start gap-1.5 text-[11px] text-slate-600 dark:text-slate-400">
+                  <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
                   <span>
                     {f.addressLine1}
                     {f.addressLine2 ? `, ${f.addressLine2}` : ''} — {f.city}, {f.district}
                   </span>
                 </div>
                 {f.ratingCount > 0 && (
-                  <p className="mt-1 text-[10px] text-slate-400 font-bold">
+                  <p className="mt-1 text-[10px] text-slate-400 dark:text-slate-500 font-bold">
                     ★ {f.ratingAvg.toFixed(1)} ({f.ratingCount} store review{f.ratingCount !== 1 ? 's' : ''})
                   </p>
                 )}
                 <div className="mt-2 pt-2 border-t border-slate-50 flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
                     {f.district} district
                   </span>
                   <span className="flex items-center gap-1 text-[11px] font-bold text-primary">
@@ -210,21 +210,21 @@ export function WarehouseLocatorPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <button
             onClick={() => navigate('shipping-calculator')}
-            className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs text-left hover:border-slate-300 transition-colors"
+            className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs text-left hover:border-slate-300 transition-colors"
           >
             <Calculator className="h-5 w-5 text-primary mb-2" />
-            <p className="text-xs font-black text-slate-900">Live freight quotes</p>
-            <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+            <p className="text-xs font-black text-slate-900 dark:text-slate-100">Live freight quotes</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
               The operators&apos; real zone book — same rates checkout charges.
             </p>
           </button>
           <button
             onClick={() => navigate('my-orders')}
-            className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs text-left hover:border-slate-300 transition-colors"
+            className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs text-left hover:border-slate-300 transition-colors"
           >
             <Truck className="h-5 w-5 text-primary mb-2" />
-            <p className="text-xs font-black text-slate-900">Track a real shipment</p>
-            <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+            <p className="text-xs font-black text-slate-900 dark:text-slate-100">Track a real shipment</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
               Real tracking events live on each order&apos;s detail page.
             </p>
           </button>

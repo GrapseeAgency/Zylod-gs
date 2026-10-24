@@ -385,17 +385,17 @@ export function InventoryManagementPage() {
 
   if (needsAuth) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-        <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+        <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Inventory Management</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Inventory Management</h1>
         </div>
         <div className="p-4 max-w-3xl mx-auto md:p-6 md:pt-10">
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center space-y-4">
-            <LogIn className="w-8 h-8 text-gray-400 mx-auto" />
-            <p className="text-sm text-gray-700">Sign in as a supplier to manage your inventory.</p>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-4">
+            <LogIn className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
+            <p className="text-sm text-gray-700 dark:text-gray-300">Sign in as a supplier to manage your inventory.</p>
             <button
               onClick={() => navigate('login')}
               className="min-h-11 px-4 bg-primary text-white rounded-lg text-sm font-medium"
@@ -413,24 +413,24 @@ export function InventoryManagementPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="overflow-x-hidden min-h-screen bg-gray-50 pb-20 md:pb-8"
+      className="overflow-x-hidden min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
     >
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between md:hidden">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Inventory Management</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Inventory Management</h1>
         </div>
       </div>
 
       <div className="p-4 md:max-w-5xl md:mx-auto md:p-6 md:pb-8">
         <div className="hidden md:flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Inventory Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Inventory Management</h1>
           <button
             onClick={() => fetchInventory(true)}
             disabled={refreshing}
-            className="min-h-11 px-4 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50 disabled:opacity-60"
+            className="min-h-11 px-4 border border-gray-200 dark:border-gray-800 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-60"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
           </button>
@@ -450,22 +450,22 @@ export function InventoryManagementPage() {
 
         {/* Real summary chips from the API (products; variant SKUs counted separately) */}
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-          <div className="bg-white p-3 md:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center gap-2 text-gray-600 mb-2">
+          <div className="bg-white dark:bg-gray-900 p-3 md:p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-2">
               <Package className="w-4 h-4" />
               <span className="text-xs font-medium">Total SKUs</span>
             </div>
-            <p className="text-2xl md:text-3xl font-bold text-gray-900">{summary?.totalSkus ?? items.length}</p>
+            <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">{summary?.totalSkus ?? items.length}</p>
             {summary && summary.totalVariantSkus > 0 && (
-              <p className="text-[10px] text-gray-400 mt-1">+{summary.totalVariantSkus} variant SKUs</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">+{summary.totalVariantSkus} variant SKUs</p>
             )}
           </div>
-          <div className="bg-white p-3 md:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center gap-2 text-gray-600 mb-2">
+          <div className="bg-white dark:bg-gray-900 p-3 md:p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-2">
               <Box className="w-4 h-4" />
               <span className="text-xs font-medium">Total Units</span>
             </div>
-            <p className="text-2xl md:text-3xl font-bold text-gray-900">{totalUnits}</p>
+            <p className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">{totalUnits}</p>
           </div>
           <div className="bg-amber-50 p-3 md:p-4 rounded-xl border border-amber-100 flex flex-col justify-between">
             <div className="flex items-center gap-2 text-amber-600 mb-2">
@@ -485,17 +485,17 @@ export function InventoryManagementPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mt-4 md:mt-6">
-          <div className="p-4 border-b border-gray-100 flex justify-between items-center">
-            <h2 className="font-semibold text-gray-900">Stock Levels</h2>
-            <span className="text-[10px] text-gray-400">Quick edits apply instantly to your real stock</span>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden mt-4 md:mt-6">
+          <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+            <h2 className="font-semibold text-gray-900 dark:text-gray-100">Stock Levels</h2>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500">Quick edits apply instantly to your real stock</span>
           </div>
 
           <div className="max-h-[70vh] overflow-y-auto scrollbar-thin">
             {loading ? (
               <div className="p-4 space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="p-4 border border-gray-100 rounded-xl animate-pulse space-y-2">
+                  <div key={i} className="p-4 border border-gray-100 dark:border-gray-800 rounded-xl animate-pulse space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-1/2" />
                     <div className="h-3 bg-gray-200 rounded w-1/4" />
                   </div>
@@ -504,8 +504,8 @@ export function InventoryManagementPage() {
             ) : items.length === 0 ? (
               <div className="p-10 text-center">
                 <Package className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-                <p className="text-sm font-medium text-gray-700">No inventory yet</p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">No inventory yet</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Your stock levels appear here once you create products. Publish your first listing to get started.
                 </p>
                 <button
@@ -516,7 +516,7 @@ export function InventoryManagementPage() {
                 </button>
               </div>
             ) : (
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y divide-gray-100 dark:divide-gray-800">
                 {items.map((product) => {
                   const key = `p:${product.id}`;
                   const isExpanded = expanded[product.id] ?? false;
@@ -532,13 +532,13 @@ export function InventoryManagementPage() {
                               aria-label={isExpanded ? 'Hide variants' : 'Show variants'}
                               onClick={() => setExpanded((prev) => ({ ...prev, [product.id]: !isExpanded }))}
                               disabled={product.variants.length === 0}
-                              className="min-h-11 min-w-8 flex items-center justify-center text-gray-500 disabled:opacity-0"
+                              className="min-h-11 min-w-8 flex items-center justify-center text-gray-500 dark:text-gray-400 disabled:opacity-0"
                             >
                               {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                             </button>
                             <div className="min-w-0">
-                              <h3 className="font-medium text-gray-900 text-sm line-clamp-1">{product.name}</h3>
-                              <p className="text-[11px] text-gray-500 mt-0.5">
+                              <h3 className="font-medium text-gray-900 dark:text-gray-100 text-sm line-clamp-1">{product.name}</h3>
+                              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
                                 {product.category?.name ?? 'Uncategorized'}
                                 {product.sku ? ` · SKU ${product.sku}` : ''}
                                 {product.variants.length > 0 ? ` · ${product.variants.length} variant${product.variants.length === 1 ? '' : 's'}` : ''}
@@ -554,7 +554,7 @@ export function InventoryManagementPage() {
                             </div>
                           </div>
                           <div className="flex flex-col items-end gap-2 shrink-0">
-                            <span className={`text-lg font-bold ${product.stockQuantity === 0 ? 'text-red-500' : isLowStock(product) ? 'text-amber-600' : 'text-gray-900'}`}>
+                            <span className={`text-lg font-bold ${product.stockQuantity === 0 ? 'text-red-500' : isLowStock(product) ? 'text-amber-600' : 'text-gray-900 dark:text-gray-100'}`}>
                               {product.stockQuantity}
                             </span>
                             <div className="flex items-center gap-1.5">
@@ -563,18 +563,18 @@ export function InventoryManagementPage() {
                                 aria-label={`Decrease stock of ${product.name} by 1`}
                                 disabled={actingKey === key}
                                 onClick={() => applyStockUpdate({ productId: product.id }, { delta: -1 })}
-                                className="min-h-11 min-w-11 p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 flex items-center justify-center"
+                                className="min-h-11 min-w-11 p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center"
                               >
-                                <Minus className="w-4 h-4 text-gray-600" />
+                                <Minus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                               </button>
                               <button
                                 type="button"
                                 aria-label={`Increase stock of ${product.name} by 1`}
                                 disabled={actingKey === key}
                                 onClick={() => applyStockUpdate({ productId: product.id }, { delta: 1 })}
-                                className="min-h-11 min-w-11 p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 flex items-center justify-center"
+                                className="min-h-11 min-w-11 p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center"
                               >
-                                <Plus className="w-4 h-4 text-gray-600" />
+                                <Plus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                               </button>
                             </div>
                           </div>
@@ -618,7 +618,7 @@ export function InventoryManagementPage() {
                               type="button"
                               disabled={actingKey === key || (thresholdInputs[key] ?? '').trim() === ''}
                               onClick={() => submitThreshold(product.id)}
-                              className="min-h-11 px-3 bg-white border border-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-50 disabled:opacity-50"
+                              className="min-h-11 px-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
                             >
                               Alert
                             </button>
@@ -628,32 +628,32 @@ export function InventoryManagementPage() {
                                 aria-label={`Reset ${product.name} to the platform default alert line (${LOW_STOCK_FALLBACK})`}
                                 disabled={actingKey === key}
                                 onClick={() => submitThresholdValue(product.id, null)}
-                                className="min-h-11 px-3 bg-white border border-gray-200 text-gray-500 rounded-lg text-xs font-medium hover:bg-gray-50 disabled:opacity-50"
+                                className="min-h-11 px-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
                               >
                                 Reset
                               </button>
                             )}
                           </div>
-                          {actingKey === key && <RefreshCw className="w-4 h-4 text-gray-400 animate-spin" aria-label="Saving" />}
+                          {actingKey === key && <RefreshCw className="w-4 h-4 text-gray-400 dark:text-gray-500 animate-spin" aria-label="Saving" />}
                         </div>
                       </div>
 
                       {/* Variant rows (real nested variants) */}
                       {isExpanded && product.variants.length === 0 && (
-                        <p className="px-4 pb-4 pl-14 text-xs text-gray-400">This product has no variants.</p>
+                        <p className="px-4 pb-4 pl-14 text-xs text-gray-400 dark:text-gray-500">This product has no variants.</p>
                       )}
                       {isExpanded &&
                         product.variants.map((variant) => {
                           const vKey = `v:${variant.id}`;
                           return (
                             <div key={variant.id} className="px-4 pb-4 pl-11 sm:pl-14">
-                              <div className="bg-gray-50 rounded-lg p-3">
+                              <div className="bg-gray-50 dark:bg-gray-950 rounded-lg p-3">
                                 <div className="flex items-start justify-between gap-3">
                                   <div className="min-w-0">
-                                    <p className="text-sm font-medium text-gray-800">
+                                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
                                       {variant.variantName}: {variant.variantValue}
                                     </p>
-                                    <p className="text-[11px] text-gray-500 mt-0.5">
+                                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
                                       {variant.sku ? `SKU ${variant.sku} · ` : ''}
                                       {variant.priceOverride != null ? `Price override ${variant.priceOverride} BDT` : 'Base price applies'}
                                     </p>
@@ -667,18 +667,18 @@ export function InventoryManagementPage() {
                                       aria-label={`Decrease stock of ${variant.variantValue} by 1`}
                                       disabled={actingKey === vKey}
                                       onClick={() => applyStockUpdate({ variantId: variant.id }, { delta: -1 })}
-                                      className="min-h-11 min-w-11 p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 flex items-center justify-center"
+                                      className="min-h-11 min-w-11 p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center"
                                     >
-                                      <Minus className="w-4 h-4 text-gray-600" />
+                                      <Minus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                                     </button>
                                     <button
                                       type="button"
                                       aria-label={`Increase stock of ${variant.variantValue} by 1`}
                                       disabled={actingKey === vKey}
                                       onClick={() => applyStockUpdate({ variantId: variant.id }, { delta: 1 })}
-                                      className="min-h-11 min-w-11 p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 flex items-center justify-center"
+                                      className="min-h-11 min-w-11 p-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center"
                                     >
-                                      <Plus className="w-4 h-4 text-gray-600" />
+                                      <Plus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                                     </button>
                                   </div>
                                 </div>
@@ -702,7 +702,7 @@ export function InventoryManagementPage() {
                                   >
                                     Set
                                   </button>
-                                  {actingKey === vKey && <RefreshCw className="w-4 h-4 text-gray-400 animate-spin" aria-label="Saving" />}
+                                  {actingKey === vKey && <RefreshCw className="w-4 h-4 text-gray-400 dark:text-gray-500 animate-spin" aria-label="Saving" />}
                                 </div>
                               </div>
                             </div>
@@ -717,15 +717,15 @@ export function InventoryManagementPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-3 mt-6">
-          <button onClick={() => navigate('inventory-restock')} className="min-h-11 py-3 px-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 text-center hover:bg-gray-50">
+          <button onClick={() => navigate('inventory-restock')} className="min-h-11 py-3 px-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 text-center hover:bg-gray-50 dark:hover:bg-gray-800">
             Restock planning
           </button>
-          <button onClick={() => navigate('inventory-audit-log')} className="min-h-11 py-3 px-4 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 text-center hover:bg-gray-50">
+          <button onClick={() => navigate('inventory-audit-log')} className="min-h-11 py-3 px-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 text-center hover:bg-gray-50 dark:hover:bg-gray-800">
             Stock audit info
           </button>
         </div>
 
-        <p className="flex items-center gap-1.5 text-[11px] text-gray-400 mt-4">
+        <p className="flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500 mt-4">
           <CheckCircle2 className="w-3.5 h-3.5" />
           Every quick edit above is verified against your own catalog server-side and written in one transaction. "Alert" sets this product's own low-stock line — variants inherit it, and the product page shows urgency once stock dips to it.
         </p>

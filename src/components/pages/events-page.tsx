@@ -36,16 +36,16 @@ export function EventsPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 md:pb-10 text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Page Header */}
-      <div className="bg-white border-b border-slate-100 px-4 py-6 md:px-6 md:py-10">
+      <div className="bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-6 md:px-6 md:py-10">
         <div className="max-w-3xl mx-auto md:max-w-5xl">
           <div className="flex items-center gap-2 mb-1">
             <CalendarDays className="h-5 w-5 text-primary" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Zylod Events</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Zylod Events</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-black tracking-tight">Trade Events & Trade Fairs</h1>
-          <p className="text-sm text-slate-500 mt-2 max-w-2xl">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-2xl">
             Trade fairs, buyer meetups, and supplier exhibitions across Bangladesh's wholesale hubs.
           </p>
         </div>
@@ -57,10 +57,10 @@ export function EventsPage() {
             {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}
           </div>
         ) : events.length === 0 ? (
-          <div className="text-center py-16 px-4 bg-white rounded-2xl border border-slate-100">
+          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
             <CalendarDays className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-            <h3 className="text-base font-bold text-slate-800">No events scheduled right now</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No events scheduled right now</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
               Trade fairs and buyer meetups will be announced here. Check back soon.
             </p>
             <Button
@@ -80,12 +80,12 @@ export function EventsPage() {
                 key={event.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl p-5 border border-slate-100 shadow-2xs hover:border-primary/30 transition-colors md:flex md:items-center md:justify-between md:gap-6 md:p-6"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-slate-100 dark:border-slate-800 shadow-2xs hover:border-primary/30 transition-colors md:flex md:items-center md:justify-between md:gap-6 md:p-6"
               >
                 <div className="space-y-1.5">
-                  <h2 className="text-sm md:text-base font-bold text-slate-900">{event.title}</h2>
-                  <p className="text-xs text-slate-500 leading-relaxed">{event.description}</p>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[11px] text-slate-400">
+                  <h2 className="text-sm md:text-base font-bold text-slate-900 dark:text-slate-100">{event.title}</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{event.description}</p>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[11px] text-slate-400 dark:text-slate-500">
                     <span className="flex items-center gap-1">
                       <CalendarDays className="h-3 w-3" />
                       {new Date(event.startsAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })}

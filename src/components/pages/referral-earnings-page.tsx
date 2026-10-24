@@ -31,15 +31,15 @@ export function ReferralEarningsPage() {
   }, [token])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Coins className="w-5 h-5 text-indigo-600" />
-            <h1 className="font-bold text-gray-900 text-base">Referral Earnings Ledger</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Referral Earnings Ledger</h1>
           </div>
         </div>
 
@@ -56,7 +56,7 @@ export function ReferralEarningsPage() {
         <div className="hidden md:flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Coins className="w-6 h-6 text-indigo-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Referral Earnings Ledger</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Referral Earnings Ledger</h1>
           </div>
           <Button
             size="sm"
@@ -77,29 +77,29 @@ export function ReferralEarningsPage() {
 
         {/* Referred Users List */}
         <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1 md:col-span-2">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1 md:col-span-2">
             Invited Merchants ({refData?.referralHistory?.length ?? 0})
           </h3>
 
           {!refData?.referralHistory?.length ? (
-            <div className="bg-white rounded-3xl p-8 border border-gray-100 text-center text-gray-400 text-xs">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 text-center text-gray-400 dark:text-gray-500 text-xs">
               No colleagues have registered with your invite code yet.
             </div>
           ) : (
             refData.referralHistory.map((item: any) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex items-center justify-between"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-900">
+                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                       {item.referredUser?.email ? item.referredUser.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') : 'Verified Merchant'}
                     </p>
-                    <p className="text-[10px] text-gray-400">
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500">
                       Joined {new Date(item.createdAt).toLocaleDateString('en-GB')}
                     </p>
                   </div>

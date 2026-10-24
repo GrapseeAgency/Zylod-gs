@@ -55,14 +55,14 @@ function ToggleRow({
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-xs font-bold text-slate-900">{label}</h3>
+            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{label}</h3>
             {badge && (
               <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-full">
                 {badge}
               </span>
             )}
           </div>
-          {sub && <p className="text-[11px] text-slate-400 mt-0.5 truncate">{sub}</p>}
+          {sub && <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">{sub}</p>}
         </div>
       </div>
       <Switch
@@ -97,7 +97,7 @@ function SettingsRow({
 }) {
   const iconBgMap: Record<string, string> = {
     rose: 'bg-rose-50 border-rose-100 text-primary',
-    slate: 'bg-slate-100 border-slate-200 text-slate-600',
+    slate: 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400',
     emerald: 'bg-emerald-50 border-emerald-100 text-emerald-600',
     amber: 'bg-amber-50 border-amber-100 text-amber-600',
     sky: 'bg-sky-50 border-sky-100 text-sky-600',
@@ -110,7 +110,7 @@ function SettingsRow({
       disabled={!onClick}
       className={`w-full flex items-center justify-between p-5 border-b border-slate-50 last:border-0 transition-colors text-left ${
         onClick
-          ? danger ? 'hover:bg-rose-50' : 'hover:bg-slate-50'
+          ? danger ? 'hover:bg-rose-50' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
           : 'cursor-default'
       }`}
     >
@@ -120,18 +120,18 @@ function SettingsRow({
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className={`text-xs font-bold ${danger ? 'text-rose-600' : 'text-slate-900'}`}>{label}</h3>
+            <h3 className={`text-xs font-bold ${danger ? 'text-rose-600' : 'text-slate-900 dark:text-slate-100'}`}>{label}</h3>
             {badge && (
               <span className="text-[9px] font-black text-white bg-primary px-1.5 py-0.5 rounded-full">
                 {badge}
               </span>
             )}
           </div>
-          {sub && <p className="text-[11px] text-slate-400 mt-0.5">{sub}</p>}
+          {sub && <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{sub}</p>}
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0 ml-3">
-        {value && <span className="text-[11px] font-bold text-slate-500">{value}</span>}
+        {value && <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">{value}</span>}
         {onClick && <ChevronRight className={`h-4 w-4 ${danger ? 'text-rose-300' : 'text-slate-300'}`} />}
       </div>
     </button>
@@ -273,23 +273,23 @@ export function AccountSettingsPage() {
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
         <button
           onClick={() => navigate('profile')}
-          className="p-1 text-slate-700 hover:text-slate-900"
+          className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900"
           title="Back"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
           <span className="text-lg font-black tracking-tight text-primary">Zylod</span>
-          <span className="text-[9px] font-bold text-slate-400 block -mt-0.5 uppercase tracking-widest text-center">Settings</span>
+          <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block -mt-0.5 uppercase tracking-widest text-center">Settings</span>
         </div>
         <button
           onClick={() => navigate('profile')}
-          className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Profile"
         >
           <User className="h-4 w-4" />
@@ -299,8 +299,8 @@ export function AccountSettingsPage() {
       <main className="max-w-lg mx-auto lg:max-w-3xl">
         {/* Page Title */}
         <div className="px-4 md:px-6 py-5 md:py-6 space-y-1">
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Account Settings</h1>
-          <p className="text-xs text-slate-500">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Account Settings</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Manage your credentials, alerts, privacy, and account security.
           </p>
         </div>
@@ -326,7 +326,7 @@ export function AccountSettingsPage() {
                     ? s.key === 'danger'
                       ? 'bg-rose-600 text-white shadow-xs'
                       : 'bg-primary text-white shadow-xs font-black'
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -351,8 +351,8 @@ export function AccountSettingsPage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeSection === 'security' && (
                 <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:items-start">
-                  <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-                    <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                       <Lock className="h-3.5 w-3.5 text-primary" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary">Password &amp; Authentication</span>
                     </div>
@@ -381,19 +381,19 @@ export function AccountSettingsPage() {
                   </div>
 
                   {/* Account Verification Details */}
-                  <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Account Credentials</h2>
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Account Credentials</h2>
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between py-2 border-b border-slate-50">
-                        <span className="text-slate-500">Email Address</span>
-                        <span className="font-bold text-slate-900">{user?.email || 'N/A'}</span>
+                        <span className="text-slate-500 dark:text-slate-400">Email Address</span>
+                        <span className="font-bold text-slate-900 dark:text-slate-100">{user?.email || 'N/A'}</span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-slate-50">
-                        <span className="text-slate-500">Phone Number</span>
-                        <span className="font-bold text-slate-900">{user?.phone || 'Not configured'}</span>
+                        <span className="text-slate-500 dark:text-slate-400">Phone Number</span>
+                        <span className="font-bold text-slate-900 dark:text-slate-100">{user?.phone || 'Not configured'}</span>
                       </div>
                       <div className="flex justify-between py-2">
-                        <span className="text-slate-500">Account Role</span>
+                        <span className="text-slate-500 dark:text-slate-400">Account Role</span>
                         <span className="font-bold text-primary capitalize">{user?.userType || 'User'}</span>
                       </div>
                     </div>
@@ -406,8 +406,8 @@ export function AccountSettingsPage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeSection === 'notifications' && (
                 <>
-                  <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-                    <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                       <Bell className="h-3.5 w-3.5 text-primary" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary">Alert Preferences</span>
                     </div>
@@ -436,7 +436,7 @@ export function AccountSettingsPage() {
                     <Button
                       onClick={() => navigate('notification-preferences')}
                       variant="outline"
-                      className="h-12 px-4 rounded-2xl text-xs font-bold border-slate-200"
+                      className="h-12 px-4 rounded-2xl text-xs font-bold border-slate-200 dark:border-slate-800"
                     >
                       Advanced
                     </Button>
@@ -449,8 +449,8 @@ export function AccountSettingsPage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeSection === 'privacy' && (
                 <>
-                  <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-                    <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                       <Eye className="h-3.5 w-3.5 text-primary" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary">Visibility Settings</span>
                     </div>
@@ -495,8 +495,8 @@ export function AccountSettingsPage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeSection === 'appearance' && (
                 <>
-                  <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
-                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Display Theme</h2>
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Display Theme</h2>
                     <div className="grid grid-cols-3 gap-3">
                       {[
                         { key: 'light', label: 'Light', icon: Sun },
@@ -507,11 +507,11 @@ export function AccountSettingsPage() {
                           key={key}
                           onClick={() => handleThemeModeChange(key as any)}
                           className={`p-3.5 rounded-2xl border-2 text-center space-y-2 transition-all ${
-                            themeMode === key ? 'border-primary bg-rose-50' : 'border-slate-200 bg-white'
+                            themeMode === key ? 'border-primary bg-rose-50' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900'
                           }`}
                         >
-                          <Icon className={`h-5 w-5 mx-auto ${themeMode === key ? 'text-primary' : 'text-slate-500'}`} />
-                          <span className={`text-xs font-bold block ${themeMode === key ? 'text-primary' : 'text-slate-600'}`}>{label}</span>
+                          <Icon className={`h-5 w-5 mx-auto ${themeMode === key ? 'text-primary' : 'text-slate-500 dark:text-slate-400'}`} />
+                          <span className={`text-xs font-bold block ${themeMode === key ? 'text-primary' : 'text-slate-600 dark:text-slate-400'}`}>{label}</span>
                         </button>
                       ))}
                     </div>
@@ -524,8 +524,8 @@ export function AccountSettingsPage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeSection === 'billing' && (
                 <>
-                  <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-                    <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                       <CreditCard className="h-3.5 w-3.5 text-primary" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary">Payment Methods</span>
                     </div>

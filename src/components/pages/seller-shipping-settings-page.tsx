@@ -101,17 +101,17 @@ export function SellerShippingSettingsPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-      <header className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 -ml-1 text-gray-600">
+          <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Shipping Settings</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Shipping Settings</h1>
         </div>
         <button 
           onClick={handleSave}
@@ -124,17 +124,17 @@ export function SellerShippingSettingsPage() {
 
       {error ? (
         <div className="p-4">
-          <div className="bg-white p-6 rounded-xl border border-gray-200 text-center">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{error}</p>
           </div>
         </div>
       ) : configs.length === 0 ? (
         <div className="p-4">
-          <div className="bg-white p-8 rounded-xl border border-gray-200 text-center">
+          <div className="bg-white dark:bg-gray-900 p-8 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
             <Truck className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-gray-700">No shipping rates configured yet</h3>
-            <p className="text-xs text-gray-500 mt-1">Save a rate for at least one zone to enable shipping.</p>
+            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No shipping rates configured yet</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Save a rate for at least one zone to enable shipping.</p>
           </div>
         </div>
       ) : (
@@ -147,17 +147,17 @@ export function SellerShippingSettingsPage() {
           {saved && !saveError && (
             <p className="text-xs text-green-700">Shipping rates saved.</p>
           )}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-            <div className="flex items-center gap-2 mb-4 text-gray-900 font-semibold">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
+            <div className="flex items-center gap-2 mb-4 text-gray-900 dark:text-gray-100 font-semibold">
               <MapPin className="w-5 h-5 text-[#C8102E]" />
               <h2>Divisional Shipping Rates</h2>
             </div>
             <div className="space-y-4">
               {configs.map((config, index) => (
-                <div key={config.zone} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                <div key={config.zone} className="border-b border-gray-100 dark:border-gray-800 pb-4 last:border-0 last:pb-0">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="font-medium text-sm text-gray-800">{ZONE_LABELS[config.zone] || config.zone}</p>
-                    <label className="flex items-center gap-1.5 text-xs text-gray-500">
+                    <p className="font-medium text-sm text-gray-800 dark:text-gray-200">{ZONE_LABELS[config.zone] || config.zone}</p>
+                    <label className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                       <input
                         type="checkbox"
                         checked={config.isActive}
@@ -169,44 +169,44 @@ export function SellerShippingSettingsPage() {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <div>
-                      <label className="text-xs text-gray-500 mb-1 block">Base Fee (৳)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Base Fee (৳)</label>
                       <input 
                         type="number" 
                         min={0}
                         value={config.baseRate}
                         onChange={(e) => updateConfig(config.zone, { baseRate: Number(e.target.value) })}
-                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 mb-1 block">Per Kg (৳)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Per Kg (৳)</label>
                       <input 
                         type="number" 
                         min={0}
                         value={config.ratePerKg}
                         onChange={(e) => updateConfig(config.zone, { ratePerKg: Number(e.target.value) })}
-                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 mb-1 block">Free above (৳)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Free above (৳)</label>
                       <input 
                         type="number" 
                         min={0}
                         value={config.freeAboveAmount ?? ''}
                         onChange={(e) => updateConfig(config.zone, { freeAboveAmount: e.target.value === '' ? null : Number(e.target.value) })}
                         placeholder="—"
-                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 mb-1 block">Est. delivery</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Est. delivery</label>
                       <input 
                         type="text"
                         value={config.estimatedDays ?? ''}
                         onChange={(e) => updateConfig(config.zone, { estimatedDays: e.target.value })}
                         placeholder="e.g. 3-5 days"
-                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
+                        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
                       />
                     </div>
                   </div>

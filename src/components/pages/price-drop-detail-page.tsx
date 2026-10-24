@@ -43,12 +43,12 @@ export function PriceDropDetailPage() {
   }, [id, token])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <span className="font-bold text-gray-900 text-base">Price Drop Alert</span>
+        <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Price Drop Alert</span>
       </div>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24 md:px-6 md:max-w-2xl md:space-y-8 md:pb-10">
@@ -58,7 +58,7 @@ export function PriceDropDetailPage() {
             <Skeleton className="h-36 w-full rounded-3xl" />
           </div>
         ) : !notif ? (
-          <div className="text-center py-16 text-gray-500">Alert not found.</div>
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400">Alert not found.</div>
         ) : (
           <>
             <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white rounded-3xl p-6 shadow-md space-y-2">
@@ -70,21 +70,21 @@ export function PriceDropDetailPage() {
               <p className="text-xs text-red-100">{new Date(notif.timestamp).toLocaleString()}</p>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
-              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Alert Summary</h2>
-              <p className="text-xs sm:text-sm text-gray-800 leading-relaxed">{notif.message}</p>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+              <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Alert Summary</h2>
+              <p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 leading-relaxed">{notif.message}</p>
 
               {product && (
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-gray-100 flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-white border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
                     {product.thumbnailUrl ? (
                       <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Package className="w-6 h-6 text-gray-400" />
+                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-gray-900 truncate">{product.name}</p>
+                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{product.name}</p>
                     <p className="text-xs text-red-600 font-bold mt-0.5">
                       Current Rate: {formatPrice(product.basePrice)}
                     </p>

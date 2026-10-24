@@ -31,15 +31,15 @@ export function GameHistoryPage() {
   }, [token])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Trophy className="w-5 h-5 text-indigo-600" />
-            <h1 className="font-bold text-gray-900 text-base">Mini Games Score History</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Mini Games Score History</h1>
           </div>
         </div>
 
@@ -53,11 +53,11 @@ export function GameHistoryPage() {
       </div>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-4 pb-24 md:max-w-3xl md:px-6 md:pb-8">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900">Mini Games Score History</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100">Mini Games Score History</h1>
         {loading ? (
-          <div className="text-center py-16 text-gray-400">Loading your game records...</div>
+          <div className="text-center py-16 text-gray-400 dark:text-gray-500">Loading your game records...</div>
         ) : scores.length === 0 ? (
-          <div className="bg-white rounded-3xl p-8 border border-gray-100 text-center text-gray-400 text-xs">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 text-center text-gray-400 dark:text-gray-500 text-xs">
             No mini game scores submitted yet. Play trivia or puzzles to start earning points!
           </div>
         ) : (
@@ -65,17 +65,17 @@ export function GameHistoryPage() {
           {scores.map(s => (
             <div
               key={s.id}
-              className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex items-center justify-between"
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm flex items-center justify-between"
             >
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <Gamepad2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-900 capitalize">
+                  <p className="text-xs font-bold text-gray-900 dark:text-gray-100 capitalize">
                     {s.gameType?.replace('_', ' ')}
                   </p>
-                  <p className="text-[10px] text-gray-400">
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500">
                     Score: {s.score} • {new Date(s.playedAt).toLocaleDateString('en-GB')}
                   </p>
                 </div>

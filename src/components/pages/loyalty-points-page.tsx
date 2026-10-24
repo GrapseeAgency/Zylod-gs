@@ -45,16 +45,16 @@ export function LoyaltyPointsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Coins className="w-5 h-5 text-amber-500" />
-            <h1 className="font-bold text-gray-900 text-base">Loyalty Points</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Loyalty Points</h1>
           </div>
         </div>
 
@@ -110,15 +110,15 @@ export function LoyaltyPointsPage() {
           <Button
             variant="outline"
             onClick={() => navigate('membership-tiers')}
-            className="py-4 bg-white font-bold rounded-2xl border-gray-200 text-gray-800 text-xs sm:text-sm gap-2"
+            className="py-4 bg-white dark:bg-gray-900 font-bold rounded-2xl border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 text-xs sm:text-sm gap-2"
           >
             <Award className="w-4 h-4 text-indigo-600" /> View All Tiers
           </Button>
         </div>
 
         {/* Ways to Earn Points */}
-        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-3">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
             Quick Ways to Earn Points
           </h3>
 
@@ -132,9 +132,9 @@ export function LoyaltyPointsPage() {
               <div
                 key={item.title}
                 onClick={() => navigate(item.nav as any)}
-                className="p-3 bg-slate-50 hover:bg-amber-50 rounded-2xl flex items-center justify-between cursor-pointer transition border border-gray-100"
+                className="p-3 bg-slate-50 dark:bg-slate-950 hover:bg-amber-50 rounded-2xl flex items-center justify-between cursor-pointer transition border border-gray-100 dark:border-gray-800"
               >
-                <span className="text-xs font-bold text-gray-800">{item.title}</span>
+                <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{item.title}</span>
                 <span className="text-xs font-extrabold text-amber-600">{item.pts} →</span>
               </div>
             ))}

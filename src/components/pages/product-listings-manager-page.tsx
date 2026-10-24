@@ -52,7 +52,7 @@ const TABS: Array<{ id: ListingTab; label: string }> = [
 function ModerationChip({ product }: { product: ApiProduct }) {
   if (!product.isActive) {
     return (
-      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-200">
+      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
         Hidden
       </span>
     );
@@ -287,17 +287,17 @@ export function ProductListingsManagerPage() {
 
   if (needsAuth) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-        <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+        <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Product Listings</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Product Listings</h1>
         </div>
         <div className="p-4 max-w-3xl mx-auto md:p-6 md:pt-10">
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center space-y-4">
-            <LogIn className="w-8 h-8 text-gray-400 mx-auto" />
-            <p className="text-sm text-gray-700">Sign in as a supplier to manage your product listings.</p>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-4">
+            <LogIn className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
+            <p className="text-sm text-gray-700 dark:text-gray-300">Sign in as a supplier to manage your product listings.</p>
             <button
               onClick={() => navigate('login')}
               className="min-h-11 px-4 bg-primary text-white rounded-lg text-sm font-medium"
@@ -315,22 +315,22 @@ export function ProductListingsManagerPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="overflow-x-hidden min-h-screen bg-gray-50 pb-20 md:pb-8"
+      className="overflow-x-hidden min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
     >
-      <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
+            <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+              <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
-            <h1 className="text-lg font-bold text-gray-900">Product Listings</h1>
+            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Product Listings</h1>
           </div>
           <div className="flex items-center gap-2">
             {/* Task 77: the real bulk-upload entry — a seller workflow that
                 used to be a fake spinner page. */}
             <button
               onClick={() => navigate('bulk-upload-products')}
-              className="min-h-11 bg-white border border-gray-200 text-gray-700 px-3 rounded-lg flex items-center gap-1 text-sm font-medium"
+              className="min-h-11 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 px-3 rounded-lg flex items-center gap-1 text-sm font-medium"
             >
               <UploadCloud className="w-4 h-4" /> Bulk
             </button>
@@ -349,7 +349,7 @@ export function ProductListingsManagerPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`whitespace-nowrap px-4 min-h-9 flex items-center rounded-full text-sm font-medium transition-colors ${
-                activeTab === tab.id ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                activeTab === tab.id ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
               }`}
             >
               {tab.label}
@@ -361,8 +361,8 @@ export function ProductListingsManagerPage() {
       <div className="p-4 space-y-4 md:p-6 md:pt-4 md:max-w-6xl md:mx-auto">
         <div className="hidden md:flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Product Listings</h1>
-            <p className="text-xs text-gray-500 mt-1">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Product Listings</h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               {total} listing{total === 1 ? '' : 's'} total — new listings await admin approval before buyers see them
             </p>
           </div>
@@ -370,7 +370,7 @@ export function ProductListingsManagerPage() {
             <button
               onClick={() => fetchProducts(true)}
               disabled={refreshing}
-              className="min-h-11 px-4 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50 disabled:opacity-60"
+              className="min-h-11 px-4 border border-gray-200 dark:border-gray-800 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-60"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
             </button>
@@ -390,7 +390,7 @@ export function ProductListingsManagerPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`whitespace-nowrap px-4 min-h-9 flex items-center rounded-full text-sm font-medium transition-colors ${
-                activeTab === tab.id ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                activeTab === tab.id ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
               }`}
             >
               {tab.label}
@@ -400,14 +400,14 @@ export function ProductListingsManagerPage() {
 
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               aria-label="Search your listings"
               placeholder="Search listings…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full min-h-11 pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full min-h-11 pl-9 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
         </div>
@@ -425,7 +425,7 @@ export function ProductListingsManagerPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 animate-pulse flex gap-4">
+              <div key={i} className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 animate-pulse flex gap-4">
                 <div className="w-20 h-20 bg-gray-200 rounded-lg" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 bg-gray-200 rounded w-3/4" />
@@ -437,9 +437,9 @@ export function ProductListingsManagerPage() {
         ) : (
           <div className="space-y-3">
             {filteredProducts.map((product) => (
-              <div key={product.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+              <div key={product.id} className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
                 <div className="flex gap-4">
-                  <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
                     {product.thumbnailUrl ? (
                        
                       <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover" />
@@ -449,10 +449,10 @@ export function ProductListingsManagerPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-semibold text-gray-900 line-clamp-1">{product.name}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">{product.name}</h3>
                       <ModerationChip product={product} />
                     </div>
-                    <p className="text-sm text-gray-500 mb-2">{product.category?.name ?? 'Uncategorized'}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{product.category?.name ?? 'Uncategorized'}</p>
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-bold text-primary">{formatPrice(product.basePrice)}</span>
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${
@@ -463,10 +463,10 @@ export function ProductListingsManagerPage() {
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 pt-3 border-t border-gray-100 grid grid-cols-4 gap-2">
+                <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 grid grid-cols-4 gap-2">
                   <button
                     onClick={() => navigate('seller-edit-product', { productId: product.id })}
-                    className="min-h-11 flex flex-col items-center justify-center p-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+                    className="min-h-11 flex flex-col items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
                   >
                     <Edit className="w-4 h-4 mb-1" />
                     <span className="text-xs font-medium">Edit</span>
@@ -474,7 +474,7 @@ export function ProductListingsManagerPage() {
                   <button
                     onClick={() => handleToggleVisibility(product)}
                     disabled={actingId === product.id}
-                    className="min-h-11 flex flex-col items-center justify-center p-2 text-gray-600 hover:bg-gray-50 rounded-lg disabled:opacity-50"
+                    className="min-h-11 flex flex-col items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg disabled:opacity-50"
                   >
                     {product.isActive ? <EyeOff className="w-4 h-4 mb-1" /> : <Eye className="w-4 h-4 mb-1" />}
                     <span className="text-xs font-medium">{product.isActive ? 'Hide' : 'Show'}</span>
@@ -482,7 +482,7 @@ export function ProductListingsManagerPage() {
                   <button
                     onClick={() => openPoolDialog(product)}
                     disabled={!product.isApproved || !product.isActive}
-                    className="min-h-11 flex flex-col items-center justify-center p-2 text-gray-600 hover:bg-gray-50 rounded-lg disabled:opacity-40"
+                    className="min-h-11 flex flex-col items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg disabled:opacity-40"
                     title={product.isApproved && product.isActive ? 'Open a group-buy volume pool for this product' : 'Approved, visible listings only'}
                   >
                     <Users className="w-4 h-4 mb-1" />
@@ -502,11 +502,11 @@ export function ProductListingsManagerPage() {
             {filteredProducts.length === 0 && (
               <div className="text-center py-10">
                 <Package className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-                <p className="text-sm font-medium text-gray-700">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {searchQuery ? 'No listings match your search.' : 'No listings in this state yet.'}
                 </p>
                 {!searchQuery && (
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Publish your first product — it will appear here as “Pending review” until an admin approves it.
                   </p>
                 )}
@@ -530,7 +530,7 @@ export function ProductListingsManagerPage() {
           </DialogHeader>
           <div className="space-y-3 py-1">
             <div>
-              <label htmlFor="pool-target" className="text-xs font-bold text-gray-600 block mb-1">Target quantity (units)</label>
+              <label htmlFor="pool-target" className="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Target quantity (units)</label>
               <Input
                 id="pool-target"
                 type="number"
@@ -542,7 +542,7 @@ export function ProductListingsManagerPage() {
               />
             </div>
             <div>
-              <label htmlFor="pool-rate" className="text-xs font-bold text-gray-600 block mb-1">Pool rate per unit (must be below the factory rate)</label>
+              <label htmlFor="pool-rate" className="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Pool rate per unit (must be below the factory rate)</label>
               <Input
                 id="pool-rate"
                 type="number"
@@ -554,7 +554,7 @@ export function ProductListingsManagerPage() {
               />
             </div>
             <div>
-              <label htmlFor="pool-hours" className="text-xs font-bold text-gray-600 block mb-1">Runs for (hours)</label>
+              <label htmlFor="pool-hours" className="text-xs font-bold text-gray-600 dark:text-gray-400 block mb-1">Runs for (hours)</label>
               <Input
                 id="pool-hours"
                 type="number"
@@ -570,7 +570,7 @@ export function ProductListingsManagerPage() {
             <button
               type="button"
               onClick={() => setPoolProduct(null)}
-              className="min-h-11 px-4 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50"
+              className="min-h-11 px-4 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               Cancel
             </button>
@@ -599,7 +599,7 @@ export function ProductListingsManagerPage() {
             <button
               type="button"
               onClick={() => setConfirmDelete(null)}
-              className="min-h-11 px-4 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50"
+              className="min-h-11 px-4 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               Cancel
             </button>

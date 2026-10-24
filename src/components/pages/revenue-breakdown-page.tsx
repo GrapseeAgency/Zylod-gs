@@ -54,7 +54,7 @@ function paymentChip(status: string) {
     case 'partial':
       return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Partial</Badge>;
     case 'unpaid':
-      return <Badge className="bg-slate-200 text-slate-700 hover:bg-slate-200">Unpaid</Badge>;
+      return <Badge className="bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Unpaid</Badge>;
     case 'refunded':
       return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Refunded</Badge>;
     default:
@@ -68,7 +68,7 @@ function fulfillmentChip(status: string) {
     shipped: 'bg-sky-100 text-sky-800 hover:bg-sky-100',
     packed: 'bg-violet-100 text-violet-800 hover:bg-violet-100',
     confirmed: 'bg-violet-100 text-violet-800 hover:bg-violet-100',
-    pending: 'bg-slate-200 text-slate-700 hover:bg-slate-200',
+    pending: 'bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200',
     cancelled: 'bg-red-100 text-red-800 hover:bg-red-100',
     returned: 'bg-orange-100 text-orange-800 hover:bg-orange-100',
   };
@@ -134,7 +134,7 @@ export function RevenueBreakdownPagePage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Revenue Breakdown</h1>
       </header>
@@ -176,7 +176,7 @@ export function RevenueBreakdownPagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-300">
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
               {error}
               <div className="mt-3">
                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
@@ -307,7 +307,7 @@ export function RevenueBreakdownPagePage() {
                 {data.ledger.length === 0 ? (
                   <div className="py-8 text-center space-y-2">
                     <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600" />
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">No revenue lines yet</p>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No revenue lines yet</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
                       Your ledger will appear here once buyers place orders on your products.
                     </p>
@@ -360,7 +360,7 @@ export function RevenueBreakdownPagePage() {
                             </div>
                             <p className="text-sm font-bold text-gray-900 shrink-0 dark:text-gray-100">{bdt(r.gross)}</p>
                           </div>
-                          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-300">
+                          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300">
                             <span className="text-gray-500 dark:text-gray-400">Date</span>
                             <span className="text-right">{fmtDate(r.date)}</span>
                             <span className="text-gray-500 dark:text-gray-400">Quantity</span>

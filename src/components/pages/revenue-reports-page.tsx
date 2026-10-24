@@ -131,7 +131,7 @@ export function RevenueReportsPagePage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Revenue Reports</h1>
       </header>
@@ -177,7 +177,7 @@ export function RevenueReportsPagePage() {
           </Card>
         ) : error && !earnings && !commissions ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-300">
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
               {error}
               <div className="mt-3">
                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
@@ -310,7 +310,7 @@ export function RevenueReportsPagePage() {
                   {commissions.items.length === 0 ? (
                     <div className="py-8 text-center space-y-2">
                       <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600" />
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200">No commission rows yet</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No commission rows yet</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
                         When buyers place orders on your products, the platform-fee breakdown per order will appear here.
                       </p>
@@ -374,7 +374,7 @@ export function RevenueReportsPagePage() {
                                 <p className="text-[11px] text-gray-500 dark:text-gray-400">net payout</p>
                               </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-300">
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300">
                               <span className="text-gray-500 dark:text-gray-400">Gross</span>
                               <span className="text-right">{bdt(r.grossAmount)}</span>
                               <span className="text-gray-500 dark:text-gray-400">Rate</span>
@@ -396,7 +396,7 @@ export function RevenueReportsPagePage() {
             <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
               <CardContent className="p-4 flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-primary mt-0.5 shrink-0" />
-                <p className="text-xs text-gray-600 leading-relaxed dark:text-gray-300">
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed dark:text-gray-300">
                   Earnings are settled by the finance team. Commission is the standard B2B wholesale
                   rate applied to gross GMV. Money only leaves your wallet when a payout is
                   <span className="font-semibold"> completed with a reference</span> — a request alone never moves funds.

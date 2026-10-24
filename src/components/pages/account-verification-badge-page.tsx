@@ -85,10 +85,10 @@ export function AccountVerificationBadgePage() {
   const isVerified = verificationData?.status === 'active_verified' || user?.userType === 'supplier'
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Trust &amp; Verification</span>
@@ -113,8 +113,8 @@ export function AccountVerificationBadgePage() {
         </div>
 
         {/* Benefits of Verification */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
             Verified Partner Privileges
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
@@ -127,8 +127,8 @@ export function AccountVerificationBadgePage() {
               <div key={title} className="flex items-start gap-2.5">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-slate-900 block">{title}</span>
-                  <span className="text-[11px] text-slate-400 block mt-0.5">{desc}</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100 block">{title}</span>
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500 block mt-0.5">{desc}</span>
                 </div>
               </div>
             ))}
@@ -136,8 +136,8 @@ export function AccountVerificationBadgePage() {
         </div>
 
         {/* Milestone Verification Checkpoints */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-          <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+          <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-primary" />
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">KYC &amp; Verification Milestones</span>
           </div>
@@ -147,20 +147,20 @@ export function AccountVerificationBadgePage() {
               <div key={m.label} className="p-4 flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                    m.completed ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400'
+                    m.completed ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500'
                   }`}>
                     {m.completed ? <Check className="h-4 w-4 stroke-[3]" /> : <Clock className="h-4 w-4" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-xs font-bold text-slate-900">{m.label}</h3>
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{m.label}</h3>
                       {m.required && (
                         <span className="text-[9px] font-black text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-full">
                           REQUIRED
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-0.5">{m.description}</p>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{m.description}</p>
                   </div>
                 </div>
                 <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${

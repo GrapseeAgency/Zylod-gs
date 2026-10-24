@@ -373,23 +373,23 @@ export function QuoteRequestPage() {
   /* ─── Success state — real id, real navigation ─── */
   if (created) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-10">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md w-full text-center space-y-3"
+          className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 max-w-md w-full text-center space-y-3"
         >
           <CheckCircle2 className="h-12 w-12 mx-auto text-emerald-600" />
-          <h1 className="text-lg font-black text-slate-900">Quote request submitted</h1>
-          <p className="text-xs text-slate-500">
+          <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Quote request submitted</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Your RFQ was saved with the reference{' '}
-            <span className="font-bold text-slate-800 break-all">{created.id}</span>. Suppliers can now respond with quotes — track them in your quote requests list.
+            <span className="font-bold text-slate-800 dark:text-slate-200 break-all">{created.id}</span>. Suppliers can now respond with quotes — track them in your quote requests list.
           </p>
           <div className="space-y-2 pt-2">
             <Button className="w-full min-h-11 text-xs font-bold rounded-xl" onClick={() => navigate('rfq-list')}>
               View My Quote Requests
             </Button>
-            <Button variant="outline" className="w-full min-h-11 text-xs font-bold rounded-xl border-slate-200" onClick={() => navigate('home')}>
+            <Button variant="outline" className="w-full min-h-11 text-xs font-bold rounded-xl border-slate-200 dark:border-slate-800" onClick={() => navigate('home')}>
               Back to Home
             </Button>
           </div>
@@ -399,20 +399,20 @@ export function QuoteRequestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16 text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16 text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs md:px-6">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:px-6">
         <div className="md:max-w-2xl md:mx-auto flex items-center gap-3">
           <button
             onClick={goBack}
             aria-label="Go back"
-            className="h-11 w-11 flex items-center justify-center rounded-full hover:bg-slate-100"
+            className="h-11 w-11 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             <ArrowLeft className="h-5 w-5 text-primary" />
           </button>
           <div>
-            <h1 className="text-base md:text-lg font-black tracking-tight text-slate-900">Request a Bulk Quote</h1>
-            <p className="text-[11px] text-slate-500">Tell suppliers what you need — they respond with tiered offers.</p>
+            <h1 className="text-base md:text-lg font-black tracking-tight text-slate-900 dark:text-slate-100">Request a Bulk Quote</h1>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">Tell suppliers what you need — they respond with tiered offers.</p>
           </div>
         </div>
       </header>
@@ -421,7 +421,7 @@ export function QuoteRequestPage() {
         {/* ─── Product context ─── */}
         {productId || product ? (
           productLoading ? (
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 flex gap-3">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs p-4 flex gap-3">
               <Skeleton className="w-14 h-14 rounded-xl shrink-0" />
               <div className="flex-1 space-y-2 py-1">
                 <Skeleton className="h-4 w-3/4" />
@@ -429,8 +429,8 @@ export function QuoteRequestPage() {
               </div>
             </div>
           ) : product ? (
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 flex gap-3">
-              <div className="w-14 h-14 rounded-xl bg-slate-100 shrink-0 overflow-hidden flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs p-4 flex gap-3">
+              <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-900 shrink-0 overflow-hidden flex items-center justify-center">
                 {product.imageUrl ? (
                   <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
                 ) : (
@@ -438,15 +438,15 @@ export function QuoteRequestPage() {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-slate-800 line-clamp-1">{product.name}</p>
+                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{product.name}</p>
                 {product.supplierName ? (
-                  <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">{product.supplierName}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{product.supplierName}</p>
                 ) : null}
                 <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                  <span className="text-[10px] font-medium text-slate-600 bg-slate-100 rounded-md px-1.5 py-0.5">
+                  <span className="text-[10px] font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 rounded-md px-1.5 py-0.5">
                     {formatPrice(product.basePrice)}/{product.unit}
                   </span>
-                  <span className="text-[10px] font-medium text-slate-600 bg-slate-100 rounded-md px-1.5 py-0.5">
+                  <span className="text-[10px] font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 rounded-md px-1.5 py-0.5">
                     MOQ {product.moq.toLocaleString()} {product.unit}
                   </span>
                   {product.priceTiers.length > 0 && product.basePrice > 0
@@ -467,39 +467,39 @@ export function QuoteRequestPage() {
                 <button
                   onClick={detachProduct}
                   aria-label="Remove attached product"
-                  className="h-11 w-11 flex items-center justify-center text-slate-400 hover:text-primary shrink-0"
+                  className="h-11 w-11 flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-primary shrink-0"
                 >
                   <X className="h-4 w-4" />
                 </button>
               ) : null}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 text-center space-y-2">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs p-4 text-center space-y-2">
               <AlertTriangle className="h-8 w-8 mx-auto text-primary" />
-              <p className="text-xs font-bold text-slate-800">{productError}</p>
-              {productStatus ? <p className="text-[11px] text-slate-400">HTTP {productStatus} from /api/products</p> : null}
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{productError}</p>
+              {productStatus ? <p className="text-[11px] text-slate-400 dark:text-slate-500">HTTP {productStatus} from /api/products</p> : null}
               <div className="flex items-center justify-center gap-2 pt-1">
                 <Button variant="outline" size="sm" className="min-h-11 text-xs font-semibold text-primary border-primary" onClick={() => setProductRetry((t) => t + 1)}>
                   <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Retry
                 </Button>
-                <Button variant="outline" size="sm" className="min-h-11 text-xs font-semibold text-slate-600 border-slate-200" onClick={() => navigate('category-browser')}>
+                <Button variant="outline" size="sm" className="min-h-11 text-xs font-semibold text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800" onClick={() => navigate('category-browser')}>
                   Browse Products
                 </Button>
               </div>
             </div>
           )
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Package className="h-4 w-4 text-primary" />
-              <p className="text-xs font-bold text-slate-800">Link a marketplace product (optional)</p>
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Link a marketplace product (optional)</p>
             </div>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               Pick something from the catalog to quote against — a linked product lets you convert an
               accepted quote straight into a real order. Or skip it and describe what you need below.
             </p>
             {!pickerOpen ? (
-              <Button variant="outline" className="w-full min-h-11 text-xs font-bold rounded-xl border-slate-200" onClick={openPicker}>
+              <Button variant="outline" className="w-full min-h-11 text-xs font-bold rounded-xl border-slate-200 dark:border-slate-800" onClick={openPicker}>
                 <Search className="h-4 w-4 mr-1.5" /> Choose from catalog
               </Button>
             ) : (
@@ -511,19 +511,19 @@ export function QuoteRequestPage() {
                   }}
                   className="relative flex items-center"
                 >
-                  <Search className="absolute left-3 h-4 w-4 text-slate-400 pointer-events-none" />
+                  <Search className="absolute left-3 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
                   <Input
                     value={pickerQuery}
                     onChange={(e) => setPickerQuery(e.target.value)}
                     placeholder="Search products…"
                     aria-label="Search products to attach"
-                    className="pl-9 pr-4 h-11 bg-slate-50 border-slate-200 rounded-xl text-xs font-medium"
+                    className="pl-9 pr-4 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium"
                   />
                 </form>
                 {pickerLoading ? (
                   <div className="space-y-2">
                     {Array.from({ length: 3 }).map((_, i) => (
-                      <div key={i} className="flex gap-2 items-center border border-slate-100 rounded-xl p-2">
+                      <div key={i} className="flex gap-2 items-center border border-slate-100 dark:border-slate-800 rounded-xl p-2">
                         <Skeleton className="w-10 h-10 rounded-lg" />
                         <Skeleton className="h-3 flex-1" />
                       </div>
@@ -532,14 +532,14 @@ export function QuoteRequestPage() {
                 ) : pickerError ? (
                   <p className="text-[11px] font-bold text-primary">{pickerError}</p>
                 ) : pickerResults.length === 0 ? (
-                  <p className="text-[11px] text-slate-500 text-center py-3">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center py-3">
                     No approved products match this search.
                   </p>
                 ) : (
-                  <ul className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
+                  <ul className="divide-y divide-slate-100 dark:divide-slate-800 max-h-64 overflow-y-auto">
                     {pickerResults.map((p) => (
                       <li key={p.id} className="py-2 flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-lg bg-slate-100 shrink-0 overflow-hidden flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-900 shrink-0 overflow-hidden flex items-center justify-center">
                           {p.imageUrl ? (
                             <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
                           ) : (
@@ -547,12 +547,12 @@ export function QuoteRequestPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[11px] font-bold text-slate-800 line-clamp-1">{p.name}</p>
-                          <p className="text-[10px] text-slate-500">
+                          <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{p.name}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400">
                             {formatPrice(p.basePrice)}/{p.unit} · MOQ {p.moq.toLocaleString()}
                           </p>
                         </div>
-                        <Button size="sm" variant="outline" className="min-h-11 px-3 text-[11px] font-bold rounded-lg border-slate-200" onClick={() => attachProduct(p)}>
+                        <Button size="sm" variant="outline" className="min-h-11 px-3 text-[11px] font-bold rounded-lg border-slate-200 dark:border-slate-800" onClick={() => attachProduct(p)}>
                           <Plus className="h-3.5 w-3.5 mr-0.5" /> Attach
                         </Button>
                       </li>
@@ -565,26 +565,26 @@ export function QuoteRequestPage() {
         )}
 
         {/* ─── RFQ form — mirrors POST /api/rfq exactly ─── */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 md:p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs p-4 md:p-5 space-y-4">
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4 text-primary" />
-            <h2 className="text-xs font-bold text-slate-900">Request details</h2>
+            <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Request details</h2>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="rfq-title" className="text-[11px] font-bold text-slate-600">Title *</Label>
+            <Label htmlFor="rfq-title" className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Title *</Label>
             <Input
               id="rfq-title"
               value={form.title}
               onChange={(e) => setField({ title: e.target.value })}
               placeholder={product ? `Bulk quote: ${product.name}` : 'e.g. Weekly supply of packaging cartons'}
-              className="h-11 bg-slate-50 border-slate-200 rounded-xl text-sm font-medium"
+              className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium"
             />
             {fieldErrors.title ? <p className="text-[11px] font-bold text-primary">{fieldErrors.title}</p> : null}
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="rfq-description" className="text-[11px] font-bold text-slate-600">What do you need? *</Label>
+            <Label htmlFor="rfq-description" className="text-[11px] font-bold text-slate-600 dark:text-slate-400">What do you need? *</Label>
             <textarea
               id="rfq-description"
               value={form.description}
@@ -595,14 +595,14 @@ export function QuoteRequestPage() {
                   ? 'Specs, grade, packaging, delivery city, payment terms…'
                   : 'Product type, specs, packaging, delivery city, payment terms…'
               }
-              className="w-full min-h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full min-h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2.5 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
             />
             {fieldErrors.description ? <p className="text-[11px] font-bold text-primary">{fieldErrors.description}</p> : null}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="rfq-quantity" className="text-[11px] font-bold text-slate-600">
+              <Label htmlFor="rfq-quantity" className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
                 Quantity {product ? `· MOQ ${product.moq.toLocaleString()} ${product.unit}` : ''}
               </Label>
               <Input
@@ -614,18 +614,18 @@ export function QuoteRequestPage() {
                 value={form.quantity}
                 onChange={(e) => setField({ quantity: e.target.value })}
                 placeholder={form.unit === 'kg' ? 'e.g., 12.5 kg' : 'How many units'}
-                className="h-11 bg-slate-50 border-slate-200 rounded-xl text-sm font-bold"
+                className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold"
               />
               {fieldErrors.quantity ? <p className="text-[11px] font-bold text-primary">{fieldErrors.quantity}</p> : null}
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="rfq-unit" className="text-[11px] font-bold text-slate-600">Unit</Label>
+              <Label htmlFor="rfq-unit" className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Unit</Label>
               <select
                 id="rfq-unit"
                 value={form.unit}
                 onChange={(e) => setField({ unit: e.target.value as ProductUnit })}
-                className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 {RFQ_UNITS.map((u) => (
                   <option key={u} value={u}>{PRODUCT_UNIT_LABELS[u]}</option>
@@ -636,7 +636,7 @@ export function QuoteRequestPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="rfq-target-price" className="text-[11px] font-bold text-slate-600">
+              <Label htmlFor="rfq-target-price" className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
                 Target price (৳ per {form.unit}) — optional
               </Label>
               <Input
@@ -648,20 +648,20 @@ export function QuoteRequestPage() {
                 value={form.targetPrice}
                 onChange={(e) => setField({ targetPrice: e.target.value })}
                 placeholder="What you're aiming to pay"
-                className="h-11 bg-slate-50 border-slate-200 rounded-xl text-sm font-bold"
+                className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold"
               />
               {fieldErrors.targetPrice ? <p className="text-[11px] font-bold text-primary">{fieldErrors.targetPrice}</p> : null}
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="rfq-deadline" className="text-[11px] font-bold text-slate-600">Deadline — optional</Label>
+              <Label htmlFor="rfq-deadline" className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Deadline — optional</Label>
               <Input
                 id="rfq-deadline"
                 type="date"
                 min={today}
                 value={form.deadline}
                 onChange={(e) => setField({ deadline: e.target.value })}
-                className="h-11 bg-slate-50 border-slate-200 rounded-xl text-sm font-medium"
+                className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium"
               />
               {fieldErrors.deadline ? <p className="text-[11px] font-bold text-primary">{fieldErrors.deadline}</p> : null}
             </div>
@@ -669,23 +669,23 @@ export function QuoteRequestPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="rfq-city" className="text-[11px] font-bold text-slate-600">Delivery city — optional</Label>
+              <Label htmlFor="rfq-city" className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Delivery city — optional</Label>
               <Input
                 id="rfq-city"
                 value={form.deliveryCity}
                 onChange={(e) => setField({ deliveryCity: e.target.value })}
                 placeholder="e.g. Dhaka"
-                className="h-11 bg-slate-50 border-slate-200 rounded-xl text-sm font-medium"
+                className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="rfq-category" className="text-[11px] font-bold text-slate-600">Category — optional</Label>
+              <Label htmlFor="rfq-category" className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Category — optional</Label>
               <select
                 id="rfq-category"
                 value={form.categorySlug}
                 onChange={(e) => setField({ categorySlug: e.target.value })}
-                className="w-full h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">No category</option>
                 {categories.map((c) => (
@@ -704,11 +704,11 @@ export function QuoteRequestPage() {
                 ) : (
                   <AlertTriangle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 )}
-                <p className="text-[11px] text-slate-700">
+                <p className="text-[11px] text-slate-700 dark:text-slate-300">
                   {submitStatus === 401
                     ? `Sign in to submit a quote request — the server answered: “${submitError}”.`
                     : submitError}
-                  {submitStatus ? <span className="text-slate-400"> (HTTP {submitStatus})</span> : null}
+                  {submitStatus ? <span className="text-slate-400 dark:text-slate-500"> (HTTP {submitStatus})</span> : null}
                 </p>
               </div>
               {submitStatus === 401 && (
@@ -728,7 +728,7 @@ export function QuoteRequestPage() {
               'Submit Quote Request'
             )}
           </Button>
-          <p className="text-[10px] text-slate-400 text-center">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center">
             Suppliers respond with per-unit quotes — you accept only if the price works for your shop.
           </p>
         </form>

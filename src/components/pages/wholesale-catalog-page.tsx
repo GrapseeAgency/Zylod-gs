@@ -140,29 +140,29 @@ export function WholesaleCatalogPage() {
   }, [toggleItem])
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 md:pb-10 text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between mb-3">
-          <button onClick={() => navigate('home')} className="p-1 text-slate-700" title="QR">
+          <button onClick={() => navigate('home')} className="p-1 text-slate-700 dark:text-slate-300" title="QR">
             <QrCode className="h-6 w-6 text-primary" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button className="md:hidden p-1 text-slate-700" title="Notifications">
+          <button className="md:hidden p-1 text-slate-700 dark:text-slate-300" title="Notifications">
             <Bell className="h-6 w-6" />
           </button>
         </div>
 
         {/* Search Bar */}
         <div className="relative flex items-center">
-          <Search className="absolute left-3.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search catalog..."
-            className="pl-10 pr-10 h-11 bg-slate-50 border-slate-200 rounded-xl text-sm font-medium focus-visible:ring-primary"
+            className="pl-10 pr-10 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
           />
-          <button className="absolute right-3 p-1 text-slate-400 hover:text-slate-600">
+          <button className="absolute right-3 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600">
             <QrCode className="h-4 w-4" />
           </button>
         </div>
@@ -170,13 +170,13 @@ export function WholesaleCatalogPage() {
 
       <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:max-w-3xl md:px-6">
         {/* Honest page intro — no invented stats or banners */}
-        <div className="rounded-3xl bg-white border border-slate-200 p-5 flex items-start gap-3.5 shadow-2xs">
+        <div className="rounded-3xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 p-5 flex items-start gap-3.5 shadow-2xs">
           <div className="w-11 h-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <BookOpen className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-base font-black text-slate-900 leading-tight">Wholesale Catalog</h1>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            <h1 className="text-base font-black text-slate-900 dark:text-slate-100 leading-tight">Wholesale Catalog</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               Every listing below is live from the marketplace — real suppliers, real prices, real
               stock. Nothing on this page is pre-generated.
             </p>
@@ -191,7 +191,7 @@ export function WholesaleCatalogPage() {
               className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                 activeCategory === 'all'
                   ? 'bg-primary text-white shadow-xs'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
               All Products
@@ -203,7 +203,7 @@ export function WholesaleCatalogPage() {
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                   activeCategory === c.slug
                     ? 'bg-primary text-white shadow-xs'
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {c.name}
@@ -215,8 +215,8 @@ export function WholesaleCatalogPage() {
         {/* Products Header */}
         <div className="flex items-center justify-between pt-1">
           <div>
-            <h3 className="text-sm font-black text-slate-900">Product Catalog</h3>
-            <p className="text-[10px] text-slate-400">Live from verified supplier listings</p>
+            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">Product Catalog</h3>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500">Live from verified supplier listings</p>
           </div>
           <button
             onClick={() => navigate('explore')}
@@ -228,20 +228,20 @@ export function WholesaleCatalogPage() {
 
         {/* Error */}
         {error && (
-          <div className="bg-white rounded-3xl p-5 border border-rose-200 shadow-2xs flex flex-col items-start gap-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-rose-200 shadow-2xs flex flex-col items-start gap-3">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
                 <AlertCircle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-xs font-black text-slate-900">Couldn&apos;t load the catalog</h3>
-                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{error}</p>
+                <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load the catalog</h3>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{error}</p>
               </div>
             </div>
             <Button
               variant="outline"
               onClick={() => fetchCatalog(activeCategory)}
-              className="h-9 px-4 rounded-xl text-xs font-bold bg-white text-slate-700 border-slate-200 flex items-center gap-1.5"
+              className="h-9 px-4 rounded-xl text-xs font-bold bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 flex items-center gap-1.5"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Try Again
@@ -253,7 +253,7 @@ export function WholesaleCatalogPage() {
         {loading && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl p-3 border border-slate-100 space-y-2">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 space-y-2">
                 <Skeleton className="aspect-square w-full rounded-xl" />
                 <Skeleton className="h-4 w-3/4" />
                 <Skeleton className="h-4 w-1/2" />
@@ -264,14 +264,14 @@ export function WholesaleCatalogPage() {
 
         {/* Empty — honest */}
         {!loading && !error && filteredProducts.length === 0 && (
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-2xs text-center">
-            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-4">
-              <Package className="h-9 w-9 text-gray-400" />
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
+            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+              <Package className="h-9 w-9 text-gray-400 dark:text-gray-500" />
             </div>
-            <h2 className="text-sm font-black text-slate-900">
+            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
               {products.length === 0 ? 'No products in the catalog yet' : 'No products match your search'}
             </h2>
-            <p className="text-xs text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-sm mx-auto leading-relaxed">
               {products.length === 0
                 ? 'Suppliers haven\u2019t listed any approved products yet. As soon as listings go live, they\u2019ll appear here in real time.'
                 : 'Try a different search term or category.'}
@@ -296,36 +296,36 @@ export function WholesaleCatalogPage() {
                 <div
                   key={p.id}
                   onClick={() => navigate('product-detail', { productId: p.id })}
-                  className="bg-white rounded-2xl border border-slate-100 p-3 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between cursor-pointer"
+                  className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between cursor-pointer"
                 >
-                  <div className="relative aspect-square rounded-xl bg-gray-100 dark:bg-gray-800 overflow-hidden mb-2">
+                  <div className="relative aspect-square rounded-xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 overflow-hidden mb-2">
                     {p.image ? (
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 w-full h-full">
-                        <Package className="h-5 w-5 text-gray-400" />
+                      <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 w-full h-full">
+                        <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                       </div>
                     )}
                     <button
                       onClick={(e) => handleToggleWishlist(e, p)}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 backdrop-blur-xs text-slate-600 hover:text-primary transition-colors"
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 backdrop-blur-xs text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
                     >
                       <Heart className={`h-3.5 w-3.5 ${inWish ? 'fill-primary text-primary' : ''}`} />
                     </button>
                   </div>
 
                   <div>
-                    <h4 className="text-xs font-bold text-slate-800 line-clamp-2 leading-snug">
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-2 leading-snug">
                       {p.name}
                     </h4>
                     <div className="mt-1 flex items-baseline gap-1.5">
                       <span className="text-sm font-black text-primary">
                         {formatPrice(p.basePrice)}
                       </span>
-                      <span className="text-[10px] text-slate-400 font-normal">/{p.unit}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">/{p.unit}</span>
                     </div>
 
-                    <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1 pt-1 border-t border-slate-50 gap-2">
+                    <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 mt-1 pt-1 border-t border-slate-50 gap-2">
                       <span className="truncate">MOQ: {p.moq.toLocaleString()}</span>
                       {p.soldCount > 0 && <span className="shrink-0">{p.soldCount.toLocaleString()} sold</span>}
                     </div>

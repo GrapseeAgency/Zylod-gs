@@ -43,16 +43,16 @@ export function PointsHistoryPage() {
   }, [fetchHistory])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Coins className="w-5 h-5 text-amber-500" />
-            <h1 className="font-bold text-gray-900 text-base">Points Transaction Ledger</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Points Transaction Ledger</h1>
           </div>
         </div>
 
@@ -66,7 +66,7 @@ export function PointsHistoryPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="bg-white border-b border-gray-100 px-4 py-2 flex items-center gap-2 md:px-6">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-2 flex items-center gap-2 md:px-6">
         {[
           { key: '', label: 'All Transactions' },
           { key: 'earn', label: 'Points Earned' },
@@ -78,7 +78,7 @@ export function PointsHistoryPage() {
             className={`px-4 py-1.5 rounded-full text-xs font-bold transition ${
               activeType === tab.key
                 ? 'bg-amber-500 text-white shadow-sm'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
             }`}
           >
             {tab.label}
@@ -91,16 +91,16 @@ export function PointsHistoryPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-white rounded-2xl p-4 border border-gray-100 animate-pulse space-y-2">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 animate-pulse space-y-2">
                 <Skeleton className="h-4 w-1/2 rounded" />
                 <Skeleton className="h-3 w-1/4 rounded" />
               </div>
             ))}
           </div>
         ) : transactions.length === 0 ? (
-          <div className="text-center py-16 text-gray-500 space-y-2">
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 space-y-2">
             <Coins className="w-12 h-12 text-gray-300 mx-auto" />
-            <p className="font-bold text-sm text-gray-800">No point transactions found</p>
+            <p className="font-bold text-sm text-gray-800 dark:text-gray-200">No point transactions found</p>
             <p className="text-xs">Earn points by making purchases or completing daily activities.</p>
           </div>
         ) : (
@@ -110,7 +110,7 @@ export function PointsHistoryPage() {
             return (
               <div
                 key={trx.id}
-                className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex items-center justify-between gap-3"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
@@ -119,10 +119,10 @@ export function PointsHistoryPage() {
                     {isEarn ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-gray-900 truncate">
+                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
                       {trx.description || (isEarn ? 'Points Earned' : 'Points Redeemed')}
                     </p>
-                    <p className="text-[11px] text-gray-400">
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500">
                       {new Date(trx.createdAt).toLocaleDateString('en-GB', {
                         day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                       })}

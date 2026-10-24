@@ -91,36 +91,36 @@ export function AdminReportsPage() {
     fake_listing: 'bg-amber-50 text-amber-700 border-amber-200',
     harassment: 'bg-purple-50 text-purple-700 border-purple-200',
     non_delivery: 'bg-rose-50 text-rose-700 border-rose-200',
-    other: 'bg-gray-100 text-gray-700 border-gray-200',
+    other: 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-800',
   }
 
   const statusBadges: Record<string, { label: string; class: string }> = {
     pending: { label: 'Pending Review', class: 'bg-yellow-50 text-yellow-800 border-yellow-200' },
     under_review: { label: 'Under Investigation', class: 'bg-blue-50 text-blue-800 border-blue-200' },
     action_taken: { label: 'Action Taken', class: 'bg-green-50 text-green-800 border-green-200' },
-    dismissed: { label: 'Dismissed', class: 'bg-gray-100 text-gray-600 border-gray-200' },
+    dismissed: { label: 'Dismissed', class: 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800' },
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div>
-            <h1 className="font-bold text-gray-900 text-sm sm:text-base flex items-center gap-2">
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 text-red-600" />
               Trust & Safety Moderation Center
             </h1>
-            <p className="text-[11px] text-gray-400">User, Seller & Counterfeit Violation Reports</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500">User, Seller & Counterfeit Violation Reports</p>
           </div>
         </div>
 
         <button
           onClick={() => navigate('admin-dashboard')}
-          className="text-xs font-semibold text-gray-600 hover:text-red-600 px-3 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 transition"
+          className="text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-red-600 px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
         >
           Admin Dashboard
         </button>
@@ -129,9 +129,9 @@ export function AdminReportsPage() {
       <div className="flex-1 px-4 py-6 space-y-6 max-w-6xl mx-auto w-full pb-24">
         {/* Metric Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-1">
-            <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Total Reports</p>
-            <p className="text-xl font-black text-gray-900">{metrics.total}</p>
+          <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-1">
+            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Reports</p>
+            <p className="text-xl font-black text-gray-900 dark:text-gray-100">{metrics.total}</p>
           </div>
           <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-200 shadow-sm space-y-1">
             <p className="text-[11px] font-semibold text-amber-700 uppercase tracking-wider">Pending Action</p>
@@ -141,24 +141,24 @@ export function AdminReportsPage() {
             <p className="text-[11px] font-semibold text-green-700 uppercase tracking-wider">Penalized / Actioned</p>
             <p className="text-xl font-black text-green-900">{metrics.actionTaken}</p>
           </div>
-          <div className="bg-slate-50 p-4 rounded-2xl border border-gray-200 shadow-sm space-y-1">
-            <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Dismissed</p>
-            <p className="text-xl font-black text-gray-700">{metrics.dismissed}</p>
+          <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-1">
+            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dismissed</p>
+            <p className="text-xl font-black text-gray-700 dark:text-gray-300">{metrics.dismissed}</p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-400" />
-            <span className="text-xs font-bold text-gray-700">Filter Reports:</span>
+            <Filter className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Filter Reports:</span>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className="bg-gray-50 border border-gray-200 text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:border-red-500"
+              className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:border-red-500"
             >
               <option value="all">All Statuses</option>
               <option value="pending">Pending Review</option>
@@ -169,7 +169,7 @@ export function AdminReportsPage() {
             <select
               value={reasonFilter}
               onChange={e => setReasonFilter(e.target.value)}
-              className="bg-gray-50 border border-gray-200 text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:border-red-500"
+              className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 text-xs rounded-xl px-3 py-1.5 focus:outline-none focus:border-red-500"
             >
               <option value="all">All Violation Types</option>
               <option value="scam">Off-Platform Payment / Scam</option>
@@ -182,7 +182,7 @@ export function AdminReportsPage() {
         </div>
 
         {/* Reports Table / Card List */}
-        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-6 space-y-3">
               {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-16 w-full rounded-2xl" />)}
@@ -190,11 +190,11 @@ export function AdminReportsPage() {
           ) : reports.length === 0 ? (
             <div className="text-center py-16 space-y-2">
               <ShieldCheck className="w-12 h-12 text-green-500 mx-auto" />
-              <p className="text-sm font-bold text-gray-800">No moderation reports in queue</p>
-              <p className="text-xs text-gray-400">All submitted buyer and seller complaints have been reviewed.</p>
+              <p className="text-sm font-bold text-gray-800 dark:text-gray-200">No moderation reports in queue</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">All submitted buyer and seller complaints have been reviewed.</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-800">
               {reports.map(rep => {
                 const statusMeta = statusBadges[rep.status] || statusBadges.pending
                 return (
@@ -204,39 +204,39 @@ export function AdminReportsPage() {
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border uppercase ${reasonColors[rep.reason] || 'bg-gray-100'}`}>
+                        <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border uppercase ${reasonColors[rep.reason] || 'bg-gray-100 dark:bg-gray-900'}`}>
                           {rep.reason.replace('_', ' ')}
                         </span>
                         <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${statusMeta.class}`}>
                           {statusMeta.label}
                         </span>
                       </div>
-                      <span className="text-[11px] text-gray-400">
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500">
                         {new Date(rep.createdAt).toLocaleString()}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-2xl border border-gray-100 text-xs">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs">
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-gray-400">Reported Entity</p>
-                        <p className="font-bold text-gray-900 mt-0.5">{rep.reportedEntity.name}</p>
-                        <p className="text-[11px] text-gray-500 font-mono">ID: {rep.reportedUserId}</p>
+                        <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Reported Entity</p>
+                        <p className="font-bold text-gray-900 dark:text-gray-100 mt-0.5">{rep.reportedEntity.name}</p>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">ID: {rep.reportedUserId}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-gray-400">Filed By</p>
-                        <p className="font-bold text-gray-900 mt-0.5">{rep.reporter.name}</p>
-                        <p className="text-[11px] text-gray-500 font-mono">ID: {rep.reporterId}</p>
+                        <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Filed By</p>
+                        <p className="font-bold text-gray-900 dark:text-gray-100 mt-0.5">{rep.reporter.name}</p>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">ID: {rep.reporterId}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-gray-400">Attached Order</p>
-                        <p className="font-semibold text-gray-800 mt-0.5">
+                        <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Attached Order</p>
+                        <p className="font-semibold text-gray-800 dark:text-gray-200 mt-0.5">
                           {rep.relatedOrderId ? `Order #${rep.relatedOrderId.slice(-8)}` : 'None specified'}
                         </p>
                       </div>
                     </div>
 
-                    <div className="text-xs text-gray-700 leading-relaxed bg-white p-3 rounded-xl border border-gray-100">
-                      <p className="font-semibold text-gray-900 mb-1">Violation Details:</p>
+                    <div className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed bg-white dark:bg-gray-900 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                      <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Violation Details:</p>
                       <p className="whitespace-pre-line">{rep.description}</p>
                     </div>
 
@@ -269,16 +269,16 @@ export function AdminReportsPage() {
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4"
+            className="bg-white dark:bg-gray-900 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4"
           >
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-red-600" />
-                <h2 className="text-sm font-bold text-gray-900">Execute Moderation Penalty</h2>
+                <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Execute Moderation Penalty</h2>
               </div>
               <button
                 onClick={() => setSelectedReport(null)}
-                className="text-gray-400 hover:text-gray-600 text-xs font-bold"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 text-xs font-bold"
               >
                 Cancel
               </button>
@@ -291,17 +291,17 @@ export function AdminReportsPage() {
               </div>
             ) : (
               <form onSubmit={handleExecuteAction} className="space-y-4">
-                <div className="bg-slate-50 p-3 rounded-2xl border border-gray-100 text-xs space-y-1">
+                <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs space-y-1">
                   <p><strong>Target:</strong> {selectedReport.reportedEntity.name} ({selectedReport.reportedUserId})</p>
                   <p><strong>Allegation:</strong> {selectedReport.reason.replace('_', ' ')}</p>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-700">Select Enforcement Action *</label>
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Select Enforcement Action *</label>
                   <select
                     value={actionType}
                     onChange={e => setActionType(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-xs bg-white focus:outline-none focus:border-red-500 font-medium"
+                    className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3 py-2.5 text-xs bg-white dark:bg-gray-900 focus:outline-none focus:border-red-500 font-medium"
                   >
                     <option value="warn_user">⚠️ Issue Official Compliance Warning</option>
                     <option value="suspend_store">🚫 Suspend Storefront & Delist Products</option>
@@ -312,14 +312,14 @@ export function AdminReportsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-700">Official Moderation Notes *</label>
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Official Moderation Notes *</label>
                   <textarea
                     required
                     rows={3}
                     placeholder="Enter reason for penalty or dismissal decision to log in audit trail..."
                     value={adminNotes}
                     onChange={e => setAdminNotes(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                    className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                   />
                 </div>
 

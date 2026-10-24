@@ -106,15 +106,15 @@ export function EarnCouponsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition" aria-label="Go back">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition" aria-label="Go back">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-500" />
-            <h1 className="font-bold text-gray-900 text-base">Earn Free Vouchers</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Earn Free Vouchers</h1>
           </div>
         </div>
 
@@ -130,7 +130,7 @@ export function EarnCouponsPage() {
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-3xl mx-auto lg:max-w-5xl w-full space-y-6 md:space-y-8 pb-24 md:pb-8">
         {/* Desktop Page Header */}
         <div className="hidden md:flex items-center justify-between">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Earn Free Vouchers</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Earn Free Vouchers</h1>
           <Button
             size="sm"
             onClick={() => navigate('my-coupons')}
@@ -154,24 +154,24 @@ export function EarnCouponsPage() {
 
         {/* Task List */}
         <div className="space-y-3">
-          <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
             Available Tasks ({tasks.length})
           </h2>
 
           {loading ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="bg-white rounded-2xl p-4 border border-gray-100 animate-pulse space-y-2">
+                <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 animate-pulse space-y-2">
                   <Skeleton className="h-4 w-1/3 rounded" />
                   <Skeleton className="h-3 w-full rounded" />
                 </div>
               ))}
             </div>
           ) : tasks.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-10 text-center">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-10 text-center">
               <Gift className="h-10 w-10 mx-auto text-gray-300 mb-2" />
-              <h3 className="text-sm font-semibold text-gray-700">No reward tasks are live right now</h3>
-              <p className="text-xs text-gray-400 mt-1">Check back soon — new ways to earn are added by the platform team.</p>
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">No reward tasks are live right now</h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Check back soon — new ways to earn are added by the platform team.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -183,16 +183,16 @@ export function EarnCouponsPage() {
                 <div
                   key={task.id}
                   className={`bg-white rounded-2xl p-4 border shadow-sm flex items-center justify-between gap-4 transition ${
-                    claimed ? 'border-green-200' : 'border-gray-100 hover:border-amber-200'
+                    claimed ? 'border-green-200' : 'border-gray-100 dark:border-gray-800 hover:border-amber-200'
                   }`}
                 >
                   <div className="flex items-start gap-3.5 min-w-0 flex-1">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-gray-800 flex items-center justify-center flex-shrink-0">
                       {getTaskIcon(task.type)}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-xs sm:text-sm font-bold text-gray-900">{task.title}</h3>
+                        <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">{task.title}</h3>
                         <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200 text-[10px] flex-shrink-0">
                           {task.rewardLabel}
                         </Badge>
@@ -202,11 +202,11 @@ export function EarnCouponsPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-gray-500 line-clamp-2 mt-0.5">{task.description}</p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mt-0.5">{task.description}</p>
                       {prog && !claimed && target > 1 && (
                         <div className="mt-2 space-y-1">
                           <Progress value={Math.min(100, Math.round((prog.count / target) * 100))} className="h-1.5" aria-label={`Progress ${prog.count} of ${target}`} />
-                          <p className="text-[10px] text-gray-400">{prog.count} of {target} completed</p>
+                          <p className="text-[10px] text-gray-400 dark:text-gray-500">{prog.count} of {target} completed</p>
                         </div>
                       )}
                     </div>

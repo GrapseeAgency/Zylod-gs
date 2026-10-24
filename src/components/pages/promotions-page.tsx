@@ -89,7 +89,7 @@ export function PromotionsPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b">
         <div className="max-w-[1280px] mx-auto px-4 py-3 flex items-center gap-3">

@@ -123,7 +123,7 @@ export function BulkAddToCartPage() {
 
   if (success) {
     return (
-      <div className="flex flex-col min-h-screen bg-white items-center justify-center p-6 md:p-10 text-center space-y-6">
+      <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 items-center justify-center p-6 md:p-10 text-center space-y-6">
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -132,8 +132,8 @@ export function BulkAddToCartPage() {
           <ShoppingCart className="w-10 h-10" />
         </motion.div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Added to Cart!</h2>
-          <p className="text-sm text-gray-500">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Added to Cart!</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             {success.added} item(s) added, {success.merged} merged into existing lines
             {success.rejected.length > 0 ? `, ${success.rejected.length} rejected` : ''}.
           </p>
@@ -157,7 +157,7 @@ export function BulkAddToCartPage() {
           </button>
           <button 
             onClick={goBack}
-            className="w-full py-3 bg-gray-100 text-gray-700 font-medium rounded-lg active:bg-gray-200"
+            className="w-full py-3 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 font-medium rounded-lg active:bg-gray-200"
           >
             Continue Shopping
           </button>
@@ -167,25 +167,25 @@ export function BulkAddToCartPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8">
-      <header className="sticky top-0 z-50 bg-white border-b flex items-center px-4 h-14 md:hidden">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8">
+      <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b flex items-center px-4 h-14 md:hidden">
         <button onClick={goBack} className="p-2 -ml-2 mr-2 active:bg-gray-100 rounded-full">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div className="flex-1">
-          <h1 className="font-semibold text-gray-900">Add to Cart</h1>
-          <div className="text-xs text-gray-500">{selectedIds.size} selected</div>
+          <h1 className="font-semibold text-gray-900 dark:text-gray-100">Add to Cart</h1>
+          <div className="text-xs text-gray-500 dark:text-gray-400">{selectedIds.size} selected</div>
         </div>
       </header>
 
       <main className="p-4 space-y-4 md:p-6 md:space-y-5 lg:max-w-6xl lg:mx-auto w-full">
         {/* Desktop page heading (mobile uses the sticky bar above) */}
         <div className="hidden md:flex items-center gap-3">
-          <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Add to Cart</h1>
-          <span className="text-sm text-gray-500">{selectedIds.size} selected</span>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Add to Cart</h1>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{selectedIds.size} selected</span>
         </div>
 
         <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg flex items-start gap-2">
@@ -194,11 +194,11 @@ export function BulkAddToCartPage() {
         </div>
 
         <div className="flex items-center justify-between px-1">
-          <button onClick={toggleSelectAll} className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <button onClick={toggleSelectAll} className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             {selectedIds.size === items.length && items.length > 0 ? (
               <CheckSquare className="w-5 h-5 text-primary" />
             ) : (
-              <Square className="w-5 h-5 text-gray-400" />
+              <Square className="w-5 h-5 text-gray-400 dark:text-gray-500" />
             )}
             Select All ({items.length})
           </button>
@@ -215,7 +215,7 @@ export function BulkAddToCartPage() {
                 key={item.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`bg-white border rounded-xl p-3 shadow-sm flex gap-3 transition-colors ${selectedIds.has(item.id) ? 'border-primary ring-1 ring-primary/20' : 'border-gray-200'}`}
+                className={`bg-white border rounded-xl p-3 shadow-sm flex gap-3 transition-colors ${selectedIds.has(item.id) ? 'border-primary ring-1 ring-primary/20' : 'border-gray-200 dark:border-gray-800'}`}
               >
                 <button onClick={() => toggleSelect(item.id)} className="mt-1 shrink-0">
                   {selectedIds.has(item.id) ? (
@@ -225,7 +225,7 @@ export function BulkAddToCartPage() {
                   )}
                 </button>
                 
-                <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden shrink-0">
                   {item.product.thumbnailUrl ? (
                     <img src={item.product.thumbnailUrl} alt={item.product.name} className="w-full h-full object-cover" />
                   ) : (
@@ -234,24 +234,24 @@ export function BulkAddToCartPage() {
                 </div>
                 
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-sm font-medium text-gray-900 line-clamp-1">{item.product.name}</h3>
-                  <div className="text-xs text-gray-500 mb-1">{item.product.supplier?.companyName}</div>
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-1">{item.product.name}</h3>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.product.supplier?.companyName}</div>
                   
-                  <div className="font-medium text-gray-900 mb-2">
-                    {item.product.currency} {item.product.basePrice} <span className="text-[10px] text-gray-500 font-normal">/{item.product.unit}</span>
+                  <div className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                    {item.product.currency} {item.product.basePrice} <span className="text-[10px] text-gray-500 dark:text-gray-400 font-normal">/{item.product.unit}</span>
                   </div>
                   
                   <div className="mt-auto flex items-center justify-between">
-                    <div className="flex items-center border rounded-lg bg-gray-50">
+                    <div className="flex items-center border rounded-lg bg-gray-50 dark:bg-gray-950">
                       <button 
                         onClick={() => updateQuantity(item.id, (quantities[item.id] || 0) - 1)}
-                        className="px-2.5 py-1 text-gray-600 active:bg-gray-200"
+                        className="px-2.5 py-1 text-gray-600 dark:text-gray-400 active:bg-gray-200"
                         disabled={quantities[item.id] <= (item.product.moq || 1)}
                       >-</button>
                       <div className="px-2 text-sm font-medium min-w-[32px] text-center">{quantities[item.id]}</div>
                       <button 
                         onClick={() => updateQuantity(item.id, (quantities[item.id] || 0) + 1)}
-                        className="px-2.5 py-1 text-gray-600 active:bg-gray-200"
+                        className="px-2.5 py-1 text-gray-600 dark:text-gray-400 active:bg-gray-200"
                       >+</button>
                     </div>
                     {item.product.moq > 1 && (
@@ -267,11 +267,11 @@ export function BulkAddToCartPage() {
         )}
       </main>
 
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white border-t p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-40 md:bottom-0 md:px-6">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-40 md:bottom-0 md:px-6">
         <div className="md:max-w-6xl md:mx-auto">
         <div className="flex justify-between items-center mb-3">
-          <span className="text-sm text-gray-600">Total ({selectedIds.size} items)</span>
-          <span className="text-lg font-bold text-gray-900">${selectedTotal.toFixed(2)}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">Total ({selectedIds.size} items)</span>
+          <span className="text-lg font-bold text-gray-900 dark:text-gray-100">${selectedTotal.toFixed(2)}</span>
         </div>
         <button
           onClick={handleBulkAdd}

@@ -68,12 +68,12 @@ export function SellerReviewsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       <header className="md:hidden bg-primary text-white p-4 flex items-center">
         <button onClick={goBack} className="mr-4">←</button>
         <h1 className="text-xl font-bold">Seller Reviews</h1>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">Seller Reviews</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Seller Reviews</h1>
       <main className="flex-1 p-4">
         {loading ? (
           <div className="animate-pulse space-y-4">
@@ -81,16 +81,16 @@ export function SellerReviewsPage() {
             <div className="h-32 bg-gray-200 rounded"></div>
           </div>
         ) : error ? (
-          <div className="bg-white p-6 rounded shadow text-center">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded shadow text-center">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 mb-3">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{error}</p>
             <Button variant="outline" size="sm" onClick={load}>
               <RefreshCw className="w-4 h-4 mr-1" /> Retry
             </Button>
           </div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-            <div className="bg-white p-4 rounded shadow">
+            <div className="bg-white dark:bg-gray-900 p-4 rounded shadow">
               <h2 className="text-lg font-bold">Rating Overview</h2>
               <div className="flex items-center space-x-2 mt-2">
                 <Star className="text-yellow-500" />
@@ -99,48 +99,48 @@ export function SellerReviewsPage() {
                 <span className="text-2xl font-bold">
                   {totalReviews > 0 ? averageRating.toFixed(1) : '—'}
                 </span>
-                <span className="text-gray-500">({totalReviews} product review{totalReviews !== 1 ? 's' : ''})</span>
+                <span className="text-gray-500 dark:text-gray-400">({totalReviews} product review{totalReviews !== 1 ? 's' : ''})</span>
               </div>
               {storeTotalReviews > 0 && (
                 <div className="flex items-center space-x-2 mt-1">
                   <Star className="w-4 h-4 text-yellow-500" />
                   <span className="text-sm font-semibold">{storeAverageRating.toFixed(1)}</span>
-                  <span className="text-xs text-gray-500">({storeTotalReviews} store review{storeTotalReviews !== 1 ? 's' : ''})</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">({storeTotalReviews} store review{storeTotalReviews !== 1 ? 's' : ''})</span>
                 </div>
               )}
             </div>
             <div className="space-y-4">
               {reviews.length === 0 ? (
-                <div className="bg-white p-8 rounded shadow text-center">
+                <div className="bg-white dark:bg-gray-900 p-8 rounded shadow text-center">
                   <Star className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                  <h3 className="text-sm font-bold text-gray-700">No reviews yet</h3>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No reviews yet</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Buyer reviews for your products will appear here once buyers start reviewing.
                   </p>
                 </div>
               ) : (
                 reviews.map((review) => (
-                  <div key={review.id} className="bg-white p-4 rounded shadow">
+                  <div key={review.id} className="bg-white dark:bg-gray-900 p-4 rounded shadow">
                     <div className="flex justify-between items-start">
                       <div>
                         <span className="font-bold">{review.buyerName}</span>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {review.productName ?? 'Store review'}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         {review.kind === 'store' && (
-                          <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">Store</span>
+                          <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded">Store</span>
                         )}
                         <span className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-200'}`} />
                           ))}
                         </span>
-                        <span className="text-sm text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{new Date(review.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
-                    {review.comment && <p className="mt-2 text-sm text-gray-700">{review.comment}</p>}
+                    {review.comment && <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">{review.comment}</p>}
                     {review.verifiedPurchase && (
                       <span className="inline-block mt-2 text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded">
                         Verified purchase

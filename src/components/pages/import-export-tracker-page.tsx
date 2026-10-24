@@ -135,10 +135,10 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
 
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center text-slate-900">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <AlertCircle className="h-10 w-10 text-slate-300 mb-3" />
-        <h1 className="text-lg font-black text-slate-900">Open this from an order</h1>
-        <p className="text-xs text-slate-500 mt-2 max-w-xs leading-relaxed">
+        <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Open this from an order</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
           An import/export journey is always a real order&apos;s journey. Open one of your orders to follow it.
         </p>
         <Button onClick={() => navigate('my-orders')} className="mt-5 w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl">
@@ -150,10 +150,10 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
 
   if (needsAuth) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center text-slate-900">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <AlertCircle className="h-10 w-10 text-slate-300 mb-3" />
-        <h1 className="text-lg font-black text-slate-900">Sign in required</h1>
-        <p className="text-xs text-slate-500 mt-2 max-w-xs">Import tracking is visible to the order&apos;s buyer.</p>
+        <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Sign in required</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs">Import tracking is visible to the order&apos;s buyer.</p>
         <Button onClick={() => navigate('login')} className="mt-5 w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl">
           Sign in
         </Button>
@@ -163,7 +163,7 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-900">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-900 dark:text-slate-100">
         <Loader2 className="h-7 w-7 animate-spin text-primary" />
       </div>
     )
@@ -171,10 +171,10 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center text-slate-900">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <AlertCircle className="h-10 w-10 text-slate-300 mb-3" />
-        <h1 className="text-lg font-black text-slate-900">Order not found</h1>
-        <p className="text-xs text-slate-500 mt-2 max-w-xs">{error || 'This order does not exist or is not visible to your account.'}</p>
+        <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Order not found</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs">{error || 'This order does not exist or is not visible to your account.'}</p>
         <Button variant="outline" onClick={() => navigate('my-orders')} className="mt-5 w-full max-w-xs font-bold text-xs h-11 rounded-2xl">
           Go to my orders
         </Button>
@@ -198,10 +198,10 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
   const stepIcon = (idx: number) => (idx <= 1 ? Factory : idx <= 3 ? Ship : CheckCircle2)
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 md:pb-8 text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -212,8 +212,8 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
         {/* Real PO header */}
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h1 className="text-xl md:text-2xl font-black text-slate-900 font-mono tracking-tight">{order.orderNumber}</h1>
-            <p className="text-xs text-slate-500 mt-0.5 font-medium">
+            <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 font-mono tracking-tight">{order.orderNumber}</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
               Placed {new Date(order.placedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} ·
               {' '}{totalItems} line item{totalItems !== 1 ? 's' : ''} · {formatPrice(order.totalAmount)}
             </p>
@@ -226,7 +226,7 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
         </div>
 
         {/* Real stage stepper — no fake percentages */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs">
           <div className="grid grid-cols-5 gap-1 text-center">
             {STEP_ORDER.map((step, idx) => {
               const Icon = stepIcon(idx)
@@ -235,13 +235,13 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
               return (
                 <div key={step} className="flex flex-col items-center gap-1.5">
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center border ${
-                    current ? 'bg-white border-2 border-primary text-primary' :
+                    current ? 'bg-white dark:bg-gray-900 border-2 border-primary text-primary' :
                     reached ? 'bg-primary text-white border-primary' :
-                    'bg-slate-100 text-slate-400 border-slate-200'
+                    'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-800'
                   }`}>
                     {current ? <Satellite className="h-4 w-4 animate-pulse" /> : <Icon className="h-4 w-4" />}
                   </div>
-                  <span className={`text-[9px] font-bold capitalize leading-tight ${reached ? 'text-slate-700' : 'text-slate-400'}`}>
+                  <span className={`text-[9px] font-bold capitalize leading-tight ${reached ? 'text-slate-700 dark:text-slate-300' : 'text-slate-400 dark:text-slate-500'}`}>
                     {step}
                   </span>
                 </div>
@@ -256,14 +256,14 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
         </div>
 
         {/* Real journey events */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-          <div className="flex items-center gap-2 text-slate-900 font-bold text-xs">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-bold text-xs">
             <Clock className="h-4 w-4 text-primary" />
             <span>Journey — real tracking events ({journey.length})</span>
           </div>
           {journey.length === 0 ? (
-            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-[11px] text-slate-500 flex items-start gap-2">
-              <Package className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" />
+            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 flex items-start gap-2">
+              <Package className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
               No tracking events yet — the factory dispatch row appears when the supplier marks the first transition. There is no fabricated vessel or route here.
             </div>
           ) : (
@@ -274,13 +274,13 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
                     <Ship className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-black text-slate-900 capitalize">{t.status}</p>
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-xs font-black text-slate-900 dark:text-slate-100 capitalize">{t.status}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
                       {t.supplier ? `${t.supplier} · ` : ''}
                       {t.location ? `${t.location} · ` : ''}
                       {new Date(t.trackedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </p>
-                    {t.note && <p className="text-[11px] text-slate-600 mt-0.5">{t.note}</p>}
+                    {t.note && <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">{t.note}</p>}
                   </div>
                 </li>
               ))}
@@ -289,27 +289,27 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
         </div>
 
         {/* Real manifest */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-          <div className="flex items-center gap-2 text-slate-900 font-bold text-xs">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-bold text-xs">
             <FileText className="h-4 w-4 text-primary" />
             <span>Manifest — real line items</span>
           </div>
           <div className="space-y-2">
             {order.subOrders.flatMap((s) =>
               s.items.map((it) => (
-                <div key={it.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-2">
+                <div key={it.id} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate">{it.product?.name ?? 'Item'}</p>
-                    <p className="text-[10px] text-slate-400 font-bold">
+                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{it.product?.name ?? 'Item'}</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">
                       {s.supplierName ?? 'Supplier'} · qty {it.quantity}{it.product?.unit ? ` ${it.product.unit}` : ''} × {formatPrice(it.unitPrice)}
                     </p>
                   </div>
-                  <span className="text-xs font-black text-slate-900 font-mono shrink-0">{formatPrice(it.totalPrice)}</span>
+                  <span className="text-xs font-black text-slate-900 dark:text-slate-100 font-mono shrink-0">{formatPrice(it.totalPrice)}</span>
                 </div>
               ))
             )}
             {totalItems === 0 && (
-              <p className="text-[11px] text-slate-500">No line items recorded on this order.</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">No line items recorded on this order.</p>
             )}
           </div>
         </div>
@@ -318,7 +318,7 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
           <Button
             variant="outline"
             onClick={() => navigate('freight-tracking', { orderId: order.id })}
-            className="flex-1 bg-white hover:bg-slate-50 text-slate-800 border-slate-200 font-bold h-11 rounded-2xl text-xs"
+            className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
           >
             <Boxes className="h-4 w-4 mr-2" /> Per-shipment view
           </Button>

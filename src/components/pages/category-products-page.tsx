@@ -212,7 +212,7 @@ function FilterSheet({ open, onClose, onApply, initialFilters, products }: Filte
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 max-h-[90vh] overflow-y-auto"
+            className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 rounded-t-2xl z-50 max-h-[90vh] overflow-y-auto"
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1">
@@ -220,7 +220,7 @@ function FilterSheet({ open, onClose, onApply, initialFilters, products }: Filte
             </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800">
               <h3 className="text-base font-bold">Filters</h3>
               <button
                 onClick={handleReset}
@@ -236,22 +236,22 @@ function FilterSheet({ open, onClose, onApply, initialFilters, products }: Filte
                 <h4 className="text-sm font-bold mb-3">Price Range (USD)</h4>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex-1">
-                    <label className="text-[10px] text-gray-500 mb-1 block">Min</label>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Min</label>
                     <input
                       type="number"
                       value={priceMin}
                       onChange={(e) => setPriceMin(Number(e.target.value))}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium"
+                      className="w-full border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-2 text-sm font-medium"
                     />
                   </div>
-                  <span className="text-gray-400 mt-4">–</span>
+                  <span className="text-gray-400 dark:text-gray-500 mt-4">–</span>
                   <div className="flex-1">
-                    <label className="text-[10px] text-gray-500 mb-1 block">Max</label>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Max</label>
                     <input
                       type="number"
                       value={priceMax}
                       onChange={(e) => setPriceMax(Number(e.target.value))}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium"
+                      className="w-full border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-2 text-sm font-medium"
                     />
                   </div>
                 </div>
@@ -276,7 +276,7 @@ function FilterSheet({ open, onClose, onApply, initialFilters, products }: Filte
                       className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                         certifications.includes(cert)
                           ? 'bg-primary text-white border-primary'
-                          : 'bg-white text-gray-700 border-gray-200'
+                          : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-800'
                       }`}
                     >
                       {cert}
@@ -297,7 +297,7 @@ function FilterSheet({ open, onClose, onApply, initialFilters, products }: Filte
                     onValueChange={([val]) => setMaxMoq(val)}
                     className="flex-1"
                   />
-                  <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
                     ≤ {maxMoq}
                   </span>
                 </div>
@@ -305,7 +305,7 @@ function FilterSheet({ open, onClose, onApply, initialFilters, products }: Filte
             </div>
 
             {/* Show Results */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4">
+            <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 px-4 py-4">
               <Button
                 onClick={handleApply}
                 className="w-full bg-primary text-white font-bold h-12 rounded-xl text-sm"
@@ -454,22 +454,22 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-gray-50 pb-24 md:pb-8"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-24 md:pb-8"
     >
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-30">
         <div className="flex items-center gap-3 px-4 md:px-6 py-3 max-w-7xl mx-auto">
-          <button onClick={goBack} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors md:hidden">
-            <ArrowLeft className="h-5 w-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden">
+            <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex-1 min-w-0">
             {/* Breadcrumb */}
-            <div className="flex items-center gap-1 text-[10px] text-gray-400">
+            <div className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500">
               <span>Home</span>
               <ChevronRight className="h-3 w-3" />
               <span>Categories</span>
               <ChevronRight className="h-3 w-3" />
-              <span className="text-gray-600 font-medium truncate">{categoryName}</span>
+              <span className="text-gray-600 dark:text-gray-400 font-medium truncate">{categoryName}</span>
             </div>
           </div>
         </div>
@@ -477,12 +477,12 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
         {/* Search */}
         <div className="px-4 md:px-6 pb-3 max-w-7xl mx-auto">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={`Search in ${categoryName}...`}
-              className="pl-9 h-10 text-sm rounded-xl border-gray-200 bg-gray-50"
+              className="pl-9 h-10 text-sm rounded-xl border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950"
             />
           </div>
         </div>
@@ -491,8 +491,8 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
       <div className="px-4 md:px-6 pt-4 md:pt-6 max-w-7xl mx-auto">
         {/* Category title + description */}
         <div className="mb-4">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">{categoryName}</h1>
-          <p className="text-xs md:text-sm text-gray-500 mt-1 leading-relaxed">{categoryDescription}</p>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">{categoryName}</h1>
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{categoryDescription}</p>
         </div>
 
         {/* Subcategory filter pills */}
@@ -504,7 +504,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
               className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex-shrink-0 ${
                 i === activeSubFilter
                   ? 'bg-primary text-white'
-                  : 'bg-white text-gray-700 border border-gray-200'
+                  : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800'
               }`}
             >
               {sub}
@@ -514,7 +514,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
 
         {/* Featured product hero card */}
         {!loading && featuredProduct && (
-          <div className="mb-4 rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm md:flex">
+          <div className="mb-4 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm md:flex">
             <div className="relative md:w-1/2">
               <Badge className="absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md z-10">
                 ★ Featured
@@ -535,15 +535,15 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
               <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">
                 {subcategories[activeSubFilter] !== 'All Parts' ? subcategories[activeSubFilter] : categoryName}
               </p>
-              <h2 className="text-base font-bold text-gray-900 leading-snug mb-1">
+              <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 leading-snug mb-1">
                 {featuredProduct.name}
               </h2>
-              <p className="text-xs text-gray-500 line-clamp-2 mb-3">{featuredProduct.description}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{featuredProduct.description}</p>
               <div className="text-xl font-bold text-primary mb-3">
                 {formatPrice(featuredProduct.base_price)}
-                <span className="text-sm font-normal text-gray-500 ml-1">/ {featuredProduct.unit}</span>
+                <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-1">/ {featuredProduct.unit}</span>
               </div>
-              <div className="grid grid-cols-2 gap-2 mb-3 text-xs text-gray-600">
+              <div className="grid grid-cols-2 gap-2 mb-3 text-xs text-gray-600 dark:text-gray-400">
                 <div className="flex items-center gap-1.5">
                   <Package className="h-3.5 w-3.5 text-orange-500" />
                   <span>MOQ: {featuredProduct.moq} {featuredProduct.unit}</span>
@@ -572,7 +572,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
 
         {/* Loading skeleton for featured */}
         {loading && (
-          <div className="mb-4 rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm">
+          <div className="mb-4 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
             <Skeleton className="h-44 w-full rounded-none" />
             <div className="p-4 space-y-2">
               <Skeleton className="h-3 w-24" />
@@ -586,10 +586,10 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
 
         {/* Sort bar */}
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-bold text-gray-900">
+          <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">
             All Products
             {!loading && (
-              <span className="ml-2 text-gray-400 font-normal text-xs">
+              <span className="ml-2 text-gray-400 dark:text-gray-500 font-normal text-xs">
                 Sort by: Popular ↓
               </span>
             )}
@@ -597,7 +597,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white"
+            className="text-xs border border-gray-200 dark:border-gray-800 rounded-lg px-2 py-1 bg-white dark:bg-gray-900"
           >
             <option value="popular">Popular</option>
             <option value="price_low">Price: Low–High</option>
@@ -611,7 +611,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i} className="overflow-hidden border border-gray-100">
+              <Card key={i} className="overflow-hidden border border-gray-100 dark:border-gray-800">
                 <CardContent className="p-0">
                   <Skeleton className="aspect-square w-full rounded-none" />
                   <div className="p-2.5 space-y-1.5">
@@ -627,8 +627,8 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
         ) : categoryProducts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Package className="h-12 w-12 text-gray-300 mb-3" />
-            <h3 className="text-sm font-bold text-gray-700 mb-1">No products found</h3>
-            <p className="text-xs text-gray-400 mb-4">Try adjusting your filters or search term</p>
+            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">No products found</h3>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">Try adjusting your filters or search term</p>
             <Button
               variant="outline"
               size="sm"
@@ -652,12 +652,12 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
                 transition={{ delay: idx * 0.03 }}
               >
                 <Card
-                  className="overflow-hidden border border-gray-100 bg-white cursor-pointer hover:shadow-md transition-shadow"
+                  className="overflow-hidden border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 cursor-pointer hover:shadow-md transition-shadow"
                   onClick={() => navigate('product-detail', { productId: product.id })}
                 >
                   <CardContent className="p-0">
                     {/* Image */}
-                    <div className="relative aspect-square bg-gray-100 flex items-center justify-center">
+                    <div className="relative aspect-square bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
                       {product.images[0]?.url ? (
                         <img
                           src={product.images[0].url}
@@ -675,10 +675,10 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
                     </div>
                     {/* Info */}
                     <div className="p-2.5">
-                      <h3 className="text-xs font-semibold text-gray-900 line-clamp-2 leading-snug mb-1">
+                      <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 leading-snug mb-1">
                         {product.name}
                       </h3>
-                      <p className="text-[10px] text-gray-400 mb-1">
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-1">
                         MOQ: {product.moq} {product.unit}
                       </p>
                       <div className="flex items-center justify-between">
@@ -690,7 +690,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
                             e.stopPropagation()
                             handleAddToCart(product)
                           }}
-                          className="p-1.5 rounded-lg bg-gray-100 hover:bg-primary hover:text-white transition-colors"
+                          className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-900 hover:bg-primary hover:text-white transition-colors"
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </button>
@@ -700,11 +700,11 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
                           e.stopPropagation()
                           navigate('product-detail', { productId: product.id })
                         }}
-                        className="mt-2 w-full text-center text-xs font-semibold text-gray-700 border border-gray-200 rounded-lg py-1.5 hover:bg-gray-50 transition-colors flex items-center justify-center gap-1"
+                        className="mt-2 w-full text-center text-xs font-semibold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 rounded-lg py-1.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-1"
                       >
                         MOQ
                         <span className="text-primary font-bold">{product.moq}</span>
-                        <span className="text-gray-400">View</span>
+                        <span className="text-gray-400 dark:text-gray-500">View</span>
                       </button>
                     </div>
                   </CardContent>
@@ -733,7 +733,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
         <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-30">
           <button
             onClick={() => setFilterOpen(true)}
-            className="flex items-center gap-2 bg-white text-gray-800 font-semibold text-sm px-5 py-2.5 rounded-full shadow-lg border border-gray-200"
+            className="flex items-center gap-2 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-semibold text-sm px-5 py-2.5 rounded-full shadow-lg border border-gray-200 dark:border-gray-800"
           >
             <SlidersHorizontal className="h-4 w-4" />
             Filters

@@ -19,34 +19,34 @@ export function InventoryAuditLogPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="overflow-x-hidden min-h-screen bg-gray-50 pb-20 md:pb-8"
+      className="overflow-x-hidden min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
     >
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between md:hidden">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-2 hover:bg-gray-100 rounded-full">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Audit Log</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Audit Log</h1>
         </div>
       </div>
 
       <div className="p-4 md:max-w-4xl md:mx-auto md:p-6 md:pb-8">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900 mb-6">Audit Log</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Audit Log</h1>
         <div className="space-y-4 md:space-y-6">
         {/* Mobile card list */}
         <div className="space-y-4 md:hidden">
           {logs.map((log) => (
-            <div key={log.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <div key={log.id} className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
               <div className="flex justify-between items-start mb-2">
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">{log.action}</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">{log.item}</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{log.action}</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{log.item}</p>
                 </div>
                 <span className={`font-bold ${log.delta.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
                   {log.delta}
                 </span>
               </div>
-              <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
+              <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400">
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   <span>{log.date}</span>
@@ -58,10 +58,10 @@ export function InventoryAuditLogPage() {
         </div>
 
         {/* Desktop table */}
-        <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="hidden md:block bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-red-50/50 text-left text-xs uppercase tracking-wider text-gray-500">
+              <tr className="bg-red-50/50 text-left text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 <th className="px-4 py-3 font-semibold">Action</th>
                 <th className="px-4 py-3 font-semibold">Item</th>
                 <th className="px-4 py-3 font-semibold">Change</th>
@@ -72,13 +72,13 @@ export function InventoryAuditLogPage() {
             <tbody>
               {logs.map((log) => (
                 <tr key={log.id} className="hover:bg-red-50/30">
-                  <td className="px-4 py-3 font-semibold text-gray-900">{log.action}</td>
-                  <td className="px-4 py-3 text-gray-500">{log.item}</td>
+                  <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{log.action}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{log.item}</td>
                   <td className={`px-4 py-3 font-bold ${log.delta.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
                     {log.delta}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">{log.user}</td>
-                  <td className="px-4 py-3 text-gray-500">{log.date}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{log.user}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{log.date}</td>
                 </tr>
               ))}
             </tbody>

@@ -87,16 +87,16 @@ export function DeliveryUpdatesPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition md:hidden">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Truck className="w-5 h-5 text-emerald-600" />
-            <h1 className="font-bold text-gray-900 text-base">Delivery Updates</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Delivery Updates</h1>
           </div>
         </div>
 
@@ -109,7 +109,7 @@ export function DeliveryUpdatesPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="bg-white border-b border-gray-100 px-4 py-2 flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-2 flex items-center gap-2">
         {[
           { key: 'all', label: 'All Dispatches' },
           { key: 'in_transit', label: 'In Transit' },
@@ -121,7 +121,7 @@ export function DeliveryUpdatesPage() {
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition ${
               activeFilter === tab.key
                 ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
             }`}
           >
             {tab.label}
@@ -134,7 +134,7 @@ export function DeliveryUpdatesPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-2xl p-4 border border-gray-100 animate-pulse space-y-3">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 animate-pulse space-y-3">
                 <Skeleton className="h-4 w-1/3 rounded" />
                 <Skeleton className="h-8 w-full rounded-xl" />
                 <Skeleton className="h-3 w-3/4 rounded" />
@@ -146,8 +146,8 @@ export function DeliveryUpdatesPage() {
             <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
               <Truck className="w-8 h-8" />
             </div>
-            <h3 className="text-sm font-bold text-gray-900">No delivery alerts right now</h3>
-            <p className="text-xs text-gray-500 max-w-xs mx-auto">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No delivery alerts right now</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
               Real-time courier GPS tracking, Steadfast/Pathao/RedX waybills, and arrival time estimates will appear here.
             </p>
             <div className="pt-2">
@@ -172,12 +172,12 @@ export function DeliveryUpdatesPage() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
-                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-4 hover:border-emerald-200 transition"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4 hover:border-emerald-200 transition"
               >
                 {/* Top Info */}
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <span className="text-xs font-bold text-gray-900 block">
+                    <span className="text-xs font-bold text-gray-900 dark:text-gray-100 block">
                       {item.order?.orderNumber || item.title}
                     </span>
                     {item.order?.carrier && (
@@ -187,7 +187,7 @@ export function DeliveryUpdatesPage() {
                     )}
                   </div>
 
-                  <span className="text-[10px] text-gray-400">
+                  <span className="text-[10px] text-gray-400 dark:text-gray-500">
                     {new Date(item.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                   </span>
                 </div>
@@ -199,8 +199,8 @@ export function DeliveryUpdatesPage() {
                       const isComplete = step >= sIdx + 1
                       return (
                         <div key={stLabel} className="space-y-1">
-                          <div className={`h-1.5 rounded-full transition ${isComplete ? 'bg-emerald-500' : 'bg-gray-100'}`} />
-                          <span className={`text-[9px] block ${isComplete ? 'font-bold text-emerald-700' : 'text-gray-400'}`}>
+                          <div className={`h-1.5 rounded-full transition ${isComplete ? 'bg-emerald-500' : 'bg-gray-100 dark:bg-gray-900'}`} />
+                          <span className={`text-[9px] block ${isComplete ? 'font-bold text-emerald-700' : 'text-gray-400 dark:text-gray-500'}`}>
                             {stLabel}
                           </span>
                         </div>
@@ -210,15 +210,15 @@ export function DeliveryUpdatesPage() {
                 </div>
 
                 {/* Tracking & Message */}
-                <p className="text-xs text-gray-600 leading-relaxed">
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                   {item.message}
                 </p>
 
                 {/* Waybill / Tracking Action */}
                 {item.order?.trackingNumber && (
-                  <div className="bg-slate-50 rounded-xl p-2.5 flex items-center justify-between text-xs border border-gray-100">
-                    <span className="text-gray-500">
-                      Consignment: <strong className="text-gray-800">{item.order.trackingNumber}</strong>
+                  <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-2.5 flex items-center justify-between text-xs border border-gray-100 dark:border-gray-800">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Consignment: <strong className="text-gray-800 dark:text-gray-200">{item.order.trackingNumber}</strong>
                     </span>
                     <button
                       onClick={() => copyTracking(item.order!.trackingNumber!, item.id)}
@@ -240,7 +240,7 @@ export function DeliveryUpdatesPage() {
                 {/* Bottom Actions */}
                 <div className="flex items-center justify-between pt-2 border-t border-gray-50 text-xs">
                   {item.order?.estimatedDelivery && (
-                    <span className="text-[11px] text-gray-400">
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500">
                       Est. Arrival: <strong>{new Date(item.order.estimatedDelivery).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</strong>
                     </span>
                   )}
@@ -262,23 +262,23 @@ export function DeliveryUpdatesPage() {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden md:block bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="hidden md:block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-red-50/50 text-left">
-                  <th className="p-3 text-xs font-semibold text-gray-700">Order</th>
-                  <th className="p-3 text-xs font-semibold text-gray-700">Latest Update</th>
-                  <th className="p-3 text-xs font-semibold text-gray-700">Status</th>
-                  <th className="p-3 text-xs font-semibold text-gray-700">Consignment</th>
-                  <th className="p-3 text-xs font-semibold text-gray-700">Est. Arrival</th>
-                  <th className="p-3 text-xs font-semibold text-gray-700"></th>
+                  <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300">Order</th>
+                  <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300">Latest Update</th>
+                  <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300">Status</th>
+                  <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300">Consignment</th>
+                  <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300">Est. Arrival</th>
+                  <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300"></th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUpdates.map(item => (
-                  <tr key={item.id} className="border-t border-gray-100 hover:bg-red-50/30">
-                    <td className="p-3 font-medium text-gray-900 whitespace-nowrap">{item.order?.orderNumber || item.title}</td>
-                    <td className="p-3 text-gray-600">{item.message}</td>
+                  <tr key={item.id} className="border-t border-gray-100 dark:border-gray-800 hover:bg-red-50/30">
+                    <td className="p-3 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{item.order?.orderNumber || item.title}</td>
+                    <td className="p-3 text-gray-600 dark:text-gray-400">{item.message}</td>
                     <td className="p-3">
                       <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md whitespace-nowrap">
                         {item.order?.status || 'In Transit'}
@@ -301,10 +301,10 @@ export function DeliveryUpdatesPage() {
                           )}
                         </button>
                       ) : (
-                        <span className="text-gray-400">-</span>
+                        <span className="text-gray-400 dark:text-gray-500">-</span>
                       )}
                     </td>
-                    <td className="p-3 text-gray-500 whitespace-nowrap">
+                    <td className="p-3 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {item.order?.estimatedDelivery
                         ? new Date(item.order.estimatedDelivery).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
                         : '-'}

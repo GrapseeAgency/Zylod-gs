@@ -61,16 +61,16 @@ export function CreditScorePage() {
   const scorePct = Math.round((data.score / data.maxScore) * 100)
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Trade Credit Score</span>
         <button
           onClick={() => navigate('credit-limit')}
-          className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Limit"
         >
           <ShieldCheck className="h-4 w-4" />
@@ -89,7 +89,7 @@ export function CreditScorePage() {
             <div className="text-5xl font-black font-mono tracking-tight text-white">
               {data.score}
             </div>
-            <span className="text-xs text-slate-400 mt-1 block">
+            <span className="text-xs text-slate-400 dark:text-slate-500 mt-1 block">
               Out of {data.maxScore} Commercial Rating Index
             </span>
           </div>
@@ -110,22 +110,22 @@ export function CreditScorePage() {
         <div className="space-y-4 md:space-y-6">
         {/* Credit Metrics Grid */}
         <div className="grid grid-cols-2 gap-3 md:gap-4">
-          <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Credit Utilization</span>
-            <span className="text-base font-black text-slate-900 block font-mono">{data.creditUtilization}</span>
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Credit Utilization</span>
+            <span className="text-base font-black text-slate-900 dark:text-slate-100 block font-mono">{data.creditUtilization}</span>
             <span className="text-[10px] text-emerald-600 font-bold block">Optimal wholesale range</span>
           </div>
 
-          <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Trade History</span>
-            <span className="text-base font-black text-slate-900 block font-mono">{data.tradeHistoryLength}</span>
-            <span className="text-[10px] text-slate-500 font-bold block">Verified fulfillment</span>
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Trade History</span>
+            <span className="text-base font-black text-slate-900 dark:text-slate-100 block font-mono">{data.tradeHistoryLength}</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold block">Verified fulfillment</span>
           </div>
         </div>
 
         {/* Credit Factors */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
             Credit Rating Evaluation Factors
           </h2>
 
@@ -135,12 +135,12 @@ export function CreditScorePage() {
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900">{f.name}</span>
+                    <span className="font-bold text-slate-900 dark:text-slate-100">{f.name}</span>
                     <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full">
                       {f.impact}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{f.description}</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{f.description}</p>
                 </div>
               </div>
             ))}

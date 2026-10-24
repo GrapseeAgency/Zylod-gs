@@ -74,23 +74,23 @@ export function PriceDropAlertsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header (mobile only; desktop uses the global Header + desktop title row below) */}
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <TrendingDown className="w-5 h-5 text-red-600" />
-            <h1 className="font-bold text-gray-900 text-base">Price Drop Alerts</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Price Drop Alerts</h1>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('push-notification-settings')}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition"
+            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition"
             title="Alert Settings"
           >
             <SlidersHorizontal className="w-4 h-4" />
@@ -110,14 +110,14 @@ export function PriceDropAlertsPage() {
       <div className="hidden md:flex items-center justify-between max-w-5xl mx-auto w-full px-6 pt-6">
         <div className="flex items-center gap-2">
           <TrendingDown className="w-5 h-5 text-red-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Price Drop Alerts</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Price Drop Alerts</h1>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigate('push-notification-settings')}
-            className="border-gray-200 text-gray-600"
+            className="border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
             Alert Settings
@@ -134,7 +134,7 @@ export function PriceDropAlertsPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="bg-white border-b border-gray-100 px-4 py-2 flex items-center gap-2 md:px-6">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-2 flex items-center gap-2 md:px-6">
         {[
           { key: 'active', label: 'Active Watches' },
           { key: 'triggered', label: 'Price Dropped' },
@@ -146,7 +146,7 @@ export function PriceDropAlertsPage() {
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition ${
               activeTab === tab.key
                 ? 'bg-red-600 text-white shadow-sm'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
             }`}
           >
             {tab.label}
@@ -159,7 +159,7 @@ export function PriceDropAlertsPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-2xl p-4 border border-gray-100 flex gap-3 animate-pulse">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex gap-3 animate-pulse">
                 <Skeleton className="w-16 h-16 rounded-xl flex-shrink-0" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-3/4 rounded" />
@@ -174,10 +174,10 @@ export function PriceDropAlertsPage() {
             <div className="w-16 h-16 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
               <TrendingDown className="w-8 h-8" />
             </div>
-            <h3 className="text-sm font-bold text-gray-900">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">
               {activeTab === 'active' ? 'No active price watches' : 'No alerts in this tab'}
             </h3>
-            <p className="text-xs text-gray-500 max-w-xs mx-auto">
+            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
               Set target prices on wholesale goods to get notified instantly when suppliers lower their rates.
             </p>
             <div className="pt-2">
@@ -201,12 +201,12 @@ export function PriceDropAlertsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => navigate('product-detail', { productId: alert.productId })}
                 className={`bg-white rounded-2xl p-4 border transition cursor-pointer shadow-sm hover:shadow hover:border-red-200 ${
-                  hasTriggered ? 'border-green-200 bg-green-50/20' : 'border-gray-100'
+                  hasTriggered ? 'border-green-200 bg-green-50/20' : 'border-gray-100 dark:border-gray-800'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   {/* Thumbnail */}
-                  <div className="w-16 h-16 rounded-xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-xl bg-gray-100 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
                     {alert.productImage ? (
                       <img
                         src={alert.productImage}
@@ -214,26 +214,26 @@ export function PriceDropAlertsPage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <Package className="w-6 h-6 text-gray-400" />
+                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0 pr-6">
-                    <h3 className="text-xs sm:text-sm font-bold text-gray-900 truncate">
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
                       {alert.productName}
                     </h3>
 
                     {/* Price Comparison Row */}
                     <div className="flex items-center gap-3 mt-1.5 text-xs">
                       <div>
-                        <span className="text-[10px] text-gray-400 block">Current Price</span>
-                        <span className="font-bold text-gray-900">
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 block">Current Price</span>
+                        <span className="font-bold text-gray-900 dark:text-gray-100">
                           {formatPrice(alert.currentPrice)}
                         </span>
                       </div>
                       <div className="text-gray-300">→</div>
                       <div>
-                        <span className="text-[10px] text-gray-400 block">Target Alert Price</span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 block">Target Alert Price</span>
                         <span className="font-bold text-red-600">
                           {formatPrice(alert.targetPrice)}
                         </span>
@@ -247,7 +247,7 @@ export function PriceDropAlertsPage() {
                     </div>
 
                     <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-50 text-[11px]">
-                      <span className="text-gray-400">
+                      <span className="text-gray-400 dark:text-gray-500">
                         Created {new Date(alert.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </span>
 

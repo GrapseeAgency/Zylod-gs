@@ -112,10 +112,10 @@ export function ClearanceSalePage() {
   return (
     <div className="min-h-screen bg-[#FDF2F4] pb-24 md:pb-8">
       {/* ─── Top Header ─── */}
-      <header className="sticky top-0 z-40 bg-white border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:px-6">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:px-6">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors md:hidden"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -123,7 +123,7 @@ export function ClearanceSalePage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -132,7 +132,7 @@ export function ClearanceSalePage() {
 
       <div className="max-w-md mx-auto px-4 pt-4 space-y-4 md:px-6 md:pt-6 md:space-y-6 lg:max-w-5xl">
         {/* ─── Clearance Banner Card ─── */}
-        <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-[#F5D0D6]">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 text-center shadow-sm border border-[#F5D0D6]">
           <h1 className="text-2xl md:text-4xl font-black tracking-tight text-[#C8102E] uppercase">
             Clearance Sale
           </h1>
@@ -158,7 +158,7 @@ export function ClearanceSalePage() {
                   className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                     isActive
                       ? 'bg-[#C8102E] text-white shadow-sm'
-                      : 'bg-white text-[#4B5563] border border-[#E5E7EB] hover:bg-gray-50'
+                      : 'bg-white dark:bg-gray-900 text-[#4B5563] border border-[#E5E7EB] hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                 >
                   {tab.label}
@@ -183,7 +183,7 @@ export function ClearanceSalePage() {
         )}
         {!isLoading && !loadError && items.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <Percent className="w-8 h-8 text-gray-400" />
+            <Percent className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               Nothing on clearance in this category right now.
             </p>
@@ -196,9 +196,9 @@ export function ClearanceSalePage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={() => navigate('product-detail', { productId: heroItem.id })}
-            className="bg-white rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer md:flex"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer md:flex"
           >
-            <div className="relative aspect-[16/11] w-full bg-gray-100 md:w-1/2">
+            <div className="relative aspect-[16/11] w-full bg-gray-100 dark:bg-gray-900 md:w-1/2">
               { }
               <img
                 src={heroItem.images?.[0]?.imageUrl || heroItem.thumbnailUrl || '/placeholder-product.svg'}
@@ -222,7 +222,7 @@ export function ClearanceSalePage() {
                 <span className="text-xs text-[#6B7280]">/ {heroItem.unit || 'unit'}</span>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-[#6B7280] mt-3 pt-2 border-t border-gray-100">
+              <div className="flex items-center justify-between text-xs text-[#6B7280] mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
                 <div>
                   <span className="block text-[10px] uppercase font-bold text-[#9CA3AF]">MOQ</span>
                   <span className="font-bold text-[#1A1A1A]">{heroItem.moq} {heroItem.unit || 'units'}</span>
@@ -249,10 +249,10 @@ export function ClearanceSalePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
               onClick={() => navigate('product-detail', { productId: item.id })}
-              className="bg-white rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between"
             >
               <div>
-                <div className="relative aspect-square w-full bg-gray-100">
+                <div className="relative aspect-square w-full bg-gray-100 dark:bg-gray-900">
                   { }
                   <img
                     src={item.images?.[0]?.imageUrl || item.thumbnailUrl || '/placeholder-product.svg'}
@@ -295,9 +295,9 @@ export function ClearanceSalePage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={() => navigate('product-detail', { productId: bottomDeal.id })}
-            className="bg-white rounded-2xl border border-[#E0E0E0] p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
           >
-            <div className="relative w-20 h-20 rounded-xl bg-gray-100 overflow-hidden shrink-0">
+            <div className="relative w-20 h-20 rounded-xl bg-gray-100 dark:bg-gray-900 overflow-hidden shrink-0">
               { }
               <img
                 src={bottomDeal.images?.[0]?.imageUrl || bottomDeal.thumbnailUrl || '/placeholder-product.svg'}

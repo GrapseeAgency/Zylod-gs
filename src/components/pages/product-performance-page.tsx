@@ -119,7 +119,7 @@ export function ProductPerformancePagePage() {
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
           aria-label="Go back"
         >
-          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Product Performance</h1>
       </header>
@@ -161,7 +161,7 @@ export function ProductPerformancePagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-300">
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
               {error}
               <div className="mt-3">
                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
@@ -321,7 +321,7 @@ export function ProductPerformancePagePage() {
                 {data.topProducts.length === 0 ? (
                   <div className="py-8 text-center space-y-2">
                     <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600" />
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">No sales yet</p>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No sales yet</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
                       Your top products will appear here once buyers place and pay for orders on your catalog.
                     </p>
@@ -333,7 +333,7 @@ export function ProductPerformancePagePage() {
                         key={p.id}
                         className="flex items-center gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0 dark:border-gray-800"
                       >
-                        <div className="h-10 w-10 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 font-bold dark:bg-gray-800 dark:text-gray-400">
+                        <div className="h-10 w-10 bg-gray-100 dark:bg-gray-900 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 font-bold dark:bg-gray-800 dark:text-gray-400">
                           #{i + 1}
                         </div>
                         <div className="flex-1 min-w-0">

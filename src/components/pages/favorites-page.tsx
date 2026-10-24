@@ -76,23 +76,23 @@ export function FavoritesPage() {
   const displayedItems = getFilteredAndSortedItems()
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white border-b px-4 pt-3 pb-2 flex items-center justify-between">
-        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 md:hidden">
+      <header className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b px-4 pt-3 pb-2 flex items-center justify-between">
+        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden">
           <ArrowLeft size={24} />
         </button>
         <div className="text-center">
           <h1 className="font-semibold text-lg md:text-2xl">Favorites</h1>
-          <p className="text-[10px] text-gray-500">Your highest-rated saved products</p>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400">Your highest-rated saved products</p>
         </div>
-        <button className="p-2 -mr-2 rounded-full hover:bg-gray-100">
+        <button className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
           <Filter size={20} />
         </button>
       </header>
 
       {/* Filter Chips */}
-      <div className="bg-white border-b px-4 py-3 flex space-x-2 overflow-x-auto no-scrollbar">
+      <div className="bg-white dark:bg-gray-900 border-b px-4 py-3 flex space-x-2 overflow-x-auto no-scrollbar">
         {filters.map((filter) => (
           <button
             key={filter}
@@ -100,7 +100,7 @@ export function FavoritesPage() {
             className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
               activeFilter === filter 
                 ? 'bg-primary text-white' 
-                : 'bg-gray-100 text-gray-600'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400'
             }`}
           >
             {filter}
@@ -110,11 +110,11 @@ export function FavoritesPage() {
 
       {/* Sort */}
       <div className="px-4 py-3 flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-700">{displayedItems.length} Products</span>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{displayedItems.length} Products</span>
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value as any)}
-          className="bg-transparent text-sm font-medium text-gray-700 outline-none"
+          className="bg-transparent text-sm font-medium text-gray-700 dark:text-gray-300 outline-none"
         >
           <option value="RATING">Highest Rated</option>
           <option value="PRICE_ASC">Price: Low to High</option>
@@ -127,7 +127,7 @@ export function FavoritesPage() {
         {loading ? (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-white rounded-xl p-3 shadow-sm animate-pulse">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-xl p-3 shadow-sm animate-pulse">
                 <div className="aspect-square bg-muted rounded-lg mb-3 skeleton-shimmer"></div>
                 <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
                 <div className="h-3 bg-muted rounded w-1/2 mb-4"></div>
@@ -143,7 +143,7 @@ export function FavoritesPage() {
               <Star size={32} className="fill-current" />
             </div>
             <h2 className="text-lg font-semibold mb-2">No favorites yet</h2>
-            <p className="text-gray-500 mb-6 max-w-[250px]">Rate products highly in your wishlist to see them here.</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-[250px]">Rate products highly in your wishlist to see them here.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -154,10 +154,10 @@ export function FavoritesPage() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden relative flex flex-col"
+                  className="bg-white dark:bg-gray-900 rounded-xl shadow-sm overflow-hidden relative flex flex-col"
                   onClick={() => navigate('product-detail', { productId: item.productId })}
                 >
-                  <div className="relative aspect-square bg-gray-100">
+                  <div className="relative aspect-square bg-gray-100 dark:bg-gray-900">
                     <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-cover" />
                     <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shadow-sm">
                       <Star size={10} className="fill-yellow-400 text-yellow-400" />
@@ -175,7 +175,7 @@ export function FavoritesPage() {
                     <h3 className="font-medium text-xs line-clamp-2 leading-tight mb-1">{item.productName}</h3>
                     
                     <div className="flex items-center gap-1 mb-2">
-                      <p className="text-[10px] text-gray-500 truncate">{item.supplierName}</p>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{item.supplierName}</p>
                       {item.isSupplierVerified && (
                         <CheckCircle2 size={10} className="text-blue-500 shrink-0" />
                       )}
@@ -183,7 +183,7 @@ export function FavoritesPage() {
 
                     <div className="mt-auto">
                       <p className="font-bold text-primary text-sm">${item.price.toFixed(2)}</p>
-                      <p className="text-[10px] text-gray-500 mb-2">Min. Order: {item.moq}</p>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-2">Min. Order: {item.moq}</p>
                       <button className="w-full bg-primary text-white py-1.5 rounded-full text-xs font-medium">
                         Order Now
                       </button>

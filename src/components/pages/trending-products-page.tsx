@@ -75,10 +75,10 @@ export function TrendingProductsPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-10">
       {/* ─── Top Nav Bar ─── */}
-      <header className="sticky top-0 z-40 bg-white border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -86,7 +86,7 @@ export function TrendingProductsPage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -131,7 +131,7 @@ export function TrendingProductsPage() {
 
         {!isLoading && !loadError && products.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
-            <TrendingUp className="w-8 h-8 text-gray-400" />
+            <TrendingUp className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               No sales recorded yet — rankings will appear as orders come in.
             </p>
@@ -186,7 +186,7 @@ export function TrendingProductsPage() {
                       e.stopPropagation()
                       navigate('product-detail', { productId: hero.id })
                     }}
-                    className="px-4 py-2 bg-white hover:bg-gray-100 text-[#1A1A1A] font-bold text-xs rounded-lg shadow-md transition-colors"
+                    className="px-4 py-2 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 text-[#1A1A1A] font-bold text-xs rounded-lg shadow-md transition-colors"
                   >
                     View Details
                   </button>
@@ -206,10 +206,10 @@ export function TrendingProductsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
               onClick={() => navigate('product-detail', { productId: item.id })}
-              className="bg-white rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
             >
               {/* Top image with optional badge */}
-              <div className="relative aspect-[16/8] w-full bg-gray-100">
+              <div className="relative aspect-[16/8] w-full bg-gray-100 dark:bg-gray-900">
                 { }
                 <img
                   src={item.images?.[0]?.imageUrl || item.thumbnailUrl || '/placeholder-product.svg'}
@@ -230,7 +230,7 @@ export function TrendingProductsPage() {
                   <span className="text-xs font-normal text-[#6B7280]"> / {item.unit || 'unit'}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
                   <span>MOQ: {item.moq} {item.unit || 'units'}</span>
                   <span className="font-medium text-[#4B5563] flex items-center gap-1">
                     {metric.icon === 'users' && <Users className="h-3 w-3 text-[#6B7280]" />}
@@ -247,7 +247,7 @@ export function TrendingProductsPage() {
         {products.length > 0 && (
           <div
             onClick={() => navigate('category-products', { filter: 'trending' })}
-            className="bg-white rounded-2xl border border-[#E0E0E0] p-6 text-center shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-6 text-center shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
           >
             <div className="w-14 h-14 rounded-full bg-[#FFE4E6] text-[#C8102E] flex items-center justify-center mx-auto mb-3">
               <ArrowRight className="h-6 w-6" />

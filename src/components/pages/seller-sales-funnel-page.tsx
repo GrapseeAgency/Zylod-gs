@@ -89,18 +89,18 @@ export function SellerSalesFunnelPagePage() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-gray-50 pb-20 md:pb-8 dark:bg-gray-900"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8 dark:bg-gray-900"
     >
       {/* Mobile header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Go back">
-          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Sales funnel</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Sales funnel</h1>
       </header>
 
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
-        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-white">Sales funnel</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Sales funnel</h1>
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -117,7 +117,7 @@ export function SellerSalesFunnelPagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : data ? (
           <>
@@ -129,7 +129,7 @@ export function SellerSalesFunnelPagePage() {
                     <Percent className="w-4 h-4" />
                     <span className="text-xs font-medium">Fulfillment rate</span>
                   </div>
-                  <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white" data-testid="funnel-fulfillment-rate">
+                  <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="funnel-fulfillment-rate">
                     {data.orders.fulfillmentRate}%
                   </p>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">delivered ÷ received</p>
@@ -142,7 +142,7 @@ export function SellerSalesFunnelPagePage() {
                       <s.icon className="w-4 h-4" />
                       <span className="text-xs font-medium">{s.label}</span>
                     </div>
-                    <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{s.value}</p>
+                    <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white tabular-nums">{s.value}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -156,17 +156,17 @@ export function SellerSalesFunnelPagePage() {
               <CardContent className="space-y-3" data-testid="funnel-stages">
                 {funnelStages.map((stage) =>
                   stage.value === null ? (
-                    <div key={stage.label} className="flex items-center justify-between p-3 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
-                      <span className="text-xs text-gray-400">{stage.label}</span>
-                      <span className="text-[11px] text-gray-400 italic">not tracked yet</span>
+                    <div key={stage.label} className="flex items-center justify-between p-3 rounded-xl border border-dashed border-gray-200 dark:border-gray-800 dark:border-gray-700">
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{stage.label}</span>
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500 italic">not tracked yet</span>
                     </div>
                   ) : (
                     <div key={stage.label} className="space-y-1">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-medium text-gray-700 dark:text-gray-200">{stage.label}</span>
-                        <span className="font-bold text-gray-900 dark:text-white tabular-nums">{stage.value}</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">{stage.label}</span>
+                        <span className="font-bold text-gray-900 dark:text-gray-100 dark:text-white tabular-nums">{stage.value}</span>
                       </div>
-                      <div className="h-3 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                      <div className="h-3 rounded-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-700 overflow-hidden">
                         <div
                           className="h-full rounded-full bg-primary/85 transition-all"
                           style={{ width: `${Math.max(3, (stage.value / funnelMax) * 100)}%` }}
@@ -182,7 +182,7 @@ export function SellerSalesFunnelPagePage() {
             <Card className="border-dashed dark:bg-gray-800">
               <CardContent className="p-6 text-center space-y-1">
                 <Inbox className="w-8 h-8 text-gray-300 mx-auto" />
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">No alerts</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No alerts</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Stock and fulfillment alerts for your store will surface here.
                 </p>

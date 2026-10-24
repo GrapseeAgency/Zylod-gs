@@ -34,13 +34,13 @@ export function EscrowProtectionGuidePage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition" aria-label="Go back">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition" aria-label="Go back">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">How Payments Work</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">How Payments Work</span>
         </div>
       </div>
 
@@ -67,14 +67,14 @@ export function EscrowProtectionGuidePage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
-                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-start gap-4"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm flex items-start gap-4"
               >
                 <div className="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-gray-900">{f.title}</h3>
-                  <p className="text-xs text-gray-600 leading-relaxed">{f.desc}</p>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{f.title}</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{f.desc}</p>
                 </div>
               </motion.div>
             )
@@ -82,23 +82,23 @@ export function EscrowProtectionGuidePage() {
         </div>
 
         {/* Payment Channels */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-3">
-          <h2 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2.5">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-800 pb-2.5">
             Supported Payment Channels
           </h2>
-          <div className="grid grid-cols-2 gap-2.5 text-xs font-semibold text-gray-700">
-            <div className="p-3 bg-slate-50 rounded-xl border border-gray-100 text-center">
-              <Building2 className="w-5 h-5 mx-auto mb-1 text-slate-700" />
-              <span className="text-slate-800 font-bold block mb-0.5">Bank Transfer</span>
-              <span className="text-[10px] text-gray-400">Account details shown per order</span>
+          <div className="grid grid-cols-2 gap-2.5 text-xs font-semibold text-gray-700 dark:text-gray-300">
+            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+              <Building2 className="w-5 h-5 mx-auto mb-1 text-slate-700 dark:text-slate-300" />
+              <span className="text-slate-800 dark:text-slate-200 font-bold block mb-0.5">Bank Transfer</span>
+              <span className="text-[10px] text-gray-400 dark:text-gray-500">Account details shown per order</span>
             </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-gray-100 text-center">
+            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
               <Smartphone className="w-5 h-5 mx-auto mb-1 text-pink-600" />
               <span className="text-pink-600 font-bold block mb-0.5">Mobile Banking</span>
-              <span className="text-[10px] text-gray-400">bKash / Nagad merchant numbers</span>
+              <span className="text-[10px] text-gray-400 dark:text-gray-500">bKash / Nagad merchant numbers</span>
             </div>
           </div>
-          <p className="text-[11px] text-gray-500 leading-relaxed pt-1">
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed pt-1">
             Card payments and escrow holding are not available yet. Until a dedicated escrow service exists, never send more than the verified order total, and always pay using the exact account details shown on your order.
           </p>
         </div>

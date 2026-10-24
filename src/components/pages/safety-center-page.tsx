@@ -61,7 +61,7 @@ export function SafetyCenterPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Header */}
       <div className="bg-slate-900 text-white px-4 pt-4 pb-8 rounded-b-3xl shadow-lg md:px-6 md:pt-6 md:pb-10">
         <div className="flex items-center justify-between gap-3 mb-6">
@@ -100,13 +100,13 @@ export function SafetyCenterPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
                 onClick={() => navigate(p.page)}
-                className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-red-200 transition text-left group"
+                className="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:border-red-200 transition text-left group"
               >
                 <div className="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center mb-2.5 group-hover:bg-red-600 group-hover:text-white transition">
                   <Icon className="w-5 h-5" />
                 </div>
-                <p className="text-sm font-bold text-gray-900 group-hover:text-red-600 transition">{p.title}</p>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">{p.desc}</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-red-600 transition">{p.title}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{p.desc}</p>
                 <div className="flex items-center gap-1 text-[11px] font-semibold text-red-600 mt-3">
                   Read Policy <ChevronRight className="w-3 h-3" />
                 </div>
@@ -116,8 +116,8 @@ export function SafetyCenterPage() {
         </div>
 
         {/* Essential Safety Guidelines */}
-        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-3">
             <CheckCircle2 className="w-4 h-4 text-green-600" />
             Safety Rules for Wholesale Buyers
           </h2>
@@ -129,16 +129,16 @@ export function SafetyCenterPage() {
           ) : (
             <div className="space-y-3">
               {tips.map((tip, idx) => (
-                <div key={tip.id} className="p-3.5 bg-slate-50 rounded-2xl border border-gray-100 space-y-1">
+                <div key={tip.id} className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-bold text-gray-900">
+                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                       {language === 'bn' ? tip.titleBn : tip.titleEn}
                     </p>
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-100 text-red-700">
                       {tip.importance}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 leading-relaxed">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                     {language === 'bn' ? tip.descriptionBn : tip.descriptionEn}
                   </p>
                 </div>

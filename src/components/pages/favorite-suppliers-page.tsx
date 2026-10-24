@@ -56,23 +56,23 @@ export function FavoriteSuppliersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-10">
+      <header className="bg-white dark:bg-gray-900 border-b sticky top-0 z-10">
         <div className="flex items-center justify-between p-4">
-          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 md:hidden">
-            <ArrowLeft className="w-6 h-6 text-gray-800" />
+          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden">
+            <ArrowLeft className="w-6 h-6 text-gray-800 dark:text-gray-200" />
           </button>
           <h1 className="text-lg font-semibold flex-1 ml-2">Favorite Suppliers</h1>
         </div>
       </header>
 
       {/* Sort & Filter */}
-      <div className="bg-white border-b px-4 py-3 flex items-center justify-between shadow-sm">
-        <button className="flex items-center text-sm font-medium text-gray-700 bg-gray-100 px-3 py-1.5 rounded-full">
+      <div className="bg-white dark:bg-gray-900 border-b px-4 py-3 flex items-center justify-between shadow-sm">
+        <button className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-900 px-3 py-1.5 rounded-full">
           Sort: {sortBy} <ChevronDown className="w-4 h-4 ml-1" />
         </button>
-        <button className="flex items-center text-sm font-medium text-gray-700 bg-gray-100 px-3 py-1.5 rounded-full">
+        <button className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-900 px-3 py-1.5 rounded-full">
           <Filter className="w-4 h-4 mr-1" /> Filter
         </button>
       </div>
@@ -82,7 +82,7 @@ export function FavoriteSuppliersPage() {
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="bg-white p-4 rounded-xl shadow-sm animate-pulse flex gap-4">
+              <div key={n} className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm animate-pulse flex gap-4">
                 <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
                 <div className="flex-1 space-y-2">
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -95,9 +95,9 @@ export function FavoriteSuppliersPage() {
         ) : error ? (
           <div className="text-center text-red-500 py-10">{error}</div>
         ) : suppliers.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+          <div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-gray-400">
             <Building2 className="w-16 h-16 mb-4 text-gray-300" />
-            <h2 className="text-lg font-semibold text-gray-700">No favorite suppliers yet</h2>
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">No favorite suppliers yet</h2>
             <p className="text-sm mt-1">Suppliers you favorite will appear here.</p>
           </div>
         ) : (
@@ -108,7 +108,7 @@ export function FavoriteSuppliersPage() {
                 animate={{ opacity: 1, y: 0 }}
                 key={supplier.id}
                 onClick={() => navigate('seller-profile', { supplierId: supplier.id })}
-                className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 cursor-pointer active:scale-[0.98] transition-transform"
+                className="bg-white dark:bg-gray-900 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 cursor-pointer active:scale-[0.98] transition-transform"
               >
                 <div className="flex items-start gap-4">
                   {/* Logo Placeholder */}
@@ -118,7 +118,7 @@ export function FavoriteSuppliersPage() {
                   
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-semibold text-gray-900 line-clamp-1">{supplier.name}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">{supplier.name}</h3>
                       <button 
                         onClick={(e) => handleRemoveFavorite(e, supplier.id)}
                         className="p-1 -mr-1 text-primary"
@@ -127,7 +127,7 @@ export function FavoriteSuppliersPage() {
                       </button>
                     </div>
                     
-                    <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
+                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 gap-2">
                       <span className="flex items-center"><MapPin className="w-3 h-3 mr-0.5" /> {supplier.location}</span>
                       {supplier.isVerified && (
                         <span className="flex items-center text-green-600 font-medium">
@@ -139,9 +139,9 @@ export function FavoriteSuppliersPage() {
                     <div className="flex items-center mt-2 gap-1 text-sm">
                       <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                       <span className="font-medium">{supplier.rating}</span>
-                      <span className="text-gray-400 text-xs">({supplier.reviewCount})</span>
+                      <span className="text-gray-400 dark:text-gray-500 text-xs">({supplier.reviewCount})</span>
                       <span className="mx-2 text-gray-300">•</span>
-                      <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 px-2 py-0.5 rounded">
                         {supplier.productsCount} Products
                       </span>
                     </div>

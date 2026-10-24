@@ -41,22 +41,22 @@ export function GroupBuyPage() {
   }, [fetchCampaigns])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Users2 className="w-5 h-5 text-red-600" />
-            <h1 className="font-bold text-gray-900 text-base">Wholesale Group Buy</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Wholesale Group Buy</h1>
           </div>
         </div>
       </div>
 
       <div className="flex-1 px-4 py-4 max-w-3xl mx-auto w-full space-y-4 pb-24 md:max-w-6xl md:px-6 md:py-6 md:space-y-5 md:pb-8">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900">Wholesale Group Buy</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100">Wholesale Group Buy</h1>
         {/* Banner */}
         <div className="bg-gradient-to-r from-red-600 via-rose-600 to-orange-600 rounded-3xl p-5 text-white shadow-md space-y-1.5">
           <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-red-100">
@@ -73,14 +73,14 @@ export function GroupBuyPage() {
         <div className="space-y-4">
           {loading ? (
             [1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-3xl p-5 border border-gray-100 animate-pulse space-y-3">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 animate-pulse space-y-3">
                 <Skeleton className="h-4 w-1/3 rounded" />
                 <Skeleton className="h-6 w-full rounded" />
                 <Skeleton className="h-2 w-full rounded-full" />
               </div>
             ))
           ) : campaigns.length === 0 ? (
-            <div className="text-center py-16 text-gray-500">
+            <div className="text-center py-16 text-gray-500 dark:text-gray-400">
               No active group buy pools at this moment.
             </div>
           ) : (
@@ -89,7 +89,7 @@ export function GroupBuyPage() {
               <div
                 key={camp.id}
                 onClick={() => navigate('group-buy-detail', { id: camp.id })}
-                className="bg-white rounded-3xl border border-gray-100 p-5 shadow-sm space-y-4 hover:border-red-200 hover:shadow-md transition cursor-pointer"
+                className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-5 shadow-sm space-y-4 hover:border-red-200 hover:shadow-md transition cursor-pointer"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1 min-w-0">
@@ -97,22 +97,22 @@ export function GroupBuyPage() {
                       <Badge className="bg-red-50 text-red-700 hover:bg-red-50 border-red-200 text-[10px] font-bold">
                         Save {camp.savingsPercent}%
                       </Badge>
-                      <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
                         <Clock className="w-3 h-3" /> Ends: {new Date(camp.expiresAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </span>
                     </div>
-                    <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-1">{camp.title}</h3>
+                    <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100 line-clamp-1">{camp.title}</h3>
                   </div>
 
                   <div className="text-right flex-shrink-0">
                     <p className="text-base font-black text-red-600">{formatPrice(camp.discountedPrice)}</p>
-                    <p className="text-[11px] text-gray-400 line-through">{formatPrice(camp.originalPrice)}</p>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500 line-through">{formatPrice(camp.originalPrice)}</p>
                   </div>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="space-y-1.5 bg-slate-50 rounded-2xl p-3 border border-gray-100">
-                  <div className="flex justify-between text-xs font-bold text-gray-700">
+                <div className="space-y-1.5 bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
+                  <div className="flex justify-between text-xs font-bold text-gray-700 dark:text-gray-300">
                     <span>Pool Progress: {camp.currentQty} / {camp.targetQty} Units</span>
                     <span className="text-red-600">{camp.progressPercent}% Full</span>
                   </div>
@@ -125,7 +125,7 @@ export function GroupBuyPage() {
                 </div>
 
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-gray-500 font-medium">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                     Live pool progress — updates as merchants join
                   </span>
                   <Button

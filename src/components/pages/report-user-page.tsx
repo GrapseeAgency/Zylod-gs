@@ -130,16 +130,16 @@ export function ReportUserPage() {
   )
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Top Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div>
-            <h1 className="font-bold text-gray-900 text-sm sm:text-base md:text-xl">Report Policy Violation</h1>
-            <p className="text-[11px] text-gray-400">Trust & Safety Moderation Intake</p>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base md:text-xl">Report Policy Violation</h1>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500">Trust & Safety Moderation Intake</p>
           </div>
         </div>
         <button
@@ -151,7 +151,7 @@ export function ReportUserPage() {
       </div>
 
       <div className="flex-1 px-4 py-6 max-w-2xl mx-auto w-full pb-24 space-y-6 md:px-6 md:py-8 md:pb-10">
-        <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
           {submitted ? (
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -161,13 +161,13 @@ export function ReportUserPage() {
               <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
-              <h2 className="text-lg font-bold text-gray-900">Report Saved</h2>
-              <p className="text-xs text-gray-600 max-w-md mx-auto leading-relaxed">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Report Saved</h2>
+              <p className="text-xs text-gray-600 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
                 Your report has been saved for review by the Zylod team. If fraudulent activity or counterfeit merchandise is confirmed, the account may face restriction and, where required, referral to the relevant authorities. Zylod does not hold funds in escrow — report any payment made outside the official order instructions immediately.
               </p>
               {reportRef && (
-                <div className="p-3 bg-slate-50 rounded-2xl border border-gray-100 text-xs text-gray-500 max-w-sm mx-auto">
-                  Report Reference: <span className="font-mono font-bold text-gray-900">{reportRef}</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                  Report Reference: <span className="font-mono font-bold text-gray-900 dark:text-gray-100">{reportRef}</span>
                 </div>
               )}
               <div className="flex justify-center gap-3 pt-2">
@@ -179,7 +179,7 @@ export function ReportUserPage() {
                 </button>
                 <button
                   onClick={() => navigate('help-center')}
-                  className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition"
+                  className="px-5 py-2.5 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold transition"
                 >
                   Help Center
                 </button>
@@ -188,11 +188,11 @@ export function ReportUserPage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <ShieldAlert className="w-4 h-4 text-red-600" />
                   Report User, Supplier, or Storefront
                 </h2>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   Select the registered supplier, manufacturer, or user ID violating wholesale regulations.
                 </p>
               </div>
@@ -206,13 +206,13 @@ export function ReportUserPage() {
 
               {/* Target Entity Picker */}
               <div className="space-y-1.5 relative">
-                <label className="text-xs font-semibold text-gray-700 flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center justify-between">
                   <span>Reported Supplier / User Entity *</span>
                   {formData.reportedUserId && (
                     <button
                       type="button"
                       onClick={copyId}
-                      className="text-[11px] text-gray-400 hover:text-red-600 font-mono flex items-center gap-1"
+                      className="text-[11px] text-gray-400 dark:text-gray-500 hover:text-red-600 font-mono flex items-center gap-1"
                     >
                       {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
                       ID: {formData.reportedUserId.slice(0, 14)}...
@@ -233,10 +233,10 @@ export function ReportUserPage() {
                       setShowSupplierDropdown(true)
                     }}
                     onFocus={() => setShowSupplierDropdown(true)}
-                    className="w-full border border-gray-200 rounded-xl pl-9 pr-8 py-2.5 text-xs focus:outline-none focus:border-red-500 font-medium"
+                    className="w-full border border-gray-200 dark:border-gray-800 rounded-xl pl-9 pr-8 py-2.5 text-xs focus:outline-none focus:border-red-500 font-medium"
                   />
-                  <Store className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
-                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-3 cursor-pointer" onClick={() => setShowSupplierDropdown(!showSupplierDropdown)} />
+                  <Store className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-3" />
+                  <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute right-3 top-3 cursor-pointer" onClick={() => setShowSupplierDropdown(!showSupplierDropdown)} />
                 </div>
 
                 {/* Autocomplete Dropdown */}
@@ -246,7 +246,7 @@ export function ReportUserPage() {
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
-                      className="absolute left-0 right-0 top-full mt-1 z-30 bg-white border border-gray-200 rounded-2xl shadow-xl max-h-52 overflow-y-auto divide-y divide-gray-100"
+                      className="absolute left-0 right-0 top-full mt-1 z-30 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xl max-h-52 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800"
                     >
                       {filteredSuppliers.map(sup => (
                         <button
@@ -256,11 +256,11 @@ export function ReportUserPage() {
                           className="w-full p-3 text-left hover:bg-red-50 flex items-center justify-between text-xs transition"
                         >
                           <div>
-                            <p className="font-bold text-gray-900">{sup.companyName}</p>
-                            <p className="text-[10px] text-gray-400 font-mono">ID: {sup.id}</p>
+                            <p className="font-bold text-gray-900 dark:text-gray-100">{sup.companyName}</p>
+                            <p className="text-[10px] text-gray-400 dark:text-gray-500 font-mono">ID: {sup.id}</p>
                           </div>
                           {sup.businessCity && (
-                            <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full">
                               {sup.businessCity}
                             </span>
                           )}
@@ -273,11 +273,11 @@ export function ReportUserPage() {
 
               {/* Violation Reason */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-700">Specific Violation Type *</label>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Specific Violation Type *</label>
                 <select
                   value={formData.reason}
                   onChange={e => setFormData({ ...formData, reason: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs bg-white focus:outline-none focus:border-red-500 font-medium"
+                  className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs bg-white dark:bg-gray-900 focus:outline-none focus:border-red-500 font-medium"
                 >
                   {reasons.map(r => (
                     <option key={r.value} value={r.value}>{r.label}</option>
@@ -288,11 +288,11 @@ export function ReportUserPage() {
               {/* Related Order Selector */}
               {orders.length > 0 && (
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-700">Attach Related Wholesale Order (Optional)</label>
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Attach Related Wholesale Order (Optional)</label>
                   <select
                     value={formData.relatedOrderId}
                     onChange={e => setFormData({ ...formData, relatedOrderId: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs bg-white focus:outline-none focus:border-red-500"
+                    className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs bg-white dark:bg-gray-900 focus:outline-none focus:border-red-500"
                   >
                     <option value="">No specific order attached</option>
                     {orders.map(o => (
@@ -306,21 +306,21 @@ export function ReportUserPage() {
 
               {/* Description & Evidence */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-700">Evidence & Detailed Report *</label>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Evidence & Detailed Report *</label>
                 <textarea
                   required
                   rows={5}
                   placeholder="Provide precise details: Did they ask for direct bKash off-platform? Did they send counterfeit replica goods? Include chat excerpts, product serials, or consignment slips..."
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full border border-gray-200 rounded-2xl p-3.5 text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+                  className="w-full border border-gray-200 dark:border-gray-800 rounded-2xl p-3.5 text-xs focus:outline-none focus:border-red-500 leading-relaxed"
                 />
               </div>
 
               {/* Confidentiality Notice */}
-              <div className="bg-slate-50 border border-gray-200 rounded-2xl p-3.5 flex items-start gap-2.5">
+              <div className="bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-3.5 flex items-start gap-2.5">
                 <Lock className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-                <p className="text-[11px] text-gray-600 leading-relaxed">
+                <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">
                   <strong>Reporter Anonymity Protected:</strong> The reported supplier will never see your identity. All claims are independently evaluated by Zylod Trust & Safety Compliance.
                 </p>
               </div>

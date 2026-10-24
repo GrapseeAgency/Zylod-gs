@@ -61,16 +61,16 @@ export function AffiliateProgramPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-emerald-600" />
-            <h1 className="font-bold text-gray-900 text-base">Affiliate Partner Program</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Affiliate Partner Program</h1>
           </div>
         </div>
 
@@ -89,8 +89,8 @@ export function AffiliateProgramPage() {
         {/* Desktop page title */}
         <div className="hidden md:flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black text-gray-900">Affiliate Partner Program</h1>
-            <p className="text-sm text-gray-500 mt-1">Earn 5% commission on every wholesale order you refer</p>
+            <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100">Affiliate Partner Program</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Earn 5% commission on every wholesale order you refer</p>
           </div>
           {affiliate && (
             <Button
@@ -116,9 +116,9 @@ export function AffiliateProgramPage() {
 
         {/* Enrollment / Link Card */}
         {affiliate ? (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                 Your Unique Tracking Link
               </span>
               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
@@ -126,8 +126,8 @@ export function AffiliateProgramPage() {
               </span>
             </div>
 
-            <div className="p-3 bg-slate-50 border border-gray-200 rounded-2xl flex items-center justify-between gap-3">
-              <span className="font-mono text-xs text-gray-700 truncate">
+            <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-gray-800 rounded-2xl flex items-center justify-between gap-3">
+              <span className="font-mono text-xs text-gray-700 dark:text-gray-300 truncate">
                 {affiliate.trackingLink}
               </span>
               <Button
@@ -148,9 +148,9 @@ export function AffiliateProgramPage() {
             </Button>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4 text-center">
-            <h3 className="text-base font-bold text-gray-900">Become a Certified Wholesale Affiliate</h3>
-            <p className="text-xs text-gray-500 max-w-md mx-auto">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4 text-center">
+            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Become a Certified Wholesale Affiliate</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-md mx-auto">
               Get instant access to tracked wholesale referral links, real-time commission analytics, and monthly bKash/bank account settlements.
             </p>
 
@@ -166,22 +166,22 @@ export function AffiliateProgramPage() {
 
         {/* Benefits Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-1">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <DollarSign className="w-5 h-5 text-emerald-600" />
-            <h4 className="text-xs font-bold text-gray-900">High Average Order Value</h4>
-            <p className="text-[11px] text-gray-500">Average wholesale order is ৳85,000+ generating ৳4,250 commission per transaction.</p>
+            <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">High Average Order Value</h4>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">Average wholesale order is ৳85,000+ generating ৳4,250 commission per transaction.</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-1">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <Share2 className="w-5 h-5 text-blue-600" />
-            <h4 className="text-xs font-bold text-gray-900">60-Day Cookie Window</h4>
-            <p className="text-[11px] text-gray-500">Commissions attributed even if buyers return up to 2 months later.</p>
+            <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">60-Day Cookie Window</h4>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">Commissions attributed even if buyers return up to 2 months later.</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-1">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <CheckCircle2 className="w-5 h-5 text-purple-600" />
-            <h4 className="text-xs font-bold text-gray-900">Automatic Bank Payouts</h4>
-            <p className="text-[11px] text-gray-500">Approved commissions are transferred to your nominated BEFTN/bKash account.</p>
+            <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">Automatic Bank Payouts</h4>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">Approved commissions are transferred to your nominated BEFTN/bKash account.</p>
           </div>
         </div>
       </div>

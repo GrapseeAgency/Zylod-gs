@@ -127,14 +127,14 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
   const LABELS: AddressLabel[] = ['Warehouse', 'Shop', 'Office', 'Other']
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8 text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-base font-bold text-slate-900">Edit Address</h1>
+          <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Edit Address</h1>
         </div>
       </header>
 
@@ -163,7 +163,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
 
         {/* Adjust Map button */}
         <div className="absolute bottom-2 right-2">
-          <span className="bg-white text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg shadow border border-slate-200 flex items-center gap-1">
+          <span className="bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-1 rounded-lg shadow border border-slate-200 dark:border-slate-800 flex items-center gap-1">
             <MapPin className="h-3 w-3 text-primary" />
             Adjust Map
           </span>
@@ -171,7 +171,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
       </div>
 
       <main className="px-4 py-5 md:px-6 md:py-6 space-y-5 md:space-y-6 max-w-lg mx-auto lg:max-w-4xl">
-        <h1 className="hidden md:block text-xl md:text-2xl font-bold text-slate-900">Edit Address</h1>
+        <h1 className="hidden md:block text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100">Edit Address</h1>
         {errors._server && (
           <p className="text-xs text-red-600 font-semibold bg-red-50 rounded-2xl px-4 py-3 border border-red-100">
             {errors._server}
@@ -179,45 +179,45 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
         )}
 
         {/* Contact Details */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-4">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2 md:col-span-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-4">
+          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 pb-2 md:col-span-2">
             Contact Details
           </h3>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700">Contact Name</label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Contact Name</label>
             <Input
               value={form.contactName}
               onChange={(e) => setField('contactName', e.target.value)}
-              className={`h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-medium ${errors.contactName ? 'border-red-400' : ''}`}
+              className={`h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.contactName ? 'border-red-400' : ''}`}
             />
             {errors.contactName && <p className="text-[10px] text-red-500 font-medium">{errors.contactName}</p>}
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700">Phone Number</label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Phone Number</label>
             <Input
               type="tel"
               value={form.phone}
               onChange={(e) => setField('phone', e.target.value)}
-              className={`h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-medium ${errors.phone ? 'border-red-400' : ''}`}
+              className={`h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.phone ? 'border-red-400' : ''}`}
             />
             {errors.phone && <p className="text-[10px] text-red-500 font-medium">{errors.phone}</p>}
           </div>
         </div>
 
         {/* Delivery Address */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-4">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2 md:col-span-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-4">
+          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 pb-2 md:col-span-2">
             Delivery Address
           </h3>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700">Area / Region</label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Area / Region</label>
             <select
               value={form.areaRegion}
               onChange={(e) => setField('areaRegion', e.target.value)}
-              className="w-full h-11 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-medium px-3.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-medium px-3.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">Select area or region</option>
               {AREAS.map((a) => (
@@ -227,38 +227,38 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
           </div>
 
           <div className="space-y-1 md:col-span-2">
-            <label className="text-xs font-semibold text-slate-700">Street Address & Warehouse No.</label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Street Address & Warehouse No.</label>
             <Textarea
               value={form.streetAddress}
               onChange={(e) => setField('streetAddress', e.target.value)}
               rows={3}
-              className={`rounded-2xl bg-slate-50 border-slate-200 text-xs font-medium resize-none ${errors.streetAddress ? 'border-red-400' : ''}`}
+              className={`rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium resize-none ${errors.streetAddress ? 'border-red-400' : ''}`}
               placeholder="e.g. Warehouse 4B, 12/A Dilkusha Commercial Area"
             />
             {errors.streetAddress && <p className="text-[10px] text-red-500 font-medium">{errors.streetAddress}</p>}
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700">Nearest Landmark <span className="text-slate-400">(Optional)</span></label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nearest Landmark <span className="text-slate-400 dark:text-slate-500">(Optional)</span></label>
             <Input
               value={form.landmark}
               onChange={(e) => setField('landmark', e.target.value)}
-              className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-medium"
+              className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium"
               placeholder="e.g. Behind Janata Bank Main Branch"
             />
           </div>
         </div>
 
         {/* Settings */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 border-b border-slate-100 pb-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 pb-2">
             Settings
           </h3>
 
-          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center justify-between">
+          <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-slate-900">Set as Default Delivery Address</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Future wholesale orders will default here.</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Set as Default Delivery Address</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Future wholesale orders will default here.</p>
             </div>
             <button
               onClick={() => setField('isDefault', !form.isDefault)}
@@ -267,14 +267,14 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
               aria-checked={form.isDefault}
             >
               <div
-                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isDefault ? 'left-5' : 'left-0.5'}`}
+                className={`absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-900 rounded-full shadow transition-transform ${form.isDefault ? 'left-5' : 'left-0.5'}`}
               />
             </button>
           </div>
 
           {/* Address Label Chips */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-700">Address Label</label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Address Label</label>
             <div className="flex gap-2 flex-wrap">
               {LABELS.map((lbl) => {
                 const Icon = lbl === 'Warehouse' ? Building2 : lbl === 'Shop' ? Store : lbl === 'Office' ? Building2 : MapPin
@@ -285,7 +285,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
                     className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold border transition-colors ${
                       form.label === lbl
                         ? 'bg-primary/10 text-primary border-primary/30'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -299,7 +299,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
       </main>
 
       {/* Fixed Bottom Actions */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white border-t border-slate-100 p-4 shadow-xl z-30 md:static md:border-0 md:bg-transparent md:p-0 md:pb-2 md:shadow-none">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 md:static md:border-0 md:bg-transparent md:p-0 md:pb-2 md:shadow-none">
         <div className="max-w-lg mx-auto space-y-2 md:max-w-4xl md:flex md:gap-3 md:space-y-0">
           <Button
             onClick={handleUpdate}

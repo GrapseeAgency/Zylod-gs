@@ -144,16 +144,16 @@ export function PrivacySettingsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-10">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-10">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Privacy &amp; Data Controls</span>
         <button
           onClick={() => navigate('account-settings')}
-          className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Settings"
         >
           <Shield className="h-4 w-4" />
@@ -162,11 +162,11 @@ export function PrivacySettingsPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-3xl md:px-6 md:py-8 md:space-y-6">
         <div className="hidden md:flex items-center justify-between">
-          <h1 className="text-2xl font-black tracking-tight text-slate-900">Privacy &amp; Data Controls</h1>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">Privacy &amp; Data Controls</h1>
           <Button
             variant="outline"
             size="sm"
-            className="border-slate-200 text-slate-700"
+            className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
             onClick={() => navigate('account-settings')}
           >
             <Shield className="h-4 w-4 mr-2" />
@@ -189,10 +189,10 @@ export function PrivacySettingsPage() {
         </div>
 
         {needsAuth ? (
-          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-2xs text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-amber-500 mx-auto" />
             <h2 className="text-sm font-black">Sign in to manage your privacy settings</h2>
-            <p className="text-xs text-slate-500">Privacy preferences are stored on your account.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Privacy preferences are stored on your account.</p>
             <Button onClick={() => navigate('login')} className="h-11 px-6 rounded-xl text-xs font-bold">Sign In</Button>
           </div>
         ) : (
@@ -206,21 +206,21 @@ export function PrivacySettingsPage() {
             )}
 
             {/* Profile Visibility */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-              <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between gap-2">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+              <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-primary" />
                   <span className="text-[10px] font-black uppercase tracking-widest text-primary">Profile Visibility</span>
                 </div>
                 {!loading && (
-                  <span className="text-[10px] font-bold text-slate-400">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
                     {configured ? 'Customized for your account' : 'Platform default — not customized yet'}
                   </span>
                 )}
               </div>
 
               {loading ? (
-                <div className="flex items-center justify-center py-8 text-slate-400">
+                <div className="flex items-center justify-center py-8 text-slate-400 dark:text-slate-500">
                   <Loader2 className="h-5 w-5 animate-spin" />
                   <span className="text-xs font-bold ml-2">Loading your privacy settings…</span>
                 </div>
@@ -236,16 +236,16 @@ export function PrivacySettingsPage() {
                         className={`p-3.5 rounded-2xl border text-left transition-all disabled:opacity-70 ${
                           isSelected
                             ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                            : 'border-slate-200 bg-white hover:bg-slate-50'
+                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isSelected ? 'bg-rose-50 border border-rose-100 text-primary' : 'bg-slate-100 border border-slate-200 text-slate-400'}`}>
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isSelected ? 'bg-rose-50 border border-rose-100 text-primary' : 'bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500'}`}>
                             <Icon className="h-4 w-4" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900'}`}>{label}</span>
-                            <span className="text-[11px] text-slate-400 block mt-0.5">{desc}</span>
+                            <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>{label}</span>
+                            <span className="text-[11px] text-slate-400 dark:text-slate-500 block mt-0.5">{desc}</span>
                           </div>
                           {isSelected && (
                             saving ? <Loader2 className="h-4 w-4 animate-spin text-primary shrink-0" /> : <Check className="h-4 w-4 text-primary stroke-[3] shrink-0" />
@@ -259,8 +259,8 @@ export function PrivacySettingsPage() {
             </div>
 
             {/* Contact visibility — real switches */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-              <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+              <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                 <Building2 className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary">Contact Details on Your Profile</span>
               </div>
@@ -272,8 +272,8 @@ export function PrivacySettingsPage() {
                       <Mail className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-xs font-bold text-slate-900">Show my email address</h3>
-                      <p className="text-[11px] text-slate-400">Display your email on your business profile.</p>
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Show my email address</h3>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500">Display your email on your business profile.</p>
                     </div>
                   </div>
                   <Switch
@@ -291,8 +291,8 @@ export function PrivacySettingsPage() {
                       <Phone className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-xs font-bold text-slate-900">Show my phone number</h3>
-                      <p className="text-[11px] text-slate-400">Display your phone on your business profile.</p>
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Show my phone number</h3>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500">Display your phone on your business profile.</p>
                     </div>
                   </div>
                   <Switch
@@ -321,12 +321,12 @@ export function PrivacySettingsPage() {
             )}
 
             {/* Honest limitation note */}
-            <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-2">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
               <div className="flex items-center gap-2">
-                <Lock className="h-4 w-4 text-slate-700" />
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-700">More Privacy Controls</h2>
+                <Lock className="h-4 w-4 text-slate-700 dark:text-slate-300" />
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">More Privacy Controls</h2>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 Additional controls (direct RFQ &amp; chat gating, aggregated trade-trend sharing, public
                 search-engine indexing, and platform analytics opt-out) are <b>not implemented yet — they
                 require backend support</b> and are not shown as active switches until they can really persist.

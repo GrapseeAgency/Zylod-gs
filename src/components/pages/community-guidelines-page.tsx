@@ -40,13 +40,13 @@ export function CommunityGuidelinesPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">Community Guidelines</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Community Guidelines</span>
         </div>
         <button
           onClick={() => navigate('docs-browser')}
@@ -58,15 +58,15 @@ export function CommunityGuidelinesPage() {
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 space-y-6 md:space-y-8 max-w-3xl mx-auto lg:max-w-4xl w-full pb-24 md:pb-8">
         {/* Intro */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
           <div className="flex items-center gap-2 text-red-600 text-xs font-bold uppercase tracking-wider">
             <FileText className="w-4 h-4" />
             Bangladesh Wholesale Code of Conduct
           </div>
-          <h1 className="text-base sm:text-lg md:text-2xl font-bold text-gray-900">
+          <h1 className="text-base sm:text-lg md:text-2xl font-bold text-gray-900 dark:text-gray-100">
             Rules for Fair, Safe, and Professional B2B Trade
           </h1>
-          <p className="text-xs text-gray-600 leading-relaxed">
+          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
             Zylod is committed to fostering trust among manufacturers, wholesale distributors, and retail business owners across Bangladesh. By using our platform, all members agree to uphold these standards in accordance with the Digital Commerce Guidelines (ডিজিটাল কমার্স পরিচালনা নির্দেশিকা).
           </p>
         </div>
@@ -81,14 +81,14 @@ export function CommunityGuidelinesPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
-                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-start gap-4"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm flex items-start gap-4"
               >
                 <div className="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-gray-900">{g.title}</h3>
-                  <p className="text-xs text-gray-600 leading-relaxed">{g.desc}</p>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{g.title}</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{g.desc}</p>
                 </div>
               </motion.div>
             )
@@ -105,15 +105,15 @@ export function CommunityGuidelinesPage() {
               <AlertOctagon className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-gray-900">Prohibited Products & Restricted Goods</h3>
-              <p className="text-xs text-gray-600">Review the complete list of items banned by Bangladesh law.</p>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Prohibited Products & Restricted Goods</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400">Review the complete list of items banned by Bangladesh law.</p>
             </div>
           </div>
           <ChevronRight className="w-5 h-5 text-red-600 flex-shrink-0" />
         </div>
 
         {/* Enforcement notice */}
-        <div className="bg-slate-100 rounded-2xl p-4 text-[11px] text-gray-500 text-center leading-relaxed">
+        <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl p-4 text-[11px] text-gray-500 dark:text-gray-400 text-center leading-relaxed">
           Violations of these guidelines may result in listing removal, supplier badge revocation, and referral to the Ministry of Commerce & Directorate of National Consumer Rights Protection (DNCRP).
         </div>
       </div>

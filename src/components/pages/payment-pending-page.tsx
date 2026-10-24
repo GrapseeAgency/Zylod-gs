@@ -55,10 +55,10 @@ export function PaymentPendingPage() {
   const totalPending = pendingItems.reduce((acc, curr) => acc + curr.amount, 0)
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Pending Clearances</span>
@@ -87,7 +87,7 @@ export function PaymentPendingPage() {
         {/* List */}
         <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400">
+            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="text-xs font-bold">Scanning Pending Clearances...</span>
             </div>
@@ -96,7 +96,7 @@ export function PaymentPendingPage() {
               <div
                 key={item.id}
                 onClick={() => navigate('order-detail', { orderId: item.orderId })}
-                className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3 cursor-pointer hover:border-amber-300 transition-all"
+                className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 cursor-pointer hover:border-amber-300 transition-all"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -105,32 +105,32 @@ export function PaymentPendingPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-xs font-bold text-slate-900">PO #{item.orderNumber}</h3>
+                        <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">PO #{item.orderNumber}</h3>
                         <span className="text-[9px] font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
                           {item.type}
                         </span>
                       </div>
-                      <span className="text-[11px] text-slate-400 block mt-0.5">
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500 block mt-0.5">
                         Initiated on {new Date(item.date).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
 
-                  <span className="text-xs font-black font-mono text-slate-900">
+                  <span className="text-xs font-black font-mono text-slate-900 dark:text-slate-100">
                     {formatPrice(item.amount)}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-2xl border border-slate-100 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 leading-relaxed">
                   {item.description}
                 </p>
               </div>
             ))
           ) : (
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 text-center space-y-3">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
               <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500 stroke-[1.5]" />
-              <span className="text-xs font-bold text-slate-700 block">All settlements cleared</span>
-              <p className="text-xs text-slate-400 max-w-xs mx-auto">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">All settlements cleared</span>
+              <p className="text-xs text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
                 No pending payments at this moment.
               </p>
             </div>

@@ -158,10 +158,10 @@ export function AddMoneyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Deposit Capital</span>
@@ -196,13 +196,13 @@ export function AddMoneyPage() {
 
         {/* Post-submit doctrine panel */}
         {submittedClaim && (
-          <div className="bg-white rounded-3xl border-2 border-amber-200 shadow-sm p-5 space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl border-2 border-amber-200 shadow-sm p-5 space-y-3">
             <div className="flex items-center gap-2.5">
               <Clock className="h-5 w-5 text-amber-500" />
               <h2 className="text-sm font-black text-amber-700 uppercase tracking-wide">Payment verification pending</h2>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Your claim for <span className="font-black text-slate-900">{formatPrice(submittedClaim.amount)}</span> (ref{' '}
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Your claim for <span className="font-black text-slate-900 dark:text-slate-100">{formatPrice(submittedClaim.amount)}</span> (ref{' '}
               <span className="font-mono font-bold">{submittedClaim.reference}</span>) is recorded and queued for the
               finance team. Your wallet balance is <span className="font-black">unchanged</span> until an admin verifies the
               payment. You will be notified the moment it is decided.
@@ -211,7 +211,7 @@ export function AddMoneyPage() {
               <Button onClick={() => navigate('my-wallet')} className="h-9 px-4 rounded-xl text-xs font-bold gap-1.5">
                 <Wallet className="h-3.5 w-3.5" /> View wallet
               </Button>
-              <Button onClick={() => setSubmittedClaim(null)} variant="outline" className="h-9 px-4 rounded-xl text-xs font-bold border-slate-200">
+              <Button onClick={() => setSubmittedClaim(null)} variant="outline" className="h-9 px-4 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800">
                 Submit another claim
               </Button>
             </div>
@@ -221,12 +221,12 @@ export function AddMoneyPage() {
         <form onSubmit={handleClaim} className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           {/* Amount Input */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-            <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
               Enter Deposit Amount (BDT)
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-400 font-mono">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-400 dark:text-slate-500 font-mono">
                 ৳
               </span>
               <Input
@@ -236,7 +236,7 @@ export function AddMoneyPage() {
                   setAmount(e.target.value)
                   setErrorMsg('')
                 }}
-                className="h-14 pl-10 pr-4 text-2xl font-black rounded-2xl bg-slate-50 border-slate-200 font-mono text-slate-900 focus:border-primary"
+                className="h-14 pl-10 pr-4 text-2xl font-black rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 font-mono text-slate-900 dark:text-slate-100 focus:border-primary"
                 placeholder="0"
               />
             </div>
@@ -251,7 +251,7 @@ export function AddMoneyPage() {
                   className={`py-2 px-1 text-xs font-bold font-mono rounded-xl border transition-all ${
                     amount === p
                       ? 'border-primary bg-rose-50 text-primary'
-                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   +৳{parseInt(p).toLocaleString()}
@@ -261,8 +261,8 @@ export function AddMoneyPage() {
           </div>
 
           {/* Payment Method + claim details */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-            <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
               How did you pay?
             </label>
             <div className="grid grid-cols-2 gap-2.5">
@@ -276,31 +276,31 @@ export function AddMoneyPage() {
                     className={`p-3.5 rounded-2xl border text-left space-y-1 transition-all ${
                       isSelected
                         ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                        : 'border-slate-200 bg-white hover:bg-slate-50'
+                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <span className={`flex items-center gap-1.5 text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900'}`}>
+                    <span className={`flex items-center gap-1.5 text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>
                       <Icon className="h-3.5 w-3.5" /> {label}
                     </span>
-                    <span className="text-[10px] text-slate-400 block">{desc}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{desc}</span>
                   </button>
                 )
               })}
             </div>
 
             <div className="pt-1">
-              <label className="text-xs font-bold text-slate-700 block mb-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                 Transaction reference (TRXID) <span className="text-red-500">*</span>
               </label>
               <Input
                 value={trxId}
                 onChange={(e) => { setTrxId(e.target.value); setErrorMsg('') }}
                 placeholder={selectedMethod === 'bank_transfer' ? 'e.g. BEFTN2451XXXXX' : 'e.g. 9GX7K2LM4P'}
-                className={`h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-mono font-bold ${trxId && !trxValid ? 'border-red-300 focus:border-red-400' : ''}`}
+                className={`h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold ${trxId && !trxValid ? 'border-red-300 focus:border-red-400' : ''}`}
                 maxLength={64}
                 required
               />
-              <p className={`text-[10px] mt-1 flex items-center gap-1 ${trxId && !trxValid ? 'text-red-500 font-bold' : 'text-slate-400'}`}>
+              <p className={`text-[10px] mt-1 flex items-center gap-1 ${trxId && !trxValid ? 'text-red-500 font-bold' : 'text-slate-400 dark:text-slate-500'}`}>
                 {trxId && !trxValid ? (
                   <><AlertCircle className="h-3 w-3" /> 6-64 characters — letters, numbers, dash, underscore</>
                 ) : (
@@ -310,25 +310,25 @@ export function AddMoneyPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                 {selectedMethod === 'bank_transfer' ? 'Bank account / deposit slip number (optional)' : `${selectedMethod} number you paid from (optional)`}
               </label>
               <Input
                 value={senderNumber}
                 onChange={(e) => setSenderNumber(e.target.value)}
                 placeholder="01XXXXXXXXX or Bank Ref"
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 maxLength={20}
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Note for the finance team (optional)</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Note for the finance team (optional)</label>
               <Input
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="e.g. paid at Uttara branch counter 2"
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs"
                 maxLength={300}
               />
             </div>
@@ -351,32 +351,32 @@ export function AddMoneyPage() {
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             {loading ? 'Recording claim…' : `Submit ${formatPrice(amountNumeric || 0)} claim for verification`}
           </Button>
-          <p className="text-center text-[10px] text-slate-400 -mt-2">
+          <p className="text-center text-[10px] text-slate-400 dark:text-slate-500 -mt-2">
             Submitting does not move money. Verification does.
           </p>
         </form>
 
         {/* Claim ledger */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
           <div className="px-5 pt-4 pb-3 flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">Your funding claims</h2>
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Your funding claims</h2>
             <button onClick={loadClaims} className="text-xs font-bold text-primary hover:underline">Refresh</button>
           </div>
           {claimsLoading ? (
             <div className="px-5 pb-5 space-y-2">
-              {[0, 1].map((i) => <div key={i} className="h-12 bg-slate-50 rounded-xl animate-pulse" />)}
+              {[0, 1].map((i) => <div key={i} className="h-12 bg-slate-50 dark:bg-slate-950 rounded-xl animate-pulse" />)}
             </div>
           ) : claims.length === 0 ? (
-            <div className="px-5 pb-6 py-4 text-center text-xs text-slate-400">
+            <div className="px-5 pb-6 py-4 text-center text-xs text-slate-400 dark:text-slate-500">
               No funding claims yet. Submit your first claim above — it will appear here with its live status.
             </div>
           ) : (
-            <div className="divide-y divide-slate-100 max-h-80 overflow-y-auto">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-80 overflow-y-auto">
               {claims.map((c) => (
                 <div key={c.id} className="px-5 py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-slate-900">{formatPrice(c.amount)}</span>
+                      <span className="text-xs font-black text-slate-900 dark:text-slate-100">{formatPrice(c.amount)}</span>
                       <span className={`text-[9px] font-black border rounded-lg px-1.5 py-0.5 uppercase tracking-wide ${claimChip[c.status] ?? claimChip.cancelled}`}>
                         {c.status === 'credited' ? <CheckCircle2 className="h-2.5 w-2.5 inline mr-0.5" /> :
                          c.status === 'pending' ? <Clock className="h-2.5 w-2.5 inline mr-0.5" /> :
@@ -384,7 +384,7 @@ export function AddMoneyPage() {
                         {c.status}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-400 block font-mono truncate">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-mono truncate">
                       {c.provider} · {c.reference} · {new Date(c.createdAt).toLocaleDateString()}
                     </span>
                   </div>

@@ -65,8 +65,8 @@ export function SharedWishlistDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen bg-gray-50 pb-20 md:pb-8">
-        <div className="md:hidden p-4 bg-white border-b flex justify-center items-center h-14">
+      <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+        <div className="md:hidden p-4 bg-white dark:bg-gray-900 border-b flex justify-center items-center h-14">
           <Skeleton className="w-24 h-6 bg-red-100 rounded" />
         </div>
         <div className="p-4">
@@ -84,9 +84,9 @@ export function SharedWishlistDetailPage() {
   if (error || !data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
-        <Info className="w-12 h-12 text-gray-400 mb-4" />
+        <Info className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
         <h2 className="text-xl font-bold mb-2">Wishlist Unavailable</h2>
-        <p className="text-gray-500 mb-6">{error || 'This link may be expired or invalid.'}</p>
+        <p className="text-gray-500 dark:text-gray-400 mb-6">{error || 'This link may be expired or invalid.'}</p>
         <Button onClick={() => navigate('home')} className="bg-primary text-white w-full rounded-full">
           Go to Zylod Homepage
         </Button>
@@ -98,24 +98,24 @@ export function SharedWishlistDetailPage() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-col min-h-screen bg-gray-50 pb-24"
+      className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 pb-24"
     >
       {/* Header (mobile only — desktop uses the AppShell Header) */}
-      <header className="md:hidden bg-white border-b h-14 flex items-center justify-center sticky top-0 z-10">
+      <header className="md:hidden bg-white dark:bg-gray-900 border-b h-14 flex items-center justify-center sticky top-0 z-10">
         <h1 className="text-xl font-black text-primary tracking-tight">ZYLOD</h1>
       </header>
 
       {/* Owner Banner */}
-      <div className="bg-white p-6 border-b text-center">
+      <div className="bg-white dark:bg-gray-900 p-6 border-b text-center">
         <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-3 flex items-center justify-center overflow-hidden">
           {data.ownerAvatar ? (
             <img src={data.ownerAvatar} alt={data.ownerName} className="w-full h-full object-cover" />
           ) : (
-            <span className="text-2xl font-bold text-gray-500">{data.ownerName.charAt(0)}</span>
+            <span className="text-2xl font-bold text-gray-500 dark:text-gray-400">{data.ownerName.charAt(0)}</span>
           )}
         </div>
-        <h2 className="text-lg font-bold text-gray-900">{data.ownerName}'s Wishlist</h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{data.ownerName}'s Wishlist</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {data.totalItems} items {data.allowPrices && `• Total value: $${data.totalValue.toFixed(2)}`}
         </p>
       </div>
@@ -124,22 +124,22 @@ export function SharedWishlistDetailPage() {
       <div className="p-4">
         <div className="grid grid-cols-2 gap-3">
           {data.items.map((item) => (
-            <div key={item.id} className="bg-white rounded-xl overflow-hidden border flex flex-col relative group">
+            <div key={item.id} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border flex flex-col relative group">
               {!item.inStock && (
                 <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center backdrop-blur-[1px]">
                   <span className="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full">Out of Stock</span>
                 </div>
               )}
               
-              <div className="aspect-square bg-gray-100 relative">
+              <div className="aspect-square bg-gray-100 dark:bg-gray-900 relative">
                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                <button className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur rounded-full text-gray-400 hover:text-primary z-20">
+                <button className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur rounded-full text-gray-400 dark:text-gray-500 hover:text-primary z-20">
                   <Heart className="w-4 h-4" />
                 </button>
               </div>
               
               <div className="p-3 flex flex-col flex-1">
-                <h3 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">{item.name}</h3>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 mb-1">{item.name}</h3>
                 
                 {data.allowPrices && (
                   <p className="text-primary font-bold text-sm mb-2">${item.price.toFixed(2)}</p>
@@ -151,7 +151,7 @@ export function SharedWishlistDetailPage() {
                       <ShoppingCart className="w-3 h-3 mr-1" /> Add
                     </Button>
                   ) : (
-                    <Button size="sm" variant="outline" className="w-full rounded-full h-8 text-xs text-gray-600">
+                    <Button size="sm" variant="outline" className="w-full rounded-full h-8 text-xs text-gray-600 dark:text-gray-400">
                       View Details
                     </Button>
                   )}
@@ -163,9 +163,9 @@ export function SharedWishlistDetailPage() {
       </div>
 
       {/* Bottom CTA — floats above the mobile bottom nav; static block on desktop */}
-      <div className="fixed bottom-0 md:static md:bottom-auto left-0 right-0 bg-white border-t p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-20">
+      <div className="fixed bottom-0 md:static md:bottom-auto left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-20">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-gray-600">Share this list</span>
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Share this list</span>
           <button className="text-primary flex items-center text-sm font-semibold">
             <Share2 className="w-4 h-4 mr-1" /> Share
           </button>

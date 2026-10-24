@@ -123,10 +123,10 @@ export function NewArrivalsPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-8">
       {/* ─── Top Nav Bar ─── */}
-      <header className="sticky top-0 z-40 bg-white border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -134,7 +134,7 @@ export function NewArrivalsPage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -206,7 +206,7 @@ export function NewArrivalsPage() {
 
         {!isLoading && !loadError && products.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <Sparkles className="w-8 h-8 text-gray-400" />
+            <Sparkles className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               No arrivals in this category yet — check another tab or come back soon.
             </p>
@@ -231,9 +231,9 @@ export function NewArrivalsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => navigate('product-detail', { productId: heroArrival.id })}
-              className="bg-white rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer mb-3"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer mb-3"
             >
-              <div className="relative aspect-[16/10] md:aspect-[16/6] w-full bg-gray-50 flex items-center justify-center">
+              <div className="relative aspect-[16/10] md:aspect-[16/6] w-full bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
                 { }
                 <img
                   src={heroArrival.images?.[0]?.imageUrl || heroArrival.thumbnailUrl || '/placeholder-product.svg'}
@@ -245,7 +245,7 @@ export function NewArrivalsPage() {
                 </span>
                 <button
                   onClick={(e) => toggleWishlist(e, heroArrival)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-500 hover:text-[#C8102E]"
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white dark:bg-gray-900 shadow-sm flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#C8102E]"
                   aria-label="Save for later"
                 >
                   <Bookmark
@@ -267,7 +267,7 @@ export function NewArrivalsPage() {
                   <span className="text-xs font-normal text-[#6B7280]"> / {heroArrival.unit || 'unit'}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
                   <span>MOQ: {heroArrival.moq} {heroArrival.unit || 'units'}</span>
                   {heroArrival.supplier?.verificationStatus === 'approved' && (
                     <span className="text-[#059669] font-medium flex items-center gap-1">
@@ -288,9 +288,9 @@ export function NewArrivalsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => navigate('product-detail', { productId: item.id })}
-                  className="bg-white rounded-xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col"
+                  className="bg-white dark:bg-gray-900 rounded-xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col"
                 >
-                  <div className="relative aspect-square w-full bg-gray-100">
+                  <div className="relative aspect-square w-full bg-gray-100 dark:bg-gray-900">
                     { }
                     <img
                       src={item.images?.[0]?.imageUrl || item.thumbnailUrl || '/placeholder-product.svg'}
@@ -325,7 +325,7 @@ export function NewArrivalsPage() {
           <div>
             <h2 className="text-base md:text-lg font-bold text-[#1A1A1A] mb-3">Just Added to Catalog</h2>
 
-            <div className="bg-white rounded-2xl border border-[#E0E0E0] p-4 space-y-4 shadow-sm">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-4 space-y-4 shadow-sm">
               {latestAdded.map((item, idx) => (
                 <div
                   key={item.id}
@@ -348,7 +348,7 @@ export function NewArrivalsPage() {
                     <h4 className="font-bold text-xs text-[#1A1A1A] line-clamp-1 group-hover:text-[#C8102E] transition-colors">
                       {item.name}
                     </h4>
-                    <span className="text-[10px] font-semibold bg-gray-100 text-[#4B5563] px-2 py-0.5 rounded whitespace-nowrap">
+                    <span className="text-[10px] font-semibold bg-gray-100 dark:bg-gray-900 text-[#4B5563] px-2 py-0.5 rounded whitespace-nowrap">
                       {timeAgo(item.createdAt)}
                     </span>
                   </div>

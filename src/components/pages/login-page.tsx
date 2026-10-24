@@ -371,7 +371,7 @@ export function LoginPage() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="bg-white rounded-2xl shadow-lg border border-[#E0E0E0]/60 overflow-hidden"
+      className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-[#E0E0E0]/60 overflow-hidden"
     >
       <div className="p-6 sm:p-8 space-y-6">
         {/* ─── Logo Section ─── */}
@@ -532,7 +532,7 @@ export function LoginPage() {
                       placeholder="Answer"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      className="w-20 h-8 border-[#E0E0E0] bg-white text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                      className="w-20 h-8 border-[#E0E0E0] bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
                     />
                   </div>
                   <button
@@ -607,7 +607,7 @@ export function LoginPage() {
             type="button"
             variant="outline"
             disabled={socialLoading !== null}
-            className="flex-1 h-11 bg-white border-[#E0E0E0] hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] font-medium text-sm shadow-sm disabled:opacity-60"
+            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] font-medium text-sm shadow-sm disabled:opacity-60"
             onClick={() => handleSocialLogin('google')}
           >
             {socialLoading === 'google' ? (
@@ -621,7 +621,7 @@ export function LoginPage() {
             type="button"
             variant="outline"
             disabled={socialLoading !== null}
-            className="flex-1 h-11 bg-white border-[#E0E0E0] hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] font-medium text-sm shadow-sm disabled:opacity-60"
+            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] font-medium text-sm shadow-sm disabled:opacity-60"
             onClick={() => handleSocialLogin('facebook')}
           >
             {socialLoading === 'facebook' ? (

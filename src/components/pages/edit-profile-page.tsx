@@ -153,8 +153,8 @@ export function EditProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-400">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="text-xs font-bold">Loading Profile...</span>
         </div>
@@ -163,10 +163,10 @@ export function EditProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 md:pb-8 text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Close">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Close">
           <X className="h-6 w-6 text-primary" />
         </button>
         <h1 className="text-base font-black text-primary">Edit Wholesale Profile</h1>
@@ -178,7 +178,7 @@ export function EditProfilePage() {
         <h1 className="hidden md:block text-xl md:text-2xl font-black text-primary">Edit Wholesale Profile</h1>
 
         {/* Step Tabs */}
-        <div className="bg-white p-1 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <div className="bg-white dark:bg-gray-900 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center gap-1 overflow-x-auto no-scrollbar">
           {[
             { key: 'personal', label: 'Personal & Contact' },
             { key: 'business', label: 'Company & Tax' },
@@ -195,7 +195,7 @@ export function EditProfilePage() {
                 className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   isActive
                     ? 'bg-primary text-white shadow-xs font-black'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {tab.label}
@@ -205,72 +205,72 @@ export function EditProfilePage() {
         </div>
 
         {/* Configuration Card */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs space-y-5">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
           <form onSubmit={handleSave} className="space-y-4">
             {/* ─── SECTION 1: PERSONAL ─── */}
             {activeSection === 'personal' && (
               <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-4 md:gap-y-4">
                 <div className="md:col-span-2">
-                  <h2 className="text-sm font-black text-slate-900">Personal &amp; Contact Details</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Primary executive contact for procurement &amp; RFQs.</p>
+                  <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Personal &amp; Contact Details</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Primary executive contact for procurement &amp; RFQs.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 md:col-span-2">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">First Name</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">First Name</label>
                     <Input
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="First Name"
-                      className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                      className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Last Name</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Last Name</label>
                     <Input
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Last Name"
-                      className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                      className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Email Address</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Email Address</label>
                   <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
                     <Input
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your.email@example.com"
-                      className="h-11 pl-10 pr-10 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                      className="h-11 pl-10 pr-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Phone Number</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Phone Number</label>
                   <div className="relative">
-                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
                     <Input
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+880 1700-000000"
-                      className="h-11 pl-10 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold font-mono"
+                      className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1 md:col-span-2">
-                  <label className="text-xs font-bold text-slate-700">Job Title / Designation</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Job Title / Designation</label>
                   <div className="relative">
-                    <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
                     <Input
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
                       placeholder="e.g. Managing Director / Procurement Manager"
-                      className="h-11 pl-10 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                      className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                 </div>
@@ -281,46 +281,46 @@ export function EditProfilePage() {
             {activeSection === 'business' && (
               <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-4 md:gap-y-4">
                 <div className="md:col-span-2">
-                  <h2 className="text-sm font-black text-slate-900">Company &amp; Legal Entity</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Commercial registration and tax credentials.</p>
+                  <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Company &amp; Legal Entity</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Commercial registration and tax credentials.</p>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Registered Business Name</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Registered Business Name</label>
                   <Input
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     placeholder="Company Legal Name"
-                    className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Trade License Number (BIN/TIN)</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Trade License Number (BIN/TIN)</label>
                   <Input
                     value={tradeLicense}
                     onChange={(e) => setTradeLicense(e.target.value)}
                     placeholder="TRD-XXXXX-BD"
-                    className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-bold font-mono"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Tax Identification Number (TIN)</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Tax Identification Number (TIN)</label>
                   <Input
                     value={taxTin}
                     onChange={(e) => setTaxTin(e.target.value)}
                     placeholder="TIN-XXXXXXX"
-                    className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-bold font-mono"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Primary Business Model</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Primary Business Model</label>
                   <select
                     value={businessType}
                     onChange={(e) => setBusinessType(e.target.value)}
-                    className="w-full h-11 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold px-3.5 text-slate-800 focus:outline-none"
+                    className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-800 dark:text-slate-200 focus:outline-none"
                   >
                     <option value="OEM / ODM Custom Manufacturer">OEM / ODM Custom Manufacturer</option>
                     <option value="Direct Factory Wholesaler">Direct Factory Wholesaler</option>
@@ -335,48 +335,48 @@ export function EditProfilePage() {
             {activeSection === 'factory' && (
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-sm font-black text-slate-900">Manufacturing &amp; Facilities</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Showcase production footprint to global buyers.</p>
+                  <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Manufacturing &amp; Facilities</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Showcase production footprint to global buyers.</p>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Primary Plant Location</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Primary Plant Location</label>
                   <Input
                     value={factoryAddress}
                     onChange={(e) => setFactoryAddress(e.target.value)}
                     placeholder="e.g. Gazipur / Tejgaon, Dhaka, Bangladesh"
-                    className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Plant Footprint</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Plant Footprint</label>
                     <Input
                       value={plantSize}
                       onChange={(e) => setPlantSize(e.target.value)}
                       placeholder="e.g. 50,000 sq ft"
-                      className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                      className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Monthly Output</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Monthly Output</label>
                     <Input
                       value={monthlyCapacity}
                       onChange={(e) => setMonthlyCapacity(e.target.value)}
                       placeholder="e.g. 10,000 units"
-                      className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                      className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700">Primary Departure Port</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Primary Departure Port</label>
                   <Input
                     value={originPort}
                     onChange={(e) => setOriginPort(e.target.value)}
                     placeholder="Chittagong Port (BDCGP)"
-                    className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   />
                 </div>
               </div>
@@ -386,15 +386,15 @@ export function EditProfilePage() {
             {activeSection === 'compliance' && (
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-sm font-black text-slate-900">Accreditations &amp; Testing</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Audited standards for trade compliance.</p>
+                  <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Accreditations &amp; Testing</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Audited standards for trade compliance.</p>
                 </div>
 
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between text-xs">
+                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-3">
                     <Award className="h-5 w-5 text-primary" />
                     <div>
-                      <h3 className="font-bold text-slate-900">Merchant Trade Verification</h3>
+                      <h3 className="font-bold text-slate-900 dark:text-slate-100">Merchant Trade Verification</h3>
                       <p className="text-[10px] text-emerald-600 font-bold">Government Verified</p>
                     </div>
                   </div>
@@ -404,12 +404,12 @@ export function EditProfilePage() {
             )}
 
             {/* Actions */}
-            <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
+            <div className="flex items-center gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
               <Button
                 type="button"
                 variant="outline"
                 onClick={goBack}
-                className="flex-1 bg-white hover:bg-slate-50 text-slate-700 border-slate-200 font-bold h-12 rounded-2xl text-xs"
+                className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-12 rounded-2xl text-xs"
               >
                 Cancel
               </Button>

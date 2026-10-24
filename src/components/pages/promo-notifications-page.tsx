@@ -77,22 +77,22 @@ export function PromoNotificationsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Tag className="w-5 h-5 text-amber-600" />
-            <h1 className="font-bold text-gray-900 text-base">Promotions &amp; Deals</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Promotions &amp; Deals</h1>
           </div>
         </div>
 
         <button
           onClick={() => navigate('promo-preferences')}
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-xl transition"
+          className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition"
           title="Promo preferences"
         >
           <SlidersHorizontal className="w-4 h-4" />
@@ -104,11 +104,11 @@ export function PromoNotificationsPage() {
         <div className="hidden md:flex items-center justify-between pb-4">
           <div className="flex items-center gap-2">
             <Tag className="w-5 h-5 text-amber-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Promotions &amp; Deals</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Promotions &amp; Deals</h1>
           </div>
           <button
             onClick={() => navigate('promo-preferences')}
-            className="flex items-center gap-1.5 text-xs font-bold text-gray-600 bg-white border border-gray-200 px-3 py-2 rounded-xl hover:bg-gray-50 transition"
+            className="flex items-center gap-1.5 text-xs font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
             Preferences
@@ -141,7 +141,7 @@ export function PromoNotificationsPage() {
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${
               activeCategory === cat.key
                 ? 'bg-amber-600 text-white shadow-sm'
-                : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+                : 'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}
           >
             {cat.label}
@@ -154,7 +154,7 @@ export function PromoNotificationsPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-2xl p-4 border border-gray-100 animate-pulse space-y-2">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 animate-pulse space-y-2">
                 <Skeleton className="h-4 w-1/2 rounded" />
                 <Skeleton className="h-3 w-full rounded" />
                 <Skeleton className="h-8 w-24 rounded-xl" />
@@ -166,8 +166,8 @@ export function PromoNotificationsPage() {
             <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
               <Megaphone className="w-8 h-8" />
             </div>
-            <h3 className="text-sm font-bold text-gray-900">No active promotions right now</h3>
-            <p className="text-xs text-gray-500 max-w-xs mx-auto">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No active promotions right now</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
               New volume discount deals, supplier promotions, and flash sales will be announced here.
             </p>
             <div className="pt-2">
@@ -192,22 +192,22 @@ export function PromoNotificationsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
                 onClick={() => navigate('promo-detail', { id: promo.id })}
-                className={`bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3 cursor-pointer hover:shadow hover:border-amber-200 transition ${theme.border}`}
+                className={`bg-white rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3 cursor-pointer hover:shadow hover:border-amber-200 transition ${theme.border}`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5">
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${theme.iconBg}`}>
                       <theme.icon className="w-4 h-4" />
                     </div>
-                    <h3 className="text-xs sm:text-sm font-bold text-gray-900">{promo.title}</h3>
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">{promo.title}</h3>
                   </div>
 
-                  <span className="text-[10px] text-gray-400 flex-shrink-0">
+                  <span className="text-[10px] text-gray-400 dark:text-gray-500 flex-shrink-0">
                     {new Date(promo.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                   </span>
                 </div>
 
-                <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
                   {promo.message}
                 </p>
 

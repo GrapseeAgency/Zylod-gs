@@ -73,22 +73,22 @@ export function SearchFiltersPage() {
   const activeCount = Object.values(filters).filter(Boolean).length
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3 md:px-6">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900 pb-3">Filter &amp; Sort</h1>
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 md:px-6">
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100 pb-3">Filter &amp; Sort</h1>
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-700" /></button>
-          <span className="font-semibold text-gray-900 flex-1 md:text-lg">Filter & Sort</span>
-          <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} className="p-1.5 rounded-full hover:bg-gray-100">
-            {layout === 'grid' ? <LayoutList className="w-4 h-4 text-gray-600" /> : <LayoutGrid className="w-4 h-4 text-gray-600" />}
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
+          <span className="font-semibold text-gray-900 dark:text-gray-100 flex-1 md:text-lg">Filter & Sort</span>
+          <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            {layout === 'grid' ? <LayoutList className="w-4 h-4 text-gray-600 dark:text-gray-400" /> : <LayoutGrid className="w-4 h-4 text-gray-600 dark:text-gray-400" />}
           </button>
-          <button onClick={() => setOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-red-50 text-sm font-medium text-gray-700 relative">
+          <button onClick={() => setOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-900 hover:bg-red-50 text-sm font-medium text-gray-700 dark:text-gray-300 relative">
             <SlidersHorizontal className="w-4 h-4" />
             Filters
             {activeCount > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white text-xs rounded-full flex items-center justify-center">{activeCount}</span>}
           </button>
         </div>
-        <p className="text-xs text-gray-400 mt-2">{loading ? 'Loading...' : `${total} products found`}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">{loading ? 'Loading...' : `${total} products found`}</p>
       </div>
 
       {/* Active filter chips */}
@@ -109,7 +109,7 @@ export function SearchFiltersPage() {
               Max: {formatPrice(Number(filters.maxPrice))}<button onClick={() => applyFilter('maxPrice', '')}><X className="w-3 h-3 ml-1" /></button>
             </span>
           )}
-          <button onClick={resetFilters} className="px-2 py-1 text-xs text-gray-500 underline flex-shrink-0">Clear all</button>
+          <button onClick={resetFilters} className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400 underline flex-shrink-0">Clear all</button>
         </div>
       )}
 
@@ -122,7 +122,7 @@ export function SearchFiltersPage() {
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 gap-3">
             <Filter className="w-12 h-12 text-gray-200" />
-            <p className="text-sm text-gray-500">No products match your filters</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">No products match your filters</p>
             <button onClick={resetFilters} className="text-sm text-red-600 font-medium">Clear filters</button>
           </div>
         ) : layout === 'grid' ? (
@@ -131,14 +131,14 @@ export function SearchFiltersPage() {
               <motion.button key={p.id}
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.04 }}
                 onClick={() => navigate('product-detail', { productId: p.id })}
-                className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-red-200 transition text-left">
-                <div className="aspect-square bg-gray-100">
+                className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden hover:border-red-200 transition text-left">
+                <div className="aspect-square bg-gray-100 dark:bg-gray-900">
                   {p.thumbnailUrl && <img src={p.thumbnailUrl} alt={p.name} className="w-full h-full object-cover" />}
                 </div>
                 <div className="p-2.5">
-                  <p className="text-xs font-medium text-gray-800 line-clamp-2">{p.name}</p>
+                  <p className="text-xs font-medium text-gray-800 dark:text-gray-200 line-clamp-2">{p.name}</p>
                   <p className="text-sm font-bold text-red-600 mt-1">{formatPrice(p.basePrice)}/{p.unit}</p>
-                  <p className="text-xs text-gray-400">MOQ: {p.moq}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">MOQ: {p.moq}</p>
                 </div>
               </motion.button>
             ))}
@@ -149,13 +149,13 @@ export function SearchFiltersPage() {
               <motion.button key={p.id}
                 initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.03 }}
                 onClick={() => navigate('product-detail', { productId: p.id })}
-                className="w-full flex gap-3 px-4 py-3 hover:bg-gray-50 transition text-left">
-                <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+                className="w-full flex gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-left">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-900 rounded-xl overflow-hidden flex-shrink-0">
                   {p.thumbnailUrl && <img src={p.thumbnailUrl} alt={p.name} className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 line-clamp-2">{p.name}</p>
-                  <p className="text-xs text-gray-500">{p.supplier.companyName}</p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200 line-clamp-2">{p.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{p.supplier.companyName}</p>
                   <p className="text-sm font-bold text-red-600 mt-1">{formatPrice(p.basePrice)}/{p.unit}</p>
                 </div>
               </motion.button>
@@ -171,30 +171,30 @@ export function SearchFiltersPage() {
           <div className="absolute inset-0 bg-black/40" />
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-            className="relative bg-white rounded-t-2xl max-h-[80vh] overflow-y-auto"
+            className="relative bg-white dark:bg-gray-900 rounded-t-2xl max-h-[80vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
-              <span className="font-semibold text-gray-900">Filters</span>
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-gray-800">
+              <span className="font-semibold text-gray-900 dark:text-gray-100">Filters</span>
               <div className="flex gap-3">
-                <button onClick={resetFilters} className="text-sm text-gray-500">Reset</button>
-                <button onClick={() => setOpen(false)} className="p-1"><X className="w-4 h-4 text-gray-600" /></button>
+                <button onClick={resetFilters} className="text-sm text-gray-500 dark:text-gray-400">Reset</button>
+                <button onClick={() => setOpen(false)} className="p-1"><X className="w-4 h-4 text-gray-600 dark:text-gray-400" /></button>
               </div>
             </div>
             <div className="px-4 py-4 space-y-4">
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Price Range (BDT)</p>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Price Range (BDT)</p>
                 <div className="flex gap-2">
                   <input type="number" placeholder="Min" value={filters.minPrice || ''} onChange={e => setFilters(f => ({ ...f, minPrice: e.target.value }))}
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                    className="flex-1 border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-2 text-sm" />
                   <input type="number" placeholder="Max" value={filters.maxPrice || ''} onChange={e => setFilters(f => ({ ...f, maxPrice: e.target.value }))}
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                    className="flex-1 border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-2 text-sm" />
                 </div>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-2">Max MOQ</p>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Max MOQ</p>
                 <input type="number" placeholder="e.g. 100" value={filters.moq || ''} onChange={e => setFilters(f => ({ ...f, moq: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+                  className="w-full border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-2 text-sm" />
               </div>
               <button
                 onClick={() => { fetchProducts(); setOpen(false) }}

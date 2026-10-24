@@ -56,22 +56,22 @@ export function BuyerQueriesPage() {
     ) : s === 'resolved' ? (
       <Badge variant="outline" className="border-emerald-200 text-emerald-700">Resolved</Badge>
     ) : s === 'closed' ? (
-      <Badge variant="outline" className="border-gray-200 text-gray-500">Closed</Badge>
+      <Badge variant="outline" className="border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400">Closed</Badge>
     ) : (
       <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">Awaiting reply</Badge>
     );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 px-4 md:px-6 py-4 shadow-sm sticky top-0 z-10 flex items-center gap-3">
-        <button onClick={goBack} className="md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Go back">
-          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 dark:bg-gray-900">
+      <header className="bg-white dark:bg-gray-900 dark:bg-gray-800 px-4 md:px-6 py-4 shadow-sm sticky top-0 z-10 flex items-center gap-3">
+        <button onClick={goBack} className="md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700 transition" aria-label="Go back">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <div className="flex items-center gap-2">
           <MessageCircleQuestion className="w-5 h-5 text-teal-600" />
           <div>
-            <h1 className="font-bold text-gray-900 dark:text-white text-base md:text-xl">My Questions</h1>
-            <p className="text-xs text-gray-500">What you asked the stores — and their replies</p>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 dark:text-white text-base md:text-xl">My Questions</h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400">What you asked the stores — and their replies</p>
           </div>
         </div>
       </header>
@@ -79,32 +79,32 @@ export function BuyerQueriesPage() {
       <main className="max-w-3xl mx-auto px-4 py-5 space-y-3 pb-24 md:pb-8">
         {loading ? (
           [1, 2].map((i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 space-y-2">
+            <div key={i} className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-5 space-y-2">
               <Skeleton className="h-4 w-1/3" />
               <Skeleton className="h-3 w-2/3" />
             </div>
           ))
         ) : authRequired ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-8 text-center space-y-3">
             <Inbox className="w-10 h-10 mx-auto text-gray-300" />
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">Sign in to see your questions</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Sign in to see your questions</p>
             <Button size="sm" onClick={() => navigate('login')}>Sign In</Button>
           </div>
         ) : error ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 text-center text-sm text-gray-600 dark:text-gray-300">{error}</div>
+          <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-8 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</div>
         ) : !rows || rows.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 text-center space-y-2">
+          <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-8 text-center space-y-2">
             <MessageCircleQuestion className="w-10 h-10 mx-auto text-gray-300" />
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">No questions yet</p>
-            <p className="text-xs text-gray-500">Visit a store and press “Ask the seller” — pre-order terms, custom orders, complaints.</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-white">No questions yet</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Visit a store and press “Ask the seller” — pre-order terms, custom orders, complaints.</p>
           </div>
         ) : (
           rows.map((q) => (
-            <div key={q.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-4 sm:p-5 space-y-2">
+            <div key={q.id} className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-4 sm:p-5 space-y-2">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm truncate">{q.subject}</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <h3 className="font-bold text-gray-900 dark:text-gray-100 dark:text-white text-sm truncate">{q.subject}</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                     {q.supplierName ?? 'A store'} · {q.queryType.replace('_', ' ')} · {fmtDate(q.createdAt)}
                   </p>
                 </div>

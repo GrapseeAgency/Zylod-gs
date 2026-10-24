@@ -70,10 +70,10 @@ export function AddBankAccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Add Bank Account</span>
@@ -97,14 +97,14 @@ export function AddBankAccountPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3.5">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3.5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Commercial Bank</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Commercial Bank</label>
               <select
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                className="w-full h-11 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold px-3.5 text-slate-900 focus:outline-none focus:border-primary"
+                className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
               >
                 <option value="City Bank PLC">City Bank PLC</option>
                 <option value="BRAC Bank PLC">BRAC Bank PLC</option>
@@ -118,55 +118,55 @@ export function AddBankAccountPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                 Account Number
               </label>
               <Input
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
                 placeholder="13-16 digit account number"
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                 Account Holder Name / Entity Title
               </label>
               <Input
                 value={accountHolderName}
                 onChange={(e) => setAccountHolderName(e.target.value)}
                 placeholder="Exact legal name matching bank statement"
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
               />
             </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Branch Name</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Branch Name</label>
                 <Input
                   value={branchName}
                   onChange={(e) => setBranchName(e.target.value)}
                   placeholder="Branch"
-                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                 />
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Routing Number</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Routing Number</label>
                 <Input
                   value={routingNumber}
                   onChange={(e) => setRoutingNumber(e.target.value)}
                   placeholder="9-digit routing"
-                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-mono font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-semibold"
                 />
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-slate-900 block">Set as Primary Account</span>
-                <span className="text-[11px] text-slate-400 block">Default destination for sales proceeds</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">Set as Primary Account</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 block">Default destination for sales proceeds</span>
               </div>
               <Switch checked={isDefault} onCheckedChange={setIsDefault} className="data-[state=checked]:bg-primary" />
             </div>

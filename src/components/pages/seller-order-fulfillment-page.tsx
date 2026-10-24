@@ -103,11 +103,11 @@ export function SellerOrderFulfillmentPage() {
 
   if (authRequired) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-sm w-full text-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-8 max-w-sm w-full text-center">
           <AlertTriangle className="w-10 h-10 mx-auto text-amber-500 mb-3" />
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">Supplier sign-in required</h2>
-          <p className="text-sm text-gray-500 mb-4">Sign in with a seller account to fulfill orders.</p>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Supplier sign-in required</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Sign in with a seller account to fulfill orders.</p>
           <button onClick={() => goBack()} className="min-h-11 px-6 bg-[#C8102E] text-white rounded-lg font-medium w-full">
             Back
           </button>
@@ -121,29 +121,29 @@ export function SellerOrderFulfillmentPage() {
   const canPack = statuses.length > 0 && statuses.every((s) => s === 'pending' || s === 'confirmed');
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-      <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10 flex items-center">
-        <button onClick={goBack} className="p-1 -ml-1 text-gray-600 mr-2">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+      <header className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center">
+        <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400 mr-2">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-lg font-bold text-gray-900">Fulfill Order</h1>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Fulfill Order</h1>
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-4">
-        <h1 className="hidden md:block text-2xl font-bold text-slate-900 mb-4">Fulfill Order</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Fulfill Order</h1>
 
         {loading ? (
-          <div className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse space-y-3">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 animate-pulse space-y-3">
             <div className="h-4 bg-gray-200 rounded w-1/3" />
-            <div className="h-20 bg-gray-100 rounded" />
+            <div className="h-20 bg-gray-100 dark:bg-gray-900 rounded" />
           </div>
         ) : error ? (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm">{error}</div>
         ) : dispatched ? (
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-10 space-y-4">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
-            <h2 className="text-xl font-bold text-gray-900">Order Dispatched</h2>
-            <p className="text-gray-500 text-sm">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Order Dispatched</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               Status is now <span className="font-semibold">shipped</span> with tracking number{' '}
               <span className="font-mono font-semibold">{trackingNumber}</span>. The buyer was notified and the
               tracking page updates live.
@@ -157,9 +157,9 @@ export function SellerOrderFulfillmentPage() {
         ) : (
           <div className="space-y-4">
             {info?.order && (
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                <p className="text-sm font-semibold text-gray-900">#{info.order.orderNumber}</p>
-                <p className="text-xs text-gray-500 mt-1">
+              <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">#{info.order.orderNumber}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Current status: <span className="font-medium capitalize">{statuses.join(', ') || 'unknown'}</span>
                   {allShipped && ' — already shipped'}
                 </p>
@@ -167,12 +167,12 @@ export function SellerOrderFulfillmentPage() {
             )}
 
             {canPack && (
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
+              <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-3">
                 <div className="flex items-center gap-2">
                   <Package className="w-5 h-5 text-[#C8102E]" />
-                  <h2 className="font-semibold text-gray-900">Step 1 — Pack the order</h2>
+                  <h2 className="font-semibold text-gray-900 dark:text-gray-100">Step 1 — Pack the order</h2>
                 </div>
-                <p className="text-sm text-gray-500">Confirm every item is packed and quality-checked before dispatch.</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Confirm every item is packed and quality-checked before dispatch.</p>
                 <button
                   onClick={() => void markPacked()}
                   disabled={busy}
@@ -184,19 +184,19 @@ export function SellerOrderFulfillmentPage() {
             )}
 
             {!canPack && !allShipped && (
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
+              <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-3">
                 <div className="flex items-center gap-2">
                   <Truck className="w-5 h-5 text-[#C8102E]" />
-                  <h2 className="font-semibold text-gray-900">Dispatch</h2>
+                  <h2 className="font-semibold text-gray-900 dark:text-gray-100">Dispatch</h2>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Air Waybill (AWB) / Tracking number</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Air Waybill (AWB) / Tracking number</label>
                   <input
                     type="text"
                     value={trackingNumber}
                     onChange={(e) => setTrackingNumber(e.target.value)}
                     placeholder="Enter the courier tracking number"
-                    className="w-full px-3 min-h-11 bg-white border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
+                    className="w-full px-3 min-h-11 bg-white dark:bg-gray-900 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
                   />
                 </div>
                 <button

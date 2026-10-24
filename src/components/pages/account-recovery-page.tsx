@@ -68,7 +68,7 @@ export function AccountRecoveryPage() {
 
   /* ─── Header Bar (mobile) ─── */
   const headerBar = (
-    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white border-b border-[#E0E0E0]">
+    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]">
       <button
         onClick={goBack}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
@@ -197,7 +197,7 @@ export function AccountRecoveryPage() {
       animate="visible"
       className="px-4 pt-5"
     >
-      <Card className="rounded-xl shadow-md border-0 bg-white py-0 gap-0">
+      <Card className="rounded-xl shadow-md border-0 bg-white dark:bg-gray-900 py-0 gap-0">
         <CardContent className="p-5 space-y-3">
           <Label className="text-[14px] font-semibold text-[#1A1A1A]">
             Original Registered Email
@@ -236,7 +236,7 @@ export function AccountRecoveryPage() {
       {/* Option 1 - Identity Verification */}
       <button
         onClick={() => setSelectedMethod('identity')}
-        className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white ${
+        className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'identity'
             ? 'border-[#C8102E] bg-[#FFF5F5] shadow-md'
             : 'border-[#E0E0E0] shadow-sm'
@@ -264,7 +264,7 @@ export function AccountRecoveryPage() {
           <div className="shrink-0 ml-2 mt-1">
             {selectedMethod === 'identity' ? (
               <div className="w-5 h-5 rounded-full bg-[#C8102E] flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-white" />
+                <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
               </div>
             ) : (
               <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB]" />
@@ -276,7 +276,7 @@ export function AccountRecoveryPage() {
       {/* Option 2 - Contact Security Team */}
       <button
         onClick={() => setSelectedMethod('security-team')}
-        className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white ${
+        className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'security-team'
             ? 'border-[#C8102E] bg-[#FFF5F5] shadow-md'
             : 'border-[#E0E0E0] shadow-sm'
@@ -298,7 +298,7 @@ export function AccountRecoveryPage() {
           <div className="shrink-0 ml-2 mt-1">
             {selectedMethod === 'security-team' ? (
               <div className="w-5 h-5 rounded-full bg-[#C8102E] flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-white" />
+                <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
               </div>
             ) : (
               <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB]" />
@@ -318,7 +318,7 @@ export function AccountRecoveryPage() {
       animate="visible"
       className="px-4 pt-4"
     >
-      <div className="flex items-start gap-3 bg-white rounded-xl p-4 border-l-4 border-l-[#C8102E] shadow-sm">
+      <div className="flex items-start gap-3 bg-white dark:bg-gray-900 rounded-xl p-4 border-l-4 border-l-[#C8102E] shadow-sm">
         <Info className="w-5 h-5 text-[#C8102E] shrink-0 mt-0.5" />
         <div>
           <p className="text-[13px] font-bold text-[#1A1A1A]">Verification Notice:</p>

@@ -43,23 +43,23 @@ export function CouponDetailPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="font-bold text-gray-900 text-base">Coupon Terms &amp; Conditions</h1>
+          <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Coupon Terms &amp; Conditions</h1>
         </div>
       </div>
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-xl mx-auto w-full space-y-6 md:space-y-8 pb-24 md:pb-8 lg:max-w-3xl">
         {loading ? (
-          <div className="p-6 text-center text-gray-400">Loading coupon details...</div>
+          <div className="p-6 text-center text-gray-400 dark:text-gray-500">Loading coupon details...</div>
         ) : !coupon ? (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm text-center space-y-3">
-            <p className="text-sm font-bold text-gray-800">Coupon Details</p>
-            <p className="text-xs text-gray-500">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-3">
+            <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Coupon Details</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               This voucher can be applied during checkout to get wholesale savings on qualified bulk orders.
             </p>
             <Button onClick={() => navigate('coupons')} className="bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold">
@@ -67,20 +67,20 @@ export function CouponDetailPage() {
             </Button>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-5">
-            <div className="space-y-2 text-center pb-4 border-b border-gray-100">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-5">
+            <div className="space-y-2 text-center pb-4 border-b border-gray-100 dark:border-gray-800">
               <Badge className="bg-red-50 text-red-700 border-red-200 uppercase font-bold text-xs">
                 {coupon.discountType === 'percentage' ? `${coupon.discountPercent}% OFF` : `৳${coupon.discountPercent} FLAT OFF`}
               </Badge>
-              <h2 className="text-lg md:text-2xl font-black text-gray-900">{coupon.code}</h2>
-              <p className="text-xs text-gray-500">
+              <h2 className="text-lg md:text-2xl font-black text-gray-900 dark:text-gray-100">{coupon.code}</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Expires on {new Date(coupon.validUntil).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
               </p>
             </div>
 
             <div className="space-y-3">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Applicable Rules</h3>
-              <ul className="text-xs text-gray-600 space-y-2">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Applicable Rules</h3>
+              <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-2">
                 <li className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
                   Minimum bulk order: <strong>{formatPrice(coupon.minOrderAmount || 0)}</strong>

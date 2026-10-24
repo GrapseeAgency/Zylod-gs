@@ -43,7 +43,7 @@ function statusChip(status: string) {
     case 'processing':
       return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Processing</Badge>;
     case 'pending':
-      return <Badge className="bg-slate-200 text-slate-700 hover:bg-slate-200">Pending</Badge>;
+      return <Badge className="bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Pending</Badge>;
     case 'failed':
       return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Failed</Badge>;
     default:
@@ -95,19 +95,19 @@ export function SellerPayoutsPagePage() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-gray-50 pb-20 md:pb-8 dark:bg-gray-900"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8 dark:bg-gray-900"
     >
       {/* Mobile header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Go back">
-          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Payouts</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Payouts</h1>
       </header>
 
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
         <div className="hidden md:flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Payouts</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Payouts</h1>
           <Button size="sm" onClick={() => navigate('withdraw-money')} className="h-9">
             <ArrowUpRight className="h-4 w-4 mr-1" />
             Request payout
@@ -129,7 +129,7 @@ export function SellerPayoutsPagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : data ? (
           <>
@@ -141,7 +141,7 @@ export function SellerPayoutsPagePage() {
                     <CheckCircle2 className="w-4 h-4" />
                     <span className="text-xs font-medium">Total paid out</span>
                   </div>
-                  <p className="mt-2 text-lg md:text-xl font-bold text-gray-900 dark:text-white" data-testid="payouts-total-paid">{bdt(data.summary.totalPaid)}</p>
+                  <p className="mt-2 text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="payouts-total-paid">{bdt(data.summary.totalPaid)}</p>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">{data.summary.completedCount} completed</p>
                 </CardContent>
               </Card>
@@ -151,14 +151,14 @@ export function SellerPayoutsPagePage() {
                     <Clock className="w-4 h-4" />
                     <span className="text-xs font-medium">In flight</span>
                   </div>
-                  <p className="mt-2 text-lg md:text-xl font-bold text-gray-900 dark:text-white" data-testid="payouts-pending-amount">{bdt(data.summary.pendingAmount)}</p>
+                  <p className="mt-2 text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="payouts-pending-amount">{bdt(data.summary.pendingAmount)}</p>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">{data.summary.pendingCount} awaiting decision</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800 col-span-2">
                 <CardContent className="p-4 flex items-start gap-3">
                   <ShieldCheck className="w-5 h-5 text-primary mt-0.5 shrink-0" />
-                  <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300 leading-relaxed">
                     Payouts are settled by the finance team. Money only leaves your wallet when a payout is
                     <span className="font-semibold"> completed with a reference</span> — a request alone never moves funds.
                   </p>
@@ -176,7 +176,7 @@ export function SellerPayoutsPagePage() {
               <Card className="border-dashed dark:bg-gray-800">
                 <CardContent className="p-10 text-center space-y-2">
                   <Inbox className="w-10 h-10 text-gray-300 mx-auto" />
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">No payouts yet</p>
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No payouts yet</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     When the finance team settles a payout for your store, it will appear here with its reference.
                   </p>
@@ -195,7 +195,7 @@ export function SellerPayoutsPagePage() {
                   <CardContent>
                     <div className="max-h-96 overflow-y-auto">
                       <table className="w-full text-sm">
-                        <thead className="sticky top-0 bg-white dark:bg-gray-800">
+                        <thead className="sticky top-0 bg-white dark:bg-gray-900 dark:bg-gray-800">
                           <tr className="text-left text-xs text-gray-500 dark:text-gray-400 border-b">
                             <th className="py-2 pr-3 font-medium">Amount</th>
                             <th className="py-2 pr-3 font-medium">Method</th>
@@ -211,7 +211,7 @@ export function SellerPayoutsPagePage() {
                               <td className="py-2.5 pr-3 font-semibold whitespace-nowrap">{bdt(p.amount)}</td>
                               <td className="py-2.5 pr-3 capitalize">{p.method}</td>
                               <td className="py-2.5 pr-3 font-mono text-xs">{p.destination}</td>
-                              <td className="py-2.5 pr-3 font-mono text-xs">{p.reference || <span className="text-gray-400">—</span>}</td>
+                              <td className="py-2.5 pr-3 font-mono text-xs">{p.reference || <span className="text-gray-400 dark:text-gray-500">—</span>}</td>
                               <td className="py-2.5 pr-3">{statusChip(p.status)}</td>
                               <td className="py-2.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{fmtDate(p.processedAt)}</td>
                             </tr>
@@ -228,10 +228,10 @@ export function SellerPayoutsPagePage() {
                     <Card key={p.id} className="border-none shadow-sm dark:bg-gray-800">
                       <CardContent className="p-4 space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-gray-900 dark:text-white">{bdt(p.amount)}</span>
+                          <span className="font-bold text-gray-900 dark:text-gray-100 dark:text-white">{bdt(p.amount)}</span>
                           {statusChip(p.status)}
                         </div>
-                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-300">
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300">
                           <span>Method</span><span className="text-right capitalize">{p.method}</span>
                           <span>Destination</span><span className="text-right font-mono truncate">{p.destination}</span>
                           <span>Reference</span><span className="text-right font-mono">{p.reference || '—'}</span>

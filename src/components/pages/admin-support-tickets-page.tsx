@@ -64,7 +64,7 @@ const SELLER_STATUS_LABELS: Record<string, string> = {
 }
 
 const PRIORITY_STYLES: Record<string, string> = {
-  low: 'bg-slate-100 text-slate-600 border-slate-200',
+  low: 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800',
   medium: 'bg-sky-50 text-sky-700 border-sky-200',
   high: 'bg-amber-50 text-amber-700 border-amber-200',
   urgent: 'bg-red-50 text-red-700 border-red-200',
@@ -219,7 +219,7 @@ export function AdminSupportTicketsPage() {
               variant="outline"
               size="icon"
               onClick={goBack}
-              className="h-10 w-10 rounded-xl border-slate-200 dark:border-slate-700"
+              className="h-10 w-10 rounded-xl border-slate-200 dark:border-slate-800 dark:border-slate-700"
               aria-label="Back"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -228,7 +228,7 @@ export function AdminSupportTicketsPage() {
               <h1 className="text-lg md:text-xl font-black tracking-tight flex items-center gap-2">
                 <LifeBuoy className="h-5 w-5 text-primary" /> Support Threads
               </h1>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500">
                 Reply as the platform. Every reply notifies the filer; status changes are yours to drive.
               </p>
             </div>
@@ -237,7 +237,7 @@ export function AdminSupportTicketsPage() {
             variant="outline"
             onClick={() => loadTickets(true)}
             disabled={refreshing}
-            className="min-h-11 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700"
+            className="min-h-11 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
           </Button>
@@ -249,7 +249,7 @@ export function AdminSupportTicketsPage() {
             <button
               key={m}
               onClick={() => { setMode(m); setOpenId(null); setStatusFilter('all') }}
-              className={`min-h-11 px-5 rounded-xl text-xs font-black uppercase tracking-wide transition ${mode === m ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'}`}
+              className={`min-h-11 px-5 rounded-xl text-xs font-black uppercase tracking-wide transition ${mode === m ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
             >
               {m === 'buyer' ? 'Buyer Threads' : 'Seller Threads'}
             </button>
@@ -257,7 +257,7 @@ export function AdminSupportTicketsPage() {
         </div>
 
         {needsAuth ? (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center text-sm font-bold text-slate-500">
+          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center text-sm font-bold text-slate-500 dark:text-slate-400">
             Admin access required — sign in as an admin to respond to support threads.
           </div>
         ) : (
@@ -267,10 +267,10 @@ export function AdminSupportTicketsPage() {
                 <button
                   key={s}
                   onClick={() => setStatusFilter(s)}
-                  className={`min-h-9 px-3 rounded-xl text-xs font-bold transition ${statusFilter === s ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300'}`}
+                  className={`min-h-9 px-3 rounded-xl text-xs font-bold transition ${statusFilter === s ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300 hover:border-slate-300'}`}
                 >
                   {s === 'all' ? 'All' : STATUS_LABELS[s]}
-                  <span className={`ml-1 tabular-nums ${statusFilter === s ? 'text-white/80' : 'text-slate-400'}`}>
+                  <span className={`ml-1 tabular-nums ${statusFilter === s ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'}`}>
                     {count(s) == null ? '' : count(s)}
                   </span>
                 </button>
@@ -280,17 +280,17 @@ export function AdminSupportTicketsPage() {
             {loading ? (
               <div className="space-y-3">
                 {[0, 1, 2].map((i) => (
-                  <div key={i} className="h-24 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+                  <div key={i} className="h-24 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
                 ))}
               </div>
             ) : error ? (
-              <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
                 <AlertTriangle className="h-6 w-6 text-amber-500 mx-auto" />
                 <p className="text-sm font-bold">{error}</p>
                 <Button onClick={() => loadTickets()} variant="outline" className="rounded-xl text-xs font-bold">Retry</Button>
               </div>
             ) : filtered.length === 0 ? (
-              <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center text-sm text-slate-400 font-medium">
+              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center text-sm text-slate-400 dark:text-slate-500 font-medium">
                 No support threads{statusFilter !== 'all' ? ` in "${STATUS_LABELS[statusFilter]}"` : ''} right now — honest zero.
               </div>
             ) : (
@@ -298,7 +298,7 @@ export function AdminSupportTicketsPage() {
                 {filtered.map((t) => {
                   const isOpen = openId === t.id
                   return (
-                    <div key={t.id} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+                    <div key={t.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
                       <button
                         type="button"
                         onClick={() => toggleThread(t.id)}
@@ -313,7 +313,7 @@ export function AdminSupportTicketsPage() {
                                 {t.priority}
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
                               {mode === 'buyer'
                                 ? (t.user ? `${t.user.buyerProfile?.fullName || t.user.email} · ${t.user.email}` : 'Buyer')
                                 : (t.supplier ? `${t.supplier.companyName} · ${t.supplier.email}` : 'Seller')}
@@ -322,13 +322,13 @@ export function AdminSupportTicketsPage() {
                             </p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[10px] font-black uppercase px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
+                            <span className="text-[10px] font-black uppercase px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                               {(mode === 'buyer' ? STATUS_LABELS[t.status] : SELLER_STATUS_LABELS[t.status]) ?? t.status}
                             </span>
-                            <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
                               <MessageSquare className="h-3 w-3" /> {t._count?.messages ?? t.messageCount ?? 0}
                             </span>
-                            {isOpen ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                            {isOpen ? <ChevronUp className="h-4 w-4 text-slate-400 dark:text-slate-500" /> : <ChevronDown className="h-4 w-4 text-slate-400 dark:text-slate-500" />}
                           </div>
                         </div>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 line-clamp-2">{t.description}</p>
@@ -337,7 +337,7 @@ export function AdminSupportTicketsPage() {
                       {isOpen && (
                         <div className="border-t border-slate-100 dark:border-slate-800 px-5 py-4 space-y-3 bg-slate-50/50 dark:bg-slate-950/40">
                           {threadLoading ? (
-                            <p className="text-xs text-slate-400 font-bold">Loading thread…</p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 font-bold">Loading thread…</p>
                           ) : (
                             <>
                               {threadError && (
@@ -346,8 +346,8 @@ export function AdminSupportTicketsPage() {
                                 </p>
                               )}
                               <div className="space-y-2 max-h-80 overflow-y-auto">
-                                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3">
-                                  <span className="text-[9px] font-black uppercase text-slate-400">Buyer · opened</span>
+                                <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3">
+                                  <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500">Buyer · opened</span>
                                   <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-wrap">{t.description}</p>
                                 </div>
                                 {messages.map((m) => {
@@ -355,9 +355,9 @@ export function AdminSupportTicketsPage() {
                                   return (
                                     <div
                                       key={m.id}
-                                      className={`rounded-2xl border p-3 ${isAdminMsg ? 'bg-primary/5 border-primary/20' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800'}`}
+                                      className={`rounded-2xl border p-3 ${isAdminMsg ? 'bg-primary/5 border-primary/20' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border-slate-100 dark:border-slate-800'}`}
                                     >
-                                      <span className={`text-[9px] font-black uppercase ${isAdminMsg ? 'text-primary' : 'text-slate-400'}`}>
+                                      <span className={`text-[9px] font-black uppercase ${isAdminMsg ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`}>
                                         {isAdminMsg ? 'Zylod Support' : mode === 'buyer' ? 'Buyer' : 'Seller'} · {new Date(m.createdAt).toLocaleString('en-GB')}
                                       </span>
                                       <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-wrap">{m.message}</p>
@@ -373,7 +373,7 @@ export function AdminSupportTicketsPage() {
                                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void sendReply(t) } }}
                                   placeholder="Reply as Zylod Support…"
                                   aria-label="Reply to the buyer"
-                                  className="flex-1 h-11 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                  className="flex-1 h-11 rounded-2xl border border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-white dark:bg-gray-900 dark:bg-slate-900 px-4 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                                 />
                                 <Button
                                   onClick={() => sendReply(t)}
@@ -394,7 +394,7 @@ export function AdminSupportTicketsPage() {
                                     variant={s === 'resolved' ? 'default' : 'outline'}
                                     disabled={statusBusy || t.status === s}
                                     onClick={() => setStatus(t, s)}
-                                    className={`h-9 px-3 rounded-xl text-[11px] font-bold ${s === 'resolved' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'} ${t.status === s ? 'opacity-50' : ''}`}
+                                    className={`h-9 px-3 rounded-xl text-[11px] font-bold ${s === 'resolved' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'} ${t.status === s ? 'opacity-50' : ''}`}
                                   >
                                     {s === 'resolved' ? <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> : null}
                                     {s === 'closed' ? <XCircle className="h-3.5 w-3.5 mr-1" /> : null}
@@ -403,7 +403,7 @@ export function AdminSupportTicketsPage() {
                                 ))}
                               </div>
                               {t.rating != null && (
-                                <p className="text-[10px] text-slate-400 font-bold">Buyer rated this thread: {t.rating}/5</p>
+                                <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">Buyer rated this thread: {t.rating}/5</p>
                               )}
                             </>
                           )}

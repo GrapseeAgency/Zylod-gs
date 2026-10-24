@@ -84,8 +84,8 @@ export function WishlistDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="md:hidden bg-white h-14 border-b flex items-center px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <header className="md:hidden bg-white dark:bg-gray-900 h-14 border-b flex items-center px-4">
           <Skeleton className="w-8 h-8 rounded-full" />
         </header>
         <Skeleton className="w-full aspect-square" />
@@ -101,7 +101,7 @@ export function WishlistDetailPage() {
   if (!item) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <p className="text-gray-500 mb-4">Item not found.</p>
+        <p className="text-gray-500 dark:text-gray-400 mb-4">Item not found.</p>
         <Button onClick={() => goBack()}>Go Back</Button>
       </div>
     )
@@ -113,17 +113,17 @@ export function WishlistDetailPage() {
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="min-h-screen bg-gray-50 flex flex-col pb-24 md:pb-10"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col pb-24 md:pb-10"
     >
-      <header className="md:hidden bg-white h-14 flex items-center px-4 fixed top-0 w-full z-20 shadow-sm">
-        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 mr-2">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+      <header className="md:hidden bg-white dark:bg-gray-900 h-14 flex items-center px-4 fixed top-0 w-full z-20 shadow-sm">
+        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 mr-2">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <h1 className="text-base font-semibold flex-1 truncate">Wishlist Item</h1>
       </header>
 
-      <div className="mt-14 md:mt-0 bg-white border-b">
-        <div className="aspect-square bg-gray-100 relative">
+      <div className="mt-14 md:mt-0 bg-white dark:bg-gray-900 border-b">
+        <div className="aspect-square bg-gray-100 dark:bg-gray-900 relative">
           <img 
             src={item.product.images[0]?.url || '/placeholder.png'} 
             alt={item.product.name}
@@ -132,16 +132,16 @@ export function WishlistDetailPage() {
         </div>
         <div className="p-4">
           <div className="flex items-start justify-between mb-2">
-            <h2 className="text-lg font-bold text-gray-900 leading-tight">{item.product.name}</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 leading-tight">{item.product.name}</h2>
           </div>
           <div className="flex items-center gap-2 mb-4">
             <span className="text-xl font-bold text-primary">${item.product.basePrice.toFixed(2)}</span>
-            <span className="text-sm text-gray-500">/ unit</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">/ unit</span>
             <div className="ml-auto bg-green-50 text-green-700 px-2 py-1 rounded text-xs font-medium flex items-center">
               <TrendingDown className="w-3 h-3 mr-1" /> -5% this week
             </div>
           </div>
-          <div className="flex items-center text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">
+          <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-950 p-2 rounded-lg">
             <span className="font-medium mr-2">Supplier:</span> 
             {item.product.supplier.companyName}
             {item.product.supplier.isVerified && (
@@ -153,13 +153,13 @@ export function WishlistDetailPage() {
 
       <div className="p-4 space-y-4">
         {/* Note Section */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
           <h3 className="text-sm font-semibold mb-2">Personal Note</h3>
           <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Add details like required size, color, or target price..."
-            className="w-full text-sm resize-none mb-2 bg-gray-50 border-gray-200 h-24"
+            className="w-full text-sm resize-none mb-2 bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800 h-24"
           />
           <div className="flex justify-end">
             <Button 
@@ -183,7 +183,7 @@ export function WishlistDetailPage() {
           </Button>
           <Button 
             variant="outline"
-            className="bg-white border-gray-200 text-gray-800 rounded-xl h-12 flex items-center justify-center gap-2"
+            className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 rounded-xl h-12 flex items-center justify-center gap-2"
           >
             <FolderPlus className="w-4 h-4" /> Move to Collection
           </Button>

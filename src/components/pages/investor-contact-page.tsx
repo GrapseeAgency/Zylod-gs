@@ -42,25 +42,25 @@ export function InvestorContactPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
-          <h1 className="font-bold text-gray-900 text-base">Investor Relations Contact Desk</h1>
-          <p className="text-xs text-gray-400">Institutional Inquiries & Financial Disclosures</p>
+          <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Investor Relations Contact Desk</h1>
+          <p className="text-xs text-gray-400 dark:text-gray-500">Institutional Inquiries & Financial Disclosures</p>
         </div>
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 pb-24 md:px-6 md:py-6 md:pb-8 lg:max-w-4xl">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900 mb-6">Investor Relations Contact Desk</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Investor Relations Contact Desk</h1>
         <div className="space-y-4 md:space-y-6">
         {submitted ? (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-3">
             <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
-            <h2 className="text-base font-bold text-gray-900">Inquiry Received</h2>
-            <p className="text-xs text-gray-600">
+            <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Inquiry Received</h2>
+            <p className="text-xs text-gray-600 dark:text-gray-400">
               Your inquiry reference is <strong>{refNo}</strong>. It has been saved to our inbox for
               review — we reply by email when action is needed. For anything urgent, email
               support@zylod.com.
@@ -71,11 +71,11 @@ export function InvestorContactPage() {
           </div>
         ) : (
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-            <div className="bg-white rounded-3xl p-5 md:p-6 border border-gray-100 shadow-sm space-y-3">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Institutional Representative</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 md:p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Institutional Representative</h3>
               <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
                 <div>
-                  <label className="text-xs font-bold text-gray-700">Full Name *</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Full Name *</label>
                   <Input
                     required
                     value={formData.name}
@@ -85,7 +85,7 @@ export function InvestorContactPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700">Corporate Email *</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Corporate Email *</label>
                   <Input
                     required
                     type="email"
@@ -96,7 +96,7 @@ export function InvestorContactPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700">Fund / Organization Name</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Fund / Organization Name</label>
                   <Input
                     value={formData.company}
                     onChange={e => setFormData({ ...formData, company: e.target.value })}
@@ -105,11 +105,11 @@ export function InvestorContactPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700">Nature of Inquiry *</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Nature of Inquiry *</label>
                   <select
                     value={formData.inquiryType}
                     onChange={e => setFormData({ ...formData, inquiryType: e.target.value })}
-                    className="w-full mt-1 p-2.5 bg-slate-50 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="general">General Investor Information</option>
                     <option value="annual_report">Audited Financial Queries</option>
@@ -120,14 +120,14 @@ export function InvestorContactPage() {
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs font-bold text-gray-700">Message / Inquiry *</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Message / Inquiry *</label>
                   <textarea
                     required
                     rows={3}
                     value={formData.message}
                     onChange={e => setFormData({ ...formData, message: e.target.value })}
                     placeholder="Please specify your request or scheduled meeting requirements..."
-                    className="w-full mt-1 p-3 bg-slate-50 rounded-2xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full mt-1 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>

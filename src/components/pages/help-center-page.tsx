@@ -78,7 +78,7 @@ export function HelpCenterPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Header */}
       <div className="bg-gradient-to-b from-red-600 to-red-700 text-white px-4 pt-4 pb-8 rounded-b-3xl shadow-lg">
         <div className="flex items-center gap-3 mb-6 md:hidden">
@@ -101,9 +101,9 @@ export function HelpCenterPage() {
               placeholder="Search help, policies, payments, disputes..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-white text-gray-900 rounded-2xl pl-11 pr-4 py-3.5 text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 placeholder:text-gray-400"
+              className="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl pl-11 pr-4 py-3.5 text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 placeholder:text-gray-400"
             />
-            <Search className="w-5 h-5 text-gray-400 absolute left-3.5 top-3.5" />
+            <Search className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute left-3.5 top-3.5" />
           </form>
         </div>
       </div>
@@ -113,39 +113,39 @@ export function HelpCenterPage() {
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => navigate('chatbot')}
-            className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition text-left group"
+            className="flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition text-left group"
           >
             <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition flex-shrink-0">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-bold text-gray-900">AI Assistant</p>
-              <p className="text-xs text-gray-500">Instant policy lookups</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">AI Assistant</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Instant policy lookups</p>
             </div>
           </button>
 
           <button
             onClick={() => navigate('live-chat')}
-            className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition text-left group"
+            className="flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition text-left group"
           >
             <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition flex-shrink-0">
               <MessageCircle className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-bold text-gray-900">Live Chat</p>
-              <p className="text-xs text-gray-500">Human support rep</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Live Chat</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Human support rep</p>
             </div>
           </button>
         </div>
 
         {/* Real Support Contacts — only what the owner actually published */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
-            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm">
+          <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-2.5">
+            <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-red-600" />
               Reach the Team
             </h2>
-            <span className="text-[11px] text-gray-400">Official channels</span>
+            <span className="text-[11px] text-gray-400 dark:text-gray-500">Official channels</span>
           </div>
 
           <div className="pt-3 space-y-2.5">
@@ -164,8 +164,8 @@ export function HelpCenterPage() {
                       <Mail className="w-4 h-4" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-[11px] text-gray-400">Email</span>
-                      <span className="block text-xs font-semibold text-gray-800 group-hover:text-red-600 transition truncate">{supportEmail}</span>
+                      <span className="block text-[11px] text-gray-400 dark:text-gray-500">Email</span>
+                      <span className="block text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-red-600 transition truncate">{supportEmail}</span>
                     </span>
                   </a>
                 )}
@@ -178,17 +178,17 @@ export function HelpCenterPage() {
                       <Phone className="w-4 h-4" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-[11px] text-gray-400">Phone</span>
-                      <span className="block text-xs font-semibold text-gray-800 group-hover:text-red-600 transition">{supportPhone}</span>
+                      <span className="block text-[11px] text-gray-400 dark:text-gray-500">Phone</span>
+                      <span className="block text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-red-600 transition">{supportPhone}</span>
                     </span>
                   </a>
                 )}
-                <p className="text-[11px] text-gray-400 border-t border-gray-50 pt-2.5">
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 border-t border-gray-50 pt-2.5">
                   Managed by site admins under Admin → System Settings.
                 </p>
               </>
             ) : (
-              <p className="text-xs text-gray-500 leading-relaxed">
+              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                 {contactsError
                   ? 'Support contacts could not be loaded right now — please try again later.'
                   : 'No support contact published yet — the site owner has not configured one under Admin → System Settings.'}
@@ -200,7 +200,7 @@ export function HelpCenterPage() {
         {/* Browse by Topic */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-gray-900">Browse Help Topics</h2>
+            <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Browse Help Topics</h2>
             <button
               onClick={() => navigate('docs-browser')}
               className="text-xs font-semibold text-red-600 flex items-center gap-1 hover:underline"
@@ -219,16 +219,16 @@ export function HelpCenterPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => navigate(topic.page, topic.category ? { category: topic.category } : {})}
-                  className="flex items-start gap-3.5 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-red-200 transition text-left group"
+                  className="flex items-start gap-3.5 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:border-red-200 transition text-left group"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-700 group-hover:bg-red-50 group-hover:text-red-600 transition flex-shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-gray-700 dark:text-gray-300 group-hover:bg-red-50 group-hover:text-red-600 transition flex-shrink-0">
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-900 group-hover:text-red-600 transition">{topic.title}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{topic.desc}</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-red-600 transition">{topic.title}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{topic.desc}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400 mt-1" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 mt-1" />
                 </motion.button>
               )
             })}
@@ -236,9 +236,9 @@ export function HelpCenterPage() {
         </div>
 
         {/* Top FAQs */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-3">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
-            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-2.5">
+            <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <HelpCircle className="w-4 h-4 text-red-600" />
               Frequently Asked Questions
             </h2>
@@ -262,10 +262,10 @@ export function HelpCenterPage() {
                   onClick={() => navigate('faq', { category: faq.category })}
                   className="w-full py-3 flex items-center justify-between text-left hover:text-red-600 transition group"
                 >
-                  <span className="text-xs font-medium text-gray-800 group-hover:text-red-600 pr-2">
+                  <span className="text-xs font-medium text-gray-800 dark:text-gray-200 group-hover:text-red-600 pr-2">
                     {faq.questionEn}
                   </span>
-                  <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
                 </button>
               ))}
             </div>
@@ -276,45 +276,45 @@ export function HelpCenterPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <button
             onClick={() => navigate('submit-ticket')}
-            className="p-3 bg-white rounded-xl border border-gray-100 text-center hover:border-red-200 transition"
+            className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-center hover:border-red-200 transition"
           >
             <Mail className="w-4 h-4 text-red-600 mx-auto mb-1" />
-            <p className="text-xs font-semibold text-gray-800">Submit Ticket</p>
+            <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">Submit Ticket</p>
           </button>
           <button
             onClick={() => navigate('contact-us')}
-            className="p-3 bg-white rounded-xl border border-gray-100 text-center hover:border-red-200 transition"
+            className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-center hover:border-red-200 transition"
           >
             <Phone className="w-4 h-4 text-red-600 mx-auto mb-1" />
-            <p className="text-xs font-semibold text-gray-800">Contact Us</p>
+            <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">Contact Us</p>
           </button>
           <button
             onClick={() => navigate('safety-center')}
-            className="p-3 bg-white rounded-xl border border-gray-100 text-center hover:border-red-200 transition"
+            className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-center hover:border-red-200 transition"
           >
             <ShieldCheck className="w-4 h-4 text-red-600 mx-auto mb-1" />
-            <p className="text-xs font-semibold text-gray-800">Safety Center</p>
+            <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">Safety Center</p>
           </button>
           <button
             onClick={() => navigate('community-guidelines')}
-            className="p-3 bg-white rounded-xl border border-gray-100 text-center hover:border-red-200 transition"
+            className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-center hover:border-red-200 transition"
           >
             <FileText className="w-4 h-4 text-red-600 mx-auto mb-1" />
-            <p className="text-xs font-semibold text-gray-800">Guidelines</p>
+            <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">Guidelines</p>
           </button>
         </div>
 
         {/* System Status Banner */}
         {status && (
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 flex items-center justify-between shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-2.5">
               <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-              <p className="text-xs font-semibold text-gray-800">
+              <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">
                 System Status: <span className="text-green-600">{status.overallStatus}</span>
               </p>
             </div>
-            <span className="text-[11px] text-gray-400 flex items-center gap-1">
-              <Activity className="w-3 h-3 text-gray-400" />
+            <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
+              <Activity className="w-3 h-3 text-gray-400 dark:text-gray-500" />
               All Courier APIs Active
             </span>
           </div>

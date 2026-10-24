@@ -117,7 +117,7 @@ const rfqStatusChip: Record<string, string> = {
   open: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
   quoted: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-900',
   awarded: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
-  closed: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+  closed: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
   expired: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
 }
 
@@ -342,7 +342,7 @@ export function AdminRfqPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">RFQ oversight is restricted to Zylod admins. Sign in with an admin account to audit quote requests across the platform.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">RFQ oversight is restricted to Zylod admins. Sign in with an admin account to audit quote requests across the platform.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -358,18 +358,18 @@ export function AdminRfqPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Quote Requests — RFQ Oversight</h1>
-            <p className="text-[11px] text-slate-400">Every RFQ on the platform with its real quotes. Closing is the only admin write — it is audit-logged and broadcast to the RFQ&apos;s room.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">Every RFQ on the platform with its real quotes. Closing is the only admin write — it is audit-logged and broadcast to the RFQ&apos;s room.</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {refreshing && (
-            <span className="text-[10px] text-slate-400 tabular-nums">auto-refreshes every 30s</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">auto-refreshes every 30s</span>
           )}
           <Button
             variant="outline"
             onClick={() => loadRfqs({ background: true })}
             disabled={refreshing}
-            className="min-h-11 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700"
+            className="min-h-11 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
           </Button>
@@ -385,10 +385,10 @@ export function AdminRfqPage() {
             <button
               key={t.key}
               onClick={() => switchStatus(t.key)}
-              className={`rounded-2xl border px-4 py-3 text-left transition min-h-11 ${active ? 'border-primary bg-primary/5 shadow-md' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600'}`}
+              className={`rounded-2xl border px-4 py-3 text-left transition min-h-11 ${active ? 'border-primary bg-primary/5 shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600'}`}
             >
               <p className={`text-lg font-black tabular-nums ${active ? 'text-primary' : 'text-slate-800 dark:text-slate-200'}`}>{n == null ? '—' : n.toLocaleString('en-BD')}</p>
-              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">{t.label}</p>
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">{t.label}</p>
             </button>
           )
         })}
@@ -402,10 +402,10 @@ export function AdminRfqPage() {
             <button
               key={t.key}
               onClick={() => switchStatus(t.key)}
-              className={`min-h-11 px-4 rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'}`}
+              className={`min-h-11 px-4 rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'}`}
             >
               {t.label}
-              <span className={`tabular-nums ${statusTab === t.key ? 'text-white/80' : 'text-slate-400'}`}>{n == null ? '' : n.toLocaleString('en-BD')}</span>
+              <span className={`tabular-nums ${statusTab === t.key ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'}`}>{n == null ? '' : n.toLocaleString('en-BD')}</span>
             </button>
           )
         })}
@@ -424,11 +424,11 @@ export function AdminRfqPage() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-24 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-24 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load RFQs</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -438,12 +438,12 @@ export function AdminRfqPage() {
         </div>
       ) : rows.length === 0 ? (
         // Honest empty state — the DB truly has zero (or zero matching) RFQs
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           {statusTab !== 'all' ? (
             <>
               <CheckCircle2 className="h-10 w-10 mx-auto text-slate-300 dark:text-slate-700" />
               <h2 className="text-sm font-black">No {statusTab} RFQs</h2>
-              <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
                 No request for quotes currently has status &ldquo;{statusTab}&rdquo;. Switch to All to see every RFQ in the database.
               </p>
             </>
@@ -451,7 +451,7 @@ export function AdminRfqPage() {
             <>
               <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 mx-auto" />
               <h2 className="text-sm font-black">No RFQs yet</h2>
-              <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
                 The rfqRequests table currently holds zero rows — real counts, not a placeholder. When a buyer requests a quote it will appear here for oversight.
               </p>
             </>
@@ -464,14 +464,14 @@ export function AdminRfqPage() {
             const canClose = r.status === 'open' || r.status === 'quoted'
             const best = r.bestQuote
             return (
-              <div key={r.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={r.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 {/* Row */}
                 <div className="p-4 flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2 min-w-[200px] max-w-[320px]">
-                    <FileText className="h-4 w-4 text-slate-400 shrink-0" />
+                    <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500 shrink-0" />
                     <div className="min-w-0">
                       <p className="text-xs font-black text-slate-800 dark:text-slate-200 truncate">{r.title}</p>
-                      <p className="text-[10px] text-slate-400 truncate flex items-center gap-1">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate flex items-center gap-1">
                         <User className="h-3 w-3 shrink-0" /> {r.buyer.displayName ?? 'buyer name unavailable'}
                       </p>
                     </div>
@@ -482,20 +482,20 @@ export function AdminRfqPage() {
                     <span className={chipClass}>{r.quoteCount} quote{r.quoteCount === 1 ? '' : 's'}</span>
                   </div>
                   <div className="min-w-[130px]">
-                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400">Target</p>
-                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{r.targetPrice != null ? formatPrice(r.targetPrice) : '—'} <span className="text-slate-400 font-normal">/ {r.unit}</span></p>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500">Target</p>
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{r.targetPrice != null ? formatPrice(r.targetPrice) : '—'} <span className="text-slate-400 dark:text-slate-500 font-normal">/ {r.unit}</span></p>
                   </div>
                   <div className="min-w-[130px]">
-                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400">Best quote total</p>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500">Best quote total</p>
                     {best.min != null && best.max != null ? (
                       <p className="text-xs font-bold text-primary">
                         {best.min === best.max ? formatPrice(best.min) : `${formatPrice(best.min)} – ${formatPrice(best.max)}`}
                       </p>
                     ) : (
-                      <p className="text-xs text-slate-400">no quotes yet</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">no quotes yet</p>
                     )}
                   </div>
-                  <div className="min-w-[90px] text-[10px] text-slate-400">
+                  <div className="min-w-[90px] text-[10px] text-slate-400 dark:text-slate-500">
                     {r.deadline ? (
                       <span className="flex items-center gap-1"><CalendarClock className="h-3 w-3 shrink-0" /> due {formatDate(r.deadline)}</span>
                     ) : (
@@ -517,7 +517,7 @@ export function AdminRfqPage() {
                     <Button
                       variant="outline"
                       onClick={() => toggleExpand(r.id)}
-                      className="min-h-11 px-4 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700"
+                      className="min-h-11 px-4 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700"
                     >
                       {isExpanded ? <><ChevronUp className="h-3.5 w-3.5" /> Hide detail</> : <><ChevronDown className="h-3.5 w-3.5" /> Detail</>}
                     </Button>
@@ -529,8 +529,8 @@ export function AdminRfqPage() {
                   <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
                     {detailLoading ? (
                       <div className="space-y-2">
-                        <div className="h-12 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse" />
-                        <div className="h-12 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+                        <div className="h-12 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+                        <div className="h-12 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse" />
                       </div>
                     ) : detailError ? (
                       <div className="flex items-start gap-2 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-xl px-3 py-2 text-xs text-red-600 dark:text-red-400 font-bold">
@@ -540,7 +540,7 @@ export function AdminRfqPage() {
                       </div>
                     ) : detail ? (
                       <>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 break-words whitespace-pre-wrap">{detail.description}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-300 break-words whitespace-pre-wrap">{detail.description}</p>
                         <div className="flex flex-wrap gap-1.5">
                           <span className={chipClass}>{detail.quantity != null ? `${detail.quantity.toLocaleString('en-BD')} ${detail.unit}` : 'quantity not set'}</span>
                           <span className={chipClass}>{detail.deliveryCity ?? 'no delivery city'}</span>
@@ -550,18 +550,18 @@ export function AdminRfqPage() {
 
                         {/* Items — real rfqItems */}
                         <div className="space-y-1.5">
-                          <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Requested items ({detail.items.length})</p>
+                          <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Requested items ({detail.items.length})</p>
                           {detail.items.length === 0 ? (
-                            <p className="text-xs text-slate-500">This RFQ has no line items — the buyer described the request in the text above.</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">This RFQ has no line items — the buyer described the request in the text above.</p>
                           ) : (
                             <div className="space-y-1.5">
                               {detail.items.map((it) => (
-                                <div key={it.id} className="flex flex-wrap items-center gap-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
-                                  <Package className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                                <div key={it.id} className="flex flex-wrap items-center gap-2 bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                                  <Package className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
                                   <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{it.productName}</p>
                                   <span className={chipClass}>{it.quantity.toLocaleString('en-BD')} {it.unit}</span>
                                   {it.targetPrice != null && <span className={chipClass}>target {formatPrice(it.targetPrice)}</span>}
-                                  {it.specifications && <p className="text-[10px] text-slate-400 w-full break-words whitespace-pre-wrap">spec: {it.specifications}</p>}
+                                  {it.specifications && <p className="text-[10px] text-slate-400 dark:text-slate-500 w-full break-words whitespace-pre-wrap">spec: {it.specifications}</p>}
                                 </div>
                               ))}
                             </div>
@@ -570,18 +570,18 @@ export function AdminRfqPage() {
 
                         {/* Quotes — real rfqQuotes with supplier displayName */}
                         <div className="space-y-1.5">
-                          <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">Supplier quotes ({detail.quotes.length})</p>
+                          <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Supplier quotes ({detail.quotes.length})</p>
                           {detail.quotes.length === 0 ? (
-                            <p className="text-xs text-slate-500">No supplier has quoted this RFQ yet.</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">No supplier has quoted this RFQ yet.</p>
                           ) : (
                             <div className="space-y-1.5">
                               {detail.quotes.map((q) => (
-                                <div key={q.id} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2 space-y-1">
+                                <div key={q.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2 space-y-1">
                                   <div className="flex flex-wrap items-center gap-2">
-                                    <Truck className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                                    <Truck className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
                                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{q.supplier.displayName}</p>
                                     <QuoteStatusChip status={q.status} />
-                                    <span className="ml-auto text-xs font-black text-primary">{formatPrice(q.totalPrice)} <span className="font-normal text-slate-400">total · {formatPrice(q.pricePerUnit)}/unit</span></span>
+                                    <span className="ml-auto text-xs font-black text-primary">{formatPrice(q.totalPrice)} <span className="font-normal text-slate-400 dark:text-slate-500">total · {formatPrice(q.pricePerUnit)}/unit</span></span>
                                   </div>
                                   <div className="flex flex-wrap items-center gap-1.5">
                                     <span className={chipClass}>{q.deliveryDays != null ? `${q.deliveryDays} day${q.deliveryDays === 1 ? '' : 's'} delivery` : 'delivery days not stated'}</span>
@@ -606,7 +606,7 @@ export function AdminRfqPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400">{total} RFQ{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500">{total} RFQ{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const np = page - 1; setPage(np); loadRfqs({ page: np }) }} className="min-h-11 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const np = page + 1; setPage(np); loadRfqs({ page: np }) }} className="min-h-11 px-4 rounded-xl text-xs font-bold">Next</Button>
@@ -625,7 +625,7 @@ export function AdminRfqPage() {
                 <DialogTitle className="text-sm font-black flex items-center gap-2">
                   <XCircle className="h-4 w-4 text-red-600" /> Close this RFQ?
                 </DialogTitle>
-                <DialogDescription className="text-xs text-slate-500">
+                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
                   Closing stops the quote round: no further quotes can land and the buyer cannot award it. The decision is audit-logged and broadcast live to everyone watching this RFQ. Awarded, closed, and expired RFQs cannot be closed.
                 </DialogDescription>
               </DialogHeader>
@@ -643,7 +643,7 @@ export function AdminRfqPage() {
               </div>
 
               <DialogFooter className="gap-2">
-                <Button variant="outline" onClick={closeDialog} disabled={closing} className="min-h-11 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-700">
+                <Button variant="outline" onClick={closeDialog} disabled={closing} className="min-h-11 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 dark:border-slate-700">
                   Cancel
                 </Button>
                 <Button

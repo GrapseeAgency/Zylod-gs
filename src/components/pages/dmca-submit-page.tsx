@@ -45,28 +45,28 @@ export function DmcaSubmitPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
-          <h1 className="font-bold text-gray-900 text-base">File DMCA Takedown Notice</h1>
-          <p className="text-xs text-gray-400">Formal Copyright & Trademark Infringement Report</p>
+          <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">File DMCA Takedown Notice</h1>
+          <p className="text-xs text-gray-400 dark:text-gray-500">Formal Copyright & Trademark Infringement Report</p>
         </div>
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 lg:max-w-4xl pb-24 md:pb-8">
         <div className="hidden md:block">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">File DMCA Takedown Notice</h1>
-          <p className="text-sm text-gray-400 mt-1">Formal Copyright &amp; Trademark Infringement Report</p>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">File DMCA Takedown Notice</h1>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Formal Copyright &amp; Trademark Infringement Report</p>
         </div>
 
         {submitted ? (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-3">
             <CheckCircle2 className="w-12 h-12 text-red-600 mx-auto" />
-            <h2 className="text-base font-bold text-gray-900">DMCA Notice Received</h2>
-            <p className="text-xs text-gray-600">
+            <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">DMCA Notice Received</h2>
+            <p className="text-xs text-gray-600 dark:text-gray-400">
               Your official report reference is <strong>{ticketRef}</strong>. Our Legal & Compliance Desk will examine the claim and take necessary enforcement action within 72 hours.
             </p>
             <Button onClick={() => navigate('dmca-policy')} className="bg-slate-900 text-white rounded-xl text-xs font-bold">
@@ -75,11 +75,11 @@ export function DmcaSubmitPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-3.5">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Claimant Information</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3.5">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Claimant Information</h3>
               <div className="space-y-2.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-4 md:gap-y-2.5">
                 <div>
-                  <label className="text-xs font-bold text-gray-700">Full Legal Name *</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Full Legal Name *</label>
                   <Input
                     required
                     value={formData.complainantName}
@@ -89,7 +89,7 @@ export function DmcaSubmitPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700">Corporate Email Address *</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Corporate Email Address *</label>
                   <Input
                     required
                     type="email"
@@ -100,7 +100,7 @@ export function DmcaSubmitPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700">Copyright / Brand Owner Name *</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Copyright / Brand Owner Name *</label>
                   <Input
                     required
                     value={formData.copyrightOwner}
@@ -112,11 +112,11 @@ export function DmcaSubmitPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-3.5">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Infringement Details</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3.5">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Infringement Details</h3>
               <div className="space-y-2.5">
                 <div>
-                  <label className="text-xs font-bold text-gray-700">Infringing Listing URL on Zylod *</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Infringing Listing URL on Zylod *</label>
                   <Input
                     required
                     value={formData.infringingUrl}
@@ -126,19 +126,19 @@ export function DmcaSubmitPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-700">Description of Original Work & Infringement *</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Description of Original Work & Infringement *</label>
                   <textarea
                     required
                     rows={3}
                     value={formData.copyrightWorkDesc}
                     onChange={e => setFormData({ ...formData, copyrightWorkDesc: e.target.value })}
                     placeholder="Describe how the listing violates your intellectual property rights..."
-                    className="w-full mt-1 p-3 bg-slate-50 rounded-2xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full mt-1 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5 pt-2 border-t border-gray-100">
+              <div className="flex items-start gap-2.5 pt-2 border-t border-gray-100 dark:border-gray-800">
                 <input
                   type="checkbox"
                   required
@@ -147,7 +147,7 @@ export function DmcaSubmitPage() {
                   onChange={e => setFormData({ ...formData, declarationSigned: e.target.checked })}
                   className="mt-0.5 rounded text-red-600 focus:ring-red-500"
                 />
-                <label htmlFor="dmca-signed" className="text-[11px] text-gray-600 leading-relaxed cursor-pointer">
+                <label htmlFor="dmca-signed" className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed cursor-pointer">
                   I state under penalty of perjury that I am authorized to act on behalf of the copyright owner and that the information in this notice is accurate.
                 </label>
               </div>

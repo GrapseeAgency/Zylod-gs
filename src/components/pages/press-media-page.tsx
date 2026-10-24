@@ -46,15 +46,15 @@ export function PressMediaPage() {
     : releases.filter(r => r.category === selectedCat)
 
   return (
-    <div className="overflow-x-hidden flex flex-col min-h-screen bg-slate-50">
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+    <div className="overflow-x-hidden flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div>
-            <h1 className="font-bold text-gray-900 text-base">Press & Media Hub</h1>
-            <p className="text-xs text-gray-400">Official News, Announcements & Media Assets</p>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Press & Media Hub</h1>
+            <p className="text-xs text-gray-400 dark:text-gray-500">Official News, Announcements & Media Assets</p>
           </div>
         </div>
         <button
@@ -69,8 +69,8 @@ export function PressMediaPage() {
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-5 pb-24 md:max-w-5xl md:px-6 md:py-8 md:space-y-8 md:pb-10">
         <div className="hidden md:flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Press &amp; Media Hub</h1>
-            <p className="text-xs text-gray-400">Official News, Announcements &amp; Media Assets</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Press &amp; Media Hub</h1>
+            <p className="text-xs text-gray-400 dark:text-gray-500">Official News, Announcements &amp; Media Assets</p>
           </div>
           <button
             onClick={() => navigate('media-kit')}
@@ -115,7 +115,7 @@ export function PressMediaPage() {
             className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
               selectedCat === 'all'
                 ? 'bg-slate-900 text-white shadow-sm'
-                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}
           >
             All News ({releases.length})
@@ -127,7 +127,7 @@ export function PressMediaPage() {
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap capitalize transition ${
                 selectedCat === cat
                   ? 'bg-slate-900 text-white shadow-sm'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                  : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
             >
               {cat.replace('_', ' ')}
@@ -142,7 +142,7 @@ export function PressMediaPage() {
               {[1, 2, 3].map(i => <div key={i} className="h-32 bg-gray-200 rounded-3xl" />)}
             </div>
           ) : filteredReleases.length === 0 ? (
-            <div className="bg-white rounded-3xl p-6 text-center text-gray-400 border border-gray-100">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 text-center text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-gray-800">
               No press releases found in this category.
             </div>
           ) : (
@@ -150,14 +150,14 @@ export function PressMediaPage() {
               <div
                 key={pr.id}
                 onClick={() => navigate('press-release-detail', { slug: pr.slug })}
-                className="bg-white rounded-3xl p-4.5 border border-gray-100 shadow-sm hover:border-blue-300 hover:shadow-md transition cursor-pointer space-y-3"
+                className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 border border-gray-100 dark:border-gray-800 shadow-sm hover:border-blue-300 hover:shadow-md transition cursor-pointer space-y-3"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1 flex-1">
                     <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-bold uppercase">
                       {pr.category.replace('_', ' ')}
                     </Badge>
-                    <h3 className="text-sm font-bold text-gray-900 leading-snug">
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-snug">
                       {pr.title}
                     </h3>
                   </div>
@@ -165,16 +165,16 @@ export function PressMediaPage() {
                     <img
                       src={pr.imageUrl}
                       alt={pr.title}
-                      className="w-16 h-16 rounded-2xl object-cover flex-shrink-0 border border-gray-100"
+                      className="w-16 h-16 rounded-2xl object-cover flex-shrink-0 border border-gray-100 dark:border-gray-800"
                     />
                   )}
                 </div>
 
-                <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
                   {pr.summary}
                 </p>
 
-                <div className="flex items-center justify-between text-[11px] text-gray-400 pt-1 border-t border-gray-50">
+                <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 pt-1 border-t border-gray-50">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
                     {new Date(pr.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}

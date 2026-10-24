@@ -96,24 +96,24 @@ export function PriceAlertCreatePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <span className="font-bold text-gray-900 text-base">Create Price Drop Alert</span>
+        <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Create Price Drop Alert</span>
       </div>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24 md:px-6 md:py-8 md:max-w-2xl md:space-y-8 md:pb-10">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900">Create Price Drop Alert</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100">Create Price Drop Alert</h1>
         {success ? (
-          <div className="bg-white rounded-3xl p-8 border border-green-100 text-center space-y-4 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-green-100 text-center space-y-4 shadow-sm">
             <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-lg md:text-2xl font-bold text-gray-900">Price Watch Activated!</h2>
-            <p className="text-xs text-gray-600">
+            <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-gray-100">Price Watch Activated!</h2>
+            <p className="text-xs text-gray-600 dark:text-gray-400">
               We are actively monitoring <strong>{selectedProduct?.name}</strong>. As soon as the price hits <strong>{formatPrice(Number(targetPrice))}</strong> or lower, you will receive an instant push notification.
             </p>
             <div className="pt-3 flex gap-3 justify-center">
@@ -140,8 +140,8 @@ export function PriceAlertCreatePage() {
           <>
             {/* Step 1: Product Selection */}
             {!selectedProduct ? (
-              <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
-                <h2 className="text-sm font-bold text-gray-900">1. Select Product to Watch</h2>
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+                <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">1. Select Product to Watch</h2>
                 <div className="flex gap-2">
                   <Input
                     placeholder="Search wholesale products..."
@@ -168,19 +168,19 @@ export function PriceAlertCreatePage() {
                         setSelectedProduct(p)
                         setTargetPrice(Math.round(p.basePrice * 0.9).toString())
                       }}
-                      className="p-3 bg-slate-50 hover:bg-red-50 rounded-2xl border border-gray-100 flex items-center justify-between cursor-pointer transition"
+                      className="p-3 bg-slate-50 dark:bg-slate-950 hover:bg-red-50 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between cursor-pointer transition"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
                           {p.thumbnailUrl ? (
                             <img src={p.thumbnailUrl} alt={p.name} className="w-full h-full object-cover" />
                           ) : (
-                            <Package className="w-5 h-5 text-gray-400" />
+                            <Package className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                           )}
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-gray-900 line-clamp-1">{p.name}</p>
-                          <p className="text-[11px] text-gray-500">Current: {formatPrice(p.basePrice)}</p>
+                          <p className="text-xs font-bold text-gray-900 dark:text-gray-100 line-clamp-1">{p.name}</p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400">Current: {formatPrice(p.basePrice)}</p>
                         </div>
                       </div>
                       <span className="text-xs font-bold text-red-600">Select →</span>
@@ -190,9 +190,9 @@ export function PriceAlertCreatePage() {
               </div>
             ) : (
               /* Selected Product Card */
-              <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-gray-900">Selected Product</h2>
+                  <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Selected Product</h2>
                   <button
                     onClick={() => setSelectedProduct(null)}
                     className="text-xs font-bold text-red-600 hover:underline"
@@ -201,17 +201,17 @@ export function PriceAlertCreatePage() {
                   </button>
                 </div>
 
-                <div className="p-3 bg-slate-50 rounded-2xl border border-gray-100 flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-white border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
                     {selectedProduct.thumbnailUrl ? (
                       <img src={selectedProduct.thumbnailUrl} alt={selectedProduct.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Package className="w-6 h-6 text-gray-400" />
+                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-gray-900 truncate">{selectedProduct.name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{selectedProduct.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       Current Price: <strong>{formatPrice(selectedProduct.basePrice)}</strong>
                     </p>
                   </div>
@@ -219,7 +219,7 @@ export function PriceAlertCreatePage() {
 
                 {/* Step 2: Target Price */}
                 <div className="space-y-3 pt-2">
-                  <label className="text-xs font-bold text-gray-700 block">
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block">
                     Alert Me When Price Drops To (BDT ৳):
                   </label>
                   <Input

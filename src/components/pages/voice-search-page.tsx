@@ -162,8 +162,8 @@ export function VoiceSearchPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 md:max-w-2xl md:mx-auto md:w-full">
         {state === 'unsupported' ? (
           <div className="text-center space-y-4">
-            <MicOff className="w-16 h-16 text-gray-500 mx-auto" />
-            <p className="text-gray-400 text-sm">Voice search is not supported in this browser.</p>
+            <MicOff className="w-16 h-16 text-gray-500 dark:text-gray-400 mx-auto" />
+            <p className="text-gray-400 dark:text-gray-500 text-sm">Voice search is not supported in this browser.</p>
             <button
               onClick={() => navigate('search-home')}
               className="px-4 py-2 bg-red-600 rounded-xl text-sm font-medium"
@@ -245,7 +245,7 @@ export function VoiceSearchPage() {
             {/* Suggested phrases */}
             {state === 'idle' && (
               <div className="text-center">
-                <p className="text-xs text-gray-500 mb-2">Try saying:</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Try saying:</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {suggestedPhrases.map(phrase => (
                     <button
@@ -266,7 +266,7 @@ export function VoiceSearchPage() {
       {/* Voice history */}
       {voiceHistory.length > 0 && (
         <div className="px-4 pb-10">
-          <p className="text-xs text-gray-500 mb-2">Recent voice searches</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Recent voice searches</p>
           <div className="space-y-1">
             {voiceHistory.map(item => (
               <button
@@ -274,7 +274,7 @@ export function VoiceSearchPage() {
                 onClick={() => navigate('search-results', { query: item.query, type: 'voice' })}
                 className="w-full text-left text-sm text-gray-300 px-3 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition flex items-center gap-2"
               >
-                <Mic className="w-3.5 h-3.5 text-gray-500" />
+                <Mic className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
                 {item.query}
               </button>
             ))}

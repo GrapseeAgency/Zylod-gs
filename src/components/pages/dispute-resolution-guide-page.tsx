@@ -42,13 +42,13 @@ export function DisputeResolutionGuidePage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">Dispute & Arbitration Guide</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Dispute & Arbitration Guide</span>
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export function DisputeResolutionGuidePage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
-                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-start gap-4"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm flex items-start gap-4"
               >
                 <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Icon className="w-5 h-5" />
@@ -84,8 +84,8 @@ export function DisputeResolutionGuidePage() {
                   <span className="text-[10px] font-bold uppercase tracking-wider text-red-600 bg-red-50 px-2 py-0.5 rounded-md">
                     {s.time}
                   </span>
-                  <h3 className="text-sm font-bold text-gray-900 pt-0.5">{s.title}</h3>
-                  <p className="text-xs text-gray-600 leading-relaxed">{s.desc}</p>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 pt-0.5">{s.title}</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{s.desc}</p>
                 </div>
               </motion.div>
             )
@@ -93,25 +93,25 @@ export function DisputeResolutionGuidePage() {
         </div>
 
         {/* Required Evidence Checklist */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-3">
-          <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-3">
             <FileCheck className="w-4 h-4 text-red-600" />
             Evidence That Helps Your Case
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-700">
-            <div className="p-3 bg-slate-50 rounded-xl border border-gray-100 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-gray-900">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-700 dark:text-gray-300">
+            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-gray-900 dark:text-gray-100">
                 <Video className="w-3.5 h-3.5 text-red-600" />
                 Unboxing Video
               </div>
-              <p className="text-[11px] text-gray-500">Continuous video showing sealed shipping label and opening parcel.</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">Continuous video showing sealed shipping label and opening parcel.</p>
             </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-gray-100 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-gray-900">
+            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-gray-900 dark:text-gray-100">
                 <Camera className="w-3.5 h-3.5 text-red-600" />
                 Defect Photographs
               </div>
-              <p className="text-[11px] text-gray-500">Close-ups of broken parts, missing units, or incorrect color/specs.</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">Close-ups of broken parts, missing units, or incorrect color/specs.</p>
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ export function DisputeResolutionGuidePage() {
           </button>
           <button
             onClick={() => navigate('report-user')}
-            className="px-6 py-3 bg-white border border-red-200 hover:bg-red-50 text-red-700 font-bold rounded-xl text-xs shadow-sm transition"
+            className="px-6 py-3 bg-white dark:bg-gray-900 border border-red-200 hover:bg-red-50 text-red-700 font-bold rounded-xl text-xs shadow-sm transition"
           >
             Report Seller Misconduct →
           </button>

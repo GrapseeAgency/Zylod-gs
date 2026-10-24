@@ -172,7 +172,7 @@ export function NotificationDetailPage() {
       case 'promotion': return <Tag className="w-6 h-6 text-amber-600" />
       case 'price_drop': return <TrendingDown className="w-6 h-6 text-red-600" />
       case 'back_in_stock': return <Layers className="w-6 h-6 text-teal-600" />
-      default: return <Bell className="w-6 h-6 text-gray-600" />
+      default: return <Bell className="w-6 h-6 text-gray-600 dark:text-gray-400" />
     }
   }
 
@@ -188,21 +188,21 @@ export function NotificationDetailPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">Notification Detail</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Notification Detail</span>
         </div>
 
         {notification && (
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
+            className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
             title="Delete notification"
           >
             <Trash2 className="w-4 h-4" />
@@ -221,8 +221,8 @@ export function NotificationDetailPage() {
         ) : !notification ? (
           <div className="text-center py-16 space-y-3">
             <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto" />
-            <h3 className="font-bold text-gray-900 text-base">Notification not found</h3>
-            <p className="text-xs text-gray-500">This notification may have expired or been deleted.</p>
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">Notification not found</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">This notification may have expired or been deleted.</p>
             <Button onClick={goBack} variant="outline" size="sm">Go Back</Button>
           </div>
         ) : (
@@ -245,17 +245,17 @@ export function NotificationDetailPage() {
             </div>
 
             {/* Notification Full Content Card */}
-            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
-              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+              <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                 Full Message Body
               </h2>
-              <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
                 {notification.message}
               </p>
 
               {/* Status Badge */}
-              <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-                <span className="text-gray-400">Read Status</span>
+              <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs">
+                <span className="text-gray-400 dark:text-gray-500">Read Status</span>
                 <span className="flex items-center gap-1 font-bold text-green-600">
                   <CheckCircle2 className="w-4 h-4" /> Delivered &amp; Read
                 </span>

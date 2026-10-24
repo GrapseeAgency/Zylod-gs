@@ -36,7 +36,7 @@ function RoleCard({ icon, title, description, selected, onClick }: RoleCardProps
       className={`flex-1 flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all cursor-pointer text-center ${
         selected
           ? 'border-[#C8102E] bg-[#C8102E]/5 shadow-sm'
-          : 'border-[#E0E0E0] bg-white hover:border-[#C8102E]/30 hover:bg-[#C8102E]/[0.02]'
+          : 'border-[#E0E0E0] bg-white dark:bg-gray-900 hover:border-[#C8102E]/30 hover:bg-[#C8102E]/[0.02]'
       }`}
     >
       <div
@@ -168,7 +168,7 @@ export function RegisterPage() {
               placeholder="Answer"
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
-              className="w-20 h-8 border-[#E0E0E0] bg-white text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+              className="w-20 h-8 border-[#E0E0E0] bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
             />
           </div>
           <button
@@ -275,7 +275,7 @@ export function RegisterPage() {
         className="min-h-screen bg-[#F8F9FA] flex flex-col"
       >
         {/* Header Bar */}
-        <header className="flex items-center justify-between px-4 h-14 border-b border-[#E0E0E0]/60 bg-white">
+        <header className="flex items-center justify-between px-4 h-14 border-b border-[#E0E0E0]/60 bg-white dark:bg-gray-900">
           <button
             onClick={goBack}
             className="p-2 rounded-lg active:scale-95 transition-transform"
@@ -326,7 +326,7 @@ export function RegisterPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="relative w-full max-w-md bg-white rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden"
+        className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden"
       >
         {/* Header Bar */}
         <header className="flex items-center justify-between px-5 h-14 border-b border-[#E0E0E0]/60">

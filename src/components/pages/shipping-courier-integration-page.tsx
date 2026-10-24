@@ -9,33 +9,33 @@ export function ShippingCourierIntegrationPage() {
   const [courier, setCourier] = useState('pathao');
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-      <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+      <header className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 -ml-1 text-gray-600">
+          <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">API Integration</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">API Integration</h1>
         </div>
         <button className="flex items-center gap-1 bg-[#C8102E] text-white px-3 py-1.5 rounded-lg text-sm font-medium">
           <Save className="w-4 h-4" /> Connect
         </button>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">API Integration</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">API Integration</h1>
 
       <div className="p-4 space-y-6">
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
+          <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
             <Link2 className="w-5 h-5 text-[#C8102E]" /> Courier Partner API
           </h2>
           
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">Select Partner</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Select Partner</label>
               <select 
                 value={courier}
                 onChange={(e) => setCourier(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-300 rounded-lg text-sm"
               >
                 <option value="pathao">Pathao Courier</option>
                 <option value="redx">RedX</option>
@@ -44,24 +44,24 @@ export function ShippingCourierIntegrationPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">Merchant API Key</label>
-              <input type="password" placeholder="Enter API Key" className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm" />
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Merchant API Key</label>
+              <input type="password" placeholder="Enter API Key" className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 rounded-lg text-sm" />
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">API Secret</label>
-              <input type="password" placeholder="Enter API Secret" className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm" />
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">API Secret</label>
+              <input type="password" placeholder="Enter API Secret" className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 rounded-lg text-sm" />
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1">Store ID</label>
-              <input type="text" placeholder="Enter Store ID" className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm" />
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Store ID</label>
+              <input type="text" placeholder="Enter Store ID" className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 rounded-lg text-sm" />
             </div>
             
-            <div className="pt-2 border-t border-gray-100">
-              <label className="text-sm font-medium text-gray-700 block mb-1">Zylod Webhook URL (Read Only)</label>
+            <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Zylod Webhook URL (Read Only)</label>
               <div className="flex gap-2">
-                <input type="text" readOnly value="https://api.zylod.com/webhooks/courier" className="flex-1 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-500" />
+                <input type="text" readOnly value="https://api.zylod.com/webhooks/courier" className="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-500 dark:text-gray-400" />
               </div>
             </div>
           </div>

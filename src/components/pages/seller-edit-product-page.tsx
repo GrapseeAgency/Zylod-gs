@@ -451,7 +451,7 @@ export function SellerEditProductPage() {
 
   if (fetching) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center" role="status" aria-label="Loading product">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center" role="status" aria-label="Loading product">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -462,18 +462,18 @@ export function SellerEditProductPage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="min-h-screen bg-gray-50 pb-20 md:pb-8"
+        className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
       >
-        <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+        <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Edit Product</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Edit Product</h1>
         </div>
         <div className="p-4 max-w-3xl mx-auto md:p-6 md:pt-10">
-          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center space-y-4">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-4">
             <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto" />
-            <p className="text-sm text-gray-700">{fetchError}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">{fetchError}</p>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <button
                 type="button"
@@ -485,7 +485,7 @@ export function SellerEditProductPage() {
               <button
                 type="button"
                 onClick={fetchProduct}
-                className="min-h-11 px-4 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50"
+                className="min-h-11 px-4 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 Retry
               </button>
@@ -501,18 +501,18 @@ export function SellerEditProductPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="min-h-screen bg-gray-50 pb-20 md:pb-8"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
     >
-      <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+      <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
+        <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <h1 className="text-lg font-bold text-gray-900">Edit Product</h1>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Edit Product</h1>
       </div>
 
       <div className="p-4 max-w-3xl mx-auto space-y-6 md:p-6 md:pt-6">
         <div className="hidden md:flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Edit Product</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Product</h1>
           {moderation && (
             <span
               className={`text-xs px-2 py-1 rounded-full font-medium border ${
@@ -520,7 +520,7 @@ export function SellerEditProductPage() {
                   ? 'bg-amber-50 text-amber-700 border-amber-200'
                   : moderation.isApproved && moderation.isActive
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-slate-50 text-slate-600 border-slate-200'
+                    : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
               }`}
             >
               {!moderation.isApproved && moderation.isActive
@@ -610,10 +610,10 @@ export function SellerEditProductPage() {
             supplier files real, verifiable certificates here; the PDP
             "Certifications" tab serves exactly these rows to buyers. */}
         {productId && !notFound && (
-          <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/60">
-              <h2 className="text-sm font-black text-slate-900">Certifications &amp; compliance</h2>
-              <p className="text-[11px] text-slate-500 mt-0.5">
+          <section className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60">
+              <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Certifications &amp; compliance</h2>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Shown to every buyer on the product page. File real, verifiable
                 certificates only — false claims are strictly penalized.
               </p>

@@ -96,30 +96,30 @@ export function WishlistPage() {
   const displayedItems = getFilteredAndSortedItems()
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center justify-between">
-        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 hidden md:block">
+      <header className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b px-4 py-3 flex items-center justify-between">
+        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 hidden md:block">
           <ArrowLeft size={24} />
         </button>
         <div className="text-center">
           <h1 className="font-semibold text-lg md:text-xl">My Wishlist {!loading && `(${items.length})`}</h1>
         </div>
         <div className="flex items-center space-x-2">
-          <button onClick={() => navigate('shared-wishlist')} className="p-2 rounded-full hover:bg-gray-100">
+          <button onClick={() => navigate('shared-wishlist')} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
             <Share2 size={20} />
           </button>
         </div>
       </header>
 
       {/* Tabs */}
-      <div className="bg-white border-b px-4 py-2 flex space-x-4 overflow-x-auto no-scrollbar">
+      <div className="bg-white dark:bg-gray-900 border-b px-4 py-2 flex space-x-4 overflow-x-auto no-scrollbar">
         {['ALL', 'IN_STOCK', 'PRICE_DROP'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
             className={`whitespace-nowrap pb-2 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-gray-500'
+              activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-gray-500 dark:text-gray-400'
             }`}
           >
             {tab === 'ALL' ? 'All Items' : tab === 'IN_STOCK' ? 'In Stock' : 'Price Drop'}
@@ -132,7 +132,7 @@ export function WishlistPage() {
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value as any)}
-          className="bg-transparent text-sm font-medium text-gray-700 outline-none"
+          className="bg-transparent text-sm font-medium text-gray-700 dark:text-gray-300 outline-none"
         >
           <option value="RECENT">Recently Added</option>
           <option value="PRICE_ASC">Price Low-High</option>
@@ -153,7 +153,7 @@ export function WishlistPage() {
         {loading ? (
           <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 lg:grid-cols-3">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="bg-white rounded-xl p-3 flex gap-4 shadow-sm animate-pulse">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-xl p-3 flex gap-4 shadow-sm animate-pulse">
                 <div className="w-20 h-20 bg-gray-200 rounded-lg"></div>
                 <div className="flex-1 space-y-2">
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -171,7 +171,7 @@ export function WishlistPage() {
               <Heart size={32} />
             </div>
             <h2 className="text-lg font-semibold mb-2">Your wishlist is empty</h2>
-            <p className="text-gray-500 mb-6 max-w-[250px]">Save items you like here to review or buy them later.</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-[250px]">Save items you like here to review or buy them later.</p>
             <button
               onClick={() => navigate('home')}
               className="bg-primary text-white px-6 py-2.5 rounded-full font-medium"
@@ -188,7 +188,7 @@ export function WishlistPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden flex relative"
+                  className="bg-white dark:bg-gray-900 rounded-xl shadow-sm overflow-hidden flex relative"
                   onClick={() => !isBatchMode && navigate('product-detail', { productId: item.productId })}
                 >
                   {isBatchMode && (
@@ -205,17 +205,17 @@ export function WishlistPage() {
                   )}
 
                   <div className={`p-3 flex gap-3 flex-1 ${isBatchMode ? 'pl-2' : ''}`}>
-                    <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden shrink-0">
                       <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-cover" />
                     </div>
                     
                     <div className="flex-1 flex flex-col justify-between">
                       <div className="pr-8">
                         <h3 className="font-medium text-sm line-clamp-2">{item.productName}</h3>
-                        <p className="text-xs text-gray-500 mt-0.5">{item.supplierName}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{item.supplierName}</p>
                         
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded text-gray-600 font-medium">MOQ: {item.moq}</span>
+                          <span className="text-[10px] bg-gray-100 dark:bg-gray-900 px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400 font-medium">MOQ: {item.moq}</span>
                           {item.stockStatus === 'IN_STOCK' ? (
                             <span className="text-[10px] text-green-600 font-medium">In Stock</span>
                           ) : item.stockStatus === 'LOW_STOCK' ? (
@@ -230,7 +230,7 @@ export function WishlistPage() {
                         <div>
                           <p className="font-bold text-primary text-sm">${item.price.toFixed(2)}</p>
                           {item.oldPrice && item.oldPrice > item.price && (
-                            <p className="text-[10px] text-gray-400 line-through">${item.oldPrice.toFixed(2)}</p>
+                            <p className="text-[10px] text-gray-400 dark:text-gray-500 line-through">${item.oldPrice.toFixed(2)}</p>
                           )}
                         </div>
                         
@@ -246,7 +246,7 @@ export function WishlistPage() {
                   {!isBatchMode && (
                     <button 
                       onClick={(e) => handleRemove(item.id, e)}
-                      className="absolute top-3 right-3 p-1.5 bg-gray-50 rounded-full text-gray-400 hover:text-red-500"
+                      className="absolute top-3 right-3 p-1.5 bg-gray-50 dark:bg-gray-950 rounded-full text-gray-400 dark:text-gray-500 hover:text-red-500"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -260,7 +260,7 @@ export function WishlistPage() {
 
       {/* Batch Mode Footer */}
       {isBatchMode && displayedItems.length > 0 && (
-        <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white border-t p-4 flex gap-3 z-20">
+        <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 flex gap-3 z-20">
           <button 
             disabled={selectedItems.size === 0}
             className="flex-1 py-3 border border-red-200 text-red-600 rounded-full font-medium disabled:opacity-50"

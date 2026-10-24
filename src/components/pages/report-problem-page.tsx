@@ -69,19 +69,19 @@ export function ReportProblemPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">Report a Technical Problem</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Report a Technical Problem</span>
         </div>
       </div>
 
       <div className="flex-1 px-4 py-6 max-w-2xl mx-auto w-full pb-24 md:px-6 md:py-8 md:pb-10">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900">Report a Technical Problem</h1>
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100">Report a Technical Problem</h1>
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
           {submitted ? (
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -91,8 +91,8 @@ export function ReportProblemPage() {
               <div className="w-14 h-14 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h2 className="text-lg font-bold text-gray-900">Problem Report Logged</h2>
-              <p className="text-xs text-gray-500 max-w-sm mx-auto">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Problem Report Logged</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
                 Thank you for helping us make Zylod more reliable. Our engineering team has received your diagnostic report and is working on a fix.
               </p>
               <button
@@ -108,11 +108,11 @@ export function ReportProblemPage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <Bug className="w-4 h-4 text-red-600" />
                   What went wrong?
                 </h2>
-                <p className="text-xs text-gray-400 mt-0.5">Let us know what bug or glitch occurred on the platform.</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Let us know what bug or glitch occurred on the platform.</p>
               </div>
 
               {errorMsg && (
@@ -123,11 +123,11 @@ export function ReportProblemPage() {
               )}
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-700">Issue Type *</label>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Issue Type *</label>
                 <select
                   value={formData.issueType}
                   onChange={e => setFormData({ ...formData, issueType: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs bg-white focus:outline-none focus:border-red-500"
+                  className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs bg-white dark:bg-gray-900 focus:outline-none focus:border-red-500"
                 >
                   {issueTypes.map(t => (
                     <option key={t.value} value={t.value}>{t.label}</option>
@@ -136,36 +136,36 @@ export function ReportProblemPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-700">Summary / Error Message *</label>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Summary / Error Message *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Button disabled on bKash checkout step 2"
                   value={formData.subject}
                   onChange={e => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-red-500"
+                  className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-700">Steps to Reproduce *</label>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Steps to Reproduce *</label>
                 <textarea
                   required
                   rows={4}
                   placeholder="1. What were you trying to do?&#10;2. What happened instead?&#10;3. Any error codes displayed?"
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 leading-relaxed font-mono"
+                  className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 leading-relaxed font-mono"
                 />
               </div>
 
               {/* Auto Diagnostics Box */}
-              <div className="bg-slate-50 border border-gray-100 rounded-2xl p-3.5 space-y-2">
-                <p className="text-[11px] font-bold text-gray-700 flex items-center gap-1.5">
-                  <Laptop className="w-3.5 h-3.5 text-gray-500" />
+              <div className="bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-gray-800 rounded-2xl p-3.5 space-y-2">
+                <p className="text-[11px] font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                  <Laptop className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
                   Auto-Captured Diagnostics (Included automatically)
                 </p>
-                <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-500 font-mono bg-white p-2 rounded-xl border border-gray-100">
+                <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-500 dark:text-gray-400 font-mono bg-white dark:bg-gray-900 p-2 rounded-xl border border-gray-100 dark:border-gray-800">
                   <div>Platform: {systemInfo.platform || 'Linux'}</div>
                   <div>Screen: {systemInfo.screen || '1920x1080'}</div>
                   <div>Language: {systemInfo.language || 'en'}</div>

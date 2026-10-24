@@ -34,13 +34,13 @@ export function NotificationFilterPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">Filter Notifications</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Filter Notifications</span>
         </div>
 
         <button
@@ -59,8 +59,8 @@ export function NotificationFilterPage() {
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-xl mx-auto lg:max-w-4xl w-full space-y-6 pb-24 md:pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
         {/* Type Multi-select */}
-        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-3 md:row-span-2">
-          <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3 md:row-span-2">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
             Notification Categories
           </h2>
 
@@ -79,7 +79,7 @@ export function NotificationFilterPage() {
                   key={type.id}
                   onClick={() => toggleType(type.id)}
                   className={`p-3 rounded-2xl border text-xs font-bold text-left transition flex items-center justify-between ${
-                    active ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 bg-slate-50 text-gray-700'
+                    active ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   <span>{type.label}</span>
@@ -91,15 +91,15 @@ export function NotificationFilterPage() {
         </div>
 
         {/* Read Status */}
-        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-3">
-          <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
             Read Status
           </h2>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setUnreadOnly(false)}
               className={`p-3 rounded-2xl border text-xs font-bold transition ${
-                !unreadOnly ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 bg-slate-50 text-gray-700'
+                !unreadOnly ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 text-gray-700 dark:text-gray-300'
               }`}
             >
               All Notifications
@@ -107,7 +107,7 @@ export function NotificationFilterPage() {
             <button
               onClick={() => setUnreadOnly(true)}
               className={`p-3 rounded-2xl border text-xs font-bold transition ${
-                unreadOnly ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 bg-slate-50 text-gray-700'
+                unreadOnly ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 text-gray-700 dark:text-gray-300'
               }`}
             >
               Unread Only
@@ -116,13 +116,13 @@ export function NotificationFilterPage() {
         </div>
 
         {/* Date Range */}
-        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-3">
-          <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
             Date Window
           </h2>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[11px] text-gray-500 font-bold block mb-1">From Date</label>
+              <label className="text-[11px] text-gray-500 dark:text-gray-400 font-bold block mb-1">From Date</label>
               <Input
                 type="date"
                 value={startDate}
@@ -131,7 +131,7 @@ export function NotificationFilterPage() {
               />
             </div>
             <div>
-              <label className="text-[11px] text-gray-500 font-bold block mb-1">To Date</label>
+              <label className="text-[11px] text-gray-500 dark:text-gray-400 font-bold block mb-1">To Date</label>
               <Input
                 type="date"
                 value={endDate}

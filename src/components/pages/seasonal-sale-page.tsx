@@ -108,10 +108,10 @@ export function SeasonalSalePage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-10">
       {/* ─── Top Header ─── */}
-      <header className="md:hidden sticky top-0 z-40 bg-white border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -119,7 +119,7 @@ export function SeasonalSalePage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -127,7 +127,7 @@ export function SeasonalSalePage() {
       </header>
 
       {/* ─── Top Seasonal Festival Hero ─── */}
-      <div className="relative aspect-[16/10] w-full bg-gray-100 overflow-hidden flex items-center justify-center text-center px-6">
+      <div className="relative aspect-[16/10] w-full bg-gray-100 dark:bg-gray-900 overflow-hidden flex items-center justify-center text-center px-6">
         {/* Background Image */}
         { }
         <img
@@ -167,7 +167,7 @@ export function SeasonalSalePage() {
         )}
         {!isLoading && !loadError && kits.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <Sparkles className="w-8 h-8 text-gray-400" />
+            <Sparkles className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               The seasonal collection is being curated. Check back soon.
             </p>
@@ -195,9 +195,9 @@ export function SeasonalSalePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => navigate('category-products', { category: kit.slug })}
-                  className="bg-white rounded-2xl border border-[#E0E0E0] p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                 >
-                  <div className="w-24 h-24 rounded-xl bg-gray-100 overflow-hidden shrink-0">
+                  <div className="w-24 h-24 rounded-xl bg-gray-100 dark:bg-gray-900 overflow-hidden shrink-0">
                     { }
                     <img
                       src={kit.hero?.images?.[0]?.imageUrl || kit.hero?.thumbnailUrl || '/placeholder-product.svg'}

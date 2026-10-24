@@ -128,7 +128,7 @@ export function BackupCodesPage() {
 
   /* ─── Header Bar (mobile) ─── */
   const headerBar = (
-    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white border-b border-[#E0E0E0]">
+    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]">
       <button
         onClick={goBack}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
@@ -194,7 +194,7 @@ export function BackupCodesPage() {
       animate="visible"
       className="px-4 pt-4"
     >
-      <Card className="rounded-xl shadow-md border-0 bg-white py-0 gap-0">
+      <Card className="rounded-xl shadow-md border-0 bg-white dark:bg-gray-900 py-0 gap-0">
         <CardContent className="p-5 space-y-2">
           <h2 className="text-[20px] font-bold text-[#1A1A1A]">
             Secure Your Account
@@ -217,7 +217,7 @@ export function BackupCodesPage() {
       animate="visible"
       className="px-4 pt-4"
     >
-      <Card className="rounded-xl shadow-md border-0 bg-white py-0 gap-0">
+      <Card className="rounded-xl shadow-md border-0 bg-white dark:bg-gray-900 py-0 gap-0">
         <CardContent className="p-5">
           {isLoading ? (
             <div className="flex flex-col items-center gap-3 py-10">

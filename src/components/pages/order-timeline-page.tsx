@@ -231,7 +231,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
         <div className="text-center max-w-xs space-y-3">
           <Package className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">No order selected</h1>
-          <p className="text-xs text-slate-500">Pick an order from your order history to see its timeline.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Pick an order from your order history to see its timeline.</p>
           <Button onClick={() => navigate('my-orders')} className="h-10 px-5 rounded-xl text-xs font-bold">View My Orders</Button>
         </div>
       </div>
@@ -244,7 +244,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
         <div className="text-center max-w-xs space-y-3">
           <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
           <h1 className="text-base font-black">Sign in required</h1>
-          <p className="text-xs text-slate-500">You need to be signed in to view this order timeline.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">You need to be signed in to view this order timeline.</p>
           <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
         </div>
       </div>
@@ -257,7 +257,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
         <div className="text-center max-w-xs space-y-3">
           <XCircle className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">Order not found</h1>
-          <p className="text-xs text-slate-500">This order does not exist or is not visible to your account.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">This order does not exist or is not visible to your account.</p>
           <Button onClick={() => navigate('my-orders')} className="h-10 px-5 rounded-xl text-xs font-bold">View My Orders</Button>
         </div>
       </div>
@@ -283,22 +283,22 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 md:hidden">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 md:hidden">
           <div className="h-5 w-40 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
         </header>
         <main className="px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg mx-auto md:max-w-2xl">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
+          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
             <div className="h-4 w-36 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-            <div className="h-6 w-48 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
-            <div className="h-3 w-52 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+            <div className="h-6 w-48 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
+            <div className="h-3 w-52 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
           </div>
           <div className="space-y-6 pt-2 pl-2">
             {[0, 1, 2, 3].map((i) => (
               <div key={i} className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse shrink-0" />
-                <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 space-y-2">
-                  <div className="h-3.5 w-32 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
-                  <div className="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+                <div className="flex-1 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 space-y-2">
+                  <div className="h-3.5 w-32 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
+                  <div className="h-3 w-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
                 </div>
               </div>
             ))}
@@ -331,7 +331,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
@@ -347,7 +347,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
 
       <main className="px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg mx-auto md:max-w-2xl">
         {/* Expected Delivery Card (real data only — no carrier invention) */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-900 dark:text-slate-100">Expected Delivery</span>
             <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${badgeClasses[badge]}`}>
@@ -360,7 +360,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
           </div>
 
           <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
-            <Truck className="h-4 w-4 text-slate-400" />
+            <Truck className="h-4 w-4 text-slate-400 dark:text-slate-500" />
             <span>
               {shipmentCount > 0
                 ? `${shipmentCount} shipment${shipmentCount === 1 ? '' : 's'} from ${supplierCount} supplier${supplierCount === 1 ? '' : 's'} — tracking details below`
@@ -388,18 +388,18 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
                 </div>
 
                 {/* Event Details Card */}
-                <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
+                <div className="flex-1 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">{event.title}</h3>
-                    <span className="text-[10px] font-bold text-slate-400 font-mono shrink-0">
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 font-mono shrink-0">
                       {event.ts !== null ? formatEventTime(event.ts) : '--'}
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{event.description}</p>
                   {event.meta && (
-                    <p className="text-[10px] text-slate-500 dark:text-slate-500 font-medium break-words">{event.meta}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium break-words">{event.meta}</p>
                   )}
-                  <p className="text-[10px] text-slate-400 font-medium pt-1">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium pt-1">
                     {event.ts !== null ? formatEventDate(event.ts) : 'No timestamp recorded'}
                   </p>
                 </div>
@@ -413,7 +413,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
           <Button
             variant="outline"
             onClick={() => navigate('help-center')}
-            className="w-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 font-bold h-12 rounded-2xl text-xs flex items-center justify-center gap-2"
+            className="w-full bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-12 rounded-2xl text-xs flex items-center justify-center gap-2"
           >
             <Headphones className="h-4 w-4" />
             Contact Support

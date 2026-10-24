@@ -86,7 +86,7 @@ function StarRating({ value, size = 'sm' }: { value: number; size?: 'sm' | 'lg' 
 function ProgressBar({ value, max, color = 'primary' }: { value: number; max: number; color?: string }) {
   const pct = Math.min(100, Math.max(0, max > 0 ? (value / max) * 100 : 0))
   return (
-    <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+    <div className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-900 overflow-hidden">
       <div
         className={`h-full rounded-full transition-all duration-500 ${color === 'primary' ? 'bg-primary' : color === 'emerald' ? 'bg-emerald-500' : 'bg-amber-500'}`}
         style={{ width: `${pct}%` }}
@@ -120,20 +120,20 @@ function StatCard({
   }
 
   return (
-    <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-2xs space-y-3">
+    <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
       <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center ${iconColors[color] || iconColors.primary}`}>
         <Icon className="h-5 w-5" />
       </div>
       <div>
-        <div className="text-2xl font-black text-slate-900 font-mono leading-none">{value}</div>
+        <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono leading-none">{value}</div>
         {trend && (
           <div className="flex items-center gap-1 mt-1">
             <TrendingUp className="h-3 w-3 text-emerald-500" />
             <span className="text-[10px] font-bold text-emerald-600">{trend}</span>
           </div>
         )}
-        <span className="text-[11px] font-bold text-slate-400 block mt-1 uppercase tracking-wider">{label}</span>
-        {sub && <span className="text-[10px] text-slate-400">{sub}</span>}
+        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block mt-1 uppercase tracking-wider">{label}</span>
+        {sub && <span className="text-[10px] text-slate-400 dark:text-slate-500">{sub}</span>}
       </div>
     </div>
   )
@@ -468,7 +468,7 @@ export function SellerProfilePage() {
 
   // ─── RENDER ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       {/* Hidden file inputs for avatar & cover uploads */}
       <input
         type="file"
@@ -486,14 +486,14 @@ export function SellerProfilePage() {
       />
 
       {/* ─── HEADER ─────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('home')} className="md:hidden p-1 text-slate-700 hover:text-slate-900" title="Home">
+          <button onClick={() => navigate('home')} className="md:hidden p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Home">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
             <span className="text-lg font-black tracking-tight text-primary">Zylod</span>
-            <span className="text-[9px] font-bold text-slate-400 block -mt-0.5 uppercase tracking-widest">
+            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block -mt-0.5 uppercase tracking-widest">
               {isOwner ? 'My Seller Portal' : 'Verified Supplier'}
             </span>
           </div>
@@ -502,7 +502,7 @@ export function SellerProfilePage() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleShare}
-            className="h-8 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors"
+            className="h-8 px-3 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-colors"
           >
             <Share2 className="h-3.5 w-3.5" />
             {copied ? 'Copied' : 'Share'}
@@ -510,7 +510,7 @@ export function SellerProfilePage() {
           {isOwner && (
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="h-8 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5"
+              className="h-8 px-3 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5"
             >
               <Edit3 className="h-3.5 w-3.5" />
               {isEditing ? 'Close' : 'Edit'}
@@ -518,7 +518,7 @@ export function SellerProfilePage() {
           )}
           <button
             onClick={() => navigate('account-settings')}
-            className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200"
+            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
             title="Settings"
           >
             <Settings className="h-4 w-4" />
@@ -528,7 +528,7 @@ export function SellerProfilePage() {
 
       <main className="max-w-lg mx-auto pb-28 md:max-w-3xl md:pb-10">
         {/* ─── 1. HERO BANNER & IDENTITY ─────────────────────────────────── */}
-        <div className="bg-white border-b border-slate-200">
+        <div className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-slate-800">
           {/* Factory Cover Banner */}
           <div className="h-44 md:h-64 bg-gradient-to-br from-slate-900 via-rose-950 to-slate-900 relative overflow-hidden group">
             {coverUrl ? (
@@ -539,7 +539,7 @@ export function SellerProfilePage() {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-slate-800 opacity-60">
-                <Building2 className="h-16 w-16 text-slate-600" />
+                <Building2 className="h-16 w-16 text-slate-600 dark:text-slate-400" />
               </div>
             )}
 
@@ -569,7 +569,7 @@ export function SellerProfilePage() {
             {/* Avatar row */}
             <div className="flex items-end justify-between">
               <div className="relative group">
-                <div className="w-24 h-24 rounded-2xl bg-white border-4 border-white shadow-lg overflow-hidden ring-2 ring-rose-100 flex items-center justify-center bg-slate-100">
+                <div className="w-24 h-24 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-rose-100 flex items-center justify-center bg-slate-100 dark:bg-slate-900">
                   {avatarUrl ? (
                     <img
                       src={avatarUrl}
@@ -577,7 +577,7 @@ export function SellerProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Building2 className="h-10 w-10 text-slate-400" />
+                    <Building2 className="h-10 w-10 text-slate-400 dark:text-slate-500" />
                   )}
                 </div>
 
@@ -613,7 +613,7 @@ export function SellerProfilePage() {
                     <Button
                       variant="outline"
                       onClick={() => navigate('edit-profile')}
-                      className="h-9 px-3 rounded-xl text-xs font-bold border-slate-200 text-slate-700 flex items-center gap-1.5 hover:border-primary hover:text-primary"
+                      className="h-9 px-3 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5 hover:border-primary hover:text-primary"
                     >
                       <Edit3 className="h-3.5 w-3.5" />
                       Edit Info
@@ -625,7 +625,7 @@ export function SellerProfilePage() {
                       onClick={() => setFollowing((f) => !f)}
                       className={`h-9 px-4 rounded-xl text-xs font-bold transition-all ${
                         following
-                          ? 'bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200'
+                          ? 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-200 border border-slate-200 dark:border-slate-800'
                           : 'bg-primary hover:bg-primary/90 text-white shadow-md'
                       }`}
                     >
@@ -634,7 +634,7 @@ export function SellerProfilePage() {
                     <Button
                       variant="outline"
                       onClick={() => navigate('delivery-chat')}
-                      className="h-9 px-3 rounded-xl text-xs font-bold border-slate-200 flex items-center gap-1.5 text-slate-700 hover:text-primary hover:border-primary"
+                      className="h-9 px-3 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:text-primary hover:border-primary"
                     >
                       <MessageSquare className="h-3.5 w-3.5" />
                       Inquiry
@@ -646,33 +646,33 @@ export function SellerProfilePage() {
 
             {/* Inline Profile Editor */}
             {isEditing && isOwner ? (
-              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
-                <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Quick Edit Profile</h3>
+              <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 space-y-3">
+                <h3 className="text-xs font-black text-slate-900 dark:text-slate-100 uppercase tracking-wider">Quick Edit Profile</h3>
                 <div className="space-y-2">
                   <div>
-                    <label className="text-[11px] font-bold text-slate-600">Company / Store Name</label>
+                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Company / Store Name</label>
                     <Input
                       value={editCompanyName}
                       onChange={(e) => setEditCompanyName(e.target.value)}
-                      className="h-9 rounded-xl bg-white text-xs"
+                      className="h-9 rounded-xl bg-white dark:bg-gray-900 text-xs"
                       placeholder="Company Name"
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-bold text-slate-600">Phone</label>
+                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Phone</label>
                     <Input
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
-                      className="h-9 rounded-xl bg-white text-xs"
+                      className="h-9 rounded-xl bg-white dark:bg-gray-900 text-xs"
                       placeholder="Phone"
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-bold text-slate-600">Email</label>
+                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Email</label>
                     <Input
                       value={editEmail}
                       onChange={(e) => setEditEmail(e.target.value)}
-                      className="h-9 rounded-xl bg-white text-xs"
+                      className="h-9 rounded-xl bg-white dark:bg-gray-900 text-xs"
                       placeholder="Email"
                     />
                   </div>
@@ -689,7 +689,7 @@ export function SellerProfilePage() {
                   <Button
                     variant="outline"
                     onClick={() => setIsEditing(false)}
-                    className="h-8 px-3 rounded-xl text-xs font-bold border-slate-200 text-slate-600"
+                    className="h-8 px-3 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
                   >
                     Cancel
                   </Button>
@@ -699,7 +699,7 @@ export function SellerProfilePage() {
               /* Company Name + Tagline */
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-xl font-black text-slate-900 tracking-tight leading-tight">
+                  <h1 className="text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
                     {companyName}
                   </h1>
                   {isVerified ? (
@@ -714,27 +714,27 @@ export function SellerProfilePage() {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   Verified Wholesale Manufacturer on Zylod Platform. ISO-standard quality controls, bulk supply agreements, and direct factory distribution.
                 </p>
               </div>
             )}
 
             {/* Meta chips */}
-            <div className="flex items-center gap-3 text-[11px] text-slate-500 flex-wrap">
+            <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 flex-wrap">
               <span className="flex items-center gap-1.5 font-semibold">
                 <MapPin className="h-3.5 w-3.5 text-primary" />
                 Dhaka, Bangladesh
               </span>
               <span className="flex items-center gap-1.5 font-semibold">
-                <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                <Calendar className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                 Active on Zylod
               </span>
-              <span className="flex items-center gap-1.5 font-bold text-slate-800">
+              <span className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
                 <strong className="text-primary">{totalProducts}</strong> SKUs
               </span>
               {ratingCount > 0 && (
-                <span className="flex items-center gap-1.5 font-bold text-slate-800">
+                <span className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
                   <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                   {ratingAvg.toFixed(1)} ({ratingCount})
                 </span>
@@ -742,16 +742,16 @@ export function SellerProfilePage() {
             </div>
 
             {/* Performance Score Bar */}
-            <div className="grid grid-cols-4 gap-2 text-center pt-1 border-t border-slate-100">
+            <div className="grid grid-cols-4 gap-2 text-center pt-1 border-t border-slate-100 dark:border-slate-800">
               {[
                 { label: 'Catalog SKUs', value: String(totalProducts), icon: Package },
                 { label: 'Rating', value: ratingAvg > 0 ? ratingAvg.toFixed(1) : '5.0', icon: Star },
                 { label: 'Inquiries', value: String(totalQuotes), icon: MessageSquare },
                 { label: 'Status', value: isVerified ? 'Verified' : 'Active', icon: ShieldCheck },
               ].map((stat) => (
-                <div key={stat.label} className="bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
-                  <div className="text-xs font-black text-slate-900 font-mono">{stat.value}</div>
-                  <span className="text-[9px] font-bold text-slate-400 block uppercase tracking-wider leading-tight mt-0.5">{stat.label}</span>
+                <div key={stat.label} className="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800">
+                  <div className="text-xs font-black text-slate-900 dark:text-slate-100 font-mono">{stat.value}</div>
+                  <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block uppercase tracking-wider leading-tight mt-0.5">{stat.label}</span>
                 </div>
               ))}
             </div>
@@ -759,7 +759,7 @@ export function SellerProfilePage() {
         </div>
 
         {/* ─── 2. TAB NAVIGATION (NO EMOJIS, CLEAN ICONS) ────────────────── */}
-        <div className="sticky top-[57px] z-30 bg-white border-b border-slate-100 shadow-xs">
+        <div className="sticky top-[57px] z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 shadow-xs">
           <div className="flex items-center gap-1 overflow-x-auto no-scrollbar px-3 py-2">
             {[
               { key: 'overview', label: 'Overview', icon: Building2 },
@@ -780,7 +780,7 @@ export function SellerProfilePage() {
                   className={`px-3.5 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-primary text-white shadow-xs font-black'
-                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -808,9 +808,9 @@ export function SellerProfilePage() {
               {activeTab === 'overview' && (
                 <>
                   {/* Corporate Specification Sheet */}
-                  <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                      <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
                         <Building2 className="h-4 w-4 text-primary" />
                         Business Specifications
                       </h2>
@@ -837,20 +837,20 @@ export function SellerProfilePage() {
                         { label: 'Shipping Port', value: 'Chittagong Port (BDCGP) / Dhaka Dry Port' },
                       ].map(({ label, value }) => (
                         <div key={label} className="flex justify-between py-2.5 items-start gap-3">
-                          <span className="text-slate-400 shrink-0 w-2/5">{label}</span>
-                          <span className="font-bold text-slate-900 text-right">{value}</span>
+                          <span className="text-slate-400 dark:text-slate-500 shrink-0 w-2/5">{label}</span>
+                          <span className="font-bold text-slate-900 dark:text-slate-100 text-right">{value}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {/* Sourcing & Quality Commitments */}
-                  <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-                    <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
                       <ShieldCheck className="h-4 w-4 text-emerald-600" />
                       Quality &amp; Sourcing Standards
                     </h2>
-                    <div className="space-y-2.5 text-xs text-slate-600 leading-relaxed">
+                    <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                       <div className="flex items-start gap-2.5">
                         <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                         <span>Order payments are verified by Zylod before the supplier ships.</span>
@@ -876,7 +876,7 @@ export function SellerProfilePage() {
                   {/* Search + Sort + Filter Row */}
                   <div className="space-y-3">
                     <div className="relative">
-                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
                       <Input
                         value={searchProduct}
                         onChange={(e) => {
@@ -884,7 +884,7 @@ export function SellerProfilePage() {
                           setProductsPage(1)
                         }}
                         placeholder="Search supplier products, SKUs, or part numbers..."
-                        className="h-12 pl-10 rounded-2xl bg-white border-slate-200 text-xs font-semibold shadow-2xs"
+                        className="h-12 pl-10 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-semibold shadow-2xs"
                       />
                     </div>
 
@@ -897,7 +897,7 @@ export function SellerProfilePage() {
                           className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
                             selectedCategory === cat
                               ? 'bg-primary text-white shadow-xs'
-                              : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                              : 'bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
                           }`}
                         >
                           {cat}
@@ -910,10 +910,10 @@ export function SellerProfilePage() {
                   {loadingProducts ? (
                     <div className="grid grid-cols-2 gap-3">
                       {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="bg-white rounded-3xl p-3.5 border border-slate-200 animate-pulse space-y-2.5">
-                          <div className="aspect-square rounded-2xl bg-slate-100" />
-                          <div className="h-3 bg-slate-100 rounded-md w-3/4" />
-                          <div className="h-4 bg-slate-100 rounded-md w-1/2" />
+                        <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl p-3.5 border border-slate-200 dark:border-slate-800 animate-pulse space-y-2.5">
+                          <div className="aspect-square rounded-2xl bg-slate-100 dark:bg-slate-900" />
+                          <div className="h-3 bg-slate-100 dark:bg-slate-900 rounded-md w-3/4" />
+                          <div className="h-4 bg-slate-100 dark:bg-slate-900 rounded-md w-1/2" />
                         </div>
                       ))}
                     </div>
@@ -922,11 +922,11 @@ export function SellerProfilePage() {
                       {products.map((item) => (
                         <div
                           key={item.id}
-                          className="bg-white rounded-3xl p-3.5 border border-slate-200 shadow-2xs space-y-2.5 group cursor-pointer hover:border-primary/40 hover:shadow-rose-100 transition-all"
+                          className="bg-white dark:bg-gray-900 rounded-3xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2.5 group cursor-pointer hover:border-primary/40 hover:shadow-rose-100 transition-all"
                           onClick={() => navigate('product-detail', { productId: item.id })}
                         >
                           {/* Product Image */}
-                          <div className="aspect-square rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden relative">
+                          <div className="aspect-square rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden relative">
                             {item.images?.[0]?.url ? (
                               <img
                                 src={item.images[0].url}
@@ -946,14 +946,14 @@ export function SellerProfilePage() {
 
                           {/* Product Info */}
                           <div>
-                            <h3 className="text-xs font-bold text-slate-900 leading-snug line-clamp-2">
+                            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug line-clamp-2">
                               {item.name}
                             </h3>
                             <div className="flex items-baseline justify-between mt-1">
                               <span className="text-sm font-black text-primary">
                                 {formatPrice(item.base_price)}
                               </span>
-                              <span className="text-[10px] text-slate-400 font-medium">
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
                                 /{item.unit}
                               </span>
                             </div>
@@ -962,24 +962,24 @@ export function SellerProfilePage() {
                           {/* Quantity Selector + Add to Cart */}
                           <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-1 bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
+                              <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                                 <button
                                   onClick={(e) => { e.stopPropagation(); setProductQuantity(item.id, item.moq, -item.moq) }}
-                                  className="p-1.5 hover:bg-slate-100 text-slate-600 transition-colors"
+                                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
                                 >
                                   <Minus className="h-3 w-3" />
                                 </button>
-                                <span className="px-2 text-[11px] font-black text-slate-900 font-mono min-w-[36px] text-center">
+                                <span className="px-2 text-[11px] font-black text-slate-900 dark:text-slate-100 font-mono min-w-[36px] text-center">
                                   {getProductQuantity(item.id, item.moq)}
                                 </span>
                                 <button
                                   onClick={(e) => { e.stopPropagation(); setProductQuantity(item.id, item.moq, item.moq) }}
-                                  className="p-1.5 hover:bg-slate-100 text-slate-600 transition-colors"
+                                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
                                 >
                                   <Plus className="h-3 w-3" />
                                 </button>
                               </div>
-                              <span className="text-[10px] text-slate-400 font-mono">
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                                 = {formatPrice(item.base_price * getProductQuantity(item.id, item.moq))}
                               </span>
                             </div>
@@ -996,9 +996,9 @@ export function SellerProfilePage() {
                       ))}
                     </div>
                   ) : (
-                    <div className="bg-white rounded-3xl p-10 border border-slate-200 text-center space-y-2">
+                    <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
                       <Boxes className="h-10 w-10 text-slate-200 mx-auto" />
-                      <p className="text-sm font-bold text-slate-400">No products found</p>
+                      <p className="text-sm font-bold text-slate-400 dark:text-slate-500">No products found</p>
                       {isOwner ? (
                         <Button
                           onClick={() => navigate('add-product')}
@@ -1007,7 +1007,7 @@ export function SellerProfilePage() {
                           + Upload Products
                         </Button>
                       ) : (
-                        <p className="text-xs text-slate-400">This supplier has not listed products under this filter yet.</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">This supplier has not listed products under this filter yet.</p>
                       )}
                     </div>
                   )}
@@ -1019,12 +1019,12 @@ export function SellerProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'factory' && (
                 <>
-                  <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
-                    <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
                       <Factory className="h-4 w-4 text-primary" />
                       Manufacturing &amp; Facility Operations
                     </h2>
-                    <p className="text-xs text-slate-600 leading-relaxed">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                       Production facilities and warehouse storage managed according to national and international manufacturing best practices.
                     </p>
 
@@ -1035,12 +1035,12 @@ export function SellerProfilePage() {
                         { label: 'Fulfillment', value: 'Standard & Express Freight', icon: Truck },
                         { label: 'Customization', value: 'OEM / Private Label Available', icon: Wrench },
                       ].map(({ label, value, icon: Icon }) => (
-                        <div key={label} className="bg-slate-50 rounded-2xl p-3 border border-slate-100 space-y-1">
+                        <div key={label} className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 space-y-1">
                           <div className="flex items-center gap-1.5">
                             <Icon className="h-3.5 w-3.5 text-primary" />
-                            <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">{label}</span>
+                            <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-wider">{label}</span>
                           </div>
-                          <p className="text-xs font-bold text-slate-900">{value}</p>
+                          <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{value}</p>
                         </div>
                       ))}
                     </div>
@@ -1053,9 +1053,9 @@ export function SellerProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'certifications' && (
                 <>
-                  <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                      <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
                         <Award className="h-4 w-4 text-primary" />
                         Verification Documents &amp; Licenses
                       </h2>
@@ -1072,14 +1072,14 @@ export function SellerProfilePage() {
                     {dashboardData?.verificationDocs && dashboardData.verificationDocs.length > 0 ? (
                       <div className="space-y-2.5">
                         {dashboardData.verificationDocs.map((doc) => (
-                          <div key={doc.id} className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                          <div key={doc.id} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary">
                                 <FileText className="h-4 w-4" />
                               </div>
                               <div>
-                                <h3 className="text-xs font-bold text-slate-900">{doc.documentType}</h3>
-                                <p className="text-[10px] text-slate-400">{new Date(doc.uploadedAt).toLocaleDateString()}</p>
+                                <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{doc.documentType}</h3>
+                                <p className="text-[10px] text-slate-400 dark:text-slate-500">{new Date(doc.uploadedAt).toLocaleDateString()}</p>
                               </div>
                             </div>
                             <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
@@ -1091,7 +1091,7 @@ export function SellerProfilePage() {
                     ) : (
                       <div className="text-center py-6 space-y-2">
                         <FileCheck2 className="h-10 w-10 text-slate-200 mx-auto" />
-                        <p className="text-xs text-slate-400">Trade License &amp; Government Accreditations verified through Zylod Merchant KYC.</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">Trade License &amp; Government Accreditations verified through Zylod Merchant KYC.</p>
                       </div>
                     )}
                   </div>
@@ -1103,8 +1103,8 @@ export function SellerProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'reviews' && (
                 <>
-                  <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
-                    <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
                       <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
                       Verified Buyer Reviews
                     </h2>
@@ -1112,21 +1112,21 @@ export function SellerProfilePage() {
                     {loadingReviews ? (
                       <div className="space-y-3">
                         {Array.from({ length: 3 }).map((_, i) => (
-                          <div key={i} className="h-16 bg-slate-100 rounded-2xl animate-pulse" />
+                          <div key={i} className="h-16 bg-slate-100 dark:bg-slate-900 rounded-2xl animate-pulse" />
                         ))}
                       </div>
                     ) : reviews.length > 0 ? (
                       <div className="space-y-3">
                         {reviews.map((review) => (
-                          <div key={review.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+                          <div key={review.id} className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-slate-900">
+                              <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                                 {review.buyer?.buyerProfile?.businessName || review.buyer?.buyerProfile?.fullName || 'Verified Buyer'}
                               </span>
                               <StarRating value={review.rating} />
                             </div>
-                            <p className="text-xs text-slate-600 leading-relaxed">{review.comment}</p>
-                            <span className="text-[10px] text-slate-400 font-mono block">
+                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{review.comment}</p>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono block">
                               {new Date(review.createdAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -1135,8 +1135,8 @@ export function SellerProfilePage() {
                     ) : (
                       <div className="text-center py-8 space-y-2">
                         <Star className="h-10 w-10 text-slate-200 mx-auto" />
-                        <p className="text-xs font-bold text-slate-400">No reviews yet</p>
-                        <p className="text-[11px] text-slate-400">Verified buyer reviews for completed purchase orders will appear here.</p>
+                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500">No reviews yet</p>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500">Verified buyer reviews for completed purchase orders will appear here.</p>
                       </div>
                     )}
                   </div>
@@ -1162,18 +1162,18 @@ export function SellerProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'rfq' && (
                 <>
-                  <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
-                    <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
                       <FileText className="h-4 w-4 text-primary" />
                       Request a Wholesale Quote
                     </h2>
-                    <p className="text-xs text-slate-600 leading-relaxed">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                       Submit your bulk quantity and delivery destination to receive direct pricing from this supplier.
                     </p>
 
                     <div className="space-y-3">
                       <div>
-                        <label className="text-xs font-bold text-slate-700">Quantity Needed</label>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Quantity Needed</label>
                         <div className="flex items-center gap-2 mt-1">
                           <Button
                             onClick={() => setRfqQuantity((q) => Math.max(10, q - 50))}
@@ -1199,7 +1199,7 @@ export function SellerProfilePage() {
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-slate-700">Part Number / Specifications</label>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Part Number / Specifications</label>
                         <Input
                           value={rfqPartNumber}
                           onChange={(e) => setRfqPartNumber(e.target.value)}
@@ -1209,7 +1209,7 @@ export function SellerProfilePage() {
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-slate-700">Destination Delivery Port / City</label>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Destination Delivery Port / City</label>
                         <Input
                           value={rfqPort}
                           onChange={(e) => setRfqPort(e.target.value)}
@@ -1219,13 +1219,13 @@ export function SellerProfilePage() {
                       </div>
 
                       <div>
-                        <label className="text-xs font-bold text-slate-700">Additional Notes</label>
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Additional Notes</label>
                         <textarea
                           rows={3}
                           value={rfqNote}
                           onChange={(e) => setRfqNote(e.target.value)}
                           placeholder="Payment terms, special packaging, testing requirements..."
-                          className="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs resize-none focus:outline-none focus:border-primary mt-1"
+                          className="w-full rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 text-xs resize-none focus:outline-none focus:border-primary mt-1"
                         />
                       </div>
 
@@ -1254,23 +1254,23 @@ export function SellerProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'contact' && (
                 <>
-                  <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-4">
-                    <h2 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-primary" />
                       Contact &amp; Location
                     </h2>
 
                     <div className="divide-y divide-slate-50 text-xs">
                       <div className="py-2.5 flex justify-between">
-                        <span className="text-slate-400">Headquarters</span>
-                        <span className="font-bold text-slate-900">Dhaka, Bangladesh</span>
+                        <span className="text-slate-400 dark:text-slate-500">Headquarters</span>
+                        <span className="font-bold text-slate-900 dark:text-slate-100">Dhaka, Bangladesh</span>
                       </div>
                       <div className="py-2.5 flex justify-between">
-                        <span className="text-slate-400">Support Hours</span>
-                        <span className="font-bold text-slate-900">Sun - Thu: 09:00 AM - 06:00 PM BST</span>
+                        <span className="text-slate-400 dark:text-slate-500">Support Hours</span>
+                        <span className="font-bold text-slate-900 dark:text-slate-100">Sun - Thu: 09:00 AM - 06:00 PM BST</span>
                       </div>
                       <div className="py-2.5 flex justify-between">
-                        <span className="text-slate-400">Messaging</span>
+                        <span className="text-slate-400 dark:text-slate-500">Messaging</span>
                         <span className="font-bold text-primary">Direct Chat via Zylod</span>
                       </div>
                     </div>

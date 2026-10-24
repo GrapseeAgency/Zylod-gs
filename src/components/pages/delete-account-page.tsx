@@ -73,10 +73,10 @@ export function DeleteAccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-rose-600">Close Account</span>
@@ -102,25 +102,25 @@ export function DeleteAccountPage() {
         </div>
 
         {/* Account Data Summary */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
             Account Impact Summary
           </h2>
           <div className="divide-y divide-slate-50 text-xs">
             <div className="py-2.5 flex justify-between">
-              <span className="text-slate-500">Account Email</span>
-              <span className="font-bold text-slate-900">{user?.email || 'Active User'}</span>
+              <span className="text-slate-500 dark:text-slate-400">Account Email</span>
+              <span className="font-bold text-slate-900 dark:text-slate-100">{user?.email || 'Active User'}</span>
             </div>
             <div className="py-2.5 flex justify-between">
-              <span className="text-slate-500">Order History &amp; POs</span>
-              <span className="font-bold text-slate-900">{accountData.ordersCount ?? 0} records archived</span>
+              <span className="text-slate-500 dark:text-slate-400">Order History &amp; POs</span>
+              <span className="font-bold text-slate-900 dark:text-slate-100">{accountData.ordersCount ?? 0} records archived</span>
             </div>
             <div className="py-2.5 flex justify-between">
-              <span className="text-slate-500">Wholesale Storefront</span>
+              <span className="text-slate-500 dark:text-slate-400">Wholesale Storefront</span>
               <span className="font-bold text-rose-600">Permanently de-indexed</span>
             </div>
             <div className="py-2.5 flex justify-between">
-              <span className="text-slate-500">Pending Support Tickets</span>
+              <span className="text-slate-500 dark:text-slate-400">Pending Support Tickets</span>
               <span className="font-bold text-emerald-600">Must be resolved or closed</span>
             </div>
           </div>
@@ -130,8 +130,8 @@ export function DeleteAccountPage() {
 
         <div className="space-y-4 md:space-y-6">
         {/* Feedback Reason */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-          <label className="text-xs font-bold text-slate-700 block">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
             Reason for leaving (Optional)
           </label>
           <textarea
@@ -139,13 +139,13 @@ export function DeleteAccountPage() {
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Help us understand how we can improve Zylod Wholesale..."
-            className="w-full rounded-2xl bg-slate-50 border border-slate-200 p-3.5 text-xs font-semibold text-slate-800 placeholder:text-slate-400 resize-none focus:outline-none focus:border-rose-500"
+            className="w-full rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3.5 text-xs font-semibold text-slate-800 dark:text-slate-200 placeholder:text-slate-400 resize-none focus:outline-none focus:border-rose-500"
           />
         </div>
 
         {/* Confirmation Input */}
-        <div className="bg-white rounded-3xl p-5 border border-rose-200 shadow-2xs space-y-3">
-          <label className="text-xs font-bold text-slate-900 block">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-rose-200 shadow-2xs space-y-3">
+          <label className="text-xs font-bold text-slate-900 dark:text-slate-100 block">
             Type <span className="text-rose-600 font-black font-mono">DELETE</span> to confirm termination:
           </label>
           <Input

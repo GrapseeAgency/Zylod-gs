@@ -75,10 +75,10 @@ export function BrandShowcasePage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-8">
       {/* ─── Top Header ─── */}
-      <header className="sticky top-0 z-40 bg-white border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -86,7 +86,7 @@ export function BrandShowcasePage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -144,7 +144,7 @@ export function BrandShowcasePage() {
         )}
         {!isLoading && !loadError && brands.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <Building2 className="w-8 h-8 text-gray-400" />
+            <Building2 className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               No branded listings yet — brands appear here as suppliers add them.
             </p>
@@ -206,10 +206,10 @@ export function BrandShowcasePage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => openBrand(brand.name)}
-                className="bg-white rounded-2xl border border-[#E0E0E0] p-3 flex items-center justify-between gap-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-3 flex items-center justify-between gap-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden shrink-0">
+                  <div className="w-16 h-16 rounded-xl bg-gray-100 dark:bg-gray-900 overflow-hidden shrink-0">
                     { }
                     <img
                       src={brand.representativeProduct?.image || '/placeholder-product.svg'}
@@ -251,9 +251,9 @@ export function BrandShowcasePage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.03 }}
                       onClick={() => openBrand(brand.name)}
-                      className="bg-white rounded-xl border border-[#E0E0E0] p-3 text-left shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
+                      className="bg-white dark:bg-gray-900 rounded-xl border border-[#E0E0E0] p-3 text-left shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
                     >
-                      <div className="w-full aspect-[16/10] rounded-lg bg-gray-100 overflow-hidden mb-2">
+                      <div className="w-full aspect-[16/10] rounded-lg bg-gray-100 dark:bg-gray-900 overflow-hidden mb-2">
                         { }
                         <img
                           src={brand.representativeProduct?.image || '/placeholder-product.svg'}

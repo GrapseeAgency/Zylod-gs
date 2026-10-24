@@ -41,7 +41,7 @@ export function SubmitTicketPage() {
   ]
 
   const priorities = [
-    { value: 'low', label: 'Low', color: 'text-gray-600 bg-gray-100' },
+    { value: 'low', label: 'Low', color: 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900' },
     { value: 'medium', label: 'Medium', color: 'text-blue-600 bg-blue-50' },
     { value: 'high', label: 'High', color: 'text-orange-600 bg-orange-50' },
     { value: 'urgent', label: 'Urgent', color: 'text-red-600 bg-red-50' },
@@ -85,23 +85,23 @@ export function SubmitTicketPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">Open Support Ticket</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Open Support Ticket</span>
         </div>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">Open Support Ticket</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Open Support Ticket</h1>
 
       <div className="flex-1 px-4 py-6 max-w-2xl mx-auto w-full pb-24">
-        <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-5">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-5">
           <div>
-            <h2 className="text-sm font-bold text-gray-900">Ticket Information</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Submit an official claim or inquiry to the Zylod Support & Dispute Resolution team.</p>
+            <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Ticket Information</h2>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Submit an official claim or inquiry to the Zylod Support & Dispute Resolution team.</p>
           </div>
 
           {errorMsg && (
@@ -113,11 +113,11 @@ export function SubmitTicketPage() {
 
           {/* Category */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-700">Category *</label>
+            <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Category *</label>
             <select
               value={formData.category}
               onChange={e => setFormData({ ...formData, category: e.target.value })}
-              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs bg-white focus:outline-none focus:border-red-500"
+              className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs bg-white dark:bg-gray-900 focus:outline-none focus:border-red-500"
             >
               {categories.map(c => (
                 <option key={c.value} value={c.value}>{c.label}</option>
@@ -127,7 +127,7 @@ export function SubmitTicketPage() {
 
           {/* Priority Pills */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-700">Priority Level *</label>
+            <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Priority Level *</label>
             <div className="grid grid-cols-4 gap-2">
               {priorities.map(p => (
                 <button
@@ -137,7 +137,7 @@ export function SubmitTicketPage() {
                   className={`py-2 text-xs font-semibold rounded-xl border transition ${
                     formData.priority === p.value
                       ? 'border-red-600 bg-red-50 text-red-600 shadow-sm'
-                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                      : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                 >
                   {p.label}
@@ -149,11 +149,11 @@ export function SubmitTicketPage() {
           {/* Related Order Selector */}
           {orders.length > 0 && (
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-700">Related Order (Optional)</label>
+              <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Related Order (Optional)</label>
               <select
                 value={formData.relatedOrderId}
                 onChange={e => setFormData({ ...formData, relatedOrderId: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs bg-white focus:outline-none focus:border-red-500"
+                className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs bg-white dark:bg-gray-900 focus:outline-none focus:border-red-500"
               >
                 <option value="">No specific order attached</option>
                 {orders.map(o => (
@@ -167,29 +167,29 @@ export function SubmitTicketPage() {
 
           {/* Subject */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-700">Ticket Subject *</label>
+            <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Ticket Subject *</label>
             <input
               type="text"
               required
               placeholder="e.g. Broken angle grinder shipment in batch #8491"
               value={formData.subject}
               onChange={e => setFormData({ ...formData, subject: e.target.value })}
-              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-red-500"
+              className="w-full border border-gray-200 dark:border-gray-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-red-500"
             />
           </div>
 
           {/* Description */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-700">Detailed Description *</label>
+            <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Detailed Description *</label>
             <textarea
               required
               rows={5}
               placeholder="Provide complete breakdown of the issue, item count, serial numbers, or supplier breach..."
               value={formData.description}
               onChange={e => setFormData({ ...formData, description: e.target.value })}
-              className="w-full border border-gray-200 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 leading-relaxed"
+              className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 leading-relaxed"
             />
-            <p className="text-[11px] text-gray-400">Minimum 20 characters.</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500">Minimum 20 characters.</p>
           </div>
 
           {/* Submit Button */}

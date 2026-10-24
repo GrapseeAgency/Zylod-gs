@@ -89,27 +89,27 @@ export function ChatbotPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 max-w-2xl lg:max-w-4xl mx-auto w-full border-x border-gray-200">
+    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 max-w-2xl lg:max-w-4xl mx-auto w-full border-x border-gray-200 dark:border-gray-800">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm z-10">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm z-10">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition md:hidden">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-500 text-white flex items-center justify-center shadow-md">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 flex items-center gap-1.5">
+            <h1 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
               Zylod Help Assistant
             </h1>
-            <p className="text-[10px] text-gray-400 font-medium">Searches our published help articles & FAQs</p>
+            <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Searches our published help articles & FAQs</p>
           </div>
         </div>
 
         <button
           onClick={() => setLanguage(l => l === 'en' ? 'bn' : 'en')}
-          className="flex items-center gap-1 px-2.5 py-1 bg-gray-100 hover:bg-red-50 text-xs font-semibold text-gray-700 rounded-full transition"
+          className="flex items-center gap-1 px-2.5 py-1 bg-gray-100 dark:bg-gray-900 hover:bg-red-50 text-xs font-semibold text-gray-700 dark:text-gray-300 rounded-full transition"
         >
           <Globe className="w-3.5 h-3.5 text-red-600" />
           {language === 'en' ? 'বাংলা' : 'English'}
@@ -136,7 +136,7 @@ export function ChatbotPage() {
                 className={`max-w-[80%] px-4 py-3 rounded-2xl text-xs md:text-sm leading-relaxed shadow-sm ${
                   isUser
                     ? 'bg-red-600 text-white rounded-br-none'
-                    : 'bg-white text-gray-900 border border-gray-200 rounded-bl-none'
+                    : 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800 rounded-bl-none'
                 }`}
               >
                 <p className="whitespace-pre-line">{msg.text}</p>
@@ -154,7 +154,7 @@ export function ChatbotPage() {
                   </button>
                 )}
 
-                <p className={`text-[9px] mt-1.5 ${isUser ? 'text-red-200 text-right' : 'text-gray-400'}`}>
+                <p className={`text-[9px] mt-1.5 ${isUser ? 'text-red-200 text-right' : 'text-gray-400 dark:text-gray-500'}`}>
                   {msg.time}
                 </p>
               </div>
@@ -163,11 +163,11 @@ export function ChatbotPage() {
         })}
 
         {loading && (
-          <div className="flex gap-2.5 items-center text-xs text-gray-500">
+          <div className="flex gap-2.5 items-center text-xs text-gray-500 dark:text-gray-400">
             <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 border border-red-100 flex items-center justify-center flex-shrink-0">
               <Bot className="w-4 h-4 animate-spin" />
             </div>
-            <div className="bg-white border border-gray-200 px-4 py-2.5 rounded-2xl shadow-sm">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 px-4 py-2.5 rounded-2xl shadow-sm">
               <span className="inline-flex gap-1">
                 <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" />
                 <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]" />
@@ -180,7 +180,7 @@ export function ChatbotPage() {
         {/* Quick Suggestion Chips */}
         {messages.length <= 2 && (
           <div className="pt-2">
-            <p className="text-[11px] font-semibold text-gray-400 mb-2 uppercase tracking-wide">
+            <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wide">
               {language === 'bn' ? 'প্রস্তাবিত প্রশ্নাবলী' : 'Suggested Inquiries'}
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -188,7 +188,7 @@ export function ChatbotPage() {
                 <button
                   key={i}
                   onClick={() => handleSend(language === 'bn' ? p.textBn : p.textEn)}
-                  className="px-3 py-1.5 bg-white hover:bg-red-50 hover:text-red-600 border border-gray-200 rounded-full text-xs text-gray-700 transition text-left"
+                  className="px-3 py-1.5 bg-white dark:bg-gray-900 hover:bg-red-50 hover:text-red-600 border border-gray-200 dark:border-gray-800 rounded-full text-xs text-gray-700 dark:text-gray-300 transition text-left"
                 >
                   {language === 'bn' ? p.textBn : p.textEn}
                 </button>
@@ -201,14 +201,14 @@ export function ChatbotPage() {
       </div>
 
       {/* Input */}
-      <div className="bg-white border-t border-gray-200 p-3 md:px-6">
+      <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 md:px-6">
         <form onSubmit={e => { e.preventDefault(); handleSend() }} className="flex items-center gap-2">
           <input
             type="text"
             placeholder={language === 'bn' ? 'প্রশ্ন লিখুন...' : 'Ask about payments, MOQs, verification, disputes...'}
             value={inputQuery}
             onChange={e => setInputQuery(e.target.value)}
-            className="flex-1 bg-gray-100 rounded-2xl px-4 py-2.5 text-xs md:text-sm text-gray-900 outline-none focus:ring-1 focus:ring-red-500 placeholder:text-gray-400"
+            className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-2xl px-4 py-2.5 text-xs md:text-sm text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-red-500 placeholder:text-gray-400"
           />
           <button
             type="submit"

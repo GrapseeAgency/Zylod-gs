@@ -103,17 +103,17 @@ export function ReturnPolicySettingsPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-      <header className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10 flex items-center justify-between md:px-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center justify-between md:px-6">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1 -ml-1 text-gray-600">
+          <button onClick={goBack} className="md:hidden p-1 -ml-1 text-gray-600 dark:text-gray-400">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg md:text-xl font-bold text-gray-900">Return &amp; Warranty</h1>
+          <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100">Return &amp; Warranty</h1>
         </div>
         <button 
           onClick={handleSave}
@@ -126,15 +126,15 @@ export function ReturnPolicySettingsPage() {
 
       <div className="p-4 space-y-6 md:p-6 md:max-w-3xl md:mx-auto">
         {error ? (
-          <div className="bg-white p-6 rounded-xl border border-gray-200 text-center">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{error}</p>
           </div>
         ) : policies.length === 0 ? (
-          <div className="bg-white p-8 rounded-xl border border-gray-200 text-center">
+          <div className="bg-white dark:bg-gray-900 p-8 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
             <RefreshCcw className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-gray-700">No policies configured yet</h3>
-            <p className="text-xs text-gray-500 mt-1">Save a policy row to publish your return terms to buyers.</p>
+            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No policies configured yet</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Save a policy row to publish your return terms to buyers.</p>
           </div>
         ) : (
           <>
@@ -152,14 +152,14 @@ export function ReturnPolicySettingsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.05, 0.2) }}
-                className="bg-white p-4 rounded-xl shadow-sm border border-gray-200"
+                className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800"
               >
-                <div className="flex items-center justify-between mb-4 text-gray-900 font-semibold">
+                <div className="flex items-center justify-between mb-4 text-gray-900 dark:text-gray-100 font-semibold">
                   <div className="flex items-center gap-2">
                     <RefreshCcw className="w-5 h-5 text-[#C8102E]" />
                     <h2>{POLICY_LABELS[policy.policyType] || policy.policyType}</h2>
                   </div>
-                  <label className="flex items-center gap-1.5 text-xs font-normal text-gray-500">
+                  <label className="flex items-center gap-1.5 text-xs font-normal text-gray-500 dark:text-gray-400">
                     <input
                       type="checkbox"
                       checked={policy.isActive}
@@ -172,23 +172,23 @@ export function ReturnPolicySettingsPage() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">Acceptance window (days)</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Acceptance window (days)</label>
                     <input
                       type="number"
                       min={0}
                       max={365}
                       value={policy.returnWindowDays}
                       onChange={(e) => updatePolicy(policy.policyType, { returnWindowDays: Number(e.target.value) })}
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">Refund method</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Refund method</label>
                     <select 
                       value={policy.refundMethod}
                       onChange={(e) => updatePolicy(policy.policyType, { refundMethod: e.target.value })}
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
                     >
                       {Object.entries(REFUND_METHOD_LABELS).map(([value, label]) => (
                         <option key={value} value={value}>{label}</option>
@@ -197,11 +197,11 @@ export function ReturnPolicySettingsPage() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">Restocking fee (%)</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Restocking fee (%)</label>
                     <select 
                       value={String(policy.restockingFeePct)}
                       onChange={(e) => updatePolicy(policy.policyType, { restockingFeePct: Number(e.target.value) })}
-                      className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E]"
                     >
                       <option value="0">0%</option>
                       <option value="5">5%</option>
@@ -211,7 +211,7 @@ export function ReturnPolicySettingsPage() {
                   </div>
 
                   <div className="flex items-center justify-between pt-2">
-                    <span className="text-sm font-medium text-gray-700">Exchange allowed</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Exchange allowed</span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input 
                         type="checkbox" 
@@ -226,12 +226,12 @@ export function ReturnPolicySettingsPage() {
               </motion.div>
             ))}
 
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-              <div className="flex items-center gap-2 mb-2 text-gray-900 font-semibold">
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
+              <div className="flex items-center gap-2 mb-2 text-gray-900 dark:text-gray-100 font-semibold">
                 <ShieldCheck className="w-5 h-5 text-[#C8102E]" />
                 <h2>How this works</h2>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 These policies describe your terms to buyers. Zylod&apos;s platform return window still applies to
                 disputes, and every approved return is processed through the platform&apos;s returns workflow.
               </p>

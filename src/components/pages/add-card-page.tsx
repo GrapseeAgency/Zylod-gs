@@ -72,10 +72,10 @@ export function AddCardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Add Payment Card</span>
@@ -91,7 +91,7 @@ export function AddCardPage() {
           </div>
 
           <div className="py-2">
-            <span className="text-xs text-slate-400 block font-mono">Card Number</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500 block font-mono">Card Number</span>
             <span className="text-lg font-black font-mono tracking-widest text-slate-100 mt-0.5 block">
               {cardNumber || '•••• •••• •••• ••••'}
             </span>
@@ -99,18 +99,18 @@ export function AddCardPage() {
 
           <div className="flex justify-between items-center text-xs">
             <div>
-              <span className="text-[10px] text-slate-400 block uppercase font-bold">Cardholder</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase font-bold">Cardholder</span>
               <span className="font-bold text-slate-200 uppercase">{holderName || 'AUTHORIZED SIGNATORY'}</span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-slate-400 block uppercase font-bold">Expires</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase font-bold">Expires</span>
               <span className="font-bold font-mono text-slate-200">{expiry || 'MM/YY'}</span>
             </div>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3.5">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3.5">
             <div className="grid grid-cols-3 gap-2">
               {['Visa', 'Mastercard', 'Amex'].map((b) => (
                 <button
@@ -120,7 +120,7 @@ export function AddCardPage() {
                   className={`py-2 text-xs font-bold rounded-xl border text-center transition-all ${
                     brand === b
                       ? 'border-primary bg-rose-50 text-primary shadow-xs'
-                      : 'border-slate-200 bg-white text-slate-700'
+                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300'
                   }`}
                 >
                   {b}
@@ -130,7 +130,7 @@ export function AddCardPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                 Card Number
               </label>
               <Input
@@ -138,51 +138,51 @@ export function AddCardPage() {
                 onChange={(e) => setCardNumber(e.target.value)}
                 placeholder="4000 1234 5678 9010"
                 maxLength={19}
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                 Cardholder Legal Name
               </label>
               <Input
                 value={holderName}
                 onChange={(e) => setHolderName(e.target.value)}
                 placeholder="Name printed on card"
-                className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
               />
             </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Expiration (MM/YY)</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Expiration (MM/YY)</label>
                 <Input
                   value={expiry}
                   onChange={(e) => setExpiry(e.target.value)}
                   placeholder="12/28"
                   maxLength={5}
-                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 />
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Security Code (CVV)</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Security Code (CVV)</label>
                 <Input
                   type="password"
                   value={cvv}
                   onChange={(e) => setCvv(e.target.value)}
                   placeholder="•••"
                   maxLength={4}
-                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 />
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-slate-900 block">Set as Primary Card</span>
-                <span className="text-[11px] text-slate-400 block">Use for 1-click wholesale checkout</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">Set as Primary Card</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 block">Use for 1-click wholesale checkout</span>
               </div>
               <Switch checked={isDefault} onCheckedChange={setIsDefault} className="data-[state=checked]:bg-primary" />
             </div>

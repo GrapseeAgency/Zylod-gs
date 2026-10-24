@@ -181,7 +181,7 @@ export function ForgotPasswordPage() {
     <motion.div
       variants={itemVariants}
       custom={0}
-      className="flex items-center justify-between px-4 h-14 bg-white border-b border-[#E0E0E0]/60"
+      className="flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]/60"
     >
       <button
         type="button"
@@ -345,7 +345,7 @@ export function ForgotPasswordPage() {
                   placeholder="Answer"
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
-                  className="w-20 h-8 border-[#E0E0E0] bg-white text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                  className="w-20 h-8 border-[#E0E0E0] bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
                 />
               </div>
               <button
@@ -454,7 +454,7 @@ export function ForgotPasswordPage() {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="bg-white rounded-2xl shadow-lg border border-[#E0E0E0]/60 mx-4 mt-6 overflow-hidden"
+              className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-[#E0E0E0]/60 mx-4 mt-6 overflow-hidden"
             >
               {mainContent}
             </motion.div>
@@ -472,10 +472,10 @@ export function ForgotPasswordPage() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="bg-white rounded-2xl shadow-lg border border-[#E0E0E0]/60 overflow-hidden"
+          className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-[#E0E0E0]/60 overflow-hidden"
         >
           {/* Desktop header bar */}
-          <div className="flex items-center justify-between px-6 h-14 bg-white border-b border-[#E0E0E0]/60">
+          <div className="flex items-center justify-between px-6 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]/60">
             <button
               type="button"
               onClick={() => navigate('login')}

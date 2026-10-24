@@ -48,14 +48,14 @@ export function AboutUsPage() {
   }, [])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
-          <h1 className="font-bold text-gray-900 text-base">About Zylod</h1>
-          <p className="text-xs text-gray-400">B2B Wholesale Marketplace</p>
+          <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">About Zylod</h1>
+          <p className="text-xs text-gray-400 dark:text-gray-500">B2B Wholesale Marketplace</p>
         </div>
       </div>
 
@@ -65,9 +65,9 @@ export function AboutUsPage() {
             {[1, 2, 3].map(i => <div key={i} className="h-28 bg-gray-200 rounded-3xl" />)}
           </div>
         ) : !data ? (
-          <div className="text-center py-16 px-4 bg-white rounded-3xl border border-gray-100">
-            <h3 className="text-sm font-bold text-gray-800">Company profile unavailable right now</h3>
-            <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">We could not load the company story. Please try again in a moment.</p>
+          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800">
+            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200">Company profile unavailable right now</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs mx-auto">We could not load the company story. Please try again in a moment.</p>
           </div>
         ) : (
           <>
@@ -85,25 +85,25 @@ export function AboutUsPage() {
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
                 <div className="text-center">
                   <p className="text-lg md:text-2xl font-black text-blue-400">{data.stats.verifiedSuppliers.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-400">Verified Suppliers</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Verified Suppliers</p>
                 </div>
                 <div className="text-center">
                   <p className="text-lg md:text-2xl font-black text-emerald-400">{data.stats.registeredBuyers.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-400">Registered Buyers</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Registered Buyers</p>
                 </div>
                 <div className="text-center">
                   <p className="text-lg md:text-2xl font-black text-amber-400">{data.stats.activeProducts.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-400">Live Products</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Live Products</p>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 leading-relaxed">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
                 These are live counts from our database. Zylod has just launched, so they start at zero — no demo or placeholder figures.
               </p>
             </div>
 
             {/* Quick Nav Sub-pages */}
-            <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-sm">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Company Links</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">Company Links</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {[
                   { label: 'Company Milestones', id: 'company-milestones' },
@@ -116,7 +116,7 @@ export function AboutUsPage() {
                   <button
                     key={link.id}
                     onClick={() => navigate(link.id)}
-                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 rounded-xl text-xs font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
+                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-700 transition"
                   >
                     {link.label}
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -127,49 +127,49 @@ export function AboutUsPage() {
 
             {/* Mission & Vision */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-2">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
                 <div className="flex items-center gap-2 text-blue-600">
                   <Target className="w-5 h-5" />
-                  <h3 className="text-sm font-bold text-gray-900">Our Mission</h3>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Our Mission</h3>
                 </div>
-                <p className="text-xs text-gray-600 leading-relaxed">
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                   {data.companyInfo.mission}
                 </p>
               </div>
 
-              <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-2">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
                 <div className="flex items-center gap-2 text-indigo-600">
                   <Eye className="w-5 h-5" />
-                  <h3 className="text-sm font-bold text-gray-900">Our Vision</h3>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Our Vision</h3>
                 </div>
-                <p className="text-xs text-gray-600 leading-relaxed">
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                   {data.companyInfo.vision}
                 </p>
               </div>
             </div>
 
             {/* Core Values */}
-            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-3">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-amber-500" />
-                <h3 className="text-sm font-bold text-gray-900">Operating Values</h3>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Operating Values</h3>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
                 {data.companyInfo.values.map(val => (
-                  <div key={val.title} className="p-3 bg-slate-50 rounded-2xl space-y-1">
-                    <p className="text-xs font-bold text-gray-800">{val.title}</p>
-                    <p className="text-[11px] text-gray-500 leading-relaxed">{val.desc}</p>
+                  <div key={val.title} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl space-y-1">
+                    <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{val.title}</p>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">{val.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Milestones Timeline */}
-            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Award className="w-5 h-5 text-indigo-600" />
-                  <h3 className="text-sm font-bold text-gray-900">Journey & Milestones</h3>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Journey & Milestones</h3>
                 </div>
                 {data.milestones.length > 0 && (
                   <button
@@ -181,7 +181,7 @@ export function AboutUsPage() {
                 )}
               </div>
               {data.milestones.length === 0 ? (
-                <p className="text-xs text-gray-500 leading-relaxed">
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                   No milestones published yet. Zylod only posts real milestones — they will appear here as the platform grows.
                 </p>
               ) : (
@@ -192,8 +192,8 @@ export function AboutUsPage() {
                         {m.year.toString().slice(-2)}
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-gray-900">{m.title} ({m.year})</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{m.description}</p>
+                        <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{m.title} ({m.year})</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{m.description}</p>
                       </div>
                     </div>
                   ))}

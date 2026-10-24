@@ -70,26 +70,26 @@ export function DeliveryTrackingAlertsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">Delivery Tracking Alerts</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Delivery Tracking Alerts</span>
         </div>
       </div>
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-2xl mx-auto w-full space-y-6 pb-24 md:pb-8 lg:max-w-4xl">
         {/* Toggle Master */}
-        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <Truck className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-bold text-gray-900">Live Courier Push Alerts</p>
-              <p className="text-xs text-gray-400">Receive step-by-step courier dispatch pings</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Live Courier Push Alerts</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">Receive step-by-step courier dispatch pings</p>
             </div>
           </div>
           <Switch checked={pushDelivery} onCheckedChange={handleToggle} />
@@ -97,12 +97,12 @@ export function DeliveryTrackingAlertsPage() {
 
         {/* Active Shipments Section */}
         <div className="space-y-3">
-          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider px-1">
+          <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
             Active Consignments ({deliveries.length})
           </h2>
 
           {deliveries.length === 0 ? (
-            <div className="bg-white rounded-3xl p-8 border border-gray-100 text-center text-gray-500 space-y-2">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400 space-y-2">
               <Truck className="w-10 h-10 text-gray-300 mx-auto" />
               <p className="font-bold text-xs">No active shipments in transit</p>
               <p className="text-[11px]">When suppliers dispatch your orders, live tracking will appear here.</p>
@@ -113,10 +113,10 @@ export function DeliveryTrackingAlertsPage() {
             {deliveries.map(del => (
               <div
                 key={del.id}
-                className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm space-y-2.5"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2.5"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-gray-900">
+                  <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
                     {del.order?.orderNumber || del.title}
                   </span>
                   <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
@@ -124,11 +124,11 @@ export function DeliveryTrackingAlertsPage() {
                   </span>
                 </div>
 
-                <p className="text-xs text-gray-600">{del.message}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">{del.message}</p>
 
                 {del.order?.trackingNumber && (
-                  <div className="bg-slate-50 rounded-xl p-2 flex items-center justify-between text-xs border border-gray-100">
-                    <span className="text-gray-500">Waybill: <strong>{del.order.trackingNumber}</strong></span>
+                  <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-2 flex items-center justify-between text-xs border border-gray-100 dark:border-gray-800">
+                    <span className="text-gray-500 dark:text-gray-400">Waybill: <strong>{del.order.trackingNumber}</strong></span>
                     <button
                       onClick={() => copyTracking(del.order.trackingNumber, del.id)}
                       className="text-emerald-600 font-bold text-[11px] flex items-center gap-1"
@@ -143,21 +143,21 @@ export function DeliveryTrackingAlertsPage() {
             </div>
 
             {/* Desktop table */}
-            <div className="hidden md:block bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="hidden md:block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-red-50/50 text-left">
-                    <th className="p-3 text-xs font-semibold text-gray-700">Order</th>
-                    <th className="p-3 text-xs font-semibold text-gray-700">Latest Update</th>
-                    <th className="p-3 text-xs font-semibold text-gray-700">Status</th>
-                    <th className="p-3 text-xs font-semibold text-gray-700">Waybill</th>
+                    <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300">Order</th>
+                    <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300">Latest Update</th>
+                    <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300">Status</th>
+                    <th className="p-3 text-xs font-semibold text-gray-700 dark:text-gray-300">Waybill</th>
                   </tr>
                 </thead>
                 <tbody>
                   {deliveries.map(del => (
-                    <tr key={del.id} className="border-t border-gray-100 hover:bg-red-50/30">
-                      <td className="p-3 font-medium text-gray-900">{del.order?.orderNumber || del.title}</td>
-                      <td className="p-3 text-gray-600">{del.message}</td>
+                    <tr key={del.id} className="border-t border-gray-100 dark:border-gray-800 hover:bg-red-50/30">
+                      <td className="p-3 font-medium text-gray-900 dark:text-gray-100">{del.order?.orderNumber || del.title}</td>
+                      <td className="p-3 text-gray-600 dark:text-gray-400">{del.message}</td>
                       <td className="p-3">
                         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md whitespace-nowrap">
                           {del.order?.status || 'In Transit'}
@@ -173,7 +173,7 @@ export function DeliveryTrackingAlertsPage() {
                             <span className="font-mono">{del.order.trackingNumber}</span>
                           </button>
                         ) : (
-                          <span className="text-gray-400">-</span>
+                          <span className="text-gray-400 dark:text-gray-500">-</span>
                         )}
                       </td>
                     </tr>

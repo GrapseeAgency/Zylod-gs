@@ -70,16 +70,16 @@ export function ReferralProgramPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Users className="w-5 h-5 text-indigo-600" />
-            <h1 className="font-bold text-gray-900 text-base">Refer &amp; Earn</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Refer &amp; Earn</h1>
           </div>
         </div>
 
@@ -95,7 +95,7 @@ export function ReferralProgramPage() {
         <div className="hidden md:flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Users className="w-6 h-6 text-indigo-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Refer &amp; Earn</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Refer &amp; Earn</h1>
           </div>
           <button
             onClick={() => navigate('referral-earnings')}
@@ -117,12 +117,12 @@ export function ReferralProgramPage() {
         </div>
 
         {/* Your Invite Code Card */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4 text-center">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4 text-center">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
             Your Unique Invite Code
           </h3>
 
-          <div className="p-3.5 bg-slate-50 border border-dashed border-indigo-200 rounded-2xl flex items-center justify-between gap-3">
+          <div className="p-3.5 bg-slate-50 dark:bg-slate-950 border border-dashed border-indigo-200 rounded-2xl flex items-center justify-between gap-3">
             <span className="font-mono font-black text-base sm:text-lg text-indigo-600 tracking-wider">
               {refData?.code || 'LOADING...'}
             </span>
@@ -139,23 +139,23 @@ export function ReferralProgramPage() {
 
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-            <div className="bg-slate-50 rounded-2xl p-3 border border-gray-100">
-              <p className="text-[10px] font-bold text-gray-400 uppercase">Invited Businesses</p>
-              <p className="text-lg font-black text-gray-900">{refData?.totalInvited ?? 0}</p>
+            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
+              <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">Invited Businesses</p>
+              <p className="text-lg font-black text-gray-900 dark:text-gray-100">{refData?.totalInvited ?? 0}</p>
             </div>
-            <div className="bg-slate-50 rounded-2xl p-3 border border-gray-100">
-              <p className="text-[10px] font-bold text-gray-400 uppercase">Points Earned</p>
+            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
+              <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">Points Earned</p>
               <p className="text-lg font-black text-indigo-600">+{refData?.totalPointsEarned ?? 0}</p>
             </div>
           </div>
         </div>
 
         {/* Claim Friend's Referral Code Card */}
-        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-3">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
             Have an Invite Code?
           </h3>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             Enter a colleague&apos;s code below to claim your ৳200 welcome voucher and 300 bonus points.
           </p>
 

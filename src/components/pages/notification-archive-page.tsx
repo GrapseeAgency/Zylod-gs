@@ -58,15 +58,15 @@ export function NotificationArchivePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Archive className="w-5 h-5 text-amber-600" />
-            <h1 className="font-bold text-gray-900 text-base">Notification Archive</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Notification Archive</h1>
           </div>
         </div>
 
@@ -93,16 +93,16 @@ export function NotificationArchivePage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-2xl p-4 border border-gray-100 animate-pulse space-y-2">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 animate-pulse space-y-2">
                 <Skeleton className="h-4 w-1/3 rounded" />
                 <Skeleton className="h-3 w-full rounded" />
               </div>
             ))}
           </div>
         ) : archived.length === 0 ? (
-          <div className="text-center py-16 space-y-2 text-gray-500">
+          <div className="text-center py-16 space-y-2 text-gray-500 dark:text-gray-400">
             <Archive className="w-12 h-12 text-gray-300 mx-auto" />
-            <p className="font-bold text-sm text-gray-700">No Archived Notifications</p>
+            <p className="font-bold text-sm text-gray-700 dark:text-gray-300">No Archived Notifications</p>
             <p className="text-xs">Notifications older than 30 days will appear in this repository.</p>
           </div>
         ) : (
@@ -111,15 +111,15 @@ export function NotificationArchivePage() {
             <div
               key={item.id}
               onClick={() => navigate('notification-detail', { id: item.id })}
-              className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm opacity-80 hover:opacity-100 transition cursor-pointer space-y-1.5"
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm opacity-80 hover:opacity-100 transition cursor-pointer space-y-1.5"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-800">{item.title}</span>
-                <span className="text-[10px] text-gray-400">
+                <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{item.title}</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500">
                   {new Date(item.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 line-clamp-2">{item.message}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{item.message}</p>
             </div>
           ))}
           </div>

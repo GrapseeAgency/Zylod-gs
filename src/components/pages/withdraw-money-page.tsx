@@ -134,16 +134,16 @@ export function WithdrawMoneyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-10">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-10">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">{isBuyer ? 'Withdraw Funds' : 'Request Payout'}</span>
         <div className="w-8" />
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">{isBuyer ? 'Withdraw Funds' : 'Request Payout'}</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">{isBuyer ? 'Withdraw Funds' : 'Request Payout'}</h1>
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-2xl md:px-6 md:py-6">
         {/* Balance box — honest three-way split under the payout doctrine */}
@@ -156,7 +156,7 @@ export function WithdrawMoneyPage() {
             <span>Wallet {formatPrice(data?.balance ?? 0)}</span>
             <span>· On hold {formatPrice(data?.onHold ?? 0)}</span>
           </div>
-          <p className="text-[11px] text-slate-400 pt-1 flex items-start gap-1.5">
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 pt-1 flex items-start gap-1.5">
             <Lock className="h-3 w-3 shrink-0 mt-0.5" />
             <span>Every request is held until an admin verifies the settlement — the same rule that protects buyer payments. Rejected requests release the hold instantly.</span>
           </p>
@@ -164,9 +164,9 @@ export function WithdrawMoneyPage() {
 
         <form onSubmit={handleWithdraw} className="space-y-4">
           {/* Amount */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-2">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-black uppercase tracking-wider text-slate-400">
+              <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Payout Amount
               </label>
               <button
@@ -178,7 +178,7 @@ export function WithdrawMoneyPage() {
               </button>
             </div>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-400 font-mono">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-400 dark:text-slate-500 font-mono">
                 ৳
               </span>
               <Input
@@ -189,14 +189,14 @@ export function WithdrawMoneyPage() {
                   setErrorMsg('')
                 }}
                 placeholder="0"
-                className="h-14 pl-10 pr-4 text-2xl font-black rounded-2xl bg-slate-50 border-slate-200 font-mono text-slate-900 focus:border-primary"
+                className="h-14 pl-10 pr-4 text-2xl font-black rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 font-mono text-slate-900 dark:text-slate-100 focus:border-primary"
               />
             </div>
           </div>
 
           {/* Method Select */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
-            <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
               Payout Destination
             </label>
             <div className="grid grid-cols-2 gap-2.5">
@@ -215,11 +215,11 @@ export function WithdrawMoneyPage() {
                     className={`p-3.5 rounded-2xl border text-left space-y-1 transition-all ${
                       isSelected
                         ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                        : 'border-slate-200 bg-white hover:bg-slate-50'
+                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900'}`}>{label}</span>
-                    <span className="text-[10px] text-slate-400 block">{desc}</span>
+                    <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>{label}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{desc}</span>
                   </button>
                 )
               })}
@@ -229,11 +229,11 @@ export function WithdrawMoneyPage() {
             <div className="space-y-3 pt-2">
               {method === 'bank' && (
                 <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Bank Name</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Bank Name</label>
                   <select
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    className="w-full h-11 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold px-3.5 text-slate-900 focus:outline-none focus:border-primary"
+                    className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
                   >
                     <option value="City Bank PLC">City Bank PLC</option>
                     <option value="BRAC Bank PLC">BRAC Bank PLC</option>
@@ -245,26 +245,26 @@ export function WithdrawMoneyPage() {
               )}
 
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                   {method === 'bank' ? 'Account Number' : `${method} Wallet Number`}
                 </label>
                 <Input
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   placeholder={method === 'bank' ? '13-16 digit account number' : '01XXXXXXXXX'}
-                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
                   Beneficiary / Corporate Account Title
                 </label>
                 <Input
                   value={holderName}
                   onChange={(e) => setHolderName(e.target.value)}
                   placeholder="Exact legal name on account"
-                  className="h-11 rounded-2xl bg-slate-50 border-slate-200 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                 />
               </div>
             </div>
@@ -296,17 +296,17 @@ export function WithdrawMoneyPage() {
         </form>
 
         {/* Payout requests — the queue the admin actually works from */}
-        <section className="bg-white rounded-3xl p-5 border border-slate-200 shadow-2xs space-y-3">
+        <section className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">{isBuyer ? 'Your withdrawal requests' : 'Your payout requests'}</h2>
-            <span className="text-[11px] text-slate-400 font-mono">{data?.payouts.length ?? 0}</span>
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">{isBuyer ? 'Your withdrawal requests' : 'Your payout requests'}</h2>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">{data?.payouts.length ?? 0}</span>
           </div>
           {initialLoading ? (
             <div className="space-y-2 animate-pulse">
-              {[1, 2].map((i) => <div key={i} className="h-12 bg-slate-100 rounded-2xl" />)}
+              {[1, 2].map((i) => <div key={i} className="h-12 bg-slate-100 dark:bg-slate-900 rounded-2xl" />)}
             </div>
           ) : !data || data.payouts.length === 0 ? (
-            <p className="text-xs text-slate-400 py-3 text-center">
+            <p className="text-xs text-slate-400 dark:text-slate-500 py-3 text-center">
               {isBuyer ? 'No withdrawal requests yet — the money in your wallet is all available.' : 'No payout requests yet — the money in your wallet is all available.'}
             </p>
           ) : (
@@ -315,14 +315,14 @@ export function WithdrawMoneyPage() {
                 const st = STATUS_STYLES[p.status] ?? STATUS_STYLES.pending
                 const Icon = st.icon
                 return (
-                  <div key={p.id} className="rounded-2xl border border-slate-100 p-3 space-y-1.5">
+                  <div key={p.id} className="rounded-2xl border border-slate-100 dark:border-slate-800 p-3 space-y-1.5">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm font-black font-mono">{formatPrice(p.amount)}</span>
                       <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded flex items-center gap-1 ${st.cls}`}>
                         <Icon className="h-3 w-3" /> {st.label}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-400 font-mono break-all">
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono break-all">
                       {p.destination ?? p.method}
                       {p.reference ? ` · ref ${p.reference}` : ''}
                     </p>

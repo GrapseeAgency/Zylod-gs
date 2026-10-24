@@ -61,16 +61,16 @@ export function CommissionHistoryPage() {
   }, [token])
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-6 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900 md:hidden" title="Back">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 md:px-6 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 md:hidden" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Commission Statements</span>
         <button
           onClick={() => navigate('earnings-dashboard')}
-          className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Earnings"
         >
           <DollarSign className="h-4 w-4" />
@@ -97,26 +97,26 @@ export function CommissionHistoryPage() {
         </div>
 
         {/* Ledger */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden">
-          <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500 md:hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+          <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 md:hidden">
             <span>Sub-Order / Date</span>
             <span>Fee (3%) / Net</span>
           </div>
 
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400">
+            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="text-xs font-bold">Loading Commission Statements...</span>
             </div>
           ) : data.items.length > 0 ? (
             <>
               {/* Mobile card list */}
-              <div className="divide-y divide-slate-100 md:hidden">
+              <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">
                 {data.items.map((item) => (
                   <div key={item.id} className="p-4 flex items-center justify-between gap-3 text-xs">
                     <div>
-                      <span className="font-bold text-slate-900 block">PO #{item.orderNumber}</span>
-                      <span className="text-[10px] text-slate-400 block mt-0.5">
+                      <span className="font-bold text-slate-900 dark:text-slate-100 block">PO #{item.orderNumber}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5">
                         Gross: {formatPrice(item.grossAmount)} • {new Date(item.date).toLocaleDateString()}
                       </span>
                     </div>
@@ -137,7 +137,7 @@ export function CommissionHistoryPage() {
               <div className="hidden md:block">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50 text-left text-xs font-bold text-slate-500">
+                    <tr className="bg-slate-50 dark:bg-slate-950 text-left text-xs font-bold text-slate-500 dark:text-slate-400">
                       <th className="py-3 px-5 font-bold">Sub-Order</th>
                       <th className="py-3 px-3 font-bold">Date</th>
                       <th className="py-3 px-3 font-bold text-right">Gross</th>
@@ -145,12 +145,12 @@ export function CommissionHistoryPage() {
                       <th className="py-3 px-5 font-bold text-right">Net Payout</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {data.items.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50">
-                        <td className="py-3 px-5 font-bold text-slate-900">PO #{item.orderNumber}</td>
-                        <td className="py-3 px-3 text-slate-500">{new Date(item.date).toLocaleDateString()}</td>
-                        <td className="py-3 px-3 text-right text-slate-700">{formatPrice(item.grossAmount)}</td>
+                      <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <td className="py-3 px-5 font-bold text-slate-900 dark:text-slate-100">PO #{item.orderNumber}</td>
+                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400">{new Date(item.date).toLocaleDateString()}</td>
+                        <td className="py-3 px-3 text-right text-slate-700 dark:text-slate-300">{formatPrice(item.grossAmount)}</td>
                         <td className="py-3 px-3 text-right font-black font-mono text-rose-600">
                           -{formatPrice(item.commissionAmount)}
                         </td>
@@ -164,9 +164,9 @@ export function CommissionHistoryPage() {
               </div>
             </>
           ) : (
-            <div className="py-12 text-center text-slate-400 space-y-1">
+            <div className="py-12 text-center text-slate-400 dark:text-slate-500 space-y-1">
               <Percent className="h-8 w-8 mx-auto text-slate-300 stroke-[1.5]" />
-              <span className="text-xs font-bold text-slate-600 block">No commission records</span>
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-400 block">No commission records</span>
             </div>
           )}
         </div>

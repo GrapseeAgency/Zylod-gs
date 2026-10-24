@@ -42,7 +42,7 @@ const bdtTime = (iso: string) =>
 
 function assignmentChip(status: string) {
   if (status === 'active') return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Active</Badge>;
-  if (status === 'cancelled') return <Badge className="bg-slate-200 text-slate-700 hover:bg-slate-200">Superseded</Badge>;
+  if (status === 'cancelled') return <Badge className="bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Superseded</Badge>;
   if (status === 'completed') return <Badge className="bg-sky-100 text-sky-800 hover:bg-sky-100">Completed</Badge>;
   return <Badge variant="outline">{status}</Badge>;
 }
@@ -164,23 +164,23 @@ export function AdminDeliveriesPage() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-gray-50 pb-20 md:pb-8 dark:bg-gray-900"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8 dark:bg-gray-900"
     >
       {/* Mobile header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Go back">
-          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Delivery ops</h1>
-        <button onClick={loadAll} className="ml-auto p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Refresh">
-          <RefreshCw className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Delivery ops</h1>
+        <button onClick={loadAll} className="ml-auto p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Refresh">
+          <RefreshCw className="h-4 w-4 text-gray-600 dark:text-gray-400 dark:text-gray-300" />
         </button>
       </header>
 
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
         <div className="hidden md:flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Delivery ops</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Delivery ops</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Drivers + assignments — the gate that makes live GPS tracking possible.
             </p>
@@ -205,7 +205,7 @@ export function AdminDeliveriesPage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : (
           <>
@@ -214,19 +214,19 @@ export function AdminDeliveriesPage() {
               <Card className="border-none shadow-sm dark:bg-gray-800">
                 <CardContent className="p-4">
                   <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Drivers</p>
-                  <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white" data-testid="drivers-count">{drivers.length}</p>
+                  <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="drivers-count">{drivers.length}</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800">
                 <CardContent className="p-4">
                   <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Active assignments</p>
-                  <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white" data-testid="assignments-active">{activeCount}</p>
+                  <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="assignments-active">{activeCount}</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800">
                 <CardContent className="p-4">
                   <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Assignable sub-orders</p>
-                  <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white" data-testid="assignable-count">{assignableSubOrders.length}</p>
+                  <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="assignable-count">{assignableSubOrders.length}</p>
                 </CardContent>
               </Card>
             </div>
@@ -246,11 +246,11 @@ export function AdminDeliveriesPage() {
                     <Input id="drv-email" type="email" placeholder="driver@zylod.com" value={dEmail} onChange={(e) => setDEmail(e.target.value)} className="h-10" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="drv-pass" className="text-xs">Password <span className="text-gray-400">(min 10 chars — hand to the driver securely)</span></Label>
+                    <Label htmlFor="drv-pass" className="text-xs">Password <span className="text-gray-400 dark:text-gray-500">(min 10 chars — hand to the driver securely)</span></Label>
                     <Input id="drv-pass" type="password" placeholder="••••••••••" value={dPassword} onChange={(e) => setDPassword(e.target.value)} className="h-10" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="drv-phone" className="text-xs">Phone <span className="text-gray-400">(optional, 01XXXXXXXXX)</span></Label>
+                    <Label htmlFor="drv-phone" className="text-xs">Phone <span className="text-gray-400 dark:text-gray-500">(optional, 01XXXXXXXXX)</span></Label>
                     <Input id="drv-phone" inputMode="numeric" placeholder="01712345678" value={dPhone} onChange={(e) => setDPhone(e.target.value)} className="h-10" />
                   </div>
                   <Button onClick={createDriver} disabled={creating || !dEmail.trim() || dPassword.length < 10} className="w-full h-10">
@@ -345,7 +345,7 @@ export function AdminDeliveriesPage() {
                 ) : (
                   <div className="max-h-64 overflow-y-auto">
                     <table className="w-full text-sm">
-                      <thead className="sticky top-0 bg-white dark:bg-gray-800">
+                      <thead className="sticky top-0 bg-white dark:bg-gray-900 dark:bg-gray-800">
                         <tr className="text-left text-xs text-gray-500 dark:text-gray-400 border-b">
                           <th className="py-2 pr-3 font-medium">Email</th>
                           <th className="py-2 pr-3 font-medium">Phone</th>
@@ -389,13 +389,13 @@ export function AdminDeliveriesPage() {
                 ) : (
                   <div className="max-h-80 overflow-y-auto space-y-2">
                     {assignments.map((a) => (
-                      <div key={a.id} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-700">
+                      <div key={a.id} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-950 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 dark:border-gray-700">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                           {a.status === 'active'
                             ? <CircleCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                            : <Ban className="w-4 h-4 text-gray-400 shrink-0" />}
+                            : <Ban className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />}
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white truncate">
                               {a.driver?.name ?? a.driver?.id}
                             </p>
                             <p className="text-[11px] text-gray-500 dark:text-gray-400 font-mono truncate">

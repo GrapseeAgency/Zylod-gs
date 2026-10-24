@@ -50,7 +50,7 @@ function paymentChip(status: string) {
     case 'partial':
       return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Partial</Badge>;
     case 'unpaid':
-      return <Badge className="bg-slate-200 text-slate-700 hover:bg-slate-200">Unpaid</Badge>;
+      return <Badge className="bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Unpaid</Badge>;
     case 'refunded':
       return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Refunded</Badge>;
     default:
@@ -64,7 +64,7 @@ function fulfillmentChip(status: string) {
     shipped: 'bg-sky-100 text-sky-800 hover:bg-sky-100',
     packed: 'bg-violet-100 text-violet-800 hover:bg-violet-100',
     confirmed: 'bg-violet-100 text-violet-800 hover:bg-violet-100',
-    pending: 'bg-slate-200 text-slate-700 hover:bg-slate-200',
+    pending: 'bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200',
     cancelled: 'bg-red-100 text-red-800 hover:bg-red-100',
     returned: 'bg-orange-100 text-orange-800 hover:bg-orange-100',
   };
@@ -118,18 +118,18 @@ export function SellerFinancialStatementsPagePage() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-gray-50 pb-20 md:pb-8 dark:bg-gray-900"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8 dark:bg-gray-900"
     >
       {/* Mobile header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Go back">
-          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-200" />
+      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Financial statements</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Financial statements</h1>
       </header>
 
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
-        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-white">Financial statements</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Financial statements</h1>
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -146,7 +146,7 @@ export function SellerFinancialStatementsPagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : data ? (
           <>
@@ -158,7 +158,7 @@ export function SellerFinancialStatementsPagePage() {
                     <TrendingUp className="w-4 h-4" />
                     <span className="text-xs font-medium">Gross revenue</span>
                   </div>
-                  <p className="mt-2 text-lg md:text-xl font-bold text-gray-900 dark:text-white" data-testid="revenue-gross">{bdt(data.summary.gross)}</p>
+                  <p className="mt-2 text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="revenue-gross">{bdt(data.summary.gross)}</p>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">all recorded order lines</p>
                 </CardContent>
               </Card>
@@ -168,7 +168,7 @@ export function SellerFinancialStatementsPagePage() {
                     <BadgeCheck className="w-4 h-4" />
                     <span className="text-xs font-medium">Recognized</span>
                   </div>
-                  <p className="mt-2 text-lg md:text-xl font-bold text-gray-900 dark:text-white" data-testid="revenue-recognized">{bdt(data.summary.recognized)}</p>
+                  <p className="mt-2 text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="revenue-recognized">{bdt(data.summary.recognized)}</p>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">orders actually paid</p>
                 </CardContent>
               </Card>
@@ -180,12 +180,12 @@ export function SellerFinancialStatementsPagePage() {
               ).map(([label, value]) => (
                 <Card key={label} className="border-none shadow-sm dark:bg-gray-800">
                   <CardContent className="p-4">
-                    <div className="flex items-center gap-2 text-gray-500">
+                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                       <span className="text-xs font-medium">{label}</span>
                       <TooltipProvider delayDuration={100}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <HelpCircle className="w-3.5 h-3.5 text-gray-400" />
+                            <HelpCircle className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs max-w-48">
                             The platform has no fee ledger yet — this number is never invented.
@@ -193,7 +193,7 @@ export function SellerFinancialStatementsPagePage() {
                         </Tooltip>
                       </TooltipProvider>
                     </div>
-                    <p className="mt-2 text-lg md:text-xl font-bold text-gray-400" title="Not tracked yet">—</p>
+                    <p className="mt-2 text-lg md:text-xl font-bold text-gray-400 dark:text-gray-500" title="Not tracked yet">—</p>
                     <p className="text-[11px] text-gray-500 dark:text-gray-400">not tracked yet</p>
                   </CardContent>
                 </Card>
@@ -215,7 +215,7 @@ export function SellerFinancialStatementsPagePage() {
                           style={{ height: `${maxGross > 0 ? Math.max(4, (d.gross / maxGross) * 100) : 4}%` }}
                           title={`${fmtDay(d.date)}: ${bdt(d.gross)}`}
                         />
-                        <span className="text-[9px] text-gray-400 truncate w-full text-center">
+                        <span className="text-[9px] text-gray-400 dark:text-gray-500 truncate w-full text-center">
                           {fmtDay(d.date)}
                         </span>
                       </div>
@@ -229,7 +229,7 @@ export function SellerFinancialStatementsPagePage() {
               <Card className="border-dashed dark:bg-gray-800">
                 <CardContent className="p-10 text-center space-y-2">
                   <Inbox className="w-10 h-10 text-gray-300 mx-auto" />
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">No revenue recorded yet</p>
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No revenue recorded yet</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Order lines on your products will appear here the moment buyers order them.
                   </p>
@@ -243,7 +243,7 @@ export function SellerFinancialStatementsPagePage() {
                 <CardContent>
                   <div className="max-h-96 overflow-y-auto">
                     <table className="w-full text-sm">
-                      <thead className="sticky top-0 bg-white dark:bg-gray-800">
+                      <thead className="sticky top-0 bg-white dark:bg-gray-900 dark:bg-gray-800">
                         <tr className="text-left text-xs text-gray-500 dark:text-gray-400 border-b">
                           <th className="py-2 pr-3 font-medium">Date</th>
                           <th className="py-2 pr-3 font-medium">Order</th>

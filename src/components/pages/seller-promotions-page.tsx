@@ -55,7 +55,7 @@ function computedStatus(r: { isActive: boolean; validFrom: string; validUntil: s
 const STATUS_STYLES: Record<string, string> = {
   live: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
   scheduled: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
-  ended: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+  ended: 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
   paused: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
 };
 
@@ -195,7 +195,7 @@ export function SellerPromotionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 dark:bg-gray-900 flex flex-col">
       {/* Mobile header (red) */}
       <header className="md:hidden bg-primary text-white p-4 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center">
@@ -204,7 +204,7 @@ export function SellerPromotionsPage() {
         </div>
         <button
           onClick={() => navigate('create-promotion')}
-          className="bg-white text-primary p-2 rounded-full"
+          className="bg-white dark:bg-gray-900 text-primary p-2 rounded-full"
           aria-label="Create campaign"
         >
           <Plus className="w-5 h-5" />
@@ -212,8 +212,8 @@ export function SellerPromotionsPage() {
       </header>
       {/* Desktop header */}
       <header className="hidden md:flex sticky top-0 z-20 items-center gap-3 px-6 h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Go back">
-          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700 transition" aria-label="Go back">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-xl font-bold text-primary">Campaigns</h1>
         <button
@@ -235,9 +235,9 @@ export function SellerPromotionsPage() {
               ['Uses', stats.totalUses],
               ['Total', stats.total],
             ] as Array<[string, number]>).map(([label, n]) => (
-              <div key={label} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 p-2 text-center">
-                <div className="text-lg font-bold text-gray-900 dark:text-white">{n}</div>
-                <div className="text-[10px] uppercase tracking-wide text-gray-500">{label}</div>
+              <div key={label} className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-2 text-center">
+                <div className="text-lg font-bold text-gray-900 dark:text-gray-100 dark:text-white">{n}</div>
+                <div className="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">{label}</div>
               </div>
             ))}
           </div>
@@ -249,15 +249,15 @@ export function SellerPromotionsPage() {
             <Skeleton className="h-28 rounded-xl" />
           </div>
         ) : error ? (
-          <div className="bg-white dark:bg-gray-800 p-6 rounded text-center shadow border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-6 rounded text-center shadow border border-gray-100 dark:border-gray-800 dark:border-gray-700">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-300">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</p>
           </div>
         ) : rows.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 p-8 rounded text-center shadow border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 p-8 rounded text-center shadow border border-gray-100 dark:border-gray-800 dark:border-gray-700">
             <Tag className="w-10 h-10 text-gray-300 mx-auto mb-2" />
             <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No campaigns yet</h3>
-            <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs mx-auto">
               Create a campaign to discount your products automatically at checkout — the discount comes off your subOrder subtotal, and buyers see it on your store page.
             </p>
             <Button className="mt-4" onClick={() => navigate('create-promotion')}>
@@ -272,23 +272,23 @@ export function SellerPromotionsPage() {
                 <div
                   key={r.id}
                   className={`bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border ${
-                    status === 'live' ? 'border-emerald-200 dark:border-emerald-900' : 'border-gray-100 dark:border-gray-700'
+                    status === 'live' ? 'border-emerald-200 dark:border-emerald-900' : 'border-gray-100 dark:border-gray-800 dark:border-gray-700'
                   }`}
                 >
                   <div className="flex justify-between items-start gap-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-bold text-gray-900 dark:text-white">{r.name}</h3>
+                        <h3 className="font-bold text-gray-900 dark:text-gray-100 dark:text-white">{r.name}</h3>
                         <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold capitalize ${STATUS_STYLES[status]}`}>{status}</span>
                         <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-bold">{campaignLabel(r)}</span>
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {new Date(r.validFrom).toLocaleDateString()} → {new Date(r.validUntil).toLocaleDateString()}
                         {r.minOrderAmount ? ` · min order ৳${r.minOrderAmount.toLocaleString()}` : ''}
                         {r.maxDiscount ? ` · max discount ৳${r.maxDiscount.toLocaleString()}` : ''}
                         {r.usageLimit ? ` · limit ${r.usedCount}/${r.usageLimit}` : ' · unlimited uses'}
                       </div>
-                      <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-500 flex-wrap">
+                      <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
                         <MousePointerClick className="w-3 h-3" />
                         {r.usedCount === 0
                           ? 'No orders priced yet'
@@ -297,7 +297,7 @@ export function SellerPromotionsPage() {
                       {r.pinnedProducts.length > 0 ? (
                         <div className="flex flex-wrap gap-1 mt-2">
                           {r.pinnedProducts.map((p) => (
-                            <span key={p.id} className="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-[11px] text-gray-600 dark:text-gray-300 max-w-[180px] truncate">
+                            <span key={p.id} className="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-900 dark:bg-gray-700 text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-300 max-w-[180px] truncate">
                               {p.name || p.id}
                             </span>
                           ))}
@@ -313,10 +313,10 @@ export function SellerPromotionsPage() {
                         onCheckedChange={(v) => toggleActive(r, v)}
                         aria-label={r.isActive ? 'Park campaign' : 'Resume campaign'}
                       />
-                      <span className="text-[10px] text-gray-400">{r.isActive ? 'Live' : 'Parked'}</span>
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500">{r.isActive ? 'Live' : 'Parked'}</span>
                     </div>
                   </div>
-                  <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                  <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 dark:border-gray-700">
                     <Button variant="outline" size="sm" onClick={() => openEdit(r)}>
                       Edit
                     </Button>
@@ -370,7 +370,7 @@ export function SellerPromotionsPage() {
               <Label htmlFor="edit-active">Live (prices orders automatically)</Label>
               <Switch id="edit-active" checked={editForm.isActive} onCheckedChange={(v) => setEditForm({ ...editForm, isActive: v })} />
             </div>
-            <p className="text-[11px] text-gray-400">
+            <p className="text-[11px] text-gray-400 dark:text-gray-500">
               Pinned products stay as they are — create a new campaign if you need a different product set.
             </p>
           </div>
