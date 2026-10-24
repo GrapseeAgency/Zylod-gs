@@ -217,6 +217,16 @@ export function MobileProductDetailPage() {
     []
   )
 
+  // Record view in browsing history (mirror desktop PDP — mobile users were generating zero history)
+  useEffect(() => {
+    if (!product?.id) return
+    fetch('/api/products/recently-viewed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId: product.id }),
+    }).catch(() => { /* fire-and-forget */ })
+  }, [product?.id])
+
   // Determine the active price tier
   const activeTier = useMemo(() => {
     if (!product || !product.priceTiers?.length) return null
@@ -316,8 +326,10 @@ export function MobileProductDetailPage() {
     navigate('cart')
   }, [handleAddToCart, navigate, currentVariantStock, quantity, product])
 
-  const handleToggleWishlist = useCallback(() => {
+  const handleToggleWishlist = useCallback(async () => {
     if (!product) return
+    // Mirror desktop PDP: real API POST/DELETE so the action persists server-side.
+    // The local store toggle still fires so the heart flips immediately.
     toggleItem({
       id: product.id,
       name: product.name,
@@ -330,7 +342,22 @@ export function MobileProductDetailPage() {
       category: product.category?.name || '',
       customizable: product.isCustomizable,
     })
-  }, [product, toggleItem])
+    const isFav = isInWishlist(product.id)
+    try {
+      if (isFav) {
+        // already favorited → user is removing
+        await fetch(`/api/wishlist?productId=${encodeURIComponent(product.id)}`, { method: 'DELETE' })
+      } else {
+        await fetch('/api/wishlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: product.id }),
+        })
+      }
+    } catch {
+      // best-effort persistence — local state already updated
+    }
+  }, [product, toggleItem, isInWishlist])
 
   const handleQuantityChange = useCallback((delta: number) => {
     setQuantity(prev => Math.max(product?.moq || 50, prev + delta))

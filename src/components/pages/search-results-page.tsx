@@ -93,6 +93,9 @@ export function SearchResultsPage() {
   const [visibleCount, setVisibleCount] = useState(10)
   const [addingId, setAddingId] = useState<string | null>(null)
   const [retryToken, setRetryToken] = useState(0)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
 
   // Deep-link / in-place navigation with a new query must re-run the search.
   useEffect(() => {
@@ -118,7 +121,7 @@ export function SearchResultsPage() {
       setErrorStatus(null)
       try {
         const [prodRes, catRes] = await Promise.all([
-          fetch(`/api/products?search=${encodeURIComponent(activeSearch.trim())}&limit=50&page=1`),
+          fetch(`/api/products?search=${encodeURIComponent(activeSearch.trim())}&limit=20&page=1`),
           fetch('/api/categories'),
         ])
 
@@ -128,6 +131,9 @@ export function SearchResultsPage() {
           if (mounted) {
             setProducts(items)
             setVisibleCount(10)
+            setPage(1)
+            const pag = prodData?.pagination
+            setHasMore(pag ? pag.page < pag.totalPages : false)
           }
         } else {
           if (mounted) {
@@ -454,14 +460,45 @@ export function SearchResultsPage() {
           </div>
         )}
 
-        {/* Load More Results */}
-        {!loading && !loadError && visibleCount < products.length && (
+        {/* Load More Results — fetches the next page from the API (was previously just slicing local state) */}
+        {!loading && !loadError && (visibleCount < products.length || hasMore) && (
           <div className="mt-6 text-center">
             <button
-              onClick={() => setVisibleCount((c) => c + 10)}
-              className="text-xs font-bold text-primary hover:underline py-3 px-4 rounded-full min-h-11"
+              onClick={async () => {
+                // First expand local visibility (cheaper than a network round-trip)
+                if (visibleCount < products.length) {
+                  setVisibleCount((c) => c + 10)
+                  return
+                }
+                // When local buffer is exhausted, fetch the next page from the API.
+                if (!hasMore || loadingMore) return
+                setLoadingMore(true)
+                try {
+                  const nextPage = page + 1
+                  const res = await fetch(`/api/products?search=${encodeURIComponent(activeSearch.trim())}&limit=20&page=${nextPage}`)
+                  if (res.ok) {
+                    const json = await res.json()
+                    const items = Array.isArray(json?.data) ? json.data.map(normalizeProduct) : []
+                    setProducts((prev) => [...prev, ...items])
+                    setVisibleCount((c) => c + items.length)
+                    setPage(nextPage)
+                    const pag = json?.pagination
+                    setHasMore(pag ? pag.page < pag.totalPages : false)
+                  }
+                } catch {
+                  // best-effort — keep what we have
+                } finally {
+                  setLoadingMore(false)
+                }
+              }}
+              disabled={loadingMore}
+              className="text-xs font-bold text-primary hover:underline py-3 px-4 rounded-full min-h-11 disabled:opacity-50"
             >
-              Load More Results ({products.length - visibleCount} remaining)
+              {loadingMore
+                ? 'Loading...'
+                : hasMore
+                  ? `Load More Results (page ${page + 1})`
+                  : `Show all ${products.length} results`}
             </button>
           </div>
         )}

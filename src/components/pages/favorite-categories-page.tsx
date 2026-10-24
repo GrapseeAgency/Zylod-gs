@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { ArrowLeft, Bell, BellRing, LayoutGrid, PackageOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 interface Category {
   id: string;
@@ -23,10 +24,23 @@ export function FavoriteCategoriesPage() {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/categories?favorited=true');
-        if (!res.ok) throw new Error('Failed to fetch categories');
+        // Real endpoint — returns only categories the buyer actually follows.
+        const res = await fetch('/api/buyer/followed-categories');
+        if (!res.ok) throw new Error('Failed to fetch followed categories');
         const data = await res.json();
-        setCategories(data.categories || data || []);
+        const raw: any[] = Array.isArray(data?.data) ? data.data : [];
+        const mapped: Category[] = raw.map((r: any) => {
+          const c = r.category || {};
+          return {
+            id: c.id || r.categoryId,
+            slug: c.slug || '',
+            name: c.name || 'Unnamed category',
+            productsCount: 0,
+            hasNewArrivals: false,
+            notificationsEnabled: !!r.notifyOnNew,
+          };
+        });
+        setCategories(mapped);
       } catch (err) {
         console.error(err);
       } finally {
@@ -38,14 +52,54 @@ export function FavoriteCategoriesPage() {
 
   const toggleNotification = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, notificationsEnabled: !c.notificationsEnabled } : c));
-    // API call would go here
+    const cat = categories.find(c => c.id === id);
+    if (!cat) return;
+    const next = !cat.notificationsEnabled;
+    // Optimistic update
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, notificationsEnabled: next } : c));
+    try {
+      const res = await fetch(`/api/categories/${id}/favorite`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notifyOnNew: next }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success(next ? 'Notifications on for this category' : 'Notifications off');
+    } catch {
+      // Revert on failure
+      setCategories(prev => prev.map(c => c.id === id ? { ...c, notificationsEnabled: !next } : c));
+      toast.error('Could not update — please try again');
+    }
   };
 
   const handleUnfollow = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
+    // Optimistic update
     setCategories(prev => prev.filter(c => c.id !== id));
-    // API call would go here
+    try {
+      const res = await fetch(`/api/categories/${id}/favorite`, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      toast.success('Unfollowed category');
+    } catch {
+      // Restore on failure by re-fetching
+      toast.error('Could not unfollow — please try again');
+      const restore = await fetch('/api/buyer/followed-categories');
+      if (restore.ok) {
+        const data = await restore.json();
+        const raw: any[] = Array.isArray(data?.data) ? data.data : [];
+        setCategories(raw.map((r: any) => {
+          const c = r.category || {};
+          return {
+            id: c.id || r.categoryId,
+            slug: c.slug || '',
+            name: c.name || 'Unnamed category',
+            productsCount: 0,
+            hasNewArrivals: false,
+            notificationsEnabled: !!r.notifyOnNew,
+          };
+        }));
+      }
+    }
   };
 
   return (

@@ -41,7 +41,28 @@ export function WishlistPage() {
         const response = await fetch('/api/wishlist')
         if (!response.ok) throw new Error('Failed to fetch wishlist')
         const data = await response.json()
-        setItems(data.items || [])
+        // API returns { success, data: [...raw Prisma rows with nested product], meta }
+        const raw: any[] = Array.isArray(data?.data) ? data.data : []
+        const mapped: WishlistItem[] = raw.map((r: any) => {
+          const p = r.product || {}
+          const stock: number = p.stockQuantity ?? 0
+          const stockStatus: WishlistItem['stockStatus'] =
+            stock === 0 ? 'OUT_OF_STOCK' : stock <= (p.moq || 10) ? 'LOW_STOCK' : 'IN_STOCK'
+          return {
+            id: r.id,
+            productId: p.id || r.productId,
+            productName: p.name || 'Unnamed product',
+            supplierName: p.supplier?.companyName || 'Unknown supplier',
+            moq: p.moq || 1,
+            price: p.basePrice || 0,
+            oldPrice: undefined,
+            stockStatus,
+            imageUrl: p.thumbnailUrl || '/images/placeholder-product.png',
+            rating: p.ratingAvg || 0,
+            dateAdded: r.createdAt || new Date().toISOString(),
+          }
+        })
+        setItems(mapped)
       } catch (err: any) {
         setError(err.message)
       } finally {

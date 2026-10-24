@@ -25,17 +25,19 @@ export function SearchResultsSupplierPage() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
-  const [sortBy, setSortBy] = useState('ratingAvg')
+  const [sortBy, setSortBy] = useState<'rating' | 'products' | 'newest'>('rating')
 
   async function fetchSuppliers() {
     setLoading(true)
     try {
-      const params = new URLSearchParams({ q: query, sortBy, limit: '20' })
+      // /api/suppliers accepts `search=` and `sort=` (not `q`/`sortBy`).
+      const params = new URLSearchParams({ search: query, sort: sortBy, limit: '20' })
       const res = await fetch(`/api/suppliers?${params}`)
       if (res.ok) {
         const json = await res.json()
         setSuppliers(json.data || [])
-        setTotal(json.total || 0)
+        // API returns total inside pagination.total — was reading non-existent json.total
+        setTotal(json.pagination?.total ?? (json.data?.length || 0))
       }
     } catch {}
     setLoading(false)
@@ -57,12 +59,12 @@ export function SearchResultsSupplierPage() {
         </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
           {[
-            { value: 'ratingAvg', label: 'Top Rated' },
-            { value: 'totalOrders', label: 'Most Orders' },
-            { value: 'totalProducts', label: 'Most Products' },
+            { value: 'rating', label: 'Top Rated' },
+            { value: 'products', label: 'Most Products' },
+            { value: 'newest', label: 'Newest' },
           ].map(({ value, label }) => (
-            <button key={value} onClick={() => setSortBy(value)}
-              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium transition ${sortBy === value ? 'bg-red-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
+            <button key={value} onClick={() => setSortBy(value as 'rating' | 'products' | 'newest')}
+              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium transition ${sortBy === value ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
               {label}
             </button>
           ))}

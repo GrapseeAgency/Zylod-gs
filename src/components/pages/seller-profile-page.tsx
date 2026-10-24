@@ -9,6 +9,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
+import { toast } from 'sonner'
 import {
   User, Building2, CheckCircle2, Star, ShieldCheck,
   Truck, DollarSign, Archive, Clock, MessageSquare, ChevronRight,
@@ -161,12 +162,32 @@ export function SellerProfilePage() {
 
   // UI state
   const [following, setFollowing] = useState(false)
+  const [followLoading, setFollowLoading] = useState(false)
   const [copied, setCopied] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [rfqQuantity, setRfqQuantity] = useState(100)
   const [rfqNote, setRfqNote] = useState('')
   const [rfqPartNumber, setRfqPartNumber] = useState('')
   const [rfqPort, setRfqPort] = useState('')
+
+  // Fetch real follow status from the server (was hardcoded to false).
+  // For visitors (no token), skip — they'll be prompted to sign in on click.
+  useEffect(() => {
+    if (isOwner || !token || !pageParams?.sellerId) return
+    let cancelled = false
+    const fetchFollowStatus = async () => {
+      try {
+        const res = await fetch(`/api/suppliers/${pageParams.sellerId}/favorite`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (!res.ok) return
+        const json = await res.json()
+        if (!cancelled && json?.success) setFollowing(!!json.data?.following)
+      } catch { /* best-effort — defaults to not-following */ }
+    }
+    fetchFollowStatus()
+    return () => { cancelled = true }
+  }, [isOwner, token, pageParams?.sellerId])
   const [rfqSubmitting, setRfqSubmitting] = useState(false)
   const [rfqSubmitted, setRfqSubmitted] = useState(false)
 
@@ -622,14 +643,38 @@ export function SellerProfilePage() {
                 ) : (
                   <>
                     <Button
-                      onClick={() => setFollowing((f) => !f)}
+                      onClick={async () => {
+                        if (!token) {
+                          toast.info('Sign in to follow suppliers', { description: 'You\'ll see updates from suppliers you follow in your buyer dashboard.' })
+                          navigate('login')
+                          return
+                        }
+                        if (!pageParams?.supplierId || followLoading) return
+                        setFollowLoading(true)
+                        const next = !following
+                        setFollowing(next) // optimistic
+                        try {
+                          const res = await fetch(`/api/suppliers/${pageParams.supplierId}/favorite`, {
+                            method: next ? 'POST' : 'DELETE',
+                            headers: { Authorization: `Bearer ${token}` },
+                          })
+                          if (!res.ok) throw new Error()
+                          toast.success(next ? 'Following supplier' : 'Unfollowed supplier')
+                        } catch {
+                          setFollowing(!next) // revert
+                          toast.error('Could not update — please try again')
+                        } finally {
+                          setFollowLoading(false)
+                        }
+                      }}
+                      disabled={followLoading}
                       className={`h-9 px-4 rounded-xl text-xs font-bold transition-all ${
                         following
                           ? 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-200 border border-slate-200 dark:border-slate-800'
                           : 'bg-primary hover:bg-primary/90 text-white shadow-md'
                       }`}
                     >
-                      {following ? 'Following' : '+ Follow'}
+                      {followLoading ? '...' : following ? 'Following' : '+ Follow'}
                     </Button>
                     <Button
                       variant="outline"

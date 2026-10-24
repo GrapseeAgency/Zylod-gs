@@ -45,6 +45,8 @@ model users {
   orders            orders[]
   orderReschedules  orderReschedules[]
   wishlists         wishlists[]
+  favoriteSuppliers favoriteSuppliers[]
+  followedCategories followedCategories[]
   notifications     notifications[]
   notificationPrefs notificationPreferences?
   priceAlerts       priceAlerts[]
@@ -280,6 +282,7 @@ model supplierProfiles {
   payouts               sellerPayouts[]
   bulkUploads           sellerBulkUploads[]
   customerQueries       sellerCustomerQueries[]
+  favoritedBy           favoriteSuppliers[]
 
   @@index([verificationStatus])
 }
@@ -301,6 +304,7 @@ model categories {
   parent   categories?  @relation("CategoryTree", fields: [parentId], references: [id])
   children categories[] @relation("CategoryTree")
   products products[]
+  followedBy followedCategories[]
 
   @@index([parentId])
   @@index([isActive])
@@ -768,6 +772,37 @@ model wishlists {
   @@unique([buyerId, productId])
   @@index([buyerId])
   @@index([productId])
+}
+
+// Buyer → Supplier follow (replaces the fake local-only Follow button on seller-profile)
+model favoriteSuppliers {
+  id         String   @id @default(cuid())
+  buyerId    String
+  supplierId String
+  createdAt  DateTime @default(now())
+
+  buyer    users            @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  supplier supplierProfiles @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@unique([buyerId, supplierId])
+  @@index([buyerId])
+  @@index([supplierId])
+}
+
+// Buyer → Category follow (replaces the local-only toggles on favorite-categories-page)
+model followedCategories {
+  id          String   @id @default(cuid())
+  buyerId     String
+  categoryId  String
+  notifyOnNew Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  buyer    users      @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  category categories @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([buyerId, categoryId])
+  @@index([buyerId])
+  @@index([categoryId])
 }
 
 model savedForLater {

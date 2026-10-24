@@ -122,7 +122,7 @@ export function ExplorePage() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      navigate('search-results', { q: searchQuery.trim() })
+      navigate('search-results', { query: searchQuery.trim() })
     }
   }
 

@@ -56,63 +56,45 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
           const data = await res.json()
           const p = data.data || (Array.isArray(data) ? data[0] : data)
           if (mounted && p) {
-            const productData = {
+            // HONEST mapping — no fabricated fallbacks. A product with no
+            // ratingAvg shows "0.0 (0 reviews)" instead of the previous
+            // fake "4.8 (1284)" copy.
+            const productData: ProductInfo = {
               id: p.id || '',
-              name: p.name || 'Heavy Duty Steel Pallet Racking',
-              rating_avg: p.rating_avg || p.ratingAvg || 4.8,
-              rating_count: p.reviews_count || p.reviewsCount || 1284,
+              name: p.name || 'Unnamed product',
+              rating_avg: Number(p.ratingAvg ?? p.rating_avg ?? 0),
+              rating_count: Number(p.reviewCount ?? p.reviewsCount ?? p.reviews_count ?? 0),
               images: Array.isArray(p.images) ? p.images : [],
             }
             setProduct(productData)
 
-            // Normalize or build reviews from product data
-            if (Array.isArray(p.reviews) && p.reviews.length > 0) {
-              setReviews(p.reviews.map((r: any, idx: number) => ({
-                id: r.id || `r-${idx}`,
-                authorName: r.user?.name || r.authorName || 'Enterprise Buyer',
-                companyName: r.user?.companyName || 'Logistics Partner',
-                purchasedQty: r.quantity || 100,
-                unit: p.unit || 'Units',
-                date: '2 weeks ago',
-                verified: true,
-                rating: r.rating || 5,
-                title: r.title || 'Incredible load capacity and easy to assemble',
-                content: r.comment || r.content || 'Excellent build quality and structural integrity. The steel gauge is accurate and installation was seamless.',
-                helpfulCount: r.helpfulCount || 24,
-                photos: r.photos || (p.images?.length ? [p.images[0].url] : []),
-              })))
-            } else {
-              // Real data dynamic representation
-              setReviews([
-                {
-                  id: 'rev-1',
-                  authorName: 'Midwest Logistics Corp',
-                  companyName: 'Midwest Logistics',
-                  purchasedQty: 100,
-                  unit: 'Units',
-                  date: '2 weeks ago',
-                  verified: true,
-                  rating: 5,
-                  title: 'Incredible load capacity and easy to assemble',
-                  content: 'We outfitted our new 50,000 sq ft facility with these racks. The build quality is exceptional for the price point. The steel gauge is exactly as advertised, and the locking pins feel very secure. Assembly was straightforward once we got the hang of the first bay. Highly recommend for high-density storage needs.',
-                  helpfulCount: 24,
-                  photos: p.images?.slice(0, 2).map((img: any) => img.url) || [],
-                },
-                {
-                  id: 'rev-2',
-                  authorName: 'Sunrise Distributors',
-                  companyName: 'Sunrise Dist.',
-                  purchasedQty: 20,
-                  unit: 'Units',
-                  date: '1 month ago',
-                  verified: true,
-                  rating: 4,
-                  title: 'Solid product, minor shipping delay',
-                  content: 'The racks themselves are top-notch and met all our safety requirements. They feel incredibly sturdy once anchored. Subtracting one star because the freight carrier was delayed by two days, which threw off our installation schedule slightly. The supplier customer service was responsive, however.',
-                  helpfulCount: 8,
-                }
-              ])
-            }
+            // Map REAL reviews from the API shape:
+            //   { id, rating, comment, images (array), verifiedPurchase, createdAt,
+            //     buyer: { id, buyerProfile: { fullName, businessName } | null },
+            //     replies: [...] }
+            // Previous code read r.user?.name (wrong shape) and synthesized
+            // fake "Midwest Logistics Corp" reviews when none existed.
+            const realReviews: ReviewItem[] = Array.isArray(p.reviews)
+              ? p.reviews.map((r: any, idx: number) => {
+                  const profile = r.buyer?.buyerProfile || null
+                  return {
+                    id: r.id || `r-${idx}`,
+                    authorName: profile?.fullName || 'Anonymous Buyer',
+                    companyName: profile?.businessName || undefined,
+                    purchasedQty: r.quantity || undefined,
+                    unit: p.unit || undefined,
+                    date: r.createdAt || r.date || new Date().toISOString(),
+                    verified: !!r.verifiedPurchase,
+                    rating: Number(r.rating ?? 0),
+                    title: r.title || '',
+                    content: r.comment || r.content || '',
+                    helpfulCount: Number(r.helpfulCount ?? 0),
+                    photos: Array.isArray(r.images) ? r.images : [],
+                  }
+                })
+              : []
+
+            setReviews(realReviews)
           }
         }
       } catch (err) {
@@ -238,10 +220,46 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
         </div>
 
         {/* Reviews List */}
+        {!loading && filteredReviews.length === 0 ? (
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 border border-slate-100 dark:border-slate-800 text-center space-y-3">
+            <div className="w-14 h-14 mx-auto bg-rose-50 dark:bg-rose-950/40 text-primary rounded-full flex items-center justify-center">
+              <Star className="h-6 w-6" />
+            </div>
+            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+              {reviews.length === 0 ? 'No reviews yet' : 'No reviews match this filter'}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+              {reviews.length === 0
+                ? 'Be the first to share your experience with this product.'
+                : 'Try a different filter to see more reviews.'}
+            </p>
+            {reviews.length === 0 && product?.id && (
+              <Button
+                size="sm"
+                onClick={() => navigate('write-review', { productId: product.id })}
+                className="bg-primary hover:bg-primary/90 text-white"
+              >
+                Write the First Review
+              </Button>
+            )}
+          </div>
+        ) : (
         <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
           {filteredReviews.map((rev) => {
             const hasHelpful = helpfulClicked[rev.id]
             const count = rev.helpfulCount + (hasHelpful ? 1 : 0)
+            const relativeDate = (() => {
+              const d = new Date(rev.date)
+              if (isNaN(d.getTime())) return ''
+              const diffMs = Date.now() - d.getTime()
+              const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+              if (diffDays < 1) return 'today'
+              if (diffDays === 1) return 'yesterday'
+              if (diffDays < 7) return `${diffDays} days ago`
+              if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`
+              if (diffDays < 365) return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`
+              return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? 's' : ''} ago`
+            })()
 
             return (
               <div key={rev.id} className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-100 dark:border-slate-800 shadow-2xs space-y-3">
@@ -261,7 +279,12 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
                         )}
                       </div>
                       <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
-                        Purchased {rev.purchasedQty} {rev.unit} • {rev.date}
+                        {rev.purchasedQty
+                          ? `Purchased ${rev.purchasedQty} ${rev.unit || ''}${relativeDate ? ' • ' : ''}`
+                          : relativeDate
+                            ? ''
+                            : 'Verified buyer'}
+                        {relativeDate}
                       </p>
                     </div>
                   </div>
@@ -279,7 +302,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
 
                 {/* Review Text */}
                 <div>
-                  <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100 mb-1">{rev.title}</h5>
+                  {rev.title && <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100 mb-1">{rev.title}</h5>}
                   <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">{rev.content}</p>
                 </div>
 
@@ -320,6 +343,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
             )
           })}
         </div>
+        )}
       </main>
     </div>
   )

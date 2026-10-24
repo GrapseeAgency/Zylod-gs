@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { toast } from 'sonner'
 import {
   X, Mail, Phone, Briefcase, CheckCircle2,
   Check, Loader2, Building2, Factory, Award,
@@ -106,7 +107,7 @@ export function EditProfilePage() {
     try {
       const fullName = `${firstName} ${lastName}`.trim()
       if (token) {
-        await Promise.all([
+        const [profileRes, businessRes] = await Promise.all([
           fetch('/api/profile/me', {
             method: 'PATCH',
             headers: {
@@ -136,18 +137,34 @@ export function EditProfilePage() {
             }),
           }),
         ])
+
+        // HONEST error handling — previously the page navigated to /profile
+        // and showed the green "Saved" state even when the API rejected the
+        // payload (e.g. duplicate email, validation 422).
+        const profileJson = await profileRes.json().catch(() => null)
+        const businessJson = await businessRes.json().catch(() => null)
+        if (!profileRes.ok || !profileJson?.success) {
+          toast.error(profileJson?.error || `Saving your profile failed (HTTP ${profileRes.status}).`)
+          return
+        }
+        // Business profile is allowed to fail gracefully (not every account has one)
+        if (!businessRes.ok && businessRes.status !== 404) {
+          toast.error(businessJson?.error || `Saving your business profile failed (HTTP ${businessRes.status}).`)
+          return
+        }
       }
       if (updateUser) {
         updateUser({ fullName, phone, email })
       }
-    } catch {
-      // Handled
-    } finally {
-      setSaving(false)
       setSaved(true)
+      toast.success('Profile updated successfully.')
       setTimeout(() => {
         navigate('profile')
       }, 600)
+    } catch (err) {
+      toast.error('Network error — please check your connection and try again.')
+    } finally {
+      setSaving(false)
     }
   }
 

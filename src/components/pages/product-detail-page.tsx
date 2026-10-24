@@ -460,15 +460,16 @@ function DesktopProductDetailPage() {
     setWishlistLoading(true)
     try {
       if (wishlist) {
-        const res = await fetch('/api/wishlist', {
+        // DELETE reads productId from query string (per /api/wishlist route.ts), not body.
+        const res = await fetch(`/api/wishlist?productId=${encodeURIComponent(currentProductId)}`, {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: currentProductId }),
         })
         const data = await res.json()
         if (data.success) {
           setWishlist(false)
           toast({ title: 'Removed from Wishlist', description: `${productName} removed from your wishlist` })
+        } else {
+          toast({ title: 'Could not remove', description: data.error || 'Please try again', variant: 'destructive' })
         }
       } else {
         const res = await fetch('/api/wishlist', {

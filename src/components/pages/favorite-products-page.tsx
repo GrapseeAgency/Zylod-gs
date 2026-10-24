@@ -34,7 +34,8 @@ export function FavoriteProductsPage() {
 
   const removeFavorite = async (productId: string) => {
     try {
-      const res = await fetch(`/api/favorites/${productId}`, { method: 'DELETE' });
+      // Favorites == wishlist at the data layer. DELETE /api/wishlist?productId=...
+      const res = await fetch(`/api/wishlist?productId=${encodeURIComponent(productId)}`, { method: 'DELETE' });
       if (res.ok) {
         setProducts(prev => prev.filter(p => p.id !== productId));
         toast.success('Removed from favorites');
@@ -63,7 +64,26 @@ export function FavoriteProductsPage() {
         const res = await fetch('/api/favorites');
         if (!res.ok) throw new Error('Failed to fetch favorite products');
         const data = await res.json();
-        setProducts(data.products || data || []);
+        // API returns { success, data: [...raw Prisma rows with nested product], meta }
+        const raw: any[] = Array.isArray(data?.data) ? data.data : [];
+        const mapped: Product[] = raw.map((r: any) => {
+          const p = r.product || {};
+          return {
+            id: p.id || r.productId,
+            name: p.name || 'Unnamed product',
+            price: p.basePrice || 0,
+            imageUrl: p.thumbnailUrl || '',
+            rating: p.ratingAvg || 0,
+            reviews: p.reviewCount || 0,
+            inStock: (p.stockQuantity ?? 0) > 0,
+            hasBulkPricing: Array.isArray(p.priceTiers) && p.priceTiers.length > 0,
+            supplier: {
+              name: p.supplier?.companyName || 'Unknown supplier',
+              isVerified: p.supplier?.verificationStatus === 'VERIFIED' || p.supplier?.verificationStatus === 'APPROVED',
+            },
+          };
+        });
+        setProducts(mapped);
       } catch (err) {
         console.error(err);
       } finally {

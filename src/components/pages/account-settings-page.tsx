@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useTheme } from 'next-themes'
+import { toast } from 'sonner'
 import {
   Menu, User, Lock, Smartphone, Bell, Eye, Link as LinkIcon, Trash2,
   ChevronRight, ShieldCheck, Globe, Moon, Sun, Laptop2, Camera,
@@ -222,21 +223,29 @@ export function AccountSettingsPage() {
   const saveNotifications = async () => {
     setSavingNotifications(true)
     try {
-      if (token) {
-        await fetch('/api/profile/notifications', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({
-            order: { push: notifOrderPush, email: notifOrderEmail, sms: notifOrderSms },
-            promotions: { push: notifPromoPush, email: false },
-            shipping: { push: notifShipPush, email: true, sms: false },
-          }),
-        })
+      if (!token) {
+        toast.error('You must be signed in to save notification preferences.')
+        return
+      }
+      const res = await fetch('/api/profile/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          order: { push: notifOrderPush, email: notifOrderEmail, sms: notifOrderSms },
+          promotions: { push: notifPromoPush, email: false },
+          shipping: { push: notifShipPush, email: true, sms: false },
+        }),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json?.success) {
+        toast.error(json?.error || `Saving notification preferences failed (HTTP ${res.status}).`)
+        return
       }
       setSavedNotifications(true)
+      toast.success('Notification preferences saved.')
       setTimeout(() => setSavedNotifications(false), 2500)
-    } catch {
-      // Graceful
+    } catch (err) {
+      toast.error('Network error — please check your connection and try again.')
     } finally {
       setSavingNotifications(false)
     }

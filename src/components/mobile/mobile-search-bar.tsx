@@ -162,7 +162,7 @@ export function MobileSearchBar() {
     } else if (suggestion.type === 'supplier') {
       navigate('suppliers')
     } else {
-      navigate('search-results', { q: suggestion.name })
+      navigate('search-results', { query: suggestion.name })
     }
   }
 
@@ -171,7 +171,7 @@ export function MobileSearchBar() {
     e.preventDefault()
     if (query.trim()) {
       setShowSuggestions(false)
-      navigate('search-results', { q: query.trim() })
+      navigate('search-results', { query: query.trim() })
     }
   }
 

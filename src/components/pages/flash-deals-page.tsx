@@ -193,7 +193,7 @@ export function FlashDealsPage() {
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-16">
             <AlertTriangle className="w-8 h-8 text-[#FF4D6D]" />
-            <p className="text-sm text-gray-300">{loadError}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">{loadError}</p>
           </div>
         )}
 
