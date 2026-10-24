@@ -63,11 +63,11 @@ export function DeliveryChatPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col pb-24 md:pb-0 text-slate-900 dark:text-slate-100">
       {/* Top Main Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Menu">
+        <button onClick={() => navigate("home")} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Menu" aria-label="Menu">
           <Menu className="h-6 w-6" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Logistics Suite</span>
-        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="More">
+        <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="More" aria-label="More options">
           <MoreVertical className="h-5 w-5" />
         </button>
       </header>

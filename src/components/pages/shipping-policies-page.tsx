@@ -43,7 +43,7 @@ export function ShippingPoliciesPage() {
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Logistics Suite</span>
-        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="More">
+        <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="More" aria-label="More options">
           <MoreVertical className="h-5 w-5" />
         </button>
       </header>
