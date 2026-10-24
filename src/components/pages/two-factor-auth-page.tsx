@@ -268,19 +268,34 @@ export function TwoFactorAuthPage() {
     })
   }, [secretKey])
 
-  // ─── Header Bar ───
+  // ─── Header back handler (shared by mobile + desktop) ───
+  const handleHeaderBack = () => {
+    if (isLoginChallenge) {
+      goBack()
+      return
+    }
+    if (step === 'select') {
+      goBack()
+      return
+    }
+    if (step === 'verify' && !isLoginChallenge) {
+      setStep(selectedMethod === 'authenticator' ? 'setup' : 'select')
+      setOtp('')
+      setError(null)
+      return
+    }
+    setStep('select')
+    setOtp('')
+    setError(null)
+    setSecretKey('')
+    setOtpauthUri('')
+  }
+
+  // ─── Header Bar (mobile) ───
   const headerBar = (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white border-b border-[#E0E0E0]">
+    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white border-b border-[#E0E0E0]">
       <button
-        onClick={
-          isLoginChallenge
-            ? goBack
-            : step === 'select'
-              ? goBack
-              : step === 'verify' && !isLoginChallenge
-                ? () => { setStep(selectedMethod === 'authenticator' ? 'setup' : 'select'); setOtp(''); setError(null) }
-                : () => { setStep('select'); setOtp(''); setError(null); setSecretKey(''); setOtpauthUri('') }
-        }
+        onClick={handleHeaderBack}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
         aria-label="Go back"
       >
@@ -294,6 +309,29 @@ export function TwoFactorAuthPage() {
       >
         <HelpCircle className="w-5 h-5 text-[#6B7280]" />
       </button>
+    </header>
+  )
+
+  // ─── Header Bar (desktop) ───
+  const desktopHeaderBar = (
+    <header className="hidden md:flex sticky top-0 z-50 items-center gap-3 px-6 h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+      <div className="max-w-3xl mx-auto w-full flex items-center gap-3">
+        <button
+          onClick={handleHeaderBack}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        </button>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Two-Factor Authentication</h1>
+        <button
+          onClick={() => navigate('help-center')}
+          className="ml-auto p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Help"
+        >
+          <HelpCircle className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+        </button>
+      </div>
     </header>
   )
 
@@ -666,6 +704,7 @@ export function TwoFactorAuthPage() {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
         {headerBar}
+        {desktopHeaderBar}
         <main className="flex-1 flex flex-col">
           {heroSection}
           {heading}
@@ -680,6 +719,7 @@ export function TwoFactorAuthPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
       {headerBar}
+      {desktopHeaderBar}
       <main className="flex-1 flex justify-center px-4 py-10">
         <div className="w-full max-w-md flex flex-col">
           {heroSection}

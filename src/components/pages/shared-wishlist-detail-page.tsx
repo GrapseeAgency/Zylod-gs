@@ -66,7 +66,7 @@ export function SharedWishlistDetailPage() {
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen bg-gray-50 pb-20 md:pb-8">
-        <div className="p-4 bg-white border-b flex justify-center items-center h-14">
+        <div className="md:hidden p-4 bg-white border-b flex justify-center items-center h-14">
           <Skeleton className="w-24 h-6 bg-red-100 rounded" />
         </div>
         <div className="p-4">
@@ -100,8 +100,8 @@ export function SharedWishlistDetailPage() {
       animate={{ opacity: 1 }}
       className="flex flex-col min-h-screen bg-gray-50 pb-24"
     >
-      {/* Header */}
-      <header className="bg-white border-b h-14 flex items-center justify-center sticky top-0 z-10">
+      {/* Header (mobile only — desktop uses the AppShell Header) */}
+      <header className="md:hidden bg-white border-b h-14 flex items-center justify-center sticky top-0 z-10">
         <h1 className="text-xl font-black text-primary tracking-tight">ZYLOD</h1>
       </header>
 
@@ -162,8 +162,8 @@ export function SharedWishlistDetailPage() {
         </div>
       </div>
 
-      {/* Bottom CTA */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white border-t p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-20">
+      {/* Bottom CTA — floats above the mobile bottom nav; static block on desktop */}
+      <div className="fixed bottom-0 md:static md:bottom-auto left-0 right-0 bg-white border-t p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-20">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-medium text-gray-600">Share this list</span>
           <button className="text-primary flex items-center text-sm font-semibold">

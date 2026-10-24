@@ -123,11 +123,11 @@ export function FlashDealsPage() {
 
   return (
     <div className="min-h-screen bg-[#121212] text-white pb-24 md:pb-8">
-      {/* ─── Top Nav Bar (Dark theme) ─── */}
-      <header className="sticky top-0 z-40 bg-[#1A1A1A] border-b border-[#2C2C2C] h-14 flex items-center justify-between px-4">
+      {/* ─── Top Nav Bar (mobile only — desktop uses the AppShell Header) ─── */}
+      <header className="md:hidden sticky top-0 z-40 bg-[#1A1A1A] border-b border-[#2C2C2C] h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors md:hidden"
+          className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#FF4D6D]" />

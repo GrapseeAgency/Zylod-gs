@@ -70,11 +70,11 @@ export function TransactionDetailPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 md:pb-10">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-6 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="md:hidden p-1 text-slate-700 hover:text-slate-900" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <span className="text-base font-black tracking-tight text-primary">Transaction Receipt</span>
+        <span className="text-base md:text-xl font-black tracking-tight text-primary">Transaction Receipt</span>
         <button
           onClick={() => window.print()}
           className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200"

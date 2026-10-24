@@ -85,7 +85,7 @@ export function WishlistDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <header className="bg-white h-14 border-b flex items-center px-4">
+        <header className="md:hidden bg-white h-14 border-b flex items-center px-4">
           <Skeleton className="w-8 h-8 rounded-full" />
         </header>
         <Skeleton className="w-full aspect-square" />
@@ -115,14 +115,14 @@ export function WishlistDetailPage() {
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
       className="min-h-screen bg-gray-50 flex flex-col pb-24 md:pb-10"
     >
-      <header className="bg-white h-14 flex items-center px-4 fixed top-0 w-full z-20 shadow-sm">
+      <header className="md:hidden bg-white h-14 flex items-center px-4 fixed top-0 w-full z-20 shadow-sm">
         <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 mr-2">
           <ArrowLeft className="w-5 h-5 text-gray-700" />
         </button>
         <h1 className="text-base font-semibold flex-1 truncate">Wishlist Item</h1>
       </header>
 
-      <div className="mt-14 bg-white border-b">
+      <div className="mt-14 md:mt-0 bg-white border-b">
         <div className="aspect-square bg-gray-100 relative">
           <img 
             src={item.product.images[0]?.url || '/placeholder.png'} 

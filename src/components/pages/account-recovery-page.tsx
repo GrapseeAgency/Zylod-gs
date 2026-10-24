@@ -66,9 +66,9 @@ export function AccountRecoveryPage() {
     }
   }, [email, selectedMethod, navigate])
 
-  /* ─── Header Bar ─── */
+  /* ─── Header Bar (mobile) ─── */
   const headerBar = (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white border-b border-[#E0E0E0]">
+    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white border-b border-[#E0E0E0]">
       <button
         onClick={goBack}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
@@ -80,6 +80,28 @@ export function AccountRecoveryPage() {
       <button className="p-1.5 rounded-lg" aria-label="Notifications">
         <Bell className="w-5 h-5 text-[#C8102E]" />
       </button>
+    </header>
+  )
+
+  /* ─── Header Bar (desktop) ─── */
+  const desktopHeaderBar = (
+    <header className="hidden md:flex sticky top-0 z-50 items-center gap-3 px-6 h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+      <div className="max-w-3xl mx-auto w-full flex items-center gap-3">
+        <button
+          onClick={goBack}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+        </button>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Account Recovery</h1>
+        <button
+          className="ml-auto p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Notifications"
+        >
+          <Bell className="w-5 h-5 text-[#C8102E]" />
+        </button>
+      </div>
     </header>
   )
 
@@ -358,6 +380,7 @@ export function AccountRecoveryPage() {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
         {headerBar}
+        {desktopHeaderBar}
         <main className="flex-1 flex flex-col">
           {heroSection}
           {heading}
@@ -376,6 +399,7 @@ export function AccountRecoveryPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
       {headerBar}
+      {desktopHeaderBar}
       <main className="flex-1 flex justify-center px-4 py-10">
         <div className="w-full max-w-md flex flex-col">
           {heroSection}

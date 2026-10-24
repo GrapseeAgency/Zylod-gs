@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { toast } from 'sonner';
-import { Plus, Tag, AlertCircle, Loader2, BarChart3, Trash2, MousePointerClick } from 'lucide-react';
+import { ArrowLeft, Plus, Tag, AlertCircle, Loader2, BarChart3, Trash2, MousePointerClick } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -196,7 +196,8 @@ export function SellerPromotionsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      <header className="bg-primary text-white p-4 flex items-center justify-between sticky top-0 z-20">
+      {/* Mobile header (red) */}
+      <header className="md:hidden bg-primary text-white p-4 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center">
           <button onClick={goBack} className="mr-4" aria-label="Go back">←</button>
           <h1 className="text-xl font-bold">Campaigns</h1>
@@ -204,6 +205,20 @@ export function SellerPromotionsPage() {
         <button
           onClick={() => navigate('create-promotion')}
           className="bg-white text-primary p-2 rounded-full"
+          aria-label="Create campaign"
+        >
+          <Plus className="w-5 h-5" />
+        </button>
+      </header>
+      {/* Desktop header */}
+      <header className="hidden md:flex sticky top-0 z-20 items-center gap-3 px-6 h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Go back">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+        </button>
+        <h1 className="text-xl font-bold text-primary">Campaigns</h1>
+        <button
+          onClick={() => navigate('create-promotion')}
+          className="ml-auto p-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition"
           aria-label="Create campaign"
         >
           <Plus className="w-5 h-5" />

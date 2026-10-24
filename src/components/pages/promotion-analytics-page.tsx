@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
-import { AlertCircle, BarChart3, CalendarClock, MousePointerClick, Package, Tag } from 'lucide-react';
+import { AlertCircle, ArrowLeft, BarChart3, CalendarClock, MousePointerClick, Package, Tag } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { campaignLabel, type StorefrontCampaign } from '@/components/supplier/storefront-campaigns';
 
@@ -75,11 +75,19 @@ export function PromotionAnalyticsPage({ id: idProp }: { id?: string }) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      <header className="bg-primary text-white p-4 flex items-center justify-between sticky top-0 z-20">
+      {/* Mobile header (red) */}
+      <header className="md:hidden bg-primary text-white p-4 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center">
           <button onClick={goBack} className="mr-4" aria-label="Go back">←</button>
           <h1 className="text-xl font-bold">Campaign Analytics</h1>
         </div>
+      </header>
+      {/* Desktop header */}
+      <header className="hidden md:flex sticky top-0 z-20 items-center gap-3 px-6 h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+        <button onClick={goBack} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Go back">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+        </button>
+        <h1 className="text-xl font-bold text-primary">Campaign Analytics</h1>
       </header>
       <main className="flex-1 p-4 md:p-6 md:max-w-3xl md:mx-auto md:w-full pb-20 md:pb-8">
         {loading ? (
