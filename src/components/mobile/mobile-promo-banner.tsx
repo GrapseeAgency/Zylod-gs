@@ -147,7 +147,7 @@ export function MobilePromoBanner() {
               key={i}
               onClick={() => setCurrentSlide(i)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === currentSlide ? 'w-6 bg-white' : 'w-1.5 bg-white/50 dark:bg-gray-900/50'
+                i === currentSlide ? 'w-6 bg-white dark:bg-gray-900' : 'w-1.5 bg-white/50 dark:bg-gray-900/50'
               }`}
               aria-label={`Go to slide ${i + 1}`}
             />

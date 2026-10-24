@@ -548,7 +548,7 @@ export function MobileProductDetailPage() {
                       className={`shrink-0 snap-start whitespace-nowrap rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
                         isSelected
                           ? 'border-[#E53935] bg-[#E53935] text-white'
-                          : 'border-gray-300 bg-white text-foreground active:bg-gray-50'
+                          : 'border-gray-300 bg-white dark:bg-gray-900 text-foreground active:bg-gray-50 dark:bg-gray-950'
                       } ${variant.stockQuantity === 0 && !isSelected ? 'opacity-80' : ''}`}
                     >
                       {label}
@@ -580,7 +580,7 @@ export function MobileProductDetailPage() {
                       className={`max-w-full rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
                         isSelected
                           ? 'border-[#E53935] bg-[#E53935] text-white'
-                          : 'border-gray-300 bg-white text-foreground active:bg-gray-50'
+                          : 'border-gray-300 bg-white dark:bg-gray-900 text-foreground active:bg-gray-50 dark:bg-gray-950'
                       } ${variant.stockQuantity === 0 && !isSelected ? 'opacity-80' : ''}`}
                     >
                       <span className="truncate">{label}</span>
@@ -653,7 +653,7 @@ export function MobileProductDetailPage() {
                       ? Math.round((1 - tier.pricePerUnit / product.basePrice) * 100)
                       : 0
                     return (
-                      <tr key={i} className={`border-t border-gray-100 ${isActive ? 'bg-[#E53935]/5' : 'bg-white'}`}>
+                      <tr key={i} className={`border-t border-gray-100 ${isActive ? 'bg-[#E53935]/5' : 'bg-white dark:bg-gray-900'}`}>
                         <td className="px-3 py-2.5 text-foreground">
                           {formatQty(tier.minQty)}{tier.maxQty === null ? '+' : `-${formatQty(tier.maxQty)}`} {isBundle ? 'bundles' : product.unit}
                         </td>
