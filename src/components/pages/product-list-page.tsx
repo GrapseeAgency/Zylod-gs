@@ -197,7 +197,7 @@ export function ProductListPage() {
             <QrCode className="h-6 w-6 text-primary" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 relative" title="Notifications">
+          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 relative" title="Notifications" aria-label="Notifications">
             <Bell className="h-6 w-6" />
           </button>
         </div>

@@ -166,7 +166,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button className="p-1 text-slate-700 dark:text-slate-300" title="Notifications">
+          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300" title="Notifications" aria-label="Notifications">
             <Bell className="h-6 w-6" />
           </button>
         </div>

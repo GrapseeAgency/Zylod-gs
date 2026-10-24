@@ -148,7 +148,7 @@ export function WholesaleCatalogPage() {
             <QrCode className="h-6 w-6 text-primary" />
           </button>
           <span className="md:hidden text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button className="md:hidden p-1 text-slate-700 dark:text-slate-300" title="Notifications">
+          <button onClick={() => navigate("notifications")} className="md:hidden p-1 text-slate-700 dark:text-slate-300" title="Notifications" aria-label="Notifications">
             <Bell className="h-6 w-6" />
           </button>
         </div>

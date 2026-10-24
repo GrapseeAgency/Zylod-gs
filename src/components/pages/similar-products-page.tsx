@@ -109,7 +109,7 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button className="p-1 text-slate-700 dark:text-slate-300" title="Notifications">
+          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300" title="Notifications" aria-label="Notifications">
             <Bell className="h-6 w-6" />
           </button>
         </div>
