@@ -492,7 +492,7 @@ export function AdminCompanyManager() {
 
       {/* Legal delete confirmation */}
       <AlertDialog open={!!legalDeleteTarget} onOpenChange={(o) => { if (!o) setLegalDeleteTarget(null); }}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{legalDeleteTarget?.label}"?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -571,7 +571,7 @@ export function AdminCompanyManager() {
 
       {/* Milestone delete confirmation */}
       <AlertDialog open={!!mDeleteTarget} onOpenChange={(o) => { if (!o) setMDeleteTarget(null); }}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{mDeleteTarget?.title}"?</AlertDialogTitle>
             <AlertDialogDescription>

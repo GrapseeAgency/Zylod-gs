@@ -58,7 +58,7 @@ export function MobileCategoryDrawer({ open, onOpenChange, category }: CategoryD
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent className="max-h-[85vh] overflow-y-auto">
         <DrawerHeader className="flex flex-row items-center justify-between border-b border-border/50 pb-3">
           <div className="flex items-center gap-2">
             <Package className="h-4 w-4 text-primary" />

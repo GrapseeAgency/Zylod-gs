@@ -144,7 +144,7 @@ function ServicesDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (
 
   return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent>
+        <DrawerContent className="max-h-[85vh] overflow-y-auto">
           <DrawerHeader className="text-left pb-2">
             <DrawerTitle className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">

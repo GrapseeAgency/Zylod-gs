@@ -224,7 +224,7 @@ export function MobileCategoryPills() {
 
       {/* Category Drawer */}
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent>
+        <DrawerContent className="max-h-[85vh] overflow-y-auto">
           <DrawerHeader className="text-left">
             <DrawerTitle className="flex items-center gap-2">
               {selectedCategory && (() => {

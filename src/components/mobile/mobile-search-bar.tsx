@@ -295,7 +295,7 @@ export function MobileSearchBar() {
 
       {/* Tools Drawer */}
       <Drawer open={toolsDrawerOpen} onOpenChange={setToolsDrawerOpen}>
-        <DrawerContent>
+        <DrawerContent className="max-h-[85vh] overflow-y-auto">
           <DrawerHeader className="text-left">
             <DrawerTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />

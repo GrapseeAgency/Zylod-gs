@@ -299,7 +299,7 @@ export function MobileProductGrid() {
 
       {/* Sort Drawer */}
       <Drawer open={sortDrawerOpen} onOpenChange={setSortDrawerOpen}>
-        <DrawerContent>
+        <DrawerContent className="max-h-[85vh] overflow-y-auto">
           <DrawerHeader className="text-left">
             <DrawerTitle className="flex items-center gap-2">
               <ArrowUpDown className="w-5 h-5 text-primary" />
@@ -334,7 +334,7 @@ export function MobileProductGrid() {
 
       {/* Filter Drawer */}
       <Drawer open={filterDrawerOpen} onOpenChange={setFilterDrawerOpen}>
-        <DrawerContent>
+        <DrawerContent className="max-h-[85vh] overflow-y-auto">
           <DrawerHeader className="text-left">
             <DrawerTitle className="flex items-center gap-2">
               <SlidersHorizontal className="w-5 h-5 text-primary" />
