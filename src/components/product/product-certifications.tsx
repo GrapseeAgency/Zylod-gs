@@ -120,7 +120,7 @@ function CertRow({ cert, onDelete, deleting }: {
               {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
+          <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
             <AlertDialogHeader>
               <AlertDialogTitle>Remove this certification?</AlertDialogTitle>
               <AlertDialogDescription>

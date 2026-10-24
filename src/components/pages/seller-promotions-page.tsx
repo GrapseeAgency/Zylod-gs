@@ -385,7 +385,7 @@ export function SellerPromotionsPage() {
 
       {/* Delete confirm — honest about what stays */}
       <AlertDialog open={!!deleteRow} onOpenChange={(o) => !o && setDeleteRow(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete “{deleteRow?.name}”?</AlertDialogTitle>
             <AlertDialogDescription>

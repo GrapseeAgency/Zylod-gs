@@ -442,7 +442,7 @@ export function AdminOrdersPage() {
 
       {/* Force-cancel confirm (Task 59-b) — verbatim doctrine before the lever fires */}
       <AlertDialog open={forceTarget !== null} onOpenChange={(open) => { if (!open) setForceTarget(null) }}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-h-[85vh] overflow-y-auto">
           <AlertDialogHeader>
             <AlertDialogTitle>Force cancel order #{forceTarget?.orderNumber ?? ''}?</AlertDialogTitle>
             <AlertDialogDescription asChild>
