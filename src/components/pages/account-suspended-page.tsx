@@ -325,7 +325,7 @@ export function AccountSuspendedPage() {
       {/* Card 1: Review Duration */}
       {!suspension.banned && (
         <div className="flex items-start gap-3 bg-[#F3F4F6] dark:bg-gray-900 rounded-xl p-4">
-          <div className="w-10 h-10 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-full bg-[#E5E7EB] dark:bg-gray-800 flex items-center justify-center shrink-0">
             <History className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
           </div>
           <div>
@@ -339,7 +339,7 @@ export function AccountSuspendedPage() {
 
       {/* Card 2: Email Notification */}
       <div className="flex items-start gap-3 bg-[#F3F4F6] dark:bg-gray-900 rounded-xl p-4">
-        <div className="w-10 h-10 rounded-full bg-[#E5E7EB] flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 rounded-full bg-[#E5E7EB] dark:bg-gray-800 flex items-center justify-center shrink-0">
           <Mail className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
         </div>
         <div>

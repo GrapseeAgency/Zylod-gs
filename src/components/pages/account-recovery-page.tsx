@@ -160,11 +160,11 @@ export function AccountRecoveryPage() {
         </div>
 
         {/* Connector 1 */}
-        <div className="flex-1 h-[2px] bg-[#D1D5DB] mx-2 mt-[-18px]" />
+        <div className="flex-1 h-[2px] bg-[#D1D5DB] dark:bg-gray-700 mx-2 mt-[-18px]" />
 
         {/* Step 2 - Inactive */}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="w-9 h-9 rounded-full bg-[#E5E7EB] flex items-center justify-center">
+          <div className="w-9 h-9 rounded-full bg-[#E5E7EB] dark:bg-gray-800 flex items-center justify-center">
             <span className="text-[#6B7280] dark:text-gray-400 text-sm font-bold">2</span>
           </div>
           <span className="text-[10px] font-bold text-[#9CA3AF] dark:text-gray-500 tracking-wider">
@@ -173,11 +173,11 @@ export function AccountRecoveryPage() {
         </div>
 
         {/* Connector 2 */}
-        <div className="flex-1 h-[2px] bg-[#D1D5DB] mx-2 mt-[-18px]" />
+        <div className="flex-1 h-[2px] bg-[#D1D5DB] dark:bg-gray-700 mx-2 mt-[-18px]" />
 
         {/* Step 3 - Inactive */}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="w-9 h-9 rounded-full bg-[#E5E7EB] flex items-center justify-center">
+          <div className="w-9 h-9 rounded-full bg-[#E5E7EB] dark:bg-gray-800 flex items-center justify-center">
             <span className="text-[#6B7280] dark:text-gray-400 text-sm font-bold">3</span>
           </div>
           <span className="text-[10px] font-bold text-[#9CA3AF] dark:text-gray-500 tracking-wider">
