@@ -171,6 +171,11 @@ const REAL_PAGES = new Set([
   'error-500', 'error-boundary', 'server-diagnostics', 'crash-report',
   'offline-mode', 'offline-content', 'offline-catalogue', 'offline-sync-queue', 'sync-queue', 'offline-orders',
   'deep-link-handler', 'link-configuration', 'link-generator', 'link-analytics', 'qr-deeplink',
+  // Dashboard sub-page aliases — navigated from buyer/supplier dashboards but
+  // previously unregistered, so they fell through to GenericInfoPage
+  // placeholders that contradicted the dashboard's real data (t183).
+  'buyer-orders', 'buyer-credit', 'category-list',
+  'supplier-analytics', 'supplier-warehouse', 'supplier-insights', 'supplier-verification-status',
 ])
 
 const CATEGORY_IDS = new Set([

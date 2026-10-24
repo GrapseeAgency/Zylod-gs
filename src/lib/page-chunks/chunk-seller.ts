@@ -183,6 +183,14 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'store-featured-products': () => import('@/components/pages/store-featured-products-page'),
     'store-story-about': () => import('@/components/pages/store-story-about-page'),
 
+    // Dashboard alias ids (t183): supplier-dashboard navigates to these —
+    // previously unregistered so they rendered GenericInfoPage placeholders
+    // that contradicted the dashboard's own real data. Aliased to the real rails.
+    'supplier-analytics': () => import('@/components/pages/seller-analytics-page'),
+    'supplier-insights': () => import('@/components/pages/seller-customer-insights-page'),
+    'supplier-warehouse': () => import('@/components/pages/inventory-warehouse-locations-page'),
+    'supplier-verification-status': () => import('@/components/pages/seller-verification-status-page'),
+
     // Sub-pages: Product & Inventory
     'product-variant-matrix': () => import('@/components/pages/product-variant-matrix-page'),
     'product-pricing-tiers': () => import('@/components/pages/product-pricing-tiers-page'),

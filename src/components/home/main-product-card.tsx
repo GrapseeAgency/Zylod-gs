@@ -41,6 +41,7 @@ export interface MainProduct {
   customizable: boolean
   location: string
   category: string
+  thumbnailUrl?: string | null
 }
 
 export function MainProductCard({ product }: { product: MainProduct }) {
@@ -64,20 +65,33 @@ export function MainProductCard({ product }: { product: MainProduct }) {
         {product.customizable && (
           <span className="absolute top-2 left-2 px-2 py-0.5 text-[10px] font-semibold text-white bg-green-600 rounded-md shadow-sm">Customizable</span>
         )}
-        <span
-          className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-bold text-white rounded-md shadow-sm"
-          style={{ background: RED }}
-        >
-          -{discountPercent}%
-        </span>
+        {discountPercent > 0 && (
+          <span
+            className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-bold text-white rounded-md shadow-sm"
+            style={{ background: RED }}
+          >
+            -{discountPercent}%
+          </span>
+        )}
 
-        {/* Product Icon */}
-        <div
-          className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110"
-          style={{ background: `${colorTheme.accent}20` }}
-        >
-          <Package className="h-8 w-8" style={{ color: colorTheme.accent }} />
-        </div>
+        {/* Product image — the REAL photo when the supplier filed one,
+            icon placeholder only as an honest fallback */}
+        {product.thumbnailUrl ? (
+          <img
+            src={product.thumbnailUrl}
+            alt={product.name}
+            className="h-full w-full object-cover dark:brightness-[0.92]"
+            loading="lazy"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+          />
+        ) : (
+          <div
+            className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110"
+            style={{ background: `${colorTheme.accent}20` }}
+          >
+            <Package className="h-8 w-8" style={{ color: colorTheme.accent }} />
+          </div>
+        )}
 
         {/* QR + Share buttons */}
         <div
@@ -92,7 +106,9 @@ export function MainProductCard({ product }: { product: MainProduct }) {
         <p className="text-xs text-gray-800 dark:text-gray-200 font-semibold leading-tight line-clamp-2 h-8 mb-1.5 group-hover:text-red-600 transition-colors">{product.name}</p>
         <div className="flex items-baseline gap-1.5 mb-1">
           <span className="text-sm font-bold text-primary">{formatPrice(product.price)}</span>
-          <span className="text-[10px] text-gray-400 dark:text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>
+          {product.originalPrice > product.price && (
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>
+          )}
         </div>
         <div className="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 mb-1.5">
           <span className="font-medium">MOQ: {product.moq}</span>

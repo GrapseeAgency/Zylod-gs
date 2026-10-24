@@ -94,7 +94,7 @@ export function MobileMenu({ selectedLang }: MobileMenuProps) {
           <Menu className="h-5 w-5"  />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-80 p-0">
+      <SheetContent side="right" className="w-80 p-0 overflow-y-auto">
         {/* Mobile menu header */}
         <div className="flex items-center gap-2 px-4 py-4 border-b">
           <img src="/zylod-logo.svg" alt="Zylod" className="h-9 w-auto" />
@@ -111,8 +111,8 @@ export function MobileMenu({ selectedLang }: MobileMenuProps) {
                 className={cn(
                   'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors active:scale-[0.98]',
                   active
-                    ? 'text-red-600 bg-red-50'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                 )}
               >
                 {item.icon}
@@ -136,8 +136,8 @@ export function MobileMenu({ selectedLang }: MobileMenuProps) {
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors w-full active:scale-[0.98]',
                     active
-                      ? 'text-red-600 bg-red-50'
-                      : 'text-gray-600 hover:bg-gray-50'
+                      ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                   )}
                 >
                   {item.icon}
@@ -161,7 +161,7 @@ export function MobileMenu({ selectedLang }: MobileMenuProps) {
           {isAuthenticated ? (
             <Button
               variant="outline"
-              className="w-full text-red-600 border-red-200 hover:bg-red-50"
+              className="w-full text-red-600 dark:text-red-400 border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-950/40"
               onClick={() => { logout(); navigate('home'); setMobileOpen(false) }}
             >
               <LogOut className="h-4 w-4 mr-2" /> Logout

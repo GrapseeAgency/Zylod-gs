@@ -106,6 +106,13 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'buyer-queries': () => import('@/components/pages/buyer-queries-page'),
     'my-queries': () => import('@/components/pages/buyer-queries-page'),
 
+    // Dashboard alias ids (t183): buyer-dashboard navigates to these —
+    // previously unregistered so they rendered GenericInfoPage placeholders.
+    // Aliased to the real rails.
+    'buyer-orders': () => import('@/components/pages/orders-page'),
+    'buyer-credit': () => import('@/components/pages/credit-limit-page'),
+    'category-list': () => import('@/components/pages/category-navigation-page'),
+
     // Core Notifications Pages 171-178
     'notifications': () => import('@/components/pages/notifications-page'),
     'notification-detail': () => import('@/components/pages/notification-detail-page'),

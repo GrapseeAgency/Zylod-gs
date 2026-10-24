@@ -1549,13 +1549,18 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
               <Skeleton className="h-10 w-1/2 rounded-2xl" />
               <Skeleton className="h-10 w-3/5 ml-auto rounded-2xl" />
             </div>
-          ) : groups.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center space-y-2">
+          ) : !conversationId && userType !== 'buyer' ? (
+            <div className="h-full flex flex-col items-center justify-center text-center space-y-2 px-6">
               <div className="h-14 w-14 rounded-full bg-white dark:bg-gray-900 shadow-sm flex items-center justify-center">
-                <MessageCircle className="h-6 w-6 text-primary" />
+                <MessageCircle className="h-6 w-6 text-muted-foreground" />
               </div>
-              <p className="text-sm font-medium text-muted-foreground">Say hello to start the conversation!</p>
-              <p className="text-xs text-muted-foreground/70">Ask about MOQ, pricing, samples and delivery</p>
+              <p className="text-sm font-medium text-muted-foreground">Buyer accounts start conversations</p>
+              <p className="text-xs text-muted-foreground/70 max-w-[240px]">
+                {user ? 'Sign in with a buyer account to chat with suppliers about MOQ, pricing and samples.' : 'Sign in as a buyer to start this conversation.'}
+              </p>
+              {!user && (
+                <Button size="sm" variant="outline" className="h-7 text-[10px] mt-1" onClick={() => navigate('login')}>Sign In</Button>
+              )}
             </div>
           ) : (
             groups.map(group => (
@@ -1671,14 +1676,14 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
               {uploading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
             </Button>
             <Input
-              placeholder="Type a message..."
+              placeholder={conversationId ? 'Type a message...' : 'Conversation not started'}
               value={draft}
               onChange={e => setDraft(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
               className="text-sm rounded-2xl bg-muted/40 border-none flex-1"
-              disabled={sending || uploading}
+              disabled={sending || uploading || !conversationId}
             />
-            <Button className="h-9 w-9 px-0 rounded-full shrink-0" onClick={send} disabled={sending || uploading || (!draft.trim() && !attachment)}>
+            <Button aria-label="Send message" className="h-9 w-9 px-0 rounded-full shrink-0" onClick={send} disabled={sending || uploading || !conversationId || (!draft.trim() && !attachment)}>
               <Send className="h-4 w-4" />
             </Button>
           </div>

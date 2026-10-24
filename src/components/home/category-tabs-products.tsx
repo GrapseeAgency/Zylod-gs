@@ -60,6 +60,7 @@ function mapApiProduct(p: ApiProduct): MainProduct {
     customizable: p.isCustomizable,
     location: p.supplier?.companyName ?? 'Bangladesh',
     category: p.category?.slug ?? 'other',
+    thumbnailUrl: p.thumbnailUrl ?? null,
   }
 }
 
