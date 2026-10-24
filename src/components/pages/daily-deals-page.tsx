@@ -203,7 +203,7 @@ export function DailyDealsPage() {
               )}
             </div>
 
-            <div className="p-4 bg-gradient-to-b from-white via-[#FAF4F5] to-white">
+            <div className="p-4 bg-gradient-to-b from-white via-[#FAF4F5] to-white dark:from-gray-900 dark:via-[#1a0a0d] dark:to-gray-900">
               <span className="inline-block bg-[#C8102E] text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded mb-2">
                 Deal of the Day · -{heroDeal.discountPercent}%
               </span>

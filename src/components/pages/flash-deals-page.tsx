@@ -122,9 +122,9 @@ export function FlashDealsPage() {
   const formatDigit = (num: number) => num.toString().padStart(2, '0')
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white pb-24 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#121212] text-gray-900 dark:text-white pb-24 md:pb-8">
       {/* ─── Top Nav Bar (mobile only — desktop uses the AppShell Header) ─── */}
-      <header className="md:hidden sticky top-0 z-40 bg-[#1A1A1A] border-b border-[#2C2C2C] h-14 flex items-center justify-between px-4">
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-[#1A1A1A] border-b border-gray-100 dark:border-[#2C2C2C] h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-white dark:bg-gray-900/10 transition-colors"
@@ -144,9 +144,9 @@ export function FlashDealsPage() {
 
       <div className="max-w-md mx-auto md:max-w-2xl lg:max-w-6xl px-4 md:px-6 pt-4 md:pt-6 space-y-4 md:space-y-6">
         {/* ─── Dark Flash Deals Header Card ─── */}
-        <div className="bg-[#1E1E1E] dark:bg-gray-900 border border-[#2E2E2E] dark:border-gray-800 rounded-2xl p-5 text-center shadow-lg relative overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 text-center shadow-lg relative overflow-hidden">
           {/* Subtle background glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-20 bg-[#C8102E]/20 blur-3xl pointer-events-none" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-20 bg-primary/20 blur-3xl pointer-events-none" />
 
           <h1 className="text-2xl md:text-3xl font-black tracking-widest text-[#FF4D6D] uppercase">
             Flash Deals
@@ -157,22 +157,22 @@ export function FlashDealsPage() {
 
           {/* Countdown timer container */}
           {timeLeft && (
-            <div className="bg-[#121212]/90 border border-[#333333] rounded-xl p-3 mt-4">
+            <div className="bg-slate-100 dark:bg-[#121212]/90 border border-gray-200 dark:border-[#333333] rounded-xl p-3 mt-4">
               <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-widest uppercase block mb-2">
                 Ends In
               </span>
               <div className="flex items-center justify-center gap-2">
-                <div className="bg-[#242424] border border-[#383838] rounded-lg px-3 py-1.5 min-w-[56px] text-center">
-                  <span className="text-lg font-black text-white">{formatDigit(timeLeft.hours)}</span>
+                <div className="bg-white dark:bg-[#242424] border border-gray-200 dark:border-[#383838] rounded-lg px-3 py-1.5 min-w-[56px] text-center">
+                  <span className="text-lg font-black text-gray-900 dark:text-white">{formatDigit(timeLeft.hours)}</span>
                   <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 block tracking-wider">HOURS</span>
                 </div>
                 <span className="text-[#FF4D6D] font-bold text-lg">:</span>
-                <div className="bg-[#242424] border border-[#383838] rounded-lg px-3 py-1.5 min-w-[56px] text-center">
-                  <span className="text-lg font-black text-white">{formatDigit(timeLeft.minutes)}</span>
+                <div className="bg-white dark:bg-[#242424] border border-gray-200 dark:border-[#383838] rounded-lg px-3 py-1.5 min-w-[56px] text-center">
+                  <span className="text-lg font-black text-gray-900 dark:text-white">{formatDigit(timeLeft.minutes)}</span>
                   <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 block tracking-wider">MINS</span>
                 </div>
                 <span className="text-[#FF4D6D] font-bold text-lg">:</span>
-                <div className="bg-[#242424] border border-[#383838] rounded-lg px-3 py-1.5 min-w-[56px] text-center">
+                <div className="bg-white dark:bg-[#242424] border border-gray-200 dark:border-[#383838] rounded-lg px-3 py-1.5 min-w-[56px] text-center">
                   <span className="text-lg font-black text-[#FF4D6D]">{formatDigit(timeLeft.seconds)}</span>
                   <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 block tracking-wider">SECS</span>
                 </div>
@@ -205,7 +205,7 @@ export function FlashDealsPage() {
             </p>
             <button
               onClick={() => navigate('daily-deals')}
-              className="mt-1 px-4 py-2 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-semibold rounded-lg"
+              className="mt-1 px-4 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded-lg"
             >
               Browse Daily Deals
             </button>
@@ -231,10 +231,10 @@ export function FlashDealsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
               onClick={() => navigate('product-detail', { productId: deal.productId })}
-              className="bg-[#1E1E1E] dark:bg-gray-900 border border-[#2E2E2E] dark:border-gray-800 rounded-2xl overflow-hidden shadow-md cursor-pointer hover:border-[#FF4D6D]/40 transition-colors"
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-md cursor-pointer hover:border-[#FF4D6D]/40 transition-colors"
             >
               {/* Product image with badge */}
-              <div className="relative aspect-[16/9] w-full bg-[#121212]">
+              <div className="relative aspect-[16/9] w-full bg-slate-100 dark:bg-[#121212]">
                 {deal.productThumbnail ? (
                    
                   <img src={deal.productThumbnail} alt={deal.productName} className="w-full h-full object-cover" />
@@ -243,18 +243,18 @@ export function FlashDealsPage() {
                     <Zap className="h-10 w-10 text-gray-700 dark:text-gray-300" />
                   </div>
                 )}
-                <span className="absolute top-3 right-3 bg-[#C8102E] text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded shadow">
+                <span className="absolute top-3 right-3 bg-primary text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded shadow">
                   -{deal.discountPercent}%
                 </span>
               </div>
 
               <div className="p-4">
-                <h3 className="font-bold text-white text-sm leading-snug line-clamp-2">
+                <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-2">
                   {deal.productName}
                 </h3>
 
                 <div className="flex items-baseline gap-2 mt-2">
-                  <span className="text-lg font-black text-white">
+                  <span className="text-lg font-black text-gray-900 dark:text-white">
                     {formatPrice(deal.dealPrice)}
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 line-through">
@@ -267,11 +267,11 @@ export function FlashDealsPage() {
                 <div className="mt-3">
                   <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 mb-1">
                     <span>Stock Level</span>
-                    <span className="text-gray-300 font-semibold">{stockText}</span>
+                    <span className="text-gray-700 dark:text-gray-300 font-semibold">{stockText}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#2C2C2C] rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-gray-200 dark:bg-[#2C2C2C] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#C8102E] rounded-full"
+                      className="h-full bg-primary rounded-full"
                       style={{ width: `${claimedPercent}%` }}
                     />
                   </div>
@@ -280,7 +280,7 @@ export function FlashDealsPage() {
                 {/* Add to Cart button */}
                 <button
                   onClick={(e) => handleAddToCart(e, deal)}
-                  className="w-full mt-4 h-11 bg-[#C8102E] hover:bg-[#A50D24] active:scale-[0.98] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"
+                  className="w-full mt-4 h-11 bg-primary hover:bg-primary/90 active:scale-[0.98] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"
                 >
                   <ShoppingCart className="h-4 w-4" />
                   Add to Cart · MOQ {deal.moq} {deal.unit}
