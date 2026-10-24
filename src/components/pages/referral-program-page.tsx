@@ -10,6 +10,7 @@ import {
   ArrowLeft, Users, Copy, Check, Share2,
   Gift, Sparkles, TrendingUp, ChevronRight
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export function ReferralProgramPage() {
   const { navigate, goBack } = useNavigationStore()
@@ -57,10 +58,10 @@ export function ReferralProgramPage() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        alert(data.message || 'Referral code claimed!')
+        toast.success(data.message || 'Referral code claimed!')
         setFriendCode('')
       } else {
-        alert(data.error || 'Failed to claim referral code')
+        toast.error(data.error || 'Failed to claim referral code')
       }
     } catch (err) {
       console.error(err)

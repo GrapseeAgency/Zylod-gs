@@ -18,6 +18,7 @@ import {
   Package, Truck, Tag, TrendingDown, Layers, MessageSquare,
   Shield, Check, Sliders, VolumeX, Sparkles, Clock
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Preferences {
   pushOrderUpdates: boolean
@@ -231,9 +232,9 @@ export function PushNotificationSettingsPage() {
                           headers,
                           body: JSON.stringify({ token: deviceToken, platform: 'android' }),
                         })
-                        alert('Push alerts enabled! Live updates will now deliver to this device.')
+                        toast.success('Push alerts enabled! Live updates will now deliver to this device.')
                       } else {
-                        alert('Permission denied. Please allow notifications for Zylod in system settings.')
+                        toast.error('Permission denied. Please allow notifications for Zylod in system settings.')
                       }
                     } else if (typeof window !== 'undefined' && 'Notification' in window) {
                       const perm = await Notification.requestPermission()
@@ -241,13 +242,13 @@ export function PushNotificationSettingsPage() {
                         // HONEST STATE: browser Web Push requires server VAPID keys and a
                         // service worker. Without them, no subscription can be registered —
                         // so we never fabricate a device token or promise delivery.
-                        alert(
+                        toast.info(
                           'Notifications allowed in the browser, but Zylod does not have web-push ' +
                           '(VAPID) configured on the server yet, so no web subscription was registered. ' +
                           'Use the Zylod Android app for real push alerts.'
                         )
                       } else {
-                        alert('Permission denied. Please enable notifications in your browser address bar.')
+                        toast.error('Permission denied. Please enable notifications in your browser address bar.')
                       }
                     }
                   }}
@@ -264,11 +265,11 @@ export function PushNotificationSettingsPage() {
                       .then(d => {
                         const message = `Alert Evaluation Completed! Checked: ${d.summary?.priceAlertsChecked} price watches, ${d.summary?.stockAlertsChecked} stock watches.`
                         if (native) showNativeNotification('Price Watch Scan', message, 'zylod_deals_channel')
-                        else alert(message)
+                        else toast.info(message)
                       })
                       .catch(() => {
                         if (native) showNativeNotification('Price Watch Scan', 'Triggered alert scan.', 'zylod_deals_channel')
-                        else alert('Triggered alert scan.')
+                        else toast.info('Triggered alert scan.')
                       })
                   }}
                   className="border-white/40 text-white hover:bg-white dark:bg-gray-900/10 font-bold text-xs rounded-xl"

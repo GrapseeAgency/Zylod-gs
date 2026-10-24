@@ -6,6 +6,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { soundEffects } from '@/lib/sound-effects'
+import { toast } from 'sonner'
 import {
   ArrowLeft, Sparkles, Trophy, History,
   Gift, RefreshCw, Star, CheckCircle2
@@ -72,7 +73,7 @@ export function SpinWinPage() {
           soundEffects.playByName('default')
         }, 4000)
       } else {
-        alert(data.error || 'Failed to spin wheel')
+        toast.error(data.error || 'Failed to spin wheel')
         setSpinning(false)
       }
     } catch (err) {

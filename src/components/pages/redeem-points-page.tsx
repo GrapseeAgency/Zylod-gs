@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { soundEffects } from '@/lib/sound-effects'
+import { toast } from 'sonner'
 import {
   ArrowLeft, Gift, Coins, Wallet, Tag,
   CheckCircle2, AlertCircle, ChevronRight
@@ -54,7 +55,7 @@ export function RedeemPointsPage() {
 
   const handleRedeem = async (option: typeof REDEEM_OPTIONS[0]) => {
     if (pointsBalance < option.points) {
-      alert(`You need ${option.points} points to redeem this reward. Current balance: ${pointsBalance}`)
+      toast.error(`You need ${option.points} points to redeem this reward. Current balance: ${pointsBalance}`)
       return
     }
 
@@ -77,14 +78,14 @@ export function RedeemPointsPage() {
         setPointsBalance(prev => prev - option.points)
         soundEffects.playByName('chime')
         const code = data.data?.coupon?.code
-        alert(
+        toast.success(
           code
             ? `${option.label} issued! Code: ${code} — single use, valid 30 days, minimum order ${formatPrice(option.bdt * 3)}. It is in your coupon vault.`
             : `${option.label} has been added to your wallet.`
         )
         navigate('my-coupons')
       } else {
-        alert(data.error || 'Failed to redeem points')
+        toast.error(data.error || 'Failed to redeem points')
       }
     } catch (err) {
       console.error(err)
@@ -102,7 +103,7 @@ export function RedeemPointsPage() {
   const handleCustomRedeem = async () => {
     const pts = Number(customPoints)
     if (!customValid) {
-      alert(`Enter a whole number of points between 100 and ${pointsBalance}.`)
+      toast.error(`Enter a whole number of points between 100 and ${pointsBalance}.`)
       return
     }
     try {
@@ -120,14 +121,14 @@ export function RedeemPointsPage() {
         setCustomPoints('')
         soundEffects.playByName('chime')
         const code = data.data?.coupon?.code
-        alert(
+        toast.success(
           code
             ? `৳${customValue} voucher issued! Code: ${code} — single use, valid 30 days, minimum order ${formatPrice(customValue * 3)}. It is in your coupon vault.`
             : 'Redemption successful.'
         )
         navigate('my-coupons')
       } else {
-        alert(data.error || 'Failed to redeem points')
+        toast.error(data.error || 'Failed to redeem points')
       }
     } catch (err) {
       console.error(err)

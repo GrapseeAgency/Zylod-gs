@@ -12,6 +12,7 @@ import {
   ArrowLeft, Tag, Copy, Check, Sparkles, Gift,
   Percent, Clock, ExternalLink, ChevronRight, Bookmark
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Coupon {
   id: string
@@ -119,9 +120,9 @@ export function CouponsPage() {
       const data = await res.json()
       if (res.ok && data.success) {
         setClaimedCodes(prev => new Set(prev).add(coupon.code))
-        alert('Coupon collected! It has been saved to your My Coupons vault.')
+        toast.success('Coupon collected! It has been saved to your My Coupons vault.')
       } else {
-        alert(data.error || 'Failed to claim coupon')
+        toast.error(data.error || 'Failed to claim coupon')
       }
     } catch (err) {
       console.error('Claim error:', err)

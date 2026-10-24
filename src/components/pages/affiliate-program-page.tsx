@@ -9,6 +9,7 @@ import {
   ArrowLeft, TrendingUp, DollarSign, Share2,
   CheckCircle2, Copy, Check, BarChart3, ChevronRight
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export function AffiliateProgramPage() {
   const { navigate, goBack } = useNavigationStore()
@@ -44,7 +45,7 @@ export function AffiliateProgramPage() {
       const data = await res.json()
       if (res.ok && data.success) {
         setAffiliate(data.data)
-        alert('Enrolled in Wholesale Affiliate Partner Program!')
+        toast.success('Enrolled in Wholesale Affiliate Partner Program!')
       }
     } catch (err) {
       console.error(err)

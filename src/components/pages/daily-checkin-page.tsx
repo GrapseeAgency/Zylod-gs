@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { soundEffects } from '@/lib/sound-effects'
+import { toast } from 'sonner'
 import {
   ArrowLeft, Flame, CheckCircle2, Gift,
   Calendar, Sparkles, Trophy, ChevronRight
@@ -59,9 +60,9 @@ export function DailyCheckinPage() {
         setCheckedInToday(true)
         setCurrentStreak(data.data.streakCount)
         soundEffects.playByName('chime')
-        alert(`Checked in! You earned +${data.data.pointsAwarded} loyalty points.`)
+        toast.success(`Checked in! You earned +${data.data.pointsAwarded} loyalty points.`)
       } else {
-        alert(data.error || 'Failed to check in')
+        toast.error(data.error || 'Failed to check in')
       }
     } catch (err) {
       console.error(err)
