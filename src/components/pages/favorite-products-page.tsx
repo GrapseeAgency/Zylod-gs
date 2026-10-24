@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useCartStore } from '@/store/cart-store';
+import { toast } from 'sonner';
 import { ArrowLeft, LayoutGrid, List, ArrowDownUp, Filter, Star, ShoppingCart, Heart, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -27,6 +29,32 @@ export function FavoriteProductsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBatchMode, setIsBatchMode] = useState(false);
+  const [sortBy, setSortBy] = useState<string>('Newest');
+  const { addItem } = useCartStore();
+
+  const removeFavorite = async (productId: string) => {
+    try {
+      const res = await fetch(`/api/favorites/${productId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setProducts(prev => prev.filter(p => p.id !== productId));
+        toast.success('Removed from favorites');
+      } else {
+        toast.error('Could not remove from favorites');
+      }
+    } catch {
+      toast.error('Network error');
+    }
+  };
+
+  const sortedProducts = React.useMemo(() => {
+    const arr = [...products];
+    switch (sortBy) {
+      case 'Price Low-High': return arr.sort((a, b) => a.price - b.price);
+      case 'Price High-Low': return arr.sort((a, b) => b.price - a.price);
+      case 'Rating': return arr.sort((a, b) => b.rating - a.rating);
+      default: return arr;
+    }
+  }, [products, sortBy]);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -79,11 +107,11 @@ export function FavoriteProductsPage() {
       <div className="bg-white dark:bg-gray-900 border-b py-2 px-4 flex flex-col gap-3 shadow-sm">
         <div className="flex overflow-x-auto no-scrollbar gap-2 pb-1">
           {['Rating', 'Price Low-High', 'Price High-Low', 'Newest'].map((sort) => (
-            <button key={sort} className="whitespace-nowrap px-3 py-1.5 bg-gray-100 dark:bg-gray-900 text-sm font-medium rounded-full text-gray-700 dark:text-gray-300 flex items-center gap-1">
+            <button key={sort} onClick={() => setSortBy(sort)} className={`whitespace-nowrap px-3 py-1.5 text-sm font-medium rounded-full flex items-center gap-1 transition ${sortBy === sort ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300'}`}>
               {sort === 'Rating' ? <Star className="w-3 h-3" /> : <ArrowDownUp className="w-3 h-3" />} {sort}
             </button>
           ))}
-          <button className="whitespace-nowrap px-3 py-1.5 bg-gray-100 dark:bg-gray-900 text-sm font-medium rounded-full text-gray-700 dark:text-gray-300 flex items-center gap-1">
+          <button onClick={() => navigate('search-filters')} className="whitespace-nowrap px-3 py-1.5 bg-gray-100 dark:bg-gray-900 text-sm font-medium rounded-full text-gray-700 dark:text-gray-300 flex items-center gap-1">
             <Filter className="w-3 h-3" /> Filters
           </button>
         </div>
@@ -113,7 +141,7 @@ export function FavoriteProductsPage() {
           </div>
         ) : (
           <div className={viewMode === 'grid' ? "grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4" : "flex flex-col gap-3"}>
-            {products.map((product) => (
+            {sortedProducts.map((product) => (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -134,7 +162,7 @@ export function FavoriteProductsPage() {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 dark:text-gray-400">No Image</div>
                   )}
-                  <button className="absolute top-2 right-2 p-1.5 bg-white dark:bg-gray-900/80 backdrop-blur rounded-full text-primary shadow-sm z-10">
+                  <button onClick={(e) => { e.stopPropagation(); removeFavorite(product.id); }} className="absolute top-2 right-2 p-1.5 bg-white dark:bg-gray-900/80 backdrop-blur rounded-full text-primary shadow-sm z-10" aria-label="Remove from favorites">
                     <Heart className="w-4 h-4 fill-current" />
                   </button>
                 </div>
@@ -154,7 +182,7 @@ export function FavoriteProductsPage() {
                   <div className="mt-auto pt-2 flex items-center justify-between">
                     <span className="font-bold text-gray-900 dark:text-gray-100">${product.price.toFixed(2)}</span>
                     {viewMode === 'list' && (
-                      <button className="p-2 bg-primary text-white rounded-full">
+                      <button onClick={(e) => { e.stopPropagation(); addItem({ id: product.id, productId: product.id, productName: product.name, productSlug: product.id, productImage: product.imageUrl, variantId: null, variantName: null, variantValue: null, quantity: 1, unitPrice: product.price, totalPrice: product.price, moq: 1, maxOrderQty: null, supplierId: '', supplierName: product.supplier?.name || '', supplierSlug: '', unit: 'pcs', priceTiers: [] }); toast.success('Added to cart'); }} className="p-2 bg-primary text-white rounded-full" aria-label="Add to cart">
                         <ShoppingCart className="w-4 h-4" />
                       </button>
                     )}
