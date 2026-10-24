@@ -389,7 +389,7 @@ export function MobileProductDetailPage() {
               if (navigator.share) {
                 try { await navigator.share({ title: product?.name || 'Zylod Product', text, url }) } catch {}
               } else {
-                try { await navigator.clipboard.writeText(url); alert('Link copied to clipboard!') } catch {}
+                try { await navigator.clipboard.writeText(url); toast.success('Link copied to clipboard!') } catch { toast.error('Could not copy the link.') }
               }
             }}
             className="flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors"

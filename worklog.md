@@ -5289,3 +5289,21 @@ Stage Summary:
 - 11 untappable back buttons + ~20 icon buttons enlarged to 36-44px targets.
 - Detectors archived: scripts/sweep-responsive.sh + scripts/parse-responsive.cjs (parse the nested JSON — the naive counter lies).
 - Remaining known-good: switches 32×18 and checkboxes 16×16 are shadcn-standard (with clickable labels); text links h:16-20 are standard web practice.
+---
+Task ID: 185
+Agent: orchestrator (Z.ai Code) — continuing t184 responsiveness + dead-element mandate.
+
+Task: User: "proceed with everything you have got" — deep-research continuation: landscape/short-viewport axes, dialog fit at 320px, interactive QA of every touched flow, alert() eradication follow-up.
+
+Work Log:
+- LANDSCAPE (740×360) + SHORT (320×500) viewport tests on home/flash-deals/login/cart/checkout/product-detail/supplier-dashboard: 0 overflows, all render usable content.
+- INTERACTIVE QA verified live: bottom-nav tabs (Categories→real 8-industries page, Hot Deals→flash deals, Profile→buyer portal); PDP sample-request dialog fits 320px (288×425, scrollable); QR header button → real qr-deeplink generator page; checkout from cart → honest address gate ("No shipping address on file" + Add Address CTA).
+- DEAD BUTTON HUNT found a real one: mobile PDP header Share button used navigator.share with an alert() fallback — silent/dead in browsers without Web Share or clipboard permission. Fixed: alert → toast.success('Link copied to clipboard!') + toast.error fallback. Browser-verified: clicking Share now ALWAYS gives visible toast feedback.
+- Swept whole src/ for alert(): found 3 more in src/components/layout/search-bar.tsx (voice-search errors) → converted to toast.error. NOTE: that search-bar.tsx turned out to be ORPHANED (no importers — MobileSearchBar is the live one); fixes are harmless.
+- PDP product-identity check: API lookup confirmed ?page=product-detail&productId=X renders exactly product X (the "different product" seen in a button list was a related-products rail below the fold — false alarm, no bug).
+- bun run lint: 0 errors. bunx tsc --noEmit: 0 errors. dev.log clean.
+
+Stage Summary:
+- Responsiveness now verified across 5 viewport classes (320/375/768/1280/landscape) with all overflows fixed at component level.
+- Every interactive element probed this round does something visible (toast/navigation/dialog). The last known alert()-theater fallback is gone.
+- Orphan note: src/components/layout/search-bar.tsx has zero importers (candidate for deletion in a future cleanup pass).

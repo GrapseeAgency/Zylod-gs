@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Search, X, Mic, MicOff } from 'lucide-react'
 import { hasNativeVoiceRecognition, recognizeSpeechWithNative } from '@/lib/native-bridge'
+import { toast } from 'sonner'
 
 /* ─── Web Speech API types ─── */
 interface SpeechRecognitionEvent {
@@ -168,7 +169,7 @@ export function SearchBar({
           }
         })
         .catch((err: Error) => {
-          alert(err.message || 'Voice recognition failed')
+          toast.error(err.message || 'Voice recognition failed')
         })
         .finally(() => {
           setIsListening(false)
@@ -178,7 +179,7 @@ export function SearchBar({
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if (!SpeechRecognition) {
-      alert('Voice search is not supported in your browser. Please use Chrome or Edge.')
+      toast.error('Voice search is not supported in this browser. Please use Chrome or Edge.')
       return
     }
 
@@ -234,7 +235,7 @@ export function SearchBar({
       console.warn('Voice search error:', event.error)
       setIsListening(false)
       if (event.error === 'not-allowed') {
-        alert('Microphone access denied. Please allow microphone permission in your browser settings.')
+        toast.error('Microphone access denied. Allow microphone permission in your browser settings.')
       }
     }
 
