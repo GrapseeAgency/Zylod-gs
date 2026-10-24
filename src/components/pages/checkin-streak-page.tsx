@@ -34,7 +34,7 @@ export function CheckinStreakPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 md:px-6 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -55,21 +55,21 @@ export function CheckinStreakPage() {
       <div className="flex-1 px-4 md:px-6 py-6 max-w-xl lg:max-w-4xl mx-auto w-full space-y-6 pb-24 md:pb-8">
         {/* Streak summary */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
-          <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Current Consecutive Streak</p>
+          <p className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">Current Consecutive Streak</p>
           <h2 className="text-4xl font-black text-orange-600">{currentStreak} Days</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Keep opening Zylod daily without breaking the chain to maximize bonus payouts.
           </p>
         </div>
 
         {/* Checkin Log History */}
         <div className="space-y-3">
-          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
             Recent Check-in Ledger
           </h3>
 
           {history.length === 0 ? (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 text-center text-gray-400 dark:text-gray-500 text-xs">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 text-center text-gray-400 dark:text-gray-500 dark:text-gray-400 text-xs">
               No previous check-in records found. Start today!
             </div>
           ) : (
@@ -85,7 +85,7 @@ export function CheckinStreakPage() {
                     </div>
                     <div>
                       <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Day {item.streakCount} Streak Milestone</p>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500">{item.checkinDate}</p>
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{item.checkinDate}</p>
                     </div>
                   </div>
 

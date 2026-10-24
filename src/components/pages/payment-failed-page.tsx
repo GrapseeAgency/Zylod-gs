@@ -53,8 +53,8 @@ export function PaymentFailedPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-rose-600">Failed Transactions</span>
@@ -80,7 +80,7 @@ export function PaymentFailedPage() {
         {/* Failed items list */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
           {loading ? (
-            <div className="py-12 md:col-span-2 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
+            <div className="py-12 md:col-span-2 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="text-xs font-bold">Checking Payment Gateway Records...</span>
             </div>
@@ -97,7 +97,7 @@ export function PaymentFailedPage() {
                     </div>
                     <div>
                       <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">PO #{item.orderNumber}</h3>
-                      <span className="text-[11px] text-slate-400 dark:text-slate-500 block mt-0.5">
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-0.5">
                         Attempted via {item.method} • {new Date(item.date).toLocaleDateString()}
                       </span>
                     </div>
@@ -135,7 +135,7 @@ export function PaymentFailedPage() {
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 md:col-span-2 border border-slate-200 dark:border-slate-800 text-center space-y-3">
               <RefreshCw className="h-10 w-10 mx-auto text-emerald-500 stroke-[1.5]" />
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">Zero failed payments</span>
-              <p className="text-xs text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
+              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
                 All wholesale gateway authorizations are operating normally.
               </p>
             </div>

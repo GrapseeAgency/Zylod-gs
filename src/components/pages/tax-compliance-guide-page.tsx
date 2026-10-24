@@ -12,16 +12,16 @@ export function TaxComplianceGuidePage() {
   const { navigate, goBack } = useNavigationStore()
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">VAT & Tax Compliance Guide</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">VAT & Tax Compliance Guide</span>
         </div>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">VAT & Tax Compliance Guide</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">VAT & Tax Compliance Guide</h1>
 
       <div className="flex-1 px-4 py-6 space-y-6 max-w-3xl mx-auto w-full pb-24">
         {/* Banner */}
@@ -37,29 +37,29 @@ export function TaxComplianceGuidePage() {
         </div>
 
         {/* Core Tax Rules */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2.5">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-800 pb-2.5">
             Commercial Invoicing Standards
           </h2>
 
-          <div className="space-y-3 text-xs text-gray-700 leading-relaxed">
-            <div className="p-3.5 bg-slate-50 rounded-2xl border border-gray-100 space-y-1">
-              <p className="font-bold text-gray-900">1. Mushak-6.3 (মূসক-৬.৩) Challan / Tax Invoice</p>
-              <p className="text-gray-600">
+          <div className="space-y-3 text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+            <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
+              <p className="font-bold text-gray-900 dark:text-gray-100">1. Mushak-6.3 (মূসক-৬.৩) Challan / Tax Invoice</p>
+              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 Verified VAT-registered suppliers issue official Mushak-6.3 invoices on every completed wholesale consignment, showing product HS Code, Base Value, and applicable 5%, 7.5%, or 15% VAT rate.
               </p>
             </div>
 
-            <div className="p-3.5 bg-slate-50 rounded-2xl border border-gray-100 space-y-1">
-              <p className="font-bold text-gray-900">2. Tax Deducted at Source (TDS)</p>
-              <p className="text-gray-600">
+            <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
+              <p className="font-bold text-gray-900 dark:text-gray-100">2. Tax Deducted at Source (TDS)</p>
+              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 Corporate buyers with a valid Withholding Tax Entity status can deduct applicable Source Tax (AIT/TDS) by providing a copy of the Mushak-6.6 Certificate during checkout.
               </p>
             </div>
 
-            <div className="p-3.5 bg-slate-50 rounded-2xl border border-gray-100 space-y-1">
-              <p className="font-bold text-gray-900">3. Instant PDF Invoice Download</p>
-              <p className="text-gray-600">
+            <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
+              <p className="font-bold text-gray-900 dark:text-gray-100">3. Instant PDF Invoice Download</p>
+              <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 Every order generates an itemized digital commercial invoice accessible from the Order Invoices tab in your dashboard.
               </p>
             </div>

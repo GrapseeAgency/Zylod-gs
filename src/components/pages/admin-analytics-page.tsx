@@ -72,11 +72,11 @@ function formatTimestamp(iso: string): string {
 function BreakdownCard({ title, rows }: { title: string; rows: { label: string; value: number | null }[] }) {
   return (
     <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-      <h3 className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">{title}</h3>
+      <h3 className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-2">{title}</h3>
       <div className="divide-y divide-slate-100 dark:divide-slate-800">
         {rows.map((row) => (
           <div key={row.label} className="flex items-center justify-between py-1.5">
-            <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
               {row.value === null && <span className="inline-block h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700" title="No module in the database yet" />}
               {row.label}
             </span>
@@ -94,11 +94,11 @@ function BreakdownCard({ title, rows }: { title: string; rows: { label: string; 
 function MiniStat({ label, value, sub }: { label: string; value: number | null; sub?: string }) {
   return (
     <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">{label}</p>
+      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">{label}</p>
       <p className={`text-xl font-black tabular-nums mt-1 ${value === null ? 'text-slate-300 dark:text-slate-600' : 'text-slate-800 dark:text-slate-200'}`}>
         {value === null ? '—' : value.toLocaleString('en-BD')}
       </p>
-      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{sub || (value === null ? 'not tracked yet' : '\u00A0')}</p>
+      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">{sub || (value === null ? 'not tracked yet' : '\u00A0')}</p>
     </div>
   )
 }
@@ -162,7 +162,7 @@ export function AdminAnalyticsPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Platform analytics are restricted to Zylod admins. Sign in with an admin account to view live platform counts.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">Platform analytics are restricted to Zylod admins. Sign in with an admin account to view live platform counts.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -181,12 +181,12 @@ export function AdminAnalyticsPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Platform Analytics</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">Live counts from the real database — no estimates, no projections.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Live counts from the real database — no estimates, no projections.</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {lastUpdated && (
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
           )}
           <Button
             variant="outline"
@@ -235,8 +235,8 @@ export function AdminAnalyticsPage() {
         <>
           {/* Honest empty-marketplace banner — zeros ARE the truth here */}
           {marketplaceEmpty && (
-            <div className="flex items-start gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-              <ShieldCheck className="h-4 w-4 shrink-0 mt-0.5 text-slate-400 dark:text-slate-500" />
+            <div className="flex items-start gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+              <ShieldCheck className="h-4 w-4 shrink-0 mt-0.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
               <span>
                 This marketplace has no data yet — every number on this page is a live count from the database, and right now they are all zero. Figures appear the moment real users, products and orders exist.
               </span>
@@ -247,39 +247,39 @@ export function AdminAnalyticsPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Users</p>
-                <Users className="h-4 w-4 text-slate-300 dark:text-slate-600" />
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Users</p>
+                <Users className="h-4 w-4 text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500" />
               </div>
               <p className="text-2xl font-black tabular-nums text-slate-800 dark:text-slate-200 mt-1">{c.totalUsers.toLocaleString('en-BD')}</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                 {c.usersByType.buyer} buyers · {c.usersByType.supplier} suppliers · {c.usersByType.admin} admins
               </p>
             </div>
             <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Products</p>
-                <Package className="h-4 w-4 text-slate-300 dark:text-slate-600" />
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Products</p>
+                <Package className="h-4 w-4 text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500" />
               </div>
               <p className="text-2xl font-black tabular-nums text-slate-800 dark:text-slate-200 mt-1">{c.totalProducts.toLocaleString('en-BD')}</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                 {c.productsByApproval.approved} approved · {c.productsByApproval.unapproved} pending
               </p>
             </div>
             <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Orders</p>
-                <ShoppingCart className="h-4 w-4 text-slate-300 dark:text-slate-600" />
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Orders</p>
+                <ShoppingCart className="h-4 w-4 text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500" />
               </div>
               <p className="text-2xl font-black tabular-nums text-slate-800 dark:text-slate-200 mt-1">{c.totalOrders.toLocaleString('en-BD')}</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">GMV {formatPrice(c.gmvSum)}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 truncate">GMV {formatPrice(c.gmvSum)}</p>
             </div>
             <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Revenue</p>
-                <Wallet className="h-4 w-4 text-slate-300 dark:text-slate-600" />
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Revenue</p>
+                <Wallet className="h-4 w-4 text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500" />
               </div>
               <p className="text-2xl font-black tabular-nums text-primary mt-1">{formatPrice(c.totalRevenue)}</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">verified (status success) payments</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 truncate">verified (status success) payments</p>
             </div>
           </div>
 
@@ -344,15 +344,15 @@ export function AdminAnalyticsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center gap-2 mb-3">
-                <ScrollText className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                <ScrollText className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                 <h3 className="text-xs font-black">Recent audit log</h3>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 ml-auto">last 10</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 ml-auto">last 10</span>
               </div>
               {data.recentAuditLogs.length === 0 ? (
                 <div className="py-8 text-center space-y-1">
-                  <ScrollText className="h-8 w-8 text-slate-300 dark:text-slate-700 mx-auto" />
-                  <p className="text-xs font-black text-slate-500 dark:text-slate-400">Nothing yet</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Admin actions are audit-logged and appear here as they happen.</p>
+                  <ScrollText className="h-8 w-8 text-slate-300 dark:text-slate-700 dark:text-slate-300 mx-auto" />
+                  <p className="text-xs font-black text-slate-500 dark:text-slate-400 dark:text-slate-500">Nothing yet</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Admin actions are audit-logged and appear here as they happen.</p>
                 </div>
               ) : (
                 <div className="max-h-80 overflow-y-auto scrollbar-thin divide-y divide-slate-100 dark:divide-slate-800">
@@ -360,9 +360,9 @@ export function AdminAnalyticsPage() {
                     <div key={log.id} className="py-2 flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{log.action}</p>
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">actor {log.actorId || 'system'}</p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 truncate">actor {log.actorId || 'system'}</p>
                       </div>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums shrink-0">{formatTimestamp(log.createdAt)}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums shrink-0">{formatTimestamp(log.createdAt)}</span>
                     </div>
                   ))}
                 </div>
@@ -371,15 +371,15 @@ export function AdminAnalyticsPage() {
 
             <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center gap-2 mb-3">
-                <Clock className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                <Clock className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                 <h3 className="text-xs font-black">Recent orders</h3>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 ml-auto">last 10</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 ml-auto">last 10</span>
               </div>
               {data.recentOrders.length === 0 ? (
                 <div className="py-8 text-center space-y-1">
-                  <ShoppingCart className="h-8 w-8 text-slate-300 dark:text-slate-700 mx-auto" />
-                  <p className="text-xs font-black text-slate-500 dark:text-slate-400">Nothing yet</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Orders appear here the moment buyers check out.</p>
+                  <ShoppingCart className="h-8 w-8 text-slate-300 dark:text-slate-700 dark:text-slate-300 mx-auto" />
+                  <p className="text-xs font-black text-slate-500 dark:text-slate-400 dark:text-slate-500">Nothing yet</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Orders appear here the moment buyers check out.</p>
                 </div>
               ) : (
                 <div className="max-h-80 overflow-y-auto scrollbar-thin divide-y divide-slate-100 dark:divide-slate-800">
@@ -398,7 +398,7 @@ export function AdminAnalyticsPage() {
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-xs font-black text-primary tabular-nums">{formatPrice(o.totalAmount)}</p>
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">{formatTimestamp(o.placedAt)}</p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">{formatTimestamp(o.placedAt)}</p>
                       </div>
                     </div>
                   ))}
@@ -411,7 +411,7 @@ export function AdminAnalyticsPage() {
           {data.dataNotes.length > 0 && (
             <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-1">
               {data.dataNotes.map((note, i) => (
-                <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">· {note}</p>
+                <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">· {note}</p>
               ))}
             </div>
           )}

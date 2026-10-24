@@ -285,7 +285,7 @@ export function SellerBulkOrderInquiryPage() {
           <button
             onClick={goBack}
             aria-label="Go back"
-            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
           >
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
@@ -308,7 +308,7 @@ export function SellerBulkOrderInquiryPage() {
               )}
               <button
                 onClick={load}
-                className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
+                className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" /> Retry
               </button>
@@ -337,13 +337,13 @@ export function SellerBulkOrderInquiryPage() {
           <button
             onClick={() => setSelectedId('')}
             aria-label="Back to list"
-            className="p-1 -ml-1 min-h-11 min-w-11 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+            className="p-1 -ml-1 min-h-11 min-w-11 flex items-center justify-center text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div className="min-w-0">
             <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">RFQ Negotiation</h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">
               {selected.buyer.displayName || 'Anonymous buyer'} · {selected.title}
             </p>
           </div>
@@ -362,43 +362,43 @@ export function SellerBulkOrderInquiryPage() {
                 {selected.status}
               </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+            <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed mb-3">
               {selected.description}
             </p>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <p className="text-gray-500 dark:text-gray-400">Buyer</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Buyer</p>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
                   {selected.buyer.displayName || '—'}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 dark:text-gray-400">Quantity</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Quantity</p>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
                   {formatQty(selected.quantity, selected.unit)}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 dark:text-gray-400">Target price</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Target price</p>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
                   {formatMoney(selected.targetPrice)}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 dark:text-gray-400">Delivery city</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Delivery city</p>
                 <p className="font-medium text-gray-900 dark:text-gray-100 inline-flex items-center gap-1">
                   <MapPin className="w-3 h-3" /> {selected.deliveryCity || '—'}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 dark:text-gray-400">Deadline</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Deadline</p>
                 <p className="font-medium text-gray-900 dark:text-gray-100 inline-flex items-center gap-1">
                   <CalendarClock className="w-3 h-3" />{' '}
                   {selected.deadline ? new Date(selected.deadline).toLocaleDateString() : '—'}
                 </p>
               </div>
               <div>
-                <p className="text-gray-500 dark:text-gray-400">Quotes received</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Quotes received</p>
                 <p className="font-medium text-gray-900 dark:text-gray-100">{selected.quoteCount}</p>
               </div>
             </div>
@@ -425,10 +425,10 @@ export function SellerBulkOrderInquiryPage() {
                       </span>
                     </div>
                     {it.specifications && (
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{it.specifications}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">{it.specifications}</p>
                     )}
                     {it.targetPrice != null && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
                         Target: <span className="font-medium">{formatMoney(it.targetPrice)}</span>
                       </p>
                     )}
@@ -501,7 +501,7 @@ export function SellerBulkOrderInquiryPage() {
                 placeholder="Add terms, conditions, or notes for the buyer."
                 className="w-full min-h-20 px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
               />
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 text-right">
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-1 text-right">
                 {message.length} / 2000
               </p>
             </div>
@@ -509,14 +509,14 @@ export function SellerBulkOrderInquiryPage() {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 disabled
-                className="flex-1 min-h-12 py-3 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
+                className="flex-1 min-h-12 py-3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 text-gray-400 dark:text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-800 dark:border-gray-700 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
               >
                 <MessageCircle className="w-4 h-4" /> Message
               </button>
               <button
                 onClick={sendQuote}
                 disabled={!isQuotable || deadlinePassed || submitting}
-                className="flex-1 min-h-12 py-3 bg-primary text-white rounded-xl font-medium flex justify-center items-center gap-2 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                className="flex-1 min-h-12 py-3 bg-primary text-white rounded-xl font-medium flex justify-center items-center gap-2 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:disabled:text-gray-400 dark:text-gray-500"
               >
                 <Send className="w-4 h-4" /> {submitting ? 'Sending…' : 'Send Quote'}
               </button>
@@ -526,7 +526,7 @@ export function SellerBulkOrderInquiryPage() {
               chat system (/api/chat/conversations) is product-scoped, not RFQ-scoped. Include any message in the quote
               text above; the buyer will see it on your quote.
             </p>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
               Total price is computed server-side from the RFQ quantity — never trusted from the client. Re-submitting a
               pending quote edits it (idempotent per supplier).
             </p>
@@ -549,7 +549,7 @@ export function SellerBulkOrderInquiryPage() {
           <button
             onClick={goBack}
             aria-label="Go back"
-            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
           >
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
@@ -558,7 +558,7 @@ export function SellerBulkOrderInquiryPage() {
         <button
           onClick={load}
           aria-label="Refresh"
-          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
         >
           <RefreshCw className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
@@ -572,7 +572,7 @@ export function SellerBulkOrderInquiryPage() {
           </div>
           <button
             onClick={load}
-            className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary inline-flex items-center gap-1"
+            className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-primary inline-flex items-center gap-1"
           >
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
@@ -582,7 +582,7 @@ export function SellerBulkOrderInquiryPage() {
         <div className="bg-white dark:bg-gray-900 p-3 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
           <div className="flex items-center gap-2">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 value={search}
@@ -614,13 +614,13 @@ export function SellerBulkOrderInquiryPage() {
 
         {rfqs.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-8 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
-            <Inbox className="w-8 h-8 text-gray-400 mx-auto" />
+            <Inbox className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
               {search || statusFilter !== 'open'
                 ? 'No RFQs match the filter'
                 : 'No open RFQs in your inbox yet'}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-sm mx-auto leading-relaxed">
               {search || statusFilter !== 'open'
                 ? 'Clear the search or change the status filter to see more.'
                 : 'When buyers file bulk-order requests visible to suppliers, they appear here. We do not show fabricated RFQs.'}
@@ -646,10 +646,10 @@ export function SellerBulkOrderInquiryPage() {
                         {r.status}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2 mb-3">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed line-clamp-2 mb-3">
                       {r.description}
                     </p>
-                    <div className="flex items-center gap-3 flex-wrap text-[11px] text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-3 flex-wrap text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       <span className="inline-flex items-center gap-1">
                         <Tag className="w-3 h-3" /> {r.buyer.displayName || 'Anonymous'}
                       </span>
@@ -679,7 +679,7 @@ export function SellerBulkOrderInquiryPage() {
         )}
 
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
             <span>
               Page {pagination.page} of {pagination.totalPages} · {pagination.total} RFQ{pagination.total === 1 ? '' : 's'}
             </span>
@@ -687,14 +687,14 @@ export function SellerBulkOrderInquiryPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={pagination.page <= 1}
-                className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
                 disabled={pagination.page >= pagination.totalPages}
-                className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

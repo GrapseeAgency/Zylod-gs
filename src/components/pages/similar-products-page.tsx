@@ -76,10 +76,10 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
         </header>
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
-            <SearchX className="h-9 w-9 text-gray-400 dark:text-gray-500" />
+            <SearchX className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No product selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
             Similar products are shown for a specific product. Open a product first and we&apos;ll
             list alternatives from the same category.
           </p>
@@ -93,7 +93,7 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
             <Button
               variant="outline"
               onClick={goBack}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
             >
               Go Back
             </Button>
@@ -125,7 +125,7 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
           <h1 className="text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
             {loading ? 'Loading…' : products.length > 0 ? `Alternatives to “${currentProductName}”` : 'Similar Products'}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
             Live listings from the same category as this product. Match percentages are computed from
             real price data — nothing here is pre-generated.
           </p>
@@ -140,7 +140,7 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
               </div>
               <div>
                 <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load similar products</h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{error}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">{error}</p>
               </div>
             </div>
             <Button
@@ -171,10 +171,10 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
         {!loading && !error && products.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
             <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
-              <Package className="h-9 w-9 text-gray-400 dark:text-gray-500" />
+              <Package className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">No similar products found yet</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
               There are no other products in this category right now. New supplier listings appear
               here in real time as soon as they are approved.
             </p>
@@ -204,11 +204,11 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 w-full h-full">
-                        <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                        <Package className="h-5 w-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                       </div>
                     )}
                     {typeof p.matchPercentage === 'number' && (
-                      <Badge className="absolute top-3 right-3 bg-white/90 text-slate-800 dark:text-slate-200 border-none text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs backdrop-blur-xs">
+                      <Badge className="absolute top-3 right-3 bg-white dark:bg-gray-900/90 text-slate-800 dark:text-slate-200 border-none text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs backdrop-blur-xs">
                         {p.matchPercentage}% price match
                       </Badge>
                     )}
@@ -217,7 +217,7 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
                   {/* Body */}
                   <div className="p-4 space-y-2.5 flex-1 min-w-0">
                     {p.category?.name && (
-                      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                         {p.category.name}
                       </span>
                     )}
@@ -226,16 +226,16 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
                     <div className="flex items-baseline gap-2 flex-wrap">
                       <span className="text-base font-black text-primary">
                         {formatPrice(p.basePrice)}
-                        <span className="text-xs font-normal text-slate-400 dark:text-slate-500"> / {p.unit}</span>
+                        <span className="text-xs font-normal text-slate-400 dark:text-slate-500 dark:text-slate-400"> / {p.unit}</span>
                       </span>
                       {typeof p.bulkPrice === 'number' && p.bulkPrice > 0 && p.bulkPrice !== p.basePrice && (
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
                           Bulk: {formatPrice(p.bulkPrice)} / {p.unit}
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-3 text-[11px] text-slate-400 dark:text-slate-500 font-medium flex-wrap">
+                    <div className="flex items-center gap-3 text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium flex-wrap">
                       <span>MOQ: {p.moq.toLocaleString()} {p.unit}</span>
                       {p.totalReviews > 0 && (
                         <span>
@@ -257,12 +257,12 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
         {/* Honest note */}
         {!loading && !error && products.length > 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-start gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0 mt-0.5">
+            <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 flex items-center justify-center shrink-0 mt-0.5">
               <Boxes className="h-5 w-5" />
             </div>
             <div>
               <h4 className="text-xs font-black text-slate-900 dark:text-slate-100">Live catalog data</h4>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 leading-relaxed">
                 This list updates automatically as suppliers add or remove products. Prices and stock
                 are fetched from the marketplace in real time.
               </p>

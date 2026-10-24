@@ -37,7 +37,7 @@ export function AffiliateDashboardPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -74,28 +74,28 @@ export function AffiliateDashboardPage() {
         {/* KPI Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
-            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-bold">
+            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 font-bold">
               <MousePointerClick className="w-4 h-4 text-blue-500" /> Clicks
             </div>
             <p className="text-xl font-black text-gray-900 dark:text-gray-100">{dashData?.stats?.totalClicks ?? 0}</p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
-            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-bold">
+            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 font-bold">
               <ShoppingBag className="w-4 h-4 text-emerald-500" /> PO Orders
             </div>
             <p className="text-xl font-black text-gray-900 dark:text-gray-100">{dashData?.stats?.totalOrders ?? 0}</p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
-            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-bold">
+            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 font-bold">
               <TrendingUp className="w-4 h-4 text-purple-500" /> Conversion
             </div>
             <p className="text-xl font-black text-gray-900 dark:text-gray-100">{dashData?.stats?.conversionRate ?? '0%'}</p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
-            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-bold">
+            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 font-bold">
               <DollarSign className="w-4 h-4 text-amber-500" /> Commission
             </div>
             <p className="text-xl font-black text-gray-900 dark:text-gray-100">{dashData?.stats?.commissionRate ?? '5%'}</p>
@@ -105,7 +105,7 @@ export function AffiliateDashboardPage() {
         {/* Payout Balance Card */}
         <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Pending Payout
             </span>
             <h2 className="text-3xl font-black text-emerald-400">
@@ -126,7 +126,7 @@ export function AffiliateDashboardPage() {
 
         {/* Recent Conversions */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Attributed Purchase Order Conversions
           </h3>
 
@@ -138,14 +138,14 @@ export function AffiliateDashboardPage() {
               >
                 <div>
                   <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{conv.orderNumber}</p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     Order Value: {formatPrice(conv.orderAmount)} • {new Date(conv.date).toLocaleDateString('en-GB')}
                   </p>
                 </div>
 
                 <div className="text-right">
                   <p className="text-xs font-extrabold text-emerald-600">+{formatPrice(conv.commissionBDT)}</p>
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500 capitalize">{conv.status.replace('_', ' ')}</span>
+                  <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 capitalize">{conv.status.replace('_', ' ')}</span>
                 </div>
               </div>
             ))}
@@ -157,21 +157,21 @@ export function AffiliateDashboardPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-red-50/50 text-left">
-                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400">Order</th>
-                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400">Date</th>
-                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400">Order Value</th>
-                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400">Commission</th>
-                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400">Status</th>
+                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">Order</th>
+                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">Date</th>
+                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">Order Value</th>
+                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">Commission</th>
+                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                   {(dashData?.recentConversions || []).map((conv: any) => (
                     <tr key={conv.id} className="hover:bg-red-50/30">
                       <td className="px-4 py-3 font-bold text-gray-900 dark:text-gray-100">{conv.orderNumber}</td>
-                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{new Date(conv.date).toLocaleDateString('en-GB')}</td>
+                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400 dark:text-gray-500">{new Date(conv.date).toLocaleDateString('en-GB')}</td>
                       <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{formatPrice(conv.orderAmount)}</td>
                       <td className="px-4 py-3 font-extrabold text-emerald-600">+{formatPrice(conv.commissionBDT)}</td>
-                      <td className="px-4 py-3 text-xs text-gray-400 dark:text-gray-500 capitalize">{conv.status.replace('_', ' ')}</td>
+                      <td className="px-4 py-3 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 capitalize">{conv.status.replace('_', ' ')}</td>
                     </tr>
                   ))}
                 </tbody>

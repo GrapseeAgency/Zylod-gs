@@ -60,7 +60,7 @@ export function FavoriteSuppliersPage() {
       {/* Header */}
       <header className="bg-white dark:bg-gray-900 border-b sticky top-0 z-10">
         <div className="flex items-center justify-between p-4">
-          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden">
+          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 md:hidden">
             <ArrowLeft className="w-6 h-6 text-gray-800 dark:text-gray-200" />
           </button>
           <h1 className="text-lg font-semibold flex-1 ml-2">Favorite Suppliers</h1>
@@ -95,7 +95,7 @@ export function FavoriteSuppliersPage() {
         ) : error ? (
           <div className="text-center text-red-500 py-10">{error}</div>
         ) : suppliers.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-gray-400">
+          <div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-gray-400 dark:text-gray-500">
             <Building2 className="w-16 h-16 mb-4 text-gray-300" />
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">No favorite suppliers yet</h2>
             <p className="text-sm mt-1">Suppliers you favorite will appear here.</p>
@@ -127,7 +127,7 @@ export function FavoriteSuppliersPage() {
                       </button>
                     </div>
                     
-                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 gap-2">
+                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 gap-2">
                       <span className="flex items-center"><MapPin className="w-3 h-3 mr-0.5" /> {supplier.location}</span>
                       {supplier.isVerified && (
                         <span className="flex items-center text-green-600 font-medium">
@@ -139,9 +139,9 @@ export function FavoriteSuppliersPage() {
                     <div className="flex items-center mt-2 gap-1 text-sm">
                       <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                       <span className="font-medium">{supplier.rating}</span>
-                      <span className="text-gray-400 dark:text-gray-500 text-xs">({supplier.reviewCount})</span>
+                      <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400 text-xs">({supplier.reviewCount})</span>
                       <span className="mx-2 text-gray-300">•</span>
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 px-2 py-0.5 rounded">
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-900 px-2 py-0.5 rounded">
                         {supplier.productsCount} Products
                       </span>
                     </div>

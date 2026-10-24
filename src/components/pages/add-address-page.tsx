@@ -84,7 +84,7 @@ export function AddAddressPage() {
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-base font-bold text-primary">Add New Address</h1>
@@ -104,7 +104,7 @@ export function AddAddressPage() {
 
         {/* Contact Details Section */}
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 pb-2">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
             Contact Details
           </h3>
 
@@ -124,7 +124,7 @@ export function AddAddressPage() {
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Business Name <span className="text-slate-400 dark:text-slate-500">(Optional)</span>
+              Business Name <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400">(Optional)</span>
             </label>
             <Input
               value={form.businessName}
@@ -139,7 +139,7 @@ export function AddAddressPage() {
               Phone Number <span className="text-primary">*</span>
             </label>
             <div className="relative">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
               <Input
                 type="tel"
                 value={form.phone}
@@ -148,7 +148,7 @@ export function AddAddressPage() {
                 className={`h-11 pl-10 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.phone ? 'border-red-400' : ''}`}
               />
             </div>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium pl-1">Used for delivery updates.</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium pl-1">Used for delivery updates.</p>
             {errors.phone && <p className="text-[10px] text-red-500 font-medium">{errors.phone}</p>}
           </div>
           </div>
@@ -156,7 +156,7 @@ export function AddAddressPage() {
 
         {/* Address Section */}
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 pb-2">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
             Address
           </h3>
 
@@ -249,7 +249,7 @@ export function AddAddressPage() {
           <Button
             variant="outline"
             onClick={goBack}
-            className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-12 rounded-2xl text-xs px-8"
+            className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-12 rounded-2xl text-xs px-8"
           >
             Cancel
           </Button>
@@ -270,7 +270,7 @@ export function AddAddressPage() {
           <Button
             variant="outline"
             onClick={goBack}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
           >
             Cancel
           </Button>

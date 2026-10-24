@@ -212,7 +212,7 @@ export function DisputeCenterPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <Scale className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Sign in to file a complaint</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
           The dispute center needs to know who you are so your complaints stay linked to your account and you can see the real resolution.
         </p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold gap-1.5">
@@ -232,12 +232,12 @@ export function DisputeCenterPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Dispute Center</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">File a complaint and track it for real — the reference you get is the actual record id, and every status change comes from the Zylod review team.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">File a complaint and track it for real — the reference you get is the actual record id, and every status change comes from the Zylod review team.</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {lastUpdated && (
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
           )}
           <Button
             variant="outline"
@@ -310,7 +310,7 @@ export function DisputeCenterPage() {
             className="min-h-[100px] rounded-xl text-xs"
             maxLength={5000}
           />
-          <p className="text-[10px] text-slate-400 dark:text-slate-500">{description.trim().length}/5000 characters</p>
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{description.trim().length}/5000 characters</p>
         </div>
 
         <div className="space-y-1.5">
@@ -322,7 +322,7 @@ export function DisputeCenterPage() {
             placeholder="The order this complaint is about"
             className="h-11 rounded-xl text-xs font-mono"
           />
-          <p className="text-[10px] text-slate-400 dark:text-slate-500">Leave empty if not order-related. If given, the order must belong to your account.</p>
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Leave empty if not order-related. If given, the order must belong to your account.</p>
         </div>
 
         {formError && (
@@ -361,9 +361,9 @@ export function DisputeCenterPage() {
         ) : complaints.length === 0 ? (
           // Honest empty state — this account truly has zero complaints
           <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
-            <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 mx-auto" />
+            <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 dark:text-slate-300 mx-auto" />
             <h3 className="text-sm font-black">No complaints filed yet</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
               Your account has no complaints on record — this list only shows real complaints you have filed.
             </p>
           </div>
@@ -380,7 +380,7 @@ export function DisputeCenterPage() {
                       <span className={`text-[10px] font-bold border rounded-lg px-2 py-0.5 ${chipClass}`}>{categoryLabel(c.category)}</span>
                       <p className="text-sm font-black text-slate-800 dark:text-slate-200 break-words">{c.title}</p>
                     </div>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                       Filed {formatTimestamp(c.createdAt)} · ref <span className="font-mono">{c.id}</span>
                       {c.orderId ? ` · order ${c.orderId}` : ' · not order-related'}
                     </p>
@@ -389,9 +389,9 @@ export function DisputeCenterPage() {
                     {c.status.toUpperCase()}
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-300 break-words line-clamp-2">{c.description}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 break-words line-clamp-2">{c.description}</p>
                 {c.resolutionNote && (
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 break-words">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
                     <span className="font-black">Resolution:</span> {c.resolutionNote}
                   </p>
                 )}

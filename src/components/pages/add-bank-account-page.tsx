@@ -72,8 +72,8 @@ export function AddBankAccountPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Add Bank Account</span>
@@ -84,7 +84,7 @@ export function AddBankAccountPage() {
         {/* Banner */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <Landmark className="h-5 w-5 text-rose-300" />
             </div>
             <div>
@@ -166,7 +166,7 @@ export function AddBankAccountPage() {
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div>
                 <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">Set as Primary Account</span>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 block">Default destination for sales proceeds</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Default destination for sales proceeds</span>
               </div>
               <Switch checked={isDefault} onCheckedChange={setIsDefault} className="data-[state=checked]:bg-primary" />
             </div>

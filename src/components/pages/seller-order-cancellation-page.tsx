@@ -49,15 +49,15 @@ export function SellerOrderCancellationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
-      <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10 flex items-center">
-        <button onClick={goBack} className="p-1 -ml-1 text-gray-600 mr-2">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
+      <header className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center">
+        <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400 dark:text-gray-500 mr-2">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-lg md:hidden font-bold text-gray-900">Cancel Order</h1>
+        <h1 className="text-lg md:hidden font-bold text-gray-900 dark:text-gray-100">Cancel Order</h1>
       </header>
 
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">Cancel Order</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Cancel Order</h1>
 
       <div className="p-4 space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-orange-50 border border-orange-200 p-4 rounded-xl flex gap-3">
@@ -67,8 +67,8 @@ export function SellerOrderCancellationPage() {
           </p>
         </motion.div>
 
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
-          <h2 className="font-semibold text-gray-900">Cancellation Reason</h2>
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-4">
+          <h2 className="font-semibold text-gray-900 dark:text-gray-100">Cancellation Reason</h2>
           <div className="space-y-3">
             {REASONS.map((r) => (
               <label key={r} className="flex items-center gap-3">
@@ -80,17 +80,17 @@ export function SellerOrderCancellationPage() {
                   onChange={() => setReason(r)} 
                   className="w-4 h-4 text-[#C8102E]" 
                 />
-                <span className="text-sm text-gray-800">{r}</span>
+                <span className="text-sm text-gray-800 dark:text-gray-200">{r}</span>
               </label>
             ))}
           </div>
 
-          <div className="pt-4 border-t border-gray-100">
-            <label className="text-sm font-medium text-gray-700 block mb-2">Additional Notes (Optional)</label>
+          <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">Additional Notes (Optional)</label>
             <textarea 
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E] min-h-[100px]"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#C8102E] min-h-[100px]"
               placeholder="Explain why you are cancelling..."
             />
           </div>

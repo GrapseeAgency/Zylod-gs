@@ -109,7 +109,7 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#C8102E]"></div>
-          <p className="text-sm text-gray-400">Loading...</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">Loading...</p>
         </div>
       </div>
     )
@@ -136,7 +136,7 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
   return (
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="text-center">
-        <p className="text-lg text-gray-600">Page not found: {pageId}</p>
+        <p className="text-lg text-gray-600 dark:text-gray-400 dark:text-gray-500">Page not found: {pageId}</p>
       </div>
     </div>
   )

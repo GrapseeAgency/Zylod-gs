@@ -338,7 +338,7 @@ export function MobileProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 space-y-3">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 space-y-3">
         <Skeleton className="h-80 w-full rounded-xl" />
         <Skeleton className="h-8 w-3/4" />
         <Skeleton className="h-4 w-1/2" />
@@ -350,7 +350,7 @@ export function MobileProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
         <div className="text-center space-y-2">
           <Package className="h-12 w-12 mx-auto text-muted-foreground" />
           <p className="text-sm text-muted-foreground">Product not found</p>
@@ -374,21 +374,21 @@ export function MobileProductDetailPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-4">
       {/* ─── 1. Fixed Header ─── */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 h-12 bg-white shadow-[0_1px_4px_rgba(0,0,0,0.08)]">
-        <button onClick={goBack} className="flex items-center justify-center w-9 h-9 rounded-full active:bg-gray-100 transition-colors" aria-label="Go back">
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 h-12 bg-white dark:bg-gray-900 shadow-[0_1px_4px_rgba(0,0,0,0.08)]">
+        <button onClick={goBack} className="flex items-center justify-center w-9 h-9 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="Go back">
           <ChevronLeft className="w-5 h-5 text-foreground" />
         </button>
         <h1 className="text-sm font-semibold text-foreground">Product Details</h1>
         <div className="flex items-center gap-0.5">
-          <button className="flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 transition-colors" aria-label="Share">
+          <button className="flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="Share">
             <Share2 className="w-[17px] h-[17px] text-foreground" />
           </button>
-          <button className="flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 transition-colors" aria-label="QR Code">
+          <button className="flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="QR Code">
             <QrCode className="w-[17px] h-[17px] text-foreground" />
           </button>
-          <button onClick={() => navigate('cart')} className="relative flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 transition-colors" aria-label="Cart">
+          <button onClick={() => navigate('cart')} className="relative flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="Cart">
             <ShoppingCart className="w-[17px] h-[17px] text-foreground" />
             {cartItemCount > 0 && (
               <span className="absolute top-0.5 right-0.5 min-w-[14px] h-3.5 bg-[#E53935] text-white text-[8px] font-bold rounded-full flex items-center justify-center px-0.5">
@@ -402,7 +402,7 @@ export function MobileProductDetailPage() {
       <div className="h-12" />
 
       {/* ─── 2. Hero Image ─── */}
-      <div className="relative bg-white">
+      <div className="relative bg-white dark:bg-gray-900">
         <div className="relative w-full" style={{ aspectRatio: '1/1' }}>
           {hasImage ? (
             <Image
@@ -414,14 +414,14 @@ export function MobileProductDetailPage() {
               priority
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-50">
+            <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-950">
               <Package className="w-16 h-16 text-gray-300" />
             </div>
           )}
         </div>
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.isCustomizable && (
-            <Badge className="bg-white text-foreground text-[10px] px-2 py-0.5 rounded-md border border-gray-200 shadow-sm">
+            <Badge className="bg-white dark:bg-gray-900 text-foreground text-[10px] px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-800 shadow-sm">
               Customizable
             </Badge>
           )}
@@ -439,7 +439,7 @@ export function MobileProductDetailPage() {
       </div>
 
       {/* ─── 3. Product Info ─── */}
-      <div className="bg-white mt-2 px-4 pt-4 pb-4">
+      <div className="bg-white dark:bg-gray-900 mt-2 px-4 pt-4 pb-4">
         <div className="flex items-start gap-2">
           <h2 className="flex-1 text-lg font-bold text-foreground leading-snug">{product.name}</h2>
           <button onClick={handleToggleWishlist} className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full active:scale-95 transition-transform" aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}>
@@ -507,7 +507,7 @@ export function MobileProductDetailPage() {
               Only {formatQty(currentVariantStock)} {product.unit} left{selectedVariant ? ` (${selectedVariantLabel})` : ''}
             </span>
           ) : selectedVariant ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-medium text-foreground">
+            <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 px-2 py-0.5 text-[10px] font-medium text-foreground">
               <Package className="w-3 h-3" />
               {selectedVariantLabel}: {formatQty(currentVariantStock)} {product.unit} available
             </span>
@@ -638,10 +638,10 @@ export function MobileProductDetailPage() {
         {product.priceTiers && product.priceTiers.length > 0 && (
           <div className="mt-4">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Tiered Pricing</h3>
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="bg-gray-50 text-muted-foreground">
+                  <tr className="bg-gray-50 dark:bg-gray-950 text-muted-foreground">
                     <th className="text-left px-3 py-2 font-medium">Quantity</th>
                     <th className="text-right px-3 py-2 font-medium">Price / {priceUnitLabel}</th>
                   </tr>
@@ -708,7 +708,7 @@ export function MobileProductDetailPage() {
                     playsInline
                     poster={video.thumbnailUrl || undefined}
                     src={video.videoUrl}
-                    className="w-full aspect-video bg-gray-100 rounded-lg"
+                    className="w-full aspect-video bg-gray-100 dark:bg-gray-900 rounded-lg"
                     aria-label={video.title || `Product video for ${product.name}`}
                   />
                   {video.title && <p className="text-[11px] text-muted-foreground mt-1">{video.title}</p>}
@@ -721,12 +721,12 @@ export function MobileProductDetailPage() {
         {/* Quantity Selector */}
         <div className="mt-4 flex items-center gap-3">
           <span className="text-xs text-muted-foreground">Quantity (MOQ: {formatQty(product.moq)})</span>
-          <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden ml-auto">
-            <button onClick={() => handleQuantityChange(-10)} className="w-8 h-8 flex items-center justify-center text-foreground active:bg-gray-100 transition-colors" aria-label="Decrease">
+          <div className="flex items-center border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden ml-auto">
+            <button onClick={() => handleQuantityChange(-10)} className="w-8 h-8 flex items-center justify-center text-foreground active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="Decrease">
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="w-12 h-8 flex items-center justify-center text-sm font-semibold text-foreground border-x border-gray-200">{quantity}</span>
-            <button onClick={() => handleQuantityChange(10)} className="w-8 h-8 flex items-center justify-center text-foreground active:bg-gray-100 transition-colors" aria-label="Increase">
+            <span className="w-12 h-8 flex items-center justify-center text-sm font-semibold text-foreground border-x border-gray-200 dark:border-gray-800">{quantity}</span>
+            <button onClick={() => handleQuantityChange(10)} className="w-8 h-8 flex items-center justify-center text-foreground active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="Increase">
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -785,8 +785,8 @@ export function MobileProductDetailPage() {
       </div>
 
       {/* ─── 4. Tabs ─── */}
-      <div className="bg-white mt-2">
-        <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide">
+      <div className="bg-white dark:bg-gray-900 mt-2">
+        <div className="flex border-b border-gray-200 dark:border-gray-800 overflow-x-auto scrollbar-hide">
           {tabs.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className={`relative flex-shrink-0 px-3 py-3 text-xs font-medium whitespace-nowrap transition-colors ${activeTab === tab.id ? 'text-[#E53935]' : 'text-muted-foreground'}`}
@@ -805,7 +805,7 @@ export function MobileProductDetailPage() {
               <motion.div key="details" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
                 <p className="text-sm text-muted-foreground leading-relaxed">{product.description || 'No description available.'}</p>
                 <div className="mt-4 grid grid-cols-2 gap-3">
-                  <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="bg-gray-50 dark:bg-gray-950 rounded-lg p-3">
                     <p className={`text-[10px] uppercase tracking-wide ${product.stockQuantity <= 0 ? 'text-red-600' : 'text-muted-foreground'}`}>
                       {product.stockQuantity <= 0 ? 'Out of Stock' : 'In Stock'}
                     </p>
@@ -825,7 +825,7 @@ export function MobileProductDetailPage() {
                       </p>
                     )}
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="bg-gray-50 dark:bg-gray-950 rounded-lg p-3">
                     <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Min. Order</p>
                     <p className="text-sm font-semibold text-foreground mt-0.5">{product.moq} {product.unit}</p>
                   </div>
@@ -836,7 +836,7 @@ export function MobileProductDetailPage() {
             {activeTab === 'specifications' && (
               <motion.div key="specifications" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
                 {specEntries.length > 0 ? (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-gray-100 dark:divide-gray-800">
                     {specEntries.map(([key, value]) => (
                       <div key={key} className="flex justify-between py-2.5">
                         <span className="text-xs text-muted-foreground">{key}</span>
@@ -891,7 +891,7 @@ export function MobileProductDetailPage() {
                 <div className="space-y-3">
                   {(product.reviews || []).length > 0 ? (
                     product.reviews.map(review => (
-                      <div key={review.id} className="bg-gray-50 rounded-lg p-3">
+                      <div key={review.id} className="bg-gray-50 dark:bg-gray-950 rounded-lg p-3">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-[#E53935]/10 text-[#E53935] flex items-center justify-center text-xs font-bold">
                             {(review.buyer?.buyerProfile?.fullName || 'A').charAt(0).toUpperCase()}
@@ -917,7 +917,7 @@ export function MobileProductDetailPage() {
                         {review.comment && <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{review.comment}</p>}
                         {review.verifiedPurchase && <p className="text-[10px] text-green-600 mt-1">✓ Verified purchase</p>}
                         {review.replies?.length > 0 && review.replies.map(reply => (
-                          <div key={reply.id} className="ml-6 mt-2 p-2 bg-white rounded-lg border border-gray-100">
+                          <div key={reply.id} className="ml-6 mt-2 p-2 bg-white dark:bg-gray-900 rounded-lg border border-gray-100 dark:border-gray-800">
                             <p className="text-[10px] font-medium text-foreground">{reply.buyer?.buyerProfile?.fullName || 'Seller'} replied:</p>
                             <p className="text-[10px] text-muted-foreground mt-0.5">{reply.comment}</p>
                           </div>
@@ -938,12 +938,12 @@ export function MobileProductDetailPage() {
       </div>
 
       {/* ─── Related Products Rail (Task 129: real endpoint, honest no-op when empty) ─── */}
-      <div className="bg-white mt-2 px-4 py-4">
+      <div className="bg-white dark:bg-gray-900 mt-2 px-4 py-4">
         <RelatedProductsRail productId={productId} />
       </div>
 
       {/* ─── 5. Supplier Section ─── */}
-      <div className="bg-white mt-2 px-4 py-4">
+      <div className="bg-white dark:bg-gray-900 mt-2 px-4 py-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-[#E53935]/10 flex items-center justify-center">
             <Store className="w-5 h-5 text-[#E53935]" />
@@ -963,15 +963,15 @@ export function MobileProductDetailPage() {
           </Button>
         </div>
         <div className="mt-3 grid grid-cols-3 gap-2">
-          <div className="bg-gray-50 rounded-lg p-2 text-center">
+          <div className="bg-gray-50 dark:bg-gray-950 rounded-lg p-2 text-center">
             <p className="text-xs font-bold text-foreground">{product.supplier.ratingAvg}</p>
             <p className="text-[10px] text-muted-foreground">Rating</p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-2 text-center">
+          <div className="bg-gray-50 dark:bg-gray-950 rounded-lg p-2 text-center">
             <p className="text-xs font-bold text-foreground">{product.supplier.ratingCount}</p>
             <p className="text-[10px] text-muted-foreground">Reviews</p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-2 text-center">
+          <div className="bg-gray-50 dark:bg-gray-950 rounded-lg p-2 text-center">
             <p className="text-xs font-bold text-foreground">{product.reviewCount}</p>
             <p className="text-[10px] text-muted-foreground">Products</p>
           </div>

@@ -236,7 +236,7 @@ function FilterSheet({ open, onClose, onApply, initialFilters, products }: Filte
                 <h4 className="text-sm font-bold mb-3">Price Range (USD)</h4>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex-1">
-                    <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Min</label>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1 block">Min</label>
                     <input
                       type="number"
                       value={priceMin}
@@ -244,9 +244,9 @@ function FilterSheet({ open, onClose, onApply, initialFilters, products }: Filte
                       className="w-full border border-gray-200 dark:border-gray-800 rounded-lg px-3 py-2 text-sm font-medium"
                     />
                   </div>
-                  <span className="text-gray-400 dark:text-gray-500 mt-4">–</span>
+                  <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-4">–</span>
                   <div className="flex-1">
-                    <label className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Max</label>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1 block">Max</label>
                     <input
                       type="number"
                       value={priceMax}
@@ -459,17 +459,17 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
       {/* Header */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-30">
         <div className="flex items-center gap-3 px-4 md:px-6 py-3 max-w-7xl mx-auto">
-          <button onClick={goBack} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden">
+          <button onClick={goBack} className="p-1.5 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors md:hidden">
             <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex-1 min-w-0">
             {/* Breadcrumb */}
-            <div className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500">
+            <div className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
               <span>Home</span>
               <ChevronRight className="h-3 w-3" />
               <span>Categories</span>
               <ChevronRight className="h-3 w-3" />
-              <span className="text-gray-600 dark:text-gray-400 font-medium truncate">{categoryName}</span>
+              <span className="text-gray-600 dark:text-gray-400 dark:text-gray-500 font-medium truncate">{categoryName}</span>
             </div>
           </div>
         </div>
@@ -477,7 +477,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
         {/* Search */}
         <div className="px-4 md:px-6 pb-3 max-w-7xl mx-auto">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -492,7 +492,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
         {/* Category title + description */}
         <div className="mb-4">
           <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">{categoryName}</h1>
-          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{categoryDescription}</p>
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">{categoryDescription}</p>
         </div>
 
         {/* Subcategory filter pills */}
@@ -538,12 +538,12 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
               <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 leading-snug mb-1">
                 {featuredProduct.name}
               </h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{featuredProduct.description}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 line-clamp-2 mb-3">{featuredProduct.description}</p>
               <div className="text-xl font-bold text-primary mb-3">
                 {formatPrice(featuredProduct.base_price)}
-                <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-1">/ {featuredProduct.unit}</span>
+                <span className="text-sm font-normal text-gray-500 dark:text-gray-400 dark:text-gray-500 ml-1">/ {featuredProduct.unit}</span>
               </div>
-              <div className="grid grid-cols-2 gap-2 mb-3 text-xs text-gray-600 dark:text-gray-400">
+              <div className="grid grid-cols-2 gap-2 mb-3 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 <div className="flex items-center gap-1.5">
                   <Package className="h-3.5 w-3.5 text-orange-500" />
                   <span>MOQ: {featuredProduct.moq} {featuredProduct.unit}</span>
@@ -589,7 +589,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
           <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">
             All Products
             {!loading && (
-              <span className="ml-2 text-gray-400 dark:text-gray-500 font-normal text-xs">
+              <span className="ml-2 text-gray-400 dark:text-gray-500 dark:text-gray-400 font-normal text-xs">
                 Sort by: Popular ↓
               </span>
             )}
@@ -628,7 +628,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Package className="h-12 w-12 text-gray-300 mb-3" />
             <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">No products found</h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">Try adjusting your filters or search term</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mb-4">Try adjusting your filters or search term</p>
             <Button
               variant="outline"
               size="sm"
@@ -678,7 +678,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
                       <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 leading-snug mb-1">
                         {product.name}
                       </h3>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-1">
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 mb-1">
                         MOQ: {product.moq} {product.unit}
                       </p>
                       <div className="flex items-center justify-between">
@@ -700,11 +700,11 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
                           e.stopPropagation()
                           navigate('product-detail', { productId: product.id })
                         }}
-                        className="mt-2 w-full text-center text-xs font-semibold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 rounded-lg py-1.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-1"
+                        className="mt-2 w-full text-center text-xs font-semibold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 rounded-lg py-1.5 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-1"
                       >
                         MOQ
                         <span className="text-primary font-bold">{product.moq}</span>
-                        <span className="text-gray-400 dark:text-gray-500">View</span>
+                        <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">View</span>
                       </button>
                     </div>
                   </CardContent>

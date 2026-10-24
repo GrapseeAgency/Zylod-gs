@@ -168,12 +168,12 @@ export function AdminDeliveriesPage() {
     >
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Delivery ops</h1>
-        <button onClick={loadAll} className="ml-auto p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Refresh">
-          <RefreshCw className="h-4 w-4 text-gray-600 dark:text-gray-400 dark:text-gray-300" />
+        <button onClick={loadAll} className="ml-auto p-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Refresh">
+          <RefreshCw className="h-4 w-4 text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300" />
         </button>
       </header>
 
@@ -181,7 +181,7 @@ export function AdminDeliveriesPage() {
         <div className="hidden md:flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Delivery ops</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
               Drivers + assignments — the gate that makes live GPS tracking possible.
             </p>
           </div>
@@ -199,13 +199,13 @@ export function AdminDeliveriesPage() {
             <CardContent className="p-8 text-center space-y-3">
               <ShieldAlert className="w-10 h-10 text-gray-300 mx-auto" />
               <h2 className="text-base font-bold dark:text-white">Admin sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Delivery ops are admin-only.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Delivery ops are admin-only.</p>
               <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
             </CardContent>
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : (
           <>
@@ -213,19 +213,19 @@ export function AdminDeliveriesPage() {
             <div className="grid grid-cols-3 gap-3">
               <Card className="border-none shadow-sm dark:bg-gray-800">
                 <CardContent className="p-4">
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Drivers</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Drivers</p>
                   <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="drivers-count">{drivers.length}</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800">
                 <CardContent className="p-4">
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Active assignments</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Active assignments</p>
                   <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="assignments-active">{activeCount}</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800">
                 <CardContent className="p-4">
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Assignable sub-orders</p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Assignable sub-orders</p>
                   <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="assignable-count">{assignableSubOrders.length}</p>
                 </CardContent>
               </Card>
@@ -246,11 +246,11 @@ export function AdminDeliveriesPage() {
                     <Input id="drv-email" type="email" placeholder="driver@zylod.com" value={dEmail} onChange={(e) => setDEmail(e.target.value)} className="h-10" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="drv-pass" className="text-xs">Password <span className="text-gray-400 dark:text-gray-500">(min 10 chars — hand to the driver securely)</span></Label>
+                    <Label htmlFor="drv-pass" className="text-xs">Password <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">(min 10 chars — hand to the driver securely)</span></Label>
                     <Input id="drv-pass" type="password" placeholder="••••••••••" value={dPassword} onChange={(e) => setDPassword(e.target.value)} className="h-10" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="drv-phone" className="text-xs">Phone <span className="text-gray-400 dark:text-gray-500">(optional, 01XXXXXXXXX)</span></Label>
+                    <Label htmlFor="drv-phone" className="text-xs">Phone <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">(optional, 01XXXXXXXXX)</span></Label>
                     <Input id="drv-phone" inputMode="numeric" placeholder="01712345678" value={dPhone} onChange={(e) => setDPhone(e.target.value)} className="h-10" />
                   </div>
                   <Button onClick={createDriver} disabled={creating || !dEmail.trim() || dPassword.length < 10} className="w-full h-10">
@@ -262,7 +262,7 @@ export function AdminDeliveriesPage() {
                       {createMsg.text}
                     </p>
                   )}
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     Drivers cannot self-register. They authenticate in the driver app and push GPS pings only for
                     sub-orders with an active assignment.
                   </p>
@@ -321,7 +321,7 @@ export function AdminDeliveriesPage() {
                       {assignMsg.text}
                     </p>
                   )}
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     One active driver per sub-order — assigning supersedes the previous assignment. Delivered,
                     cancelled or returned sub-orders refuse assignment.
                   </p>
@@ -339,14 +339,14 @@ export function AdminDeliveriesPage() {
               </CardHeader>
               <CardContent>
                 {drivers.length === 0 ? (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 py-6 text-center">
                     No drivers yet — create the first account above.
                   </p>
                 ) : (
                   <div className="max-h-64 overflow-y-auto">
                     <table className="w-full text-sm">
                       <thead className="sticky top-0 bg-white dark:bg-gray-900 dark:bg-gray-800">
-                        <tr className="text-left text-xs text-gray-500 dark:text-gray-400 border-b">
+                        <tr className="text-left text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 border-b">
                           <th className="py-2 pr-3 font-medium">Email</th>
                           <th className="py-2 pr-3 font-medium">Phone</th>
                           <th className="py-2 pr-3 font-medium">Status</th>
@@ -363,7 +363,7 @@ export function AdminDeliveriesPage() {
                                 ? <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Active</Badge>
                                 : <Badge className="bg-red-100 text-red-800 hover:bg-red-100">{d.accountStatus}</Badge>}
                             </td>
-                            <td className="py-2.5 text-xs text-gray-500 dark:text-gray-400">{bdtTime(d.createdAt)}</td>
+                            <td className="py-2.5 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{bdtTime(d.createdAt)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -383,7 +383,7 @@ export function AdminDeliveriesPage() {
               </CardHeader>
               <CardContent>
                 {assignments.length === 0 ? (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 py-6 text-center">
                     No assignments yet — assign a driver to arm live tracking.
                   </p>
                 ) : (
@@ -393,12 +393,12 @@ export function AdminDeliveriesPage() {
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                           {a.status === 'active'
                             ? <CircleCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                            : <Ban className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />}
+                            : <Ban className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 shrink-0" />}
                           <div className="min-w-0">
                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white truncate">
                               {a.driver?.name ?? a.driver?.id}
                             </p>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400 font-mono truncate">
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-mono truncate">
                               sub-order {a.subOrderId}
                             </p>
                           </div>
@@ -406,7 +406,7 @@ export function AdminDeliveriesPage() {
                         <div className="flex items-center gap-2 md:gap-3 shrink-0">
                           {a.subOrderStatus && <Badge variant="outline" className="text-[10px] capitalize">{a.subOrderStatus}</Badge>}
                           {assignmentChip(a.status)}
-                          <span className="text-[11px] text-gray-500 dark:text-gray-400 whitespace-nowrap">{bdtTime(a.assignedAt)}</span>
+                          <span className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 whitespace-nowrap">{bdtTime(a.assignedAt)}</span>
                         </div>
                       </div>
                     ))}

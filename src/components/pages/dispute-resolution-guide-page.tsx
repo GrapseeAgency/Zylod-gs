@@ -45,7 +45,7 @@ export function DisputeResolutionGuidePage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Dispute & Arbitration Guide</span>
@@ -85,7 +85,7 @@ export function DisputeResolutionGuidePage() {
                     {s.time}
                   </span>
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 pt-0.5">{s.title}</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{s.desc}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{s.desc}</p>
                 </div>
               </motion.div>
             )
@@ -104,14 +104,14 @@ export function DisputeResolutionGuidePage() {
                 <Video className="w-3.5 h-3.5 text-red-600" />
                 Unboxing Video
               </div>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">Continuous video showing sealed shipping label and opening parcel.</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Continuous video showing sealed shipping label and opening parcel.</p>
             </div>
             <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-gray-900 dark:text-gray-100">
                 <Camera className="w-3.5 h-3.5 text-red-600" />
                 Defect Photographs
               </div>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">Close-ups of broken parts, missing units, or incorrect color/specs.</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Close-ups of broken parts, missing units, or incorrect color/specs.</p>
             </div>
           </div>
         </div>

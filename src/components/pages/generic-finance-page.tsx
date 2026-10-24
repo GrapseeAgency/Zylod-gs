@@ -118,7 +118,7 @@ export function GenericFinancePage({ pageId }: { pageId: string }) {
             <ArrowLeft className="h-4 w-4" /> Back to Dashboard
           </button>
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
+            <div className="p-2.5 rounded-xl bg-white dark:bg-gray-900/10 backdrop-blur-sm border border-white/20">
               <Wallet className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold">{title}</h1>
@@ -203,7 +203,7 @@ function Overview({ data, loading, formatPrice, navigate }: {
             <p className="text-xs text-muted-foreground font-medium">Total Spent / Debited</p>
             <h3 className="text-2xl font-bold text-foreground mt-1">{formatPrice(data?.totalUsed || 0)}</h3>
           </div>
-          <div className="p-3 rounded-full bg-slate-500/10 text-slate-600 dark:text-slate-400"><Receipt className="h-6 w-6" /></div>
+          <div className="p-3 rounded-full bg-slate-500/10 text-slate-600 dark:text-slate-400 dark:text-slate-500"><Receipt className="h-6 w-6" /></div>
         </CardContent>
       </Card>
       <Card className="border-border/50 bg-card">

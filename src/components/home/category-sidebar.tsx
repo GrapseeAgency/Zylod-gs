@@ -81,9 +81,9 @@ export function CategorySidebar() {
   return (
     <aside className="hidden lg:block w-[220px] shrink-0 relative z-20">
       {/* All Categories Card */}
-      <Card className="border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
         <div
-          className="px-4 py-3 border-b border-gray-100 bg-primary"
+          className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-primary"
         >
           <h2 className="text-sm font-bold text-white flex items-center gap-2">
             <Package className="h-4 w-4" />
@@ -131,7 +131,7 @@ export function CategorySidebar() {
                   {/* ─── Flyout Mega-Menu ─── */}
                   {isHovered && (
                     <div
-                      className="absolute left-full top-0 ml-0 w-[480px] bg-card border border-gray-200 shadow-xl rounded-lg z-50 p-5"
+                      className="absolute left-full top-0 ml-0 w-[480px] bg-card border border-gray-200 dark:border-gray-800 shadow-xl rounded-lg z-50 p-5"
                       style={{ minHeight: '200px' }}
                     >
                       <div className="flex items-center gap-2 mb-4">
@@ -147,18 +147,18 @@ export function CategorySidebar() {
                         {cat.children.map((sub) => (
                           <button
                             key={sub.id}
-                            className="flex items-center justify-between py-2 px-3 rounded-md text-[12px] text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer group/sub"
+                            className="flex items-center justify-between py-2 px-3 rounded-md text-[12px] text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer group/sub"
                             onClick={() => navigate(CATEGORY_PAGE_MAP[sub.slug] || CATEGORY_PAGE_MAP[cat.slug] || cat.slug)}
                           >
                             <span className="font-medium">{sub.name}</span>
-                            <span className="text-[10px] text-gray-400 group-hover/sub:text-red-400">{sub.productCount}</span>
+                            <span className="text-[10px] text-gray-400 dark:text-gray-500 group-hover/sub:text-red-400">{sub.productCount}</span>
                           </button>
                         ))}
                         {cat.children.length === 0 && (
-                          <p className="text-[11px] text-gray-400 col-span-2">No subcategories yet.</p>
+                          <p className="text-[11px] text-gray-400 dark:text-gray-500 col-span-2">No subcategories yet.</p>
                         )}
                       </div>
-                      <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-4">
+                      <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center gap-4">
                         <Button
                           size="sm"
                           className="text-xs font-semibold bg-primary text-primary-foreground"
@@ -186,11 +186,11 @@ export function CategorySidebar() {
       </Card>
 
       {/* Small promo banner */}
-      <Card className="mt-3 border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+      <Card className="mt-3 border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
         <div className="p-4 text-center bg-gradient-to-br from-primary/5 to-card">
           <Sparkles className="h-8 w-8 mx-auto mb-2 text-primary" />
           <p className="text-xs font-bold mb-1 text-foreground">New Supplier?</p>
-          <p className="text-[11px] text-gray-500 mb-3">
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-3">
             {/* supplierCount is a raw per-category seller count (any
                 verification status) — the old 'verified' adjective was a claim
                 the data does not make. */}

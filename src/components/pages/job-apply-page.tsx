@@ -49,24 +49,24 @@ export function JobApplyPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Apply for Position</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">{jobTitle}</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{jobTitle}</p>
         </div>
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 pb-24 md:px-6 md:py-6 md:pb-8 lg:max-w-4xl">
         <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">Apply for Position</h1>
-        <p className="hidden md:block text-sm text-gray-500 dark:text-gray-400 mb-6">{jobTitle}</p>
+        <p className="hidden md:block text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-6">{jobTitle}</p>
         <div className="space-y-4 md:space-y-6">
         {submitted ? (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-3">
             <CheckCircle2 className="w-12 h-12 text-teal-600 mx-auto" />
             <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Application Submitted!</h2>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
               Thank you for applying. Your application tracking code is <strong>{appRef}</strong>. Our Talent Acquisition team will contact you within 5 business days.
             </p>
             <Button onClick={() => navigate('careers-page')} className="bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold">
@@ -76,7 +76,7 @@ export function JobApplyPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 md:p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Your Details</h3>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">Your Details</h3>
               <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
                 <div>
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Full Name *</label>
@@ -113,7 +113,7 @@ export function JobApplyPage() {
             </div>
 
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 md:p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Links & Experience</h3>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">Links & Experience</h3>
               <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
                 <div>
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Resume / CV Link (Google Drive / Dropbox) *</label>

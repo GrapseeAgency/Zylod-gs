@@ -87,7 +87,7 @@ export function FeedbackSuggestionsPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Feedback & Suggestions</span>
@@ -140,7 +140,7 @@ export function FeedbackSuggestionsPage() {
             <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 md:col-span-2">
               <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-2" />
               <p className="text-sm font-bold text-gray-800 dark:text-gray-200">No suggestions in this category yet</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Be the first to share an idea with our product team!</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-0.5">Be the first to share an idea with our product team!</p>
             </div>
           ) : (
             items.map((item, idx) => (
@@ -152,10 +152,10 @@ export function FeedbackSuggestionsPage() {
                 className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 dark:text-gray-500">
                     {item.type.replace('_', ' ')}
                   </span>
-                  <div className="flex items-center gap-1 text-[11px] text-gray-400 dark:text-gray-500">
+                  <div className="flex items-center gap-1 text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                     {item.rating && (
                       <span className="flex items-center gap-0.5 text-yellow-500 font-semibold mr-2">
                         <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
@@ -167,7 +167,7 @@ export function FeedbackSuggestionsPage() {
                 </div>
 
                 <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">{item.subject}</h3>
-                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{item.description}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{item.description}</p>
               </motion.div>
             ))
           )}
@@ -186,7 +186,7 @@ export function FeedbackSuggestionsPage() {
               <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Share Feedback & Ideas</h2>
               <button
                 onClick={() => setShowSubmitModal(false)}
-                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 text-xs font-bold"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400 text-xs font-bold"
               >
                 Cancel
               </button>

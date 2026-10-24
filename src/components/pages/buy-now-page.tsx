@@ -262,10 +262,10 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
-            <Package className="h-9 w-9 text-gray-400 dark:text-gray-500" />
+            <Package className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No product selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
             Open a product and choose “Buy Now” to place a direct order.
           </p>
           <Button
@@ -287,27 +287,27 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
           <CheckCircle2 className="h-10 w-10" />
         </div>
         <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">Order Placed</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
           Order <strong className="text-slate-800 dark:text-slate-200">{placedOrder.orderNumber}</strong> was created with{' '}
           {product?.supplier?.companyName || 'the supplier'}.
         </p>
         <div className="mt-4 w-full max-w-xs bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-xs space-y-1.5">
           <div className="flex justify-between">
-            <span className="text-slate-500 dark:text-slate-400">Order total</span>
+            <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Order total</span>
             <span className="font-black text-slate-900 dark:text-slate-100">{formatPrice(placedOrder.totalAmount)}</span>
           </div>
           {typeof placedOrder.shippingFee === 'number' && placedOrder.shippingFee > 0 && (
             <div className="flex justify-between">
-              <span className="text-slate-500 dark:text-slate-400">Incl. shipping</span>
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Incl. shipping</span>
               <span className="font-bold text-slate-900 dark:text-slate-100">{formatPrice(placedOrder.shippingFee)}</span>
             </div>
           )}
           <div className="flex justify-between">
-            <span className="text-slate-500 dark:text-slate-400">Payment status</span>
+            <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Payment status</span>
             <span className="font-bold text-slate-900 dark:text-slate-100 capitalize">{placedOrder.paymentStatus || 'unpaid'}</span>
           </div>
         </div>
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-3 max-w-xs leading-relaxed">
+        <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-3 max-w-xs leading-relaxed">
           Cash on delivery — payment is settled with the supplier on receipt. Track progress from your orders.
         </p>
         <div className="mt-6 space-y-2 w-full max-w-xs">
@@ -320,7 +320,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
           >
             Back to Home
           </Button>
@@ -335,7 +335,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
         <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Checkout</h1>
@@ -343,12 +343,12 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
         </header>
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
-            {needsAuth ? <LogIn className="h-9 w-9 text-gray-400 dark:text-gray-500" /> : <AlertCircle className="h-9 w-9 text-gray-400 dark:text-gray-500" />}
+            {needsAuth ? <LogIn className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <AlertCircle className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">
             {notFound ? 'Product not found' : needsAuth ? 'Sign in required' : 'Couldn\u2019t load this product'}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
             {notFound
               ? 'This product doesn\u2019t exist or is no longer available on the marketplace.'
               : needsAuth
@@ -367,7 +367,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
               <Button
                 variant="outline"
                 onClick={fetchData}
-                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 Try Again
@@ -376,7 +376,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
             <Button
               variant="outline"
               onClick={goBack}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
             >
               Go Back
             </Button>
@@ -413,7 +413,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Checkout</h1>
@@ -434,7 +434,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                   <img src={productImage} alt={product.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 w-full h-full">
-                    <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <Package className="h-5 w-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                   </div>
                 )}
               </div>
@@ -443,13 +443,13 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                   {product.name}
                 </h3>
                 {product.supplier?.companyName && (
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Sold by {product.supplier.companyName}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">Sold by {product.supplier.companyName}</p>
                 )}
                 <div className="flex items-baseline justify-between mt-2">
                   <span className="text-xs font-bold text-primary">
                     {formatPrice(unitPrice)} / {product.unit || 'pcs'}
                   </span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
                     {outOfStock ? 'Out of stock' : stock > 0 ? `${stock.toLocaleString()} in stock` : null}
                   </span>
                 </div>
@@ -457,16 +457,16 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
             </div>
 
             {/* Quantity stepper — MOQ enforced from real product data */}
-            <div className="flex items-center justify-between bg-slate-50/70 border border-slate-100 dark:border-slate-800 rounded-2xl p-3">
+            <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-950/70 border border-slate-100 dark:border-slate-800 rounded-2xl p-3">
               <div>
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase block">Quantity</span>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500">MOQ: {moq}</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase block">Quantity</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">MOQ: {moq}</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleQtyChange(-1)}
                   disabled={outOfStock || (quantity ?? moq) <= moq}
-                  className="w-7 h-7 rounded-lg bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 disabled:opacity-40"
+                  className="w-7 h-7 rounded-lg bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 disabled:opacity-40"
                 >
                   <Minus className="h-3 w-3" />
                 </button>
@@ -476,7 +476,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                 <button
                   onClick={() => handleQtyChange(1)}
                   disabled={outOfStock || (stock > 0 && (quantity ?? moq) >= stock)}
-                  className="w-7 h-7 rounded-lg bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 disabled:opacity-40"
+                  className="w-7 h-7 rounded-lg bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 disabled:opacity-40"
                 >
                   <Plus className="h-3 w-3" />
                 </button>
@@ -495,7 +495,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
               <div className="h-16 rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 animate-pulse" />
             ) : addresses.length === 0 ? (
               <div className="p-4 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-center space-y-2">
-                <p className="text-xs text-slate-500 dark:text-slate-400">No saved delivery address found.</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">No saved delivery address found.</p>
                 <Button
                   variant="outline"
                   onClick={() => navigate('add-address')}
@@ -528,7 +528,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                           <span className="ml-1.5 text-[9px] font-black uppercase text-primary">Default</span>
                         )}
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                         {a.addressLine1}
                         {a.addressLine2 ? `, ${a.addressLine2}` : ''}, {a.city}
                         {a.postalCode ? ` ${a.postalCode}` : ''}
@@ -548,16 +548,16 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                 <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Courier</h2>
               </div>
               {selectedAddress?.district && (
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">to {selectedAddress.district}</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wide">to {selectedAddress.district}</span>
               )}
             </div>
 
             {shipmentWeightKg === null ? (
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
                 No weight on file for this product — shipping settles directly with the supplier.
               </p>
             ) : !quote || quote.loading ? (
-              <p className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500">
+              <p className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                 <RefreshCw className="h-3 w-3 animate-spin" /> Quoting couriers for {shipmentWeightKg} kg…
               </p>
             ) : quote.error ? (
@@ -572,7 +572,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                 </button>
               </div>
             ) : quote.options.length === 0 ? (
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
                 No courier covers {shipmentWeightKg} kg to {selectedAddress?.district ?? 'this district'} — place the order and settle shipping with the supplier.
               </p>
             ) : (
@@ -608,7 +608,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                             <span className="text-[9px] font-black text-emerald-600 uppercase bg-emerald-50 border border-emerald-200 rounded-full px-1.5 py-0.5">Free</span>
                           )}
                         </span>
-                        <span className="block text-[10px] text-slate-400 dark:text-slate-500">
+                        <span className="block text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                           {opt.estimatedDays ? `Est. ${opt.estimatedDays}` : 'Est. delivery not stated'} · {shipmentWeightKg} kg
                           {opt.freeShipping && opt.basePrice > 0 && <s className="ml-1">{formatPrice(opt.basePrice)}</s>}
                         </span>
@@ -623,14 +623,14 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                   <button
                     type="button"
                     onClick={() => setShippingMethodId('')}
-                    className="text-[10px] font-bold text-slate-400 dark:text-slate-500 hover:text-slate-600 underline"
+                    className="text-[10px] font-bold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400 underline"
                   >
                     No shipping method — settle with the supplier
                   </button>
                 )}
               </div>
             )}
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
               Re-quoted server-side from the live rate book when the order is placed.
             </p>
           </div>
@@ -644,15 +644,15 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
 
             <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0">
-                <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Cash on Delivery</p>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500">Pay the supplier when the goods arrive</p>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Pay the supplier when the goods arrive</p>
               </div>
             </div>
 
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
               Online payment methods will appear here once a payment gateway is connected.
             </p>
           </div>
@@ -662,7 +662,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
         <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start">
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2.5">
             <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Order Summary</h2>
-            <div className="space-y-1 text-xs text-slate-500 dark:text-slate-400">
+            <div className="space-y-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <div className="flex justify-between">
                 <span>
                   {(quantity ?? moq).toLocaleString()} {product.unit || 'pcs'} × {formatPrice(unitPrice)}
@@ -700,7 +700,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
               </p>
             )}
 
-            <p className="text-[10px] text-center text-slate-400 dark:text-slate-500">
+            <p className="text-[10px] text-center text-slate-400 dark:text-slate-500 dark:text-slate-400">
               Final total is confirmed by the server when the order is created.
             </p>
           </div>
@@ -710,7 +710,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
       {/* Sticky Bottom Order Bar */}
       <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 lg:hidden">
         <div className="max-w-lg mx-auto space-y-2.5">
-          <div className="space-y-1 text-xs text-slate-500 dark:text-slate-400">
+          <div className="space-y-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             <div className="flex justify-between">
               <span>
                 {(quantity ?? moq).toLocaleString()} {product.unit || 'pcs'} × {formatPrice(unitPrice)}

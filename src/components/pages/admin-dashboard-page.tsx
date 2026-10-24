@@ -289,7 +289,7 @@ export function AdminDashboardPage() {
                 {data?.recentActivity.map((activity, i) => {
                   const { Icon, color, bg } = activityIcon(activity.type)
                   return (
-                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex items-start gap-3 p-3 rounded-lg border bg-gray-50/50 hover:bg-red-50/20 transition-colors">
+                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex items-start gap-3 p-3 rounded-lg border bg-gray-50 dark:bg-gray-950/50 hover:bg-red-50/20 transition-colors">
                       <div className={`h-9 w-9 rounded-full ${bg} flex items-center justify-center shrink-0`}><Icon className={`h-4 w-4 ${color}`} /></div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm">{activity.text}</p>
@@ -355,7 +355,7 @@ export function AdminDashboardPage() {
                 <div key={region.region} className="flex items-center gap-3">
                   <MapPin className="h-4 w-4 text-primary shrink-0" />
                   <span className="text-sm font-medium w-24 shrink-0">{region.region}</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
+                  <div className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-full h-3 overflow-hidden">
                     <motion.div initial={{ width: 0 }} animate={{ width: `${region.percentage}%` }} transition={{ duration: 0.8 }} className="h-full bg-primary rounded-full" />
                   </div>
                   <span className="text-sm font-semibold text-primary w-16 text-right">{region.users.toLocaleString()}</span>

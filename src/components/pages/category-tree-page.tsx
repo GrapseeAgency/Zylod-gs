@@ -45,14 +45,14 @@ export function CategoryTreePage() {
 
   
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 flex items-center gap-3 px-4 md:px-6 py-3">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center gap-3 px-4 md:px-6 py-3">
         <button onClick={selected ? () => setSelected(null) : goBack} className={`p-1.5 rounded-full hover:bg-gray-100 ${selected ? '' : 'md:hidden'}`}>
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div className="flex-1 max-w-5xl mx-auto">
-          <h1 className="font-semibold text-gray-900 md:text-lg">{selected ? selected.name : 'Category Tree'}</h1>
-          {selected && <p className="text-xs text-gray-400 flex items-center gap-1"><Grid3X3 className="w-3 h-3" />All Categories → {selected.name}</p>}
+          <h1 className="font-semibold text-gray-900 dark:text-gray-100 md:text-lg">{selected ? selected.name : 'Category Tree'}</h1>
+          {selected && <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1"><Grid3X3 className="w-3 h-3" />All Categories → {selected.name}</p>}
         </div>
       </div>
 
@@ -68,7 +68,7 @@ export function CategoryTreePage() {
               <motion.button key={cat.id}
                 initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.03 }}
                 onClick={() => cat.children?.length ? setSelected(cat) : navigate('category-products', { category: cat.slug })}
-                className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 transition text-left group">
+                className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition text-left group">
                 {cat.iconUrl ? (
                   <img src={cat.iconUrl} alt={cat.name} className="w-10 h-10 object-contain flex-shrink-0" />
                 ) : (
@@ -77,13 +77,13 @@ export function CategoryTreePage() {
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 group-hover:text-red-600">{cat.name}</p>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-red-600">{cat.name}</p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    {cat._count && <p className="text-xs text-gray-400">{cat._count.products} products</p>}
-                    {cat.children?.length && <p className="text-xs text-gray-400">· {cat.children.length} sub-categories</p>}
+                    {cat._count && <p className="text-xs text-gray-400 dark:text-gray-500">{cat._count.products} products</p>}
+                    {cat.children?.length && <p className="text-xs text-gray-400 dark:text-gray-500">· {cat.children.length} sub-categories</p>}
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
               </motion.button>
             ))}
           </div>
@@ -103,15 +103,15 @@ export function CategoryTreePage() {
                 <motion.button key={sub.id}
                   initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.03 }}
                   onClick={() => navigate('category-products', { category: sub.slug })}
-                  className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition text-left group">
-                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Hash className="w-4 h-4 text-gray-400" />
+                  className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition text-left group">
+                  <div className="w-8 h-8 bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Hash className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-800 group-hover:text-red-600">{sub.name}</p>
-                    {sub._count && <p className="text-xs text-gray-400">{sub._count.products} products</p>}
+                    <p className="text-sm text-gray-800 dark:text-gray-200 group-hover:text-red-600">{sub.name}</p>
+                    {sub._count && <p className="text-xs text-gray-400 dark:text-gray-500">{sub._count.products} products</p>}
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                 </motion.button>
               ))}
             </div>

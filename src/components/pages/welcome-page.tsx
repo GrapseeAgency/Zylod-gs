@@ -381,7 +381,7 @@ export function WelcomePage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="relative w-full max-w-md bg-white rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden"
+        className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden"
       >
         {/* Brand Header */}
         <div className="pt-10 pb-4 text-center">

@@ -17,14 +17,14 @@ export function CareerCulturePage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
-          <h1 className="font-bold text-gray-900 text-base">Life & Culture at Zylod</h1>
-          <p className="text-xs text-gray-400">Values that Drive Our Daily Execution</p>
+          <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Life & Culture at Zylod</h1>
+          <p className="text-xs text-gray-400 dark:text-gray-500">Values that Drive Our Daily Execution</p>
         </div>
       </div>
 
@@ -41,14 +41,14 @@ export function CareerCulturePage() {
 
         <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
           {pillars.map((p, idx) => (
-            <div key={p.title} className="bg-white rounded-3xl p-4.5 border border-gray-100 shadow-sm space-y-1.5">
+            <div key={p.title} className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1.5">
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-teal-100 text-teal-700 text-xs font-black flex items-center justify-center">
                   {idx + 1}
                 </span>
-                <h3 className="text-xs font-bold text-gray-900">{p.title}</h3>
+                <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100">{p.title}</h3>
               </div>
-              <p className="text-xs text-gray-600 pl-8 leading-relaxed">{p.desc}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 pl-8 leading-relaxed">{p.desc}</p>
             </div>
           ))}
         </div>

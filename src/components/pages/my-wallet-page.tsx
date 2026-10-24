@@ -104,8 +104,8 @@ export function MyWalletPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Wholesale Wallet</span>
@@ -123,42 +123,42 @@ export function MyWalletPage() {
         <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950 rounded-3xl p-6 text-white shadow-2xl space-y-5 relative overflow-hidden lg:col-span-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center border border-white/10">
+              <div className="w-8 h-8 rounded-xl bg-white dark:bg-gray-900/10 flex items-center justify-center border border-white/10">
                 <Wallet className="h-4 w-4 text-rose-300" />
               </div>
               <span className="text-xs font-bold text-slate-300">Zylod Enterprise Balance</span>
             </div>
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="text-slate-400 dark:text-slate-500 hover:text-white p-1"
+              className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-white p-1"
             >
               {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
             </button>
           </div>
 
           <div>
-            <span className="text-xs text-slate-400 dark:text-slate-500 block font-medium">Available Payout &amp; Sourcing Fund</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block font-medium">Available Payout &amp; Sourcing Fund</span>
             <div className="text-3xl md:text-4xl font-black tracking-tight mt-1">
               {showBalance ? formatPrice(walletData.balance) : '••••••••'}
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
-            <div className="bg-white/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase font-bold tracking-wider">Total Outflow</span>
+            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">Total Outflow</span>
               <span className="text-sm font-bold text-amber-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.totalWithdrawals) : '••••••'}
               </span>
             </div>
-            <div className="bg-white/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase font-bold tracking-wider">Total Inflow</span>
+            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">Total Inflow</span>
               <span className="text-sm font-bold text-emerald-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.totalDeposits) : '••••••'}
               </span>
             </div>
             {/* Task 71: the SafePay escrow ledger is REAL now — show it. */}
-            <div className="bg-white/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase font-bold tracking-wider">In Escrow</span>
+            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">In Escrow</span>
               <span className="text-sm font-bold text-sky-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.escrowBalance ?? 0) : '••••••'}
               </span>
@@ -197,7 +197,7 @@ export function MyWalletPage() {
             <button
               key={title}
               onClick={() => navigate(page as any)}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition-colors"
             >
               <div className="flex items-center gap-3.5">
                 <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary shrink-0">
@@ -205,10 +205,10 @@ export function MyWalletPage() {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{title}</h3>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{subtitle}</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">{subtitle}</p>
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-500 shrink-0" />
+              <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
             </button>
           ))}
         </div>
@@ -218,7 +218,7 @@ export function MyWalletPage() {
             admin verification credits the wallet. */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 lg:col-span-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
               Funding claims
             </h2>
             <div className="flex items-center gap-3">
@@ -245,7 +245,7 @@ export function MyWalletPage() {
                         {c.status}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-mono truncate">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block font-mono truncate">
                       {c.provider} · {c.reference} · {new Date(c.createdAt).toLocaleDateString()}
                     </span>
                   </div>
@@ -258,7 +258,7 @@ export function MyWalletPage() {
               ))}
             </div>
           ) : (
-            <div className="py-4 text-center text-slate-400 dark:text-slate-500 text-xs space-y-2">
+            <div className="py-4 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 text-xs space-y-2">
               <p>No funding claims yet.</p>
               <button
                 onClick={() => navigate('add-money')}
@@ -273,7 +273,7 @@ export function MyWalletPage() {
         {/* Recent Transactions */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
               Recent Activity
             </h2>
             <button
@@ -290,7 +290,7 @@ export function MyWalletPage() {
                 <div
                   key={tx.id}
                   onClick={() => navigate('transaction-detail', { id: tx.id })}
-                  className="py-3 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl px-2 -mx-2 transition-colors"
+                  className="py-3 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 rounded-xl px-2 -mx-2 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
@@ -300,7 +300,7 @@ export function MyWalletPage() {
                     </div>
                     <div className="min-w-0">
                       <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block truncate">{tx.description}</span>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{new Date(tx.date).toLocaleDateString()}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">{new Date(tx.date).toLocaleDateString()}</span>
                     </div>
                   </div>
                   <span className={`text-xs font-black font-mono shrink-0 ${
@@ -312,7 +312,7 @@ export function MyWalletPage() {
               ))}
             </div>
           ) : (
-            <div className="py-6 text-center text-slate-400 dark:text-slate-500 text-xs">
+            <div className="py-6 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 text-xs">
               No transactions recorded yet.
             </div>
           )}

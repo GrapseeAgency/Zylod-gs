@@ -86,8 +86,8 @@ export function CreditDebitCardsPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Saved Payment Cards</span>
@@ -104,7 +104,7 @@ export function CreditDebitCardsPage() {
         {/* Banner */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <CreditCard className="h-5 w-5 text-rose-300" />
             </div>
             <div>
@@ -119,7 +119,7 @@ export function CreditDebitCardsPage() {
         {/* Cards List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
+            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="text-xs font-bold">Loading Saved Cards...</span>
             </div>
@@ -143,7 +143,7 @@ export function CreditDebitCardsPage() {
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-slate-500 dark:text-slate-400 font-mono font-bold block mt-0.5">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono font-bold block mt-0.5">
                         •••• •••• •••• {c.last4}
                       </span>
                     </div>
@@ -152,15 +152,15 @@ export function CreditDebitCardsPage() {
                   <button
                     onClick={() => handleDelete(c.id)}
                     disabled={actionLoading === c.id}
-                    className="text-slate-400 dark:text-slate-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors"
+                    className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
 
                 <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 text-xs flex justify-between">
-                  <span className="text-slate-400 dark:text-slate-500 font-medium">Cardholder: <strong className="text-slate-800 dark:text-slate-200">{c.holderName}</strong></span>
-                  <span className="text-slate-400 dark:text-slate-500 font-medium">Exp: <strong className="font-mono text-slate-800 dark:text-slate-200">{c.expiry}</strong></span>
+                  <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">Cardholder: <strong className="text-slate-800 dark:text-slate-200">{c.holderName}</strong></span>
+                  <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">Exp: <strong className="font-mono text-slate-800 dark:text-slate-200">{c.expiry}</strong></span>
                 </div>
 
                 {!c.isDefault && (
@@ -168,7 +168,7 @@ export function CreditDebitCardsPage() {
                     onClick={() => handleSetDefault(c.id)}
                     disabled={actionLoading === c.id}
                     variant="outline"
-                    className="w-full h-9 rounded-xl border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    className="w-full h-9 rounded-xl border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
                   >
                     {actionLoading === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Set as Default Payment Card'}
                   </Button>
@@ -179,7 +179,7 @@ export function CreditDebitCardsPage() {
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
               <CreditCard className="h-10 w-10 mx-auto text-slate-300 stroke-[1.5]" />
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">No cards saved</span>
-              <p className="text-xs text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
+              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
                 Save a corporate debit or credit card for seamless multi-item wholesale checkout.
               </p>
             </div>

@@ -37,21 +37,21 @@ export function DomesticShippingPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
-          <h1 className="font-bold text-gray-900 text-base">Domestic Wholesale Logistics</h1>
-          <p className="text-xs text-gray-400">Coverage Across All 64 Districts in Bangladesh</p>
+          <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Domestic Wholesale Logistics</h1>
+          <p className="text-xs text-gray-400 dark:text-gray-500">Coverage Across All 64 Districts in Bangladesh</p>
         </div>
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 lg:max-w-4xl pb-24 md:pb-8">
         <div className="hidden md:block">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Domestic Wholesale Logistics</h1>
-          <p className="text-sm text-gray-400 mt-1">Coverage Across All 64 Districts in Bangladesh</p>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">Domestic Wholesale Logistics</h1>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Coverage Across All 64 Districts in Bangladesh</p>
         </div>
 
         <div className="bg-indigo-600 rounded-3xl p-5 text-white space-y-2">
@@ -66,15 +66,15 @@ export function DomesticShippingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
           {tiers.map(t => (
-            <div key={t.title} className="bg-white rounded-3xl p-4.5 border border-gray-100 shadow-sm space-y-2">
+            <div key={t.title} className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
               <div className="flex items-start justify-between gap-2">
-                <h3 className="text-xs font-bold text-gray-900">{t.title}</h3>
+                <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100">{t.title}</h3>
                 <Badge className="bg-indigo-50 text-indigo-700 border-indigo-200 text-[10px] font-bold">
                   {t.time}
                 </Badge>
               </div>
-              <p className="text-[11px] text-gray-500"><strong>Partners:</strong> {t.couriers}</p>
-              <div className="p-2.5 bg-slate-50 rounded-2xl">
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500"><strong>Partners:</strong> {t.couriers}</p>
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-2xl">
                 <p className="text-xs text-indigo-900 font-semibold">{t.rates}</p>
               </div>
             </div>

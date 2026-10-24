@@ -43,7 +43,7 @@ const typeIcon = (t: string) => {
   if (t === 'voice') return <Mic className="w-3.5 h-3.5 text-blue-400" />
   if (t === 'image') return <Camera className="w-3.5 h-3.5 text-purple-400" />
   if (t === 'barcode') return <Smartphone className="w-3.5 h-3.5 text-green-400" />
-  return <Search className="w-3.5 h-3.5 text-gray-400" />
+  return <Search className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
 }
 
 export function SearchHistoryPage() {
@@ -81,11 +81,11 @@ export function SearchHistoryPage() {
   const groups = groupByDate(filtered)
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 pt-4 pb-3 md:px-6">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 pt-4 pb-3 md:px-6">
         <div className="flex items-center gap-3 mb-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100"><ArrowLeft className="w-5 h-5 text-gray-700" /></button>
-          <span className="font-semibold text-gray-900 flex-1 md:text-xl">Search History</span>
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
+          <span className="font-semibold text-gray-900 dark:text-gray-100 flex-1 md:text-xl">Search History</span>
           {history.length > 0 && <button onClick={clearAll} className="text-sm text-red-600 font-medium">Clear All</button>}
         </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
@@ -112,32 +112,32 @@ export function SearchHistoryPage() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center px-6 gap-3">
             <Clock className="w-12 h-12 text-gray-200" />
-            <p className="text-sm font-medium text-gray-500">No search history yet</p>
-            <p className="text-xs text-gray-400">Your recent searches will appear here</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">No search history yet</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">Your recent searches will appear here</p>
             <button onClick={() => navigate('search-home')} className="mt-2 px-4 py-2 bg-red-600 text-white text-sm rounded-xl font-medium">Start Searching</button>
           </div>
         ) : (
           <div>
             {groups.map(group => (
               <section key={group.label}>
-                <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50">{group.label}</p>
+                <p className="px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide bg-gray-50 dark:bg-gray-950">{group.label}</p>
                 <AnimatePresence>
                   {group.items.map((item, idx) => (
                     <motion.div key={item.id}
                       initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }}
                       transition={{ delay: idx * 0.03 }}
-                      className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 group cursor-pointer"
+                      className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 group cursor-pointer"
                       onClick={() => navigate('search-results', { query: item.query })}>
-                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center flex-shrink-0">
                         {typeIcon(item.searchType)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-800 truncate">{item.query}</p>
-                        {item.resultCount > 0 && <p className="text-xs text-gray-400">{item.resultCount} results</p>}
+                        <p className="text-sm text-gray-800 dark:text-gray-200 truncate">{item.query}</p>
+                        {item.resultCount > 0 && <p className="text-xs text-gray-400 dark:text-gray-500">{item.resultCount} results</p>}
                       </div>
                       <button onClick={e => { e.stopPropagation(); deleteItem(item.query) }}
                         className="opacity-0 group-hover:opacity-100 transition p-1">
-                        <X className="w-4 h-4 text-gray-400" />
+                        <X className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       </button>
                     </motion.div>
                   ))}

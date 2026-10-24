@@ -118,7 +118,7 @@ function SocialShareButton({ icon, label, color, url }: SocialButtonProps) {
       >
         <span className="text-white h-5 w-5 [&_svg]:h-5 [&_svg]:w-5">{icon}</span>
       </div>
-      <span className="text-xs font-medium text-gray-700">{label}</span>
+      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{label}</span>
     </button>
   )
 }

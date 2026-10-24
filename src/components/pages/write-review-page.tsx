@@ -94,7 +94,7 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
           <CheckCircle2 className="h-10 w-10" />
         </div>
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Review Submitted!</h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs">
           Thank you for sharing your experience. Your feedback helps other enterprise buyers source with confidence.
         </p>
         <Button
@@ -112,7 +112,7 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
       {/* Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Write a Review</h1>
@@ -124,7 +124,7 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Star Rating Section */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-2xs text-center">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-2">
               Overall Quality Rating
             </h3>
             <div className="flex items-center justify-center gap-2 py-2">
@@ -186,7 +186,7 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
             >
               <Camera className="h-6 w-6 mx-auto text-primary mb-1.5" />
               <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Add Photos or Video</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Showcase real warehouse usage and tolerances</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">Showcase real warehouse usage and tolerances</p>
             </div>
           </div>
 

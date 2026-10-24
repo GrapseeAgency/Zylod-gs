@@ -41,12 +41,12 @@ export function PrivacyPolicyPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base md:text-2xl">Privacy Policy</h1>
-          {doc && <p className="text-xs text-gray-400 dark:text-gray-500">v{doc.version} · Effective {new Date(doc.effectiveDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
+          {doc && <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">v{doc.version} · Effective {new Date(doc.effectiveDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
         </div>
       </div>
 
@@ -73,13 +73,13 @@ export function PrivacyPolicyPage() {
 
             {/* Data categories */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Data We Collect</h3>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">Data We Collect</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {dataCategories.map(cat => (
                   <div key={cat.label} className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 space-y-1">
                     <cat.icon className="w-4 h-4 text-emerald-600" />
                     <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{cat.label}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{cat.desc}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{cat.desc}</p>
                   </div>
                 ))}
               </div>
@@ -87,7 +87,7 @@ export function PrivacyPolicyPage() {
 
             {/* Quick nav sub-pages */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">Data Rights & Sub-Sections</h3>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Data Rights & Sub-Sections</h3>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { label: 'Data Collection', id: 'data-collection' },
@@ -113,7 +113,7 @@ export function PrivacyPolicyPage() {
             {doc && (
               <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm">
                 <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3">Full Privacy Policy</h3>
-                <div className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">{doc.contentEn}</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed whitespace-pre-wrap">{doc.contentEn}</div>
               </div>
             )}
 
@@ -127,13 +127,13 @@ export function PrivacyPolicyPage() {
                   <div key={faq.id} className="border-b border-gray-50 last:border-b-0">
                     <button
                       onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)}
-                      className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                      className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition"
                     >
                       <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 pr-3">{faq.questionEn}</span>
                       <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0 transition-transform ${openFaq === faq.id ? 'rotate-180' : ''}`} />
                     </button>
                     {openFaq === faq.id && (
-                      <div className="px-4 pb-4 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{faq.answerEn}</div>
+                      <div className="px-4 pb-4 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{faq.answerEn}</div>
                     )}
                   </div>
                 ))}

@@ -93,7 +93,7 @@ export function SellerSalesFunnelPagePage() {
     >
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Sales funnel</h1>
@@ -111,13 +111,13 @@ export function SellerSalesFunnelPagePage() {
             <CardContent className="p-8 text-center space-y-3">
               <Filter className="w-10 h-10 text-gray-300 mx-auto" />
               <h2 className="text-base font-bold dark:text-white">Seller sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Sign in with a supplier account to see your funnel.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Sign in with a supplier account to see your funnel.</p>
               <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
             </CardContent>
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : data ? (
           <>
@@ -132,7 +132,7 @@ export function SellerSalesFunnelPagePage() {
                   <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="funnel-fulfillment-rate">
                     {data.orders.fulfillmentRate}%
                   </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">delivered ÷ received</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">delivered ÷ received</p>
                 </CardContent>
               </Card>
               {orderStats.map((s) => (
@@ -157,8 +157,8 @@ export function SellerSalesFunnelPagePage() {
                 {funnelStages.map((stage) =>
                   stage.value === null ? (
                     <div key={stage.label} className="flex items-center justify-between p-3 rounded-xl border border-dashed border-gray-200 dark:border-gray-800 dark:border-gray-700">
-                      <span className="text-xs text-gray-400 dark:text-gray-500">{stage.label}</span>
-                      <span className="text-[11px] text-gray-400 dark:text-gray-500 italic">not tracked yet</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{stage.label}</span>
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 italic">not tracked yet</span>
                     </div>
                   ) : (
                     <div key={stage.label} className="space-y-1">
@@ -183,7 +183,7 @@ export function SellerSalesFunnelPagePage() {
               <CardContent className="p-6 text-center space-y-1">
                 <Inbox className="w-8 h-8 text-gray-300 mx-auto" />
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No alerts</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   Stock and fulfillment alerts for your store will surface here.
                 </p>
               </CardContent>

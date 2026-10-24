@@ -63,11 +63,11 @@ export function DeliveryChatPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col pb-24 md:pb-0 text-slate-900 dark:text-slate-100">
       {/* Top Main Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Menu">
+        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Menu">
           <Menu className="h-6 w-6" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Logistics Suite</span>
-        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="More">
+        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="More">
           <MoreVertical className="h-5 w-5" />
         </button>
       </header>
@@ -78,7 +78,7 @@ export function DeliveryChatPage() {
           <ParticipantAvatar sizeClass="w-11 h-11" />
           <div>
             <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100">Delivery Chat</h2>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">Not connected to a delivery conversation</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Not connected to a delivery conversation</p>
           </div>
         </div>
 
@@ -118,7 +118,7 @@ export function DeliveryChatPage() {
           <div className="text-center py-14">
             <MessageSquareOff className="h-12 w-12 mx-auto text-slate-300 mb-3" />
             <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No messages yet</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
               This conversation has no messages. Live chat with your delivery partner will appear
               here once a shipment with real-time tracking is active.
             </p>
@@ -130,7 +130,7 @@ export function DeliveryChatPage() {
                 <ParticipantAvatar sizeClass="w-7 h-7" />
                 <div className="max-w-[78%] rounded-3xl p-4 shadow-2xs space-y-1 bg-white dark:bg-gray-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-bl-none">
                   <p className="text-xs md:text-sm leading-relaxed">{msg.text}</p>
-                  <div className="flex items-center justify-end text-[10px] text-slate-400 dark:text-slate-500">
+                  <div className="flex items-center justify-end text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                     <span>{msg.time}</span>
                   </div>
                 </div>

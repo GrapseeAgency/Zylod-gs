@@ -278,7 +278,7 @@ export function BulkPriceUpdatePage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
         <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Bulk Price Update</h1>
@@ -293,7 +293,7 @@ export function BulkPriceUpdatePage() {
                   Sign in
                 </button>
               )}
-              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
+              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
                 <RefreshCw className="w-4 h-4" /> Retry
               </button>
             </div>
@@ -312,12 +312,12 @@ export function BulkPriceUpdatePage() {
     >
       <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Bulk Price Update</h1>
         </div>
-        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
           <RefreshCw className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
       </div>
@@ -325,13 +325,13 @@ export function BulkPriceUpdatePage() {
       <div className="p-4 md:max-w-4xl md:mx-auto md:p-6 md:pt-8 space-y-4">
         <div className="hidden md:flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Bulk Price Update</h1>
-          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary inline-flex items-center gap-1">
+          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-primary inline-flex items-center gap-1">
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
         </div>
 
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             value={search}
@@ -344,7 +344,7 @@ export function BulkPriceUpdatePage() {
         {products.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No products found</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
               {search ? 'No products match your search.' : 'You have no products yet. Create one in the seller console.'}
             </p>
           </div>
@@ -352,7 +352,7 @@ export function BulkPriceUpdatePage() {
           <>
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
               {/* Header */}
-              <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-950 border-b border-gray-100 dark:border-gray-800 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-950 border-b border-gray-100 dark:border-gray-800 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                 <div className="col-span-6">Product</div>
                 <div className="col-span-2 text-right">Price (৳)</div>
                 <div className="col-span-2 text-right">MOQ</div>
@@ -368,7 +368,7 @@ export function BulkPriceUpdatePage() {
                   <div key={p.id} className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0 items-center">
                     <div className="col-span-12 md:col-span-6 min-w-0">
                       <div className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">{p.name}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">
                         {p.sku || 'no SKU'} · {p.category?.name || 'Uncategorized'} · {p.unit}
                       </div>
                     </div>
@@ -394,7 +394,7 @@ export function BulkPriceUpdatePage() {
                         className={`w-20 px-2 py-1.5 bg-gray-50 dark:bg-gray-950 border rounded text-sm text-right text-gray-900 dark:text-gray-100 focus:outline-none ${moqChanged ? 'border-primary' : 'border-gray-200 dark:border-gray-800 focus:border-primary'}`}
                       />
                     </div>
-                    <div className="col-span-12 md:col-span-2 text-right text-sm text-gray-600 dark:text-gray-400">
+                    <div className="col-span-12 md:col-span-2 text-right text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">
                       {money(p.stockQuantity)} {p.unit}
                       {dirty && <span className="ml-1 text-xs text-primary">·edited</span>}
                     </div>
@@ -405,7 +405,7 @@ export function BulkPriceUpdatePage() {
 
             {/* Pagination */}
             {(totalPages > 1 || total > 0) && (
-              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 <span>
                   Page {page} of {Math.max(1, totalPages)} · {total} product{total === 1 ? '' : 's'}
                 </span>
@@ -413,14 +413,14 @@ export function BulkPriceUpdatePage() {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page <= 1}
-                    className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page >= totalPages}
-                    className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -436,7 +436,7 @@ export function BulkPriceUpdatePage() {
               <Save className="w-5 h-5" />
               {saving ? 'Saving…' : dirtyCount === 0 ? 'No changes to save' : `Save All (${dirtyCount})`}
             </button>
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center">
               Each save writes the full product back. A product referenced by active carts or orders may be blocked (409) — hide the listing instead.
             </p>
           </>

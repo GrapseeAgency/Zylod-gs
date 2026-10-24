@@ -91,7 +91,7 @@ export function DeliveryUpdatesPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -147,7 +147,7 @@ export function DeliveryUpdatesPage() {
               <Truck className="w-8 h-8" />
             </div>
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No delivery alerts right now</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
               Real-time courier GPS tracking, Steadfast/Pathao/RedX waybills, and arrival time estimates will appear here.
             </p>
             <div className="pt-2">
@@ -187,7 +187,7 @@ export function DeliveryUpdatesPage() {
                     )}
                   </div>
 
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                  <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                     {new Date(item.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                   </span>
                 </div>
@@ -210,14 +210,14 @@ export function DeliveryUpdatesPage() {
                 </div>
 
                 {/* Tracking & Message */}
-                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
                   {item.message}
                 </p>
 
                 {/* Waybill / Tracking Action */}
                 {item.order?.trackingNumber && (
                   <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-2.5 flex items-center justify-between text-xs border border-gray-100 dark:border-gray-800">
-                    <span className="text-gray-500 dark:text-gray-400">
+                    <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       Consignment: <strong className="text-gray-800 dark:text-gray-200">{item.order.trackingNumber}</strong>
                     </span>
                     <button
@@ -240,7 +240,7 @@ export function DeliveryUpdatesPage() {
                 {/* Bottom Actions */}
                 <div className="flex items-center justify-between pt-2 border-t border-gray-50 text-xs">
                   {item.order?.estimatedDelivery && (
-                    <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                       Est. Arrival: <strong>{new Date(item.order.estimatedDelivery).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</strong>
                     </span>
                   )}
@@ -278,7 +278,7 @@ export function DeliveryUpdatesPage() {
                 {filteredUpdates.map(item => (
                   <tr key={item.id} className="border-t border-gray-100 dark:border-gray-800 hover:bg-red-50/30">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{item.order?.orderNumber || item.title}</td>
-                    <td className="p-3 text-gray-600 dark:text-gray-400">{item.message}</td>
+                    <td className="p-3 text-gray-600 dark:text-gray-400 dark:text-gray-500">{item.message}</td>
                     <td className="p-3">
                       <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md whitespace-nowrap">
                         {item.order?.status || 'In Transit'}
@@ -301,10 +301,10 @@ export function DeliveryUpdatesPage() {
                           )}
                         </button>
                       ) : (
-                        <span className="text-gray-400 dark:text-gray-500">-</span>
+                        <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">-</span>
                       )}
                     </td>
-                    <td className="p-3 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    <td className="p-3 text-gray-500 dark:text-gray-400 dark:text-gray-500 whitespace-nowrap">
                       {item.order?.estimatedDelivery
                         ? new Date(item.order.estimatedDelivery).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
                         : '-'}

@@ -101,10 +101,10 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
-              <Search className="h-6 w-6 text-slate-500 dark:text-slate-400" />
+              <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">No shipment selected</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
               Open an order from your order history and choose <span className="font-semibold">Track shipment</span> to
               see its real delivery milestones here.
             </p>
@@ -127,7 +127,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
               <LogIn className="h-6 w-6 text-amber-600" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Sign in to track</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
               Shipment milestones are visible only to the order's buyer, its suppliers, or an admin.
             </p>
             <Button onClick={() => navigate('login')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
@@ -146,10 +146,10 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
-              <Package className="h-6 w-6 text-slate-500 dark:text-slate-400" />
+              <Package className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Order not found</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
               We couldn't find this order. It may have been removed, or the link may be stale.
             </p>
             <Button onClick={() => navigate('orders-history')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
@@ -171,7 +171,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
               <AlertCircle className="h-6 w-6 text-red-600" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Couldn't load tracking</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 break-words">{errorMsg}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">{errorMsg}</p>
             <Button onClick={load} variant="outline" className="text-xs font-bold gap-2">
               <Loader2 className="h-4 w-4" /> Retry
             </Button>
@@ -197,7 +197,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       {/* Mobile sticky header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <h1 className="text-base font-black text-primary truncate">Tracking</h1>
@@ -208,7 +208,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
         <div className="hidden md:flex items-center justify-between">
           <div className="min-w-0">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Shipment tracking</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
               Order <span className="font-mono font-semibold">{data.orderNumber}</span> · {data.subOrders.length} shipment{data.subOrders.length === 1 ? '' : 's'}
             </p>
           </div>
@@ -226,7 +226,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
         {/* Honest note about live GPS */}
         <div className="flex items-start gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 p-3">
           <Truck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-          <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
             Milestones below come from the driver app (dispatched, in-transit, delivered).
             Continuous live GPS is shown only inside the active delivery chat room — this view
             shows the verified timeline.
@@ -241,21 +241,21 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
               <CardContent className="p-5 space-y-4">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div className="min-w-0">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
                       Shipment {idx + 1}
                     </span>
                     <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mt-0.5">
                       {STATUS_LABEL[stage] || stage}
                     </h3>
                     {so.trackingNumber && (
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5 break-all">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono mt-0.5 break-all">
                         AWB: {so.trackingNumber}
                       </p>
                     )}
                   </div>
                   {so.estimatedDelivery && (
                     <div className="text-right">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
                         Est. delivery
                       </span>
                       <span className="text-xs font-bold text-slate-900 dark:text-slate-100">{formatDate(so.estimatedDelivery)}</span>
@@ -266,8 +266,8 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
                 {/* Timeline */}
                 {so.timeline.length === 0 ? (
                   <div className="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 text-center">
-                    <Clock className="h-5 w-5 text-slate-400 dark:text-slate-500 mx-auto mb-1" />
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <Clock className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mx-auto mb-1" />
+                    <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       No milestones yet. The seller hasn't dispatched this shipment.
                     </p>
                   </div>
@@ -292,12 +292,12 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
                               {STATUS_LABEL[(t.status || '').toLowerCase()] || t.status}
                             </h4>
                             {t.location && (
-                              <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-center gap-1 mt-0.5">
                                 <MapPin className="h-3 w-3 shrink-0" /> {t.location}
                               </p>
                             )}
-                            {t.note && <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5 break-words">{t.note}</p>}
-                            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{formatDate(t.trackedAt)}</p>
+                            {t.note && <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 mt-0.5 break-words">{t.note}</p>}
+                            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">{formatDate(t.trackedAt)}</p>
                           </div>
                         </div>
                       )
@@ -324,7 +324,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
           <Button
             onClick={() => navigate('order-detail', { orderId })}
             variant="ghost"
-            className="text-xs font-semibold text-slate-600 dark:text-slate-400 gap-1.5"
+            className="text-xs font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 gap-1.5"
           >
             View full order <ArrowRight className="h-3.5 w-3.5" />
           </Button>

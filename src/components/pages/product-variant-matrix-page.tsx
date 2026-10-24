@@ -298,7 +298,7 @@ export function ProductVariantMatrixPage() {
         <button
           type="button"
           onClick={fetchProduct}
-          className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
+          className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
         >
           <RefreshCw className="w-4 h-4" /> Retry
         </button>
@@ -317,7 +317,7 @@ export function ProductVariantMatrixPage() {
         <button
           onClick={goBack}
           aria-label="Go back"
-          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
         >
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
@@ -328,7 +328,7 @@ export function ProductVariantMatrixPage() {
         <div className="hidden md:flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Variant Matrix</h1>
           {product && (
-            <span className="text-sm text-gray-500 dark:text-gray-400 truncate min-w-0">
+            <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate min-w-0">
               {product.name}
             </span>
           )}
@@ -336,9 +336,9 @@ export function ProductVariantMatrixPage() {
 
         {state === 'loading' && (
           <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-            <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
-            <div className="h-20 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-            <div className="h-20 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+            <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
+            <div className="h-20 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-lg animate-pulse" />
+            <div className="h-20 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-lg animate-pulse" />
           </div>
         )}
 
@@ -349,7 +349,7 @@ export function ProductVariantMatrixPage() {
             <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
               <div className="flex justify-between items-center">
                 <h2 className="font-semibold text-gray-900 dark:text-gray-100">
-                  Variants <span className="text-gray-400 dark:text-gray-500 font-normal">({rows.length})</span>
+                  Variants <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400 font-normal">({rows.length})</span>
                 </h2>
                 <button
                   onClick={() => addRow()}
@@ -360,7 +360,7 @@ export function ProductVariantMatrixPage() {
               </div>
 
               {rows.length === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center py-6">
                   No variants on this product yet. Add a variant to offer different colors, sizes, or
                   materials.
                 </p>
@@ -434,7 +434,7 @@ export function ProductVariantMatrixPage() {
                             />
                             <button
                               onClick={() => removeRow(index)}
-                              className="sm:col-span-1 p-2 text-gray-400 hover:text-red-500 justify-self-end"
+                              className="sm:col-span-1 p-2 text-gray-400 dark:text-gray-500 hover:text-red-500 justify-self-end"
                               aria-label="Remove variant"
                             >
                               <X className="w-4 h-4" />
@@ -454,21 +454,21 @@ export function ProductVariantMatrixPage() {
               </div>
               <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400">Total variants</p>
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Total variants</p>
                   <p className="font-semibold text-gray-900 dark:text-gray-100">{rows.length}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400">Attributes</p>
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Attributes</p>
                   <p className="font-semibold text-gray-900 dark:text-gray-100">{groups.length}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400">Total stock</p>
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Total stock</p>
                   <p className="font-semibold text-gray-900 dark:text-gray-100">
                     {rows.reduce((sum, r) => sum + (Number(r.stockQuantity) || 0), 0)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400">With price override</p>
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">With price override</p>
                   <p className="font-semibold text-gray-900 dark:text-gray-100">
                     {rows.filter((r) => r.priceOverride.trim() !== '').length}
                   </p>

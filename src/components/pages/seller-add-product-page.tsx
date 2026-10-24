@@ -256,19 +256,19 @@ export function SellerAddProductPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="min-h-screen bg-gray-50 pb-20 md:pb-8"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
     >
-      <div className="md:hidden sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 rounded-full flex items-center justify-center">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 rounded-full flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Add New Product</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Add New Product</h1>
         </div>
       </div>
 
       <div className="p-4 max-w-3xl mx-auto space-y-6 md:p-6 md:pt-6">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900">Add New Product</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100">Add New Product</h1>
 
         {error && (
           <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 flex items-start gap-2" role="alert">
@@ -341,7 +341,7 @@ export function SellerAddProductPage() {
               </>
             )}
           </button>
-          <p className="text-xs text-gray-500 text-center -mt-2">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center -mt-2">
             New listings go to the moderation queue — an admin approves them before buyers can see them.
           </p>
         </form>

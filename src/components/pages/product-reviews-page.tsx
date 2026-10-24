@@ -155,7 +155,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
         {/* Back Link */}
         <button
           onClick={goBack}
-          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 pt-1"
+          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100 pt-1"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Product
@@ -165,7 +165,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
       <main className="px-4 py-3 space-y-4 md:px-6 md:py-6 md:max-w-4xl md:mx-auto md:w-full md:space-y-5">
         <button
           onClick={goBack}
-          className="hidden md:flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900"
+          className="hidden md:flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Product
@@ -198,7 +198,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
                   <Star className="h-3.5 w-3.5 fill-amber-500 mr-0.5" />
                   {product.rating_avg.toFixed(1)}
                 </div>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500">({product.rating_count.toLocaleString()} reviews)</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">({product.rating_count.toLocaleString()} reviews)</span>
               </div>
             </div>
           </div>
@@ -226,7 +226,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
           ))}
         </div>
 
-        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1">
+        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 pt-1">
           <span>Sort by: <strong className="text-primary font-semibold">Most Relevant</strong></span>
           <button
             onClick={() => navigate('write-review', { productId: product?.id || '' })}
@@ -259,7 +259,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
                           </Badge>
                         )}
                       </div>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                         Purchased {rev.purchasedQty} {rev.unit} • {rev.date}
                       </p>
                     </div>
@@ -279,7 +279,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
                 {/* Review Text */}
                 <div>
                   <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100 mb-1">{rev.title}</h5>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{rev.content}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">{rev.content}</p>
                 </div>
 
                 {/* Attached Photos */}
@@ -294,7 +294,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
                 )}
 
                 {/* Actions: Helpful & Report */}
-                <div className="flex items-center gap-4 pt-2 border-t border-slate-50 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                <div className="flex items-center gap-4 pt-2 border-t border-slate-50 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
                   <button
                     onClick={() => toggleHelpful(rev.id)}
                     className={`flex items-center gap-1.5 transition-colors ${

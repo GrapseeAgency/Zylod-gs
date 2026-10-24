@@ -52,7 +52,7 @@ export function NotificationMutedPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Muted &amp; Paused Alerts</span>
@@ -68,7 +68,7 @@ export function NotificationMutedPage() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Temporary Snooze</h2>
-              <p className="text-xs text-gray-400 dark:text-gray-500">Pause all non-critical wholesale notifications</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Pause all non-critical wholesale notifications</p>
             </div>
           </div>
 
@@ -106,7 +106,7 @@ export function NotificationMutedPage() {
 
         {/* Currently Disabled Categories */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Disabled Categories
           </h2>
 
@@ -114,23 +114,23 @@ export function NotificationMutedPage() {
             {!prefs.pushPromotions && (
               <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-between text-xs">
                 <span className="font-bold text-gray-700 dark:text-gray-300">Promotions &amp; Flash Sales</span>
-                <span className="text-gray-400 dark:text-gray-500">Muted</span>
+                <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">Muted</span>
               </div>
             )}
             {!prefs.pushPriceDrops && (
               <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-between text-xs">
                 <span className="font-bold text-gray-700 dark:text-gray-300">Price Drops</span>
-                <span className="text-gray-400 dark:text-gray-500">Muted</span>
+                <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">Muted</span>
               </div>
             )}
             {!prefs.pushBackInStock && (
               <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-between text-xs">
                 <span className="font-bold text-gray-700 dark:text-gray-300">Back in Stock</span>
-                <span className="text-gray-400 dark:text-gray-500">Muted</span>
+                <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">Muted</span>
               </div>
             )}
             {prefs.pushPromotions && prefs.pushPriceDrops && prefs.pushBackInStock && (
-              <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-4">No categories currently muted.</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 text-center py-4">No categories currently muted.</p>
             )}
           </div>
 

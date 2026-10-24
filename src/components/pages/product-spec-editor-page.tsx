@@ -128,7 +128,7 @@ export function ProductSpecEditorPage() {
         <button
           onClick={goBack}
           aria-label="Go back"
-          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
         >
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
@@ -139,7 +139,7 @@ export function ProductSpecEditorPage() {
         <div className="hidden md:flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Technical Specs</h1>
           {productName && (
-            <span className="text-sm text-gray-500 dark:text-gray-400 truncate min-w-0">
+            <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate min-w-0">
               {productName}
             </span>
           )}
@@ -147,10 +147,10 @@ export function ProductSpecEditorPage() {
 
         {state === 'loading' && (
           <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-            <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
-            <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-            <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-            <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+            <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
+            <div className="h-10 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-lg animate-pulse" />
+            <div className="h-10 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-lg animate-pulse" />
+            <div className="h-10 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-lg animate-pulse" />
           </div>
         )}
 
@@ -175,7 +175,7 @@ export function ProductSpecEditorPage() {
             <button
               type="button"
               onClick={fetchSpecs}
-              className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center gap-2"
+              className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center gap-2"
             >
               <RefreshCw className="w-4 h-4" /> Retry
             </button>
@@ -207,7 +207,7 @@ export function ProductSpecEditorPage() {
               </div>
 
               {specs.length === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center py-6">
                   No specifications have been added to this product yet.
                 </p>
               ) : (
@@ -219,18 +219,18 @@ export function ProductSpecEditorPage() {
                         placeholder="Name (e.g., Material)"
                         value={spec.specName}
                         onChange={(e) => updateSpec(i, 'specName', e.target.value)}
-                        className="flex-1 min-w-0 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100"
+                        className="flex-1 min-w-0 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 dark:bg-gray-950 text-gray-900 dark:text-gray-100"
                       />
                       <input
                         type="text"
                         placeholder="Value"
                         value={spec.specValue}
                         onChange={(e) => updateSpec(i, 'specValue', e.target.value)}
-                        className="flex-1 min-w-0 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100"
+                        className="flex-1 min-w-0 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 dark:bg-gray-950 text-gray-900 dark:text-gray-100"
                       />
                       <button
                         onClick={() => removeSpec(i)}
-                        className="p-2 text-gray-400 hover:text-red-500"
+                        className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-500"
                         aria-label="Remove spec"
                       >
                         <X className="w-5 h-5" />
@@ -244,13 +244,13 @@ export function ProductSpecEditorPage() {
             <button
               onClick={handleSaveClick}
               disabled
-              className="w-full md:w-auto md:px-10 bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed"
+              className="w-full md:w-auto md:px-10 bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 dark:text-gray-500 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed"
             >
               <Save className="w-5 h-5" />
               Save Specifications
             </button>
             {dirty && (
-              <p className="text-xs text-gray-400 dark:text-gray-500 text-center md:text-left">
+              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 text-center md:text-left">
                 You have unsaved draft edits — saving is not yet wired to a server writer.
               </p>
             )}

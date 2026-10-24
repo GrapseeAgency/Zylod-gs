@@ -5,7 +5,7 @@ import { useNavigationStore } from '@/store/navigation-store';
 export function StoreThemeCustomizerPage() {
   const { goBack } = useNavigationStore();
   return (
-    <div className="min-h-screen bg-white p-4 md:max-w-3xl md:mx-auto md:p-8">
+    <div className="min-h-screen bg-white dark:bg-gray-900 p-4 md:max-w-3xl md:mx-auto md:p-8">
       <button onClick={goBack} className="mb-4">← Back</button>
       <h1 className="text-xl font-bold mb-4">Theme Options</h1>
       <div className="space-y-4">

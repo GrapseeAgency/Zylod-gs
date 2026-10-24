@@ -131,7 +131,7 @@ export function RevenueBreakdownPagePage() {
       <header className="md:hidden sticky top-0 z-50 bg-white border-b px-4 py-3 flex items-center gap-3 dark:bg-gray-900 dark:border-gray-800">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
@@ -166,9 +166,9 @@ export function RevenueBreakdownPagePage() {
         ) : authRequired ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
             <CardContent className="p-8 text-center space-y-3">
-              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600" />
+              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
               <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Seller sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 Sign in with a supplier account to see your revenue breakdown.
               </p>
               <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
@@ -176,7 +176,7 @@ export function RevenueBreakdownPagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
               {error}
               <div className="mt-3">
                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
@@ -198,7 +198,7 @@ export function RevenueBreakdownPagePage() {
                   <p className="mt-2 text-lg font-bold text-gray-900 dark:text-gray-100">
                     {bdt(data.summary.gross)}
                   </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">all non-reversed order lines</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">all non-reversed order lines</p>
                 </CardContent>
               </Card>
               <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
@@ -210,7 +210,7 @@ export function RevenueBreakdownPagePage() {
                   <p className="mt-2 text-lg font-bold text-gray-900 dark:text-gray-100">
                     {bdt(data.summary.recognized)}
                   </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">paid orders only</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">paid orders only</p>
                 </CardContent>
               </Card>
               <Card className="shadow-sm col-span-2 md:col-span-1 dark:bg-gray-900 dark:border-gray-800">
@@ -219,10 +219,10 @@ export function RevenueBreakdownPagePage() {
                     <Receipt className="w-4 h-4" />
                     <span className="text-xs font-medium">Platform Commission</span>
                   </div>
-                  <p className="mt-2 text-lg font-bold text-gray-400 dark:text-gray-500">
+                  <p className="mt-2 text-lg font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400">
                     Not available yet
                   </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">no fee ledger implemented</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">no fee ledger implemented</p>
                 </CardContent>
               </Card>
             </div>
@@ -230,20 +230,20 @@ export function RevenueBreakdownPagePage() {
             <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
               <CardContent className="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                 <div className="flex justify-between md:block">
-                  <span className="text-gray-500 dark:text-gray-400">Delivery Deductions</span>
-                  <span className="font-bold text-gray-400 md:block md:mt-1 dark:text-gray-500">
+                  <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Delivery Deductions</span>
+                  <span className="font-bold text-gray-400 md:block md:mt-1 dark:text-gray-500 dark:text-gray-400">
                     {data.summary.deliveryDeductions != null ? bdt(data.summary.deliveryDeductions) : 'Not available yet'}
                   </span>
                 </div>
                 <div className="flex justify-between md:block">
-                  <span className="text-gray-500 dark:text-gray-400">Net Revenue</span>
-                  <span className="font-bold text-gray-400 md:block md:mt-1 dark:text-gray-500">
+                  <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Net Revenue</span>
+                  <span className="font-bold text-gray-400 md:block md:mt-1 dark:text-gray-500 dark:text-gray-400">
                     {data.summary.netRevenue != null ? bdt(data.summary.netRevenue) : 'Not available yet'}
                   </span>
                 </div>
                 <div className="flex justify-between md:block">
-                  <span className="text-gray-500 dark:text-gray-400">Available for Payout</span>
-                  <span className="font-bold text-gray-400 md:block md:mt-1 dark:text-gray-500">
+                  <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Available for Payout</span>
+                  <span className="font-bold text-gray-400 md:block md:mt-1 dark:text-gray-500 dark:text-gray-400">
                     {data.summary.availableForPayout != null ? bdt(data.summary.availableForPayout) : 'Not available yet'}
                   </span>
                 </div>
@@ -254,13 +254,13 @@ export function RevenueBreakdownPagePage() {
             <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base dark:text-gray-100">Daily Gross Revenue</CardTitle>
-                <CardDescription className="dark:text-gray-400">
+                <CardDescription className="dark:text-gray-400 dark:text-gray-500">
                   Real order-line totals grouped by day
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {data.dailySeries.length === 0 ? (
-                  <p className="text-sm text-gray-400 py-6 text-center dark:text-gray-500">
+                  <p className="text-sm text-gray-400 py-6 text-center dark:text-gray-500 dark:text-gray-400">
                     No revenue recorded yet — your daily breakdown will appear here once paid orders come in.
                   </p>
                 ) : (
@@ -286,7 +286,7 @@ export function RevenueBreakdownPagePage() {
                         );
                       })}
                     </div>
-                    <div className="mt-2 flex justify-between text-[10px] text-gray-400 dark:text-gray-500">
+                    <div className="mt-2 flex justify-between text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                       <span>{fmtDay(data.dailySeries[0].date)}</span>
                       <span>{fmtDay(data.dailySeries[data.dailySeries.length - 1].date)}</span>
                     </div>
@@ -299,16 +299,16 @@ export function RevenueBreakdownPagePage() {
             <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base dark:text-gray-100">Revenue Ledger</CardTitle>
-                <CardDescription className="dark:text-gray-400">
+                <CardDescription className="dark:text-gray-400 dark:text-gray-500">
                   Every order line on your products (cancelled &amp; returned excluded)
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {data.ledger.length === 0 ? (
                   <div className="py-8 text-center space-y-2">
-                    <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600" />
+                    <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No revenue lines yet</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
                       Your ledger will appear here once buyers place orders on your products.
                     </p>
                   </div>
@@ -318,7 +318,7 @@ export function RevenueBreakdownPagePage() {
                     <div className="hidden md:block max-h-96 overflow-y-auto">
                       <table className="w-full text-sm">
                         <thead className="sticky top-0 bg-white dark:bg-gray-900">
-                          <tr className="text-left text-xs text-gray-500 border-b dark:text-gray-400 dark:border-gray-800">
+                          <tr className="text-left text-xs text-gray-500 border-b dark:text-gray-400 dark:text-gray-500 dark:border-gray-800">
                             <th className="py-2 pr-3 font-medium">Date</th>
                             <th className="py-2 pr-3 font-medium">Order</th>
                             <th className="py-2 pr-3 font-medium">Product</th>
@@ -332,7 +332,7 @@ export function RevenueBreakdownPagePage() {
                         <tbody>
                           {data.ledger.map((r) => (
                             <tr key={r.id} className="border-b last:border-0 text-gray-800 dark:text-gray-200 dark:border-gray-800">
-                              <td className="py-2.5 pr-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                              <td className="py-2.5 pr-3 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 whitespace-nowrap">
                                 <Calendar className="inline h-3 w-3 mr-1" />
                                 {fmtDate(r.date)}
                               </td>
@@ -355,15 +355,15 @@ export function RevenueBreakdownPagePage() {
                         <div key={r.id} className="border border-gray-100 rounded-xl p-3 space-y-2 dark:border-gray-800">
                           <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0">
-                              <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{r.orderNumber}</p>
+                              <p className="text-xs font-mono text-gray-500 dark:text-gray-400 dark:text-gray-500">{r.orderNumber}</p>
                               <p className="text-sm font-medium text-gray-900 truncate dark:text-gray-100">{r.productName}</p>
                             </div>
                             <p className="text-sm font-bold text-gray-900 shrink-0 dark:text-gray-100">{bdt(r.gross)}</p>
                           </div>
-                          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300">
-                            <span className="text-gray-500 dark:text-gray-400">Date</span>
+                          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
+                            <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Date</span>
                             <span className="text-right">{fmtDate(r.date)}</span>
-                            <span className="text-gray-500 dark:text-gray-400">Quantity</span>
+                            <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Quantity</span>
                             <span className="text-right">{r.quantity} @ {bdt(r.unitPrice)}</span>
                           </div>
                           <div className="flex flex-wrap gap-2 pt-1">

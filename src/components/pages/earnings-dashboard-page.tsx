@@ -65,8 +65,8 @@ export function EarningsDashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Earnings &amp; Revenue</span>
@@ -86,7 +86,7 @@ export function EarningsDashboardPage() {
           <Button
             onClick={() => navigate('commission-history')}
             variant="outline"
-            className="h-10 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2"
+            className="h-10 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 flex items-center justify-center gap-2"
           >
             <Percent className="h-4 w-4" />
             Commission Ledger
@@ -106,20 +106,20 @@ export function EarningsDashboardPage() {
             <div className="text-3xl md:text-4xl font-black font-mono">
               {formatPrice(data.netEarnings)}
             </div>
-            <span className="text-xs text-slate-400 dark:text-slate-500 mt-1 block">
+            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 block">
               After {data.commissionRate} Zylod platform wholesale commission
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10">
-            <div className="bg-white/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold block">Gross GMV</span>
+            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase font-bold block">Gross GMV</span>
               <span className="text-sm font-bold text-slate-100 block font-mono mt-0.5">
                 {formatPrice(data.grossGMV)}
               </span>
             </div>
-            <div className="bg-white/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold block">Total Orders</span>
+            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase font-bold block">Total Orders</span>
               <span className="text-sm font-bold text-amber-300 block font-mono mt-0.5">
                 {data.totalOrders}
               </span>
@@ -139,7 +139,7 @@ export function EarningsDashboardPage() {
           <Button
             onClick={() => navigate('commission-history')}
             variant="outline"
-            className="h-12 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2"
+            className="h-12 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 flex items-center justify-center gap-2"
           >
             <Percent className="h-4 w-4" />
             Commission Ledger
@@ -148,35 +148,35 @@ export function EarningsDashboardPage() {
 
         {/* Financial Highlights Breakdown */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
             Revenue Analytics Breakdown
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 md:rounded-xl md:border md:border-slate-100 md:flex-col md:items-start md:gap-1">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Gross Merchandise Value (GMV)</span>
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-slate-950 md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Gross Merchandise Value (GMV)</span>
               <span className="font-bold text-slate-900 dark:text-slate-100 font-mono">{formatPrice(data.grossGMV)}</span>
             </div>
-            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 md:rounded-xl md:border md:border-slate-100 md:flex-col md:items-start md:gap-1">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Platform Sourcing Commission (3.0%)</span>
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-slate-950 md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Platform Sourcing Commission (3.0%)</span>
               <span className="font-bold text-rose-600 font-mono">-{formatPrice(data.platformCommission)}</span>
             </div>
-            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 md:rounded-xl md:border md:border-slate-100 md:flex-col md:items-start md:gap-1">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Available for Bank Payout</span>
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-slate-950 md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Available for Bank Payout</span>
               <span className="font-bold text-emerald-600 font-mono">{formatPrice(data.availablePayout)}</span>
             </div>
             {/* Task 73: these two were hidden zeros before the escrow + payout
                 ledgers existed — now they are the seller's real money state. */}
             <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-amber-50 md:rounded-xl md:border md:border-amber-100 md:flex-col md:items-start md:gap-1">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Held in SafePay Escrow (in transit)</span>
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Held in SafePay Escrow (in transit)</span>
               <span className="font-bold text-amber-600 font-mono">{formatPrice(data.pendingEscrow)}</span>
             </div>
             <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-emerald-50 md:rounded-xl md:border md:border-emerald-100 md:flex-col md:items-start md:gap-1">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Escrow Released &amp; Paid to Wallet</span>
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Escrow Released &amp; Paid to Wallet</span>
               <span className="font-bold text-emerald-700 font-mono">{formatPrice(data.totalPaidOut ?? 0)}</span>
             </div>
-            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 md:rounded-xl md:border md:border-slate-100 md:flex-col md:items-start md:gap-1">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Total Orders Recorded</span>
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-slate-950 md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Total Orders Recorded</span>
               <span className="font-bold text-amber-600 font-mono">{data.totalOrders}</span>
             </div>
           </div>
@@ -184,7 +184,7 @@ export function EarningsDashboardPage() {
 
         {/* Recent Wholesale Sales */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
             Recent Sales Activity
           </h2>
           {data.recentSales.length > 0 ? (
@@ -197,13 +197,13 @@ export function EarningsDashboardPage() {
                   </div>
                   <div className="text-right">
                     <span className="font-bold font-mono text-slate-900 dark:text-slate-100 block">{formatPrice(sale.total)}</span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{new Date(sale.date).toLocaleDateString()}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">{new Date(sale.date).toLocaleDateString()}</span>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="py-6 text-center text-slate-400 dark:text-slate-500 text-xs">
+            <div className="py-6 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 text-xs">
               No sales orders recorded yet.
             </div>
           )}

@@ -162,7 +162,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -178,7 +178,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
           <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
             Frequently Bought Together
           </h1>
-          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
             Boost your inventory with these synergistic products.
           </p>
         </div>
@@ -208,9 +208,9 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
                   <span className="text-sm font-black text-primary">
                     {formatPrice(item.price)}
                   </span>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">/ {item.unit}</span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">/ {item.unit}</span>
                 </div>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">MOQ: {item.moq}</p>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">MOQ: {item.moq}</p>
 
                 {/* Checkbox Trigger */}
                 <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none">
@@ -238,7 +238,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
           <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Bundle Summary</h2>
 
           <div className="space-y-2 text-xs divide-y divide-slate-50">
-            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400">
+            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <span>Items ({selectedItems.length} selected)</span>
               <span className="font-semibold text-slate-800 dark:text-slate-200">{formatPrice(subtotal)}</span>
             </div>
@@ -254,7 +254,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
                 <div className="text-xl font-black text-primary">
                   {formatPrice(totalBundlePrice)}
                 </div>
-                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 px-1.5 py-0.5 rounded">
+                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 px-1.5 py-0.5 rounded">
                   Per unit equivalent
                 </span>
               </div>
@@ -273,14 +273,14 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
             <Button
               variant="outline"
               onClick={handleAddBundleToCart}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
             >
               Add Individual Items
             </Button>
           </div>
 
           {/* Expedited shipping note */}
-          <div className="bg-rose-50/70 border border-rose-100 rounded-2xl p-3 flex items-start gap-2.5 text-[10px] text-slate-600 dark:text-slate-400">
+          <div className="bg-rose-50/70 border border-rose-100 rounded-2xl p-3 flex items-start gap-2.5 text-[10px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
             <Truck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               Ordering this bundle qualifies for <strong className="text-primary font-bold">expedited warehouse processing</strong>.

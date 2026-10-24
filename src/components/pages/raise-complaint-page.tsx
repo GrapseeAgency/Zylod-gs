@@ -64,7 +64,7 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
           <CheckCircle2 className="h-8 w-8" />
         </div>
         <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">Complaint Saved</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
           {reference ? `Reference: ${reference}. ` : ''}
           Your complaint has been saved to our inbox for review by the Zylod team — we reply by email when action is needed. Zylod does not hold funds in escrow; approved refunds go back to your original payment method.
         </p>
@@ -85,7 +85,7 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
       {/* Top Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             <ArrowLeft className="h-5 w-5 text-primary" />
           </button>
           <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Raise Complaint</h1>
@@ -96,7 +96,7 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
         <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Raise Complaint</h1>
         {/* Order Target Card */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
-          <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+          <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
             Associated Order
           </span>
           <div className="flex justify-between items-center text-xs">
@@ -184,13 +184,13 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
               required
             />
 
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
               Photo or video evidence cannot be uploaded here yet — include it in your follow-up email to support@zylod.com.
             </p>
           </div>
 
           {/* Honest Protection Info */}
-          <div className="p-4 bg-slate-100/70 rounded-2xl border border-slate-200/80 flex gap-3 items-start text-xs text-slate-600 dark:text-slate-400">
+          <div className="p-4 bg-slate-100 dark:bg-slate-900/70 rounded-2xl border border-slate-200 dark:border-slate-800/80 flex gap-3 items-start text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
             <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p className="text-[11px] leading-relaxed">
               Zylod does not hold payments in escrow. Your complaint is reviewed by the Zylod team and the outcome is documented — nothing is decided automatically.

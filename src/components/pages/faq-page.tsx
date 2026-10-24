@@ -94,7 +94,7 @@ export function FAQPage() {
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 pt-4 pb-3 md:px-6">
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden">
+            <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition md:hidden">
               <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base md:text-lg">
@@ -119,9 +119,9 @@ export function FAQPage() {
             placeholder={language === 'bn' ? 'প্রশ্ন দিয়ে খুঁজুন...' : 'Search questions or keywords...'}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-gray-100 dark:bg-gray-900 rounded-xl pl-9 pr-4 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-red-500 placeholder:text-gray-400"
+            className="w-full bg-gray-100 dark:bg-gray-900 rounded-xl pl-9 pr-4 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-red-500 placeholder:text-gray-400 dark:text-gray-500"
           />
-          <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-3" />
+          <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 absolute left-3 top-3" />
         </div>
 
         {/* Category horizontal scroll */}
@@ -156,7 +156,7 @@ export function FAQPage() {
             <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
               {language === 'bn' ? 'কোনো প্রশ্ন পাওয়া যায়নি' : 'No matching questions found'}
             </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-1">
               {language === 'bn' ? 'সরাসরি লাইভ চ্যাটে আমাদের সাথে যোগাযোগ করুন' : 'Try searching another keyword or contact live support'}
             </p>
           </div>
@@ -177,7 +177,7 @@ export function FAQPage() {
                 >
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : faq.id)}
-                    className="w-full p-4 flex items-center justify-between text-left gap-3 hover:bg-slate-50/50 transition"
+                    className="w-full p-4 flex items-center justify-between text-left gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-950/50 transition"
                   >
                     <span className="text-xs sm:text-sm md:text-base font-bold text-gray-900 dark:text-gray-100 leading-snug">
                       {question}
@@ -193,12 +193,12 @@ export function FAQPage() {
                         exit={{ height: 0, opacity: 0 }}
                         className="px-4 pb-4 border-t border-gray-50 pt-3"
                       >
-                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-line">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed whitespace-pre-line">
                           {answer}
                         </p>
 
                         {/* Helpful vote section */}
-                        <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500">
+                        <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                           <span>
                             {language === 'bn' ? 'এই উত্তরটি কি সহায়ক ছিল?' : 'Was this answer helpful?'}
                           </span>

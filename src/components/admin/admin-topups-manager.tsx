@@ -263,7 +263,7 @@ export function AdminTopupsManager() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">This queue is restricted to Zylod finance admins. Sign in with an admin account to verify wallet top-up claims.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This queue is restricted to Zylod finance admins. Sign in with an admin account to verify wallet top-up claims.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -279,10 +279,10 @@ export function AdminTopupsManager() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Wallet Top-up Verification</h1>
-            <p className="text-[11px] text-slate-400">Manual funding claims stay pending until you confirm the money arrived. Verifying credits the wallet and writes the ledger row; rejecting moves nothing.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">Manual funding claims stay pending until you confirm the money arrived. Verifying credits the wallet and writes the ledger row; rejecting moves nothing.</p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => loadTopups({ background: true })} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700">
+        <Button variant="outline" onClick={() => loadTopups({ background: true })} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
         </Button>
       </div>
@@ -299,14 +299,14 @@ export function AdminTopupsManager() {
           <button
             key={key}
             onClick={() => switchTab(STATUS_TABS.some((t) => t.key === key) ? key : 'all')}
-            className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left hover:border-slate-300 dark:hover:border-slate-700 transition"
+            className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left hover:border-slate-300 dark:hover:border-slate-700 transition"
           >
             <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider ${tone}`}>
               <Icon className="h-3.5 w-3.5" /> {label}
             </div>
             <p className="text-xl font-black mt-1">{stats ? stats[key] : '--'}</p>
             {key === 'pending' && stats ? (
-              <p className="text-[10px] text-slate-400 font-bold mt-0.5">{formatPrice(stats.pendingAmount)} claimed</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">{formatPrice(stats.pendingAmount)} claimed</p>
             ) : null}
           </button>
         ))}
@@ -329,11 +329,11 @@ export function AdminTopupsManager() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-16 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load the queue</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -342,12 +342,12 @@ export function AdminTopupsManager() {
           </Button>
         </div>
       ) : rows.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           {statusTab === 'pending' ? (
             <>
               <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
               <h2 className="text-sm font-black">No top-up claims awaiting verification</h2>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 Manual funding claims appear here the moment POST /api/wallet/topup records them. Gateway top-ups credit themselves through the verified callback — they never need you.
               </p>
             </>
@@ -355,52 +355,52 @@ export function AdminTopupsManager() {
             <>
               <Wallet className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No {statusTab} top-ups</h2>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">This tab reflects the real walletTopups table — counts in the strip above are platform-wide.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This tab reflects the real walletTopups table — counts in the strip above are platform-wide.</p>
             </>
           )}
         </div>
       ) : (
         <div className="space-y-2">
           {/* Desktop table */}
-          <div className="hidden md:block bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="hidden md:block bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
             <table className="w-full text-xs">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-950 text-left">
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Claimant</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Provider</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Reference</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Sender</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Amount</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Status</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Date</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Action</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Claimant</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Provider</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Reference</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Sender</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 text-right">Amount</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Date</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {rows.map((t) => {
                   const PIcon = providerIcon(t.provider)
                   return (
-                    <tr key={t.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-950/40">
+                    <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-950/60 dark:hover:bg-slate-950/40">
                       <td className="px-3 py-2.5">
                         <span className="font-black block max-w-[160px] truncate">{t.claimant.displayName || '--'}</span>
-                        <span className="text-[9px] text-slate-400 block truncate">{t.claimant.email || ''}</span>
+                        <span className="text-[9px] text-slate-400 dark:text-slate-500 block truncate">{t.claimant.email || ''}</span>
                       </td>
                       <td className="px-3 py-2.5 capitalize">
-                        <span className="inline-flex items-center gap-1.5"><PIcon className="h-3.5 w-3.5 text-slate-400" />{t.provider}</span>
-                        <span className="block text-[9px] text-slate-400">{t.source === 'gateway' ? 'gateway session' : 'manual claim'}</span>
+                        <span className="inline-flex items-center gap-1.5"><PIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />{t.provider}</span>
+                        <span className="block text-[9px] text-slate-400 dark:text-slate-500">{t.source === 'gateway' ? 'gateway session' : 'manual claim'}</span>
                       </td>
                       <td className="px-3 py-2.5 font-mono max-w-[150px] truncate">{t.reference}</td>
                       <td className="px-3 py-2.5 font-mono max-w-[120px] truncate">{t.senderNumber || '--'}</td>
                       <td className="px-3 py-2.5 text-right font-black whitespace-nowrap">{formatPrice(t.amount)}</td>
                       <td className="px-3 py-2.5"><StatusChip status={t.status} /></td>
-                      <td className="px-3 py-2.5 text-slate-400 whitespace-nowrap">{formatDate(t.submittedAt ?? t.createdAt)}</td>
+                      <td className="px-3 py-2.5 text-slate-400 dark:text-slate-500 whitespace-nowrap">{formatDate(t.submittedAt ?? t.createdAt)}</td>
                       <td className="px-3 py-2.5 text-right whitespace-nowrap">
                         {t.status === 'pending' ? (
                           <Button onClick={() => setExpandedId(expandedId === t.id ? null : t.id)} className="h-8 px-3 rounded-lg text-[11px] font-bold bg-primary hover:bg-primary/90 text-white gap-1">
                             {expandedId === t.id ? <><ChevronUp className="h-3 w-3" /> Close</> : <>Decide</>}
                           </Button>
                         ) : (
-                          <span className="text-[10px] text-slate-400">{t.status === 'credited' ? `credited ${formatDate(t.creditedAt)}` : 'decided'}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500">{t.status === 'credited' ? `credited ${formatDate(t.creditedAt)}` : 'decided'}</span>
                         )}
                       </td>
                     </tr>
@@ -415,11 +415,11 @@ export function AdminTopupsManager() {
             {rows.map((t) => {
               const PIcon = providerIcon(t.provider)
               return (
-                <div key={t.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2">
+                <div key={t.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="text-xs font-black truncate">{t.claimant.displayName || '--'}</p>
-                      <p className="text-[11px] text-slate-400 truncate">{t.claimant.email || ''}</p>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{t.claimant.email || ''}</p>
                     </div>
                     <StatusChip status={t.status} />
                   </div>
@@ -428,10 +428,10 @@ export function AdminTopupsManager() {
                     <span className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 font-mono">{t.reference}</span>
                     {t.senderNumber ? <span className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 font-mono">from {t.senderNumber}</span> : null}
                   </div>
-                  {t.note ? <p className="text-[10px] text-slate-500 italic">&ldquo;{t.note}&rdquo;</p> : null}
+                  {t.note ? <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 italic">&ldquo;{t.note}&rdquo;</p> : null}
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-black text-primary">{formatPrice(t.amount)}</span>
-                    <span className="text-[10px] text-slate-400">{formatDate(t.submittedAt ?? t.createdAt)}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500">{formatDate(t.submittedAt ?? t.createdAt)}</span>
                   </div>
                   {t.status === 'pending' && (
                     <div className="grid grid-cols-2 gap-2 pt-1">
@@ -450,7 +450,7 @@ export function AdminTopupsManager() {
             if (!t || t.status !== 'pending') return null
             return (
               <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3">
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Decide the pending claim from <span className="font-bold text-slate-800 dark:text-slate-200">{t.claimant.displayName || t.claimant.email || 'this user'}</span> — credit only after confirming {formatPrice(t.amount)} really arrived ({t.provider}, ref <span className="font-mono">{t.reference}</span>).
                 </p>
                 <div className="flex gap-2">
@@ -464,7 +464,7 @@ export function AdminTopupsManager() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400">{total} top-up{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500">{total} top-up{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); loadTopups({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const p = page + 1; setPage(p); loadTopups({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>
@@ -492,7 +492,7 @@ export function AdminTopupsManager() {
 
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Decision note (optional)</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Decision note (optional)</label>
                   <Input
                     value={dialogNote}
                     onChange={(e) => setDialogNote(e.target.value)}

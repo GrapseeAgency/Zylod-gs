@@ -89,7 +89,7 @@ export function SubmitTicketPage() {
       {/* Header */}
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Open Support Ticket</span>
@@ -101,7 +101,7 @@ export function SubmitTicketPage() {
         <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-5">
           <div>
             <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Ticket Information</h2>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Submit an official claim or inquiry to the Zylod Support & Dispute Resolution team.</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-0.5">Submit an official claim or inquiry to the Zylod Support & Dispute Resolution team.</p>
           </div>
 
           {errorMsg && (
@@ -189,7 +189,7 @@ export function SubmitTicketPage() {
               onChange={e => setFormData({ ...formData, description: e.target.value })}
               className="w-full border border-gray-200 dark:border-gray-800 rounded-xl p-3 text-xs focus:outline-none focus:border-red-500 leading-relaxed"
             />
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">Minimum 20 characters.</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Minimum 20 characters.</p>
           </div>
 
           {/* Submit Button */}

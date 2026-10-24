@@ -66,7 +66,7 @@ export function WishlistSharePage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b flex items-center px-4 h-14">
-        <button onClick={goBack} className="p-2 -ml-2 mr-2 active:bg-gray-100 rounded-full">
+        <button onClick={goBack} className="p-2 -ml-2 mr-2 active:bg-gray-100 dark:bg-gray-900 rounded-full">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <h1 className="font-semibold text-gray-900 dark:text-gray-100">Sharing Settings</h1>
@@ -84,7 +84,7 @@ export function WishlistSharePage() {
             {shareData ? (
               <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">Active</span>
             ) : (
-              <span className="px-2.5 py-1 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full">Not Shared</span>
+              <span className="px-2.5 py-1 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 dark:text-gray-500 text-xs font-medium rounded-full">Not Shared</span>
             )}
           </div>
           
@@ -92,37 +92,37 @@ export function WishlistSharePage() {
             {shareData ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-950 rounded-lg p-2 border">
-                  <div className="flex-1 truncate text-sm text-gray-600 dark:text-gray-400 font-mono">
+                  <div className="flex-1 truncate text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 font-mono">
                     {`${window.location.origin}/shared?token=${shareData.token}`}
                   </div>
-                  <button className="p-2 bg-white dark:bg-gray-900 rounded shadow-sm border active:bg-gray-50" onClick={() => navigator.clipboard.writeText(`${window.location.origin}/shared?token=${shareData.token}`)}>
-                    <Copy className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <button className="p-2 bg-white dark:bg-gray-900 rounded shadow-sm border active:bg-gray-50 dark:bg-gray-950" onClick={() => navigator.clipboard.writeText(`${window.location.origin}/shared?token=${shareData.token}`)}>
+                    <Copy className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
                   </button>
-                  <button className="p-2 bg-white dark:bg-gray-900 rounded shadow-sm border active:bg-gray-50" onClick={createShareLink}>
-                    <RefreshCw className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <button className="p-2 bg-white dark:bg-gray-900 rounded shadow-sm border active:bg-gray-50 dark:bg-gray-950" onClick={createShareLink}>
+                    <RefreshCw className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
                   </button>
                 </div>
 
                 <div className="flex justify-center p-4 bg-gray-50 dark:bg-gray-950 rounded-lg border border-dashed">
-                  <QrCode className="w-24 h-24 text-gray-400 dark:text-gray-500" />
+                  <QrCode className="w-24 h-24 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                   <div className="text-center">
                     <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{shareData.viewCount || 0}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Total Views</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Views</div>
                   </div>
                   <div className="text-center">
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-1">
                       {shareData.lastViewedAt ? new Date(shareData.lastViewedAt).toLocaleDateString() : 'Never'}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Last Viewed</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Last Viewed</div>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="text-center py-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">You haven't shared your wishlist yet.</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 mb-4">You haven't shared your wishlist yet.</p>
                 <button onClick={createShareLink} className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium">
                   Generate Share Link
                 </button>
@@ -146,14 +146,14 @@ export function WishlistSharePage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Allow adding to cart</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Viewers can add items to their cart</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Viewers can add items to their cart</div>
                   </div>
                   <input type="checkbox" checked={settings.allowAddToCart} onChange={() => setSettings(s => ({ ...s, allowAddToCart: !s.allowAddToCart }))} className="toggle text-primary" />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">Show prices</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Display current prices to viewers</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Display current prices to viewers</div>
                   </div>
                   <input type="checkbox" checked={settings.showPrices} onChange={() => setSettings(s => ({ ...s, showPrices: !s.showPrices }))} className="toggle text-primary" />
                 </div>

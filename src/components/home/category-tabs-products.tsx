@@ -440,17 +440,17 @@ export function CategoryTabsAndProducts() {
       case 'product': return <Package className="h-3.5 w-3.5 text-red-500" />
       case 'category': return <Tag className="h-3.5 w-3.5 text-blue-500" />
       case 'supplier': return <Building2 className="h-3.5 w-3.5 text-green-500" />
-      case 'fallback': return <Search className="h-3.5 w-3.5 text-gray-400" />
+      case 'fallback': return <Search className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
     }
   }
 
   return (
     <main className="flex-1 min-w-0 space-y-3">
       {/* ═══════════ SECTION 1: TABBED SEARCH AREA ═══════════ */}
-      <Card className="border border-gray-200 shadow-sm rounded-lg overflow-hidden">
-        <div className="bg-white">
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-gray-900">
           {/* Row 1: Search Tabs */}
-          <div className="flex items-center gap-0 border-b border-gray-100">
+          <div className="flex items-center gap-0 border-b border-gray-100 dark:border-gray-800">
             {SEARCH_TABS.map((tab) => {
               const TabIcon = tab.icon
               const isActive = activeSearchTab === tab.id
@@ -494,7 +494,7 @@ export function CategoryTabsAndProducts() {
                   onFocus={() => {
                     if (suggestions.length > 0) setShowSuggestions(true)
                   }}
-                  className="flex-1 h-11 border-2 border-red-600 rounded-l-md px-4 text-sm placeholder:text-gray-400 focus:outline-none focus:border-red-700 transition-colors"
+                  className="flex-1 h-11 border-2 border-red-600 rounded-l-md px-4 text-sm placeholder:text-gray-400 dark:text-gray-500 focus:outline-none focus:border-red-700 transition-colors"
                   autoComplete="off"
                 />
                 {searchQuery && (
@@ -503,7 +503,7 @@ export function CategoryTabsAndProducts() {
                     onClick={clearSearch}
                     className="absolute right-[100px] top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors"
                   >
-                    <X className="h-3.5 w-3.5 text-gray-400" />
+                    <X className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
                   </button>
                 )}
                 <button
@@ -518,10 +518,10 @@ export function CategoryTabsAndProducts() {
               {showSuggestions && (
                 <div
                   ref={suggestionsRef}
-                  className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-80 overflow-y-auto"
+                  className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-xl z-50 max-h-80 overflow-y-auto"
                 >
                   {suggestionsLoading && (
-                    <div className="flex items-center gap-2 px-4 py-3 text-sm text-gray-500">
+                    <div className="flex items-center gap-2 px-4 py-3 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       <Loader2 className="h-4 w-4 animate-spin" />
                       <span>Searching...</span>
                     </div>
@@ -537,15 +537,15 @@ export function CategoryTabsAndProducts() {
                           : 'hover:bg-gray-50'
                       }`}
                     >
-                      <div className="shrink-0 h-8 w-8 rounded-md bg-gray-100 flex items-center justify-center">
+                      <div className="shrink-0 h-8 w-8 rounded-md bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
                         {getSuggestionIcon(suggestion.type)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-800 font-medium truncate">
+                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium truncate">
                           {highlightMatch(suggestion.name, searchQuery)}
                         </p>
                         {suggestion.subtitle && (
-                          <p className="text-xs text-gray-400 truncate">{suggestion.subtitle}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{suggestion.subtitle}</p>
                         )}
                       </div>
                       {suggestion.price && (
@@ -556,7 +556,7 @@ export function CategoryTabsAndProducts() {
                   ))}
 
                   {!suggestionsLoading && suggestions.length === 0 && searchQuery && (
-                    <div className="px-4 py-3 text-sm text-gray-400 text-center">
+                    <div className="px-4 py-3 text-sm text-gray-400 dark:text-gray-500 text-center">
                       No suggestions found
                     </div>
                   )}
@@ -604,7 +604,7 @@ export function CategoryTabsAndProducts() {
       )}
 
       {/* ═══════════ SECTION 2: CATEGORY TABS + PRODUCT GRID ═══════════ */}
-      <Card className="border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
         <div className="px-4 pt-3 pb-0" style={{ background: BG_CARD }}>
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-thin pb-2">
             {CATEGORY_TABS.map((tab) => (
@@ -647,8 +647,8 @@ export function CategoryTabsAndProducts() {
         {currentProductList.length === 0 && !isLoadingMore && !productsLoading && (
           <div className="flex flex-col items-center py-12 text-center">
             <Search className="h-10 w-10 text-gray-300 mb-3" />
-            <p className="text-sm font-medium text-gray-500">No products found</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">No products found</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               {productsError ?? 'Try a different search term'}
             </p>
             <Button variant="outline" size="sm" className="mt-3" onClick={clearSearch}>Clear search</Button>
@@ -662,7 +662,7 @@ export function CategoryTabsAndProducts() {
         {!hasMore && currentProductList.length > 0 && (
           <div className="flex items-center justify-center py-8">
             <div className="h-px flex-1 bg-gray-200" />
-            <span className="px-4 text-xs text-gray-400 font-medium">You&#39;ve seen all products</span>
+            <span className="px-4 text-xs text-gray-400 dark:text-gray-500 font-medium">You&#39;ve seen all products</span>
             <div className="h-px flex-1 bg-gray-200" />
           </div>
         )}

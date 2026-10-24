@@ -43,7 +43,7 @@ export function CommunityGuidelinesPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Community Guidelines</span>
@@ -66,7 +66,7 @@ export function CommunityGuidelinesPage() {
           <h1 className="text-base sm:text-lg md:text-2xl font-bold text-gray-900 dark:text-gray-100">
             Rules for Fair, Safe, and Professional B2B Trade
           </h1>
-          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+          <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
             Zylod is committed to fostering trust among manufacturers, wholesale distributors, and retail business owners across Bangladesh. By using our platform, all members agree to uphold these standards in accordance with the Digital Commerce Guidelines (ডিজিটাল কমার্স পরিচালনা নির্দেশিকা).
           </p>
         </div>
@@ -88,7 +88,7 @@ export function CommunityGuidelinesPage() {
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{g.title}</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{g.desc}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{g.desc}</p>
                 </div>
               </motion.div>
             )
@@ -106,14 +106,14 @@ export function CommunityGuidelinesPage() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Prohibited Products & Restricted Goods</h3>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Review the complete list of items banned by Bangladesh law.</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">Review the complete list of items banned by Bangladesh law.</p>
             </div>
           </div>
           <ChevronRight className="w-5 h-5 text-red-600 flex-shrink-0" />
         </div>
 
         {/* Enforcement notice */}
-        <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl p-4 text-[11px] text-gray-500 dark:text-gray-400 text-center leading-relaxed">
+        <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl p-4 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center leading-relaxed">
           Violations of these guidelines may result in listing removal, supplier badge revocation, and referral to the Ministry of Commerce & Directorate of National Consumer Rights Protection (DNCRP).
         </div>
       </div>

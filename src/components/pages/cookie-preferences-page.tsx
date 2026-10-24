@@ -35,12 +35,12 @@ export function CookiePreferencesPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Cookie Preferences Center</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">Manage Consent for Tracking Technologies</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Manage Consent for Tracking Technologies</p>
         </div>
       </div>
 
@@ -63,9 +63,9 @@ export function CookiePreferencesPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100">Strictly Necessary Cookies</h3>
-                  <Badge className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-none text-[10px]">Always Active</Badge>
+                  <Badge className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 dark:text-gray-500 border-none text-[10px]">Always Active</Badge>
                 </div>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">
                   Required for CSRF tokens, sign-in sessions, cart storage, and server load balancing.
                 </p>
               </div>
@@ -79,7 +79,7 @@ export function CookiePreferencesPage() {
               <BarChart3 className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100">Performance & Analytics</h3>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">
                   Helps us measure page load times, buyer search query performance, and user interface responsiveness.
                 </p>
               </div>
@@ -93,7 +93,7 @@ export function CookiePreferencesPage() {
               <Megaphone className="w-5 h-5 text-rose-500 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100">Personalized Bulk Promotions</h3>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">
                   Allows us to deliver personalized wholesale volume rebates and notifications based on your sourcing categories.
                 </p>
               </div>

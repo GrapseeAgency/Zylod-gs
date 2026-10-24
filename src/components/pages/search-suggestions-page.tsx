@@ -107,27 +107,27 @@ export function SearchSuggestionsPage() {
   )
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       {/* Header with live input */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 pt-4 pb-3 md:px-6">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 pt-4 pb-3 md:px-6">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2.5">
+          <div className="flex-1 flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-xl px-3 py-2.5">
             <Search className="w-4 h-4 text-red-500 flex-shrink-0" />
             <input
               ref={inputRef}
               type="text"
               placeholder="Search wholesale products..."
-              className="flex-1 bg-transparent text-sm outline-none text-gray-800 placeholder:text-gray-400"
+              className="flex-1 bg-transparent text-sm outline-none text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:text-gray-500"
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSearch(query)}
             />
             {query && (
               <button onClick={() => setQuery('')}>
-                <X className="w-4 h-4 text-gray-400" />
+                <X className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </button>
             )}
           </div>
@@ -153,7 +153,7 @@ export function SearchSuggestionsPage() {
                 className="px-4 pt-4"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Recent</p>
+                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wide">Recent</p>
                   <button
                     onClick={() => { setHistory([]); fetch('/api/search/history', { method: 'DELETE' }).catch(() => {}) }}
                     className="text-xs text-red-500"
@@ -171,7 +171,7 @@ export function SearchSuggestionsPage() {
                     onClick={() => handleSearch(item.query)}
                   >
                     <Clock className="w-4 h-4 text-gray-300 flex-shrink-0" />
-                    <span className="flex-1 text-sm text-gray-700">{item.query}</span>
+                    <span className="flex-1 text-sm text-gray-700 dark:text-gray-300">{item.query}</span>
                     <button
                       onClick={e => { e.stopPropagation(); deleteHistory(item.query) }}
                       className="opacity-0 group-hover:opacity-100"
@@ -210,10 +210,10 @@ export function SearchSuggestionsPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.04 }}
                     onClick={() => handleSearch(s)}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50"
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition border-b border-gray-50"
                   >
                     <Search className="w-4 h-4 text-gray-300 flex-shrink-0" />
-                    <span className="text-sm text-gray-700 text-left flex-1">
+                    <span className="text-sm text-gray-700 dark:text-gray-300 text-left flex-1">
                       {s.toLowerCase().includes(query.toLowerCase()) ? (
                         <>
                           {s.substring(0, s.toLowerCase().indexOf(query.toLowerCase()))}
@@ -230,7 +230,7 @@ export function SearchSuggestionsPage() {
             {/* Category suggestions */}
             {suggestions!.categories.length > 0 && (
               <div>
-                <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50">Categories</p>
+                <p className="px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide bg-gray-50 dark:bg-gray-950">Categories</p>
                 {suggestions!.categories.map((cat, idx) => (
                   <motion.button
                     key={cat.id}
@@ -238,11 +238,11 @@ export function SearchSuggestionsPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.04 }}
                     onClick={() => navigate('category-products', { category: cat.slug })}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50"
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition border-b border-gray-50"
                   >
                     <Tag className="w-4 h-4 text-red-400 flex-shrink-0" />
-                    <span className="text-sm text-gray-700 text-left">{cat.name}</span>
-                    <span className="text-xs text-gray-400 ml-auto">Category</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300 text-left">{cat.name}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">Category</span>
                   </motion.button>
                 ))}
               </div>
@@ -251,7 +251,7 @@ export function SearchSuggestionsPage() {
             {/* Product suggestions */}
             {suggestions!.products.length > 0 && (
               <div>
-                <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50">Products</p>
+                <p className="px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide bg-gray-50 dark:bg-gray-950">Products</p>
                 {suggestions!.products.map((product, idx) => (
                   <motion.button
                     key={product.id}
@@ -259,16 +259,16 @@ export function SearchSuggestionsPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.04 }}
                     onClick={() => navigate('product-detail', { productId: product.id })}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50"
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition border-b border-gray-50"
                   >
                     {product.thumbnailUrl ? (
                       <img src={product.thumbnailUrl} alt={product.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
                     ) : (
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex-shrink-0" />
+                      <div className="w-10 h-10 bg-gray-100 dark:bg-gray-900 rounded-lg flex-shrink-0" />
                     )}
                     <div className="flex-1 min-w-0 text-left">
-                      <p className="text-sm text-gray-800 line-clamp-1">{product.name}</p>
-                      <p className="text-xs text-gray-400">{product.category?.name}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 line-clamp-1">{product.name}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">{product.category?.name}</p>
                     </div>
                     <span className="text-sm font-bold text-red-600 flex-shrink-0">{formatPrice(product.basePrice)}</span>
                   </motion.button>
@@ -279,7 +279,7 @@ export function SearchSuggestionsPage() {
             {/* Supplier suggestions */}
             {suggestions!.suppliers.length > 0 && (
               <div>
-                <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50">Suppliers</p>
+                <p className="px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide bg-gray-50 dark:bg-gray-950">Suppliers</p>
                 {suggestions!.suppliers.map((supplier, idx) => (
                   <motion.button
                     key={supplier.id}
@@ -287,11 +287,11 @@ export function SearchSuggestionsPage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.04 }}
                     onClick={() => navigate('seller-storefront', { supplierId: supplier.id })}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50"
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition border-b border-gray-50"
                   >
                     <TrendingUp className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                    <span className="flex-1 text-sm text-gray-700 text-left">{supplier.companyName}</span>
-                    <span className="text-xs text-gray-400">⭐ {supplier.ratingAvg.toFixed(1)}</span>
+                    <span className="flex-1 text-sm text-gray-700 dark:text-gray-300 text-left">{supplier.companyName}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">⭐ {supplier.ratingAvg.toFixed(1)}</span>
                   </motion.button>
                 ))}
               </div>
@@ -313,7 +313,7 @@ export function SearchSuggestionsPage() {
         {/* No suggestions */}
         {!loading && query && !hasSuggestions && (
           <div className="px-4 pt-8 text-center">
-            <p className="text-sm text-gray-500">No suggestions found</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">No suggestions found</p>
             <button
               onClick={() => handleSearch(query)}
               className="mt-3 text-sm text-red-600 font-medium"

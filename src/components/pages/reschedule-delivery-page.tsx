@@ -171,7 +171,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
       <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <AlertCircle className="h-10 w-10 text-slate-300 mb-3" />
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Open this from an order</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
           A reschedule is always tied to a real order. Open one of your orders and tap
           &ldquo;Reschedule delivery&rdquo; there.
         </p>
@@ -187,7 +187,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
       <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <AlertCircle className="h-10 w-10 text-slate-300 mb-3" />
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Sign in required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs">Reschedule requests are tied to your buyer account.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs">Reschedule requests are tied to your buyer account.</p>
         <Button onClick={() => navigate('login')} className="mt-5 w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl">
           Sign in
         </Button>
@@ -208,7 +208,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
       <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <AlertCircle className="h-10 w-10 text-slate-300 mb-3" />
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Order not found</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs">{loadError || 'This order does not exist or belongs to another account.'}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs">{loadError || 'This order does not exist or belongs to another account.'}</p>
         <Button variant="outline" onClick={() => navigate('my-orders')} className="mt-5 w-full max-w-xs font-bold text-xs h-11 rounded-2xl">
           Go to my orders
         </Button>
@@ -224,7 +224,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           <CheckCircle2 className="h-8 w-8" />
         </div>
         <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">Reschedule request sent</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
           Order <span className="font-mono font-bold">{order.orderNumber}</span> — the supplier has been asked to move
           delivery to <strong>{new Date(`${confirmed.date}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>
           {' '}({confirmed.window === 'morning' ? '8:00 AM – 12:00 PM' : '12:00 PM – 4:00 PM'}).
@@ -240,7 +240,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           <Button
             variant="outline"
             onClick={() => { setConfirmed(null); load() }}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
           >
             Back to request details
           </Button>
@@ -258,7 +258,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -270,12 +270,12 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           {/* Header */}
           <div>
             <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Reschedule Delivery</h1>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 font-mono">{order.orderNumber}</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 font-mono">{order.orderNumber}</p>
           </div>
 
           {/* Real current schedule — one row per shipment slice */}
-          <div className="p-3.5 bg-slate-100/70 rounded-2xl border border-slate-200/80 flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-400">
-            <Info className="h-4 w-4 text-slate-500 dark:text-slate-400 shrink-0 mt-0.5" />
+          <div className="p-3.5 bg-slate-100 dark:bg-slate-900/70 rounded-2xl border border-slate-200 dark:border-slate-800/80 flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
+            <Info className="h-4 w-4 text-slate-500 dark:text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
             <div className="text-[11px] leading-relaxed space-y-1">
               {order.subOrders.map((s) => (
                 <p key={s.id}>
@@ -299,7 +299,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           )}
 
           {allFinal && (
-            <div className="p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+            <div className="p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
               Every shipment on this order is already delivered/closed — there is no delivery left to reschedule.
             </div>
           )}
@@ -316,7 +316,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
               disabled={Boolean(pendingRequest) || allFinal || submitting}
               className="w-full h-11 px-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200 disabled:opacity-50"
             />
-            <p className="text-[10px] text-slate-400 dark:text-slate-500">Tomorrow onward — the delivery cannot move into the past.</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Tomorrow onward — the delivery cannot move into the past.</p>
           </div>
 
           {/* Window */}
@@ -347,7 +347,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           {/* Instructions */}
           <div className="space-y-2">
             <label htmlFor="reschedule-instructions" className="text-xs font-bold text-slate-900 dark:text-slate-100 block">
-              Note for the supplier <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span>
+              Note for the supplier <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">(optional)</span>
             </label>
             <Textarea
               id="reschedule-instructions"
@@ -358,7 +358,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
               disabled={Boolean(pendingRequest) || allFinal || submitting}
               className="rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs"
             />
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 text-right">{instructions.length}/500</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 text-right">{instructions.length}/500</p>
           </div>
         </div>
 
@@ -367,7 +367,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           <Button
             variant="outline"
             onClick={goBack}
-            className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
           >
             Cancel
           </Button>
@@ -386,11 +386,11 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
             <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100 mb-2">Your requests for this order</h2>
             <ul className="space-y-2">
               {requests.map((r) => (
-                <li key={r.id} className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 border-b border-slate-50 pb-2 last:border-0 last:pb-0">
+                <li key={r.id} className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 border-b border-slate-50 pb-2 last:border-0 last:pb-0">
                   <span>
                     {fmtISODate(r.requestedDate)} ·{' '}
                     {r.window === 'morning' ? 'morning' : 'afternoon'}
-                    {r.instructions ? <span className="text-slate-400 dark:text-slate-500"> — {r.instructions.slice(0, 60)}</span> : null}
+                    {r.instructions ? <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400"> — {r.instructions.slice(0, 60)}</span> : null}
                   </span>
                   <span className={`font-bold uppercase tracking-wide ${
                     r.status === 'pending' ? 'text-amber-600' :

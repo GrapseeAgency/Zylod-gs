@@ -180,7 +180,7 @@ export function AdminProductsPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">This moderation queue is restricted to Zylod admins. Sign in with an admin account to approve or reject product listings.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This moderation queue is restricted to Zylod admins. Sign in with an admin account to approve or reject product listings.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -196,7 +196,7 @@ export function AdminProductsPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Product Moderation</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">Approve or reject supplier product listings. Only approved products appear in the public catalog.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Approve or reject supplier product listings. Only approved products appear in the public catalog.</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => loadProducts()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
@@ -219,7 +219,7 @@ export function AdminProductsPage() {
           Approved
         </button>
         <div className="relative flex-1 min-w-[200px] max-w-sm ml-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
           <Input
             value={q}
             onChange={(e) => { setQ(e.target.value) }}
@@ -258,7 +258,7 @@ export function AdminProductsPage() {
             <>
               <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
               <h2 className="text-sm font-black">No products waiting for review</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 {q ? `No pending products match "${q}".` : "New supplier listings appear here as soon as they're submitted."}
               </p>
             </>
@@ -266,7 +266,7 @@ export function AdminProductsPage() {
             <>
               <Package className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No approved products yet</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 {q ? `No approved products match "${q}".` : 'Products you approve from the Pending tab appear here.'}
               </p>
             </>
@@ -288,12 +288,12 @@ export function AdminProductsPage() {
                       : <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />}
                     <div className="min-w-0">
                       <p className="text-xs font-black text-slate-800 dark:text-slate-200 truncate">{p.name}</p>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{p.supplierName || '--'}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 truncate">{p.supplierName || '--'}</p>
                     </div>
                   </div>
                   <div className="text-right min-w-[110px] ml-auto">
                     <p className="text-sm font-black text-primary">{formatPrice(p.basePrice)}</p>
-                    <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">per {p.unit || '--'}</p>
+                    <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">per {p.unit || '--'}</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className={chipClass}>MOQ {p.moq.toLocaleString()}</span>
@@ -301,7 +301,7 @@ export function AdminProductsPage() {
                     <span className={chipClass}>{p.categoryName || '--'}</span>
                     <span className={chipClass}>{p.reviewCount} review{p.reviewCount === 1 ? '' : 's'}</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 dark:text-slate-500 min-w-[90px]">
+                  <div className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 min-w-[90px]">
                     {new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     <span className="block">submitted</span>
                   </div>
@@ -364,8 +364,8 @@ export function AdminProductsPage() {
                 {images.length > 0 || videos.length > 0 ? (
                   <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 px-4 py-3">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <ImageIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      <ImageIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
                         Media review · {images.length} image{images.length === 1 ? '' : 's'} · {videos.length} video{videos.length === 1 ? '' : 's'}
                       </span>
                       {videos.length > 0 && (
@@ -421,11 +421,11 @@ export function AdminProductsPage() {
                 {/* Inline reject form (pending tab) */}
                 {tab === 'pending' && isRejectOpen && (
                   <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                       Rejecting sets this product to not approved — it will not appear in the public catalog. The optional reason is stored in the server audit log for this action.
                     </p>
                     <div className="space-y-1">
-                      <label htmlFor={`reject-reason-${p.id}`} className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Reason (optional)</label>
+                      <label htmlFor={`reject-reason-${p.id}`} className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Reason (optional)</label>
                       <Input
                         id={`reject-reason-${p.id}`}
                         value={reason}
@@ -453,7 +453,7 @@ export function AdminProductsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400 dark:text-slate-500">{total} product{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{total} product{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const np = page - 1; setPage(np); loadProducts({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const np = page + 1; setPage(np); loadProducts({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>

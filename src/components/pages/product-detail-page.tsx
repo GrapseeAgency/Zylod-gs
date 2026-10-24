@@ -874,7 +874,7 @@ function DesktopProductDetailPage() {
             )}
             {/* Task 95: the filed shipping weight — buyers see what couriers quote against */}
             {product.weightKg != null && (
-              <Badge variant="outline" className="text-xs border-slate-300 text-slate-600 dark:text-slate-400">
+              <Badge variant="outline" className="text-xs border-slate-300 text-slate-600 dark:text-slate-400 dark:text-slate-500">
                 <Truck className="h-3 w-3 mr-1" />
                 {formatQty(product.weightKg)} kg per {isBundle ? 'bundle' : unit === 'pcs' ? 'pc' : unit}
               </Badge>
@@ -1291,7 +1291,7 @@ function DesktopProductDetailPage() {
               </div>
               <div>
                 <p className="font-bold text-gray-900 dark:text-gray-100 text-[11px]">Order stays UNPAID until payment is verified</p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400">Pay only via the bank transfer or bKash/Nagad details shown for your order — the supplier ships once Zylod verifies the payment.</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Pay only via the bank transfer or bKash/Nagad details shown for your order — the supplier ships once Zylod verifies the payment.</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-[11px] font-semibold text-red-600">
@@ -2044,7 +2044,7 @@ function DesktopProductDetailPage() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 z-50 lg:hidden border-t bg-white/95 backdrop-blur-sm shadow-[0_-4px_20px_rgba(0,0,0,0.1)]"
+          className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 z-50 lg:hidden border-t bg-white dark:bg-gray-900/95 backdrop-blur-sm shadow-[0_-4px_20px_rgba(0,0,0,0.1)]"
         >
           <div className="max-w-[1440px] mx-auto px-4 py-3">
             <div className="flex items-center gap-3">

@@ -78,7 +78,7 @@ export function SearchPriceAlertPage() {
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 pt-4 pb-3 md:px-6">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
           <span className="font-semibold text-gray-900 dark:text-gray-100 flex-1">Price Alerts</span>
           <button onClick={() => setShowAdd(s => !s)} className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-xl hover:bg-red-700 transition">
             <Plus className="w-3.5 h-3.5" />New Alert
@@ -112,8 +112,8 @@ export function SearchPriceAlertPage() {
         ) : alerts.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 gap-3 px-6 text-center">
             <TrendingDown className="w-12 h-12 text-gray-200" />
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">No price alerts set</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Set alerts to get notified when wholesale prices drop</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">No price alerts set</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Set alerts to get notified when wholesale prices drop</p>
           </div>
         ) : (
           <div className="px-4 pt-4 space-y-3">
@@ -128,24 +128,24 @@ export function SearchPriceAlertPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">"{alert.query}"</p>
                     <div className="flex items-center gap-3 mt-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Target: <strong className="text-red-600">{formatPrice(alert.targetPrice)}</strong></span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">Best now: {formatPrice(alert.currentBestPrice)}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Target: <strong className="text-red-600">{formatPrice(alert.targetPrice)}</strong></span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Best now: {formatPrice(alert.currentBestPrice)}</span>
                     </div>
                     {alert.currentBestPrice <= alert.targetPrice && (
                       <span className="inline-block mt-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">🎉 Price target reached!</span>
                     )}
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
-                    <button onClick={() => toggleAlert(alert.id, alert.isActive)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition">
-                      {alert.isActive ? <Bell className="w-4 h-4 text-red-500" /> : <BellOff className="w-4 h-4 text-gray-400 dark:text-gray-500" />}
+                    <button onClick={() => toggleAlert(alert.id, alert.isActive)} className="p-1.5 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-lg transition">
+                      {alert.isActive ? <Bell className="w-4 h-4 text-red-500" /> : <BellOff className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
                     </button>
-                    <button onClick={() => deleteAlert(alert.id)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition text-gray-400 dark:text-gray-500 hover:text-red-500">
+                    <button onClick={() => deleteAlert(alert.id)} className="p-1.5 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-lg transition text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-red-500">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
                 <button onClick={() => navigate('search-results', { query: alert.query })}
-                  className="mt-2.5 w-full py-1.5 border border-gray-200 dark:border-gray-800 rounded-lg text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition">
+                  className="mt-2.5 w-full py-1.5 border border-gray-200 dark:border-gray-800 rounded-lg text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition">
                   <Search className="w-3 h-3" />Search Now ({alert.matchCount} products)
                 </button>
               </motion.div>

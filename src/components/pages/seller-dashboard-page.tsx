@@ -231,7 +231,7 @@ export const SellerDashboardPage = () => {
       <header className="bg-white dark:bg-gray-900 px-4 py-4 shadow-sm dark:bg-gray-800 sticky top-0 z-10 flex justify-between items-center">
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">Seller Hub</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             {data ? `Welcome back, ${data.supplier.companyName}` : 'Welcome back to Zylod Marketplace'}
           </p>
         </div>
@@ -262,13 +262,13 @@ export const SellerDashboardPage = () => {
             <CardContent className="p-8 text-center space-y-3">
               <Users className="w-10 h-10 text-gray-300 mx-auto" />
               <h2 className="text-base font-bold dark:text-white">Supplier sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Sign in with a supplier account to see your live dashboard.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Sign in with a supplier account to see your live dashboard.</p>
               <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
             </CardContent>
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : (
           <>
@@ -286,7 +286,7 @@ export const SellerDashboardPage = () => {
                       ) : (
                         <div className="text-2xl font-bold dark:text-white">{stat.value}</div>
                       )}
-                      <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">{stat.label}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">{stat.label}</div>
                     </div>
                   </CardContent>
                 )
@@ -320,7 +320,7 @@ export const SellerDashboardPage = () => {
               <CardContent>
                 {demand.length === 0 ? (
                   <div className="py-4 text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">No active restock watches right now. Buyers who tap “Notify me” on a sold-out product appear here instantly.</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">No active restock watches right now. Buyers who tap “Notify me” on a sold-out product appear here instantly.</p>
                   </div>
                 ) : (
                   <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -328,7 +328,7 @@ export const SellerDashboardPage = () => {
                       <div key={row.productId} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-950 dark:bg-gray-700/50">
                         <div className="min-w-0">
                           <div className="text-xs font-semibold truncate dark:text-white">{row.productName}</div>
-                          <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                          <div className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                             {row.stockQuantity <= 0 ? 'Out of stock' : `${row.stockQuantity} ${row.unit} in stock`}
                             {!row.isActive && ' · hidden listing'}
                           </div>
@@ -351,7 +351,7 @@ export const SellerDashboardPage = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold flex items-center justify-between">
                   <span>Revenue Trend (last 6 months)</span>
-                  <BarChart3 className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                  <BarChart3 className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -359,14 +359,14 @@ export const SellerDashboardPage = () => {
                   <Skeleton className="h-40 w-full rounded-lg" />
                 ) : maxRevenue === 0 ? (
                   <div className="h-40 w-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-700 rounded-lg flex flex-col items-center justify-center gap-1">
-                    <BarChart3 className="w-6 h-6 text-gray-400 dark:text-gray-500" />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">No revenue yet — your sales will chart here</p>
+                    <BarChart3 className="w-6 h-6 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
+                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">No revenue yet — your sales will chart here</p>
                   </div>
                 ) : (
                   <div className="h-40 w-full flex items-end justify-between gap-2 px-1">
                     {data?.monthlyRevenue.map((point) => (
                       <div key={point.month} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-                        <span className="text-[9px] font-semibold text-gray-500 dark:text-gray-400 tabular-nums">
+                        <span className="text-[9px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 tabular-nums">
                           {point.revenue > 0 ? `৳${point.revenue >= 1000 ? `${Math.round(point.revenue / 1000)}k` : point.revenue}` : ''}
                         </span>
                         <div
@@ -374,7 +374,7 @@ export const SellerDashboardPage = () => {
                           style={{ height: `${Math.max(2, Math.round((point.revenue / maxRevenue) * 100))}%` }}
                           title={`${point.month}: ৳${point.revenue.toLocaleString()}`}
                         />
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400">{point.month}</span>
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500">{point.month}</span>
                       </div>
                     ))}
                   </div>
@@ -400,11 +400,11 @@ export const SellerDashboardPage = () => {
                           {c.type === 'percentage' ? `${c.value}% off` : `৳${c.value.toLocaleString()} off`}
                         </Badge>
                       </div>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">
                         {c.products.length} of your products pinned · ends {new Date(c.validUntil).toLocaleDateString('en-GB')}
                         {c.minOrderAmount != null ? ` · applies from ৳${c.minOrderAmount.toLocaleString()}` : ''}
                       </p>
-                      <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">
+                      <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-0.5">
                         You are always paid the full line value — the platform funds the discount.
                       </p>
                     </div>
@@ -429,7 +429,7 @@ export const SellerDashboardPage = () => {
                     <CardContent className="p-8 text-center">
                       <Package className="w-10 h-10 text-gray-300 mx-auto mb-2" />
                       <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No orders yet</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
                         Orders from buyers will appear here the moment they come in.
                       </p>
                       <Button variant="outline" size="sm" className="mt-3" onClick={() => navigate('seller-add-product')}>
@@ -441,7 +441,7 @@ export const SellerDashboardPage = () => {
                   data?.recentSubOrders.map((order) => (
                     <Card
                       key={order.id}
-                      className="border-none shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      className="border-none shadow-sm cursor-pointer hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition-colors"
                       onClick={() => navigate('seller-order-management', { subOrderId: order.id })}
                     >
                       <CardContent className="p-4 flex items-center justify-between">
@@ -451,7 +451,7 @@ export const SellerDashboardPage = () => {
                           </div>
                           <div className="min-w-0">
                             <div className="font-semibold text-sm dark:text-white">{order.orderNumber}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">
                               {order.primaryItemName}
                               {order.itemCount > 1 ? ` +${order.itemCount - 1} more` : ''} • {order.itemCount} item{order.itemCount !== 1 ? 's' : ''}
                             </div>

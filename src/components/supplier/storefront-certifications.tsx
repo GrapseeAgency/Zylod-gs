@@ -43,9 +43,9 @@ export const StorefrontCertifications = ({ rollup }: { rollup: StorefrontCertRol
   if (!rollup || rollup.total === 0) {
     return (
       <div className="text-center py-10" aria-live="polite">
-        <ShieldOff className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+        <ShieldOff className="w-10 h-10 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 mx-auto mb-2" />
         <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No certifications on file</h3>
-        <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-xs mx-auto">
           This store has not published any product certifications yet. Compliance claims on Zylod come only from documents the supplier filed — never from the platform.
         </p>
       </div>
@@ -56,26 +56,26 @@ export const StorefrontCertifications = ({ rollup }: { rollup: StorefrontCertRol
     <div className="space-y-4" aria-live="polite">
       {/* Honest counters — expired is shown, not hidden */}
       <div className="grid grid-cols-3 gap-2">
-        <div className="rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-3 text-center">
+        <div className="rounded-lg bg-white dark:bg-gray-900 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-3 text-center">
           <div className="text-lg font-bold text-green-600 dark:text-green-400 flex items-center justify-center gap-1">
             {rollup.active}
             <BadgeCheck className="w-4 h-4" />
           </div>
-          <div className="text-[10px] text-gray-500 uppercase tracking-wide">Valid</div>
+          <div className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wide">Valid</div>
         </div>
-        <div className="rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-3 text-center">
+        <div className="rounded-lg bg-white dark:bg-gray-900 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-3 text-center">
           <div className="text-lg font-bold text-amber-600 dark:text-amber-400 flex items-center justify-center gap-1">
             {rollup.expiringSoon}
             <Timer className="w-4 h-4" />
           </div>
-          <div className="text-[10px] text-gray-500 uppercase tracking-wide">Expiring soon</div>
+          <div className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wide">Expiring soon</div>
         </div>
-        <div className="rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-3 text-center">
+        <div className="rounded-lg bg-white dark:bg-gray-900 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-3 text-center">
           <div className="text-lg font-bold text-red-600 dark:text-red-400 flex items-center justify-center gap-1">
             {rollup.expired}
             <ShieldAlert className="w-4 h-4" />
           </div>
-          <div className="text-[10px] text-gray-500 uppercase tracking-wide">Expired</div>
+          <div className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wide">Expired</div>
         </div>
       </div>
 
@@ -85,7 +85,7 @@ export const StorefrontCertifications = ({ rollup }: { rollup: StorefrontCertRol
           {rollup.issuers.map((issuer) => (
             <span
               key={issuer}
-              className="text-[11px] px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
+              className="text-[11px] px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 border border-gray-200 dark:border-gray-800 dark:border-gray-700"
             >
               {issuer}
             </span>
@@ -101,12 +101,12 @@ export const StorefrontCertifications = ({ rollup }: { rollup: StorefrontCertRol
           return (
             <div
               key={cert.id}
-              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 p-3"
+              className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-3"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <div className="text-sm font-medium text-gray-900 dark:text-white truncate">{cert.certName}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white truncate">{cert.certName}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">
                     {cert.issuedBy}
                     {cert.expiresAt
                       ? ` · valid until ${new Date(cert.expiresAt).toLocaleDateString()}`
@@ -130,7 +130,7 @@ export const StorefrontCertifications = ({ rollup }: { rollup: StorefrontCertRol
           );
         })}
         {rollup.total > rollup.recent.length && (
-          <p className="text-[11px] text-gray-400 text-center">
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 text-center">
             Showing the {rollup.recent.length} most recent of {rollup.total} filed certifications.
           </p>
         )}

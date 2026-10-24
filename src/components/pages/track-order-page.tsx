@@ -165,10 +165,10 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 flex items-center justify-center mb-4">
-          <PackageSearch className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+          <PackageSearch className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
           Open one of your orders and choose the tracking action there — this screen
           tracks a specific order.
         </p>
@@ -222,7 +222,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
       {/* Top Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Track Order</h1>
@@ -233,7 +233,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
       {/* Neutral header band — no fake live map, no live-tracking claim */}
       <div className="bg-slate-900 dark:bg-slate-800">
         <div className="max-w-lg mx-auto px-4 py-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-900/10 flex items-center justify-center shrink-0">
             <Truck className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -251,7 +251,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               <LogIn className="h-6 w-6" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Sign in required</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">{error}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1.5">{error}</p>
             <div className="mt-5 flex items-center justify-center gap-2">
               <Button
                 onClick={() => navigate('login')}
@@ -262,7 +262,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               <Button
                 variant="outline"
                 onClick={loadOrder}
-                className="bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold text-xs h-10 px-5 rounded-2xl"
+                className="bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold text-xs h-10 px-5 rounded-2xl"
               >
                 Retry
               </Button>
@@ -273,11 +273,11 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
         {/* Not found (404) */}
         {!needsAuth && notFound && (
           <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500 flex items-center justify-center mx-auto mb-3">
+            <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-3">
               <PackageSearch className="h-6 w-6" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Order not found</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1.5">
               This order doesn&apos;t exist or the link you followed is incorrect.
             </p>
             <Button
@@ -343,7 +343,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
                     Order Number
                   </span>
                   <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
@@ -358,13 +358,13 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
 
               {/* Estimated Delivery — only a real supplier-set date */}
               <div className="text-center py-1">
-                <span className="text-xs text-slate-500 dark:text-slate-400 block">Estimated Delivery</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 block">Estimated Delivery</span>
                 {estimatedDelivery ? (
                   <div className="text-xl font-black text-primary mt-0.5 tracking-tight">
                     {estimatedDelivery}
                   </div>
                 ) : (
-                  <div className="text-sm font-bold text-slate-400 dark:text-slate-500 mt-1">
+                  <div className="text-sm font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1">
                     To be scheduled by the supplier
                   </div>
                 )}
@@ -425,7 +425,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               {/* Per-shipment tracking — real numbers only */}
               <div className="space-y-2.5 pt-1 border-t border-slate-100 dark:border-slate-800">
                 {subOrders.length === 0 && (
-                  <p className="text-xs text-slate-400 dark:text-slate-500 py-1">No shipments recorded for this order.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-1">No shipments recorded for this order.</p>
                 )}
                 {subOrders.map((so, idx) => (
                   <div
@@ -441,7 +441,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                           <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
                             {so.supplier?.companyName || '--'}
                           </h3>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
                             Shipment {idx + 1} of {subOrders.length}
                           </p>
                         </div>
@@ -453,19 +453,19 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
 
                     {so.trackingNumber ? (
                       <div className="flex items-center justify-between bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-xl px-3 py-2 border border-slate-100 dark:border-slate-800">
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono truncate">
                           Tracking: {so.trackingNumber}
                         </p>
                         <button
                           onClick={() => handleCopy(so.id, so.trackingNumber as string)}
-                          className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg shrink-0"
+                          className="p-1.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200 rounded-lg shrink-0"
                           title="Copy tracking number"
                         >
                           {copiedId === so.id ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
                         </button>
                       </div>
                     ) : (
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 italic">
                         No tracking number assigned yet
                       </p>
                     )}
@@ -491,15 +491,15 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               {trackingEvents.length === 0 ? (
                 <div className="py-6 text-center">
                   <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3">
-                    <Truck className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+                    <Truck className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                   </div>
                   <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">No tracking updates yet</h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
                     Updates appear here once the supplier ships your order.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-5 pl-2 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:before:bg-slate-800">
+                <div className="space-y-5 pl-2 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:bg-slate-900 dark:before:bg-slate-800">
                   {trackingEvents.map((event, idx) => {
                     const isLatest = idx === 0
                     return (
@@ -526,17 +526,17 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                           >
                             {(event.status || '--').replace(/_/g, ' ')}
                           </h3>
-                          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                          <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                             {event.location ? `${event.location} • ` : ''}
                             {formatDateTime(event.trackedAt)}
                           </p>
                           {event.note && (
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
                               {event.note}
                             </p>
                           )}
                           {event.supplierName && (
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-1">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1">
                               {event.supplierName}
                             </p>
                           )}

@@ -63,13 +63,13 @@ export function CustomerQueriesPage() {
         ) : error ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded text-center shadow">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{error}</p>
           </div>
         ) : queries.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-8 rounded text-center shadow">
             <Inbox className="w-10 h-10 text-gray-300 mx-auto mb-2" />
             <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No customer queries yet</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
               Direct buyer queries — pre-order asks, custom requests, complaints — will land here.
               Today most buyer questions arrive through product Q&amp;A, the RFQ inbox, and chat.
             </p>
@@ -80,15 +80,15 @@ export function CustomerQueriesPage() {
               {queries.map(q => (
                 <div key={q.id} onClick={() => navigate('customer-query-detail', { id: q.id })} className="bg-white dark:bg-gray-900 p-4 rounded shadow cursor-pointer flex items-start">
                   <div className="bg-gray-100 dark:bg-gray-900 p-3 rounded-full mr-4">
-                    <MessageCircle className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                    <MessageCircle className="w-6 h-6 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between items-center gap-2">
                       <h3 className="font-bold">{q.buyerName}</h3>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{new Date(q.createdAt).toLocaleDateString()}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{new Date(q.createdAt).toLocaleDateString()}</span>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">{q.subject}: {q.lastMessage}</p>
-                    <span className="inline-block mt-1.5 text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full border bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800">{q.status}</span>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 mt-1 truncate">{q.subject}: {q.lastMessage}</p>
+                    <span className="inline-block mt-1.5 text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full border bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 dark:text-gray-500 border-gray-200 dark:border-gray-800">{q.status}</span>
                   </div>
                 </div>
               ))}
@@ -107,9 +107,9 @@ export function CustomerQueriesPage() {
                   {queries.map(q => (
                     <tr key={q.id} onClick={() => navigate('customer-query-detail', { id: q.id })} className="border-t cursor-pointer hover:bg-red-50/30">
                       <td className="px-4 py-3 font-bold">{q.buyerName}</td>
-                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-md truncate">{q.subject}: {q.lastMessage}</td>
-                      <td className="px-4 py-3"><span className="text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full border bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800">{q.status}</span></td>
-                      <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400">{new Date(q.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400 dark:text-gray-500 max-w-md truncate">{q.subject}: {q.lastMessage}</td>
+                      <td className="px-4 py-3"><span className="text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full border bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400 dark:text-gray-500 border-gray-200 dark:border-gray-800">{q.status}</span></td>
+                      <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{new Date(q.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>

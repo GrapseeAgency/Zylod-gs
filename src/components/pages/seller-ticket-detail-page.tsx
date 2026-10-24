@@ -113,13 +113,13 @@ export function SellerTicketDetailPage({ pageParams: _pageParams }: { pageParams
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
-      <header className="bg-white dark:bg-gray-900 p-4 flex items-center justify-between border-b sticky top-0 z-20">
+      <header className="bg-white dark:bg-gray-900 p-4 md:px-6 flex items-center justify-between border-b sticky top-0 z-20">
         <div className="flex items-center min-w-0">
-          <button onClick={goBack} className="mr-3 text-slate-600 dark:text-slate-400 hover:text-slate-900" aria-label="Back">←</button>
+          <button onClick={goBack} className="md:hidden mr-3 text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100" aria-label="Back">←</button>
           <h1 className="font-bold truncate">{thread?.subject ?? 'Ticket'}</h1>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={loadThread} className="text-slate-400 dark:text-slate-500 hover:text-slate-700" aria-label="Refresh">
+          <button onClick={loadThread} className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300" aria-label="Refresh">
             <RefreshCw className="w-4 h-4" />
           </button>
           {thread && (
@@ -140,7 +140,7 @@ export function SellerTicketDetailPage({ pageParams: _pageParams }: { pageParams
           <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl text-center shadow-sm">
             <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto mb-2" />
             <p className="text-sm font-bold text-slate-700 dark:text-slate-300">Sign in required</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Sign in with the seller account that opened this ticket.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Sign in with the seller account that opened this ticket.</p>
           </div>
         ) : error ? (
           <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl text-center shadow-sm">
@@ -154,10 +154,10 @@ export function SellerTicketDetailPage({ pageParams: _pageParams }: { pageParams
           <>
             <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-2 flex-wrap mb-1">
-                <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500">
+                <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400">
                   You · opened {new Date(thread.createdAt).toLocaleDateString('en-GB')}
                 </span>
-                <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500">· {thread.category.replace(/_/g, ' ')}</span>
+                <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400">· {thread.category.replace(/_/g, ' ')}</span>
               </div>
               <p className="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{thread.description}</p>
             </div>

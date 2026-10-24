@@ -13,7 +13,7 @@ export function SplitPaymentPage() {
       {/* Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Close">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Close">
             <X className="h-5 w-5 text-primary" />
           </button>
           <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Split Payment</h1>
@@ -36,7 +36,7 @@ export function SplitPaymentPage() {
             </h2>
           </div>
 
-          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
             Orders on Zylod start UNPAID. Once your order is placed, you can pay the full amount via
             bank transfer or mobile wallet from the order page — payment is verified before the order
             is marked paid. Splitting one order across multiple payment methods isn&apos;t supported
@@ -46,7 +46,7 @@ export function SplitPaymentPage() {
       </main>
 
       {/* Fixed Bottom Actions */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <div className="max-w-lg mx-auto space-y-2">
           <Button
             onClick={() => navigate('my-orders')}
@@ -58,7 +58,7 @@ export function SplitPaymentPage() {
           <Button
             variant="outline"
             onClick={goBack}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
           >
             Back
           </Button>

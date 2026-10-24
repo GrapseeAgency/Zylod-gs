@@ -168,7 +168,7 @@ export function PushNotificationSettingsPage() {
       {/* Header */}
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Push Notification Settings</span>
@@ -197,7 +197,7 @@ export function PushNotificationSettingsPage() {
             <Skeleton className="h-48 w-full rounded-3xl" />
           </div>
         ) : !prefs ? (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">Failed to load settings.</div>
+          <div className="text-center py-12 text-gray-500 dark:text-gray-400 dark:text-gray-500">Failed to load settings.</div>
         ) : (
           <>
             {/* Web Push Device Permission Banner */}
@@ -207,7 +207,7 @@ export function PushNotificationSettingsPage() {
                   <Smartphone className="w-5 h-5 text-white" />
                   <h2 className="text-sm font-bold">Browser &amp; Device Web Push</h2>
                 </div>
-                <span className="text-[10px] font-bold uppercase bg-white/20 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold uppercase bg-white dark:bg-gray-900/20 px-2 py-0.5 rounded-full">
                   Real-time
                 </span>
               </div>
@@ -271,7 +271,7 @@ export function PushNotificationSettingsPage() {
                         else alert('Triggered alert scan.')
                       })
                   }}
-                  className="border-white/40 text-white hover:bg-white/10 font-bold text-xs rounded-xl"
+                  className="border-white/40 text-white hover:bg-white dark:bg-gray-900/10 font-bold text-xs rounded-xl"
                 >
                   Scan Price Watches ⚡
                 </Button>
@@ -286,7 +286,7 @@ export function PushNotificationSettingsPage() {
               >
                 <Volume2 className="w-4 h-4 text-red-600" />
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Sounds &amp; Vibrate</p>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500 capitalize">{prefs.notificationSound}</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 capitalize">{prefs.notificationSound}</p>
               </button>
               <button
                 onClick={() => navigate('notification-quiet-hours')}
@@ -294,7 +294,7 @@ export function PushNotificationSettingsPage() {
               >
                 <Moon className="w-4 h-4 text-indigo-600" />
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Quiet Hours</p>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500">{prefs.quietHoursEnabled ? 'Active' : 'Disabled'}</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{prefs.quietHoursEnabled ? 'Active' : 'Disabled'}</p>
               </button>
               <button
                 onClick={() => navigate('notification-archive')}
@@ -302,25 +302,25 @@ export function PushNotificationSettingsPage() {
               >
                 <Clock className="w-4 h-4 text-amber-600" />
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Archive</p>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500">&gt;30 days old</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">&gt;30 days old</p>
               </button>
               <button
                 onClick={() => navigate('notification-muted')}
                 className="bg-white dark:bg-gray-900 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm text-left hover:border-red-200 transition space-y-1"
               >
-                <VolumeX className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                <VolumeX className="w-4 h-4 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Muted Alerts</p>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500">Pause alerts</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Pause alerts</p>
               </button>
             </div>
 
             {/* Notification Channels Header */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
               <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
-                <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Category Controls
                 </h2>
-                <div className="flex items-center gap-6 text-xs font-bold text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-6 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   <span className="flex items-center gap-1">
                     <Smartphone className="w-3.5 h-3.5 text-blue-600" /> Push
                   </span>
@@ -339,7 +339,7 @@ export function PushNotificationSettingsPage() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{cat.title}</p>
-                        <p className="text-[11px] text-gray-400 dark:text-gray-500 line-clamp-1">{cat.desc}</p>
+                        <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 line-clamp-1">{cat.desc}</p>
                       </div>
                     </div>
 
@@ -369,14 +369,14 @@ export function PushNotificationSettingsPage() {
 
             {/* General Delivery Preferences */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
-              <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2.5">
+              <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2.5">
                 Frequency &amp; Digest Options
               </h2>
 
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">Daily Morning Summary</p>
-                  <p className="text-[11px] text-gray-400 dark:text-gray-500">Receive a consolidated 8:00 AM briefing of all wholesale movements</p>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Receive a consolidated 8:00 AM briefing of all wholesale movements</p>
                 </div>
                 <Switch
                   checked={prefs.digestEnabled}
@@ -387,7 +387,7 @@ export function PushNotificationSettingsPage() {
               <div className="flex items-center justify-between pt-2 border-t border-gray-50">
                 <div>
                   <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">Direct Mention &amp; RFQ Pings</p>
-                  <p className="text-[11px] text-gray-400 dark:text-gray-500">High-priority sound alerts when a factory responds to your RFQ</p>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">High-priority sound alerts when a factory responds to your RFQ</p>
                 </div>
                 <Switch
                   checked={prefs.mentionNotify}

@@ -139,7 +139,7 @@ export function EditCollectionPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
-        <header className="bg-white dark:bg-gray-900 h-14 border-b flex items-center px-4">
+        <header className="md:hidden bg-white dark:bg-gray-900 h-14 border-b flex items-center px-4">
           <Skeleton className="w-8 h-8 rounded-full" />
           <Skeleton className="w-32 h-6 ml-4 rounded" />
         </header>
@@ -170,7 +170,7 @@ export function EditCollectionPage() {
       className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col pb-6"
     >
       <header className="bg-white dark:bg-gray-900 h-14 border-b flex items-center justify-between px-4 sticky top-0 z-20 md:hidden">
-        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Go back">
+        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800" aria-label="Go back">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <h1 className="text-base font-semibold">Edit Collection</h1>
@@ -241,7 +241,7 @@ export function EditCollectionPage() {
               ))}
             </div>
             {collection.privacy === 'SHARED' && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">
                 A secret link lets anyone holding it view this collection. Flip back to Private and old links stop working.
               </p>
             )}
@@ -263,7 +263,7 @@ export function EditCollectionPage() {
           <div className="space-y-3">
             {collection.items.map((item) => (
               <div key={item.id} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-950 p-2 rounded-lg border border-gray-100 dark:border-gray-800">
-                <GripVertical className="w-5 h-5 text-gray-400 dark:text-gray-500 cursor-grab" aria-hidden="true" />
+                <GripVertical className="w-5 h-5 text-gray-400 dark:text-gray-500 dark:text-gray-400 cursor-grab" aria-hidden="true" />
                 <div className="w-12 h-12 bg-white dark:bg-gray-900 rounded border flex-shrink-0 overflow-hidden">
                   {item.product?.thumbnailUrl ? (
                     <img src={item.product.thumbnailUrl} alt={item.product.name} className="w-full h-full object-cover" />
@@ -273,19 +273,19 @@ export function EditCollectionPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{item.product?.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">৳{item.product?.basePrice} / {item.product?.unit}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">৳{item.product?.basePrice} / {item.product?.unit}</p>
                 </div>
                 <button 
                   onClick={() => removeItem(item.product.id)}
                   aria-label={`Remove ${item.product?.name} — saved on Save`}
-                  className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-500 rounded-full hover:bg-gray-200"
+                  className="p-2 text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-200"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
             {collection.items.length === 0 && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No products in this collection.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center py-4">No products in this collection.</p>
             )}
           </div>
         </div>

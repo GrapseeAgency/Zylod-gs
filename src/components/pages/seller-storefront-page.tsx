@@ -157,7 +157,7 @@ export const SellerStorefrontPage = () => {
         ) : data?.storeCustomization?.bannerUrl ? (
           <img src={data.storeCustomization.bannerUrl} alt="Store Banner" className="w-full h-full object-cover" />
         ) : !error ? (
-          <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 gap-1">
+          <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 dark:text-gray-400 gap-1">
             <ImageOff className="w-8 h-8" />
             <span className="text-[11px]">No banner set yet</span>
           </div>
@@ -183,9 +183,9 @@ export const SellerStorefrontPage = () => {
       {error ? (
         /* Honest state — no demo store content is invented */
         <div className="px-4 py-16 text-center">
-          <AlertCircle className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+          <AlertCircle className="w-12 h-12 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 mx-auto mb-3" />
           <h2 className="text-base font-bold text-gray-800 dark:text-gray-200">Store profile not available</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs mx-auto">{error}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-xs mx-auto">{error}</p>
           <Button onClick={goBack} className="mt-4">Go Back</Button>
         </div>
       ) : (
@@ -200,7 +200,7 @@ export const SellerStorefrontPage = () => {
               ) : companyName ? (
                 <StoreInitials name={companyName} className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 text-2xl" />
               ) : (
-                <div className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                <div className="w-20 h-20 rounded-xl border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   <Store className="w-8 h-8" />
                 </div>
               )}
@@ -211,7 +211,7 @@ export const SellerStorefrontPage = () => {
                 <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white flex items-center gap-2">
                   {loading ? <Skeleton className="w-32 h-6" /> : companyName || 'Unnamed store'}
                 </h1>
-                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-1 gap-3">
+                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 gap-3">
                   {/* Verified only reflects the real KYC verification status */}
                   {data?.verificationStatus === 'approved' && (
                     <span className="flex items-center gap-1 text-green-600">Verified</span>
@@ -234,12 +234,12 @@ export const SellerStorefrontPage = () => {
                       : '—'}
                   <Star className="w-3 h-3 inline text-amber-400 mb-0.5" fill="currentColor" />
                 </div>
-                <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase">Rating</div>
+                <div className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Rating</div>
               </div>
               <div className="w-px h-8 bg-gray-200 dark:bg-gray-700" />
               <div className="text-center">
                 <div className="text-sm font-bold dark:text-white">{loading ? '-' : data?.ratingCount ?? 0}</div>
-                <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase">Reviews</div>
+                <div className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Reviews</div>
               </div>
               {/* Task 146: the buyer→seller query rail — visitor view only */}
               {viewedSupplierId && (
@@ -253,7 +253,7 @@ export const SellerStorefrontPage = () => {
                     <div className="text-sm font-bold text-gray-700 dark:text-gray-300 dark:text-gray-200 flex items-center gap-1 group-hover:text-primary transition">
                       <MessageCircleQuestion className="w-4 h-4" /> Ask
                     </div>
-                    <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase">the seller</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">the seller</div>
                   </button>
                 </>
               )}
@@ -289,9 +289,9 @@ export const SellerStorefrontPage = () => {
                     [1, 2, 3, 4].map(i => <Skeleton key={i} className="aspect-[3/4] rounded-xl" />)
                   ) : productCount === 0 ? (
                     <div className="col-span-full text-center py-10">
-                      <Package className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                      <Package className="w-10 h-10 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 mx-auto mb-2" />
                       <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No products listed yet</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This store has not published any approved products.</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">This store has not published any approved products.</p>
                     </div>
                   ) : (
                     data?.products?.map((prod) => (
@@ -304,15 +304,15 @@ export const SellerStorefrontPage = () => {
                           {prod.thumbnailUrl ? (
                             <img src={prod.thumbnailUrl} alt={prod.name} className="w-full aspect-square object-cover" />
                           ) : (
-                            <div className="w-full aspect-square flex items-center justify-center text-gray-300 dark:text-gray-500">
+                            <div className="w-full aspect-square flex items-center justify-center text-gray-300 dark:text-gray-500 dark:text-gray-400">
                               <Package className="w-8 h-8" />
                             </div>
                           )}
                         </div>
                         <div className="p-3">
                           <h3 className="font-medium text-sm line-clamp-2 dark:text-white mb-1">{prod.name}</h3>
-                          <div className="font-bold text-primary">৳{prod.basePrice} <span className="text-xs font-normal text-gray-500 dark:text-gray-400">/ {prod.unit}</span></div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Min. {prod.moq} {prod.unit}</div>
+                          <div className="font-bold text-primary">৳{prod.basePrice} <span className="text-xs font-normal text-gray-500 dark:text-gray-400 dark:text-gray-500">/ {prod.unit}</span></div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Min. {prod.moq} {prod.unit}</div>
                         </div>
                       </div>
                     ))
@@ -323,13 +323,13 @@ export const SellerStorefrontPage = () => {
                 {viewedSupplierId ? (
                   <div className="text-center py-10">
                     <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <h3 className="text-gray-500 dark:text-gray-400 font-medium mb-1">No featured collection published</h3>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">This store has not set up featured products yet.</p>
+                    <h3 className="text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium mb-1">No featured collection published</h3>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">This store has not set up featured products yet.</p>
                   </div>
                 ) : (
                   <div className="text-center py-10">
                     <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-gray-500 dark:text-gray-400 font-medium mb-4">Set up featured collections</h3>
+                    <h3 className="text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium mb-4">Set up featured collections</h3>
                     <Button onClick={() => navigate('store-featured-products')}>Manage Featured Products</Button>
                   </div>
                 )}
@@ -357,7 +357,7 @@ export const SellerStorefrontPage = () => {
                   {campaignSupplierId ? (
                     <StorefrontCampaigns supplierId={campaignSupplierId} />
                   ) : (
-                    <div className="text-center py-10 text-sm text-gray-500 dark:text-gray-400">Campaigns load once the store profile resolves.</div>
+                    <div className="text-center py-10 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Campaigns load once the store profile resolves.</div>
                   )}
                 </div>
               </TabsContent>
@@ -402,7 +402,7 @@ export const SellerStorefrontPage = () => {
                 <option value="custom_request">Custom order request</option>
                 <option value="complaint">Complaint</option>
               </select>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">Product questions belong on the product page's Q&amp;A.</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Product questions belong on the product page's Q&amp;A.</p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="ask-subject">Subject</Label>

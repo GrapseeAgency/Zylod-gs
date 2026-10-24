@@ -140,15 +140,15 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
   if (!productId) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
+        <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
           <span className="text-lg font-black tracking-tight text-primary">Zylod</span>
         </header>
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
-            <Layers className="h-9 w-9 text-gray-400 dark:text-gray-500" />
+            <Layers className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No product selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
             Variants are listed per product. Open a product to see its real, live variants.
           </p>
           <Button
@@ -168,14 +168,14 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <button onClick={goBack} className="md:hidden p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+            <button onClick={goBack} className="md:hidden p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <h1 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
               {loading ? 'Product Variants' : product?.name || 'Product Variants'}
             </h1>
           </div>
-          <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900">
+          <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100">
             <Search className="h-5 w-5" />
           </button>
         </div>
@@ -191,7 +191,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
               </div>
               <div>
                 <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load this product</h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{error}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">{error}</p>
               </div>
             </div>
             <Button
@@ -230,15 +230,15 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                 <img src={productImage} alt={product.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 w-full h-full">
-                  <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <Package className="h-5 w-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                 </div>
               )}
             </div>
 
             <div>
               {product.sku && (
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
-                  <Package className="h-3 w-3 text-slate-500 dark:text-slate-400" />
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
+                  <Package className="h-3 w-3 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
                   SKU: {product.sku}
                 </span>
               )}
@@ -246,7 +246,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                 {product.name}
               </h2>
               {product.description && (
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
                   {product.description}
                 </p>
               )}
@@ -255,7 +255,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                 <span className="text-sm font-black text-primary">
                   From {formatPrice(product.basePrice || 0)} / {product.unit || 'pcs'}
                 </span>
-                <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+                <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">
                   MOQ: {product.moq || 1}
                 </span>
               </div>
@@ -264,7 +264,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
             <Button
               variant="outline"
               onClick={() => navigate('product-detail', { productId: product.id })}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
             >
               <Package className="h-4 w-4" />
               View Full Product Details
@@ -294,7 +294,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+            <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">
               <Info className="h-3.5 w-3.5 text-primary shrink-0" />
               <span>Prices and stock come live from the supplier&apos;s listings.</span>
             </div>
@@ -305,10 +305,10 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
         {!loading && !error && product && variants.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
             <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
-              <Layers className="h-7 w-7 text-gray-400 dark:text-gray-500" />
+              <Layers className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">No variants configured</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
               This product doesn&apos;t have any variants set up yet. Check the full product page for
               current pricing and availability.
             </p>
@@ -335,7 +335,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                     <h3 className="text-xs font-black text-slate-900 dark:text-slate-100 truncate">
                       {v.variantName}: {v.variantValue}
                     </h3>
-                    {v.sku && <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">SKU: {v.sku}</p>}
+                    {v.sku && <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">SKU: {v.sku}</p>}
                   </div>
 
                   {v.isAvailable ? (
@@ -344,7 +344,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                       {v.stockQuantity.toLocaleString()} in stock
                     </Badge>
                   ) : (
-                    <Badge className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-none text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                    <Badge className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 border-none text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
                       <AlertCircle className="h-3 w-3" />
                       Out of stock
                     </Badge>
@@ -355,7 +355,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                 <div className="flex items-center justify-between pt-1 border-t border-slate-50">
                   <span className="text-sm font-black text-primary">
                     {formatPrice(v.effectivePrice)}{' '}
-                    <span className="text-[10px] font-normal text-slate-400 dark:text-slate-500">
+                    <span className="text-[10px] font-normal text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       / {product?.unit || 'pcs'}
                     </span>
                   </span>

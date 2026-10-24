@@ -109,7 +109,7 @@ export function EarnCouponsPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition" aria-label="Go back">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition" aria-label="Go back">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -154,7 +154,7 @@ export function EarnCouponsPage() {
 
         {/* Task List */}
         <div className="space-y-3">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
             Available Tasks ({tasks.length})
           </h2>
 
@@ -171,7 +171,7 @@ export function EarnCouponsPage() {
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 p-10 text-center">
               <Gift className="h-10 w-10 mx-auto text-gray-300 mb-2" />
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">No reward tasks are live right now</h3>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Check back soon — new ways to earn are added by the platform team.</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-1">Check back soon — new ways to earn are added by the platform team.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -182,7 +182,7 @@ export function EarnCouponsPage() {
               return (
                 <div
                   key={task.id}
-                  className={`bg-white rounded-2xl p-4 border shadow-sm flex items-center justify-between gap-4 transition ${
+                  className={`bg-white dark:bg-gray-900 rounded-2xl p-4 border shadow-sm flex items-center justify-between gap-4 transition ${
                     claimed ? 'border-green-200' : 'border-gray-100 dark:border-gray-800 hover:border-amber-200'
                   }`}
                 >
@@ -202,11 +202,11 @@ export function EarnCouponsPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mt-0.5">{task.description}</p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 line-clamp-2 mt-0.5">{task.description}</p>
                       {prog && !claimed && target > 1 && (
                         <div className="mt-2 space-y-1">
                           <Progress value={Math.min(100, Math.round((prog.count / target) * 100))} className="h-1.5" aria-label={`Progress ${prog.count} of ${target}`} />
-                          <p className="text-[10px] text-gray-400 dark:text-gray-500">{prog.count} of {target} completed</p>
+                          <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{prog.count} of {target} completed</p>
                         </div>
                       )}
                     </div>

@@ -89,16 +89,16 @@ export function ImageSearchPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 flex items-center gap-3 px-4 py-3 md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center gap-3 px-4 py-3 md:hidden">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <span className="font-semibold text-gray-900">Search by Image</span>
+        <span className="font-semibold text-gray-900 dark:text-gray-100">Search by Image</span>
         {stage !== 'select' && (
-          <button onClick={reset} className="ml-auto p-1.5 rounded-full hover:bg-gray-100">
-            <X className="w-4 h-4 text-gray-600" />
+          <button onClick={reset} className="ml-auto p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900">
+            <X className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
           </button>
         )}
       </div>
@@ -109,7 +109,7 @@ export function ImageSearchPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative w-32 h-32 rounded-xl overflow-hidden border border-gray-200 mx-auto"
+            className="relative w-32 h-32 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 mx-auto"
           >
             <img src={preview} alt="Search image" className="w-full h-full object-cover" />
             <button
@@ -129,23 +129,23 @@ export function ImageSearchPage() {
                 onClick={() => cameraInputRef.current?.click()}
                 className="border-2 border-dashed border-gray-300 rounded-2xl p-6 flex flex-col items-center gap-2 hover:border-red-400 hover:bg-red-50 transition"
               >
-                <Camera className="w-8 h-8 text-gray-400" />
-                <span className="text-sm font-medium text-gray-600">Take Photo</span>
-                <span className="text-xs text-gray-400">Use camera</span>
+                <Camera className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500">Take Photo</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">Use camera</span>
               </button>
               <button
                 onClick={() => galleryInputRef.current?.click()}
                 className="border-2 border-dashed border-gray-300 rounded-2xl p-6 flex flex-col items-center gap-2 hover:border-red-400 hover:bg-red-50 transition"
               >
-                <Upload className="w-8 h-8 text-gray-400" />
-                <span className="text-sm font-medium text-gray-600">Upload Image</span>
-                <span className="text-xs text-gray-400">From gallery</span>
+                <Upload className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500">Upload Image</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">From gallery</span>
               </button>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400">or</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">or</span>
               <div className="flex-1 h-px bg-gray-200" />
             </div>
 
@@ -163,7 +163,7 @@ export function ImageSearchPage() {
               </Button>
             </div>
 
-            <p className="text-xs text-center text-gray-400">
+            <p className="text-xs text-center text-gray-400 dark:text-gray-500">
               Upload or paste an image to find similar wholesale products
             </p>
           </motion.div>
@@ -171,7 +171,7 @@ export function ImageSearchPage() {
 
         {stage === 'loading' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-            <p className="text-center text-sm text-gray-500">Searching for similar products...</p>
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Searching for similar products...</p>
             {[1, 2, 3].map(i => (
               <div key={i} className="flex gap-3">
                 <Skeleton className="w-20 h-20 rounded-xl" />
@@ -187,9 +187,9 @@ export function ImageSearchPage() {
 
         {stage === 'results' && result && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-            <p className="text-sm font-semibold text-gray-800">
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
               Products matching your image
-              {result.query && <span className="font-normal text-gray-500">: &ldquo;{result.query}&rdquo;</span>}
+              {result.query && <span className="font-normal text-gray-500 dark:text-gray-400 dark:text-gray-500">: &ldquo;{result.query}&rdquo;</span>}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {result.products.map((product, idx) => (
@@ -199,9 +199,9 @@ export function ImageSearchPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.06 }}
               >
-                <Card className="overflow-hidden border border-gray-100">
+                <Card className="overflow-hidden border border-gray-100 dark:border-gray-800">
                   <CardContent className="p-3 flex gap-3">
-                    <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-900 rounded-xl overflow-hidden flex-shrink-0">
                       {product.thumbnailUrl ? (
                         <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover" />
                       ) : (
@@ -211,10 +211,10 @@ export function ImageSearchPage() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 line-clamp-2">{product.name}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{product.supplier.companyName}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{product.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">{product.supplier.companyName}</p>
                       <p className="text-sm font-bold text-red-600 mt-1">{formatPrice(product.basePrice)}/{product.unit}</p>
-                      <p className="text-xs text-gray-400">MOQ: {product.moq} {product.unit}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">MOQ: {product.moq} {product.unit}</p>
                       <div className="flex gap-2 mt-2">
                         <Button
                           size="sm"
@@ -236,8 +236,8 @@ export function ImageSearchPage() {
         {stage === 'empty' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12 space-y-3">
             <ImageIcon className="w-12 h-12 text-gray-300 mx-auto" />
-            <p className="text-sm font-medium text-gray-600">No matching products found</p>
-            <p className="text-xs text-gray-400">Try a clearer image or different angle</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500">No matching products found</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">Try a clearer image or different angle</p>
             <Button onClick={reset} variant="outline" size="sm">Try Again</Button>
           </motion.div>
         )}
@@ -245,7 +245,7 @@ export function ImageSearchPage() {
         {stage === 'error' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12 space-y-3">
             <X className="w-12 h-12 text-gray-300 mx-auto" />
-            <p className="text-sm font-medium text-gray-600">{errorMsg}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500">{errorMsg}</p>
             <Button onClick={reset} variant="outline" size="sm">Try Again</Button>
           </motion.div>
         )}

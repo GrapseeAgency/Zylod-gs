@@ -44,7 +44,7 @@ export function SellerTierBenefitsPagePage() {
     >
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Tier benefits</h1>
@@ -59,7 +59,7 @@ export function SellerTierBenefitsPagePage() {
             <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="tier-honest">
               The tier program isn&apos;t live yet
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300 leading-relaxed max-w-md mx-auto">
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 leading-relaxed max-w-md mx-auto">
               Zylod hasn&apos;t launched supplier tiers, so there are no tier benefits to claim — and this page
               will never describe invented tiers. Here is what your store can actually use today:
             </p>
@@ -76,7 +76,7 @@ export function SellerTierBenefitsPagePage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-white">{item.title}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-lg">{item.body}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5 max-w-lg">{item.body}</p>
                   </div>
                 </div>
                 <Button size="sm" variant="outline" className="h-9 shrink-0" onClick={() => navigate(item.page)}>

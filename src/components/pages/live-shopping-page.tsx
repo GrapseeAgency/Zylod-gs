@@ -64,9 +64,9 @@ export function LiveShoppingPage() {
             ))
           ) : streams.length === 0 ? (
             <div className="col-span-full text-center py-16">
-              <Radio className="w-12 h-12 text-slate-700 mx-auto mb-3" />
+              <Radio className="w-12 h-12 text-slate-700 dark:text-slate-300 mx-auto mb-3" />
               <h3 className="text-sm font-bold text-slate-300">No live streams right now</h3>
-              <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                 No broadcast sessions have been scheduled yet. Check back once a supplier goes live.
               </p>
             </div>
@@ -85,7 +85,7 @@ export function LiveShoppingPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-600">
+                    <div className="w-full h-full flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500">
                       <Radio className="w-8 h-8" />
                     </div>
                   )}
@@ -93,7 +93,7 @@ export function LiveShoppingPage() {
                   <div className="absolute top-3 left-3 flex items-center gap-2">
                     {st.isLive ? (
                       <span className="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md">
-                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" /> LIVE
+                        <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-gray-900 animate-ping" /> LIVE
                       </span>
                     ) : (
                       <span className="bg-slate-900/80 text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
@@ -117,13 +117,13 @@ export function LiveShoppingPage() {
 
                 <div className="p-4 space-y-2">
                   <h3 className="text-xs sm:text-sm font-bold text-white line-clamp-2">{st.title}</h3>
-                  <p className="text-[11px] text-slate-400 line-clamp-2">{st.description}</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 line-clamp-2">{st.description}</p>
 
                   <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
                     {st.supplierName ? (
                       <span className="text-xs font-bold text-slate-300 truncate pr-2">{st.supplierName}</span>
                     ) : (
-                      <span className="text-xs text-slate-500">Supplier unnamed</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Supplier unnamed</span>
                     )}
                     {/* Rating row hidden unless a real aggregate rating exists */}
                     {st.supplierRating != null && (

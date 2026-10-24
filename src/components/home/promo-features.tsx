@@ -30,7 +30,7 @@ export function PromoFeatures() {
         return (
           <div
             key={i}
-            className="bg-card rounded-lg border border-gray-100 p-3.5 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            className="bg-card rounded-lg border border-gray-100 dark:border-gray-800 p-3.5 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
             onClick={() => {
               if (feature.title === 'Daily Deals') setCurrentPage('daily-deals')
               else if (feature.title === 'Cross-border') setCurrentPage('cross-border')
@@ -47,7 +47,7 @@ export function PromoFeatures() {
               </div>
               <div>
                 <p className="text-xs font-bold" style={{ color: feature.color }}>{feature.title}</p>
-                <p className="text-[10px] text-gray-400 leading-tight mt-0.5">{feature.desc}</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-tight mt-0.5">{feature.desc}</p>
               </div>
             </div>
           </div>

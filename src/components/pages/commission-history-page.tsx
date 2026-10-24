@@ -63,8 +63,8 @@ export function CommissionHistoryPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 md:px-6 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 md:hidden" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 md:px-6 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 md:hidden" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Commission Statements</span>
@@ -81,7 +81,7 @@ export function CommissionHistoryPage() {
         {/* Banner */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 md:p-8 text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <Percent className="h-5 w-5 text-rose-300" />
             </div>
             <div>
@@ -98,13 +98,13 @@ export function CommissionHistoryPage() {
 
         {/* Ledger */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-          <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 md:hidden">
+          <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500 md:hidden">
             <span>Sub-Order / Date</span>
             <span>Fee (3%) / Net</span>
           </div>
 
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
+            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="text-xs font-bold">Loading Commission Statements...</span>
             </div>
@@ -116,7 +116,7 @@ export function CommissionHistoryPage() {
                   <div key={item.id} className="p-4 flex items-center justify-between gap-3 text-xs">
                     <div>
                       <span className="font-bold text-slate-900 dark:text-slate-100 block">PO #{item.orderNumber}</span>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-0.5">
                         Gross: {formatPrice(item.grossAmount)} • {new Date(item.date).toLocaleDateString()}
                       </span>
                     </div>
@@ -137,7 +137,7 @@ export function CommissionHistoryPage() {
               <div className="hidden md:block">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-950 text-left text-xs font-bold text-slate-500 dark:text-slate-400">
+                    <tr className="bg-slate-50 dark:bg-slate-950 text-left text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       <th className="py-3 px-5 font-bold">Sub-Order</th>
                       <th className="py-3 px-3 font-bold">Date</th>
                       <th className="py-3 px-3 font-bold text-right">Gross</th>
@@ -147,9 +147,9 @@ export function CommissionHistoryPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {data.items.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                      <tr key={item.id} className="hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800">
                         <td className="py-3 px-5 font-bold text-slate-900 dark:text-slate-100">PO #{item.orderNumber}</td>
-                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400">{new Date(item.date).toLocaleDateString()}</td>
+                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400 dark:text-slate-500">{new Date(item.date).toLocaleDateString()}</td>
                         <td className="py-3 px-3 text-right text-slate-700 dark:text-slate-300">{formatPrice(item.grossAmount)}</td>
                         <td className="py-3 px-3 text-right font-black font-mono text-rose-600">
                           -{formatPrice(item.commissionAmount)}
@@ -164,9 +164,9 @@ export function CommissionHistoryPage() {
               </div>
             </>
           ) : (
-            <div className="py-12 text-center text-slate-400 dark:text-slate-500 space-y-1">
+            <div className="py-12 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 space-y-1">
               <Percent className="h-8 w-8 mx-auto text-slate-300 stroke-[1.5]" />
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-400 block">No commission records</span>
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 block">No commission records</span>
             </div>
           )}
         </div>

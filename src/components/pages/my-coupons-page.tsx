@@ -70,7 +70,7 @@ export function MyCouponsPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -121,7 +121,7 @@ export function MyCouponsPage() {
             ))}
           </div>
         ) : coupons.length === 0 ? (
-          <div className="text-center py-16 text-gray-500 dark:text-gray-400 space-y-3">
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-3">
             <Tag className="w-12 h-12 text-gray-300 mx-auto" />
             <p className="font-bold text-sm text-gray-800 dark:text-gray-200">
               {activeTab === 'active' ? 'No active coupons in your vault' : 'No coupons in this category'}
@@ -147,7 +147,7 @@ export function MyCouponsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.04 }}
               onClick={() => navigate('coupon-detail', { id: coupon.id })}
-              className={`bg-white rounded-3xl border shadow-sm p-5 space-y-3 cursor-pointer hover:shadow-md transition ${
+              className={`bg-white dark:bg-gray-900 rounded-3xl border shadow-sm p-5 space-y-3 cursor-pointer hover:shadow-md transition ${
                 activeTab === 'active' ? 'border-red-100 hover:border-red-300' : 'border-gray-100 dark:border-gray-800 opacity-70'
               }`}
             >
@@ -162,12 +162,12 @@ export function MyCouponsPage() {
                     </Badge>
                   </div>
                   <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{coupon.title}</p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     Min Purchase: <strong>{formatPrice(coupon.minOrderBDT)}</strong>
                   </p>
                 </div>
 
-                <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1 flex-shrink-0">
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 flex items-center gap-1 flex-shrink-0">
                   <Clock className="w-3 h-3" />
                   Exp: {new Date(coupon.validUntil).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                 </span>
@@ -187,7 +187,7 @@ export function MyCouponsPage() {
                       e.stopPropagation()
                       copyCode(coupon.code)
                     }}
-                    className="h-8 px-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900"
+                    className="h-8 px-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100"
                   >
                     {copiedCode === coupon.code ? (
                       <>

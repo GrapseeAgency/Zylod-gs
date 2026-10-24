@@ -116,9 +116,9 @@ function VerificationDocuments({ documents }: { documents: ApiDocument[] | undef
   const docs = Array.isArray(documents) ? documents : []
   return (
     <div className="space-y-2">
-      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Verification documents</p>
+      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Verification documents</p>
       {docs.length === 0 ? (
-        <p className="text-[11px] text-slate-400 dark:text-slate-500 bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
           No documents uploaded yet — this supplier has not submitted any verification files. Approving now means approving without document evidence.
         </p>
       ) : (
@@ -144,7 +144,7 @@ function VerificationDocuments({ documents }: { documents: ApiDocument[] | undef
                       href={doc.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="h-16 w-full rounded-lg border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      className="h-16 w-full rounded-lg border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
                     >
                       <FileText className="h-5 w-5" />
                       <span className="text-[9px] font-bold">Open file</span>
@@ -159,7 +159,7 @@ function VerificationDocuments({ documents }: { documents: ApiDocument[] | undef
                 <p className="text-[10px] font-black text-slate-700 dark:text-slate-300 truncate">{label}</p>
                 <div className="flex items-center justify-between gap-1">
                   <span className={`text-[9px] font-bold border rounded-md px-1.5 py-0.5 ${statusStyle}`}>{doc.status}</span>
-                  {size && <span className="text-[9px] text-slate-400 dark:text-slate-500">{size}</span>}
+                  {size && <span className="text-[9px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{size}</span>}
                 </div>
                 {doc.status === 'rejected' && doc.rejectionReason && (
                   <p className="text-[9px] text-red-500 leading-snug">{doc.rejectionReason}</p>
@@ -333,7 +333,7 @@ export function AdminSuppliersPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">The supplier KYC verification queue is restricted to Zylod admins. Sign in with an admin account to review supplier applications.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">The supplier KYC verification queue is restricted to Zylod admins. Sign in with an admin account to review supplier applications.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -349,7 +349,7 @@ export function AdminSuppliersPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Supplier Verification</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">Review supplier KYC submissions. Only approved suppliers can list products on the marketplace.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Review supplier KYC submissions. Only approved suppliers can list products on the marketplace.</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => loadSuppliers()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
@@ -369,7 +369,7 @@ export function AdminSuppliersPage() {
           </button>
         ))}
         <div className="relative flex-1 min-w-[200px] max-w-sm ml-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
           <Input
             value={q}
             onChange={(e) => { setQ(e.target.value) }}
@@ -408,7 +408,7 @@ export function AdminSuppliersPage() {
             <>
               <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
               <h2 className="text-sm font-black">No suppliers waiting for review</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 {q ? `No pending suppliers match "${q}".` : "New supplier applications appear here the moment they register with KYC details."}
               </p>
             </>
@@ -416,7 +416,7 @@ export function AdminSuppliersPage() {
             <>
               <Clock className="h-10 w-10 text-sky-500 mx-auto" />
               <h2 className="text-sm font-black">Nothing is under review right now</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 {q ? `No suppliers under review match "${q}".` : 'Use “Start review” on a pending application to move it here while you verify its documents.'}
               </p>
             </>
@@ -424,7 +424,7 @@ export function AdminSuppliersPage() {
             <>
               <Building2 className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No approved suppliers yet</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 {q ? `No approved suppliers match "${q}".` : 'Suppliers you approve from the Pending or Under review tabs appear here.'}
               </p>
             </>
@@ -432,7 +432,7 @@ export function AdminSuppliersPage() {
             <>
               <FileWarning className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No rejected suppliers</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 {q ? `No rejected suppliers match "${q}".` : 'Rejected applications (with your recorded reason) appear here.'}
               </p>
             </>
@@ -459,7 +459,7 @@ export function AdminSuppliersPage() {
                           : <FileWarning className="h-4 w-4 text-red-500 shrink-0" />}
                     <div className="min-w-0">
                       <p className="text-xs font-black text-slate-800 dark:text-slate-200 truncate">{displayName}</p>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{s.email || s.phone || '--'}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 truncate">{s.email || s.phone || '--'}</p>
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -468,7 +468,7 @@ export function AdminSuppliersPage() {
                     <span className={chipClass}>★ {s.ratingAvg.toFixed(1)} ({s.ratingCount})</span>
                     {s.accountStatus !== 'active' && <span className="text-[10px] font-black text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-lg px-2 py-1">{s.accountStatus.toUpperCase()}</span>}
                   </div>
-                  <div className="text-[10px] text-slate-400 dark:text-slate-500 min-w-[90px]">
+                  <div className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 min-w-[90px]">
                     {fmtDate(s.registeredAt)}
                     <span className="block">registered</span>
                   </div>
@@ -532,7 +532,7 @@ export function AdminSuppliersPage() {
                 {isDetailsOpen && (
                   <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
                     <div className="flex items-center justify-between flex-wrap gap-2">
-                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">KYC submission</p>
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">KYC submission</p>
                       {statusBadge(s.verificationStatus)}
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -540,7 +540,7 @@ export function AdminSuppliersPage() {
                         const val = (s[f.key] as string) || ''
                         return (
                           <div key={String(f.key)} className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
-                            <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">{f.label}</p>
+                            <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">{f.label}</p>
                             <p className={`text-xs font-bold truncate ${val ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 italic font-normal'}`}>
                               {val || 'Not provided'}
                             </p>
@@ -548,12 +548,12 @@ export function AdminSuppliersPage() {
                         )
                       })}
                       <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
-                        <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Contact</p>
+                        <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Contact</p>
                         <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{s.email || 'No email'}</p>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{s.phone || 'No phone'}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 truncate">{s.phone || 'No phone'}</p>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-[10px] text-slate-400 dark:text-slate-500">
+                    <div className="flex flex-wrap gap-4 text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       <span>Email verified: <b className={s.isEmailVerified ? 'text-emerald-600' : 'text-slate-500 dark:text-slate-400'}>{s.isEmailVerified ? 'yes' : 'no'}</b></span>
                       <span>Phone verified: <b className={s.isPhoneVerified ? 'text-emerald-600' : 'text-slate-500 dark:text-slate-400'}>{s.isPhoneVerified ? 'yes' : 'no'}</b></span>
                       <span>KYC submitted: <b>{fmtDate(s.kycSubmittedAt)}</b></span>
@@ -568,7 +568,7 @@ export function AdminSuppliersPage() {
                         <p className="text-xs font-bold text-red-700 dark:text-red-400">{s.rejectionReason || '--'}</p>
                       </div>
                     )}
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
                       Approving verifies this supplier&apos;s identity based on the KYC data and uploaded documents above. Fields marked &quot;Not provided&quot; were never submitted, and a missing documents strip means no verification files exist — approving without them is a blind approval. Every decision is audit-logged with your admin account.
                     </p>
                   </div>
@@ -577,11 +577,11 @@ export function AdminSuppliersPage() {
                 {/* Inline reject form */}
                 {isRejectOpen && (
                   <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                       Rejecting sets this supplier to Rejected — they cannot list products until re-approved. The reason is REQUIRED and stored in the server audit log and on the supplier record.
                     </p>
                     <div className="space-y-1">
-                      <label htmlFor={`reject-reason-${s.id}`} className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Reason (required)</label>
+                      <label htmlFor={`reject-reason-${s.id}`} className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Reason (required)</label>
                       <Input
                         id={`reject-reason-${s.id}`}
                         value={reason}
@@ -612,7 +612,7 @@ export function AdminSuppliersPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400 dark:text-slate-500">{total} supplier{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{total} supplier{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const np = page - 1; setPage(np); loadSuppliers({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const np = page + 1; setPage(np); loadSuppliers({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>

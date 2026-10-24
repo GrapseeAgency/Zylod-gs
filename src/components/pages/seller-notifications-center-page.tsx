@@ -183,7 +183,7 @@ export function SellerNotificationsCenterPage() {
           <button
             onClick={goBack}
             aria-label="Go back"
-            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
           >
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
@@ -206,7 +206,7 @@ export function SellerNotificationsCenterPage() {
               )}
               <button
                 onClick={load}
-                className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
+                className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" /> Retry
               </button>
@@ -229,7 +229,7 @@ export function SellerNotificationsCenterPage() {
           <button
             onClick={goBack}
             aria-label="Go back"
-            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
           >
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
@@ -243,7 +243,7 @@ export function SellerNotificationsCenterPage() {
         <button
           onClick={load}
           aria-label="Refresh"
-          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
         >
           <RefreshCw className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
@@ -272,7 +272,7 @@ export function SellerNotificationsCenterPage() {
             )}
             <button
               onClick={load}
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary inline-flex items-center gap-1"
+              className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-primary inline-flex items-center gap-1"
             >
               <RefreshCw className="w-4 h-4" /> Refresh
             </button>
@@ -284,7 +284,7 @@ export function SellerNotificationsCenterPage() {
           <button
             onClick={markAllRead}
             disabled={markingAll}
-            className="md:hidden w-full min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2 disabled:opacity-50"
+            className="md:hidden w-full min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <CheckCheck className="w-4 h-4" /> {markingAll ? 'Marking…' : 'Mark all read'}
           </button>
@@ -292,9 +292,9 @@ export function SellerNotificationsCenterPage() {
 
         {items.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-8 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
-            <Inbox className="w-8 h-8 text-gray-400 mx-auto" />
+            <Inbox className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No notifications yet</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-sm mx-auto leading-relaxed">
               When orders, payments, returns, deliveries, or system events happen on your account, they appear here in
               real time. We do not show fabricated notifications.
             </p>
@@ -322,14 +322,14 @@ export function SellerNotificationsCenterPage() {
                         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                           {n.title}
                         </h3>
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500 shrink-0">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 shrink-0">
                           {meta.label}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed break-words">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed break-words">
                         {n.message}
                       </p>
-                      <div className="flex items-center gap-1 mt-2 text-[11px] text-gray-400 dark:text-gray-500">
+                      <div className="flex items-center gap-1 mt-2 text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                         <Clock className="w-3 h-3" />
                         <span>{new Date(n.timestamp).toLocaleString()}</span>
                         {!n.isRead && (
@@ -346,7 +346,7 @@ export function SellerNotificationsCenterPage() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
             <span>
               Page {pagination.page} of {pagination.totalPages} · {pagination.total} notification
               {pagination.total === 1 ? '' : 's'}
@@ -355,14 +355,14 @@ export function SellerNotificationsCenterPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={pagination.page <= 1}
-                className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
                 disabled={pagination.page >= pagination.totalPages}
-                className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="p-1.5 rounded border border-gray-200 dark:border-gray-800 disabled:opacity-40 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

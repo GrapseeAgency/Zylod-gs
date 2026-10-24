@@ -97,7 +97,7 @@ export function TaxInformationPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500">
+        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500 dark:text-slate-400">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="text-xs font-bold">Loading Tax Information...</span>
         </div>
@@ -108,8 +108,8 @@ export function TaxInformationPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-10">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Tax &amp; VAT Identification</span>
@@ -121,7 +121,7 @@ export function TaxInformationPage() {
         {/* Banner */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <Landmark className="h-5 w-5 text-rose-300" />
             </div>
             <div>
@@ -136,7 +136,7 @@ export function TaxInformationPage() {
         <form onSubmit={handleSave} className="space-y-4">
           {/* Tax Credentials */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
               Tax Registration Credentials
             </h2>
 
@@ -172,19 +172,19 @@ export function TaxInformationPage() {
                 <Input
                   value={taxJurisdiction}
                   disabled
-                  className="h-11 rounded-2xl bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400"
+                  className="h-11 rounded-2xl bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500"
                 />
               </div>
             </div>
           </div>
 
           {/* Tax Invoicing Notice */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2 text-xs text-slate-600 dark:text-slate-400">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
             <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100 font-bold">
               <Receipt className="h-4 w-4 text-primary" />
               Automated VAT Commercial Invoices
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
               Your verified BIN and e-TIN are automatically rendered on all standard wholesale B2B commercial invoices generated on Zylod for corporate audit compliance.
             </p>
           </div>

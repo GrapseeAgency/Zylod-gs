@@ -22,7 +22,7 @@ export function LogisticsDeliveryPolicyPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Shipping & Logistics Policy</span>
@@ -44,7 +44,7 @@ export function LogisticsDeliveryPolicyPage() {
 
         {/* Courier Partners */}
         <div className="space-y-3">
-          <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
+          <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
             Integrated Logistics Partners
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -62,8 +62,8 @@ export function LogisticsDeliveryPolicyPage() {
                     {c.time}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{c.type}</p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500">Coverage: {c.area}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{c.type}</p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Coverage: {c.area}</p>
               </motion.div>
             ))}
           </div>
@@ -74,7 +74,7 @@ export function LogisticsDeliveryPolicyPage() {
           <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-800 pb-2.5">
             Key Delivery Rules
           </h2>
-          <ul className="space-y-2.5 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+          <ul className="space-y-2.5 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
             <li className="flex items-start gap-2">
               <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
               <span><strong>Packaging Standards:</strong> All items must be packed in sturdy corrugated cartons with bubble wrap and water-resistant outer taping.</span>

@@ -49,7 +49,7 @@ export function ApplyCreditsPage() {
       {/* Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Close">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Close">
             <X className="h-5 w-5" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -60,7 +60,7 @@ export function ApplyCreditsPage() {
       <main className="px-4 py-6 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg mx-auto md:max-w-3xl w-full">
         {/* Desktop back affordance */}
         <div className="hidden md:block">
-          <button onClick={goBack} className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">
+          <button onClick={goBack} className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100 dark:hover:text-slate-100">
             <X className="h-4 w-4" /> Close
           </button>
         </div>
@@ -70,7 +70,7 @@ export function ApplyCreditsPage() {
           <h1 className="text-xl md:text-2xl font-black tracking-tight">
             Apply Wallet Credit
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-xs mx-auto leading-relaxed">
             Your real wallet balance, loaded from your account.
           </p>
         </div>
@@ -78,13 +78,13 @@ export function ApplyCreditsPage() {
         {loading ? (
           <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
             <div className="h-8 w-40 bg-slate-200 dark:bg-slate-800 rounded animate-pulse mx-auto" />
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-3">Loading your wallet balance…</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-3">Loading your wallet balance…</p>
           </div>
         ) : needsAuth ? (
           <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
             <AlertTriangle className="h-8 w-8 text-amber-500 mx-auto" />
             <h2 className="text-sm font-black">Sign in required</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Sign in to see your wallet credit.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Sign in to see your wallet credit.</p>
             <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
           </div>
         ) : error ? (
@@ -109,7 +109,7 @@ export function ApplyCreditsPage() {
               <div className="text-2xl font-black">
                 {formatPrice(balance.availableBalance)}
               </div>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium capitalize">Currency: {balance.currency || '--'}</p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium capitalize">Currency: {balance.currency || '--'}</p>
             </div>
 
             {/* Honest availability notice */}
@@ -118,7 +118,7 @@ export function ApplyCreditsPage() {
                 <Info className="h-4 w-4 text-primary" />
                 <span>Applying credit at checkout is not available yet</span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                 Orders on Zylod currently start UNPAID and are paid in full via verified bank transfer or
                 mobile wallet — the checkout does not deduct from your wallet balance yet. Your balance above
                 is real and reflects deposits, refunds, and cashback recorded on your account.
@@ -127,7 +127,7 @@ export function ApplyCreditsPage() {
                 <Button onClick={() => navigate('wallet')} className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-2xl text-xs gap-2">
                   <Wallet className="h-4 w-4" /> Open Wallet
                 </Button>
-                <Button onClick={goBack} variant="outline" className="flex-1 bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs">
+                <Button onClick={goBack} variant="outline" className="flex-1 bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs">
                   Back
                 </Button>
               </div>

@@ -87,8 +87,8 @@ export function AccountVerificationBadgePage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Trust &amp; Verification</span>
@@ -98,7 +98,7 @@ export function AccountVerificationBadgePage() {
       <main className="max-w-lg mx-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6 lg:max-w-3xl">
         {/* Verification Badge Showcase */}
         <div className="bg-gradient-to-br from-slate-900 via-rose-950 to-slate-900 rounded-3xl p-6 text-white text-center shadow-xl space-y-3 relative overflow-hidden">
-          <div className="w-16 h-16 rounded-3xl bg-white/10 border-2 border-white/20 mx-auto flex items-center justify-center shadow-inner">
+          <div className="w-16 h-16 rounded-3xl bg-white dark:bg-gray-900/10 border-2 border-white/20 mx-auto flex items-center justify-center shadow-inner">
             <Award className="h-8 w-8 text-rose-300" />
           </div>
           <div>
@@ -114,7 +114,7 @@ export function AccountVerificationBadgePage() {
 
         {/* Benefits of Verification */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
             Verified Partner Privileges
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
@@ -128,7 +128,7 @@ export function AccountVerificationBadgePage() {
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold text-slate-900 dark:text-slate-100 block">{title}</span>
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500 block mt-0.5">{desc}</span>
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-0.5">{desc}</span>
                 </div>
               </div>
             ))}
@@ -160,7 +160,7 @@ export function AccountVerificationBadgePage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{m.description}</p>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">{m.description}</p>
                   </div>
                 </div>
                 <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${

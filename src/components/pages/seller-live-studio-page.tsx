@@ -179,14 +179,14 @@ export function SellerLiveStudioPage() {
       {/* Header */}
       <header className="bg-white dark:bg-gray-900 dark:bg-gray-800 px-4 md:px-6 py-4 shadow-sm sticky top-0 z-10 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <button onClick={goBack} className="md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700 transition" aria-label="Go back">
+          <button onClick={goBack} className="md:hidden p-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700 transition" aria-label="Go back">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
           </button>
           <div className="flex items-center gap-2 min-w-0">
             <Radio className="w-5 h-5 text-rose-600 flex-shrink-0" />
             <div className="min-w-0">
               <h1 className="font-bold text-gray-900 dark:text-gray-100 dark:text-white text-base md:text-xl truncate">Live Studio</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Schedule broadcasts and control the room</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Schedule broadcasts and control the room</p>
             </div>
           </div>
         </div>
@@ -223,12 +223,12 @@ export function SellerLiveStudioPage() {
             <Button size="sm" onClick={() => navigate('login')}>Sign In</Button>
           </div>
         ) : error ? (
-          <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-8 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</div>
+          <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-8 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">{error}</div>
         ) : !streams || streams.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-8 text-center space-y-3">
             <Radio className="w-10 h-10 mx-auto text-gray-300" />
             <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-white">No broadcasts yet</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Schedule your first live factory tour — pick the products you will feature.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Schedule your first live factory tour — pick the products you will feature.</p>
             <Button size="sm" onClick={openDialog} className="bg-rose-600 hover:bg-rose-700 text-white">
               <Plus className="w-4 h-4 mr-1" /> Schedule a broadcast
             </Button>
@@ -258,13 +258,13 @@ export function SellerLiveStudioPage() {
                           </Badge>
                         )}
                         {st === 'scheduled' && <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">SCHEDULED</Badge>}
-                        {st === 'ended' && <Badge variant="outline" className="border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-950">ENDED</Badge>}
+                        {st === 'ended' && <Badge variant="outline" className="border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-950">ENDED</Badge>}
                         <h3 className="font-bold text-gray-900 dark:text-gray-100 dark:text-white text-sm sm:text-base truncate">{s.title}</h3>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">{s.description}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 line-clamp-2 mt-1">{s.description}</p>
                     </div>
                     <div className="text-right flex-shrink-0 space-y-1">
-                      <div className="flex items-center justify-end gap-1 text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center justify-end gap-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         <CalendarClock className="w-3.5 h-3.5" /> {fmtWhen(s.scheduledAt)}
                       </div>
                       {st === 'live' && (
@@ -273,14 +273,14 @@ export function SellerLiveStudioPage() {
                         </div>
                       )}
                       {s.endedAt && (
-                        <div className="text-[11px] text-gray-400 dark:text-gray-500">ended {fmtWhen(s.endedAt)}</div>
+                        <div className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">ended {fmtWhen(s.endedAt)}</div>
                       )}
                     </div>
                   </div>
 
                   {s.featuredProducts.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <Package className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+                      <Package className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                       {s.featuredProducts.map((p) => (
                         <Badge key={p.id} variant="secondary" className="text-[11px] font-medium">
                           {p.name} · {bdt(p.basePrice)}
@@ -315,7 +315,7 @@ export function SellerLiveStudioPage() {
                       size="sm"
                       variant="ghost"
                       onClick={() => navigate('live-shopping-detail', { id: s.id })}
-                      className="h-9 text-gray-600 dark:text-gray-400"
+                      className="h-9 text-gray-600 dark:text-gray-400 dark:text-gray-500"
                     >
                       <ExternalLink className="w-4 h-4 mr-1" /> View buyer room
                     </Button>
@@ -358,11 +358,11 @@ export function SellerLiveStudioPage() {
             <div className="space-y-1.5">
               <Label>Featured products ({picked.size} picked)</Label>
               {products.length === 0 ? (
-                <p className="text-xs text-gray-500 dark:text-gray-400">Loading your approved products…</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Loading your approved products…</p>
               ) : (
                 <div className="max-h-44 overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 divide-y divide-gray-50 dark:divide-gray-800">
                   {products.map((p) => (
-                    <label key={p.id} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-900">
+                    <label key={p.id} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:bg-gray-900">
                       <input
                         type="checkbox"
                         checked={picked.has(p.id)}
@@ -370,7 +370,7 @@ export function SellerLiveStudioPage() {
                         className="accent-rose-600"
                       />
                       <span className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate flex-1">{p.name}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">{bdt(p.basePrice)}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 flex-shrink-0">{bdt(p.basePrice)}</span>
                     </label>
                   ))}
                 </div>

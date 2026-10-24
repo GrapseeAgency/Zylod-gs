@@ -379,7 +379,7 @@ export function AdminPromotionsManager() {
                       Seller: {c.ownerName ?? 'unknown'}
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">Platform</span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-900 text-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:text-gray-500">Platform</span>
                   )}
                 </div>
                 <div className="text-[11px] text-muted-foreground mt-0.5 truncate">
@@ -420,7 +420,7 @@ export function AdminPromotionsManager() {
                       <span>most recent first</span>
                     </div>
                     {usages.map((u) => (
-                      <div key={u.id} className="flex items-center justify-between gap-2 text-xs bg-white dark:bg-gray-800 rounded border px-2.5 py-1.5">
+                      <div key={u.id} className="flex items-center justify-between gap-2 text-xs bg-white dark:bg-gray-900 dark:bg-gray-800 rounded border px-2.5 py-1.5">
                         <span className="font-mono font-semibold">{u.orderNumber}</span>
                         <span className="text-muted-foreground">
                           {u.type === 'percentage' ? `${u.value}% of ৳${(u.promotedSubtotal ?? 0).toLocaleString()}` : u.type === 'fixed' ? `৳${u.value?.toLocaleString()} flat` : '—'}

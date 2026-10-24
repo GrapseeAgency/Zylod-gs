@@ -36,23 +36,23 @@ export function PromoDetailPage() {
   }, [id, token])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <span className="font-bold text-gray-900 text-base">Campaign Details</span>
+        <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Campaign Details</span>
       </div>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24 md:px-6 md:py-8 md:max-w-2xl md:space-y-8 md:pb-10">
-        <h1 className="hidden md:block text-2xl font-bold text-gray-900">Campaign Details</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100">Campaign Details</h1>
         {loading ? (
           <div className="space-y-4 animate-pulse">
             <Skeleton className="h-36 w-full rounded-3xl" />
             <Skeleton className="h-32 w-full rounded-3xl" />
           </div>
         ) : !promo ? (
-          <div className="text-center py-16 text-gray-500">Promotion expired or not found.</div>
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500">Promotion expired or not found.</div>
         ) : (
           <>
             <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white rounded-3xl p-6 shadow-md space-y-2">
@@ -64,9 +64,9 @@ export function PromoDetailPage() {
               <p className="text-xs text-amber-100">{new Date(promo.timestamp).toLocaleDateString()}</p>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
-              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Offer Summary</h2>
-              <p className="text-xs sm:text-sm text-gray-800 leading-relaxed">{promo.message}</p>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+              <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Offer Summary</h2>
+              <p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 leading-relaxed">{promo.message}</p>
             </div>
 
             <Button

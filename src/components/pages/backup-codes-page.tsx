@@ -153,7 +153,7 @@ export function BackupCodesPage() {
       <div className="max-w-3xl mx-auto w-full flex items-center gap-3">
         <button
           onClick={goBack}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
@@ -161,7 +161,7 @@ export function BackupCodesPage() {
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Backup Codes</h1>
         <button
           onClick={() => navigate('notifications')}
-          className="ml-auto p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="ml-auto p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Notifications"
         >
           <Bell className="w-5 h-5 text-[#C8102E]" />

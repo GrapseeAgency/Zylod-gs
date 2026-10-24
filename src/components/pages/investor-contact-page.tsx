@@ -44,12 +44,12 @@ export function InvestorContactPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Investor Relations Contact Desk</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">Institutional Inquiries & Financial Disclosures</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Institutional Inquiries & Financial Disclosures</p>
         </div>
       </div>
 
@@ -60,7 +60,7 @@ export function InvestorContactPage() {
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-3">
             <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
             <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Inquiry Received</h2>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
               Your inquiry reference is <strong>{refNo}</strong>. It has been saved to our inbox for
               review — we reply by email when action is needed. For anything urgent, email
               support@zylod.com.
@@ -72,7 +72,7 @@ export function InvestorContactPage() {
         ) : (
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 md:p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Institutional Representative</h3>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">Institutional Representative</h3>
               <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
                 <div>
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Full Name *</label>

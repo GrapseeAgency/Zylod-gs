@@ -484,11 +484,11 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
   return (
     <div className="space-y-6">
       {/* Basic information — every field below is backed by a real products column */}
-      <section className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-4">
-        <h2 className="font-semibold text-gray-900">Basic Information</h2>
+      <section className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+        <h2 className="font-semibold text-gray-900 dark:text-gray-100">Basic Information</h2>
 
         <div className="space-y-1">
-          <label htmlFor="pf-name" className="text-sm font-medium text-gray-700">Product name</label>
+          <label htmlFor="pf-name" className="text-sm font-medium text-gray-700 dark:text-gray-300">Product name</label>
           <input
             id="pf-name"
             type="text"
@@ -504,7 +504,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label htmlFor="pf-category" className="text-sm font-medium text-gray-700">Category</label>
+            <label htmlFor="pf-category" className="text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
             <select
               id="pf-category"
               value={form.categoryId}
@@ -530,7 +530,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             {serverIssues.categoryId?.[0] && <FieldError message={serverIssues.categoryId[0]} />}
           </div>
           <div className="space-y-1">
-            <label htmlFor="pf-brand" className="text-sm font-medium text-gray-700">Brand <span className="text-gray-400">(optional)</span></label>
+            <label htmlFor="pf-brand" className="text-sm font-medium text-gray-700 dark:text-gray-300">Brand <span className="text-gray-400 dark:text-gray-500">(optional)</span></label>
             <input
               id="pf-brand"
               type="text"
@@ -544,7 +544,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="pf-sku" className="text-sm font-medium text-gray-700">SKU <span className="text-gray-400">(optional)</span></label>
+          <label htmlFor="pf-sku" className="text-sm font-medium text-gray-700 dark:text-gray-300">SKU <span className="text-gray-400 dark:text-gray-500">(optional)</span></label>
           <input
             id="pf-sku"
             type="text"
@@ -557,7 +557,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="pf-description" className="text-sm font-medium text-gray-700">Description</label>
+          <label htmlFor="pf-description" className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
           <textarea
             id="pf-description"
             value={form.description}
@@ -578,7 +578,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             onChange={(e) => onFormChange({ isCustomizable: e.target.checked })}
             className="w-5 h-5 accent-primary"
           />
-          <span className="text-sm font-medium text-gray-700">Supports custom orders (customizable)</span>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Supports custom orders (customizable)</span>
         </label>
 
         {showIsActive && (
@@ -589,18 +589,18 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               onChange={(e) => onFormChange({ isActive: e.target.checked })}
               className="w-5 h-5 accent-primary"
             />
-            <span className="text-sm font-medium text-gray-700">Listing active (visible when approved)</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Listing active (visible when approved)</span>
           </label>
         )}
       </section>
 
       {/* Pricing & inventory */}
-      <section className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-4">
-        <h2 className="font-semibold text-gray-900">Pricing &amp; Inventory</h2>
+      <section className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+        <h2 className="font-semibold text-gray-900 dark:text-gray-100">Pricing &amp; Inventory</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label htmlFor="pf-base-price" className="text-sm font-medium text-gray-700">Base price (BDT)</label>
+            <label htmlFor="pf-base-price" className="text-sm font-medium text-gray-700 dark:text-gray-300">Base price (BDT)</label>
             <input
               id="pf-base-price"
               type="number"
@@ -615,7 +615,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             {serverIssues.basePrice?.[0] && <FieldError message={serverIssues.basePrice[0]} />}
           </div>
           <div className="space-y-1">
-            <label htmlFor="pf-unit" className="text-sm font-medium text-gray-700">Unit</label>
+            <label htmlFor="pf-unit" className="text-sm font-medium text-gray-700 dark:text-gray-300">Unit</label>
             <select
               id="pf-unit"
               value={form.unit}
@@ -629,8 +629,8 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
           </div>
           {showBundleSizeInput && (
             <div className="space-y-1">
-              <label htmlFor="pf-bundle-size" className="text-sm font-medium text-gray-700">
-                Bundle size{form.unit === 'kg' ? ' (kg)' : ''} <span className="text-gray-400">(units per bundle, optional)</span>
+              <label htmlFor="pf-bundle-size" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Bundle size{form.unit === 'kg' ? ' (kg)' : ''} <span className="text-gray-400 dark:text-gray-500">(units per bundle, optional)</span>
               </label>
               <input
                 id="pf-bundle-size"
@@ -643,7 +643,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                 placeholder={form.unit === 'bundle' ? 'e.g., 50' : 'Leave empty to sell single units'}
               />
               <FieldError message={bundleSizeError} />
-              <p className="text-[11px] text-gray-500">
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 Buyers pay per bundle — e.g. 50 pcs per bundle at ৳450 shows ≈ ৳9/pc on the product page.
               </p>
             </div>
@@ -651,8 +651,8 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
           {/* Task 95: per-unit weight — lets checkout quote REAL courier rates
               against the shipment weight. Empty = honest "settles with supplier". */}
           <div className="space-y-1">
-            <label htmlFor="pf-weight-kg" className="text-sm font-medium text-gray-700">
-              Weight per {form.unit === 'bundle' ? 'bundle' : form.unit === 'pcs' ? 'piece' : form.unit} <span className="text-gray-400">(kg, optional)</span>
+            <label htmlFor="pf-weight-kg" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Weight per {form.unit === 'bundle' ? 'bundle' : form.unit === 'pcs' ? 'piece' : form.unit} <span className="text-gray-400 dark:text-gray-500">(kg, optional)</span>
             </label>
             <input
               id="pf-weight-kg"
@@ -665,13 +665,13 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               placeholder="e.g., 12.5"
             />
             <FieldError message={weightKgError} />
-            <p className="text-[11px] text-gray-500">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Buyers see live courier prices for their district at checkout, quoted against this weight. Leave it
               empty and shipping is settled directly with you.
             </p>
           </div>
           <div className="space-y-1">
-            <label htmlFor="pf-moq" className="text-sm font-medium text-gray-700">
+            <label htmlFor="pf-moq" className="text-sm font-medium text-gray-700 dark:text-gray-300">
               MOQ (minimum order){form.unit === 'kg' ? ' — kg' : ''}
             </label>
             <input
@@ -688,7 +688,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             {serverIssues.moq?.[0] && <FieldError message={serverIssues.moq[0]} />}
           </div>
           <div className="space-y-1">
-            <label htmlFor="pf-max-order" className="text-sm font-medium text-gray-700">Max order qty{form.unit === 'kg' ? ' (kg)' : ''} <span className="text-gray-400">(optional)</span></label>
+            <label htmlFor="pf-max-order" className="text-sm font-medium text-gray-700 dark:text-gray-300">Max order qty{form.unit === 'kg' ? ' (kg)' : ''} <span className="text-gray-400 dark:text-gray-500">(optional)</span></label>
             <input
               id="pf-max-order"
               type="number"
@@ -701,7 +701,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             />
           </div>
           <div className="space-y-1 col-span-2">
-            <label htmlFor="pf-stock" className="text-sm font-medium text-gray-700">Stock quantity{form.unit === 'kg' ? ' (kg)' : ''}</label>
+            <label htmlFor="pf-stock" className="text-sm font-medium text-gray-700 dark:text-gray-300">Stock quantity{form.unit === 'kg' ? ' (kg)' : ''}</label>
             <input
               id="pf-stock"
               type="number"
@@ -716,8 +716,8 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             {serverIssues.stockQuantity?.[0] && <FieldError message={serverIssues.stockQuantity[0]} />}
           </div>
           <div className="space-y-1 col-span-2">
-            <label htmlFor="pf-stock-alert" className="text-sm font-medium text-gray-700">
-              Low-stock alert threshold <span className="text-gray-400">(optional)</span>
+            <label htmlFor="pf-stock-alert" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Low-stock alert threshold <span className="text-gray-400 dark:text-gray-500">(optional)</span>
             </label>
             <input
               id="pf-stock-alert"
@@ -729,16 +729,16 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
               className={inputClass}
               placeholder="Default 5 — e.g. 10 for bulk-heavy stock"
             />
-            <p className="text-[11px] text-gray-500">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
               When stock falls to this level the product page shows an urgent “Only X left” warning.
             </p>
           </div>
         </div>
 
         {/* Tiered wholesale pricing — pricePerUnit ≤ basePrice enforced with inline errors */}
-        <div className="pt-2 border-t border-gray-100">
+        <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-medium text-gray-900">Tiered wholesale pricing</h3>
+            <h3 className="font-medium text-gray-900 dark:text-gray-100">Tiered wholesale pricing</h3>
             <button
               type="button"
               onClick={() => onTiersChange((current) => [...current, emptyTier()])}
@@ -751,12 +751,12 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-2">{tierGlobalError}</p>
           )}
           {tiers.length === 0 ? (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
               No tiers — buyers pay the base price at every quantity. Add a tier for volume discounts.
             </p>
           ) : (
             <div className="space-y-3">
-              <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_44px] gap-2 text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-1">
+              <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_44px] gap-2 text-[11px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wide px-1">
                 <span>Min qty</span><span>Max qty (empty = open)</span><span>Price / unit (BDT)</span><span />
               </div>
               {tiers.map((tier, index) => (
@@ -827,9 +827,9 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
         </div>
 
         {/* Variants */}
-        <div className="pt-2 border-t border-gray-100">
+        <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-medium text-gray-900">Variants <span className="text-gray-400 font-normal">(optional)</span></h3>
+            <h3 className="font-medium text-gray-900 dark:text-gray-100">Variants <span className="text-gray-400 dark:text-gray-500 font-normal">(optional)</span></h3>
             <button
               type="button"
               onClick={() => onVariantsChange((current) => [...current, emptyVariant()])}
@@ -839,12 +839,12 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             </button>
           </div>
           {variants.length === 0 ? (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
               No variants — the listing sells one undivided SKU. Add rows for options like Color: Red.
             </p>
           ) : (
             <div className="space-y-3">
-              <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_1fr_1fr_44px] gap-2 text-[11px] font-semibold text-gray-500 uppercase tracking-wide px-1">
+              <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_1fr_1fr_44px] gap-2 text-[11px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wide px-1">
                 <span>Name</span><span>Value</span><span>SKU</span><span>Stock</span><span>Price override</span><span />
               </div>
               {variants.map((variant, index) => (
@@ -929,9 +929,9 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
       </section>
 
       {/* Media — real uploads to /api/uploads/product-media */}
-      <section className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-4">
-        <h2 className="font-semibold text-gray-900">Media</h2>
-        <p className="text-[11px] text-gray-500 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
+      <section className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+        <h2 className="font-semibold text-gray-900 dark:text-gray-100">Media</h2>
+        <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-lg px-3 py-2">
           Files upload immediately to the Zylod server and are served from <code className="font-mono">/uploads/…</code>.
           Self-hosting note: the container disk is ephemeral — point <code className="font-mono">PRODUCT_MEDIA_UPLOAD_DIR</code>{" "}
           and <code className="font-mono">VIDEO_UPLOAD_DIR</code> at a mounted volume so your media survives redeploys.
@@ -951,22 +951,22 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             <button
               type="button"
               onClick={() => imageInputRef.current?.click()}
-              className="min-h-11 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50"
+              className="min-h-11 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950"
             >
               <ImagePlus className="w-4 h-4" /> Add images
             </button>
-            <span className="text-xs text-gray-500">PNG, JPG, WebP up to 5MB each — the first image becomes the thumbnail</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">PNG, JPG, WebP up to 5MB each — the first image becomes the thumbnail</span>
           </div>
 
           {images.length === 0 ? (
-            <p className="text-xs text-gray-500">No images uploaded yet.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">No images uploaded yet.</p>
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
               {images.map((img, index) => (
                 <div key={`${img.fileName}-${index}`} className="relative group">
-                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                  <div className="aspect-square bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
                     {img.status === 'uploading' ? (
-                      <Loader2 className="w-6 h-6 text-gray-400 animate-spin" aria-label={`Uploading ${img.fileName}`} />
+                      <Loader2 className="w-6 h-6 text-gray-400 dark:text-gray-500 animate-spin" aria-label={`Uploading ${img.fileName}`} />
                     ) : img.status === 'error' ? (
                       <span className="text-[10px] text-red-600 text-center px-1" title={img.error}>Failed — remove &amp; retry</span>
                     ) : (
@@ -981,7 +981,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                     type="button"
                     aria-label={`Remove image ${index + 1}`}
                     onClick={() => onImagesChange(images.filter((_, i) => i !== index))}
-                    className="absolute top-1 right-1 min-h-8 min-w-8 p-1.5 bg-white/90 border border-gray-200 rounded-full text-red-500 hover:bg-red-50 flex items-center justify-center"
+                    className="absolute top-1 right-1 min-h-8 min-w-8 p-1.5 bg-white dark:bg-gray-900/90 border border-gray-200 dark:border-gray-800 rounded-full text-red-500 hover:bg-red-50 flex items-center justify-center"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -994,7 +994,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
           )}
         </div>
 
-        <div className="space-y-3 pt-2 border-t border-gray-100">
+        <div className="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-800">
           <div className="flex flex-wrap items-center gap-3">
             <input
               ref={videoInputRef}
@@ -1007,11 +1007,11 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
             <button
               type="button"
               onClick={() => videoInputRef.current?.click()}
-              className="min-h-11 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50"
+              className="min-h-11 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950"
             >
               <VideoIcon className="w-4 h-4" /> Add video
             </button>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
               MP4, WebM, or MOV up to {VIDEO_MAX_MB_DEFAULT}MB — uploads and attaches right after you publish (max 5 per product)
             </span>
           </div>
@@ -1047,18 +1047,18 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
           </div>
 
           {videos.length === 0 ? (
-            <p className="text-xs text-gray-500">No videos added yet.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">No videos added yet.</p>
           ) : (
             <div className="space-y-3">
               {videos.map((video, index) => (
-                <div key={`${video.fileName}-${index}`} className="flex items-start gap-3 bg-gray-50 p-2 rounded-lg">
+                <div key={`${video.fileName}-${index}`} className="flex items-start gap-3 bg-gray-50 dark:bg-gray-950 p-2 rounded-lg">
                   <div className="w-28 h-16 bg-gray-200 rounded overflow-hidden flex items-center justify-center shrink-0">
                     {video.status === 'ready' && video.url ? (
                       <video src={video.url} controls className="w-full h-full object-cover" preload="metadata" />
                     ) : video.file ? (
-                      <VideoIcon className="w-5 h-5 text-gray-500" aria-label={`Selected video ${video.fileName}`} />
+                      <VideoIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" aria-label={`Selected video ${video.fileName}`} />
                     ) : video.status === 'uploading' ? (
-                      <Loader2 className="w-5 h-5 text-gray-400 animate-spin" aria-label={`Uploading ${video.fileName}`} />
+                      <Loader2 className="w-5 h-5 text-gray-400 dark:text-gray-500 animate-spin" aria-label={`Uploading ${video.fileName}`} />
                     ) : (
                       <span className="text-[10px] text-red-600 text-center px-1">Failed</span>
                     )}
@@ -1077,7 +1077,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                       }}
                       className={`${inputClass} min-h-0 py-1.5`}
                     />
-                    <p className="text-[11px] text-gray-500 truncate">{video.fileName}</p>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">{video.fileName}</p>
                     {video.file && (
                       <p className="text-[10px] text-amber-600">Ready — uploads and attaches when you publish/save</p>
                     )}

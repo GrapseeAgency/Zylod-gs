@@ -126,7 +126,7 @@ export function NewArrivalsPage() {
       <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -134,7 +134,7 @@ export function NewArrivalsPage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -206,7 +206,7 @@ export function NewArrivalsPage() {
 
         {!isLoading && !loadError && products.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <Sparkles className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+            <Sparkles className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               No arrivals in this category yet — check another tab or come back soon.
             </p>
@@ -240,12 +240,12 @@ export function NewArrivalsPage() {
                   alt={heroArrival.name}
                   className="w-full h-full object-cover"
                 />
-                <span className="absolute top-3 left-3 bg-white/95 text-[#C8102E] font-serif italic text-xs font-bold px-2 py-0.5 rounded shadow-sm">
+                <span className="absolute top-3 left-3 bg-white dark:bg-gray-900/95 text-[#C8102E] font-serif italic text-xs font-bold px-2 py-0.5 rounded shadow-sm">
                   New
                 </span>
                 <button
                   onClick={(e) => toggleWishlist(e, heroArrival)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white dark:bg-gray-900 shadow-sm flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#C8102E]"
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white dark:bg-gray-900 shadow-sm flex items-center justify-center text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-[#C8102E]"
                   aria-label="Save for later"
                 >
                   <Bookmark
@@ -297,7 +297,7 @@ export function NewArrivalsPage() {
                       alt={item.name}
                       className="w-full h-full object-cover"
                     />
-                    <span className="absolute top-2 left-2 bg-white/95 text-[#C8102E] font-serif italic text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                    <span className="absolute top-2 left-2 bg-white dark:bg-gray-900/95 text-[#C8102E] font-serif italic text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">
                       New
                     </span>
                   </div>

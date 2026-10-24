@@ -37,7 +37,7 @@ export function NotificationFilterPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Filter Notifications</span>
@@ -60,7 +60,7 @@ export function NotificationFilterPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
         {/* Type Multi-select */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3 md:row-span-2">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Notification Categories
           </h2>
 
@@ -92,7 +92,7 @@ export function NotificationFilterPage() {
 
         {/* Read Status */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Read Status
           </h2>
           <div className="grid grid-cols-2 gap-2">
@@ -117,12 +117,12 @@ export function NotificationFilterPage() {
 
         {/* Date Range */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Date Window
           </h2>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[11px] text-gray-500 dark:text-gray-400 font-bold block mb-1">From Date</label>
+              <label className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-bold block mb-1">From Date</label>
               <Input
                 type="date"
                 value={startDate}
@@ -131,7 +131,7 @@ export function NotificationFilterPage() {
               />
             </div>
             <div>
-              <label className="text-[11px] text-gray-500 dark:text-gray-400 font-bold block mb-1">To Date</label>
+              <label className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-bold block mb-1">To Date</label>
               <Input
                 type="date"
                 value={endDate}

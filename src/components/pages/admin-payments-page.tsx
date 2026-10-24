@@ -261,7 +261,7 @@ export function AdminPaymentsPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">This queue is restricted to Zylod admins. Sign in with an admin account to verify payments.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This queue is restricted to Zylod admins. Sign in with an admin account to verify payments.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -308,7 +308,7 @@ export function AdminPaymentsPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Payment Verification</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">Every buyer payment submission across the platform — verify after confirming money arrived. Every action is audit-logged.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Every buyer payment submission across the platform — verify after confirming money arrived. Every action is audit-logged.</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => loadPayments({ background: true })} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
@@ -373,7 +373,7 @@ export function AdminPaymentsPage() {
             <>
               <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
               <h2 className="text-sm font-black">No payments awaiting verification</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 Buyer submissions appear here the moment POST /api/orders/[id]/payment-submit records them. Nothing is marked paid until a seller, an admin, or the verified webhook confirms it.
               </p>
             </>
@@ -381,7 +381,7 @@ export function AdminPaymentsPage() {
             <>
               <Wallet className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No {statusTab} payments</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">This tab reflects the real payments table — counts in the strip above are platform-wide.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This tab reflects the real payments table — counts in the strip above are platform-wide.</p>
             </>
           )}
         </div>
@@ -392,38 +392,38 @@ export function AdminPaymentsPage() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-950 text-left">
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Order</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Buyer</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Supplier(s)</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Method</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">TRX ID</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 text-right">Amount</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Date</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 text-right">Action</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Order</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Supplier(s)</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Method</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">TRX ID</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 text-right">Amount</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Status</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Date</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {rows.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-950/40">
+                  <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-950/60 dark:hover:bg-slate-950/40">
                     <td className="px-3 py-2.5 font-black whitespace-nowrap">#{p.orderNumber}</td>
-                    <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400 dark:text-slate-300 max-w-[140px] truncate">{p.buyer.displayName || '--'}</td>
-                    <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400 dark:text-slate-300 max-w-[140px] truncate">{p.suppliers.join(', ') || '--'}</td>
-                    <td className="px-3 py-2.5 capitalize">{p.method}{p.brand ? <span className="text-slate-400 dark:text-slate-500"> · {p.brand}</span> : null}</td>
+                    <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 max-w-[140px] truncate">{p.buyer.displayName || '--'}</td>
+                    <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 max-w-[140px] truncate">{p.suppliers.join(', ') || '--'}</td>
+                    <td className="px-3 py-2.5 capitalize">{p.method}{p.brand ? <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400"> · {p.brand}</span> : null}</td>
                     <td className="px-3 py-2.5 font-mono max-w-[150px] truncate">{p.transactionId || '--'}</td>
                     <td className="px-3 py-2.5 text-right font-black whitespace-nowrap">
                       {formatPrice(p.amount)}
-                      <span className="block text-[9px] text-slate-400 dark:text-slate-500 font-normal">of {formatPrice(p.orderTotal)} · {p.orderPaymentStatus}</span>
+                      <span className="block text-[9px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">of {formatPrice(p.orderTotal)} · {p.orderPaymentStatus}</span>
                     </td>
                     <td className="px-3 py-2.5"><StatusChip status={p.status} /></td>
-                    <td className="px-3 py-2.5 text-slate-400 dark:text-slate-500 whitespace-nowrap">{formatDate(p.submittedAt ?? p.paidAt)}</td>
+                    <td className="px-3 py-2.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 whitespace-nowrap">{formatDate(p.submittedAt ?? p.paidAt)}</td>
                     <td className="px-3 py-2.5 text-right whitespace-nowrap">
                       {p.status === 'pending' ? (
                         <Button onClick={() => setExpandedId(expandedId === p.id ? null : p.id)} className="h-8 px-3 rounded-lg text-[11px] font-bold bg-primary hover:bg-primary/90 text-white gap-1">
                           {expandedId === p.id ? <><ChevronUp className="h-3 w-3" /> Close</> : <>Decide</>}
                         </Button>
                       ) : (
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500">decided</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">decided</span>
                       )}
                     </td>
                   </tr>
@@ -439,7 +439,7 @@ export function AdminPaymentsPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-xs font-black">#{p.orderNumber}</p>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{p.buyer.displayName || '--'} → {p.suppliers.join(', ') || '--'}</p>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 truncate">{p.buyer.displayName || '--'} → {p.suppliers.join(', ') || '--'}</p>
                   </div>
                   <StatusChip status={p.status} />
                 </div>
@@ -448,8 +448,8 @@ export function AdminPaymentsPage() {
                   <span className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 font-mono">{p.transactionId || '--'}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-primary">{formatPrice(p.amount)} <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">of {formatPrice(p.orderTotal)} · {p.orderPaymentStatus}</span></span>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500">{formatDate(p.submittedAt ?? p.paidAt)}</span>
+                  <span className="text-sm font-black text-primary">{formatPrice(p.amount)} <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">of {formatPrice(p.orderTotal)} · {p.orderPaymentStatus}</span></span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{formatDate(p.submittedAt ?? p.paidAt)}</span>
                 </div>
                 {p.status === 'pending' && (
                   <div className="grid grid-cols-2 gap-2 pt-1">
@@ -467,7 +467,7 @@ export function AdminPaymentsPage() {
             if (!p || p.status !== 'pending') return null
             return (
               <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3">
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Decide the pending submission for <span className="font-bold text-slate-800 dark:text-slate-200">#{p.orderNumber}</span> — verify only after confirming {formatPrice(p.amount)} really arrived ({p.method}{p.brand ? ` · ${p.brand}` : ''}, ref {p.transactionId || '--'}).
                 </p>
                 <div className="flex gap-2">
@@ -481,7 +481,7 @@ export function AdminPaymentsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400 dark:text-slate-500">{total} payment{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{total} payment{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); loadPayments({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const p = page + 1; setPage(p); loadPayments({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>
@@ -509,7 +509,7 @@ export function AdminPaymentsPage() {
 
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Verification note (optional)</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Verification note (optional)</label>
                   <Input
                     value={dialogNote}
                     onChange={(e) => setDialogNote(e.target.value)}

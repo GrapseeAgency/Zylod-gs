@@ -47,12 +47,12 @@ const CampaignCard = ({ c }: { c: StorefrontCampaign }) => {
   const end = new Date(c.validUntil);
   const daysLeft = Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86_400_000));
   return (
-    <div className="rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+    <div className="rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 dark:border-gray-700 bg-white dark:bg-gray-900 dark:bg-gray-800 shadow-sm">
       <div className="relative h-28 bg-gradient-to-r from-amber-100 to-amber-50 dark:from-gray-700 dark:to-gray-800">
         {c.bannerImageUrl ? (
           <img src={c.bannerImageUrl} alt={c.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-amber-500/70 dark:text-gray-500">
+          <div className="w-full h-full flex items-center justify-center text-amber-500/70 dark:text-gray-500 dark:text-gray-400">
             <BadgePercent className="w-8 h-8" />
           </div>
         )}
@@ -61,17 +61,17 @@ const CampaignCard = ({ c }: { c: StorefrontCampaign }) => {
         </span>
       </div>
       <div className="p-3">
-        <h3 className="font-bold text-sm text-gray-900 dark:text-white">{c.name}</h3>
+        <h3 className="font-bold text-sm text-gray-900 dark:text-gray-100 dark:text-white">{c.name}</h3>
         {c.description ? (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{c.description}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 line-clamp-2">{c.description}</p>
         ) : null}
-        <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+        <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">
           <CalendarClock className="w-3 h-3" />
           {daysLeft > 0 ? `Ends in ${daysLeft} day${daysLeft > 1 ? 's' : ''}` : 'Ending today'}
         </div>
         {c.products.length > 0 ? (
           <div className="mt-3">
-            <div className="text-[10px] uppercase tracking-wide text-gray-400 mb-1.5">
+            <div className="text-[10px] uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1.5">
               {c.products.length} product{c.products.length > 1 ? 's' : ''} in this campaign
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -82,25 +82,25 @@ const CampaignCard = ({ c }: { c: StorefrontCampaign }) => {
                   className="shrink-0 w-24 text-left group"
                   aria-label={`View ${p.name}`}
                 >
-                  <div className="w-24 h-24 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                  <div className="w-24 h-24 rounded-lg bg-gray-100 dark:bg-gray-900 dark:bg-gray-700 overflow-hidden">
                     {p.image ? (
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-gray-500">
+                      <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-gray-500 dark:text-gray-400">
                         <Package className="w-6 h-6" />
                       </div>
                     )}
                   </div>
                   <div className="text-[11px] font-medium text-gray-800 dark:text-gray-200 truncate mt-1">{p.name}</div>
                   <div className="text-[11px] text-primary font-bold">
-                    ৳{p.unitPrice} <span className="text-gray-400 font-normal">/{p.unit}</span>
+                    ৳{p.unitPrice} <span className="text-gray-400 dark:text-gray-500 font-normal">/{p.unit}</span>
                   </div>
                 </button>
               ))}
             </div>
           </div>
         ) : (
-          <div className="mt-3 flex items-center gap-1.5 text-[11px] text-gray-400">
+          <div className="mt-3 flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
             <ImageOff className="w-3 h-3" /> Campaign products are being prepared
           </div>
         )}
@@ -157,8 +157,8 @@ export const StorefrontCampaigns = ({ supplierId }: { supplierId: string }) => {
   if (error) {
     return (
       <div className="text-center py-10">
-        <Tag className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-        <p className="text-sm text-gray-600 dark:text-gray-300">{error}</p>
+        <Tag className="w-10 h-10 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+        <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">{error}</p>
       </div>
     );
   }
@@ -166,9 +166,9 @@ export const StorefrontCampaigns = ({ supplierId }: { supplierId: string }) => {
   if (!campaigns || campaigns.length === 0) {
     return (
       <div className="text-center py-10">
-        <BadgePercent className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+        <BadgePercent className="w-10 h-10 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 mx-auto mb-2" />
         <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No live campaigns right now</h3>
-        <p className="text-xs text-gray-500 mt-1">When this store runs a campaign, it appears here — and the discount applies at checkout automatically.</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">When this store runs a campaign, it appears here — and the discount applies at checkout automatically.</p>
       </div>
     );
   }

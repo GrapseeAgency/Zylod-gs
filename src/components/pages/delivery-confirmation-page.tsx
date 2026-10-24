@@ -140,10 +140,10 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
-          <Truck className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+          <Truck className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
           Open an order to see its real delivery status — this screen confirms the
           delivery of a specific order.
         </p>
@@ -170,7 +170,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
             <div className="aspect-[16/9] rounded-2xl bg-slate-100 dark:bg-slate-900 animate-pulse" />
             <div className="h-3.5 w-1/2 bg-slate-200 rounded animate-pulse" />
           </div>
-          <p className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+          <p className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
             Loading delivery status…
           </p>
@@ -198,7 +198,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
         <Button
           variant="outline"
           onClick={() => navigate('orders')}
-          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
         >
           Go to My Orders
         </Button>
@@ -217,7 +217,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
           <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
             {allDelivered ? 'Order Delivered' : 'Delivery Status'}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             Order #{order.orderNumber}
             {statusText ? ` • ${statusText}` : ''}
             {deliveredAt
@@ -225,7 +225,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
               : ''}
           </p>
           {!allDelivered && !anyDelivered && (
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
               This order has not been marked as delivered by the supplier yet.
             </p>
           )}
@@ -234,15 +234,15 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
         {/* Card 1: Proof of Delivery — honest: only if a real POD exists */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
           <div className="aspect-[16/9] rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-2">
-            <Truck className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-            <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500">No proof-of-delivery photo available yet</p>
+            <Truck className="h-8 w-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
+            <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 dark:text-gray-400">No proof-of-delivery photo available yet</p>
           </div>
 
           <div className="flex items-start gap-2.5">
             <ShieldCheck className="h-4 w-4 text-slate-700 dark:text-slate-300 shrink-0 mt-0.5" />
             <div>
               <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Proof of Delivery</h2>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
                 {deliveredAt
                   ? `Delivery recorded on ${new Date(deliveredAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}.`
                   : 'Delivery will be confirmed by the supplier in the tracking timeline.'}
@@ -268,7 +268,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
             </div>
 
             {items.length === 0 ? (
-              <p className="text-xs text-slate-400 dark:text-slate-500 py-3 text-center">
+              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-3 text-center">
                 No line items recorded on this order.
               </p>
             ) : (
@@ -293,7 +293,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
             <div>
               <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Rate Delivery</h2>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">How was the logistics service?</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">How was the logistics service?</p>
             </div>
 
             <div className="flex justify-center gap-3">
@@ -307,7 +307,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
                   aria-label={`Rate ${star} star${star === 1 ? '' : 's'}`}
                 >
                   {ratingSubmitting && rating === star ? (
-                    <Loader2 className="h-7 w-7 text-slate-400 dark:text-slate-500 animate-spin" />
+                    <Loader2 className="h-7 w-7 text-slate-400 dark:text-slate-500 dark:text-slate-400 animate-spin" />
                   ) : (
                     <Star
                       className={`h-7 w-7 ${

@@ -154,11 +154,11 @@ export function CouponPromoPage() {
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
-          <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Menu">
+          <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Menu">
             <Menu className="h-6 w-6" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Search">
+          <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Search">
             <Search className="h-6 w-6" />
           </button>
         </div>
@@ -170,7 +170,7 @@ export function CouponPromoPage() {
           <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
             Coupons &amp; Promo Codes
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
             Collect vouchers to your vault — codes are applied at checkout.
           </p>
         </div>
@@ -183,7 +183,7 @@ export function CouponPromoPage() {
 
           <form onSubmit={claimByTypedCode} className="flex gap-2">
             <div className="relative flex-1">
-              <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+              <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
               <Input
                 id="promo-code-input"
                 value={promoInput}
@@ -202,7 +202,7 @@ export function CouponPromoPage() {
             </Button>
           </form>
 
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
             The server checks the code against the live database — expired, exhausted,
             foreign, or unknown codes are refused with the real reason. Application to an
             order happens at checkout from your vault.
@@ -214,7 +214,7 @@ export function CouponPromoPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Available B2B Offers</h2>
             {!loading && !loadError && (
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{total} active</span>
+              <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">{total} active</span>
             )}
           </div>
 
@@ -241,7 +241,7 @@ export function CouponPromoPage() {
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
               <Ticket className="h-8 w-8 text-slate-300 mx-auto mb-2" />
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">No active coupons right now</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">
                 New offers appear here the moment the platform publishes them — nothing is faked.
               </p>
             </div>
@@ -253,11 +253,11 @@ export function CouponPromoPage() {
                 return (
                   <div
                     key={coupon.id}
-                    className={`bg-white rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs relative overflow-hidden ${coupon.userId ? 'border-l-4 border-l-amber-400' : 'border-l-4 border-l-primary'}`}
+                    className={`bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs relative overflow-hidden ${coupon.userId ? 'border-l-4 border-l-amber-400' : 'border-l-4 border-l-primary'}`}
                   >
                     {/* Header tags */}
                     <div className="flex items-center justify-between gap-2">
-                      <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+                      <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
                         {coupon.userId ? 'Personal voucher' : 'Platform offer'}
                       </span>
                       <span className="text-xs font-black text-primary whitespace-nowrap">
@@ -270,7 +270,7 @@ export function CouponPromoPage() {
                       <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug font-mono tracking-wider">
                         {coupon.code}
                       </h3>
-                      <ul className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed space-y-0.5">
+                      <ul className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed space-y-0.5">
                         {coupon.minOrderAmount ? (
                           <li>Minimum order ৳{Number(coupon.minOrderAmount).toLocaleString()}</li>
                         ) : (
@@ -306,7 +306,7 @@ export function CouponPromoPage() {
                       </button>
 
                       {exhausted ? (
-                        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 px-3 py-1.5">Fully claimed</span>
+                        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 px-3 py-1.5">Fully claimed</span>
                       ) : (
                         <Button
                           onClick={() => claimByCouponId(coupon)}

@@ -63,8 +63,8 @@ export function CreditScorePage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Trade Credit Score</span>
@@ -89,12 +89,12 @@ export function CreditScorePage() {
             <div className="text-5xl font-black font-mono tracking-tight text-white">
               {data.score}
             </div>
-            <span className="text-xs text-slate-400 dark:text-slate-500 mt-1 block">
+            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 block">
               Out of {data.maxScore} Commercial Rating Index
             </span>
           </div>
 
-          <div className="w-full bg-white/10 h-3 rounded-full overflow-hidden p-0.5 border border-white/10">
+          <div className="w-full bg-white dark:bg-gray-900/10 h-3 rounded-full overflow-hidden p-0.5 border border-white/10">
             <div
               className="bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400 h-full rounded-full transition-all duration-1000"
               style={{ width: `${scorePct}%` }}
@@ -111,21 +111,21 @@ export function CreditScorePage() {
         {/* Credit Metrics Grid */}
         <div className="grid grid-cols-2 gap-3 md:gap-4">
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Credit Utilization</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Credit Utilization</span>
             <span className="text-base font-black text-slate-900 dark:text-slate-100 block font-mono">{data.creditUtilization}</span>
             <span className="text-[10px] text-emerald-600 font-bold block">Optimal wholesale range</span>
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Trade History</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Trade History</span>
             <span className="text-base font-black text-slate-900 dark:text-slate-100 block font-mono">{data.tradeHistoryLength}</span>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold block">Verified fulfillment</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-bold block">Verified fulfillment</span>
           </div>
         </div>
 
         {/* Credit Factors */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
             Credit Rating Evaluation Factors
           </h2>
 
@@ -140,7 +140,7 @@ export function CreditScorePage() {
                       {f.impact}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{f.description}</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">{f.description}</p>
                 </div>
               </div>
             ))}

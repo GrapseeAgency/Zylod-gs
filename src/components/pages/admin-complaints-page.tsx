@@ -283,7 +283,7 @@ export function AdminComplaintsPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">The complaints review queue is restricted to Zylod admins. Sign in with an admin account to review buyer complaints.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">The complaints review queue is restricted to Zylod admins. Sign in with an admin account to review buyer complaints.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -305,12 +305,12 @@ export function AdminComplaintsPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Complaints</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">Every decision is audit-logged. Resolve or reject only with a real note — the buyer sees it verbatim.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Every decision is audit-logged. Resolve or reject only with a real note — the buyer sees it verbatim.</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {lastUpdated && (
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
           )}
           <Button
             variant="outline"
@@ -370,9 +370,9 @@ export function AdminComplaintsPage() {
         <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           {tab === 'all' ? (
             <>
-              <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 mx-auto" />
+              <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 dark:text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No complaints yet</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
                 The complaints table currently holds zero rows — real counts, not a placeholder. When a buyer files a complaint it will appear here for review.
               </p>
             </>
@@ -380,7 +380,7 @@ export function AdminComplaintsPage() {
             <>
               <CheckCircle2 className={`h-10 w-10 mx-auto ${tab === 'resolved' || tab === 'rejected' || tab === 'withdrawn' ? 'text-emerald-500' : 'text-slate-300 dark:text-slate-700'}`} />
               <h2 className="text-sm font-black">No {TAB_LABELS[tab].toLowerCase()} complaints</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
                 No complaint currently has status &ldquo;{tab}&rdquo;. Switch to All to see every complaint in the database.
               </p>
             </>
@@ -400,7 +400,7 @@ export function AdminComplaintsPage() {
                     <span className={`text-[10px] font-bold border rounded-lg px-2 py-0.5 ${chipClass}`}>{c.categoryLabel}</span>
                     <p className="text-sm font-black text-slate-800 dark:text-slate-200 break-words">{c.title}</p>
                   </div>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                     Filed {formatTimestamp(c.createdAt)} · ref <span className="font-mono">{c.id}</span>
                   </p>
                 </div>
@@ -412,31 +412,31 @@ export function AdminComplaintsPage() {
               {/* Buyer + order context */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
-                  <User className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
+                  <User className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500">Buyer</p>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</p>
                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">{c.buyerName ?? '—'}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">id {c.buyerId}</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 truncate">id {c.buyerId}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
-                  <Package className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
+                  <Package className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500">Order</p>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Order</p>
                     {c.orderId ? (
                       <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate font-mono">{c.orderId}</p>
                     ) : (
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Not order-related</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Not order-related</p>
                     )}
-                    {c.subOrderId && <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate font-mono">sub {c.subOrderId}</p>}
+                    {c.subOrderId && <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 truncate font-mono">sub {c.subOrderId}</p>}
                   </div>
                 </div>
               </div>
 
               {/* Real complaint description */}
               <div className="rounded-xl border border-slate-100 dark:border-slate-800 px-3 py-2">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">Description</p>
-                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-300 break-words whitespace-pre-wrap">{c.description}</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-1">Description</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 break-words whitespace-pre-wrap">{c.description}</p>
               </div>
 
               {/* Buyer evidence photos — review only, never fabricated (empty rows stay honestly empty) */}
@@ -445,14 +445,14 @@ export function AdminComplaintsPage() {
               {/* Resolution (shown only when a real decision exists) */}
               {c.resolutionNote && (
                 <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
-                  <ScrollText className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-300 break-words">
+                  <ScrollText className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 break-words">
                     <span className="font-black">Resolution note:</span> {c.resolutionNote}
                   </p>
                 </div>
               )}
               {c.resolvedAt && (
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">
                   Decided {formatTimestamp(c.resolvedAt)}
                   {c.resolvedById ? ` · by admin ${c.resolvedById}` : ''}
                 </p>
@@ -498,7 +498,7 @@ export function AdminComplaintsPage() {
       {!loading && dataNotes.length > 0 && complaints.length > 0 && (
         <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-1">
           {dataNotes.map((noteLine, i) => (
-            <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">· {noteLine}</p>
+            <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">· {noteLine}</p>
           ))}
         </div>
       )}
@@ -516,7 +516,7 @@ export function AdminComplaintsPage() {
                     <><XCircle className="h-4 w-4 text-red-600" /> Reject complaint</>
                   )}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   {dialog.action === 'resolve'
                     ? 'Resolving records a real decision (audit-logged). A note of at least 3 characters is required — the buyer will see it on their complaint.'
                     : 'Rejecting records a real decision (audit-logged). A note of at least 3 characters is required — the buyer will see it on their complaint.'}
@@ -524,7 +524,7 @@ export function AdminComplaintsPage() {
               </DialogHeader>
 
               <div className="space-y-3 py-1">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 break-words">
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
                   <span className="font-black">{dialog.complaint.title}</span> · {dialog.complaint.categoryLabel} · buyer {dialog.complaint.buyerName ?? dialog.complaint.buyerId}
                 </div>
 
@@ -537,7 +537,7 @@ export function AdminComplaintsPage() {
                     placeholder={dialog.action === 'resolve' ? 'Explain how the complaint was resolved…' : 'Explain the real reason this complaint is rejected…'}
                     className="min-h-[80px] rounded-xl text-xs"
                   />
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">{note.trim().length}/3 characters minimum</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{note.trim().length}/3 characters minimum</p>
                 </div>
 
                 {dialogError && (

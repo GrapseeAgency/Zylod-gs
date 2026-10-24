@@ -51,19 +51,19 @@ export function CareersPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Careers at Zylod</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">{jobs.length} Open Positions in Dhaka & Remote</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{jobs.length} Open Positions in Dhaka & Remote</p>
         </div>
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 md:px-6 md:py-6 space-y-5 md:space-y-8 pb-24 md:pb-8 lg:max-w-5xl">
         {/* Hero */}
         <div className="bg-gradient-to-r from-teal-700 to-emerald-800 rounded-3xl p-6 md:p-8 text-white space-y-3">
-          <Badge className="bg-white/20 text-white border-none text-xs">
+          <Badge className="bg-white dark:bg-gray-900/20 text-white border-none text-xs">
             We are hiring!
           </Badge>
           <h2 className="text-xl md:text-2xl font-black leading-tight">
@@ -90,7 +90,7 @@ export function CareersPage() {
 
         {/* Quick Nav Sub-pages */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">Culture & Benefits</h3>
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Culture & Benefits</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {[
               { label: 'Employee Benefits', id: 'career-benefits' },
@@ -144,7 +144,7 @@ export function CareersPage() {
               {[1, 2, 3].map(i => <div key={i} className="h-28 bg-gray-200 rounded-3xl" />)}
             </div>
           ) : filteredJobs.length === 0 ? (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 text-center text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-gray-800">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 text-center text-gray-400 dark:text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-800">
               No positions open in this department right now.
             </div>
           ) : (
@@ -166,13 +166,13 @@ export function CareersPage() {
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-500 dark:text-gray-400">
+                <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+                    <MapPin className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                     {job.location}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+                    <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                     {job.employmentType.replace('_', ' ').toUpperCase()}
                   </span>
                   {job.salaryMin && (
@@ -183,7 +183,7 @@ export function CareersPage() {
                 </div>
 
                 <div className="pt-1 flex items-center justify-between border-t border-gray-50">
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500">{job.applicationCount} applicants</span>
+                  <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{job.applicationCount} applicants</span>
                   <span className="text-xs font-bold text-teal-600 flex items-center gap-0.5">
                     View Details <ChevronRight className="w-3.5 h-3.5" />
                   </span>

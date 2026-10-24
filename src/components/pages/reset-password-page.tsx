@@ -164,7 +164,7 @@ export default function ResetPasswordPage() {
   // ─── Shared Form Content ───
   const formContent = (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#E0E0E0] space-y-5">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-[#E0E0E0] space-y-5">
         {/* New Password */}
         <div className="space-y-2">
           <Label htmlFor="new-password" className="text-sm font-medium text-[#1A1A1A]">
@@ -313,10 +313,10 @@ export default function ResetPasswordPage() {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-[#E0E0E0]">
+        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]">
           <button
             onClick={goBack}
-            className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
             aria-label="Go back"
           >
             <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -382,7 +382,7 @@ export default function ResetPasswordPage() {
           <div className="flex items-center justify-between mb-8">
             <button
               onClick={goBack}
-              className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
               aria-label="Go back"
             >
               <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -432,7 +432,7 @@ export default function ResetPasswordPage() {
       <div className="animate-pulse flex flex-col items-center gap-4">
         <div className="w-28 h-28 rounded-full bg-[#FFE4E6]" />
         <div className="h-8 w-48 bg-gray-200 rounded" />
-        <div className="h-4 w-64 bg-gray-100 rounded" />
+        <div className="h-4 w-64 bg-gray-100 dark:bg-gray-900 rounded" />
       </div>
     </div>
   )

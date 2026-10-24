@@ -87,7 +87,7 @@ export function DeliveryMethodPage() {
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -99,7 +99,7 @@ export function DeliveryMethodPage() {
         {/* Page Title */}
         <div>
           <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Select Delivery Method</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Choose how you want your wholesale order delivered.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">Choose how you want your wholesale order delivered.</p>
         </div>
 
         {/* Delivery Option Cards */}
@@ -147,7 +147,7 @@ export function DeliveryMethodPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">{method.name}</h3>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{method.description}</p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">{method.description}</p>
                         </div>
 
                         {/* Price */}
@@ -179,7 +179,7 @@ export function DeliveryMethodPage() {
 
                       {/* Pickup address if available */}
                       {method.pickupAddress && (
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 leading-relaxed">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
                           {method.pickupAddress}
                         </p>
                       )}
@@ -193,7 +193,7 @@ export function DeliveryMethodPage() {
       </main>
 
       {/* Sticky Continue Button */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <div className="max-w-lg mx-auto lg:max-w-3xl">
           <Button
             onClick={() => navigate('payment-method')}

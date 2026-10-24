@@ -38,7 +38,7 @@ export function BuyerProtectionPolicyPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Buyer Protection Policy</span>
@@ -75,7 +75,7 @@ export function BuyerProtectionPolicyPage() {
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{p.title}</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{p.desc}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{p.desc}</p>
                 </div>
               </motion.div>
             )
@@ -85,7 +85,7 @@ export function BuyerProtectionPolicyPage() {
         {/* CTA */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
           <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Have an active order with an issue?</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">You can open an official support ticket or check dispute guidelines.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">You can open an official support ticket or check dispute guidelines.</p>
           <div className="flex justify-center gap-2 pt-2">
             <button
               onClick={() => navigate('submit-ticket')}

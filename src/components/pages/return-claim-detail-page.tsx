@@ -278,7 +278,7 @@ export function ReturnClaimDetailPage() {
           <button
             onClick={goBack}
             aria-label="Go back"
-            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+            className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
           >
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
@@ -307,7 +307,7 @@ export function ReturnClaimDetailPage() {
               )}
               <button
                 onClick={load}
-                className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
+                className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" /> Retry
               </button>
@@ -343,13 +343,13 @@ export function ReturnClaimDetailPage() {
         <button
           onClick={goBack}
           aria-label="Go back"
-          className="md:hidden p-1 -ml-1 min-h-11 min-w-11 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+          className="md:hidden p-1 -ml-1 min-h-11 min-w-11 flex items-center justify-center text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
         <div className="min-w-0">
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">Return Inspection</h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">
             Claim <span className="font-mono">{ret.returnNumber}</span>
           </p>
         </div>
@@ -367,12 +367,12 @@ export function ReturnClaimDetailPage() {
               </span>
             </div>
             {ret.orderNumber && (
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 Order <span className="font-mono text-gray-700 dark:text-gray-300">{ret.orderNumber}</span>
               </p>
             )}
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">
             Filed {new Date(ret.createdAt).toLocaleString()}
             {ret.resolvedAt && (
               <> · Resolved {new Date(ret.resolvedAt).toLocaleString()}</>
@@ -381,7 +381,7 @@ export function ReturnClaimDetailPage() {
           {ret.resolutionNote && (
             <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-lg">
               <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Resolution note</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{ret.resolutionNote}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{ret.resolutionNote}</p>
             </div>
           )}
         </div>
@@ -392,7 +392,7 @@ export function ReturnClaimDetailPage() {
             <Box className="w-4 h-4 text-primary" /> Returned Items
           </h2>
           {ret.items.length === 0 ? (
-            <p className="text-xs text-gray-500 dark:text-gray-400">No items on this return.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">No items on this return.</p>
           ) : (
             <ul className="space-y-2">
               {ret.items.map((it) => (
@@ -401,7 +401,7 @@ export function ReturnClaimDetailPage() {
                   className="p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950"
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
+                    <span className="text-xs font-mono text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       Line {it.orderItemId.slice(-8)}
                     </span>
                     <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
@@ -410,14 +410,14 @@ export function ReturnClaimDetailPage() {
                   </div>
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{it.reason}</p>
                   {it.comments && (
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 italic">“{it.comments}”</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 mt-1 italic">“{it.comments}”</p>
                   )}
                 </li>
               ))}
             </ul>
           )}
           {ret.estimatedRefund != null && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
               Estimated refund: <span className="font-bold text-primary">৳{ret.estimatedRefund}</span>
             </p>
           )}
@@ -429,7 +429,7 @@ export function ReturnClaimDetailPage() {
             <Camera className="w-4 h-4 text-primary" /> Buyer Evidence
           </h2>
           {ret.evidencePhotos.length === 0 ? (
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
               The buyer attached no evidence photos to this return.
             </p>
           ) : (
@@ -468,15 +468,15 @@ export function ReturnClaimDetailPage() {
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-bold text-gray-900 dark:text-gray-100">৳{r.amount}</span>
-                    <span className="text-gray-500 dark:text-gray-400">{r.method}</span>
+                    <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">{r.method}</span>
                   </div>
                   {r.reference && (
-                    <p className="text-gray-600 dark:text-gray-300 font-mono">{r.reference}</p>
+                    <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 font-mono">{r.reference}</p>
                   )}
-                  <p className="text-gray-500 dark:text-gray-400">
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     {r.status} · {new Date(r.processedAt).toLocaleString()}
                   </p>
-                  {r.note && <p className="text-gray-600 dark:text-gray-400 italic">{r.note}</p>}
+                  {r.note && <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500 italic">{r.note}</p>}
                 </li>
               ))}
             </ul>
@@ -516,7 +516,7 @@ export function ReturnClaimDetailPage() {
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <RotateCcw className="w-4 h-4 text-primary" /> Confirm Receipt of Returned Goods
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
             Confirming receipt is what restores stock for your items on this return — the API is the source of truth.
             The action is only allowed when the return status is <span className="font-medium">approved</span> or{' '}
             <span className="font-medium">refunded</span> (goods only travel back after approval).
@@ -531,7 +531,7 @@ export function ReturnClaimDetailPage() {
           <button
             onClick={confirmReceipt}
             disabled={!canConfirmReceipt || alreadyReceived || submitting}
-            className="w-full min-h-12 py-3 bg-primary text-white rounded-xl font-medium flex justify-center items-center gap-2 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+            className="w-full min-h-12 py-3 bg-primary text-white rounded-xl font-medium flex justify-center items-center gap-2 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed disabled:text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:disabled:text-gray-400 dark:text-gray-500"
           >
             <Check className="w-5 h-5" />
             {submitting ? 'Confirming…' : alreadyReceived ? 'Already confirmed' : 'Confirm Receipt'}
@@ -550,7 +550,7 @@ export function ReturnClaimDetailPage() {
 
           <button
             disabled
-            className="w-full min-h-12 py-3 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
+            className="w-full min-h-12 py-3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 text-gray-400 dark:text-gray-500 dark:text-gray-400 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <Check className="w-5 h-5" /> Approve Refund
           </button>
@@ -561,7 +561,7 @@ export function ReturnClaimDetailPage() {
 
           <button
             disabled
-            className="w-full min-h-12 py-3 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
+            className="w-full min-h-12 py-3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 text-gray-400 dark:text-gray-500 dark:text-gray-400 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <X className="w-5 h-5" /> Reject Claim
           </button>
@@ -572,7 +572,7 @@ export function ReturnClaimDetailPage() {
 
           <button
             disabled
-            className="w-full min-h-12 py-3 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
+            className="w-full min-h-12 py-3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 text-gray-400 dark:text-gray-500 dark:text-gray-400 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <Camera className="w-5 h-5" /> Upload Inspection Photos
           </button>

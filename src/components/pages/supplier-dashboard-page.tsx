@@ -360,7 +360,7 @@ export function SupplierDashboardPage() {
                           <span className="text-sm flex items-center gap-1"><MapPin className="h-3.5 w-3.5 text-primary" /> {region.region}</span>
                           <span className="text-xs text-muted-foreground">{region.percentage}%</span>
                         </div>
-                        <div className="bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                        <div className="bg-gray-100 dark:bg-gray-900 rounded-full h-2.5 overflow-hidden">
                           <motion.div initial={{ width: 0 }} animate={{ width: `${region.percentage}%` }} transition={{ duration: 0.8 }} className="h-full bg-primary rounded-full" />
                         </div>
                       </div>

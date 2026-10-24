@@ -103,7 +103,7 @@ export function InventoryWarehouseLocationsPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
         <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Warehouse Locations</h1>
@@ -118,7 +118,7 @@ export function InventoryWarehouseLocationsPage() {
                   Sign in
                 </button>
               )}
-              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
+              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
                 <RefreshCw className="w-4 h-4" /> Retry
               </button>
             </div>
@@ -137,12 +137,12 @@ export function InventoryWarehouseLocationsPage() {
     >
       <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Warehouse Locations</h1>
         </div>
-        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
           <RefreshCw className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
       </div>
@@ -150,19 +150,19 @@ export function InventoryWarehouseLocationsPage() {
       <div className="p-4 md:max-w-4xl md:mx-auto md:p-6 md:pt-8 space-y-4">
         <div className="hidden md:flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Warehouse Locations</h1>
-          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary inline-flex items-center gap-1">
+          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-primary inline-flex items-center gap-1">
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 -mt-2">
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 -mt-2">
           Your real ship-from locations. Manage them in the self-pickup settings. Utilization is not tracked — the warehouse model carries no capacity column.
         </p>
 
         {warehouses.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
-            <MapPin className="w-8 h-8 text-gray-400 mx-auto" />
+            <MapPin className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No warehouse locations yet</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Add a pickup location from self-pickup settings to see it here.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Add a pickup location from self-pickup settings to see it here.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -181,9 +181,9 @@ export function InventoryWarehouseLocationsPage() {
                       {w.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{w.district}, {w.city}</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 break-words">{w.addressLine1}</p>
-                  {w.addressLine2 && <p className="text-xs text-gray-600 dark:text-gray-300 break-words">{w.addressLine2}</p>}
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">{w.district}, {w.city}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 mt-2 break-words">{w.addressLine1}</p>
+                  {w.addressLine2 && <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 break-words">{w.addressLine2}</p>}
                   {w.lat != null && w.lng != null && (
                     <a
                       href={`https://www.openstreetmap.org/?mlat=${w.lat}&mlon=${w.lng}#map=16/${w.lat}/${w.lng}`}
@@ -194,7 +194,7 @@ export function InventoryWarehouseLocationsPage() {
                       <Navigation className="w-3 h-3" /> {w.lat.toFixed(4)}, {w.lng.toFixed(4)}
                     </a>
                   )}
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-2">
                     Added {new Date(w.createdAt).toLocaleDateString()}
                   </p>
                 </div>

@@ -93,7 +93,7 @@ export function GenericDealsPage({ pageId }: GenericDealsPageProps) {
               <ArrowLeft className="h-4 w-4" /> Back to All Deals
             </button>
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
+              <div className="p-2.5 rounded-xl bg-white dark:bg-gray-900/10 backdrop-blur-sm border border-white/20">
                 {meta.icon}
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold">{meta.name}</h1>
@@ -159,7 +159,7 @@ export function GenericDealsPage({ pageId }: GenericDealsPageProps) {
                           customizable: false,
                         })
                       }}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white text-muted-foreground transition-colors"
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white dark:bg-gray-900/80 backdrop-blur-sm hover:bg-white dark:bg-gray-900 text-muted-foreground transition-colors"
                     >
                       <Heart className={`h-4 w-4 ${inWishlist ? 'fill-rose-500 text-rose-500' : ''}`} />
                     </button>

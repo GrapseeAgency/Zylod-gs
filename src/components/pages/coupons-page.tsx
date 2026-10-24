@@ -135,7 +135,7 @@ export function CouponsPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex flex-wrap items-center justify-between gap-2 shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -185,10 +185,10 @@ export function CouponsPage() {
             <button
               type="button"
               onClick={() => setShowCreate((v) => !v)}
-              className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+              className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition"
               aria-expanded={showCreate}
             >
-              <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 Admin — Create Coupon
               </span>
               <span className="text-xs font-bold text-primary">{showCreate ? 'Hide' : 'Open'}</span>
@@ -246,7 +246,7 @@ export function CouponsPage() {
                     className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
                   Valid until
                   <input
                     type="datetime-local"
@@ -280,7 +280,7 @@ export function CouponsPage() {
             ))}
           </div>
         ) : coupons.length === 0 ? (
-          <div className="text-center py-16 text-gray-500 dark:text-gray-400 space-y-2">
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-2">
             <Gift className="w-12 h-12 text-gray-300 mx-auto" />
             <p className="font-bold text-sm text-gray-800 dark:text-gray-200">No public coupons active right now</p>
             <p className="text-xs">Check back soon or earn vouchers by completing tasks.</p>
@@ -312,14 +312,14 @@ export function CouponsPage() {
                           Wholesale
                         </Badge>
                       </div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
                         {coupon.minOrderAmount
                           ? `Valid on bulk orders of ${formatPrice(coupon.minOrderAmount)} or more`
                           : 'Valid on all wholesale purchases'}
                       </p>
                     </div>
 
-                    <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1 flex-shrink-0">
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 flex items-center gap-1 flex-shrink-0">
                       <Clock className="w-3 h-3" />
                       Exp: {new Date(coupon.validUntil).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                     </span>
@@ -339,7 +339,7 @@ export function CouponsPage() {
                         size="sm"
                         variant="ghost"
                         onClick={() => copyCode(coupon.code)}
-                        className="h-8 px-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900"
+                        className="h-8 px-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-gray-100"
                       >
                         {copiedCode === coupon.code ? (
                           <>

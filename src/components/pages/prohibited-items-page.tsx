@@ -38,7 +38,7 @@ export function ProhibitedItemsPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Prohibited Wholesale Items</span>
@@ -73,7 +73,7 @@ export function ProhibitedItemsPage() {
                 <Ban className="w-4 h-4 text-red-600" />
                 {cat.name}
               </h2>
-              <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+              <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 {cat.items.map((item, i) => (
                   <li key={i} className="flex items-start gap-2 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-gray-100 dark:border-gray-800">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />

@@ -59,18 +59,18 @@ const WarehouseCard = ({
   >
     <div className="flex items-start justify-between gap-2">
       <div className="min-w-0">
-        <div className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-1.5">
-          <Warehouse className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white flex items-center gap-1.5">
+          <Warehouse className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 shrink-0" />
           <span className="truncate">{w.name}</span>
         </div>
-        <div className="text-xs text-gray-500 mt-1 leading-relaxed">
+        <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">
           {w.addressLine1}
           {w.addressLine2 ? `, ${w.addressLine2}` : ''}
           <br />
           {w.city}, {w.district}
         </div>
         {w.lat !== null && w.lng !== null && (
-          <div className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+          <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 flex items-center gap-1">
             <MapPin className="w-3 h-3" />
             {w.lat.toFixed(4)}, {w.lng.toFixed(4)}
           </div>
@@ -79,7 +79,7 @@ const WarehouseCard = ({
       {manage && (
         <div className="flex flex-col items-center gap-2 shrink-0">
           <div className="flex items-center gap-1">
-            <Power className="w-3 h-3 text-gray-400" aria-hidden="true" />
+            <Power className="w-3 h-3 text-gray-400 dark:text-gray-500" aria-hidden="true" />
             <Switch
               checked={w.isActive === true}
               onCheckedChange={() => onToggle?.()}
@@ -92,7 +92,7 @@ const WarehouseCard = ({
             onClick={onRemove}
             disabled={busy}
             aria-label={`Remove ${w.name}`}
-            className="p-1.5 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 dark:hover:bg-gray-700"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
@@ -244,9 +244,9 @@ export const StorefrontWarehouses = ({
         </div>
       ) : (
         <div className="text-center py-10">
-          <Warehouse className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+          <Warehouse className="w-10 h-10 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 mx-auto mb-2" />
           <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No warehouse locations listed</h3>
-          <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-xs mx-auto">
             {ownView
               ? 'Add where your goods actually ship from — buyers read this before a bulk order.'
               : 'This store has not published its ship-from locations yet.'}
@@ -261,35 +261,35 @@ export const StorefrontWarehouses = ({
               <Plus className="w-4 h-4 mr-1" /> Add warehouse location
             </Button>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 p-4 space-y-3">
+            <div className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-4 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-medium text-gray-600 dark:text-gray-300 block mb-1">Location name *</label>
-                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Tejgaon Main Warehouse" className="bg-gray-50 dark:bg-gray-900" />
+                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 block mb-1">Location name *</label>
+                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Tejgaon Main Warehouse" className="bg-gray-50 dark:bg-gray-950 dark:bg-gray-900" />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-medium text-gray-600 dark:text-gray-300 block mb-1">Address line 1 *</label>
-                  <Input value={form.addressLine1} onChange={(e) => setForm({ ...form, addressLine1: e.target.value })} placeholder="House 42, Road 11" className="bg-gray-50 dark:bg-gray-900" />
+                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 block mb-1">Address line 1 *</label>
+                  <Input value={form.addressLine1} onChange={(e) => setForm({ ...form, addressLine1: e.target.value })} placeholder="House 42, Road 11" className="bg-gray-50 dark:bg-gray-950 dark:bg-gray-900" />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-medium text-gray-600 dark:text-gray-300 block mb-1">Address line 2</label>
-                  <Input value={form.addressLine2} onChange={(e) => setForm({ ...form, addressLine2: e.target.value })} placeholder="Block C (optional)" className="bg-gray-50 dark:bg-gray-900" />
+                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 block mb-1">Address line 2</label>
+                  <Input value={form.addressLine2} onChange={(e) => setForm({ ...form, addressLine2: e.target.value })} placeholder="Block C (optional)" className="bg-gray-50 dark:bg-gray-950 dark:bg-gray-900" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-600 dark:text-gray-300 block mb-1">City *</label>
-                  <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Dhaka" className="bg-gray-50 dark:bg-gray-900" />
+                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 block mb-1">City *</label>
+                  <Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Dhaka" className="bg-gray-50 dark:bg-gray-950 dark:bg-gray-900" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-600 dark:text-gray-300 block mb-1">District *</label>
-                  <Input value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} placeholder="Dhaka" className="bg-gray-50 dark:bg-gray-900" />
+                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 block mb-1">District *</label>
+                  <Input value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} placeholder="Dhaka" className="bg-gray-50 dark:bg-gray-950 dark:bg-gray-900" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-600 dark:text-gray-300 block mb-1">Latitude</label>
-                  <Input value={form.lat} onChange={(e) => setForm({ ...form, lat: e.target.value })} placeholder="23.7509 (optional)" className="bg-gray-50 dark:bg-gray-900" />
+                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 block mb-1">Latitude</label>
+                  <Input value={form.lat} onChange={(e) => setForm({ ...form, lat: e.target.value })} placeholder="23.7509 (optional)" className="bg-gray-50 dark:bg-gray-950 dark:bg-gray-900" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-600 dark:text-gray-300 block mb-1">Longitude</label>
-                  <Input value={form.lng} onChange={(e) => setForm({ ...form, lng: e.target.value })} placeholder="90.3932 (optional)" className="bg-gray-50 dark:bg-gray-900" />
+                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 block mb-1">Longitude</label>
+                  <Input value={form.lng} onChange={(e) => setForm({ ...form, lng: e.target.value })} placeholder="90.3932 (optional)" className="bg-gray-50 dark:bg-gray-950 dark:bg-gray-900" />
                 </div>
               </div>
               {formError && (

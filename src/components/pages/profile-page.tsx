@@ -48,8 +48,8 @@ export function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-400">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="text-xs font-bold">Loading Profile...</span>
         </div>
@@ -58,7 +58,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <AnimatePresence mode="wait">
         <motion.div
           key={role}

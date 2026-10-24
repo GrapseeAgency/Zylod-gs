@@ -218,7 +218,7 @@ export function BarcodeScannerPage() {
       <div className="relative flex-1 bg-gray-900 overflow-hidden">
         {cameraError ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-            <QrCode className="w-12 h-12 text-gray-500 dark:text-gray-400 mb-3" />
+            <QrCode className="w-12 h-12 text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-3" />
             <p className="text-gray-300 text-sm mb-4">{cameraError}</p>
             <Button onClick={() => fileInputRef.current?.click()} variant="outline" size="sm" className="text-white border-white/30">
               Upload Image Instead
@@ -229,7 +229,7 @@ export function BarcodeScannerPage() {
             onClick={launchNativeScan}
             className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-900"
           >
-            <QrCode className="w-12 h-12 text-gray-500 dark:text-gray-400" />
+            <QrCode className="w-12 h-12 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
             <span className="text-gray-300 text-sm">Tap to scan with camera</span>
           </button>
         ) : (
@@ -316,9 +316,9 @@ export function BarcodeScannerPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">{product.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">SKU: {product.sku}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">SKU: {product.sku}</p>
                   <p className="text-sm font-bold text-red-600 mt-1">{formatPrice(product.basePrice)}/{product.unit}</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">Stock: {product.stockQuantity} units available</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Stock: {product.stockQuantity} units available</p>
                 </div>
               </CardContent>
             </Card>
@@ -353,7 +353,7 @@ export function BarcodeScannerPage() {
             {!manualEntry ? (
               <button
                 onClick={() => setManualEntry(true)}
-                className="w-full text-center text-xs text-gray-400 dark:text-gray-500 underline"
+                className="w-full text-center text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 underline"
               >
                 Enter barcode manually
               </button>
@@ -364,7 +364,7 @@ export function BarcodeScannerPage() {
                   value={manualCode}
                   onChange={e => setManualCode(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && lookupCode(manualCode)}
-                  className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-gray-500 text-sm"
+                  className="flex-1 bg-white dark:bg-gray-900/10 border-white/20 text-white placeholder:text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm"
                 />
                 <Button
                   onClick={() => lookupCode(manualCode)}
@@ -377,14 +377,14 @@ export function BarcodeScannerPage() {
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full text-center text-xs text-gray-500 dark:text-gray-400 underline"
+              className="w-full text-center text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 underline"
             >
               Upload barcode image
             </button>
           </div>
         )}
 
-        <p className="text-xs text-center text-gray-600 dark:text-gray-400">
+        <p className="text-xs text-center text-gray-600 dark:text-gray-400 dark:text-gray-500">
           Point camera at any product barcode or QR code
         </p>
       </div>

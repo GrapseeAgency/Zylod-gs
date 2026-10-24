@@ -47,7 +47,7 @@ export function PointsHistoryPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -98,7 +98,7 @@ export function PointsHistoryPage() {
             ))}
           </div>
         ) : transactions.length === 0 ? (
-          <div className="text-center py-16 text-gray-500 dark:text-gray-400 space-y-2">
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-2">
             <Coins className="w-12 h-12 text-gray-300 mx-auto" />
             <p className="font-bold text-sm text-gray-800 dark:text-gray-200">No point transactions found</p>
             <p className="text-xs">Earn points by making purchases or completing daily activities.</p>
@@ -122,7 +122,7 @@ export function PointsHistoryPage() {
                     <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
                       {trx.description || (isEarn ? 'Points Earned' : 'Points Redeemed')}
                     </p>
-                    <p className="text-[11px] text-gray-400 dark:text-gray-500">
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                       {new Date(trx.createdAt).toLocaleDateString('en-GB', {
                         day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                       })}

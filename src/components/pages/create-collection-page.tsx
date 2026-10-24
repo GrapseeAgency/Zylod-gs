@@ -134,7 +134,7 @@ export function CreateCollectionPage() {
       {/* Header */}
       <header className="bg-white dark:bg-gray-900 sticky top-0 z-10 border-b px-4 py-3 flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full active:bg-gray-100" aria-label="Go back">
+          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full active:bg-gray-100 dark:bg-gray-900" aria-label="Go back">
             <ArrowLeft className="w-5 h-5 text-gray-800 dark:text-gray-200" />
           </button>
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -157,7 +157,7 @@ export function CreateCollectionPage() {
           <div>
             <div className="flex justify-between text-sm mb-1">
               <label className="font-medium text-gray-700 dark:text-gray-300">Collection Name <span className="text-[#C8102E]">*</span></label>
-              <span className="text-gray-400 dark:text-gray-500">{name.length}/50</span>
+              <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">{name.length}/50</span>
             </div>
             <input 
               type="text" 
@@ -172,7 +172,7 @@ export function CreateCollectionPage() {
           <div>
             <div className="flex justify-between text-sm mb-1">
               <label className="font-medium text-gray-700 dark:text-gray-300">Description</label>
-              <span className="text-gray-400 dark:text-gray-500">{description.length}/200</span>
+              <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">{description.length}/200</span>
             </div>
             <textarea 
               maxLength={200}
@@ -210,7 +210,7 @@ export function CreateCollectionPage() {
             ))}
           </div>
           {privacy === 'SHARED' && (
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
               A secret link is minted for this collection — anyone holding it can view. Flip back to Private and the link stops working.
             </p>
           )}
@@ -220,7 +220,7 @@ export function CreateCollectionPage() {
         <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
           <label className="font-medium text-gray-700 dark:text-gray-300 text-sm flex items-center justify-between">
             Cover Color
-            <span className="text-xs text-gray-400 dark:text-gray-500 font-normal">Optional</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 font-normal">Optional</span>
           </label>
           <div className="flex flex-wrap gap-3">
             {PRESET_COLORS.map((c, i) => (
@@ -237,7 +237,7 @@ export function CreateCollectionPage() {
               >
                 {!c && <div className="absolute w-[120%] h-0.5 bg-gray-300 rotate-45"></div>}
                 {coverColor === c && c && <Check className="w-5 h-5 text-white" />}
-                {coverColor === c && !c && <Check className="w-5 h-5 text-gray-500 dark:text-gray-400" />}
+                {coverColor === c && !c && <Check className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />}
               </button>
             ))}
           </div>
@@ -247,7 +247,7 @@ export function CreateCollectionPage() {
         <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
           <label className="font-medium text-gray-700 dark:text-gray-300 text-sm">Products from your wishlist</label>
           <div className="relative">
-            <Search className="w-5 h-5 absolute left-3 top-2.5 text-gray-400 dark:text-gray-500" />
+            <Search className="w-5 h-5 absolute left-3 top-2.5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <input 
               type="text" 
               value={searchQuery}
@@ -260,12 +260,12 @@ export function CreateCollectionPage() {
           {wishlistError ? (
             <p className="text-xs text-red-500">{wishlistError}</p>
           ) : !wishlistLoaded ? (
-            <div className="flex items-center justify-center py-4 text-gray-400 dark:text-gray-500">
+            <div className="flex items-center justify-center py-4 text-gray-400 dark:text-gray-500 dark:text-gray-400">
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
               <span className="text-xs">Loading your wishlist…</span>
             </div>
           ) : wishlistResults.length === 0 ? (
-            <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-3">
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 text-center py-3">
               {query ? `Nothing in your wishlist matches "${searchQuery}".` : 'Your wishlist is empty — save products from product pages first.'}
             </p>
           ) : (
@@ -288,7 +288,7 @@ export function CreateCollectionPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{w.product.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">৳{w.product.basePrice} / {w.product.unit}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">৳{w.product.basePrice} / {w.product.unit}</p>
                     </div>
                     <span className={`w-6 h-6 rounded-full flex items-center justify-center border ${picked ? 'bg-[#C8102E] border-[#C8102E] text-white' : 'border-gray-300 text-transparent'}`} aria-hidden="true">
                       <Check className="w-4 h-4" />
@@ -306,7 +306,7 @@ export function CreateCollectionPage() {
                 <div key={p.id} className="bg-gray-100 dark:bg-gray-900 px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5">
                   <span className="truncate max-w-[100px]">{p.name}</span>
                   <button onClick={() => setSelectedProducts(selectedProducts.filter(x => x.id !== p.id))} aria-label={`Remove ${p.name}`}>
-                    <X className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 hover:text-red-500" />
+                    <X className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-red-500" />
                   </button>
                 </div>
               ))}

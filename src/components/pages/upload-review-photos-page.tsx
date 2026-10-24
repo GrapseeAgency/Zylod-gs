@@ -109,7 +109,7 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
         <div className="relative flex items-center justify-center">
           <button
             onClick={goBack}
-            className="absolute left-0 p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900"
+            className="absolute left-0 p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100"
           >
             <X className="h-5 w-5" />
           </button>
@@ -124,7 +124,7 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
           <h2 className="text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">
             Add Photos or Videos
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
             Help other buyers make informed decisions. Upload high-quality images of the product you received.
           </p>
         </div>
@@ -148,7 +148,7 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
           <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
             Click or drag files here to upload
           </h3>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 mb-4">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-4">
             Supports JPG, PNG, and MP4 (Max 50MB)
           </p>
           <Button
@@ -167,7 +167,7 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
             </div>
           )}
           {mediaList.length === 0 && !uploadError && (
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center py-6">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 text-center py-6">
               No media selected. Upload real photos or videos of the product you received — nothing is
               pre-filled or faked.
             </p>
@@ -208,7 +208,7 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
                     <span className="text-[10px] font-bold text-white mb-2 bg-black/40 px-2 py-0.5 rounded-full">
                       Uploading... {item.progress}%
                     </span>
-                    <div className="w-full bg-white/40 h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-white dark:bg-gray-900/40 h-1.5 rounded-full overflow-hidden">
                       <div
                         className="bg-primary h-full rounded-full transition-all duration-300"
                         style={{ width: `${item.progress}%` }}
@@ -256,13 +256,13 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
       </main>
 
       {/* Bottom Sticky Action Bar */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-lg z-30">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-lg z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <div className="max-w-lg mx-auto grid grid-cols-2 gap-3">
           <Button
             type="button"
             variant="outline"
             onClick={goBack}
-            className="h-12 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="h-12 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
           >
             Cancel
           </Button>

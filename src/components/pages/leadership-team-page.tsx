@@ -12,12 +12,12 @@ export function LeadershipTeamPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Leadership Team</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">About Zylod</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">About Zylod</p>
         </div>
       </div>
 
@@ -31,7 +31,7 @@ export function LeadershipTeamPage() {
             Not Published Yet
           </Badge>
           <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">No named team members published yet</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-md mx-auto">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed max-w-md mx-auto">
             Zylod has not published its leadership or team roster. When we do, every person listed
             here will be a real member of the company with their actual role — no placeholder
             profiles. Open roles will be posted on the careers page as they become available.
@@ -45,7 +45,7 @@ export function LeadershipTeamPage() {
               <Briefcase className="w-5 h-5" />
               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Work With Us</h3>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+            <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
               Roles will be posted on the careers page as they open.
             </p>
             <Button onClick={() => navigate('careers-page')} variant="outline" className="w-full rounded-xl text-xs font-bold py-2.5">
@@ -58,7 +58,7 @@ export function LeadershipTeamPage() {
               <Mail className="w-5 h-5" />
               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Contact</h3>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+            <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
               Questions for the team? Reach us by email.
             </p>
             <a

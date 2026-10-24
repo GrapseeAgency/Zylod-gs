@@ -106,7 +106,7 @@ export function BusinessProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500">
+        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500 dark:text-slate-400">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="text-xs font-bold">Loading Business Profile...</span>
         </div>
@@ -117,8 +117,8 @@ export function BusinessProfilePage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Business Profile</span>
@@ -135,7 +135,7 @@ export function BusinessProfilePage() {
         {/* Banner */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <Building2 className="h-5 w-5 text-rose-300" />
             </div>
             <div>
@@ -150,7 +150,7 @@ export function BusinessProfilePage() {
         <form onSubmit={handleSave} className="space-y-4">
           {/* Corporate Entity Details */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
               Commercial Entity Details
             </h2>
 
@@ -199,7 +199,7 @@ export function BusinessProfilePage() {
 
           {/* Registered Address — honestly labelled: no backend storage exists yet */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <MapPin className="h-4 w-4 text-primary" />
               Registered Commercial Address
             </h2>
@@ -246,7 +246,7 @@ export function BusinessProfilePage() {
 
           {/* Verified Documents */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <FileText className="h-4 w-4 text-primary" />
               Commercial Document Archive
             </h2>
@@ -262,7 +262,7 @@ export function BusinessProfilePage() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 dark:text-slate-500 py-2">Trade License verified through Zylod Merchant KYC.</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-2">Trade License verified through Zylod Merchant KYC.</p>
             )}
           </div>
 

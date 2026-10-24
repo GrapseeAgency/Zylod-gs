@@ -74,18 +74,18 @@ export function TermsOfServicePage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div>
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base md:text-xl">Terms of Service</h1>
-            {doc && <p className="text-xs text-gray-400 dark:text-gray-500">v{doc.version} · {new Date(doc.effectiveDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
+            {doc && <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">v{doc.version} · {new Date(doc.effectiveDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setLanguage(l => l === 'en' ? 'bn' : 'en')}
-            className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 px-2 py-1 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+            className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 px-2 py-1 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition"
           >
             <Globe className="w-3.5 h-3.5" />
             {language === 'en' ? 'বাংলা' : 'English'}
@@ -102,7 +102,7 @@ export function TermsOfServicePage() {
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-3">
             <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
             <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Terms document loading</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Our legal team is finalizing the latest version. Please check back shortly.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Our legal team is finalizing the latest version. Please check back shortly.</p>
           </div>
         ) : (
           <>
@@ -134,7 +134,7 @@ export function TermsOfServicePage() {
 
             {/* Quick nav sub-pages */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">Quick Navigation</h3>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Quick Navigation</h3>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { label: 'Buyer Terms', id: 'buyer-terms' },
@@ -163,7 +163,7 @@ export function TermsOfServicePage() {
                 <div key={section.id} className="border-b border-gray-50 last:border-b-0">
                   <button
                     onClick={() => setOpenSection(openSection === String(idx) ? null : String(idx))}
-                    className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                    className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition"
                   >
                     <div className="flex items-center gap-3">
                       <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-black flex items-center justify-center">{idx + 1}</span>
@@ -173,13 +173,13 @@ export function TermsOfServicePage() {
                   </button>
                   {openSection === String(idx) && (
                     <div className="px-4 pb-4">
-                      <div className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap pl-9">{section.content.trim()}</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed whitespace-pre-wrap pl-9">{section.content.trim()}</div>
                     </div>
                   )}
                 </div>
               )) : (
                 <div className="px-4 py-4">
-                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">{doc.contentEn}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed whitespace-pre-wrap">{doc.contentEn}</p>
                 </div>
               )}
             </div>
@@ -194,13 +194,13 @@ export function TermsOfServicePage() {
                   <div key={faq.id} className="border-b border-gray-50 last:border-b-0">
                     <button
                       onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)}
-                      className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                      className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition"
                     >
                       <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 pr-3">{faq.questionEn}</span>
                       <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0 transition-transform ${openFaq === faq.id ? 'rotate-180' : ''}`} />
                     </button>
                     {openFaq === faq.id && (
-                      <div className="px-4 pb-4 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{faq.answerEn}</div>
+                      <div className="px-4 pb-4 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{faq.answerEn}</div>
                     )}
                   </div>
                 ))}

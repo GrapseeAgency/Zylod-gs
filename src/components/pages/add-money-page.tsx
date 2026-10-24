@@ -160,8 +160,8 @@ export function AddMoneyPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Deposit Capital</span>
@@ -172,7 +172,7 @@ export function AddMoneyPage() {
         {/* Banner + doctrine */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-3">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <Plus className="h-5 w-5 text-rose-300" />
             </div>
             <div>
@@ -182,7 +182,7 @@ export function AddMoneyPage() {
               </p>
             </div>
           </div>
-          <div className="flex items-start gap-2.5 bg-white/5 border border-white/10 rounded-2xl p-3">
+          <div className="flex items-start gap-2.5 bg-white dark:bg-gray-900/5 border border-white/10 rounded-2xl p-3">
             <ShieldCheck className="h-4 w-4 text-emerald-300 shrink-0 mt-0.5" />
             <p className="text-[11px] leading-relaxed text-slate-200">
               <span className="font-black text-white">Verification doctrine:</span> your claim stays
@@ -201,7 +201,7 @@ export function AddMoneyPage() {
               <Clock className="h-5 w-5 text-amber-500" />
               <h2 className="text-sm font-black text-amber-700 uppercase tracking-wide">Payment verification pending</h2>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
               Your claim for <span className="font-black text-slate-900 dark:text-slate-100">{formatPrice(submittedClaim.amount)}</span> (ref{' '}
               <span className="font-mono font-bold">{submittedClaim.reference}</span>) is recorded and queued for the
               finance team. Your wallet balance is <span className="font-black">unchanged</span> until an admin verifies the
@@ -222,11 +222,11 @@ export function AddMoneyPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           {/* Amount Input */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-            <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
               Enter Deposit Amount (BDT)
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-400 dark:text-slate-500 font-mono">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">
                 ৳
               </span>
               <Input
@@ -262,7 +262,7 @@ export function AddMoneyPage() {
 
           {/* Payment Method + claim details */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-            <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
               How did you pay?
             </label>
             <div className="grid grid-cols-2 gap-2.5">
@@ -282,7 +282,7 @@ export function AddMoneyPage() {
                     <span className={`flex items-center gap-1.5 text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>
                       <Icon className="h-3.5 w-3.5" /> {label}
                     </span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{desc}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">{desc}</span>
                   </button>
                 )
               })}
@@ -351,7 +351,7 @@ export function AddMoneyPage() {
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             {loading ? 'Recording claim…' : `Submit ${formatPrice(amountNumeric || 0)} claim for verification`}
           </Button>
-          <p className="text-center text-[10px] text-slate-400 dark:text-slate-500 -mt-2">
+          <p className="text-center text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 -mt-2">
             Submitting does not move money. Verification does.
           </p>
         </form>
@@ -359,7 +359,7 @@ export function AddMoneyPage() {
         {/* Claim ledger */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
           <div className="px-5 pt-4 pb-3 flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Your funding claims</h2>
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Your funding claims</h2>
             <button onClick={loadClaims} className="text-xs font-bold text-primary hover:underline">Refresh</button>
           </div>
           {claimsLoading ? (
@@ -367,7 +367,7 @@ export function AddMoneyPage() {
               {[0, 1].map((i) => <div key={i} className="h-12 bg-slate-50 dark:bg-slate-950 rounded-xl animate-pulse" />)}
             </div>
           ) : claims.length === 0 ? (
-            <div className="px-5 pb-6 py-4 text-center text-xs text-slate-400 dark:text-slate-500">
+            <div className="px-5 pb-6 py-4 text-center text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
               No funding claims yet. Submit your first claim above — it will appear here with its live status.
             </div>
           ) : (
@@ -384,7 +384,7 @@ export function AddMoneyPage() {
                         {c.status}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-mono truncate">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block font-mono truncate">
                       {c.provider} · {c.reference} · {new Date(c.createdAt).toLocaleDateString()}
                     </span>
                   </div>

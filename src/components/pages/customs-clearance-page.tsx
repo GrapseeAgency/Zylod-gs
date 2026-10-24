@@ -42,7 +42,7 @@ export function CustomsClearancePage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -53,7 +53,7 @@ export function CustomsClearancePage() {
         {/* Title */}
         <div>
           <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Customs Clearance Guide</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">What to expect when your wholesale consignment crosses the border.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">What to expect when your wholesale consignment crosses the border.</p>
         </div>
 
         {/* The honest banner — no live process is bound to this view */}
@@ -75,21 +75,21 @@ export function CustomsClearancePage() {
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs">
             <Truck className="h-5 w-5 text-primary mb-2" />
             <p className="text-xs font-black text-slate-900 dark:text-slate-100">Shipment status</p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed mt-0.5">
               Real order slices and tracking events live on each order&apos;s detail page — seller transitions and driver milestones, live.
             </p>
           </div>
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs">
             <ShieldCheck className="h-5 w-5 text-primary mb-2" />
             <p className="text-xs font-black text-slate-900 dark:text-slate-100">Delivery windows</p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed mt-0.5">
               Reschedule a real order&apos;s delivery from the order page — the request lands in the supplier&apos;s feed.
             </p>
           </div>
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs">
             <Calculator className="h-5 w-5 text-primary mb-2" />
             <p className="text-xs font-black text-slate-900 dark:text-slate-100">Live freight quotes</p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed mt-0.5">
               The freight calculator quotes the operators&apos; real zone book — the same rates checkout charges.
             </p>
           </div>
@@ -97,7 +97,7 @@ export function CustomsClearancePage() {
 
         {/* Document checklist — genuinely real guidance */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Document Checklist</h2>
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Document Checklist</h2>
           <div className="space-y-2">
             {DOC_CHECKLIST.map((doc) => (
               <div key={doc.name} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-start gap-3">
@@ -106,7 +106,7 @@ export function CustomsClearancePage() {
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{doc.name}</h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{doc.why}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">{doc.why}</p>
                 </div>
               </div>
             ))}
@@ -115,7 +115,7 @@ export function CustomsClearancePage() {
 
         {/* Process steps */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">The Process, Step by Step</h2>
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">The Process, Step by Step</h2>
           <div className="space-y-2">
             {PROCESS_STEPS.map((step) => (
               <div key={step.title} className="p-3 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-start gap-3">
@@ -124,7 +124,7 @@ export function CustomsClearancePage() {
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{step.title}</h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{step.body}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">{step.body}</p>
                 </div>
               </div>
             ))}

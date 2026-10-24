@@ -71,13 +71,13 @@ export function SellerSupportPage() {
         ) : error ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded text-center shadow">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{error}</p>
           </div>
         ) : tickets.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-8 rounded text-center shadow">
             <TicketCheck className="w-10 h-10 text-gray-300 mx-auto mb-2" />
             <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No support tickets yet</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Open a ticket and the Zylod support team will follow up.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Open a ticket and the Zylod support team will follow up.</p>
           </div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
@@ -87,7 +87,7 @@ export function SellerSupportPage() {
                   <span className="font-bold">{ticket.subject}</span>
                   <span className="text-xs bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded">{ticket.status}</span>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{ticket.category} • {ticket.messageCount} message{ticket.messageCount !== 1 ? 's' : ''} • {new Date(ticket.createdAt).toLocaleDateString()}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{ticket.category} • {ticket.messageCount} message{ticket.messageCount !== 1 ? 's' : ''} • {new Date(ticket.createdAt).toLocaleDateString()}</p>
               </div>
             ))}
           </motion.div>

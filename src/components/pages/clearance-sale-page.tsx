@@ -112,10 +112,10 @@ export function ClearanceSalePage() {
   return (
     <div className="min-h-screen bg-[#FDF2F4] pb-24 md:pb-8">
       {/* ─── Top Header ─── */}
-      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:px-6">
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:px-6">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors md:hidden"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -123,7 +123,7 @@ export function ClearanceSalePage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -183,7 +183,7 @@ export function ClearanceSalePage() {
         )}
         {!isLoading && !loadError && items.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <Percent className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+            <Percent className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               Nothing on clearance in this category right now.
             </p>

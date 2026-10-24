@@ -50,7 +50,7 @@ export function FeaturedProductCard({ product }: { product: FeaturedProduct }) {
 
   return (
     <div
-      className="group min-w-[200px] max-w-[200px] bg-card rounded-lg border border-gray-100 overflow-hidden flex-shrink-0 transition-all duration-200 hover:-translate-y-1.5 hover:shadow-lg hover:border-red-200"
+      className="group min-w-[200px] max-w-[200px] bg-card rounded-lg border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 transition-all duration-200 hover:-translate-y-1.5 hover:shadow-lg hover:border-red-200"
     >
       {/* Badge Banner */}
       <div
@@ -89,16 +89,16 @@ export function FeaturedProductCard({ product }: { product: FeaturedProduct }) {
         </div>
       </div>
       <div className="p-3 cursor-pointer" onClick={() => setCurrentPage('product-detail', { productId: product.id })}>
-        <p className="text-xs text-gray-800 font-semibold leading-tight line-clamp-2 h-8 mb-1.5 group-hover:text-red-600 transition-colors">{product.name}</p>
+        <p className="text-xs text-gray-800 dark:text-gray-200 font-semibold leading-tight line-clamp-2 h-8 mb-1.5 group-hover:text-red-600 transition-colors">{product.name}</p>
         <div className="flex items-baseline gap-1.5 mb-1">
           <span className="text-sm font-bold" style={{ color: 'primary' }}>{formatPrice(product.price)}</span>
-          <span className="text-[10px] text-gray-400 line-through">{formatPrice(product.originalPrice)}</span>
+          <span className="text-[10px] text-gray-400 dark:text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>
         </div>
-        <div className="flex items-center justify-between text-[10px] text-gray-400 mb-1">
+        <div className="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 mb-1">
           <span className="font-medium">MOQ: {product.moq}</span>
           <span className="font-medium">{product.sold >= 1000 ? `${(product.sold / 1000).toFixed(1)}k` : product.sold} sold</span>
         </div>
-        <div className="flex items-center gap-1 text-[10px] text-gray-400">
+        <div className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500">
           <MapPin className="h-3 w-3" />
           <span>{product.location}</span>
         </div>

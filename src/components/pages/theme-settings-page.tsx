@@ -110,8 +110,8 @@ export function ThemeSettingsPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-10">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Theme &amp; Appearance</span>
@@ -123,7 +123,7 @@ export function ThemeSettingsPage() {
         {/* Banner */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <Sun className="h-5 w-5 text-rose-300" />
             </div>
             <div>
@@ -139,7 +139,7 @@ export function ThemeSettingsPage() {
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-amber-500 mx-auto" />
             <h2 className="text-sm font-black">Sign in to manage your saved theme</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Theme preferences are stored on your account.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Theme preferences are stored on your account.</p>
             <Button onClick={() => navigate('login')} className="h-11 px-6 rounded-xl text-xs font-bold">Sign In</Button>
           </div>
         ) : (
@@ -155,15 +155,15 @@ export function ThemeSettingsPage() {
             {/* Theme Mode Selector */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Color Theme</h2>
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Color Theme</h2>
                 {!loading && (
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">
                     {configured ? 'Customized for your account' : 'Platform default — not customized yet'}
                   </span>
                 )}
               </div>
               {loading ? (
-                <div className="flex items-center justify-center py-8 text-slate-400 dark:text-slate-500">
+                <div className="flex items-center justify-center py-8 text-slate-400 dark:text-slate-500 dark:text-slate-400">
                   <Loader2 className="h-5 w-5 animate-spin" />
                   <span className="text-xs font-bold ml-2">Loading your saved theme…</span>
                 </div>
@@ -193,7 +193,7 @@ export function ThemeSettingsPage() {
                         </div>
                         <div>
                           <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>{label}</span>
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{desc}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">{desc}</span>
                         </div>
                       </button>
                     )
@@ -224,7 +224,7 @@ export function ThemeSettingsPage() {
                     </div>
                     <div>
                       <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">High Contrast Mode</h3>
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500">Not implemented yet — requires backend support</p>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Not implemented yet — requires backend support</p>
                     </div>
                   </div>
                   <Switch checked={false} disabled aria-label="High Contrast Mode (not implemented)" />
@@ -237,7 +237,7 @@ export function ThemeSettingsPage() {
                     </div>
                     <div>
                       <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Compact Density Grid</h3>
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500">Not implemented yet — requires backend support</p>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Not implemented yet — requires backend support</p>
                     </div>
                   </div>
                   <Switch checked={false} disabled aria-label="Compact Density Grid (not implemented)" />
@@ -250,7 +250,7 @@ export function ThemeSettingsPage() {
                     </div>
                     <div>
                       <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Reduce Motion</h3>
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500">Not implemented yet — requires backend support</p>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Not implemented yet — requires backend support</p>
                     </div>
                   </div>
                   <Switch checked={false} disabled aria-label="Reduce Motion (not implemented)" />

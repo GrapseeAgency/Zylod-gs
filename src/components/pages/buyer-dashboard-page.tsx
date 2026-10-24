@@ -124,7 +124,7 @@ export default function BuyerDashboardPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Buyer Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Buyer Dashboard</h1>
           <p className="text-muted-foreground mt-1">Welcome back to your wholesale command center</p>
         </div>
         <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-red-50" onClick={() => navigate('buyer-settings')}>Settings</Button>
@@ -411,7 +411,7 @@ export default function BuyerDashboardPage() {
                 {data?.recentActivity.map((activity, i) => {
                   const { Icon, color, bg } = activityIcon(activity.type)
                   return (
-                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition-colors">
                       <div className={`h-8 w-8 rounded-full ${bg} flex items-center justify-center shrink-0`}><Icon className={`h-4 w-4 ${color}`} /></div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm">{activity.text}</p>

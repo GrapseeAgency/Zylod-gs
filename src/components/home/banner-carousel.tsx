@@ -182,7 +182,7 @@ export function BannerCarousel() {
                 aria-label={`Go to banner ${i + 1}`}
                 aria-current={i === index}
                 onClick={() => setIndex(i)}
-                className={`h-1.5 rounded-full transition-all ${i === index ? 'w-5 bg-white' : 'w-1.5 bg-white/50'}`}
+                className={`h-1.5 rounded-full transition-all ${i === index ? 'w-5 bg-white' : 'w-1.5 bg-white/50 dark:bg-gray-900/50'}`}
               />
             ))}
           </div>

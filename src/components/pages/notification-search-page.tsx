@@ -45,7 +45,7 @@ export function NotificationSearchPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Search Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center gap-3 shadow-sm">
-        <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
 
@@ -60,7 +60,7 @@ export function NotificationSearchPage() {
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -72,7 +72,7 @@ export function NotificationSearchPage() {
       <div className="flex-1 px-4 py-4 md:px-6 md:py-6 max-w-2xl mx-auto lg:max-w-3xl w-full space-y-4 md:space-y-6 pb-24 md:pb-8">
         {!query ? (
           <div className="space-y-3 pt-2">
-            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Popular Search Terms
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -88,14 +88,14 @@ export function NotificationSearchPage() {
             </div>
           </div>
         ) : results.length === 0 ? (
-          <div className="text-center py-16 text-gray-500 dark:text-gray-400 space-y-2">
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-2">
             <Search className="w-10 h-10 text-gray-300 mx-auto" />
             <p className="font-bold text-sm text-gray-700 dark:text-gray-300">No matching notifications</p>
             <p className="text-xs">Try searching for order numbers, couriers, or keywords.</p>
           </div>
         ) : (
           <div className="space-y-2.5">
-            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 px-1">
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 px-1">
               Found {results.length} result{results.length > 1 ? 's' : ''}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
@@ -107,11 +107,11 @@ export function NotificationSearchPage() {
                 >
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">{n.title}</h4>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                       {new Date(n.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{n.message}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 line-clamp-2">{n.message}</p>
                 </div>
               ))}
             </div>

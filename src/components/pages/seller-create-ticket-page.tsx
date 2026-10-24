@@ -70,12 +70,12 @@ export function SellerCreateTicketPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center">
         <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
           <CheckCircle2 className="w-10 h-10" />
         </div>
         <h2 className="text-2xl font-bold mb-2">Ticket created</h2>
-        <p className="text-gray-500 mb-8">Your ticket is open. The Zylod support team will reply in your ticket thread.</p>
+        <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-8">Your ticket is open. The Zylod support team will reply in your ticket thread.</p>
         <div className="flex w-full max-w-xs flex-col gap-2">
           <Button className="w-full" onClick={() => navigate('seller-support')}>View My Tickets</Button>
           <Button variant="outline" className="w-full" onClick={goBack}>Go Back</Button>
@@ -85,14 +85,14 @@ export function SellerCreateTicketPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 md:max-w-3xl md:mx-auto md:p-8">
-      <button onClick={goBack} className="mb-4 flex items-center gap-1 text-gray-600 hover:text-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900 p-4 md:max-w-3xl md:mx-auto md:p-8">
+      <button onClick={goBack} className="mb-4 flex items-center gap-1 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:text-gray-100">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
       <h1 className="text-xl font-bold mb-4">New Ticket</h1>
       <div className="space-y-4">
         <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">Category</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Category</label>
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border p-2 rounded h-11">
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>{c.label}</option>
@@ -100,7 +100,7 @@ export function SellerCreateTicketPage() {
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">Priority</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Priority</label>
           <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full border p-2 rounded h-11">
             {PRIORITIES.map((p) => (
               <option key={p.value} value={p.value}>{p.label}</option>
@@ -108,7 +108,7 @@ export function SellerCreateTicketPage() {
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">Subject</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Subject</label>
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
@@ -117,7 +117,7 @@ export function SellerCreateTicketPage() {
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">Description</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Description</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}

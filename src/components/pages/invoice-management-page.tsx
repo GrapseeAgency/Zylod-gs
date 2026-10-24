@@ -110,8 +110,8 @@ export function InvoiceManagementPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Commercial Invoices</span>
@@ -122,7 +122,7 @@ export function InvoiceManagementPage() {
         {/* Banner */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 md:p-6 text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <FileText className="h-5 w-5 text-rose-300" />
             </div>
             <div>
@@ -161,7 +161,7 @@ export function InvoiceManagementPage() {
         {/* Invoice List */}
         <div>
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
+            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="text-xs font-bold">Generating Invoice Documents...</span>
             </div>
@@ -182,7 +182,7 @@ export function InvoiceManagementPage() {
                             {inv.paymentStatus}
                           </span>
                         </div>
-                        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono block mt-0.5">
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono block mt-0.5">
                           {inv.mushakNumber} • PO #{inv.orderNumber}
                         </span>
                       </div>
@@ -192,7 +192,7 @@ export function InvoiceManagementPage() {
                       </span>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 text-xs flex justify-between text-slate-600 dark:text-slate-400">
+                    <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 text-xs flex justify-between text-slate-600 dark:text-slate-400 dark:text-slate-500">
                       <span>Client: <strong className="text-slate-800 dark:text-slate-200">{inv.buyerName}</strong></span>
                       <span>Issued: <strong className="text-slate-800 dark:text-slate-200">{new Date(inv.date).toLocaleDateString()}</strong></span>
                     </div>
@@ -222,7 +222,7 @@ export function InvoiceManagementPage() {
               <div className="hidden md:block bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-red-50/50 text-left text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <tr className="bg-red-50/50 text-left text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       <th className="px-4 py-3 font-semibold">Invoice</th>
                       <th className="px-4 py-3 font-semibold">Mushak / PO</th>
                       <th className="px-4 py-3 font-semibold">Client</th>
@@ -242,11 +242,11 @@ export function InvoiceManagementPage() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+                        <td className="px-4 py-3 text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">
                           {inv.mushakNumber} • PO #{inv.orderNumber}
                         </td>
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{inv.buyerName}</td>
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{new Date(inv.date).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 dark:text-slate-500">{inv.buyerName}</td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 dark:text-slate-500">{new Date(inv.date).toLocaleDateString()}</td>
                         <td className="px-4 py-3 font-black font-mono text-slate-900 dark:text-slate-100">{formatPrice(inv.grandTotal)}</td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
@@ -295,7 +295,7 @@ export function InvoiceManagementPage() {
           </DialogHeader>
 
           {mushakLoading && (
-            <div className="flex items-center justify-center gap-2 py-8 text-xs font-bold text-slate-500 dark:text-slate-400">
+            <div className="flex items-center justify-center gap-2 py-8 text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <Loader2 className="h-4 w-4 animate-spin" /> Loading document…
             </div>
           )}
@@ -311,8 +311,8 @@ export function InvoiceManagementPage() {
               <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div>
                   <p className="font-black text-sm">{mushakDoc.invoiceNumber}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{mushakDoc.mushakNumber} · PO #{mushakDoc.orderNumber}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Issued {new Date(mushakDoc.date).toLocaleDateString()}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">{mushakDoc.mushakNumber} · PO #{mushakDoc.orderNumber}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Issued {new Date(mushakDoc.date).toLocaleDateString()}</p>
                 </div>
                 <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border uppercase ${mushakDoc.paymentStatus === 'paid' ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-amber-700 bg-amber-50 border-amber-100'}`}>
                   {mushakDoc.paymentStatus}
@@ -321,22 +321,22 @@ export function InvoiceManagementPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-3 space-y-0.5">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Seller</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400">Seller</p>
                   <p className="font-bold">{mushakDoc.seller.name}</p>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">{mushakDoc.seller.address}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">TIN {mushakDoc.seller.tin} · BIN {mushakDoc.seller.bin}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">{mushakDoc.seller.address}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">TIN {mushakDoc.seller.tin} · BIN {mushakDoc.seller.bin}</p>
                 </div>
                 <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-3 space-y-0.5">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Buyer</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</p>
                   <p className="font-bold">{mushakDoc.buyer.name}</p>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">{mushakDoc.buyer.address}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">TIN {mushakDoc.buyer.tin}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">{mushakDoc.buyer.address}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">TIN {mushakDoc.buyer.tin}</p>
                 </div>
               </div>
 
               <table className="w-full">
                 <thead>
-                  <tr className="text-left text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                  <tr className="text-left text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
                     <th className="py-1.5">Item</th>
                     <th className="py-1.5 text-right">Qty</th>
                     <th className="py-1.5 text-right">Amount</th>
@@ -345,7 +345,7 @@ export function InvoiceManagementPage() {
                 <tbody>
                   {mushakDoc.items.map((it, i) => (
                     <tr key={i} className="border-b border-slate-50">
-                      <td className="py-1.5 font-bold">{it.name}<span className="block text-[10px] text-slate-400 dark:text-slate-500">৳{it.unitPrice} / {it.unit}</span></td>
+                      <td className="py-1.5 font-bold">{it.name}<span className="block text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">৳{it.unitPrice} / {it.unit}</span></td>
                       <td className="py-1.5 text-right font-semibold">{it.quantity}</td>
                       <td className="py-1.5 text-right font-bold">{formatPrice(it.totalPrice)}</td>
                     </tr>
@@ -353,7 +353,7 @@ export function InvoiceManagementPage() {
                 </tbody>
               </table>
 
-              <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400">
+              <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-500">
                 <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold text-slate-900 dark:text-slate-100">{formatPrice(mushakDoc.subtotal)}</span></div>
                 <div className="flex justify-between"><span>Shipping</span><span className="font-semibold text-slate-900 dark:text-slate-100">{formatPrice(mushakDoc.shippingCost)}</span></div>
                 <div className="flex justify-between"><span>VAT ({mushakDoc.vatRate})</span><span className="font-semibold text-slate-900 dark:text-slate-100">{formatPrice(mushakDoc.vatAmount)}</span></div>
@@ -361,7 +361,7 @@ export function InvoiceManagementPage() {
                   <span className="font-bold text-slate-900 dark:text-slate-100">Grand Total</span>
                   <span className="text-lg font-black text-primary">{formatPrice(mushakDoc.grandTotal)}</span>
                 </div>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 pt-1">Payment method: {mushakDoc.paymentMethod || '—'} · status {mushakDoc.paymentStatus}.</p>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 pt-1">Payment method: {mushakDoc.paymentMethod || '—'} · status {mushakDoc.paymentStatus}.</p>
               </div>
             </div>
           )}

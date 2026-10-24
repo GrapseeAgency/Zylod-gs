@@ -44,12 +44,12 @@ export function InvestorRelationsPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div>
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Investor Relations</h1>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Financial Reports, Filings & Corporate Governance</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Financial Reports, Filings & Corporate Governance</p>
           </div>
         </div>
         <button
@@ -78,22 +78,22 @@ export function InvestorRelationsPage() {
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
             <div className="text-center">
               <p className="text-base md:text-xl font-black text-emerald-400">{docs.length.toLocaleString()}</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500">Documents Published</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Documents Published</p>
             </div>
             <div className="text-center">
               <p className="text-base md:text-xl font-black text-teal-300">None</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500">Funding Rounds Announced</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Funding Rounds Announced</p>
             </div>
             <div className="text-center">
               <p className="text-base md:text-xl font-black text-amber-300">None</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500">Audited Financials Released</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Audited Financials Released</p>
             </div>
           </div>
         </div>
 
         {/* Quick Nav Sub-pages */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm">
-          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">Investor Resources</h3>
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Investor Resources</h3>
           <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
             {[
               { label: 'Annual Reports', id: 'annual-report' },
@@ -125,7 +125,7 @@ export function InvestorRelationsPage() {
           ) : docs.length === 0 ? (
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
               <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">No investor documents published yet</h4>
-              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-md mx-auto">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed max-w-md mx-auto">
                 Investor relations materials are not published yet. Nothing is listed here because
                 nothing has been released — reports and filings will appear on this page as they are
                 published. Contact support@zylod.com with any inquiry.
@@ -157,12 +157,12 @@ export function InvestorRelationsPage() {
                 </div>
 
                 {doc.summary && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
                     {doc.summary}
                   </p>
                 )}
 
-                <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 pt-1 border-t border-gray-50">
+                <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 pt-1 border-t border-gray-50">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
                     Published {new Date(doc.publishedAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}

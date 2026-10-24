@@ -110,7 +110,7 @@ export function ReturnPolicySettingsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center justify-between md:px-6">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1 -ml-1 text-gray-600 dark:text-gray-400">
+          <button onClick={goBack} className="md:hidden p-1 -ml-1 text-gray-600 dark:text-gray-400 dark:text-gray-500">
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100">Return &amp; Warranty</h1>
@@ -128,13 +128,13 @@ export function ReturnPolicySettingsPage() {
         {error ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{error}</p>
           </div>
         ) : policies.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-8 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
             <RefreshCcw className="w-10 h-10 text-gray-300 mx-auto mb-2" />
             <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No policies configured yet</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Save a policy row to publish your return terms to buyers.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Save a policy row to publish your return terms to buyers.</p>
           </div>
         ) : (
           <>
@@ -159,7 +159,7 @@ export function ReturnPolicySettingsPage() {
                     <RefreshCcw className="w-5 h-5 text-[#C8102E]" />
                     <h2>{POLICY_LABELS[policy.policyType] || policy.policyType}</h2>
                   </div>
-                  <label className="flex items-center gap-1.5 text-xs font-normal text-gray-500 dark:text-gray-400">
+                  <label className="flex items-center gap-1.5 text-xs font-normal text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     <input
                       type="checkbox"
                       checked={policy.isActive}
@@ -219,7 +219,7 @@ export function ReturnPolicySettingsPage() {
                         checked={policy.exchangeAllowed}
                         onChange={(e) => updatePolicy(policy.policyType, { exchangeAllowed: e.target.checked })}
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#C8102E]"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#C8102E]"></div>
                     </label>
                   </div>
                 </div>
@@ -231,7 +231,7 @@ export function ReturnPolicySettingsPage() {
                 <ShieldCheck className="w-5 h-5 text-[#C8102E]" />
                 <h2>How this works</h2>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 These policies describe your terms to buyers. Zylod&apos;s platform return window still applies to
                 disputes, and every approved return is processed through the platform&apos;s returns workflow.
               </p>

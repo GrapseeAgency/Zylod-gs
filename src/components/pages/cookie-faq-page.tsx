@@ -22,14 +22,14 @@ export function CookieFaqPage() {
   }, [])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
-          <h1 className="font-bold text-gray-900 text-base">Cookie Policy FAQ</h1>
-          <p className="text-xs text-gray-400">Information about Local Storage, Sessions & Tracking</p>
+          <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Cookie Policy FAQ</h1>
+          <p className="text-xs text-gray-400 dark:text-gray-500">Information about Local Storage, Sessions & Tracking</p>
         </div>
       </div>
 
@@ -39,18 +39,18 @@ export function CookieFaqPage() {
             {[1, 2, 3].map(i => <div key={i} className="h-16 bg-gray-200 rounded-2xl" />)}
           </div>
         ) : (
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden divide-y divide-gray-50 md:divide-y-0 grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden divide-y divide-gray-50 md:divide-y-0 grid grid-cols-1 md:grid-cols-2 gap-x-6">
             {faqs.map(faq => (
               <div key={faq.id} className="p-4 space-y-2">
                 <button
                   onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
                   className="w-full flex items-center justify-between text-left"
                 >
-                  <span className="text-xs font-bold text-gray-900 pr-2">{faq.questionEn}</span>
+                  <span className="text-xs font-bold text-gray-900 dark:text-gray-100 pr-2">{faq.questionEn}</span>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${openId === faq.id ? 'rotate-180' : ''}`} />
                 </button>
                 {openId === faq.id && (
-                  <p className="text-xs text-gray-600 leading-relaxed pt-1">{faq.answerEn}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed pt-1">{faq.answerEn}</p>
                 )}
               </div>
             ))}

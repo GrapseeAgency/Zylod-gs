@@ -46,7 +46,7 @@ export function StorageBreakdownPage() {
 
       {/* Honest empty state for Android sandbox storage */}
       <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 p-6 md:p-8 text-center space-y-3">
-        <Smartphone className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500" />
+        <Smartphone className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500 dark:text-gray-400" />
         <h2 className="text-sm font-bold text-foreground">
           Storage breakdown is native to the Android app
         </h2>
@@ -104,7 +104,7 @@ export function StorageBreakdownPage() {
                 Managed by the browser — not directly measurable from JavaScript
               </p>
             </div>
-            <div className="font-mono text-xs font-bold text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-lg shrink-0">
+            <div className="font-mono text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 px-3 py-1 rounded-lg shrink-0">
               N/A
             </div>
           </CardContent>
@@ -118,7 +118,7 @@ export function StorageBreakdownPage() {
                 Used by some pages for offline-capable caches — per-origin, browser-managed
               </p>
             </div>
-            <div className="font-mono text-xs font-bold text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-lg shrink-0">
+            <div className="font-mono text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 px-3 py-1 rounded-lg shrink-0">
               N/A
             </div>
           </CardContent>
@@ -126,8 +126,8 @@ export function StorageBreakdownPage() {
       </div>
 
       <div className="flex items-start gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <HardDrive className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
-        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+        <HardDrive className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
+        <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
           The Android app exposes a full file-level storage breakdown (Room SQLite tables, image cache size, downloaded
           PDF invoices) inside its own Storage Manager screen. The web client does not have access to that data.
         </p>

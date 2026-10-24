@@ -106,7 +106,7 @@ export function AdminReportsPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div>
@@ -114,13 +114,13 @@ export function AdminReportsPage() {
               <ShieldAlert className="w-4 h-4 text-red-600" />
               Trust & Safety Moderation Center
             </h1>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">User, Seller & Counterfeit Violation Reports</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">User, Seller & Counterfeit Violation Reports</p>
           </div>
         </div>
 
         <button
           onClick={() => navigate('admin-dashboard')}
-          className="text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-red-600 px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+          className="text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-red-600 px-3 py-1 rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition"
         >
           Admin Dashboard
         </button>
@@ -130,7 +130,7 @@ export function AdminReportsPage() {
         {/* Metric Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-1">
-            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Reports</p>
+            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Reports</p>
             <p className="text-xl font-black text-gray-900 dark:text-gray-100">{metrics.total}</p>
           </div>
           <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-200 shadow-sm space-y-1">
@@ -142,7 +142,7 @@ export function AdminReportsPage() {
             <p className="text-xl font-black text-green-900">{metrics.actionTaken}</p>
           </div>
           <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-1">
-            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dismissed</p>
+            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Dismissed</p>
             <p className="text-xl font-black text-gray-700 dark:text-gray-300">{metrics.dismissed}</p>
           </div>
         </div>
@@ -150,7 +150,7 @@ export function AdminReportsPage() {
         {/* Filters */}
         <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <Filter className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Filter Reports:</span>
           </div>
 
@@ -191,7 +191,7 @@ export function AdminReportsPage() {
             <div className="text-center py-16 space-y-2">
               <ShieldCheck className="w-12 h-12 text-green-500 mx-auto" />
               <p className="text-sm font-bold text-gray-800 dark:text-gray-200">No moderation reports in queue</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">All submitted buyer and seller complaints have been reviewed.</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">All submitted buyer and seller complaints have been reviewed.</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -200,7 +200,7 @@ export function AdminReportsPage() {
                 return (
                   <div
                     key={rep.id}
-                    className="p-5 hover:bg-slate-50/70 transition space-y-3"
+                    className="p-5 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-950/70 transition space-y-3"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
@@ -211,24 +211,24 @@ export function AdminReportsPage() {
                           {statusMeta.label}
                         </span>
                       </div>
-                      <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                         {new Date(rep.createdAt).toLocaleString()}
                       </span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs">
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Reported Entity</p>
+                        <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 dark:text-gray-400">Reported Entity</p>
                         <p className="font-bold text-gray-900 dark:text-gray-100 mt-0.5">{rep.reportedEntity.name}</p>
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">ID: {rep.reportedUserId}</p>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-mono">ID: {rep.reportedUserId}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Filed By</p>
+                        <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 dark:text-gray-400">Filed By</p>
                         <p className="font-bold text-gray-900 dark:text-gray-100 mt-0.5">{rep.reporter.name}</p>
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">ID: {rep.reporterId}</p>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-mono">ID: {rep.reporterId}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Attached Order</p>
+                        <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 dark:text-gray-400">Attached Order</p>
                         <p className="font-semibold text-gray-800 dark:text-gray-200 mt-0.5">
                           {rep.relatedOrderId ? `Order #${rep.relatedOrderId.slice(-8)}` : 'None specified'}
                         </p>
@@ -278,7 +278,7 @@ export function AdminReportsPage() {
               </div>
               <button
                 onClick={() => setSelectedReport(null)}
-                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 text-xs font-bold"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400 text-xs font-bold"
               >
                 Cancel
               </button>

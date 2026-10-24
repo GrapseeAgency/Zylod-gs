@@ -61,8 +61,8 @@ export function BalanceOverviewPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Balance Breakdown</span>
@@ -73,7 +73,7 @@ export function BalanceOverviewPage() {
         {/* Desktop page title */}
         <div className="hidden md:block">
           <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">Balance Breakdown</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Wallet balance and cash-flow overview</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">Wallet balance and cash-flow overview</p>
         </div>
 
         {/* Total Funds Highlight */}
@@ -101,7 +101,7 @@ export function BalanceOverviewPage() {
             <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
               <Wallet className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Available Liquid</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Available Liquid</span>
             <span className="text-base md:text-lg font-black text-slate-900 dark:text-slate-100 block font-mono">
               {formatPrice(data.availableBalance)}
             </span>
@@ -112,7 +112,7 @@ export function BalanceOverviewPage() {
             <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
               <ArrowDownLeft className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Total Inflow</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Total Inflow</span>
             <span className="text-base md:text-lg font-black text-slate-900 dark:text-slate-100 block font-mono">
               {formatPrice(data.totalInflow)}
             </span>
@@ -122,7 +122,7 @@ export function BalanceOverviewPage() {
 
         {/* Detailed Financial Ledger Breakdown */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 md:p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 lg:col-span-2">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
             Historical Capital Flow
           </h2>
 
@@ -145,7 +145,7 @@ export function BalanceOverviewPage() {
 
             <div className="py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                <DollarSign className="h-4 w-4 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
                 <span className="font-semibold text-slate-700 dark:text-slate-300">Wholesale Order Payments</span>
               </div>
               <span className="font-bold text-slate-900 dark:text-slate-100 font-mono">-{formatPrice(data.totalPayments)}</span>
@@ -181,7 +181,7 @@ export function BalanceOverviewPage() {
           <Button
             onClick={() => navigate('withdraw-money')}
             variant="outline"
-            className="h-12 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="h-12 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
           >
             Request Payout
           </Button>

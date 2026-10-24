@@ -144,10 +144,10 @@ export function WholesaleCatalogPage() {
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between mb-3">
-          <button onClick={() => navigate('home')} className="p-1 text-slate-700 dark:text-slate-300" title="QR">
+          <button onClick={() => navigate('home')} className="md:hidden p-1 text-slate-700 dark:text-slate-300" title="QR">
             <QrCode className="h-6 w-6 text-primary" />
           </button>
-          <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
+          <span className="md:hidden text-xl font-black tracking-tight text-primary">Zylod</span>
           <button className="md:hidden p-1 text-slate-700 dark:text-slate-300" title="Notifications">
             <Bell className="h-6 w-6" />
           </button>
@@ -155,14 +155,14 @@ export function WholesaleCatalogPage() {
 
         {/* Search Bar */}
         <div className="relative flex items-center">
-          <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
+          <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search catalog..."
             className="pl-10 pr-10 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
           />
-          <button className="absolute right-3 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600">
+          <button className="absolute right-3 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400">
             <QrCode className="h-4 w-4" />
           </button>
         </div>
@@ -176,7 +176,7 @@ export function WholesaleCatalogPage() {
           </div>
           <div>
             <h1 className="text-base font-black text-slate-900 dark:text-slate-100 leading-tight">Wholesale Catalog</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
               Every listing below is live from the marketplace — real suppliers, real prices, real
               stock. Nothing on this page is pre-generated.
             </p>
@@ -216,7 +216,7 @@ export function WholesaleCatalogPage() {
         <div className="flex items-center justify-between pt-1">
           <div>
             <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">Product Catalog</h3>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500">Live from verified supplier listings</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Live from verified supplier listings</p>
           </div>
           <button
             onClick={() => navigate('explore')}
@@ -235,7 +235,7 @@ export function WholesaleCatalogPage() {
               </div>
               <div>
                 <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load the catalog</h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{error}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">{error}</p>
               </div>
             </div>
             <Button
@@ -266,12 +266,12 @@ export function WholesaleCatalogPage() {
         {!loading && !error && filteredProducts.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
             <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
-              <Package className="h-9 w-9 text-gray-400 dark:text-gray-500" />
+              <Package className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
               {products.length === 0 ? 'No products in the catalog yet' : 'No products match your search'}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
               {products.length === 0
                 ? 'Suppliers haven\u2019t listed any approved products yet. As soon as listings go live, they\u2019ll appear here in real time.'
                 : 'Try a different search term or category.'}
@@ -303,12 +303,12 @@ export function WholesaleCatalogPage() {
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 w-full h-full">
-                        <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                        <Package className="h-5 w-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                       </div>
                     )}
                     <button
                       onClick={(e) => handleToggleWishlist(e, p)}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 backdrop-blur-xs text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white dark:bg-gray-900/80 backdrop-blur-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
                     >
                       <Heart className={`h-3.5 w-3.5 ${inWish ? 'fill-primary text-primary' : ''}`} />
                     </button>
@@ -322,10 +322,10 @@ export function WholesaleCatalogPage() {
                       <span className="text-sm font-black text-primary">
                         {formatPrice(p.basePrice)}
                       </span>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">/{p.unit}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">/{p.unit}</span>
                     </div>
 
-                    <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 mt-1 pt-1 border-t border-slate-50 gap-2">
+                    <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 pt-1 border-t border-slate-50 gap-2">
                       <span className="truncate">MOQ: {p.moq.toLocaleString()}</span>
                       {p.soldCount > 0 && <span className="shrink-0">{p.soldCount.toLocaleString()} sold</span>}
                     </div>

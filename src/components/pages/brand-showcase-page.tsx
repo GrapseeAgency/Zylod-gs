@@ -78,7 +78,7 @@ export function BrandShowcasePage() {
       <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -86,7 +86,7 @@ export function BrandShowcasePage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -106,7 +106,7 @@ export function BrandShowcasePage() {
           <div className="absolute inset-0 bg-black/40" />
 
           {/* Frosted Glass Card */}
-          <div className="relative z-10 w-full bg-white/85 backdrop-blur-md rounded-2xl p-6 border border-white/40 shadow-xl text-center">
+          <div className="relative z-10 w-full bg-white dark:bg-gray-900/85 backdrop-blur-md rounded-2xl p-6 border border-white/40 shadow-xl text-center">
             <span className="text-[10px] font-black tracking-widest text-[#C8102E] uppercase block mb-1">
               Top-Tier Manufacturers
             </span>
@@ -144,7 +144,7 @@ export function BrandShowcasePage() {
         )}
         {!isLoading && !loadError && brands.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <Building2 className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+            <Building2 className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               No branded listings yet — brands appear here as suppliers add them.
             </p>
@@ -185,7 +185,7 @@ export function BrandShowcasePage() {
                 </div>
 
                 <div className="absolute bottom-3 left-3 right-3">
-                  <div className="bg-white/95 text-[#1A1A1A] rounded-xl p-2.5 flex items-center justify-between shadow-md mb-2">
+                  <div className="bg-white dark:bg-gray-900/95 text-[#1A1A1A] rounded-xl p-2.5 flex items-center justify-between shadow-md mb-2">
                     <span className="font-bold text-xs">{hero.name}</span>
                     <span className="bg-[#FFF1F2] text-[#C8102E] border border-[#FECDD3] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Package className="h-3 w-3" /> {hero.productCount} products

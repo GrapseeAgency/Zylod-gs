@@ -133,11 +133,11 @@ export default function StorefrontReviews({ supplierId, rows, avg, count, onChan
     <div className="space-y-4" aria-label="Store reviews">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-gray-900 dark:text-white">
+          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
             {typeof avg === 'number' && count ? avg.toFixed(1) : '—'}
           </span>
           <Stars value={Math.round(avg ?? 0)} />
-          <span className="text-xs text-gray-500">{count ?? 0} review{(count ?? 0) === 1 ? '' : 's'}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{count ?? 0} review{(count ?? 0) === 1 ? '' : 's'}</span>
         </div>
         <Button size="sm" onClick={openDialog} className="gap-1.5">
           <MessageSquarePlus className="w-4 h-4" />
@@ -146,21 +146,21 @@ export default function StorefrontReviews({ supplierId, rows, avg, count, onChan
       </div>
 
       {!hasRows ? (
-        <div className="text-center py-10 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-          <MessageSquareDashed className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+        <div className="text-center py-10 bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-800 dark:border-gray-700">
+          <MessageSquareDashed className="w-10 h-10 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 mx-auto mb-2" />
           <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No reviews yet</h3>
-          <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-xs mx-auto">
             Reviews come only from buyers with a real order from this store — the first one hasn&apos;t been written yet.
           </p>
         </div>
       ) : (
         <div className="space-y-3">
           {rows.map((r) => (
-            <div key={r.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4">
+            <div key={r.id} className="bg-white dark:bg-gray-900 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-800 dark:border-gray-700 p-4">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <Stars value={r.rating} />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
                     {r.buyerName} · {formatDate(r.createdAt)}
                     {r.mine ? ' · you' : ''}
                   </p>

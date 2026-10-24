@@ -108,7 +108,7 @@ export function SellerPayoutMethodsPagePage() {
       <header className="md:hidden sticky top-0 z-50 bg-white border-b px-4 py-3 flex items-center gap-3 dark:bg-gray-900 dark:border-gray-800">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
@@ -128,7 +128,7 @@ export function SellerPayoutMethodsPagePage() {
         <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
           <CardContent className="p-4 flex items-start gap-3">
             <ShieldCheck className="w-5 h-5 text-primary mt-0.5 shrink-0" />
-            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed dark:text-gray-300">
+            <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed dark:text-gray-300">
               Payout methods are the verified commercial bank accounts where the finance team settles
               your wallet withdrawals. A request alone never moves funds — payouts only leave your
               wallet when finance completes them with a reference.
@@ -151,9 +151,9 @@ export function SellerPayoutMethodsPagePage() {
         ) : authRequired ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
             <CardContent className="p-8 text-center space-y-3">
-              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600" />
+              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
               <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 Sign in to manage the bank accounts the platform pays your withdrawals into.
               </p>
               <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
@@ -161,7 +161,7 @@ export function SellerPayoutMethodsPagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
               {error}
               <div className="mt-3">
                 <Button variant="outline" size="sm" onClick={loadAccounts}>
@@ -173,9 +173,9 @@ export function SellerPayoutMethodsPagePage() {
         ) : accounts.length === 0 ? (
           <Card className="border-dashed dark:bg-gray-900 dark:border-gray-800">
             <CardContent className="p-8 text-center space-y-3">
-              <Landmark className="h-10 w-10 mx-auto text-gray-300 dark:text-gray-600" />
+              <Landmark className="h-10 w-10 mx-auto text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No payout methods linked</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
                 Add a commercial bank account so the finance team can settle your wallet withdrawals.
               </p>
               <Button onClick={() => navigate('add-bank-account')} className="h-11">
@@ -208,7 +208,7 @@ export function SellerPayoutMethodsPagePage() {
                             </Badge>
                           )}
                         </div>
-                        <span className="text-[11px] text-gray-400 font-mono block mt-0.5 dark:text-gray-500">
+                        <span className="text-[11px] text-gray-400 font-mono block mt-0.5 dark:text-gray-500 dark:text-gray-400">
                           A/C: {masked(acc.accountNumber)}
                         </span>
                       </div>
@@ -217,7 +217,7 @@ export function SellerPayoutMethodsPagePage() {
                     <button
                       onClick={() => handleDelete(acc.id)}
                       disabled={actionLoading === acc.id}
-                      className="text-gray-400 dark:text-gray-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors shrink-0 dark:hover:bg-rose-950/40"
+                      className="text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors shrink-0 dark:hover:bg-rose-950/40"
                       aria-label="Remove payout method"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -226,16 +226,16 @@ export function SellerPayoutMethodsPagePage() {
 
                   <div className="bg-gray-50 rounded-xl p-3 text-xs divide-y divide-gray-100 dark:bg-gray-950 dark:divide-gray-800">
                     <div className="pb-1.5 flex justify-between gap-2">
-                      <span className="text-gray-400 font-medium dark:text-gray-500">Beneficiary</span>
+                      <span className="text-gray-400 font-medium dark:text-gray-500 dark:text-gray-400">Beneficiary</span>
                       <span className="font-bold text-gray-800 text-right dark:text-gray-200">{acc.accountHolderName || '—'}</span>
                     </div>
                     <div className="pt-1.5 flex justify-between gap-2">
-                      <span className="text-gray-400 font-medium dark:text-gray-500">Branch</span>
+                      <span className="text-gray-400 font-medium dark:text-gray-500 dark:text-gray-400">Branch</span>
                       <span className="font-semibold text-gray-700 text-right dark:text-gray-300">{acc.branchName || '—'}</span>
                     </div>
                     {acc.routingNumber && acc.routingNumber !== 'N/A' && (
                       <div className="pt-1.5 flex justify-between gap-2">
-                        <span className="text-gray-400 font-medium dark:text-gray-500">Routing</span>
+                        <span className="text-gray-400 font-medium dark:text-gray-500 dark:text-gray-400">Routing</span>
                         <span className="font-mono text-gray-700 text-right dark:text-gray-300">{acc.routingNumber}</span>
                       </div>
                     )}
@@ -246,7 +246,7 @@ export function SellerPayoutMethodsPagePage() {
                       onClick={() => handleSetDefault(acc.id)}
                       disabled={actionLoading === acc.id}
                       variant="outline"
-                      className="w-full h-9 rounded-xl text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800 dark:border-gray-700"
+                      className="w-full h-9 rounded-xl text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-950 dark:text-gray-200 dark:hover:bg-gray-800 dark:border-gray-700"
                     >
                       {actionLoading === acc.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Set as primary payout account'}
                     </Button>

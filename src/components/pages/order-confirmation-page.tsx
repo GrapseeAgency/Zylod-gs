@@ -86,10 +86,10 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
-          <ShoppingBag className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+          <ShoppingBag className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order to confirm</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
           This screen shows the details of an order you have placed. Place an order
           first and its real details will appear here.
         </p>
@@ -103,7 +103,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
           >
             Continue Sourcing
           </Button>
@@ -132,7 +132,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
               </div>
             ))}
           </div>
-          <p className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+          <p className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
             Loading your order…
           </p>
@@ -160,7 +160,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
         <Button
           variant="outline"
           onClick={() => navigate('orders')}
-          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
         >
           Go to My Orders
         </Button>
@@ -200,7 +200,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
 
           <div>
             <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Order Received</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto mt-1.5 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-xs mx-auto mt-1.5 leading-relaxed">
               Order <span className="font-bold text-slate-700 dark:text-slate-300">#{order.orderNumber}</span> was created
               and sent to the supplier{allItems.length > 0 ? ` with ${allItems.length} item${allItems.length === 1 ? '' : 's'}` : ''}.
             </p>
@@ -210,13 +210,13 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
         {/* Order Details Card */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
           {/* Header Strip */}
-          <div className="p-4 bg-slate-50/70 flex justify-between items-center">
+          <div className="p-4 bg-slate-50 dark:bg-slate-950/70 flex justify-between items-center">
             <div>
-              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Order Number</span>
+              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Order Number</span>
               <span className="text-xs font-black text-slate-900 dark:text-slate-100">{order.orderNumber}</span>
             </div>
             <div className="text-right">
-              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Est. Delivery</span>
+              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Est. Delivery</span>
               <span className="text-xs font-black text-primary">
                 {estDelivery || 'To be scheduled by the supplier'}
               </span>
@@ -225,12 +225,12 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
 
           {/* Payment Status — real, never faked as paid */}
           <div className="p-4 flex items-center gap-2.5">
-            <Package className="h-4 w-4 text-slate-600 dark:text-slate-400 shrink-0" />
+            <Package className="h-4 w-4 text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0" />
             <div>
               <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">
                 Payment status: <span className={isPaid ? 'text-emerald-600 uppercase' : 'text-amber-600 uppercase'}>{paymentStatus || 'UNKNOWN'}</span>
               </span>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
                 {isPaid
                   ? 'Your payment has been verified.'
                   : 'This order is not confirmed until payment is verified. Use the payment instructions on the order to pay.'}
@@ -241,12 +241,12 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
           {/* Items Ordered List */}
           <div className="p-4 space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-100">
-              <Package className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              <Package className="h-4 w-4 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
               <span>Items Ordered ({allItems.length})</span>
             </div>
 
             {allItems.length === 0 ? (
-              <p className="text-xs text-slate-400 dark:text-slate-500 py-3 text-center">
+              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-3 text-center">
                 This order has no line items recorded.
               </p>
             ) : (
@@ -257,14 +257,14 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
                       {item.product?.thumbnailUrl ? (
                         <img src={item.product.thumbnailUrl} alt={item.product?.name || 'Product'} className="w-full h-full object-cover" />
                       ) : (
-                        <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                        <Package className="h-5 w-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1 leading-snug">
                         {item.product?.name || '--'}
                       </h3>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                         Qty: {item.quantity}{item.product?.unit ? ` ${item.product.unit}` : ''}
                       </p>
                       <p className="text-xs font-black text-primary mt-1">
@@ -278,7 +278,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
           </div>
 
           {/* Financial Breakdown — only real numbers */}
-          <div className="p-4 space-y-2 text-xs text-slate-500 dark:text-slate-400">
+          <div className="p-4 space-y-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span className="font-semibold text-slate-800 dark:text-slate-200">{formatPrice(subtotal)}</span>
@@ -309,7 +309,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="w-full md:w-auto md:px-8 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 md:h-12 rounded-2xl text-xs"
+            className="w-full md:w-auto md:px-8 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 md:h-12 rounded-2xl text-xs"
           >
             Continue Sourcing
           </Button>

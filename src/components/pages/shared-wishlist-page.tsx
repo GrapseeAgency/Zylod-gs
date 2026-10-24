@@ -54,7 +54,7 @@ export function SharedWishlistPage() {
     return (
       <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
         <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b flex items-center px-4 h-14">
-          <button onClick={goBack} className="p-2 -ml-2 mr-2 active:bg-gray-100 rounded-full">
+          <button onClick={goBack} className="p-2 -ml-2 mr-2 active:bg-gray-100 dark:bg-gray-900 rounded-full">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="font-semibold text-gray-900 dark:text-gray-100">Share Wishlist</h1>
@@ -68,18 +68,18 @@ export function SharedWishlistPage() {
             className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border p-4 text-center"
           >
             <div className="w-48 h-48 mx-auto bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center mb-4">
-              <QrCode className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+              <QrCode className="w-16 h-16 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             
             <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-950 rounded-lg p-2 mb-4 border">
-              <div className="flex-1 truncate text-sm text-gray-600 dark:text-gray-400 font-mono">
+              <div className="flex-1 truncate text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 font-mono">
                 {shareData ? `${window.location.origin}/shared?token=${shareData.token}` : 'Generate link...'}
               </div>
               <button 
                 onClick={copyToClipboard}
-                className="p-2 bg-white dark:bg-gray-900 rounded shadow-sm border active:bg-gray-50"
+                className="p-2 bg-white dark:bg-gray-900 rounded shadow-sm border active:bg-gray-50 dark:bg-gray-950"
               >
-                {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-gray-600 dark:text-gray-400" />}
+                {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />}
               </button>
             </div>
 
@@ -105,7 +105,7 @@ export function SharedWishlistPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
-      <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b flex flex-col justify-center px-4 h-16">
+      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b flex flex-col justify-center px-4 h-16">
         <div className="text-xs text-primary font-bold uppercase tracking-wider mb-1">ZYLOD MARKETPLACE</div>
         <h1 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
           {shareData?.owner?.name ? `${shareData.owner.name}'s Wishlist` : 'Shared Wishlist'}
@@ -120,7 +120,7 @@ export function SharedWishlistPage() {
             </div>
             <div>
               <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{shareData.owner.companyName || shareData.owner.name}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Shared with you</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Shared with you</div>
             </div>
           </div>
         )}
@@ -144,7 +144,7 @@ export function SharedWishlistPage() {
                 <h3 className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-2 mb-1">{item.product.name}</h3>
                 {shareData.settings?.showPrices && (
                   <div className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">
-                    {item.product.currency} {item.product.basePrice} <span className="text-[10px] text-gray-500 dark:text-gray-400 font-normal">/{item.product.unit}</span>
+                    {item.product.currency} {item.product.basePrice} <span className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-normal">/{item.product.unit}</span>
                   </div>
                 )}
                 
@@ -154,7 +154,7 @@ export function SharedWishlistPage() {
                       Add to Cart
                     </button>
                   )}
-                  <button className="w-full py-1.5 bg-white dark:bg-gray-900 border border-gray-300 text-gray-700 dark:text-gray-300 text-xs font-medium rounded active:bg-gray-50">
+                  <button className="w-full py-1.5 bg-white dark:bg-gray-900 border border-gray-300 text-gray-700 dark:text-gray-300 text-xs font-medium rounded active:bg-gray-50 dark:bg-gray-950">
                     Save to My Wishlist
                   </button>
                 </div>
@@ -164,7 +164,7 @@ export function SharedWishlistPage() {
         </div>
       </main>
 
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t z-50">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t z-50 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <button className="w-full py-3 bg-gray-900 text-white font-medium rounded-lg active:bg-gray-800">
           Shop on Zylod
         </button>

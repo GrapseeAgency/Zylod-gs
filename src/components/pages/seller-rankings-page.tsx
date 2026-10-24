@@ -80,7 +80,7 @@ export function SellerRankingsPagePage() {
     >
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Rankings</h1>
@@ -98,13 +98,13 @@ export function SellerRankingsPagePage() {
             <CardContent className="p-8 text-center space-y-3">
               <Trophy className="w-10 h-10 text-gray-300 mx-auto" />
               <h2 className="text-base font-bold dark:text-white">Seller sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Sign in with a supplier account to see your product rankings.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Sign in with a supplier account to see your product rankings.</p>
               <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
             </CardContent>
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : data ? (
           <>
@@ -112,7 +112,7 @@ export function SellerRankingsPagePage() {
             <Card className="border-none shadow-sm dark:bg-gray-800">
               <CardContent className="p-4 flex items-start gap-3">
                 <Medal className="w-5 h-5 text-primary mt-0.5 shrink-0" />
-                <div className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300 leading-relaxed">
+                <div className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 leading-relaxed">
                   <span className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Your best sellers, ranked by units sold.</span>{' '}
                   A platform-wide rank and supplier tier aren&apos;t computed yet — they will appear here when the
                   marketplace ranks stores against each other, not before.
@@ -125,7 +125,7 @@ export function SellerRankingsPagePage() {
                 <CardContent className="p-10 text-center space-y-2">
                   <Inbox className="w-10 h-10 text-gray-300 mx-auto" />
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">Nothing to rank yet</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     Add products and make sales — your top 10 best sellers will rank here by units sold.
                   </p>
                 </CardContent>
@@ -149,7 +149,7 @@ export function SellerRankingsPagePage() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white truncate" title={p.name}>{p.name}</p>
-                        <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-500 dark:text-gray-400 flex-wrap">
+                        <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 flex-wrap">
                           <span className="inline-flex items-center gap-1">
                             <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
                             {p.ratingAvg ? p.ratingAvg.toFixed(1) : '—'}
@@ -163,7 +163,7 @@ export function SellerRankingsPagePage() {
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-sm font-bold text-gray-900 dark:text-gray-100 dark:text-white tabular-nums" data-testid={`rankings-sold-${p.rank}`}>{p.soldCount}</p>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400">sold</p>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500">sold</p>
                       </div>
                     </div>
                   ))}
@@ -171,7 +171,7 @@ export function SellerRankingsPagePage() {
               </Card>
             )}
 
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 text-center">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center">
               Ranked by real soldCount from recorded orders · <Badge variant="outline" className="text-[10px]">updated live</Badge>
             </p>
           </>

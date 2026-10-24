@@ -136,21 +136,21 @@ export function TicketDetailPage() {
       {/* Top Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div>
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-xs sm:text-sm truncate max-w-xs md:max-w-none">
               Ticket #{ticketId.slice(-8).toUpperCase()}
             </h1>
-            <p className="text-[10px] text-gray-400 dark:text-gray-500">Official Support Record</p>
+            <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Official Support Record</p>
           </div>
         </div>
 
         {ticket && ticket.status !== 'closed' && (
           <button
             onClick={handleCloseTicket}
-            className="px-3 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-red-600 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+            className="px-3 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-red-600 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition"
           >
             Close Ticket
           </button>
@@ -167,7 +167,7 @@ export function TicketDetailPage() {
           <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 space-y-3">
             <AlertCircle className="w-12 h-12 text-gray-300 mx-auto" />
             <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Ticket Not Found</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">The support ticket ID is invalid or has expired.</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">The support ticket ID is invalid or has expired.</p>
             <button
               onClick={() => navigate('help-center')}
               className="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-xl"
@@ -183,19 +183,19 @@ export function TicketDetailPage() {
                 <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border capitalize ${statusColor[ticket.status] || 'bg-gray-100 dark:bg-gray-900'}`}>
                   {ticket.status.replace('_', ' ')}
                 </span>
-                <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                   {new Date(ticket.createdAt).toLocaleDateString()}
                 </span>
               </div>
 
               <div>
                 <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">{ticket.subject}</h2>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1.5 leading-relaxed bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
                   {ticket.description}
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-2 text-[11px] text-gray-500 dark:text-gray-400 pt-1">
+              <div className="flex flex-wrap gap-2 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 pt-1">
                 <span className="bg-gray-100 dark:bg-gray-900 px-2 py-0.5 rounded-md font-medium">Category: {ticket.category.replace('_', ' ')}</span>
                 <span className="bg-gray-100 dark:bg-gray-900 px-2 py-0.5 rounded-md font-medium capitalize">Priority: {ticket.priority}</span>
                 {ticket.relatedOrderId && (
@@ -215,7 +215,7 @@ export function TicketDetailPage() {
 
               <div className="space-y-3">
                 {ticket.messages.length === 0 ? (
-                  <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-4">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 text-center py-4">
                     Your ticket is queued. A support agent will respond here shortly.
                   </p>
                 ) : (
@@ -235,7 +235,7 @@ export function TicketDetailPage() {
                             {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-red-600" /> : <User className="w-3.5 h-3.5" />}
                             {isAdmin ? 'Zylod Dispute Specialist' : 'You (Buyer / Merchant)'}
                           </span>
-                          <span className="text-gray-400 dark:text-gray-500">
+                          <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">
                             {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>

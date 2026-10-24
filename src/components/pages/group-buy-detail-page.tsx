@@ -75,7 +75,7 @@ export function GroupBuyDetailPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Group Buy Pooling Pool</h1>
@@ -84,9 +84,9 @@ export function GroupBuyDetailPage() {
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24 md:max-w-4xl md:px-6 md:py-8 md:pb-8">
         {loading ? (
-          <div className="p-8 text-center text-gray-400 dark:text-gray-500">Loading campaign details...</div>
+          <div className="p-8 text-center text-gray-400 dark:text-gray-500 dark:text-gray-400">Loading campaign details...</div>
         ) : !campaign ? (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 text-center text-gray-500 dark:text-gray-400 space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 text-center text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-3">
             <p>Campaign not found</p>
             <Button onClick={() => navigate('group-buy')} className="rounded-xl text-xs font-bold bg-red-600 text-white">
               Back to Group Buys
@@ -101,7 +101,7 @@ export function GroupBuyDetailPage() {
                 Active Wholesale Pool
               </Badge>
               <h2 className="text-base sm:text-lg md:text-2xl font-black text-gray-900 dark:text-gray-100">{campaign.title}</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 Expires on {new Date(campaign.expiresAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}
               </p>
             </div>
@@ -109,12 +109,12 @@ export function GroupBuyDetailPage() {
             {/* Price Card */}
             <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-400 dark:text-gray-500">Group Pool Rate</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Group Pool Rate</p>
                 <p className="text-2xl md:text-3xl font-black text-red-600">{formatPrice(campaign.discountedPrice)}</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-gray-400 dark:text-gray-500">Regular Factory Rate</p>
-                <p className="text-sm line-through text-gray-500 dark:text-gray-400">{formatPrice(campaign.originalPrice)}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Regular Factory Rate</p>
+                <p className="text-sm line-through text-gray-500 dark:text-gray-400 dark:text-gray-500">{formatPrice(campaign.originalPrice)}</p>
               </div>
             </div>
 
@@ -157,7 +157,7 @@ export function GroupBuyDetailPage() {
                 <p className="text-sm font-black text-gray-900 dark:text-gray-100">
                   {campaign.status === 'completed' ? 'This pool is filled — participants can now order their reserved units at the pool rate.' : 'This pool has ended.'}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
                   Reserved units are honored automatically at checkout, up to each participant's reservation.
                 </p>
               </div>
@@ -167,7 +167,7 @@ export function GroupBuyDetailPage() {
 
             {/* Participants list */}
             <div className="space-y-2 pt-2 lg:pt-0">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Joined Merchants ({campaign.totalParticipants})
               </h3>
               <div className="space-y-1.5 max-h-40 overflow-y-auto">

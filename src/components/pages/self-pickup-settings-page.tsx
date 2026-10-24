@@ -217,7 +217,7 @@ export function SelfPickupSettingsPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
         <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Self Pickup</h1>
@@ -232,7 +232,7 @@ export function SelfPickupSettingsPage() {
                   Sign in
                 </button>
               )}
-              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
+              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
                 <RefreshCw className="w-4 h-4" /> Retry
               </button>
             </div>
@@ -251,12 +251,12 @@ export function SelfPickupSettingsPage() {
     >
       <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Self Pickup</h1>
         </div>
-        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
           <RefreshCw className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
       </div>
@@ -264,7 +264,7 @@ export function SelfPickupSettingsPage() {
       <div className="p-4 md:max-w-3xl md:mx-auto md:p-6 md:pt-8 space-y-6">
         <div className="hidden md:flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Self Pickup Locations</h1>
-          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary inline-flex items-center gap-1">
+          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-primary inline-flex items-center gap-1">
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
         </div>
@@ -281,9 +281,9 @@ export function SelfPickupSettingsPage() {
 
         {warehouses.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
-            <Building className="w-8 h-8 text-gray-400 mx-auto" />
+            <Building className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No pickup locations yet</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Add a warehouse so buyers can self-pickup orders.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Add a warehouse so buyers can self-pickup orders.</p>
           </div>
         ) : (
           warehouses.map((w) => {
@@ -300,7 +300,7 @@ export function SelfPickupSettingsPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Location name</label>
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Location name</label>
                   <input
                     type="text"
                     value={form.name}
@@ -310,7 +310,7 @@ export function SelfPickupSettingsPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Address line 1</label>
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Address line 1</label>
                   <textarea
                     value={form.addressLine1}
                     onChange={(e) => updateEdit(w.id, { addressLine1: e.target.value })}
@@ -320,7 +320,7 @@ export function SelfPickupSettingsPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Address line 2 (optional)</label>
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Address line 2 (optional)</label>
                   <input
                     type="text"
                     value={form.addressLine2}
@@ -331,7 +331,7 @@ export function SelfPickupSettingsPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">City</label>
                     <input
                       type="text"
                       value={form.city}
@@ -340,7 +340,7 @@ export function SelfPickupSettingsPage() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">District</label>
                     <input
                       type="text"
                       value={form.district}
@@ -362,17 +362,17 @@ export function SelfPickupSettingsPage() {
 
                 {/* Draft-only operating hours block — NOT persisted (no rail yet) */}
                 <div className="bg-gray-50 dark:bg-gray-950 border border-dashed border-gray-200 dark:border-gray-800 rounded-lg p-3 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     <Clock className="w-3.5 h-3.5" /> Operating hours (draft — not persisted yet)
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-gray-500 dark:text-gray-400">Opening</label>
-                      <input type="time" defaultValue="09:00" className="w-full px-2 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded text-sm text-gray-500 dark:text-gray-400" disabled />
+                      <label className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Opening</label>
+                      <input type="time" defaultValue="09:00" className="w-full px-2 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500" disabled />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 dark:text-gray-400">Closing</label>
-                      <input type="time" defaultValue="18:00" className="w-full px-2 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded text-sm text-gray-500 dark:text-gray-400" disabled />
+                      <label className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Closing</label>
+                      <input type="time" defaultValue="18:00" className="w-full px-2 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500" disabled />
                     </div>
                   </div>
                 </div>
@@ -397,12 +397,12 @@ export function SelfPickupSettingsPage() {
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm inline-flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-primary" /> New pickup location
               </h3>
-              <button onClick={() => setShowCreate(false)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
-                <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <button onClick={() => setShowCreate(false)} className="p-1 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded">
+                <X className="w-4 h-4 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
               </button>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Location name</label>
+              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Location name</label>
               <input
                 type="text"
                 value={createForm.name}
@@ -412,7 +412,7 @@ export function SelfPickupSettingsPage() {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Address line 1</label>
+              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Address line 1</label>
               <textarea
                 value={createForm.addressLine1}
                 onChange={(e) => setCreateForm((f) => ({ ...f, addressLine1: e.target.value }))}
@@ -422,7 +422,7 @@ export function SelfPickupSettingsPage() {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Address line 2 (optional)</label>
+              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Address line 2 (optional)</label>
               <input
                 type="text"
                 value={createForm.addressLine2}
@@ -432,7 +432,7 @@ export function SelfPickupSettingsPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">City</label>
                 <input
                   type="text"
                   value={createForm.city}
@@ -441,7 +441,7 @@ export function SelfPickupSettingsPage() {
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">District</label>
                 <input
                   type="text"
                   value={createForm.district}

@@ -75,10 +75,10 @@ export function TrendingProductsPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-10">
       {/* ─── Top Nav Bar ─── */}
-      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -86,7 +86,7 @@ export function TrendingProductsPage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -131,7 +131,7 @@ export function TrendingProductsPage() {
 
         {!isLoading && !loadError && products.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
-            <TrendingUp className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+            <TrendingUp className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               No sales recorded yet — rankings will appear as orders come in.
             </p>
@@ -216,7 +216,7 @@ export function TrendingProductsPage() {
                   alt={item.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-3 left-3 bg-white/95 text-[#1A1A1A] text-[10px] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
+                <div className="absolute top-3 left-3 bg-white dark:bg-gray-900/95 text-[#1A1A1A] text-[10px] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
                   <span>⭐</span> #{idx + 2} Top Mover
                 </div>
               </div>

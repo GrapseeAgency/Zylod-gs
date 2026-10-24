@@ -49,7 +49,7 @@ function CategoryCard({
       {/* Header row */}
       <button
         onClick={() => setExpanded((e) => !e)}
-        className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+        className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition-colors"
       >
         <div className="flex items-center gap-3.5 min-w-0 flex-1">
           <div className={`w-11 h-11 rounded-2xl border flex items-center justify-center shrink-0 ${category.iconBg}`}>
@@ -57,7 +57,7 @@ function CategoryCard({
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">{category.label}</h3>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">{category.description}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{category.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -66,13 +66,13 @@ function CategoryCard({
               {channelCount} channel{channelCount > 1 ? 's' : ''} active
             </span>
           ) : (
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-full">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-full">
               Muted
             </span>
           )}
           {expanded
-            ? <ChevronUp className="h-4 w-4 text-slate-400 dark:text-slate-500" />
-            : <ChevronDown className="h-4 w-4 text-slate-400 dark:text-slate-500" />}
+            ? <ChevronUp className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+            : <ChevronDown className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />}
         </div>
       </button>
 
@@ -90,12 +90,12 @@ function CategoryCard({
               {/* Push toggle */}
               <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0">
                     <Smartphone className="h-4 w-4" />
                   </div>
                   <div>
                     <span className="text-xs font-bold text-slate-900 dark:text-slate-100">Push Notification</span>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500">In-app & mobile banner alerts</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">In-app & mobile banner alerts</p>
                   </div>
                 </div>
                 <Switch
@@ -108,12 +108,12 @@ function CategoryCard({
               {/* Email toggle */}
               <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0">
                     <Mail className="h-4 w-4" />
                   </div>
                   <div>
                     <span className="text-xs font-bold text-slate-900 dark:text-slate-100">Email Digest</span>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500">Sent to your registered email</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Sent to your registered email</p>
                   </div>
                 </div>
                 <Switch
@@ -127,12 +127,12 @@ function CategoryCard({
               {category.hasSms !== false && (
                 <div className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 shrink-0">
+                    <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0">
                       <Phone className="h-4 w-4" />
                     </div>
                     <div>
                       <span className="text-xs font-bold text-slate-900 dark:text-slate-100">SMS Alert</span>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500">Critical events via text message</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Critical events via text message</p>
                     </div>
                   </div>
                   <Switch
@@ -152,7 +152,7 @@ function CategoryCard({
                     </div>
                     <div>
                       <span className="text-xs font-bold text-slate-900 dark:text-slate-100">WhatsApp Message</span>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500">Automated WhatsApp Business updates</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Automated WhatsApp Business updates</p>
                     </div>
                   </div>
                   <Switch
@@ -417,10 +417,10 @@ export function NotificationPreferencesPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28 md:pb-8">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
         <button
           onClick={() => navigate('profile')}
-          className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900"
+          className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -439,7 +439,7 @@ export function NotificationPreferencesPage() {
         {/* Hero Banner */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <Bell className="h-6 w-6 text-rose-300" />
             </div>
             <div>
@@ -466,7 +466,7 @@ export function NotificationPreferencesPage() {
             <Button
               onClick={sendTestNotification}
               disabled={testing || testSent}
-              className="h-10 px-4 rounded-xl text-xs font-bold bg-white/10 border border-white/20 text-white hover:bg-white/20 flex items-center justify-center gap-1.5"
+              className="h-10 px-4 rounded-xl text-xs font-bold bg-white dark:bg-gray-900/10 border border-white/20 text-white hover:bg-white dark:bg-gray-900/20 flex items-center justify-center gap-1.5"
             >
               {testing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -495,7 +495,7 @@ export function NotificationPreferencesPage() {
                 <Icon className="h-4 w-4" />
               </div>
               <div className="text-lg font-black text-slate-900 dark:text-slate-100 font-mono mt-1.5">{count}</div>
-              <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{label}</span>
+              <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wider">{label}</span>
             </div>
           ))}
         </div>
@@ -509,7 +509,7 @@ export function NotificationPreferencesPage() {
               </div>
               <div>
                 <h2 className="text-xs font-black text-slate-900 dark:text-slate-100">Quiet Hours — Do Not Disturb</h2>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500">Suppress push &amp; SMS during sleep hours</p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Suppress push &amp; SMS during sleep hours</p>
               </div>
             </div>
             <Switch
@@ -529,13 +529,13 @@ export function NotificationPreferencesPage() {
                 className="overflow-hidden"
               >
                 <div className="px-5 py-4 space-y-3">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
                     During quiet hours, push and SMS notifications are silently queued and delivered at your wake time.
                     Email and WhatsApp are not affected.
                   </p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
                         <Moon className="h-3 w-3" />
                         Sleep (Quiet Start)
                       </label>
@@ -547,7 +547,7 @@ export function NotificationPreferencesPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
                         <Sun className="h-3 w-3" />
                         Wake (Quiet End)
                       </label>
@@ -573,7 +573,7 @@ export function NotificationPreferencesPage() {
 
         {/* Category Cards */}
         <div className="space-y-1">
-          <h2 className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 px-1 pb-1">
+          <h2 className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 px-1 pb-1">
             Event Categories — {categories.length} total
           </h2>
         </div>
@@ -612,7 +612,7 @@ export function NotificationPreferencesPage() {
             onClick={sendTestNotification}
             disabled={testing || testSent}
             variant="outline"
-            className="w-full font-bold h-11 rounded-2xl text-xs border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 flex items-center justify-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="w-full font-bold h-11 rounded-2xl text-xs border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 flex items-center justify-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
           >
             {testing ? (
               <><Loader2 className="h-4 w-4 animate-spin" />Sending Test...</>

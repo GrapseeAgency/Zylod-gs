@@ -126,7 +126,7 @@ export function MobileMenu({ selectedLang }: MobileMenuProps) {
 
           {/* More section */}
           <div className="mt-2 pt-2 border-t">
-            <p className="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">More</p>
+            <p className="px-3 py-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">More</p>
             {moreNavItems.map((item) => {
               const active = isPageActive(item.page)
               return (
@@ -151,12 +151,12 @@ export function MobileMenu({ selectedLang }: MobileMenuProps) {
         {/* Mobile bottom actions */}
         <div className="absolute bottom-0 left-0 right-0 border-t p-4 bg-card">
           <div className="flex items-center gap-3 mb-3">
-            <Globe className="h-4 w-4 text-gray-500" />
-            <span className="text-sm text-gray-600">Language: {languages.find(l => l.code === selectedLang)?.label}</span>
+            <Globe className="h-4 w-4 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+            <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">Language: {languages.find(l => l.code === selectedLang)?.label}</span>
           </div>
           <div className="flex items-center gap-3 mb-3">
             <span className="text-sm">{getCurrencyInfo().symbol}</span>
-            <span className="text-sm text-gray-600">Currency: {currentCurrency}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">Currency: {currentCurrency}</span>
           </div>
           {isAuthenticated ? (
             <Button

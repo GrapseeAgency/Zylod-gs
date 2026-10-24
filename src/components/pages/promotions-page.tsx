@@ -91,7 +91,7 @@ export function PromotionsPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900/95 backdrop-blur border-b">
         <div className="max-w-[1280px] mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => navigate('home')}
@@ -134,7 +134,7 @@ export function PromotionsPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h2 id={`promo-${c.id}`} className="text-base sm:text-lg font-black tracking-tight">{c.name}</h2>
-                      <span className="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded-full">{discountLabel(c)}</span>
+                      <span className="text-[11px] font-bold bg-white dark:bg-gray-900/20 px-2 py-0.5 rounded-full">{discountLabel(c)}</span>
                     </div>
                     {c.description && <p className="text-xs text-white/85 mt-1 max-w-xl">{c.description}</p>}
                     <div className="flex items-center gap-3 mt-1.5 text-[11px] text-white/80 flex-wrap">

@@ -77,19 +77,19 @@ export function BulkUploadTemplatePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6 md:py-8">
+    <div className="min-h-screen bg-white dark:bg-gray-900 p-4 md:p-6 md:py-8">
       <div className="max-w-3xl mx-auto">
-        <button onClick={goBack} className="mb-4 flex items-center gap-1 text-sm font-bold text-gray-600 hover:text-gray-900" aria-label="Back">
+        <button onClick={goBack} className="mb-4 flex items-center gap-1 text-sm font-bold text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:text-gray-100" aria-label="Back">
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
-        <h1 className="text-xl md:text-2xl font-bold mb-2 text-gray-900">Bulk Upload Template</h1>
-        <p className="text-xs text-gray-500 mb-5 leading-relaxed">
-          The server expects the header <code className="bg-gray-100 px-1 rounded font-mono text-[11px]">{header}</code> — exactly these columns, one product per row, max 100 rows per upload.
+        <h1 className="text-xl md:text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">Bulk Upload Template</h1>
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-5 leading-relaxed">
+          The server expects the header <code className="bg-gray-100 dark:bg-gray-900 px-1 rounded font-mono text-[11px]">{header}</code> — exactly these columns, one product per row, max 100 rows per upload.
           The template below carries your LIVE category ids, so the categoryId column is valid on the first try.
         </p>
 
-        <div className="bg-gray-50 rounded-2xl border border-gray-200 p-4 space-y-3">
-          <div className="flex items-center gap-2 text-xs font-bold text-gray-800">
+        <div className="bg-gray-50 dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-4 space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-gray-800 dark:text-gray-200">
             <FileSpreadsheet className="w-4 h-4 text-primary" /> Valid units: pcs · dozen · kg · carton · box · set
           </div>
           <pre className="bg-slate-900 text-slate-100 text-[11px] font-mono rounded-xl p-3 overflow-x-auto leading-relaxed">{csv}</pre>
@@ -97,12 +97,12 @@ export function BulkUploadTemplatePage() {
             <Button onClick={download} className="flex-1 h-11 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2">
               <Download className="w-4 h-4" /> Download template CSV
             </Button>
-            <Button variant="outline" onClick={() => navigate('bulk-upload-products')} className="flex-1 h-11 rounded-2xl text-xs font-bold border-gray-200">
+            <Button variant="outline" onClick={() => navigate('bulk-upload-products')} className="flex-1 h-11 rounded-2xl text-xs font-bold border-gray-200 dark:border-gray-800">
               Go to upload
             </Button>
           </div>
           {loading && (
-            <p className="text-[10px] text-gray-400 flex items-center gap-1.5">
+            <p className="text-[10px] text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
               <Loader2 className="w-3 h-3 animate-spin" /> Loading your live category ids…
             </p>
           )}

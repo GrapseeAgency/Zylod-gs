@@ -93,7 +93,7 @@ export function ChatbotPage() {
       {/* Header */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm z-10">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-500 text-white flex items-center justify-center shadow-md">
@@ -103,7 +103,7 @@ export function ChatbotPage() {
             <h1 className="text-xs sm:text-sm md:text-base font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
               Zylod Help Assistant
             </h1>
-            <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Searches our published help articles & FAQs</p>
+            <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 font-medium">Searches our published help articles & FAQs</p>
           </div>
         </div>
 
@@ -163,7 +163,7 @@ export function ChatbotPage() {
         })}
 
         {loading && (
-          <div className="flex gap-2.5 items-center text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex gap-2.5 items-center text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
             <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 border border-red-100 flex items-center justify-center flex-shrink-0">
               <Bot className="w-4 h-4 animate-spin" />
             </div>
@@ -180,7 +180,7 @@ export function ChatbotPage() {
         {/* Quick Suggestion Chips */}
         {messages.length <= 2 && (
           <div className="pt-2">
-            <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wide">
+            <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">
               {language === 'bn' ? 'প্রস্তাবিত প্রশ্নাবলী' : 'Suggested Inquiries'}
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -208,7 +208,7 @@ export function ChatbotPage() {
             placeholder={language === 'bn' ? 'প্রশ্ন লিখুন...' : 'Ask about payments, MOQs, verification, disputes...'}
             value={inputQuery}
             onChange={e => setInputQuery(e.target.value)}
-            className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-2xl px-4 py-2.5 text-xs md:text-sm text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-red-500 placeholder:text-gray-400"
+            className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-2xl px-4 py-2.5 text-xs md:text-sm text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-red-500 placeholder:text-gray-400 dark:text-gray-500"
           />
           <button
             type="submit"

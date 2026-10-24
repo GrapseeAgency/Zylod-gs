@@ -103,8 +103,8 @@ export function CreditLimitPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Trade Credit Line</span>
@@ -129,13 +129,13 @@ export function CreditLimitPage() {
           </div>
 
           <div>
-            <span className="text-xs text-slate-400 dark:text-slate-500 block">Available Sourcing Credit</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Available Sourcing Credit</span>
             <div className="text-3xl font-black font-mono mt-0.5">
               {formatPrice(limitData.availableCredit)}
             </div>
           </div>
 
-          <div className="w-full bg-white/10 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10">
+          <div className="w-full bg-white dark:bg-gray-900/10 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10">
             <div
               className="bg-primary h-full rounded-full transition-all"
               style={{ width: `${Math.max(5, usedPct)}%` }}
@@ -144,11 +144,11 @@ export function CreditLimitPage() {
 
           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10 text-xs">
             <div>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase font-bold">Total Facility</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold">Total Facility</span>
               <span className="font-bold text-slate-100 font-mono mt-0.5 block">{formatPrice(limitData.creditLimit)}</span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase font-bold">Drawn / Utilized</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold">Drawn / Utilized</span>
               <span className="font-bold text-rose-300 font-mono mt-0.5 block">{formatPrice(limitData.usedCredit)}</span>
             </div>
           </div>
@@ -156,22 +156,22 @@ export function CreditLimitPage() {
 
         {/* Perks */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
             Terms &amp; Settlement SLA
           </h2>
           <div className="divide-y divide-slate-50 text-xs">
             <div className="py-2.5 flex justify-between">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Interest-Free Grace Period</span>
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Interest-Free Grace Period</span>
               <span className="font-bold text-emerald-600">30 Days (0% APR)</span>
             </div>
             <div className="py-2.5 flex justify-between">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Next Settlement Cycle</span>
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Next Settlement Cycle</span>
               <span className="font-bold text-slate-900 dark:text-slate-100">
                 {limitData.nextSettlementDate ? new Date(limitData.nextSettlementDate).toLocaleDateString() : 'Active Cycle'}
               </span>
             </div>
             <div className="py-2.5 flex justify-between">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Underwriting Sponsor</span>
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Underwriting Sponsor</span>
               <span className="font-bold text-slate-900 dark:text-slate-100">City Bank Wholesale Trade Partner</span>
             </div>
           </div>
@@ -188,7 +188,7 @@ export function CreditLimitPage() {
         {/* Increase Request Form */}
         {showIncreaseForm ? (
           <form onSubmit={handleRequestIncrease} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-xl space-y-3">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
               Request Credit Limit Increase
             </h2>
 

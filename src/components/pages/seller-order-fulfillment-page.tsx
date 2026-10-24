@@ -107,7 +107,7 @@ export function SellerOrderFulfillmentPage() {
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-8 max-w-sm w-full text-center">
           <AlertTriangle className="w-10 h-10 mx-auto text-amber-500 mb-3" />
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Supplier sign-in required</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Sign in with a seller account to fulfill orders.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4">Sign in with a seller account to fulfill orders.</p>
           <button onClick={() => goBack()} className="min-h-11 px-6 bg-[#C8102E] text-white rounded-lg font-medium w-full">
             Back
           </button>
@@ -123,7 +123,7 @@ export function SellerOrderFulfillmentPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
       <header className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center">
-        <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400 mr-2">
+        <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400 dark:text-gray-500 mr-2">
           <ArrowLeft className="w-6 h-6" />
         </button>
         <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Fulfill Order</h1>
@@ -143,7 +143,7 @@ export function SellerOrderFulfillmentPage() {
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-10 space-y-4">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Order Dispatched</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm">
               Status is now <span className="font-semibold">shipped</span> with tracking number{' '}
               <span className="font-mono font-semibold">{trackingNumber}</span>. The buyer was notified and the
               tracking page updates live.
@@ -159,7 +159,7 @@ export function SellerOrderFulfillmentPage() {
             {info?.order && (
               <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">#{info.order.orderNumber}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
                   Current status: <span className="font-medium capitalize">{statuses.join(', ') || 'unknown'}</span>
                   {allShipped && ' — already shipped'}
                 </p>
@@ -172,7 +172,7 @@ export function SellerOrderFulfillmentPage() {
                   <Package className="w-5 h-5 text-[#C8102E]" />
                   <h2 className="font-semibold text-gray-900 dark:text-gray-100">Step 1 — Pack the order</h2>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Confirm every item is packed and quality-checked before dispatch.</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Confirm every item is packed and quality-checked before dispatch.</p>
                 <button
                   onClick={() => void markPacked()}
                   disabled={busy}

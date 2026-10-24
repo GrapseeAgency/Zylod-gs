@@ -59,12 +59,12 @@ export function CompanyMilestonesPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Zylod Journey &amp; Milestones</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">Real Milestones, Published As They Happen</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Real Milestones, Published As They Happen</p>
         </div>
       </div>
 
@@ -79,7 +79,7 @@ export function CompanyMilestonesPage() {
               <Milestone className="w-7 h-7 text-blue-600" />
             </div>
             <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">No milestones published yet</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-sm mx-auto">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed max-w-sm mx-auto">
               Milestones will be posted here as the platform grows — only real, verifiable ones.
               Zylod does not invent dates or achievements to look established.
             </p>
@@ -101,7 +101,7 @@ export function CompanyMilestonesPage() {
                         {month ? `${month} ${m.year}` : m.year}
                       </Badge>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{m.description}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{m.description}</p>
                   </div>
                 </div>
               )

@@ -189,7 +189,7 @@ export function InventoryRestockPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
         <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Restock Intake</h1>
@@ -204,7 +204,7 @@ export function InventoryRestockPage() {
                   Sign in
                 </button>
               )}
-              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
+              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
                 <RefreshCw className="w-4 h-4" /> Retry
               </button>
             </div>
@@ -223,12 +223,12 @@ export function InventoryRestockPage() {
     >
       <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Restock Intake</h1>
         </div>
-        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
           <RefreshCw className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
       </div>
@@ -236,7 +236,7 @@ export function InventoryRestockPage() {
       <div className="p-4 md:max-w-3xl md:mx-auto md:p-6 md:pt-8 space-y-6">
         <div className="hidden md:flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Restock Intake</h1>
-          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary inline-flex items-center gap-1">
+          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-primary inline-flex items-center gap-1">
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
         </div>
@@ -254,9 +254,9 @@ export function InventoryRestockPage() {
 
         {items.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
-            <Package className="w-8 h-8 text-gray-400 mx-auto" />
+            <Package className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No products in inventory</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Create a product first to restock it.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Create a product first to restock it.</p>
           </div>
         ) : (
           <>
@@ -264,7 +264,7 @@ export function InventoryRestockPage() {
               <h2 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Pick a product to restock</h2>
 
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   value={search}
@@ -276,7 +276,7 @@ export function InventoryRestockPage() {
 
               <div className="max-h-60 overflow-y-auto border border-gray-100 dark:border-gray-800 rounded-lg divide-y divide-gray-100 dark:divide-gray-800">
                 {filteredItems.length === 0 ? (
-                  <div className="p-3 text-xs text-gray-500 dark:text-gray-400 text-center">No products match your search.</div>
+                  <div className="p-3 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center">No products match your search.</div>
                 ) : (
                   filteredItems.map((i) => {
                     const isSel = selectedProductId === i.id;
@@ -289,7 +289,7 @@ export function InventoryRestockPage() {
                       >
                         <div className="min-w-0">
                           <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{i.name}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">
                             {i.sku || 'no SKU'} · stock: {money(i.stockQuantity)} {i.unit}
                             {i.variants.length > 0 && ` · ${i.variants.length} variant${i.variants.length === 1 ? '' : 's'}`}
                           </div>
@@ -320,7 +320,7 @@ export function InventoryRestockPage() {
               )}
 
               {selectedItem && (
-                <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg p-3 text-xs text-gray-600 dark:text-gray-400">
+                <div className="bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg p-3 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
                   Selected: <span className="font-medium text-gray-900 dark:text-gray-100">{selectedItem.name}</span>
                   {selectedVariant && (
                     <span> · {selectedVariant.variantName}: {selectedVariant.variantValue}</span>
@@ -347,38 +347,38 @@ export function InventoryRestockPage() {
                     className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary"
                     placeholder="e.g. 100"
                   />
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Added to current stock as a delta (+).</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Added to current stock as a delta (+).</p>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Batch expiry <span className="text-xs text-gray-400">(draft — not persisted)</span></label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Batch expiry <span className="text-xs text-gray-400 dark:text-gray-500">(draft — not persisted)</span></label>
                   <input
                     type="date"
                     value={batchExpiry}
                     onChange={(e) => setBatchExpiry(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-500 dark:text-gray-400"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">PO Number <span className="text-xs text-gray-400">(draft — not persisted)</span></label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">PO Number <span className="text-xs text-gray-400 dark:text-gray-500">(draft — not persisted)</span></label>
                   <input
                     type="text"
                     value={poNumber}
                     onChange={(e) => setPoNumber(e.target.value)}
                     placeholder="PO-10024"
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-500 dark:text-gray-400"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Supplier source <span className="text-xs text-gray-400">(draft — not persisted)</span></label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Supplier source <span className="text-xs text-gray-400 dark:text-gray-500">(draft — not persisted)</span></label>
                   <input
                     type="text"
                     value={supplierSource}
                     onChange={(e) => setSupplierSource(e.target.value)}
                     placeholder="Supplier name"
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-500 dark:text-gray-400"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500"
                   />
                 </div>
               </div>
@@ -391,7 +391,7 @@ export function InventoryRestockPage() {
                 <Save className="w-5 h-5" />
                 {saving ? 'Processing…' : 'Process Intake'}
               </button>
-              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center">
                 The rail writes the quantity delta to stock and notifies back-in-stock watchers.
               </p>
             </div>

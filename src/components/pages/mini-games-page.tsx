@@ -249,7 +249,7 @@ export function MiniGamesPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition" aria-label="Go back">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition" aria-label="Go back">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -320,7 +320,7 @@ export function MiniGamesPage() {
             <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-600" />
             <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{quizResult.correct}/{quizResult.total} correct</p>
             <p className="text-xs text-emerald-700 font-bold">+{quizResult.pointsWon} loyalty points</p>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">{quizResult.message}</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">{quizResult.message}</p>
           </div>
         )}
 
@@ -330,7 +330,7 @@ export function MiniGamesPage() {
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-2"><Layers className="w-4 h-4 text-emerald-600" /> Factory Cargo Matcher</h3>
             {mem.phase === 'flash' ? (
               <div className="space-y-3 py-4">
-                <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1"><Timer className="w-3.5 h-3.5" /> Memorize the cargo order…</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1"><Timer className="w-3.5 h-3.5" /> Memorize the cargo order…</p>
                 <div className="flex items-center justify-center gap-2 min-h-16">
                   {mem.sequence.map((sym, i) => (
                     <span
@@ -346,7 +346,7 @@ export function MiniGamesPage() {
               </div>
             ) : mem.phase === 'input' ? (
               <div className="space-y-3 py-2">
-                <p className="text-xs text-gray-500 dark:text-gray-400">Reproduce the order ({mem.picked.length}/{mem.sequence.length})</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Reproduce the order ({mem.picked.length}/{mem.sequence.length})</p>
                 <div className="flex items-center justify-center gap-1.5 min-h-10 flex-wrap">
                   {mem.picked.map((sym, i) => <span key={i} className="text-2xl" role="img" aria-label={`picked ${i + 1}`}>{MEMORY_SYMBOL_GLYPHS[sym] ?? '📦'}</span>)}
                 </div>
@@ -372,23 +372,23 @@ export function MiniGamesPage() {
             {memResult.correct === memResult.total ? <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-600" /> : <XCircle className="w-8 h-8 mx-auto text-amber-600" />}
             <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{memResult.correct}/{memResult.total} positions matched</p>
             <p className="text-xs text-emerald-700 font-bold">+{memResult.pointsWon} loyalty points</p>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">Dealt order: {memResult.dealt.map((s) => MEMORY_SYMBOL_GLYPHS[s] ?? '📦').join(' ')}</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Dealt order: {memResult.dealt.map((s) => MEMORY_SYMBOL_GLYPHS[s] ?? '📦').join(' ')}</p>
           </div>
         )}
 
         {/* CRATE result */}
         {crateResult && (
-          <div className={`bg-white rounded-3xl p-5 border shadow-md space-y-1 text-center ${crateResult.won ? 'border-amber-300' : 'border-gray-200 dark:border-gray-800'}`}>
+          <div className={`bg-white dark:bg-gray-900 rounded-3xl p-5 border shadow-md space-y-1 text-center ${crateResult.won ? 'border-amber-300' : 'border-gray-200 dark:border-gray-800'}`}>
             {crateResult.won ? <Gift className="w-8 h-8 mx-auto text-amber-600" /> : <Package className="w-8 h-8 mx-auto text-gray-300" />}
             <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{crateResult.won ? `৳${crateResult.prize?.value} OFF voucher won!` : 'Packing straw'}</p>
-            {crateResult.won && crateResult.prize && <p className="text-xs font-mono text-gray-600 dark:text-gray-400">{crateResult.prize.code}</p>}
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">{crateResult.message}</p>
+            {crateResult.won && crateResult.prize && <p className="text-xs font-mono text-gray-600 dark:text-gray-400 dark:text-gray-500">{crateResult.prize.code}</p>}
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">{crateResult.message}</p>
           </div>
         )}
 
         {/* Games grid */}
         <div className="space-y-3">
-          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">Available Games</h3>
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">Available Games</h3>
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-3xl" />)}
@@ -410,7 +410,7 @@ export function MiniGamesPage() {
                             <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">{g.title}</h4>
                             <Badge variant="outline" className="text-[10px] border-red-200 text-red-700">{g.reward}</Badge>
                           </div>
-                          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{g.desc}</p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">{g.desc}</p>
                         </div>
                       </div>
                     </div>
@@ -418,10 +418,10 @@ export function MiniGamesPage() {
                       {token && usage ? (
                         <div className="flex-1 min-w-0">
                           <Progress value={Math.min(100, Math.round((used / g.dailyLimit) * 100))} className="h-1.5" aria-label={`Daily attempts ${used} of ${g.dailyLimit}`} />
-                          <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">{used} of {g.dailyLimit} used today</p>
+                          <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-1">{used} of {g.dailyLimit} used today</p>
                         </div>
                       ) : (
-                        <p className="text-[10px] text-gray-400 dark:text-gray-500 flex-1">{g.dailyLimit} rounds per day</p>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 flex-1">{g.dailyLimit} rounds per day</p>
                       )}
                       {g.id === 'wholesale_trivia' && (
                         <Button size="sm" onClick={startQuiz} disabled={quizBusy || exhausted} className="h-9 px-4 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-xl flex-shrink-0 gap-1 shadow-sm">

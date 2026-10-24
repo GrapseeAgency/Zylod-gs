@@ -113,8 +113,8 @@ export function LanguageSettingsPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Language &amp; Locale</span>
@@ -125,7 +125,7 @@ export function LanguageSettingsPage() {
         {/* Banner */}
         <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 md:p-6 text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
               <Globe className="h-5 w-5 text-rose-300" />
             </div>
             <div>
@@ -141,7 +141,7 @@ export function LanguageSettingsPage() {
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-amber-500 mx-auto" />
             <h2 className="text-sm font-black">Sign in to manage your saved language</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Language preferences are stored on your account.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Language preferences are stored on your account.</p>
             <Button onClick={() => navigate('login')} className="h-11 px-6 rounded-xl text-xs font-bold">Sign In</Button>
           </div>
         ) : (
@@ -157,15 +157,15 @@ export function LanguageSettingsPage() {
             {/* Language Selection */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Interface Language</h2>
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Interface Language</h2>
                 {!loading && (
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">
                     {configured ? 'Customized for your account' : 'Platform default — not customized yet'}
                   </span>
                 )}
               </div>
               {loading ? (
-                <div className="flex items-center justify-center py-8 text-slate-400 dark:text-slate-500">
+                <div className="flex items-center justify-center py-8 text-slate-400 dark:text-slate-500 dark:text-slate-400">
                   <Loader2 className="h-5 w-5 animate-spin" />
                   <span className="text-xs font-bold ml-2">Loading your saved language…</span>
                 </div>
@@ -189,7 +189,7 @@ export function LanguageSettingsPage() {
                           <span className={`text-xs font-black block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>
                             {lang.nativeName} ({lang.name})
                           </span>
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5">{lang.region}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-0.5">{lang.region}</span>
                         </div>
                         {isSaving ? (
                           <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center">
@@ -212,7 +212,7 @@ export function LanguageSettingsPage() {
                   <p className="text-xs font-bold text-red-600">{saveError}</p>
                 </div>
               )}
-              <p className="text-[11px] text-slate-400 dark:text-slate-500">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                 Spanish, French, and Arabic were listed before but were never actually supported — they are
                 not implemented yet and require backend support before they can be selected.
               </p>
@@ -220,7 +220,7 @@ export function LanguageSettingsPage() {
 
             {/* Preferred Currency — real device-local preference (zustand persist) */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-              <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+              <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <DollarSign className="h-4 w-4 text-primary" />
                 Wholesale Catalog Currency
               </h2>
@@ -243,7 +243,7 @@ export function LanguageSettingsPage() {
                   )
                 })}
               </div>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                 Currency is stored on this device only (it is not part of your account settings).
               </p>
             </div>

@@ -413,7 +413,7 @@ export function AdminReturnsPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">The return review queue is restricted to Zylod admins. Sign in with an admin account to review buyer return requests.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">The return review queue is restricted to Zylod admins. Sign in with an admin account to review buyer return requests.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -435,12 +435,12 @@ export function AdminReturnsPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Return Requests</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">Approve/reject is audit-logged. Record a refund only after the money really moved — every record needs the real transfer reference.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Approve/reject is audit-logged. Record a refund only after the money really moved — every record needs the real transfer reference.</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {lastUpdated && (
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
           )}
           <Button
             variant="outline"
@@ -500,9 +500,9 @@ export function AdminReturnsPage() {
         <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           {tab === 'all' ? (
             <>
-              <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 mx-auto" />
+              <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 dark:text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No return requests yet</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
                 The returnRequests table currently holds zero rows — real counts, not a placeholder. When a buyer submits a return on a paid, delivered order it will appear here for review.
               </p>
             </>
@@ -510,7 +510,7 @@ export function AdminReturnsPage() {
             <>
               <CheckCircle2 className={`h-10 w-10 mx-auto ${tab === 'pending' ? 'text-slate-300 dark:text-slate-700' : 'text-emerald-500'}`} />
               <h2 className="text-sm font-black">No {TAB_LABELS[tab].toLowerCase()} return requests</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
                 No return request currently has status &ldquo;{tab}&rdquo;. Switch to All to see every return request in the database.
               </p>
             </>
@@ -532,7 +532,7 @@ export function AdminReturnsPage() {
                       {r.status.toUpperCase()}
                     </Badge>
                   </div>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                     Submitted {formatTimestamp(r.createdAt)} · Order {r.order?.orderNumber ?? '—'}
                   </p>
                 </div>
@@ -549,29 +549,29 @@ export function AdminReturnsPage() {
               {/* Buyer + refund + shipping */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
-                  <User className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
+                  <User className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500">Buyer</p>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</p>
                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">{r.buyer?.name ?? '—'}</p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{r.buyer?.email ?? 'no email on file'}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 truncate">{r.buyer?.email ?? 'no email on file'}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
-                  <Wallet className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
+                  <Wallet className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500">Estimated refund</p>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Estimated refund</p>
                     <p className="text-xs font-black text-primary tabular-nums">{formatPrice(r.estimatedRefund)}</p>
                     {r.refundTotal > 0 && (
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">
                         {formatPrice(r.refundTotal)} refunded · {formatPrice(r.refundRemaining)} remaining
                       </p>
                     )}
                   </div>
                 </div>
                 <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
-                  <Truck className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
+                  <Truck className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500">Return method</p>
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Return method</p>
                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{shippingLabel(r.shippingMethod)}</p>
                   </div>
                 </div>
@@ -592,11 +592,11 @@ export function AdminReturnsPage() {
                     }`}
                   />
                   <div className="min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500">
+                    <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       Goods received by seller
                     </p>
                     {r.receipts.length === 0 ? (
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                         Not yet — stock restores when each seller confirms the goods arrived
                       </p>
                     ) : (
@@ -604,7 +604,7 @@ export function AdminReturnsPage() {
                         <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
                           {r.receipts.length}/{r.supplierCount} seller(s) · {r.receipts.reduce((s, x) => s + x.itemsRestored, 0)} line(s) back in stock
                         </p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 tabular-nums">
                           {r.receipts.map((rc) => formatPrice(rc.restoredValue)).join(' + ')} stock value restored
                         </p>
                       </>
@@ -615,7 +615,7 @@ export function AdminReturnsPage() {
 
               {/* Items — real reasons / quantities / comments */}
               <div>
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 flex items-center gap-1.5">
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
                   <Package className="h-3 w-3" /> Items ({r.items.length})
                 </p>
                 <div className="rounded-xl border border-slate-100 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
@@ -624,7 +624,7 @@ export function AdminReturnsPage() {
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-slate-700 dark:text-slate-300 break-words">{item.reason}</p>
                         {item.comments && (
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 break-words">&ldquo;{item.comments}&rdquo;</p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 break-words">&ldquo;{item.comments}&rdquo;</p>
                         )}
                       </div>
                       <span className={`text-[10px] shrink-0 ${chipClass}`}>Qty {item.quantity}</span>
@@ -639,7 +639,7 @@ export function AdminReturnsPage() {
               {/* Refunds — real ledger rows (money that actually moved outside the system) */}
               {r.refunds.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 flex items-center gap-1.5">
+                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-1.5">
                     <Banknote className="h-3 w-3" /> Refunds ({r.refunds.length})
                   </p>
                   <div className="rounded-xl border border-emerald-100 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/30 divide-y divide-emerald-100 dark:divide-emerald-900">
@@ -649,10 +649,10 @@ export function AdminReturnsPage() {
                           <p className="text-xs font-black text-emerald-700 dark:text-emerald-400 tabular-nums">
                             {formatPrice(f.amount)} <span className="font-bold">· {refundMethodLabel(f.method)}</span>
                           </p>
-                          <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400 break-all">ref {f.reference}</p>
-                          {f.note && <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 break-words">&ldquo;{f.note}&rdquo;</p>}
+                          <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400 dark:text-slate-500 break-all">ref {f.reference}</p>
+                          {f.note && <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 break-words">&ldquo;{f.note}&rdquo;</p>}
                         </div>
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums shrink-0">{formatTimestamp(f.createdAt)}</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums shrink-0">{formatTimestamp(f.createdAt)}</span>
                       </div>
                     ))}
                   </div>
@@ -662,14 +662,14 @@ export function AdminReturnsPage() {
               {/* Resolution (shown only when a real decision exists) */}
               {r.resolutionNote && (
                 <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
-                  <ScrollText className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-300 break-words">
+                  <ScrollText className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 break-words">
                     <span className="font-black">Decision note:</span> {r.resolutionNote}
                   </p>
                 </div>
               )}
               {r.resolvedAt && (
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">
                   Resolved {formatTimestamp(r.resolvedAt)}
                   {r.resolvedById ? ` · by admin ${r.resolvedById}` : ''}
                 </p>
@@ -716,7 +716,7 @@ export function AdminReturnsPage() {
       {!loading && dataNotes.length > 0 && returns.length > 0 && (
         <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-1">
           {dataNotes.map((noteLine, i) => (
-            <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">· {noteLine}</p>
+            <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">· {noteLine}</p>
           ))}
         </div>
       )}
@@ -734,7 +734,7 @@ export function AdminReturnsPage() {
                     <><XCircle className="h-4 w-4 text-red-600" /> Reject {dialog.ret.returnNumber}</>
                   )}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   {dialog.action === 'approve'
                     ? 'Approving records a real decision (audit-logged). You may set the refund amount — clear the field to keep the buyer\u2019s original estimate. No money moves from this queue.'
                     : 'Rejecting records a real decision (audit-logged). A note of at least 3 characters is required — the buyer will see it on their order.'}
@@ -742,7 +742,7 @@ export function AdminReturnsPage() {
               </DialogHeader>
 
               <div className="space-y-3 py-1">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Order {dialog.ret.order?.orderNumber ?? '—'} · {dialog.ret.items.length} item{dialog.ret.items.length === 1 ? '' : 's'} · estimated refund {formatPrice(dialog.ret.estimatedRefund)}
                 </div>
 
@@ -772,7 +772,7 @@ export function AdminReturnsPage() {
                     className="min-h-[80px] rounded-xl text-xs"
                   />
                   {dialog.action === 'reject' && (
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500">{note.trim().length}/3 characters minimum</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{note.trim().length}/3 characters minimum</p>
                   )}
                 </div>
 
@@ -816,7 +816,7 @@ export function AdminReturnsPage() {
                 <DialogTitle className="text-sm font-black flex items-center gap-2">
                   <Banknote className="h-4 w-4 text-emerald-600" /> Record refund — {refundDialog.ret.returnNumber}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Only record a refund AFTER the money actually left — via bank transfer, mobile banking, or cash.
                   This writes a real ledger row and marks the return refunded. It does not move money, and the order&rsquo;s
                   payment status is never modified.
@@ -824,7 +824,7 @@ export function AdminReturnsPage() {
               </DialogHeader>
 
               <div className="space-y-3 py-1">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Order {refundDialog.ret.order?.orderNumber ?? '—'} · estimate {formatPrice(refundDialog.ret.estimatedRefund)}
                   {' '}· remaining <span className="font-bold tabular-nums">{formatPrice(refundDialog.ret.refundRemaining)}</span>
                 </div>
@@ -838,7 +838,7 @@ export function AdminReturnsPage() {
                     onChange={(e) => setRefundAmount(e.target.value)}
                     className="h-10 rounded-xl text-xs"
                   />
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                     Prefilled with the stored estimate. Must be &gt; 0 and ≤ {formatPrice(refundDialog.ret.refundRemaining)} (estimate minus what is already refunded).
                   </p>
                 </div>
@@ -866,7 +866,7 @@ export function AdminReturnsPage() {
                     placeholder="e.g. UTR / TxnID from the transfer receipt"
                     className="h-10 rounded-xl text-xs font-mono"
                   />
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Transaction ID / UTR from the real transfer — no reference, no refund record.</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Transaction ID / UTR from the real transfer — no reference, no refund record.</p>
                 </div>
 
                 <div className="space-y-1.5">

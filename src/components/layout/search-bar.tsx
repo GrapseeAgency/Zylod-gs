@@ -100,9 +100,9 @@ function LanguagePickerInner({
   if (!show) return null
   return (
     <div
-      className="absolute top-full left-0 mt-1 bg-card border border-gray-200 rounded-lg shadow-xl z-50 p-2 min-w-[160px]"
+      className="absolute top-full left-0 mt-1 bg-card border border-gray-200 dark:border-gray-800 rounded-lg shadow-xl z-50 p-2 min-w-[160px]"
     >
-      <p className="text-[10px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Voice Language</p>
+      <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-1.5 uppercase tracking-wider">Voice Language</p>
       <div className="flex flex-col gap-1">
         {SUPPORTED_LANGUAGES.map((lang) => (
           <button
@@ -276,7 +276,7 @@ export function SearchBar({
         className="hidden md:flex flex-1 max-w-lg ml-2"
       >
         <div className="relative flex items-center w-full">
-          <Search className="absolute left-3 h-4 w-4 text-gray-400 pointer-events-none" />
+          <Search className="absolute left-3 h-4 w-4 text-gray-400 dark:text-gray-500 pointer-events-none" />
           <input
             type="text"
             placeholder={isListening ? '🎤 Listening... Speak now' : 'Search products, suppliers...'}
@@ -358,7 +358,7 @@ export function SearchBar({
           <div className="flex items-center gap-2">
             <form onSubmit={(e) => { onSearchSubmit(e); onMobileSearchToggle(false) }} className="flex-1">
               <div className="relative flex items-center">
-                <Search className="absolute left-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Search className="absolute left-3 h-4 w-4 text-gray-400 dark:text-gray-500 pointer-events-none" />
                 <input
                   ref={searchInputRef}
                   type="text"

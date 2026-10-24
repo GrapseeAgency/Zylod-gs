@@ -42,10 +42,10 @@ export function EventsPage() {
         <div className="max-w-3xl mx-auto md:max-w-5xl">
           <div className="flex items-center gap-2 mb-1">
             <CalendarDays className="h-5 w-5 text-primary" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Zylod Events</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Zylod Events</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-black tracking-tight">Trade Events & Trade Fairs</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-2xl">
+          <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-2xl">
             Trade fairs, buyer meetups, and supplier exhibitions across Bangladesh's wholesale hubs.
           </p>
         </div>
@@ -60,7 +60,7 @@ export function EventsPage() {
           <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
             <CalendarDays className="h-12 w-12 mx-auto text-slate-300 mb-3" />
             <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No events scheduled right now</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
               Trade fairs and buyer meetups will be announced here. Check back soon.
             </p>
             <Button
@@ -84,8 +84,8 @@ export function EventsPage() {
               >
                 <div className="space-y-1.5">
                   <h2 className="text-sm md:text-base font-bold text-slate-900 dark:text-slate-100">{event.title}</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{event.description}</p>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">{event.description}</p>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                     <span className="flex items-center gap-1">
                       <CalendarDays className="h-3 w-3" />
                       {new Date(event.startsAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })}

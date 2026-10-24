@@ -213,7 +213,7 @@ export function SellerLiveConsolePage() {
     >
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Go Live console</h1>
@@ -223,7 +223,7 @@ export function SellerLiveConsolePage() {
         <div className="hidden md:flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Go Live console</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
               Schedule factory-floor broadcasts, feature your own products, and control when the room is actually live.
             </p>
           </div>
@@ -252,7 +252,7 @@ export function SellerLiveConsolePage() {
             <CardContent className="p-8 text-center space-y-3">
               <Radio className="w-10 h-10 text-gray-300 mx-auto" />
               <h2 className="text-base font-bold dark:text-white">Seller sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Sign in with a supplier account to schedule and control broadcasts.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Sign in with a supplier account to schedule and control broadcasts.</p>
               <button onClick={() => navigate('login')} className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground">
                 Sign In
               </button>
@@ -260,7 +260,7 @@ export function SellerLiveConsolePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : data ? (
           <>
@@ -273,7 +273,7 @@ export function SellerLiveConsolePage() {
                     <span className="text-xs font-medium">Live now</span>
                   </div>
                   <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="live-console-live-now">{data.stats.liveNow}</p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">rooms open to buyers</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">rooms open to buyers</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800">
@@ -283,7 +283,7 @@ export function SellerLiveConsolePage() {
                     <span className="text-xs font-medium">Scheduled</span>
                   </div>
                   <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="live-console-scheduled">{data.stats.scheduled}</p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">waiting to go live</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">waiting to go live</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800">
@@ -293,7 +293,7 @@ export function SellerLiveConsolePage() {
                     <span className="text-xs font-medium">Ended</span>
                   </div>
                   <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="live-console-ended">{data.stats.ended}</p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">archived sessions</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">archived sessions</p>
                 </CardContent>
               </Card>
             </div>
@@ -332,17 +332,17 @@ export function SellerLiveConsolePage() {
                     <button type="button" onClick={() => setPickerOpen(o => !o)} className="flex items-center gap-2 text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-primary" aria-expanded={pickerOpen}>
                       <PackageSearch className="h-4 w-4" />
                       Featured products {selectedIds.length > 0 && <Badge className="text-[10px]">{selectedIds.length} selected</Badge>}
-                      <span className="text-[11px] text-gray-500 dark:text-gray-400 font-normal">(your own active listings)</span>
+                      <span className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-normal">(your own active listings)</span>
                     </button>
                     {pickerOpen && (
                       <div className="max-h-48 overflow-y-auto rounded-md border dark:border-gray-700 divide-y dark:divide-gray-700">
                         {picker.length === 0 ? (
-                          <p className="p-3 text-xs text-gray-500 dark:text-gray-400">No active products found — approve listings first, or schedule without featured products.</p>
+                          <p className="p-3 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">No active products found — approve listings first, or schedule without featured products.</p>
                         ) : picker.map(p => (
-                          <label key={p.id} className="flex items-center gap-3 p-3 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-700/50">
+                          <label key={p.id} className="flex items-center gap-3 p-3 text-sm cursor-pointer hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:bg-gray-700/50">
                             <Checkbox checked={selectedIds.includes(p.id)} onCheckedChange={() => toggleProduct(p.id)} aria-label={`Feature ${p.name}`} />
                             <span className="flex-1 truncate text-gray-800 dark:text-gray-200">{p.name}</span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400 tabular-nums whitespace-nowrap">{bdt(p.basePrice)}</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 tabular-nums whitespace-nowrap">{bdt(p.basePrice)}</span>
                           </label>
                         ))}
                       </div>
@@ -358,7 +358,7 @@ export function SellerLiveConsolePage() {
                       {creating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CalendarClock className="h-4 w-4 mr-2" />}
                       Schedule broadcast
                     </Button>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       A schedule is NOT live — buyers see it as upcoming until you press Start.
                     </p>
                   </div>
@@ -372,7 +372,7 @@ export function SellerLiveConsolePage() {
                 <CardContent className="p-10 text-center space-y-2">
                   <Inbox className="w-10 h-10 text-gray-300 mx-auto" />
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No broadcasts yet</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     Schedule your first factory-floor walkthrough — buyers watch from the Live Shopping page.
                   </p>
                 </CardContent>
@@ -394,13 +394,13 @@ export function SellerLiveConsolePage() {
                         )}
                         <h3 className="font-semibold text-gray-900 dark:text-gray-100 dark:text-white text-sm flex-1 min-w-40">{s.title}</h3>
                         {s.isLive && (
-                          <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400" title="Live viewers">
+                          <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500" title="Live viewers">
                             <Eye className="h-3.5 w-3.5" /> {s.viewerCount}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300 line-clamp-2">{s.description}</p>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 line-clamp-2">{s.description}</p>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         <span className="flex items-center gap-1"><CalendarClock className="h-3 w-3" /> Scheduled: {fmtDateTime(s.scheduledAt)}</span>
                         {s.endedAt && <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Ended: {fmtDateTime(s.endedAt)}</span>}
                       </div>
@@ -430,7 +430,7 @@ export function SellerLiveConsolePage() {
                             Go live
                           </Button>
                         ) : (
-                          <span className="text-[11px] text-gray-400 dark:text-gray-500">Session archived</span>
+                          <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Session archived</span>
                         )}
                         <Button size="sm" variant="ghost" onClick={() => navigate('live-shopping-detail', { id: s.id })}>
                           <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Public room

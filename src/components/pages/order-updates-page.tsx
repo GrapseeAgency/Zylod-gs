@@ -94,7 +94,7 @@ export function OrderUpdatesPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -159,7 +159,7 @@ export function OrderUpdatesPage() {
               <ShoppingBag className="w-8 h-8" />
             </div>
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No order updates yet</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
               Real-time progress, shipment tracking, and delivery receipts for your wholesale purchases will appear here.
             </p>
             <div className="pt-2">
@@ -194,7 +194,7 @@ export function OrderUpdatesPage() {
                       {item.order?.orderNumber || item.title}
                     </span>
                     {item.order?.supplierName && (
-                      <p className="text-[11px] text-gray-400 dark:text-gray-500">Supplier: {item.order.supplierName}</p>
+                      <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Supplier: {item.order.supplierName}</p>
                     )}
                   </div>
                 </div>
@@ -209,7 +209,7 @@ export function OrderUpdatesPage() {
               </p>
 
               <div className="flex items-center justify-between pt-2 border-t border-gray-50 text-xs">
-                <span className="text-gray-400 dark:text-gray-500 text-[11px]">
+                <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400 text-[11px]">
                   {new Date(item.timestamp).toLocaleString('en-GB', {
                     day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
                   })}
@@ -245,20 +245,20 @@ export function OrderUpdatesPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-950 text-left">
-                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">Order</th>
-                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">Update</th>
-                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">Status</th>
-                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">Date</th>
-                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 text-right">Action</th>
+                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500">Order</th>
+                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500">Update</th>
+                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500">Status</th>
+                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500">Date</th>
+                  <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {updates.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={item.id} className="hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800">
                     <td className="px-4 py-3">
                       <span className="text-xs font-bold text-gray-900 dark:text-gray-100 block">{item.order?.orderNumber || item.title}</span>
                       {item.order?.supplierName && (
-                        <span className="text-[11px] text-gray-400 dark:text-gray-500 block mt-0.5">Supplier: {item.order.supplierName}</span>
+                        <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 block mt-0.5">Supplier: {item.order.supplierName}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 max-w-xs">
@@ -267,7 +267,7 @@ export function OrderUpdatesPage() {
                     <td className="px-4 py-3">
                       {getStatusBadge(item.order?.status)}
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 whitespace-nowrap">
                       {new Date(item.timestamp).toLocaleString('en-GB', {
                         day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
                       })}

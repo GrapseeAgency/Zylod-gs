@@ -405,7 +405,7 @@ export function AdminCategoriesPage() {
             <button
               onClick={() => toggleExpanded(cat.id)}
               aria-label={isOpen ? `Collapse children of ${cat.name}` : `Expand children of ${cat.name}`}
-              className="min-h-11 w-8 shrink-0 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-200"
+              className="min-h-11 w-8 shrink-0 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200"
             >
               {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </button>
@@ -428,7 +428,7 @@ export function AdminCategoriesPage() {
               </Badge>
             </div>
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 break-all">/{cat.slug}</span>
+              <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 break-all">/{cat.slug}</span>
               <span className={chipClass}>{cat.productCount} product{cat.productCount === 1 ? '' : 's'}</span>
               {cat.childrenCount > 0 && <span className={chipClass}>{cat.childrenCount} subcategor{cat.childrenCount === 1 ? 'y' : 'ies'}</span>}
               <span className={chipClass}>sort {cat.sortOrder}</span>
@@ -483,7 +483,7 @@ export function AdminCategoriesPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Category management is restricted to Zylod admins. Sign in with an admin account to create, edit or delete marketplace categories.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">Category management is restricted to Zylod admins. Sign in with an admin account to create, edit or delete marketplace categories.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -506,12 +506,12 @@ export function AdminCategoriesPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Category Management</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">Create, edit, reorder and deactivate the real marketplace categories buyers browse. Every action is a real, audit-logged database change.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Create, edit, reorder and deactivate the real marketplace categories buyers browse. Every action is a real, audit-logged database change.</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {lastUpdated && (
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
           )}
           <Button
             variant="outline"
@@ -534,7 +534,7 @@ export function AdminCategoriesPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {statChips.map((chip) => (
           <div key={chip.label} className="rounded-2xl bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
-            <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500">{chip.label}</p>
+            <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">{chip.label}</p>
             <p className="text-lg font-black text-slate-800 dark:text-slate-200 tabular-nums">
               {chip.value == null ? '—' : chip.value.toLocaleString('en-BD')}
             </p>
@@ -570,9 +570,9 @@ export function AdminCategoriesPage() {
       ) : categories.length === 0 ? (
         // Honest empty state — the categories table truly holds zero rows
         <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
-          <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 mx-auto" />
+          <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 dark:text-slate-300 mx-auto" />
           <h2 className="text-sm font-black">No categories yet</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
             Buyers see an empty category tree until suppliers/you create real ones. Use “New category” to add the first real category — nothing is seeded or faked here.
           </p>
         </div>
@@ -580,8 +580,8 @@ export function AdminCategoriesPage() {
         <div className="space-y-3">
           <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
             <div className="px-4 pt-3 flex items-center gap-1.5">
-              <FolderTree className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
-              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Category tree</p>
+              <FolderTree className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Category tree</p>
             </div>
             <div className="max-h-[70vh] overflow-y-auto scrollbar-thin divide-y divide-slate-100 dark:divide-slate-800 px-4 pb-3 mt-1">
               {tree.map((node) => renderNode(node, 0))}
@@ -590,7 +590,7 @@ export function AdminCategoriesPage() {
 
           {hiddenDeeperCount > 0 && (
             <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4">
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
                 · {hiddenDeeperCount} categor{hiddenDeeperCount === 1 ? 'y is' : 'ies are'} nested deeper than 3 levels and {hiddenDeeperCount === 1 ? 'is' : 'are'} not shown in this tree. They still exist in the database and remain reachable via Edit on their ancestors.
               </p>
             </div>
@@ -600,7 +600,7 @@ export function AdminCategoriesPage() {
           {dataNotes.length > 0 && (
             <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-1">
               {dataNotes.map((noteLine, i) => (
-                <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">· {noteLine}</p>
+                <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">· {noteLine}</p>
               ))}
             </div>
           )}
@@ -620,7 +620,7 @@ export function AdminCategoriesPage() {
                     <><Pencil className="h-4 w-4 text-primary" /> Edit “{editCat?.name ?? ''}”</>
                   )}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   {form.mode === 'create'
                     ? 'Creates a real category row (audit-logged). Buyers only see active categories.'
                     : `Created ${editCat ? formatTimestamp(editCat.createdAt) : ''} · ${editCat?.productCount ?? 0} product${editCat?.productCount === 1 ? '' : 's'} · /${editCat?.slug ?? ''}`}
@@ -650,7 +650,7 @@ export function AdminCategoriesPage() {
                     maxLength={80}
                     className="h-10 rounded-xl text-xs font-mono"
                   />
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Lowercase letters, numbers and hyphens. Must be unique — a collision is refused with the real existing category named.</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Lowercase letters, numbers and hyphens. Must be unique — a collision is refused with the real existing category named.</p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -663,13 +663,13 @@ export function AdminCategoriesPage() {
                       <SelectItem value="top" className="text-xs">Top level (no parent)</SelectItem>
                       {parentOptions.map((c) => (
                         <SelectItem key={c.id} value={c.id} className="text-xs">
-                          {c.name} <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">/{c.slug}</span>
+                          {c.name} <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">/{c.slug}</span>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   {form.mode === 'edit' && (
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       Current parent: {form.category?.parentName ?? 'none (top level)'} · the category itself and its subcategories are not offered as parents (that would create a cycle).
                     </p>
                   )}
@@ -694,7 +694,7 @@ export function AdminCategoriesPage() {
                         checked={form.isActive}
                         onCheckedChange={(checked) => setForm((f) => (f ? { ...f, isActive: checked } : f))}
                       />
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500">{form.isActive ? 'Visible to buyers' : 'Hidden from buyers'}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{form.isActive ? 'Visible to buyers' : 'Hidden from buyers'}</span>
                     </div>
                   </div>
                 </div>
@@ -743,14 +743,14 @@ export function AdminCategoriesPage() {
                 <DialogTitle className="text-sm font-black flex items-center gap-2">
                   <Trash2 className="h-4 w-4 text-red-600" /> Delete “{deleting.name}”?
                 </DialogTitle>
-                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   This permanently deletes the real category row (audit-logged). Deletion is refused if the category still has products or subcategories.
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-3 py-1">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">/{deleting.slug}</span>
+                  <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">/{deleting.slug}</span>
                   <span className={chipClass}>{deleting.productCount} product{deleting.productCount === 1 ? '' : 's'}</span>
                   <span className={chipClass}>{deleting.childrenCount} subcategor{deleting.childrenCount === 1 ? 'y' : 'ies'}</span>
                   <Badge

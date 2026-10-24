@@ -261,7 +261,7 @@ export function AdminBuyerPayoutsManager() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 max-w-sm mx-auto">This queue is restricted to Zylod finance admins. Sign in with an admin account to decide buyer withdrawals.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This queue is restricted to Zylod finance admins. Sign in with an admin account to decide buyer withdrawals.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -277,10 +277,10 @@ export function AdminBuyerPayoutsManager() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Buyer Withdrawals</h1>
-            <p className="text-[11px] text-slate-400">Buyers&rsquo; money-out requests from their sourcing fund. Completing debits the wallet with a transfer reference on record; rejecting frees the hold — nothing moves. Decisions are terminal.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">Buyers&rsquo; money-out requests from their sourcing fund. Completing debits the wallet with a transfer reference on record; rejecting frees the hold — nothing moves. Decisions are terminal.</p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => loadPayouts({ background: true })} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700">
+        <Button variant="outline" onClick={() => loadPayouts({ background: true })} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
         </Button>
       </div>
@@ -296,14 +296,14 @@ export function AdminBuyerPayoutsManager() {
           <button
             key={key}
             onClick={() => switchTab(STATUS_TABS.some((t) => t.key === key) ? key : 'all')}
-            className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left hover:border-slate-300 dark:hover:border-slate-700 transition"
+            className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left hover:border-slate-300 dark:hover:border-slate-700 transition"
           >
             <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider ${tone}`}>
               <Icon className="h-3.5 w-3.5" /> {label}
             </div>
             <p className="text-xl font-black mt-1">{stats ? stats[key] : '--'}</p>
             {key === 'pending' && stats ? (
-              <p className="text-[10px] text-slate-400 font-bold mt-0.5">{formatPrice(stats.pendingAmount)} on hold</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">{formatPrice(stats.pendingAmount)} on hold</p>
             ) : null}
           </button>
         ))}
@@ -326,11 +326,11 @@ export function AdminBuyerPayoutsManager() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-16 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load the queue</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -339,12 +339,12 @@ export function AdminBuyerPayoutsManager() {
           </Button>
         </div>
       ) : rows.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           {statusTab === 'pending' ? (
             <>
               <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
               <h2 className="text-sm font-black">No buyer withdrawals awaiting a decision</h2>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 Buyer money-out requests appear here the moment POST /api/buyer/withdrawals records them. The requested amount is HELD, not debited, until you decide.
               </p>
             </>
@@ -352,52 +352,52 @@ export function AdminBuyerPayoutsManager() {
             <>
               <Wallet className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No {statusTab} withdrawals</h2>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">This tab reflects the real buyerPayouts table — counts in the strip above are platform-wide.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This tab reflects the real buyerPayouts table — counts in the strip above are platform-wide.</p>
             </>
           )}
         </div>
       ) : (
         <div className="space-y-2">
           {/* Desktop table */}
-          <div className="hidden md:block bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="hidden md:block bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
             <table className="w-full text-xs">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-950 text-left">
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Buyer</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Method</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Destination</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Amount</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Status</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400">Requested</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Action</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Buyer</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Method</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Destination</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 text-right">Amount</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Requested</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {rows.map((p) => {
                   const PIcon = methodIcon(p.method)
                   return (
-                    <tr key={p.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-950/40">
+                    <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-950/60 dark:hover:bg-slate-950/40">
                       <td className="px-3 py-2.5">
                         <span className="font-black block max-w-[160px] truncate">{p.claimant.displayName || '--'}</span>
-                        <span className="text-[9px] text-slate-400 block truncate">{p.claimant.email || ''}</span>
+                        <span className="text-[9px] text-slate-400 dark:text-slate-500 block truncate">{p.claimant.email || ''}</span>
                       </td>
                       <td className="px-3 py-2.5 capitalize">
-                        <span className="inline-flex items-center gap-1.5"><PIcon className="h-3.5 w-3.5 text-slate-400" />{p.method}</span>
+                        <span className="inline-flex items-center gap-1.5"><PIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />{p.method}</span>
                       </td>
-                      <td className="px-3 py-2.5 font-mono max-w-[220px] truncate text-slate-500">{p.destination || '--'}</td>
+                      <td className="px-3 py-2.5 font-mono max-w-[220px] truncate text-slate-500 dark:text-slate-400 dark:text-slate-500">{p.destination || '--'}</td>
                       <td className="px-3 py-2.5 text-right font-black whitespace-nowrap">
                         {formatPrice(p.amount)}
-                        {p.reference ? <span className="block text-[9px] text-slate-400 font-normal">ref {p.reference}</span> : null}
+                        {p.reference ? <span className="block text-[9px] text-slate-400 dark:text-slate-500 font-normal">ref {p.reference}</span> : null}
                       </td>
                       <td className="px-3 py-2.5"><StatusChip status={p.status} /></td>
-                      <td className="px-3 py-2.5 text-slate-400 whitespace-nowrap">{formatDate(p.createdAt)}</td>
+                      <td className="px-3 py-2.5 text-slate-400 dark:text-slate-500 whitespace-nowrap">{formatDate(p.createdAt)}</td>
                       <td className="px-3 py-2.5 text-right whitespace-nowrap">
                         {p.status === 'pending' || p.status === 'processing' ? (
                           <Button onClick={() => setExpandedId(expandedId === p.id ? null : p.id)} className="h-8 px-3 rounded-lg text-[11px] font-bold bg-primary hover:bg-primary/90 text-white gap-1">
                             {expandedId === p.id ? <><ChevronUp className="h-3 w-3" /> Close</> : <>Decide</>}
                           </Button>
                         ) : (
-                          <span className="text-[10px] text-slate-400">decided {formatDate(p.processedAt)}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500">decided {formatDate(p.processedAt)}</span>
                         )}
                       </td>
                     </tr>
@@ -412,11 +412,11 @@ export function AdminBuyerPayoutsManager() {
             {rows.map((p) => {
               const PIcon = methodIcon(p.method)
               return (
-                <div key={p.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2">
+                <div key={p.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="text-xs font-black truncate">{p.claimant.displayName || '--'}</p>
-                      <p className="text-[11px] text-slate-400 truncate">{p.claimant.email || ''}</p>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{p.claimant.email || ''}</p>
                     </div>
                     <StatusChip status={p.status} />
                   </div>
@@ -424,10 +424,10 @@ export function AdminBuyerPayoutsManager() {
                     <span className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 capitalize inline-flex items-center gap-1"><PIcon className="h-3 w-3" />{p.method}</span>
                     {p.reference ? <span className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 font-mono">ref {p.reference}</span> : null}
                   </div>
-                  <p className="text-[10px] text-slate-500 font-mono break-all">{p.destination || '--'}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono break-all">{p.destination || '--'}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-black text-primary">{formatPrice(p.amount)}</span>
-                    <span className="text-[10px] text-slate-400">{formatDate(p.createdAt)}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500">{formatDate(p.createdAt)}</span>
                   </div>
                   {(p.status === 'pending' || p.status === 'processing') && (
                     <div className="grid grid-cols-2 gap-2 pt-1">
@@ -446,7 +446,7 @@ export function AdminBuyerPayoutsManager() {
             if (!p || (p.status !== 'pending' && p.status !== 'processing')) return null
             return (
               <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3">
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Decide the withdrawal for <span className="font-bold text-slate-800 dark:text-slate-200">{p.claimant.displayName || p.claimant.email || 'this buyer'}</span> — settle only after the transfer really left the account ({p.method}, <span className="font-mono">{p.destination || 'destination on file'}</span>).
                 </p>
                 <div className="flex gap-2">
@@ -460,7 +460,7 @@ export function AdminBuyerPayoutsManager() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400">{total} withdrawal{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500">{total} withdrawal{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); loadPayouts({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const p = page + 1; setPage(p); loadPayouts({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>
@@ -489,7 +489,7 @@ export function AdminBuyerPayoutsManager() {
               <div className="space-y-3">
                 {dialogTarget.action === 'complete' && (
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Transfer reference (TRXID / bank ref) *</label>
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Transfer reference (TRXID / bank ref) *</label>
                     <Input
                       value={dialogReference}
                       onChange={(e) => setDialogReference(e.target.value)}
@@ -500,7 +500,7 @@ export function AdminBuyerPayoutsManager() {
                   </div>
                 )}
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Decision note (optional)</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Decision note (optional)</label>
                   <Input
                     value={dialogNote}
                     onChange={(e) => setDialogNote(e.target.value)}

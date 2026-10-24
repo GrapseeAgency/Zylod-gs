@@ -145,7 +145,7 @@ export function AdminUsersPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">User management is restricted to Zylod admins. Sign in with an admin account.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">User management is restricted to Zylod admins. Sign in with an admin account.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -168,7 +168,7 @@ export function AdminUsersPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">User Management</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500">All registered accounts with real order/review counts. Suspend, ban, or reactivate — every action is audit-logged.</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">All registered accounts with real order/review counts. Suspend, ban, or reactivate — every action is audit-logged.</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => loadUsers()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
@@ -198,7 +198,7 @@ export function AdminUsersPage() {
           <option value="banned">Banned</option>
         </select>
         <div className="relative flex-1 min-w-[200px] max-w-sm ml-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -235,7 +235,7 @@ export function AdminUsersPage() {
         <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           <Users className="h-10 w-10 text-slate-300 mx-auto" />
           <h2 className="text-sm font-black">No users found</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
             {search || role || status
               ? 'No accounts match the current filters. Adjust the role/status filters or search term.'
               : 'No accounts are registered yet. New buyers and suppliers appear here the moment they sign up.'}
@@ -258,14 +258,14 @@ export function AdminUsersPage() {
                         {u.accountStatus}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 truncate mt-0.5">
                       {u.email || u.phone || 'no contact on file'}
-                      <span className="text-slate-300 dark:text-slate-600"> · </span>
+                      <span className="text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500"> · </span>
                       <span className="capitalize">{u.userType}</span>
                       {u.userType === 'supplier' && u.verificationStatus ? ` · ${u.verificationStatus}` : ''}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3 text-[10px] text-slate-400 dark:text-slate-500 min-w-[150px]">
+                  <div className="flex items-center gap-3 text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 min-w-[150px]">
                     <span>{u.orderCount} order{u.orderCount === 1 ? '' : 's'}</span>
                     <span>{u.reviewCount} review{u.reviewCount === 1 ? '' : 's'}</span>
                     <span>{new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
@@ -287,7 +287,7 @@ export function AdminUsersPage() {
                     )}
                     <button
                       onClick={() => { setDetailsId(showDetails ? null : u.id); setRowError('') }}
-                      className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200"
+                      className="p-2 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
                       title={showDetails ? 'Hide details' : 'Show details'}
                     >
                       {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -300,16 +300,16 @@ export function AdminUsersPage() {
                   <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
                     {/* Real account details */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px]">
-                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Contact</span><span className="font-bold break-all">{u.email || '--'}</span><span className="block text-slate-400 dark:text-slate-500">{u.phone || ''}</span></div>
-                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Verified</span><span className="font-bold">Email: {u.isEmailVerified ? 'yes' : 'no'} · Phone: {u.isPhoneVerified ? 'yes' : 'no'}</span></div>
-                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Activity</span><span className="font-bold">{u.orderCount} orders · {u.reviewCount} reviews · {u.quoteRequestCount} RFQs</span></div>
-                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Supplier rating</span><span className="font-bold">{u.userType === 'supplier' && u.ratingAvg > 0 ? u.ratingAvg.toFixed(1) : '--'}</span></div>
+                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Contact</span><span className="font-bold break-all">{u.email || '--'}</span><span className="block text-slate-400 dark:text-slate-500 dark:text-slate-400">{u.phone || ''}</span></div>
+                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Verified</span><span className="font-bold">Email: {u.isEmailVerified ? 'yes' : 'no'} · Phone: {u.isPhoneVerified ? 'yes' : 'no'}</span></div>
+                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Activity</span><span className="font-bold">{u.orderCount} orders · {u.reviewCount} reviews · {u.quoteRequestCount} RFQs</span></div>
+                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Supplier rating</span><span className="font-bold">{u.userType === 'supplier' && u.ratingAvg > 0 ? u.ratingAvg.toFixed(1) : '--'}</span></div>
                     </div>
 
                     {/* Action confirm panel — only when an action button was clicked for THIS row */}
                     {isActionTarget && (
                       <div className="space-y-2.5">
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                           {action === 'ban' && 'Banning permanently blocks this account. Provide a reason — it is recorded in the audit log.'}
                           {action === 'suspend' && 'Suspending temporarily blocks this account. Provide a reason — it is recorded in the audit log.'}
                           {action === 'activate' && 'Reactivating restores full access to this account.'}
@@ -344,7 +344,7 @@ export function AdminUsersPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400 dark:text-slate-500">{total} account{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{total} account{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); loadUsers({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const p = page + 1; setPage(p); loadUsers({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>

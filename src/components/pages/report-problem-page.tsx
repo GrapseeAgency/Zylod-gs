@@ -72,7 +72,7 @@ export function ReportProblemPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Report a Technical Problem</span>
@@ -92,7 +92,7 @@ export function ReportProblemPage() {
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Problem Report Logged</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-sm mx-auto">
                 Thank you for helping us make Zylod more reliable. Our engineering team has received your diagnostic report and is working on a fix.
               </p>
               <button
@@ -112,7 +112,7 @@ export function ReportProblemPage() {
                   <Bug className="w-4 h-4 text-red-600" />
                   What went wrong?
                 </h2>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Let us know what bug or glitch occurred on the platform.</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-0.5">Let us know what bug or glitch occurred on the platform.</p>
               </div>
 
               {errorMsg && (
@@ -162,10 +162,10 @@ export function ReportProblemPage() {
               {/* Auto Diagnostics Box */}
               <div className="bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-gray-800 rounded-2xl p-3.5 space-y-2">
                 <p className="text-[11px] font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
-                  <Laptop className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
+                  <Laptop className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
                   Auto-Captured Diagnostics (Included automatically)
                 </p>
-                <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-500 dark:text-gray-400 font-mono bg-white dark:bg-gray-900 p-2 rounded-xl border border-gray-100 dark:border-gray-800">
+                <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-mono bg-white dark:bg-gray-900 p-2 rounded-xl border border-gray-100 dark:border-gray-800">
                   <div>Platform: {systemInfo.platform || 'Linux'}</div>
                   <div>Screen: {systemInfo.screen || '1920x1080'}</div>
                   <div>Language: {systemInfo.language || 'en'}</div>

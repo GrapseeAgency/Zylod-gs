@@ -77,10 +77,10 @@ export function SearchFiltersPage() {
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 md:px-6">
         <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100 pb-3">Filter &amp; Sort</h1>
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
           <span className="font-semibold text-gray-900 dark:text-gray-100 flex-1 md:text-lg">Filter & Sort</span>
-          <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            {layout === 'grid' ? <LayoutList className="w-4 h-4 text-gray-600 dark:text-gray-400" /> : <LayoutGrid className="w-4 h-4 text-gray-600 dark:text-gray-400" />}
+          <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
+            {layout === 'grid' ? <LayoutList className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" /> : <LayoutGrid className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />}
           </button>
           <button onClick={() => setOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-900 hover:bg-red-50 text-sm font-medium text-gray-700 dark:text-gray-300 relative">
             <SlidersHorizontal className="w-4 h-4" />
@@ -88,7 +88,7 @@ export function SearchFiltersPage() {
             {activeCount > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white text-xs rounded-full flex items-center justify-center">{activeCount}</span>}
           </button>
         </div>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">{loading ? 'Loading...' : `${total} products found`}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-2">{loading ? 'Loading...' : `${total} products found`}</p>
       </div>
 
       {/* Active filter chips */}
@@ -109,7 +109,7 @@ export function SearchFiltersPage() {
               Max: {formatPrice(Number(filters.maxPrice))}<button onClick={() => applyFilter('maxPrice', '')}><X className="w-3 h-3 ml-1" /></button>
             </span>
           )}
-          <button onClick={resetFilters} className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400 underline flex-shrink-0">Clear all</button>
+          <button onClick={resetFilters} className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 underline flex-shrink-0">Clear all</button>
         </div>
       )}
 
@@ -122,7 +122,7 @@ export function SearchFiltersPage() {
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 gap-3">
             <Filter className="w-12 h-12 text-gray-200" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">No products match your filters</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">No products match your filters</p>
             <button onClick={resetFilters} className="text-sm text-red-600 font-medium">Clear filters</button>
           </div>
         ) : layout === 'grid' ? (
@@ -138,7 +138,7 @@ export function SearchFiltersPage() {
                 <div className="p-2.5">
                   <p className="text-xs font-medium text-gray-800 dark:text-gray-200 line-clamp-2">{p.name}</p>
                   <p className="text-sm font-bold text-red-600 mt-1">{formatPrice(p.basePrice)}/{p.unit}</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">MOQ: {p.moq}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">MOQ: {p.moq}</p>
                 </div>
               </motion.button>
             ))}
@@ -149,13 +149,13 @@ export function SearchFiltersPage() {
               <motion.button key={p.id}
                 initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.03 }}
                 onClick={() => navigate('product-detail', { productId: p.id })}
-                className="w-full flex gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-left">
+                className="w-full flex gap-3 px-4 py-3 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition text-left">
                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-900 rounded-xl overflow-hidden flex-shrink-0">
                   {p.thumbnailUrl && <img src={p.thumbnailUrl} alt={p.name} className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-800 dark:text-gray-200 line-clamp-2">{p.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{p.supplier.companyName}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{p.supplier.companyName}</p>
                   <p className="text-sm font-bold text-red-600 mt-1">{formatPrice(p.basePrice)}/{p.unit}</p>
                 </div>
               </motion.button>
@@ -177,8 +177,8 @@ export function SearchFiltersPage() {
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-gray-800">
               <span className="font-semibold text-gray-900 dark:text-gray-100">Filters</span>
               <div className="flex gap-3">
-                <button onClick={resetFilters} className="text-sm text-gray-500 dark:text-gray-400">Reset</button>
-                <button onClick={() => setOpen(false)} className="p-1"><X className="w-4 h-4 text-gray-600 dark:text-gray-400" /></button>
+                <button onClick={resetFilters} className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Reset</button>
+                <button onClick={() => setOpen(false)} className="p-1"><X className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" /></button>
               </div>
             </div>
             <div className="px-4 py-4 space-y-4">

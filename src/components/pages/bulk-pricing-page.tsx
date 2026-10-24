@@ -150,7 +150,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
           <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
             Bulk Pricing Calculator
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 leading-relaxed">
             Adjust quantity to see real-time volume discounts for {product?.name || 'industrial parts'} (SKU: {product?.sku || 'IN-B-998'}).
           </p>
 
@@ -184,7 +184,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1">{product.name}</h3>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                 Supplier: {product.supplierName} • Verified Supplier
               </p>
               <p className="text-xs font-bold text-primary mt-1">
@@ -213,7 +213,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
             className="py-2"
           />
 
-          <div className="flex justify-between text-[10px] text-slate-400 dark:text-slate-500 font-bold px-1">
+          <div className="flex justify-between text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold px-1">
             <span>1</span>
             <span>250</span>
             <span>500</span>
@@ -228,7 +228,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
                 CURRENT TIER: TIER {activeTier.id} ({activeTier.label})
               </span>
               <div className="text-xl md:text-3xl font-black text-slate-900 dark:text-slate-100">
-                {formatPrice(activeTier.price)} <span className="text-xs font-normal text-slate-500 dark:text-slate-400">/ unit</span>
+                {formatPrice(activeTier.price)} <span className="text-xs font-normal text-slate-500 dark:text-slate-400 dark:text-slate-500">/ unit</span>
               </div>
               {activeTier.discountPercent > 0 && (
                 <div className="text-xs font-bold text-primary flex items-center justify-center gap-1">
@@ -247,7 +247,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
           </div>
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 text-[10px] font-black uppercase text-slate-400 dark:text-slate-500">
+              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70 text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400">
                 <th className="p-3">Quantity</th>
                 <th className="p-3">Unit Price</th>
                 <th className="p-3">Discount</th>
@@ -288,17 +288,17 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
           <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Order Summary</h3>
 
           <div className="space-y-2 text-xs divide-y divide-slate-50">
-            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400">
+            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <span>Base Price (1 unit)</span>
               <span className="font-semibold text-slate-800 dark:text-slate-200">{formatPrice(product?.basePrice || 12.5)}</span>
             </div>
-            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400">
+            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <span>Quantity</span>
               <span className="font-semibold text-slate-800 dark:text-slate-200">{quantity.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400">
+            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
               <span>Subtotal (Base)</span>
-              <span className="line-through text-slate-400 dark:text-slate-500">{formatPrice(baseSubtotal)}</span>
+              <span className="line-through text-slate-400 dark:text-slate-500 dark:text-slate-400">{formatPrice(baseSubtotal)}</span>
             </div>
             <div className="flex justify-between py-1 text-sm font-black text-primary">
               <span>Volume Price</span>
@@ -315,7 +315,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
               <div className="text-lg font-black text-primary mt-0.5">
                 {formatPrice(savings)}
               </div>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">By ordering in bulk today.</p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">By ordering in bulk today.</p>
             </div>
           )}
 
@@ -331,7 +331,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
             <Button
               variant="outline"
               onClick={() => navigate('product-detail', { productId: product?.id || '' })}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
             >
               <FileText className="h-4 w-4" />
               Request Formal Quote
@@ -340,7 +340,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
         </div>
 
         {/* Trust Badges */}
-        <div className="space-y-2 pt-1 text-xs text-slate-500 dark:text-slate-400 font-medium">
+        <div className="space-y-2 pt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-emerald-600" />
             <span>Trade Assurance protects your orders.</span>

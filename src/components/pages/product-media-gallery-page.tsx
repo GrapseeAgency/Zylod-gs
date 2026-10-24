@@ -429,7 +429,7 @@ export function ProductMediaGalleryPage() {
         <button
           type="button"
           onClick={fetchProduct}
-          className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
+          className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2"
         >
           <RefreshCw className="w-4 h-4" /> Retry
         </button>
@@ -451,7 +451,7 @@ export function ProductMediaGalleryPage() {
         <button
           onClick={goBack}
           aria-label="Go back"
-          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
+          className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center"
         >
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
@@ -462,7 +462,7 @@ export function ProductMediaGalleryPage() {
         <div className="hidden md:flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Media Gallery</h1>
           {product && (
-            <span className="text-sm text-gray-500 dark:text-gray-400 truncate min-w-0">
+            <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate min-w-0">
               {product.name}
             </span>
           )}
@@ -470,12 +470,12 @@ export function ProductMediaGalleryPage() {
 
         {state === 'loading' && (
           <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-            <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
-            <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+            <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
+            <div className="h-32 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-lg animate-pulse" />
             <div className="grid grid-cols-3 gap-3">
-              <div className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-              <div className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
-              <div className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
+              <div className="aspect-square bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-lg animate-pulse" />
+              <div className="aspect-square bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-lg animate-pulse" />
+              <div className="aspect-square bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-lg animate-pulse" />
             </div>
           </div>
         )}
@@ -522,11 +522,11 @@ export function ProductMediaGalleryPage() {
                   </>
                 ) : (
                   <>
-                    <Upload className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                    <Upload className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400 mx-auto mb-2" />
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Drag &amp; drop or click to upload
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
                       PNG, JPEG, WebP (≤5MB) · MP4, WebM (≤50MB)
                     </p>
                   </>
@@ -542,14 +542,14 @@ export function ProductMediaGalleryPage() {
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
                   placeholder="https://youtube.com/…"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 dark:bg-gray-950 text-gray-900 dark:text-gray-100"
                 />
                 <input
                   type="text"
                   value={videoTitle}
                   onChange={(e) => setVideoTitle(e.target.value)}
                   placeholder="Title (optional)"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 dark:bg-gray-950 text-gray-900 dark:text-gray-100"
                 />
                 <button
                   type="button"
@@ -565,11 +565,11 @@ export function ProductMediaGalleryPage() {
 
             <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
               <h2 className="font-semibold text-gray-900 dark:text-gray-100">
-                Gallery <span className="text-gray-400 dark:text-gray-500 font-normal">({images.length + videos.length})</span>
+                Gallery <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400 font-normal">({images.length + videos.length})</span>
               </h2>
 
               {images.length === 0 && videos.length === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-6">
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center py-6">
                   No media uploaded yet. Use the upload zone above to add images or videos.
                 </p>
               ) : (
@@ -577,7 +577,7 @@ export function ProductMediaGalleryPage() {
                   {images.map((img) => (
                     <div
                       key={img.id}
-                      className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 group bg-gray-100 dark:bg-gray-950"
+                      className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 group bg-gray-100 dark:bg-gray-900 dark:bg-gray-950"
                     >
                       <img
                         src={img.imageUrl}
@@ -606,7 +606,7 @@ export function ProductMediaGalleryPage() {
                   {videos.map((vid) => (
                     <div
                       key={vid.id}
-                      className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 group bg-gray-100 dark:bg-gray-950 flex items-center justify-center"
+                      className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 group bg-gray-100 dark:bg-gray-900 dark:bg-gray-950 flex items-center justify-center"
                     >
                       {vid.videoUrl.startsWith('/uploads/videos/') ? (
                         <video
@@ -616,7 +616,7 @@ export function ProductMediaGalleryPage() {
                           muted
                         />
                       ) : (
-                        <div className="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 p-2 text-center">
+                        <div className="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 dark:text-gray-400 p-2 text-center">
                           <VideoIcon className="w-8 h-8" />
                           <span className="text-[10px] break-all line-clamp-2">External link</span>
                         </div>

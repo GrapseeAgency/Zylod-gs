@@ -78,13 +78,13 @@ export function BlogPage() {
   if (readSlug) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
-        <header className="bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 sticky top-0 z-10">
+        <header className="bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 md:px-6 py-3 sticky top-0 z-10">
           <div className="max-w-2xl mx-auto flex items-center gap-3">
-            <button onClick={goBack} className="p-1.5 -ml-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Go back">
+            <button onClick={goBack} className="md:hidden p-1.5 -ml-1.5 rounded-full hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800" aria-label="Go back">
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
             <Newspaper className="h-4 w-4 text-primary" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Zylod Blog</span>
+            <span className="md:hidden text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Zylod Blog</span>
           </div>
         </header>
 
@@ -98,7 +98,7 @@ export function BlogPage() {
           <div className="max-w-2xl mx-auto px-4 py-20 text-center">
             <ShieldAlert className="h-12 w-12 mx-auto text-slate-300 mb-3" />
             <h1 className="text-base font-bold text-slate-800 dark:text-slate-200">This article does not exist</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">The link is wrong, or the piece was unpublished.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">The link is wrong, or the piece was unpublished.</p>
             <Button variant="outline" size="sm" className="mt-4" onClick={() => navigate('blog')}>All articles</Button>
           </div>
         ) : (
@@ -113,7 +113,7 @@ export function BlogPage() {
               </span>
             )}
             <h1 className="text-2xl md:text-3xl font-black tracking-tight mt-2 leading-tight">{post.title}</h1>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 flex items-center gap-1">
+            <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               {new Date(post.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
@@ -121,7 +121,7 @@ export function BlogPage() {
               <img src={post.coverImageUrl} alt={post.title} className="w-full rounded-2xl mt-5 border border-slate-100 dark:border-slate-800" />
             )}
             {post.excerpt && (
-              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mt-5 border-l-2 border-primary/30 pl-3">{post.excerpt}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed mt-5 border-l-2 border-primary/30 pl-3">{post.excerpt}</p>
             )}
             <div className="prose-sm mt-5 space-y-3">
               {post.content.split(/\n{2,}/).map((para, i) => (
@@ -142,10 +142,10 @@ export function BlogPage() {
         <div className="max-w-3xl mx-auto md:max-w-5xl">
           <div className="flex items-center gap-2 mb-1">
             <Newspaper className="h-5 w-5 text-primary" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Zylod Blog</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Zylod Blog</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-black tracking-tight">Insights for Wholesale Traders</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-2xl">
+          <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-2xl">
             Market updates, sourcing guides, and platform news for Bangladesh's B2B wholesale community.
           </p>
         </div>
@@ -160,7 +160,7 @@ export function BlogPage() {
           <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
             <Newspaper className="h-12 w-12 mx-auto text-slate-300 mb-3" />
             <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No articles published yet</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
               Sourcing guides and market updates will appear here once the editorial team publishes them.
             </p>
             <Button
@@ -193,9 +193,9 @@ export function BlogPage() {
                 )}
                 <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-snug">{post.title}</h2>
                 {post.excerpt && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{post.excerpt}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 line-clamp-2 leading-relaxed">{post.excerpt}</p>
                 )}
-                <div className="flex items-center justify-between pt-2 border-t border-slate-50 text-[11px] text-slate-400 dark:text-slate-500">
+                <div className="flex items-center justify-between pt-2 border-t border-slate-50 text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     {new Date(post.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}

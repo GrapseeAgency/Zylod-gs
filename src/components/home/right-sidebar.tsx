@@ -33,7 +33,7 @@ export function RightSidebar() {
     <aside className="hidden xl:block w-[280px] shrink-0 space-y-3">
 
       {/* ═══════════ Widget 1: User Welcome / Dashboard Card ═══════════ */}
-      <Card className="border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
         <div className="p-4" style={{ background: '#FAFAFA' }}>
           {isAuthenticated && user ? (
             <>
@@ -59,7 +59,7 @@ export function RightSidebar() {
                     <button
                       key={i}
                       onClick={() => setCurrentPage(action.page)}
-                      className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-gray-100 transition-colors group"
+                      className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors group"
                     >
                       <div
                         className="h-8 w-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
@@ -67,7 +67,7 @@ export function RightSidebar() {
                       >
                         <IconComp className="h-4 w-4" style={{ color: action.color }} />
                       </div>
-                      <span className="text-[10px] text-gray-500 font-medium">{action.label}</span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">{action.label}</span>
                     </button>
                   )
                 })}
@@ -84,7 +84,7 @@ export function RightSidebar() {
                 ].map((feature) => (
                   <div key={feature.label} className="flex items-center gap-2">
                     <span className="material-symbols-outlined shrink-0" style={{ fontSize: 14, color: feature.color, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>
-                    <span className="text-[11px] text-gray-600 font-medium">{feature.label}</span>
+                    <span className="text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-500 font-medium">{feature.label}</span>
                   </div>
                 ))}
               </div>
@@ -108,7 +108,7 @@ export function RightSidebar() {
                   <ShoppingCart className="h-6 w-6" style={{ color: RED }} />
                 </div>
                 <p className="text-sm font-bold" style={{ color: '#212121' }}>Sign in to Zylod</p>
-                <p className="text-[11px] text-gray-500 mt-1">Access wholesale prices, track orders & chat with suppliers</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Access wholesale prices, track orders & chat with suppliers</p>
               </div>
               <Button
                 className="w-full text-xs font-semibold mb-2"
@@ -139,7 +139,7 @@ export function RightSidebar() {
       </Card>
 
       {/* ═══════════ Widget 2: B2B Services ═══════════ */}
-      <Card className="border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
         <div className="p-4" style={{ background: '#FAFAFA' }}>
           <p className="text-sm font-bold mb-3" style={{ color: RED }}>B2B Services</p>
           {[
@@ -159,7 +159,7 @@ export function RightSidebar() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold" style={{ color: '#212121' }}>{service.label}</p>
-                  <p className="text-[10px] text-gray-400">{service.desc}</p>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500">{service.desc}</p>
                 </div>
               </div>
             )

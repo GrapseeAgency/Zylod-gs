@@ -150,10 +150,10 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
-            <Store className="h-9 w-9 text-gray-400 dark:text-gray-500" />
+            <Store className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No supplier selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
             Open a supplier profile to browse their live product listings.
           </p>
           <Button
@@ -193,7 +193,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
               </div>
               <div>
                 <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load this supplier</h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{profileError}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">{profileError}</p>
               </div>
             </div>
             <Button
@@ -222,9 +222,9 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
               {/* Neutral logo box — initials from the real company name */}
               <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0">
                 {initials ? (
-                  <span className="text-sm font-black text-slate-600 dark:text-slate-400 dark:text-gray-300">{initials}</span>
+                  <span className="text-sm font-black text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-gray-300">{initials}</span>
                 ) : (
-                  <Store className="h-6 w-6 text-gray-400 dark:text-gray-500" />
+                  <Store className="h-6 w-6 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                 )}
               </div>
 
@@ -237,7 +237,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                     <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                   )}
                 </div>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                   {profile.verificationStatus === 'approved'
                     ? 'Verified supplier'
                     : `Verification status: ${profile.verificationStatus}`}
@@ -246,8 +246,8 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
             </div>
 
             {(profile.warehouseCity || profile.warehouseDistrict) && (
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
+                <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
                 <span>
                   {profile.warehouseCity}
                   {profile.warehouseCity && profile.warehouseDistrict ? ', ' : ''}
@@ -263,7 +263,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                   <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                   {profile.ratingCount > 0 ? profile.ratingAvg.toFixed(1) : '—'}
                 </div>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-0.5">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                   {profile.ratingCount > 0 ? `Rating (${profile.ratingCount})` : 'No ratings yet'}
                 </span>
               </div>
@@ -273,7 +273,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                   <Package className="h-3.5 w-3.5 text-blue-500" />
                   {profile.productCount.toLocaleString()}
                 </div>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-0.5">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                   Active Listings
                 </span>
               </div>
@@ -324,7 +324,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
           <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
             All Products ({total.toLocaleString()})
           </h2>
-          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 font-semibold">
+          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-semibold">
             <span>Sorted by <strong className="text-slate-800 dark:text-slate-200">Newest</strong></span>
             <ChevronDown className="h-3.5 w-3.5" />
           </div>
@@ -339,7 +339,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
               </div>
               <div>
                 <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load products</h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{error}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">{error}</p>
               </div>
             </div>
             <Button
@@ -370,12 +370,12 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
         {!loading && !error && filteredProducts.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
             <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
-              <Package className="h-9 w-9 text-gray-400 dark:text-gray-500" />
+              <Package className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
               {products.length === 0 ? 'No products listed yet' : 'No products in this category'}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
               {products.length === 0
                 ? 'This supplier hasn\u2019t published any approved listings yet. Their products will appear here as soon as they go live.'
                 : 'Try the “All Products” filter to see everything this supplier lists.'}
@@ -397,7 +397,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                     <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 w-full h-full">
-                      <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                      <Package className="h-5 w-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                     </div>
                   )}
                 </div>
@@ -409,7 +409,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                   <div className="mt-1 text-sm font-black text-primary">
                     {formatPrice(p.basePrice)}
                   </div>
-                  <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 mt-1 pt-1 border-t border-slate-50 gap-2">
+                  <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 pt-1 border-t border-slate-50 gap-2">
                     <span className="truncate">MOQ: {p.moq.toLocaleString()} {p.unit}</span>
                     {p.soldCount > 0 && <span className="shrink-0">{p.soldCount.toLocaleString()} sold</span>}
                   </div>
@@ -426,7 +426,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
               variant="outline"
               onClick={() => fetchProducts(page + 1, true)}
               disabled={loadingMore}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl shadow-xs disabled:opacity-60"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl shadow-xs disabled:opacity-60"
             >
               {loadingMore ? 'Loading…' : `Load More (${total - products.length} remaining)`}
             </Button>

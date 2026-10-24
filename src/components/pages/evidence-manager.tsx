@@ -194,7 +194,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
 
   return (
     <div className="space-y-3">
-      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
         <ImageIcon className="h-3 w-3" />
         Evidence photos {photos ? `(${photoCount})` : ''}
       </p>
@@ -203,7 +203,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
       {listLoading ? (
         <div className="grid grid-cols-3 gap-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-24 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+            <div key={i} className="h-24 rounded-xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 animate-pulse" />
           ))}
         </div>
       ) : listError ? (
@@ -218,7 +218,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
           </button>
         </div>
       ) : photos && photos.length === 0 ? (
-        <p className="text-[11px] text-slate-500 dark:text-slate-400">No evidence photos attached yet.</p>
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">No evidence photos attached yet.</p>
       ) : (
         photos && (
           <div className="grid grid-cols-3 gap-2">
@@ -237,7 +237,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
                       src={p.url}
                       alt={p.note ? `Evidence photo: ${p.note}` : `Evidence photo ${i + 1}`}
                       loading="lazy"
-                      className="h-24 w-full rounded-xl object-cover border border-slate-200 dark:border-slate-700"
+                      className="h-24 w-full rounded-xl object-cover border border-slate-200 dark:border-slate-800 dark:border-slate-700"
                     />
                   </a>
                   {canEdit && (
@@ -253,11 +253,11 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
                   )}
                 </div>
                 {p.note && (
-                  <p className="text-[10px] text-slate-600 dark:text-slate-300 mt-1 truncate" title={p.note}>
+                  <p className="text-[10px] text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 mt-1 truncate" title={p.note}>
                     {p.note}
                   </p>
                 )}
-                <p className="text-[10px] text-slate-400 tabular-nums">{formatBytes(p.sizeBytes)}</p>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums">{formatBytes(p.sizeBytes)}</p>
               </div>
             ))}
           </div>
@@ -266,7 +266,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
 
       {/* Upload — only while evidence is genuinely editable */}
       {canEdit && (
-        <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 p-3 space-y-2">
+        <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 dark:border-slate-700 p-3 space-y-2">
           <input
             ref={fileInputRef}
             type="file"
@@ -284,7 +284,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading || photoCount >= EVIDENCE_MAX_PHOTOS}
-              className="min-h-11 w-full rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700"
+              className="min-h-11 w-full rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700"
             >
               <Upload className="h-3.5 w-3.5" />
               {photoCount >= EVIDENCE_MAX_PHOTOS ? `Photo limit reached (${photoCount})` : 'Add photo'}
@@ -295,7 +295,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
                 <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate" title={pendingFile.name}>
                   {pendingFile.name}
                 </span>
-                <span className="text-[10px] text-slate-400 tabular-nums shrink-0">{formatBytes(pendingFile.size)}</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums shrink-0">{formatBytes(pendingFile.size)}</span>
               </div>
               <Input
                 value={note}
@@ -320,7 +320,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
                   variant="outline"
                   onClick={clearPending}
                   disabled={uploading}
-                  className="min-h-11 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-700"
+                  className="min-h-11 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 dark:border-slate-700"
                 >
                   Cancel
                 </Button>
@@ -330,7 +330,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
           {pendingError && (
             <p className="text-[11px] text-red-600 dark:text-red-400 font-bold break-words">{pendingError}</p>
           )}
-          <p className="text-[10px] text-slate-400 leading-relaxed">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
             PNG, JPEG, or WebP up to 2 MB — up to {EVIDENCE_MAX_PHOTOS} photos. Each file is checked against its real
             signature. Photos are visible only to you and the Zylod review team, and lock once the review decision is
             made.
@@ -341,8 +341,8 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
       {/* Honest lock note — evidence cannot be changed after review starts */}
       {!canEdit && (
         <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
-          <Lock className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" />
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+          <Lock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
             {lockedNote || 'Evidence is locked — photos can no longer be added or removed.'}
           </p>
         </div>

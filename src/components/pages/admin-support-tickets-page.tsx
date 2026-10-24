@@ -228,7 +228,7 @@ export function AdminSupportTicketsPage() {
               <h1 className="text-lg md:text-xl font-black tracking-tight flex items-center gap-2">
                 <LifeBuoy className="h-5 w-5 text-primary" /> Support Threads
               </h1>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
                 Reply as the platform. Every reply notifies the filer; status changes are yours to drive.
               </p>
             </div>
@@ -257,7 +257,7 @@ export function AdminSupportTicketsPage() {
         </div>
 
         {needsAuth ? (
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center text-sm font-bold text-slate-500 dark:text-slate-400">
+          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center text-sm font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
             Admin access required — sign in as an admin to respond to support threads.
           </div>
         ) : (
@@ -290,7 +290,7 @@ export function AdminSupportTicketsPage() {
                 <Button onClick={() => loadTickets()} variant="outline" className="rounded-xl text-xs font-bold">Retry</Button>
               </div>
             ) : filtered.length === 0 ? (
-              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center text-sm text-slate-400 dark:text-slate-500 font-medium">
+              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">
                 No support threads{statusFilter !== 'all' ? ` in "${STATUS_LABELS[statusFilter]}"` : ''} right now — honest zero.
               </div>
             ) : (
@@ -302,7 +302,7 @@ export function AdminSupportTicketsPage() {
                       <button
                         type="button"
                         onClick={() => toggleThread(t.id)}
-                        className="w-full text-left px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"
+                        className="w-full text-left px-5 py-4 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800/50 transition"
                         aria-expanded={isOpen}
                       >
                         <div className="flex items-start justify-between gap-3">
@@ -313,7 +313,7 @@ export function AdminSupportTicketsPage() {
                                 {t.priority}
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                               {mode === 'buyer'
                                 ? (t.user ? `${t.user.buyerProfile?.fullName || t.user.email} · ${t.user.email}` : 'Buyer')
                                 : (t.supplier ? `${t.supplier.companyName} · ${t.supplier.email}` : 'Seller')}
@@ -322,22 +322,22 @@ export function AdminSupportTicketsPage() {
                             </p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[10px] font-black uppercase px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                            <span className="text-[10px] font-black uppercase px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-500 dark:text-slate-400 dark:text-slate-500">
                               {(mode === 'buyer' ? STATUS_LABELS[t.status] : SELLER_STATUS_LABELS[t.status]) ?? t.status}
                             </span>
-                            <span className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1">
                               <MessageSquare className="h-3 w-3" /> {t._count?.messages ?? t.messageCount ?? 0}
                             </span>
-                            {isOpen ? <ChevronUp className="h-4 w-4 text-slate-400 dark:text-slate-500" /> : <ChevronDown className="h-4 w-4 text-slate-400 dark:text-slate-500" />}
+                            {isOpen ? <ChevronUp className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />}
                           </div>
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 line-clamp-2">{t.description}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1.5 line-clamp-2">{t.description}</p>
                       </button>
 
                       {isOpen && (
                         <div className="border-t border-slate-100 dark:border-slate-800 px-5 py-4 space-y-3 bg-slate-50/50 dark:bg-slate-950/40">
                           {threadLoading ? (
-                            <p className="text-xs text-slate-400 dark:text-slate-500 font-bold">Loading thread…</p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold">Loading thread…</p>
                           ) : (
                             <>
                               {threadError && (
@@ -347,7 +347,7 @@ export function AdminSupportTicketsPage() {
                               )}
                               <div className="space-y-2 max-h-80 overflow-y-auto">
                                 <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3">
-                                  <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500">Buyer · opened</span>
+                                  <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer · opened</span>
                                   <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-wrap">{t.description}</p>
                                 </div>
                                 {messages.map((m) => {
@@ -403,7 +403,7 @@ export function AdminSupportTicketsPage() {
                                 ))}
                               </div>
                               {t.rating != null && (
-                                <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">Buyer rated this thread: {t.rating}/5</p>
+                                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold">Buyer rated this thread: {t.rating}/5</p>
                               )}
                             </>
                           )}

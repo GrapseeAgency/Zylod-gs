@@ -136,8 +136,8 @@ export function WithdrawMoneyPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-10">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">{isBuyer ? 'Withdraw Funds' : 'Request Payout'}</span>
@@ -156,7 +156,7 @@ export function WithdrawMoneyPage() {
             <span>Wallet {formatPrice(data?.balance ?? 0)}</span>
             <span>· On hold {formatPrice(data?.onHold ?? 0)}</span>
           </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 pt-1 flex items-start gap-1.5">
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 pt-1 flex items-start gap-1.5">
             <Lock className="h-3 w-3 shrink-0 mt-0.5" />
             <span>Every request is held until an admin verifies the settlement — the same rule that protects buyer payments. Rejected requests release the hold instantly.</span>
           </p>
@@ -166,7 +166,7 @@ export function WithdrawMoneyPage() {
           {/* Amount */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
                 Payout Amount
               </label>
               <button
@@ -178,7 +178,7 @@ export function WithdrawMoneyPage() {
               </button>
             </div>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-400 dark:text-slate-500 font-mono">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">
                 ৳
               </span>
               <Input
@@ -196,7 +196,7 @@ export function WithdrawMoneyPage() {
 
           {/* Method Select */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-            <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
               Payout Destination
             </label>
             <div className="grid grid-cols-2 gap-2.5">
@@ -219,7 +219,7 @@ export function WithdrawMoneyPage() {
                     }`}
                   >
                     <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>{label}</span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{desc}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">{desc}</span>
                   </button>
                 )
               })}
@@ -298,15 +298,15 @@ export function WithdrawMoneyPage() {
         {/* Payout requests — the queue the admin actually works from */}
         <section className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">{isBuyer ? 'Your withdrawal requests' : 'Your payout requests'}</h2>
-            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">{data?.payouts.length ?? 0}</span>
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">{isBuyer ? 'Your withdrawal requests' : 'Your payout requests'}</h2>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">{data?.payouts.length ?? 0}</span>
           </div>
           {initialLoading ? (
             <div className="space-y-2 animate-pulse">
               {[1, 2].map((i) => <div key={i} className="h-12 bg-slate-100 dark:bg-slate-900 rounded-2xl" />)}
             </div>
           ) : !data || data.payouts.length === 0 ? (
-            <p className="text-xs text-slate-400 dark:text-slate-500 py-3 text-center">
+            <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-3 text-center">
               {isBuyer ? 'No withdrawal requests yet — the money in your wallet is all available.' : 'No payout requests yet — the money in your wallet is all available.'}
             </p>
           ) : (
@@ -322,7 +322,7 @@ export function WithdrawMoneyPage() {
                         <Icon className="h-3 w-3" /> {st.label}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono break-all">
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono break-all">
                       {p.destination ?? p.method}
                       {p.reference ? ` · ref ${p.reference}` : ''}
                     </p>

@@ -33,7 +33,7 @@ export function SellerTrafficSourcesPagePage() {
     >
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Traffic sources</h1>
@@ -48,7 +48,7 @@ export function SellerTrafficSourcesPagePage() {
             <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="traffic-honest">
               Traffic tracking isn&apos;t live yet
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300 leading-relaxed max-w-md mx-auto">
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 leading-relaxed max-w-md mx-auto">
               Zylod doesn&apos;t record storefront visits, impressions or click channels yet — so this page has
               no numbers, and it will never show invented percentages. When visit tracking ships, every
               channel below lights up with real data.
@@ -60,12 +60,12 @@ export function SellerTrafficSourcesPagePage() {
           {PLANNED_CHANNELS.map((ch) => (
             <Card key={ch.label} className="border-dashed dark:bg-gray-800">
               <CardContent className="p-4 flex items-start gap-3">
-                <div className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-700 text-gray-500 dark:text-gray-400 dark:text-gray-300 shrink-0">
+                <div className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-700 text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 shrink-0">
                   <ch.icon className="w-4 h-4" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-800 dark:text-gray-200 dark:text-gray-100">{ch.label}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{ch.note}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">{ch.note}</p>
                 </div>
               </CardContent>
             </Card>

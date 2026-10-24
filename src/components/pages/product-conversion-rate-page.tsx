@@ -83,7 +83,7 @@ export function ProductConversionRatePagePage() {
       <header className="md:hidden sticky top-0 z-50 bg-white border-b px-4 py-3 flex items-center gap-3 dark:bg-gray-900 dark:border-gray-800">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
@@ -118,9 +118,9 @@ export function ProductConversionRatePagePage() {
         ) : authRequired ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
             <CardContent className="p-8 text-center space-y-3">
-              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600" />
+              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
               <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Seller sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 Sign in with a supplier account to view your conversion data.
               </p>
               <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
@@ -128,7 +128,7 @@ export function ProductConversionRatePagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
               {error}
               <div className="mt-3">
                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
@@ -146,7 +146,7 @@ export function ProductConversionRatePagePage() {
                   <Activity className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                   Conversion Rate
                 </CardTitle>
-                <CardDescription className="dark:text-gray-400">
+                <CardDescription className="dark:text-gray-400 dark:text-gray-500">
                   How many product views turn into orders
                 </CardDescription>
               </CardHeader>
@@ -169,25 +169,25 @@ export function ProductConversionRatePagePage() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 pt-1">
                   <div className="rounded-lg border border-gray-100 p-3 dark:border-gray-800">
-                    <p className="text-[11px] text-gray-500 uppercase font-medium dark:text-gray-400">Orders (numerator)</p>
+                    <p className="text-[11px] text-gray-500 uppercase font-medium dark:text-gray-400 dark:text-gray-500">Orders (numerator)</p>
                     <p className="text-lg font-bold text-gray-900 mt-1 dark:text-gray-100">
                       {data.overview.totalOrders.toLocaleString()}
                     </p>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500">real, from paid order lines</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">real, from paid order lines</p>
                   </div>
                   <div className="rounded-lg border border-gray-100 p-3 dark:border-gray-800">
-                    <p className="text-[11px] text-gray-500 uppercase font-medium dark:text-gray-400">Product Views (denominator)</p>
-                    <p className="text-lg font-bold text-gray-400 mt-1 dark:text-gray-500">
+                    <p className="text-[11px] text-gray-500 uppercase font-medium dark:text-gray-400 dark:text-gray-500">Product Views (denominator)</p>
+                    <p className="text-lg font-bold text-gray-400 mt-1 dark:text-gray-500 dark:text-gray-400">
                       —
                     </p>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500">no tracking source yet</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">no tracking source yet</p>
                   </div>
                   <div className="rounded-lg border border-gray-100 p-3 col-span-2 md:col-span-1 dark:border-gray-800">
-                    <p className="text-[11px] text-gray-500 uppercase font-medium dark:text-gray-400">Conversion Rate</p>
-                    <p className="text-lg font-bold text-gray-400 mt-1 dark:text-gray-500">
+                    <p className="text-[11px] text-gray-500 uppercase font-medium dark:text-gray-400 dark:text-gray-500">Conversion Rate</p>
+                    <p className="text-lg font-bold text-gray-400 mt-1 dark:text-gray-500 dark:text-gray-400">
                       —
                     </p>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500">cannot compute honestly</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">cannot compute honestly</p>
                   </div>
                 </div>
               </CardContent>
@@ -204,7 +204,7 @@ export function ProductConversionRatePagePage() {
                   <p className="mt-2 text-lg font-bold text-gray-900 dark:text-gray-100">
                     {data.overview.totalOrders.toLocaleString()}
                   </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">paid, non-reversed</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">paid, non-reversed</p>
                 </CardContent>
               </Card>
               <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
@@ -216,7 +216,7 @@ export function ProductConversionRatePagePage() {
                   <p className="mt-2 text-lg font-bold text-gray-900 dark:text-gray-100">
                     {data.overview.unitsSold.toLocaleString()}
                   </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">across all paid orders</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">across all paid orders</p>
                 </CardContent>
               </Card>
               <Card className="shadow-sm col-span-2 md:col-span-1 dark:bg-gray-900 dark:border-gray-800">
@@ -228,7 +228,7 @@ export function ProductConversionRatePagePage() {
                   <p className="mt-2 text-sm font-bold text-gray-900 truncate dark:text-gray-100">
                     {data.topProducts[0]?.name || '—'}
                   </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     {data.topProducts[0]
                       ? `${data.topProducts[0].unitsSold} units · ৳${data.topProducts[0].revenue.toLocaleString()}`
                       : 'no sales yet'}
@@ -241,16 +241,16 @@ export function ProductConversionRatePagePage() {
             <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base dark:text-gray-100">Top Products by Units Sold</CardTitle>
-                <CardDescription className="dark:text-gray-400">
+                <CardDescription className="dark:text-gray-400 dark:text-gray-500">
                   The numerator inputs that a real conversion rate would slice by product
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {data.topProducts.length === 0 ? (
                   <div className="py-8 text-center space-y-2">
-                    <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600" />
+                    <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No sales yet</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
                       When buyers pay for your products, the per-product order counts that feed a conversion rate will appear here.
                     </p>
                   </div>
@@ -261,12 +261,12 @@ export function ProductConversionRatePagePage() {
                         key={p.id}
                         className="flex items-center gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0 dark:border-gray-800"
                       >
-                        <div className="h-10 w-10 bg-gray-100 dark:bg-gray-900 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 font-bold dark:bg-gray-800 dark:text-gray-400">
+                        <div className="h-10 w-10 bg-gray-100 dark:bg-gray-900 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 font-bold dark:bg-gray-800 dark:text-gray-400 dark:text-gray-500">
                           #{i + 1}
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-gray-900 truncate dark:text-gray-100">{p.name}</h4>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{p.unitsSold} units sold</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{p.unitsSold} units sold</p>
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-sm font-bold text-gray-900 dark:text-gray-100">

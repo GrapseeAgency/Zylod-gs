@@ -8,7 +8,7 @@ import { Truck, Navigation } from 'lucide-react'
 const LeafletMap = dynamic(() => import('./live-tracking-map'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-48 bg-gray-100 rounded-xl flex items-center justify-center">
+    <div className="w-full h-48 bg-gray-100 dark:bg-gray-900 rounded-xl flex items-center justify-center">
       <div className="flex flex-col items-center gap-1.5">
         <Truck className="h-6 w-6 text-[#E53935] animate-pulse" />
         <span className="text-xs text-muted-foreground">Loading live map...</span>
@@ -59,7 +59,7 @@ export default function LiveTracking({
       <LeafletMap points={gpsPoints as { lat: number; lng: number; location: string | null; speed: number | null; trackedAt: string }[]} destination={destination || null} status={status} />
 
       {/* Overlay: status + ETA */}
-      <div className="absolute bottom-3 left-3 right-3 z-[500] flex items-center gap-3 bg-white/95 backdrop-blur rounded-xl shadow-lg px-3 py-2.5">
+      <div className="absolute bottom-3 left-3 right-3 z-[500] flex items-center gap-3 bg-white dark:bg-gray-900/95 backdrop-blur rounded-xl shadow-lg px-3 py-2.5">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             {isLive && <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />}

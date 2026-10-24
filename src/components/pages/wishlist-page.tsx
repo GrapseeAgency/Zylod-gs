@@ -98,15 +98,15 @@ export function WishlistPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b px-4 py-3 flex items-center justify-between">
-        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 hidden md:block">
+      <header className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b px-4 md:px-6 py-3 flex items-center justify-between">
+        <button onClick={() => goBack()} className="md:hidden p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
           <ArrowLeft size={24} />
         </button>
         <div className="text-center">
           <h1 className="font-semibold text-lg md:text-xl">My Wishlist {!loading && `(${items.length})`}</h1>
         </div>
         <div className="flex items-center space-x-2">
-          <button onClick={() => navigate('shared-wishlist')} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+          <button onClick={() => navigate('shared-wishlist')} className="p-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
             <Share2 size={20} />
           </button>
         </div>
@@ -171,7 +171,7 @@ export function WishlistPage() {
               <Heart size={32} />
             </div>
             <h2 className="text-lg font-semibold mb-2">Your wishlist is empty</h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-[250px]">Save items you like here to review or buy them later.</p>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-6 max-w-[250px]">Save items you like here to review or buy them later.</p>
             <button
               onClick={() => navigate('home')}
               className="bg-primary text-white px-6 py-2.5 rounded-full font-medium"
@@ -212,10 +212,10 @@ export function WishlistPage() {
                     <div className="flex-1 flex flex-col justify-between">
                       <div className="pr-8">
                         <h3 className="font-medium text-sm line-clamp-2">{item.productName}</h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{item.supplierName}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">{item.supplierName}</p>
                         
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[10px] bg-gray-100 dark:bg-gray-900 px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400 font-medium">MOQ: {item.moq}</span>
+                          <span className="text-[10px] bg-gray-100 dark:bg-gray-900 px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-400 dark:text-gray-500 font-medium">MOQ: {item.moq}</span>
                           {item.stockStatus === 'IN_STOCK' ? (
                             <span className="text-[10px] text-green-600 font-medium">In Stock</span>
                           ) : item.stockStatus === 'LOW_STOCK' ? (
@@ -230,7 +230,7 @@ export function WishlistPage() {
                         <div>
                           <p className="font-bold text-primary text-sm">${item.price.toFixed(2)}</p>
                           {item.oldPrice && item.oldPrice > item.price && (
-                            <p className="text-[10px] text-gray-400 dark:text-gray-500 line-through">${item.oldPrice.toFixed(2)}</p>
+                            <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 line-through">${item.oldPrice.toFixed(2)}</p>
                           )}
                         </div>
                         
@@ -246,7 +246,7 @@ export function WishlistPage() {
                   {!isBatchMode && (
                     <button 
                       onClick={(e) => handleRemove(item.id, e)}
-                      className="absolute top-3 right-3 p-1.5 bg-gray-50 dark:bg-gray-950 rounded-full text-gray-400 dark:text-gray-500 hover:text-red-500"
+                      className="absolute top-3 right-3 p-1.5 bg-gray-50 dark:bg-gray-950 rounded-full text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-red-500"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -260,7 +260,7 @@ export function WishlistPage() {
 
       {/* Batch Mode Footer */}
       {isBatchMode && displayedItems.length > 0 && (
-        <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 flex gap-3 z-20">
+        <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 flex gap-3 z-20 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
           <button 
             disabled={selectedItems.size === 0}
             className="flex-1 py-3 border border-red-200 text-red-600 rounded-full font-medium disabled:opacity-50"

@@ -64,7 +64,7 @@ export function BulkUploadHistoryPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 md:p-6 md:py-8">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-4">
-          <button onClick={goBack} className="flex items-center gap-1 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900" aria-label="Back">
+          <button onClick={goBack} className="flex items-center gap-1 text-sm font-bold text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:text-gray-100" aria-label="Back">
             <ArrowLeft className="w-4 h-4" /> Back
           </button>
           <Button variant="outline" onClick={load} disabled={loading} className="rounded-xl text-xs font-bold gap-2">
@@ -82,7 +82,7 @@ export function BulkUploadHistoryPage() {
           <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl text-center shadow-sm">
             <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto mb-2" />
             <p className="text-sm font-bold text-gray-700 dark:text-gray-300">Sign in required</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Sign in with your seller account to see your uploads.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Sign in with your seller account to see your uploads.</p>
           </div>
         ) : error ? (
           <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl text-center shadow-sm">
@@ -93,7 +93,7 @@ export function BulkUploadHistoryPage() {
         ) : rows.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-10 rounded-2xl text-center shadow-sm">
             <p className="text-sm font-bold text-gray-700 dark:text-gray-300">No bulk uploads yet</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Every upload you process is recorded here with its honest row counts.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Every upload you process is recorded here with its honest row counts.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -105,29 +105,29 @@ export function BulkUploadHistoryPage() {
                   <button
                     type="button"
                     onClick={() => setExpanded(expanded === u.id ? null : u.id)}
-                    className="w-full text-left px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+                    className="w-full text-left px-4 py-3.5 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition"
                     aria-expanded={expanded === u.id}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <span className="text-sm font-bold text-gray-900 dark:text-gray-100 block truncate">{u.fileName}</span>
-                        <span className="text-[10px] text-gray-400 dark:text-gray-500">{new Date(u.createdAt).toLocaleString('en-GB')}</span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{new Date(u.createdAt).toLocaleString('en-GB')}</span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-full border flex items-center gap-1 ${clean ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : allFailed ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
                           {clean ? <CheckCircle2 className="w-3 h-3" /> : <FileWarning className="w-3 h-3" />}
                           {clean ? 'Created' : allFailed ? 'Failed' : 'Partial'}
                         </span>
-                        <span className="text-xs font-bold text-gray-600 dark:text-gray-400 tabular-nums">
+                        <span className="text-xs font-bold text-gray-600 dark:text-gray-400 dark:text-gray-500 tabular-nums">
                           {u.successCount}/{u.totalRows} rows
                         </span>
                       </div>
                     </div>
                   </button>
                   {expanded === u.id && (
-                    <div className="border-t border-gray-100 dark:border-gray-800 px-4 py-3 bg-gray-50/50 dark:bg-gray-900/50">
+                    <div className="border-t border-gray-100 dark:border-gray-800 px-4 py-3 bg-gray-50 dark:bg-gray-950/50 dark:bg-gray-900/50">
                       {u.errors.length === 0 ? (
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Every row passed validation — no errors recorded.</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Every row passed validation — no errors recorded.</p>
                       ) : (
                         <div className="divide-y divide-gray-100 dark:divide-gray-800 max-h-56 overflow-y-auto">
                           {u.errors.map((e, i) => (

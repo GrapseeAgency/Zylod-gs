@@ -46,19 +46,19 @@ export function SpinHistoryPage() {
         <Button
           size="sm"
           onClick={() => navigate('spin-win')}
-          className="h-8 text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-xl"
+          className="h-8 text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-900 dark:text-slate-100 rounded-xl"
         >
           Spin Wheel 🎡
         </Button>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">Spin Win History</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Spin Win History</h1>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-4 pb-24">
         {loading ? (
-          <div className="text-center py-16 text-slate-500">Loading spin results...</div>
+          <div className="text-center py-16 text-slate-500 dark:text-slate-400 dark:text-slate-500">Loading spin results...</div>
         ) : spins.length === 0 ? (
-          <div className="text-center py-16 text-slate-500 space-y-2">
-            <Gift className="w-12 h-12 text-slate-700 mx-auto" />
+          <div className="text-center py-16 text-slate-500 dark:text-slate-400 dark:text-slate-500 space-y-2">
+            <Gift className="w-12 h-12 text-slate-700 dark:text-slate-300 mx-auto" />
             <p className="font-bold text-sm text-slate-300">No spin history recorded</p>
             <p className="text-xs">Take your free daily turns on the Lucky Wheel to unlock prizes.</p>
           </div>
@@ -74,7 +74,7 @@ export function SpinHistoryPage() {
                 </div>
                 <div>
                   <h3 className="text-xs sm:text-sm font-bold text-white">{s.prizeLabel}</h3>
-                  <p className="text-[10px] text-slate-400">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500">
                     {new Date(s.createdAt).toLocaleDateString('en-GB', {
                       day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
                     })}

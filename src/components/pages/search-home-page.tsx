@@ -114,41 +114,41 @@ export function SearchHomePage() {
   }
 
   return (
-    <div className="overflow-x-hidden flex flex-col min-h-screen bg-white">
+    <div className="overflow-x-hidden flex flex-col min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 pt-4 pb-3 md:px-6">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 pt-4 pb-3 md:px-6">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2">
-            <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          <div className="flex-1 flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-xl px-3 py-2">
+            <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
             <input
               ref={inputRef}
               type="text"
               placeholder="Search wholesale products..."
-              className="flex-1 bg-transparent text-sm outline-none text-gray-800 placeholder:text-gray-400"
+              className="flex-1 bg-transparent text-sm outline-none text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:text-gray-500"
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSearch(query)}
             />
             {query && (
               <button onClick={() => setQuery('')}>
-                <X className="w-4 h-4 text-gray-400" />
+                <X className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </button>
             )}
           </div>
           <button
             onClick={() => navigate('voice-search')}
-            className="p-2 rounded-full bg-gray-100 hover:bg-red-50 transition"
+            className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 hover:bg-red-50 transition"
           >
-            <Mic className="w-4 h-4 text-gray-600" />
+            <Mic className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
           </button>
           <button
             onClick={() => navigate('image-search')}
-            className="p-2 rounded-full bg-gray-100 hover:bg-red-50 transition"
+            className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 hover:bg-red-50 transition"
           >
-            <Camera className="w-4 h-4 text-gray-600" />
+            <Camera className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
           </button>
         </div>
       </div>
@@ -158,7 +158,7 @@ export function SearchHomePage() {
         {(loadingHistory || history.length > 0) && (
           <section className="px-4 pt-5">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-gray-800">Recent Searches</h2>
+              <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Recent Searches</h2>
               {!loadingHistory && history.length > 0 && (
                 <button
                   onClick={clearAllHistory}
@@ -184,16 +184,16 @@ export function SearchHomePage() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ delay: idx * 0.04 }}
-                      className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-gray-50 cursor-pointer group"
+                      className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 cursor-pointer group"
                       onClick={() => handleSearch(item.query)}
                     >
-                      <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                      <span className="flex-1 text-sm text-gray-700">{item.query}</span>
+                      <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                      <span className="flex-1 text-sm text-gray-700 dark:text-gray-300">{item.query}</span>
                       <button
                         onClick={e => { e.stopPropagation(); deleteHistoryItem(item.query) }}
                         className="opacity-0 group-hover:opacity-100 transition p-1"
                       >
-                        <X className="w-3.5 h-3.5 text-gray-400" />
+                        <X className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                       </button>
                     </motion.div>
                   ))}
@@ -206,7 +206,7 @@ export function SearchHomePage() {
         {/* Popular Searches */}
         <section className="px-4 pt-5">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-1.5">
+            <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
               <Flame className="w-4 h-4 text-red-500" />
               Popular Searches
             </h2>
@@ -218,7 +218,7 @@ export function SearchHomePage() {
               ))}
             </div>
           ) : popular.length === 0 ? (
-            <p className="text-sm text-gray-400">No trending searches yet</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">No trending searches yet</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {popular.map((item, idx) => (
@@ -228,12 +228,12 @@ export function SearchHomePage() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => handleSearch(item.query)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-red-50 hover:text-red-700 rounded-full text-sm text-gray-700 transition"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-900 hover:bg-red-50 hover:text-red-700 rounded-full text-sm text-gray-700 dark:text-gray-300 transition"
                 >
                   <TrendingUp className="w-3 h-3" />
                   <span>{item.query}</span>
                   {item.searchCount > 100 && (
-                    <span className="text-xs text-gray-400">{(item.searchCount / 1000).toFixed(1)}k</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{(item.searchCount / 1000).toFixed(1)}k</span>
                   )}
                 </motion.button>
               ))}
@@ -244,7 +244,7 @@ export function SearchHomePage() {
         {/* Trending Categories */}
         <section className="pt-6">
           <div className="px-4 flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-800">Browse Categories</h2>
+            <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Browse Categories</h2>
             <button
               onClick={() => navigate('category-browser')}
               className="text-xs text-red-600 flex items-center gap-0.5"
@@ -267,14 +267,14 @@ export function SearchHomePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => navigate('category-products', { category: cat.slug })}
-                  className="flex-shrink-0 flex flex-col items-center gap-1.5 p-3 bg-gray-50 hover:bg-red-50 rounded-xl w-20 transition"
+                  className="flex-shrink-0 flex flex-col items-center gap-1.5 p-3 bg-gray-50 dark:bg-gray-950 hover:bg-red-50 rounded-xl w-20 transition"
                 >
                   {cat.iconUrl ? (
                     <img src={cat.iconUrl} alt={cat.name} className="w-8 h-8 object-contain" />
                   ) : (
-                    <Hash className="w-8 h-8 text-gray-400" />
+                    <Hash className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                   )}
-                  <span className="text-xs text-gray-700 text-center leading-tight line-clamp-2">{cat.name}</span>
+                  <span className="text-xs text-gray-700 dark:text-gray-300 text-center leading-tight line-clamp-2">{cat.name}</span>
                 </motion.button>
               ))}
             </div>

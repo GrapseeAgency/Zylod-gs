@@ -42,12 +42,12 @@ export function SellerOrderDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-[calc(var(--bottom-nav-h)+140px)]">
       <header className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center">
-        <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400 mr-2">
+        <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400 dark:text-gray-500 mr-2">
           <ArrowLeft className="w-6 h-6" />
         </button>
         <div>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Order #{order.orderNumber}</h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400">{format(new Date(order.createdAt), 'MMM dd, yyyy HH:mm')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{format(new Date(order.createdAt), 'MMM dd, yyyy HH:mm')}</p>
         </div>
       </header>
 
@@ -56,11 +56,11 @@ export function SellerOrderDetailPage() {
         {/* Status Card */}
         <div className="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Status</p>
             <p className="font-semibold text-gray-900 dark:text-gray-100 text-lg">{order.status}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-right">Payment Status</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 text-right">Payment Status</p>
             <p className="font-semibold text-green-600">{order.paymentStatus}</p>
           </div>
         </div>
@@ -72,8 +72,8 @@ export function SellerOrderDetailPage() {
           </h3>
           <div className="text-sm">
             <p className="font-medium">{order.buyerCompanyName}</p>
-            <p className="text-gray-600 dark:text-gray-400">{order.buyerName}</p>
-            <p className="text-gray-600 dark:text-gray-400">{order.buyerPhone}</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">{order.buyerName}</p>
+            <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">{order.buyerPhone}</p>
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export function SellerOrderDetailPage() {
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <MapPin className="w-4 h-4" /> Shipping Address
           </h3>
-          <div className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">
             <p>{order.shippingAddress?.street}</p>
             <p>{order.shippingAddress?.area}, {order.shippingAddress?.city}</p>
             <p>Method: <span className="font-medium text-gray-900 dark:text-gray-100">{order.shippingMethod}</span></p>
@@ -102,9 +102,9 @@ export function SellerOrderDetailPage() {
                 </div>
                 <div className="flex-1 text-sm">
                   <p className="font-medium text-gray-900 dark:text-gray-100">{item.name}</p>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs">SKU: {item.sku} | Qty: {item.quantity}</p>
+                  <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-xs">SKU: {item.sku} | Qty: {item.quantity}</p>
                   <div className="mt-1 flex justify-between">
-                    <p className="text-gray-600 dark:text-gray-400">৳{item.price.toLocaleString()} x {item.quantity}</p>
+                    <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">৳{item.price.toLocaleString()} x {item.quantity}</p>
                     <p className="font-medium">৳{(item.price * item.quantity).toLocaleString()}</p>
                   </div>
                 </div>
@@ -119,15 +119,15 @@ export function SellerOrderDetailPage() {
             <Receipt className="w-4 h-4" /> Payment Summary
           </h3>
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-gray-600 dark:text-gray-400">
+            <div className="flex justify-between text-gray-600 dark:text-gray-400 dark:text-gray-500">
               <span>Subtotal</span>
               <span>৳{order.subtotal?.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-gray-600 dark:text-gray-400">
+            <div className="flex justify-between text-gray-600 dark:text-gray-400 dark:text-gray-500">
               <span>Shipping</span>
               <span>৳{order.shippingFee?.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-gray-600 dark:text-gray-400">
+            <div className="flex justify-between text-gray-600 dark:text-gray-400 dark:text-gray-500">
               <span>VAT/Tax</span>
               <span>৳{order.tax?.toLocaleString()}</span>
             </div>
@@ -140,7 +140,7 @@ export function SellerOrderDetailPage() {
       </div>
 
       {/* Action Bottom Bar */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-4 pb-safe flex gap-3">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-4 pb-safe flex gap-3 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         {order.status === 'pending' && (
           <>
             <button 

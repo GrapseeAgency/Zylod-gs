@@ -105,7 +105,7 @@ export function PaymentMethodPage() {
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             ←
           </button>
           <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">My Payment Methods</h1>
@@ -137,7 +137,7 @@ export function PaymentMethodPage() {
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 text-center space-y-2">
               <Wallet className="h-7 w-7 text-slate-300 mx-auto" />
               <p className="text-sm font-bold text-slate-800 dark:text-slate-200">No saved payment instruments yet</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                 Link a wallet, tokenize a card (last 4 only), or add a bank account — every entry is a real
                 database row with a financial-audit trail. Payments themselves are made per order below.
               </p>
@@ -152,9 +152,9 @@ export function PaymentMethodPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-slate-900 dark:text-slate-100 truncate">{m.label}</p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{maskAccount(m.accountNumber)}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono">{maskAccount(m.accountNumber)}</p>
                   </div>
-                  <span className="shrink-0 text-[9px] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-full">
+                  <span className="shrink-0 text-[9px] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-full">
                     {m.type}
                   </span>
                 </div>
@@ -165,7 +165,7 @@ export function PaymentMethodPage() {
             <Button
               onClick={() => navigate('add-payment-method')}
               variant="outline"
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-primary border-slate-300 font-bold h-11 rounded-2xl text-xs"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-primary border-slate-300 font-bold h-11 rounded-2xl text-xs"
             >
               <Plus className="h-4 w-4 mr-2" /> Add a payment method
             </Button>
@@ -185,7 +185,7 @@ export function PaymentMethodPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-xs md:text-sm font-bold text-slate-900 dark:text-slate-100">{opt.title}</h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{opt.subtitle}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">{opt.subtitle}</p>
                 </div>
               </div>
             </div>
@@ -193,7 +193,7 @@ export function PaymentMethodPage() {
         </div>
 
         {/* Security badge */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-200 dark:border-slate-800 flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-slate-400">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-200 dark:border-slate-800 flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
           <Info className="h-4 w-4 text-emerald-600 shrink-0" />
           <span>Zylod does not hold payments in escrow. An order stays UNPAID until your payment is verified.</span>
         </div>

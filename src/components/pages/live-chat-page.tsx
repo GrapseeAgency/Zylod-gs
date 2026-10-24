@@ -139,7 +139,7 @@ export function LiveChatPage() {
       {/* Top Bar */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between shadow-sm z-10">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="relative">
@@ -161,7 +161,7 @@ export function LiveChatPage() {
           {session && session.status === 'active' && (
             <button
               onClick={endChat}
-              className="px-2.5 py-1 text-[11px] font-semibold text-gray-600 dark:text-gray-400 hover:text-red-600 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+              className="px-2.5 py-1 text-[11px] font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-red-600 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition"
             >
               End Chat
             </button>
@@ -181,7 +181,7 @@ export function LiveChatPage() {
           <div className="text-center py-12 space-y-2">
             <ShieldCheck className="w-12 h-12 text-red-500 mx-auto" />
             <p className="text-xs font-bold text-gray-800 dark:text-gray-200">Protected Live Support Session</p>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
               Your conversation is encrypted. Ask anything regarding orders, delivery status, or supplier disputes.
             </p>
           </div>
@@ -193,7 +193,7 @@ export function LiveChatPage() {
             if (isSystem) {
               return (
                 <div key={msg.id} className="text-center my-3">
-                  <span className="inline-block px-3 py-1 bg-white/80 border border-gray-200 dark:border-gray-800 rounded-full text-[10px] text-gray-500 dark:text-gray-400 shadow-sm">
+                  <span className="inline-block px-3 py-1 bg-white dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-full text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 shadow-sm">
                     {msg.message}
                   </span>
                 </div>
@@ -238,7 +238,7 @@ export function LiveChatPage() {
       <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 md:px-6">
         {session?.status === 'ended' ? (
           <div className="text-center py-2 space-y-2">
-            <p className="text-xs text-gray-500 dark:text-gray-400">This chat session has ended.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">This chat session has ended.</p>
             <button
               onClick={initChatSession}
               className="px-4 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-xl"
@@ -253,7 +253,7 @@ export function LiveChatPage() {
               placeholder="Type your question..."
               value={inputMessage}
               onChange={e => setInputMessage(e.target.value)}
-              className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-2xl px-4 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-red-500 placeholder:text-gray-400"
+              className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-2xl px-4 py-2.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-red-500 placeholder:text-gray-400 dark:text-gray-500"
             />
             <button
               type="submit"

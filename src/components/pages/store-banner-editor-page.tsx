@@ -235,7 +235,7 @@ export function StoreBannerEditorPage() {
                   className="absolute inset-0 w-full h-full object-cover brightness-50"
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                <div className="absolute inset-0 flex items-center justify-center text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   <ImageOff className="w-8 h-8" />
                 </div>
               )}

@@ -213,7 +213,7 @@ export function InventoryAlertsPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
         <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Stock Alerts</h1>
@@ -228,7 +228,7 @@ export function InventoryAlertsPage() {
                   Sign in
                 </button>
               )}
-              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
+              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
                 <RefreshCw className="w-4 h-4" /> Retry
               </button>
             </div>
@@ -247,12 +247,12 @@ export function InventoryAlertsPage() {
     >
       <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Stock Alerts</h1>
         </div>
-        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
           <RefreshCw className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
       </div>
@@ -260,7 +260,7 @@ export function InventoryAlertsPage() {
       <div className="p-4 md:max-w-3xl md:mx-auto md:p-6 md:pt-8 space-y-6">
         <div className="hidden md:flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Stock Alerts</h1>
-          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary inline-flex items-center gap-1">
+          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-primary inline-flex items-center gap-1">
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
         </div>
@@ -271,12 +271,12 @@ export function InventoryAlertsPage() {
             <Users className="w-4 h-4 text-primary" /> Restock demand
           </h2>
           {demand.length === 0 ? (
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
               No active back-in-stock watches on your products right now. Buyers who press “Notify me when available” on an out-of-stock listing will appear here.
             </p>
           ) : (
             <>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 {demand.length} product{demand.length === 1 ? '' : 's'} {demand.length === 1 ? 'has' : 'have'} active back-in-stock watchers — prioritize these for restock.
               </p>
               <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -284,7 +284,7 @@ export function InventoryAlertsPage() {
                   <div key={d.productId} className="py-2 flex items-center justify-between gap-2">
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{d.productName}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         Stock: {money(d.stockQuantity)} {d.unit} · {!d.isActive && 'inactive · '}
                         <span className="text-primary font-medium">{d.watchers} watcher{d.watchers === 1 ? '' : 's'}</span>
                       </div>
@@ -302,14 +302,14 @@ export function InventoryAlertsPage() {
             <Bell className="w-5 h-5" />
             <h2 className="font-semibold md:text-lg text-gray-900 dark:text-gray-100">Low-stock thresholds</h2>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Each product's low-stock line is tuned separately. Leave a field empty to fall back to the platform default of <strong>{LOW_STOCK_FALLBACK}</strong>. The threshold is informational — it drives the low-stock summary in your inventory dashboard, not an automated action.
           </p>
 
           {items.length === 0 ? (
             <div className="text-center py-6">
               <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No products in inventory</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Create a product to tune its low-stock line.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Create a product to tune its low-stock line.</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -324,7 +324,7 @@ export function InventoryAlertsPage() {
               <div key={i.id} className="py-3 flex items-center justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{i.name}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     {i.sku || 'no SKU'} · stock: {money(i.stockQuantity)} {i.unit}
                     {isOut && <span className="ml-2 text-red-600 dark:text-red-400 font-medium">Out of stock</span>}
                     {!isOut && isLow && <span className="ml-2 text-amber-600 dark:text-amber-400 font-medium">Low</span>}
@@ -354,7 +354,7 @@ export function InventoryAlertsPage() {
             <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
             <div className="text-xs text-gray-700 dark:text-gray-300">
               <p className="font-medium">Auto-pause listing when stock hits zero — not available yet.</p>
-              <p className="text-gray-500 dark:text-gray-400 mt-0.5">
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">
                 The inventory rail does not auto-flip <code className="text-xs">products.isActive</code>. Hide a listing manually from the listings console, or restock to keep it live.
               </p>
             </div>

@@ -63,13 +63,13 @@ export function NotificationQuietHoursPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-bold text-gray-900 text-base">Quiet Hours Schedule</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Quiet Hours Schedule</span>
         </div>
 
         {saved && (
@@ -93,11 +93,11 @@ export function NotificationQuietHoursPage() {
         </div>
 
         {/* Master Toggle */}
-        <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-bold text-gray-900">Enable Quiet Hours</p>
-              <p className="text-xs text-gray-400">Automatically silence alerts during specified time window</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Enable Quiet Hours</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">Automatically silence alerts during specified time window</p>
             </div>
             <Switch
               checked={enabled}
@@ -109,10 +109,10 @@ export function NotificationQuietHoursPage() {
           </div>
 
           {enabled && (
-            <div className="pt-4 border-t border-gray-100 space-y-4">
+            <div className="pt-4 border-t border-gray-100 dark:border-gray-800 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1.5">Silence From (PM):</label>
+                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 dark:text-gray-500 block mb-1.5">Silence From (PM):</label>
                   <Input
                     type="time"
                     value={start}
@@ -120,11 +120,11 @@ export function NotificationQuietHoursPage() {
                       setStart(e.target.value)
                       handleSave(enabled, e.target.value, end)
                     }}
-                    className="text-sm font-bold text-gray-800"
+                    className="text-sm font-bold text-gray-800 dark:text-gray-200"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1.5">Resume At (AM):</label>
+                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 dark:text-gray-500 block mb-1.5">Resume At (AM):</label>
                   <Input
                     type="time"
                     value={end}
@@ -132,7 +132,7 @@ export function NotificationQuietHoursPage() {
                       setEnd(e.target.value)
                       handleSave(enabled, start, e.target.value)
                     }}
-                    className="text-sm font-bold text-gray-800"
+                    className="text-sm font-bold text-gray-800 dark:text-gray-200"
                   />
                 </div>
               </div>

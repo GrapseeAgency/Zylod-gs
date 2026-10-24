@@ -150,10 +150,10 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
-          <XCircle className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+          <XCircle className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
           Open one of your orders and choose the cancel action there — this screen
           cancels items of a specific order.
         </p>
@@ -175,7 +175,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
           <XCircle className="h-10 w-10" />
         </div>
         <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">Cancellation Submitted</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
           {result.message ||
             `Your cancellation request for order ${order?.orderNumber || ''} was received.`}
           {result.refundAmount > 0 && (
@@ -199,7 +199,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">
@@ -241,9 +241,9 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
 
         {!loading && !loadError && order && items.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <Package className="h-8 w-8 text-slate-400 dark:text-slate-500 mx-auto mb-3" />
+            <Package className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400 mx-auto mb-3" />
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">No cancelable items found</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">
               This order has no line items available for cancellation.
             </p>
           </div>
@@ -258,7 +258,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
               </div>
               <h2 className="text-xs font-black text-slate-900 dark:text-slate-100">Select Items to Cancel</h2>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
               Choose the items you wish to remove from order #{order.orderNumber}.
             </p>
 
@@ -291,7 +291,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                        <Package className="h-5 w-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                       )}
                     </div>
 
@@ -303,7 +303,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
                         <span className="text-xs font-black text-primary">
                           {formatPrice(item.totalPrice || 0)}
                         </span>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
                           Qty: {item.quantity}{item.product?.unit ? ` ${item.product.unit}` : ''}
                         </span>
                       </div>
@@ -340,7 +340,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Additional Notes <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional)</span></label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Additional Notes <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">(Optional)</span></label>
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -358,7 +358,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
             <AlertTriangle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
             <div className="space-y-1 text-xs">
               <h3 className="font-bold text-slate-900 dark:text-slate-100">Refund Processing</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-[11px]">
+              <p className="text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed text-[11px]">
                 If your payment has already been processed, refunds may take 3-5 business days to appear on your original payment method. Cancellations cannot be undone once confirmed.
               </p>
             </div>
@@ -379,7 +379,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
             <Button
               variant="outline"
               onClick={goBack}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
             >
               Keep Order
             </Button>

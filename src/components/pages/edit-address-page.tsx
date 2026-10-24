@@ -131,7 +131,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Edit Address</h1>
@@ -148,10 +148,10 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
             ))}
           </div>
           {/* Streets simulation */}
-          <div className="absolute left-1/4 top-0 bottom-0 w-2 bg-white/60" />
-          <div className="absolute left-2/3 top-0 bottom-0 w-1 bg-white/40" />
-          <div className="absolute top-1/3 left-0 right-0 h-2 bg-white/60" />
-          <div className="absolute top-2/3 left-0 right-0 h-1 bg-white/40" />
+          <div className="absolute left-1/4 top-0 bottom-0 w-2 bg-white dark:bg-gray-900/60" />
+          <div className="absolute left-2/3 top-0 bottom-0 w-1 bg-white dark:bg-gray-900/40" />
+          <div className="absolute top-1/3 left-0 right-0 h-2 bg-white dark:bg-gray-900/60" />
+          <div className="absolute top-2/3 left-0 right-0 h-1 bg-white dark:bg-gray-900/40" />
         </div>
 
         {/* Map pin */}
@@ -180,7 +180,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
 
         {/* Contact Details */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-4">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 pb-2 md:col-span-2">
+          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2 md:col-span-2">
             Contact Details
           </h3>
 
@@ -208,7 +208,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
 
         {/* Delivery Address */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-4">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 pb-2 md:col-span-2">
+          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2 md:col-span-2">
             Delivery Address
           </h3>
 
@@ -239,7 +239,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nearest Landmark <span className="text-slate-400 dark:text-slate-500">(Optional)</span></label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Nearest Landmark <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400">(Optional)</span></label>
             <Input
               value={form.landmark}
               onChange={(e) => setField('landmark', e.target.value)}
@@ -251,14 +251,14 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
 
         {/* Settings */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 pb-2">
+          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
             Settings
           </h3>
 
           <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Set as Default Delivery Address</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Future wholesale orders will default here.</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">Future wholesale orders will default here.</p>
             </div>
             <button
               onClick={() => setField('isDefault', !form.isDefault)}

@@ -171,11 +171,11 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
   const header = (
     <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
       <div className="flex items-center justify-between">
-        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Menu">
+        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Menu">
           <Menu className="h-6 w-6" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Search">
+        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Search">
           <Search className="h-6 w-6" />
         </button>
       </div>
@@ -189,10 +189,10 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
         {header}
         <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
           <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
-            <Star className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+            <Star className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
           </div>
           <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 max-w-xs leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
             Open one of your delivered orders and choose to leave feedback there —
             this screen reviews a specific order.
           </p>
@@ -215,7 +215,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
         {/* Back Link */}
         <button
           onClick={() => navigate('orders')}
-          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900"
+          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Order History</span>
@@ -226,7 +226,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
           <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
             Order Feedback &amp; Issues
           </h1>
-          <p className="text-xs md:text-sm text-slate-400 dark:text-slate-500 mt-0.5 font-medium">
+          <p className="text-xs md:text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
             {loading ? 'Loading order…' : order ? `Order #${order.orderNumber}` : 'Order unavailable'}
           </p>
         </div>
@@ -261,8 +261,8 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
           <div className="space-y-3">
             {items.length === 0 ? (
               <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-                <Package className="h-7 w-7 text-slate-400 dark:text-slate-500 mx-auto mb-2" />
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <Package className="h-7 w-7 text-slate-400 dark:text-slate-500 dark:text-slate-400 mx-auto mb-2" />
+                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   This order has no recorded products to review.
                 </p>
               </div>
@@ -280,7 +280,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <Package className="h-6 w-6 text-gray-400 dark:text-gray-500" />
+                      <Package className="h-6 w-6 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                     )}
                   </div>
 
@@ -289,13 +289,13 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                       {item.product?.name || '--'}
                     </h2>
                     {supplierNames.length > 0 && (
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
-                        <Building2 className="h-3 w-3 text-slate-400 dark:text-slate-500 shrink-0" />
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 flex items-center gap-1">
+                        <Building2 className="h-3 w-3 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
                         <span>Supplier: {supplierNames.join(', ')}</span>
                       </p>
                     )}
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
-                      <Package className="h-3 w-3 text-slate-400 dark:text-slate-500 shrink-0" />
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 flex items-center gap-1">
+                      <Package className="h-3 w-3 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
                       <span>
                         Qty: {item.quantity}{item.product?.unit ? ` ${item.product.unit}` : ''}
                       </span>
@@ -310,7 +310,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
         {/* Rate Your Experience Section */}
         {!loading && !loadError && order && items.length > 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
-            <h2 className="text-xs md:text-sm font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <h2 className="text-xs md:text-sm font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
               Rate your experience
             </h2>
 
@@ -330,7 +330,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                   <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Item Quality</span>
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{getLabel(qualityRating)}</span>
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{getLabel(qualityRating)}</span>
                     </div>
                     <StarPicker value={qualityRating} onChange={setQualityRating} />
                   </div>
@@ -339,7 +339,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                   <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Shipping Speed</span>
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{getLabel(shippingRating)}</span>
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{getLabel(shippingRating)}</span>
                     </div>
                     <StarPicker value={shippingRating} onChange={setShippingRating} />
                   </div>
@@ -348,7 +348,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                   <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Supplier Comm.</span>
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{getLabel(commRating)}</span>
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{getLabel(commRating)}</span>
                     </div>
                     <StarPicker value={commRating} onChange={setCommRating} />
                   </div>

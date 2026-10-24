@@ -36,7 +36,7 @@ const staggerContainer = {
 function HeaderBar({ onBack }: { onBack: () => void }) {
   const { navigate } = useNavigationStore()
   return (
-    <div className="flex items-center justify-between px-4 h-14">
+    <div className="md:hidden flex items-center justify-between px-4 h-14">
       <button
         onClick={onBack}
         className="p-2 -ml-2 rounded-lg active:scale-95 transition-transform"
@@ -53,6 +53,32 @@ function HeaderBar({ onBack }: { onBack: () => void }) {
         <HelpCircle className="w-5 h-5 text-[#6B7280]" />
       </button>
     </div>
+  )
+}
+
+/* ─── Desktop Header (auth fullscreen pages) ─── */
+function DesktopHeader({ onBack }: { onBack: () => void }) {
+  const { navigate } = useNavigationStore()
+  return (
+    <header className="hidden md:flex items-center gap-3 px-6 h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+      <button
+        onClick={onBack}
+        className="p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        aria-label="Go back"
+      >
+        <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
+      </button>
+      <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Email Verification</h1>
+      <div className="ml-auto">
+        <button
+          onClick={() => navigate('help-center')}
+          className="p-2 -mr-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Help"
+        >
+          <HelpCircle className="w-5 h-5 text-[#6B7280]" />
+        </button>
+      </div>
+    </header>
   )
 }
 
@@ -75,7 +101,7 @@ function FeatureBadge({
       transition={{ delay, duration: 0.4 }}
       className="flex items-center gap-3 p-3.5 rounded-xl bg-[#F3F4F6] border border-[#E0E0E0]"
     >
-      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-sm">
+      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-white dark:bg-gray-900 flex items-center justify-center shadow-sm">
         {icon}
       </div>
       <div>
@@ -342,7 +368,7 @@ export default function EmailVerificationPage() {
               <Button
                 onClick={handleOpenEmailApp}
                 variant="outline"
-                className="w-full h-[52px] border-[#E0E0E0] bg-white hover:bg-[#F8F9FA] text-[#1A1A1A] rounded-xl text-base font-semibold"
+                className="w-full h-[52px] border-[#E0E0E0] bg-white dark:bg-gray-900 hover:bg-[#F8F9FA] text-[#1A1A1A] rounded-xl text-base font-semibold"
                 size="lg"
               >
                 <ExternalLink className="w-5 h-5 mr-2" />
@@ -414,6 +440,7 @@ export default function EmailVerificationPage() {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
         <HeaderBar onBack={goBack} />
+        <DesktopHeader onBack={goBack} />
 
         <motion.div
           variants={staggerContainer}
@@ -432,6 +459,7 @@ export default function EmailVerificationPage() {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
         <HeaderBar onBack={goBack} />
+        <DesktopHeader onBack={goBack} />
 
         <div className="flex-1 flex items-start justify-center pt-6 pb-12 px-4">
           <motion.div
@@ -453,7 +481,7 @@ export default function EmailVerificationPage() {
       <div className="animate-pulse flex flex-col items-center gap-4">
         <div className="w-64 h-48 bg-gray-200 rounded" />
         <div className="h-8 w-48 bg-gray-200 rounded" />
-        <div className="h-4 w-64 bg-gray-100 rounded" />
+        <div className="h-4 w-64 bg-gray-100 dark:bg-gray-900 rounded" />
       </div>
     </div>
   )

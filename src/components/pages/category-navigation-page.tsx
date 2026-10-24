@@ -56,25 +56,25 @@ export function CategoryNavigationPage() {
     : categories
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 md:px-6 pt-4 pb-3">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 md:px-6 pt-4 pb-3">
         <div className="flex items-center gap-3 mb-3 max-w-5xl mx-auto">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 md:hidden"><ArrowLeft className="w-5 h-5 text-gray-700" /></button>
-          <span className="font-semibold text-gray-900 flex-1 md:text-lg">All Categories</span>
-          <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} className="p-1.5 rounded-full hover:bg-gray-100">
-            {layout === 'grid' ? <List className="w-4 h-4 text-gray-600" /> : <Grid3X3 className="w-4 h-4 text-gray-600" />}
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 md:hidden"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
+          <span className="font-semibold text-gray-900 dark:text-gray-100 flex-1 md:text-lg">All Categories</span>
+          <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900">
+            {layout === 'grid' ? <List className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" /> : <Grid3X3 className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />}
           </button>
         </div>
 
         {/* Search */}
-        <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2 max-w-5xl mx-auto">
-          <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-xl px-3 py-2 max-w-5xl mx-auto">
+          <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
             placeholder="Search categories..."
-            className="flex-1 bg-transparent text-sm outline-none text-gray-800 placeholder:text-gray-400"
+            className="flex-1 bg-transparent text-sm outline-none text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:text-gray-500"
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
@@ -95,7 +95,7 @@ export function CategoryNavigationPage() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 gap-3">
             <Hash className="w-12 h-12 text-gray-200" />
-            <p className="text-sm text-gray-500">No categories found for &ldquo;{query}&rdquo;</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">No categories found for &ldquo;{query}&rdquo;</p>
           </div>
         ) : layout === 'grid' ? (
           <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3 p-4 md:px-6">
@@ -106,7 +106,7 @@ export function CategoryNavigationPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.03 }}
                 onClick={() => navigate('category-products', { category: cat.slug })}
-                className="flex flex-col items-center gap-2 p-3 bg-gray-50 hover:bg-red-50 rounded-xl transition group"
+                className="flex flex-col items-center gap-2 p-3 bg-gray-50 dark:bg-gray-950 hover:bg-red-50 rounded-xl transition group"
               >
                 {cat.iconUrl ? (
                   <img src={cat.iconUrl} alt={cat.name} className="w-10 h-10 object-contain" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
@@ -115,9 +115,9 @@ export function CategoryNavigationPage() {
                     <Hash className="w-8 h-8 text-gray-300 group-hover:text-red-300" />
                   </div>
                 )}
-                <span className="text-xs text-gray-700 group-hover:text-red-700 text-center leading-tight line-clamp-2 font-medium">{cat.name}</span>
+                <span className="text-xs text-gray-700 dark:text-gray-300 group-hover:text-red-700 text-center leading-tight line-clamp-2 font-medium">{cat.name}</span>
                 {cat._count && (
-                  <span className="text-xs text-gray-400">{cat._count.products} products</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">{cat._count.products} products</span>
                 )}
               </motion.button>
             ))}
@@ -131,7 +131,7 @@ export function CategoryNavigationPage() {
                 transition={{ delay: idx * 0.03 }}
               >
                 <button
-                  className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition group"
+                  className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition group"
                   onClick={() => {
                     if (cat.children?.length) {
                       setExpandedId(expandedId === cat.id ? null : cat.id)
@@ -143,13 +143,13 @@ export function CategoryNavigationPage() {
                   {cat.iconUrl ? (
                     <img src={cat.iconUrl} alt={cat.name} className="w-8 h-8 object-contain flex-shrink-0" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
                   ) : (
-                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Hash className="w-4 h-4 text-gray-400" />
+                    <div className="w-8 h-8 bg-gray-100 dark:bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Hash className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                     </div>
                   )}
                   <div className="flex-1 text-left">
-                    <p className="text-sm font-medium text-gray-800 group-hover:text-red-600">{cat.name}</p>
-                    {cat._count && <p className="text-xs text-gray-400">{cat._count.products} products</p>}
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-red-600">{cat.name}</p>
+                    {cat._count && <p className="text-xs text-gray-400 dark:text-gray-500">{cat._count.products} products</p>}
                   </div>
                   <ChevronRight className={`w-4 h-4 text-gray-400 transition ${expandedId === cat.id ? 'rotate-90' : ''}`} />
                 </button>
@@ -161,16 +161,16 @@ export function CategoryNavigationPage() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden bg-gray-50"
+                      className="overflow-hidden bg-gray-50 dark:bg-gray-950"
                     >
                       {cat.children.map(sub => (
                         <button
                           key={sub.id}
                           onClick={() => navigate('category-products', { category: sub.slug })}
-                          className="w-full flex items-center gap-3 pl-12 pr-4 py-2.5 hover:bg-gray-100 transition"
+                          className="w-full flex items-center gap-3 pl-12 pr-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition"
                         >
-                          <span className="text-sm text-gray-600">{sub.name}</span>
-                          {sub._count && <span className="text-xs text-gray-400 ml-auto">{sub._count.products}</span>}
+                          <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{sub.name}</span>
+                          {sub._count && <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">{sub._count.products}</span>}
                         </button>
                       ))}
                     </motion.div>

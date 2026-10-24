@@ -65,7 +65,7 @@ export function AffiliateProgramPage() {
       {/* Header */}
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ export function AffiliateProgramPage() {
         <div className="hidden md:flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100">Affiliate Partner Program</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Earn 5% commission on every wholesale order you refer</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Earn 5% commission on every wholesale order you refer</p>
           </div>
           {affiliate && (
             <Button
@@ -105,7 +105,7 @@ export function AffiliateProgramPage() {
 
         {/* Hero Banner */}
         <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-800 rounded-3xl p-6 md:p-8 text-white shadow-md space-y-3">
-          <span className="text-[10px] font-extrabold uppercase tracking-widest bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest bg-white dark:bg-gray-900/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm">
             5% Commission on Bulk Orders
           </span>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-black">Monetize Your B2B Industry Network</h2>
@@ -118,7 +118,7 @@ export function AffiliateProgramPage() {
         {affiliate ? (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Your Unique Tracking Link
               </span>
               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
@@ -150,7 +150,7 @@ export function AffiliateProgramPage() {
         ) : (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4 text-center">
             <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Become a Certified Wholesale Affiliate</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-md mx-auto">
               Get instant access to tracked wholesale referral links, real-time commission analytics, and monthly bKash/bank account settlements.
             </p>
 
@@ -169,19 +169,19 @@ export function AffiliateProgramPage() {
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <DollarSign className="w-5 h-5 text-emerald-600" />
             <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">High Average Order Value</h4>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">Average wholesale order is ৳85,000+ generating ৳4,250 commission per transaction.</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Average wholesale order is ৳85,000+ generating ৳4,250 commission per transaction.</p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <Share2 className="w-5 h-5 text-blue-600" />
             <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">60-Day Cookie Window</h4>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">Commissions attributed even if buyers return up to 2 months later.</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Commissions attributed even if buyers return up to 2 months later.</p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <CheckCircle2 className="w-5 h-5 text-purple-600" />
             <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">Automatic Bank Payouts</h4>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">Approved commissions are transferred to your nominated BEFTN/bKash account.</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Approved commissions are transferred to your nominated BEFTN/bKash account.</p>
           </div>
         </div>
       </div>

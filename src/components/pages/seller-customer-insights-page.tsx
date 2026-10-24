@@ -83,7 +83,7 @@ export function SellerCustomerInsightsPagePage() {
     >
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Customer insights</h1>
@@ -92,7 +92,7 @@ export function SellerCustomerInsightsPagePage() {
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
         <div className="hidden md:block">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Customer insights</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
             Everyone who ordered from your store — built from your real order lines, nothing modeled.
           </p>
         </div>
@@ -106,7 +106,7 @@ export function SellerCustomerInsightsPagePage() {
             <CardContent className="p-8 text-center space-y-3">
               <Users className="w-10 h-10 text-gray-300 mx-auto" />
               <h2 className="text-base font-bold dark:text-white">Seller sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Sign in with a supplier account to see your customers.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Sign in with a supplier account to see your customers.</p>
               <button onClick={() => navigate('login')} className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground">
                 Sign In
               </button>
@@ -114,7 +114,7 @@ export function SellerCustomerInsightsPagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">{error}</CardContent>
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">{error}</CardContent>
           </Card>
         ) : data ? (
           <>
@@ -127,7 +127,7 @@ export function SellerCustomerInsightsPagePage() {
                     <span className="text-xs font-medium">Customers</span>
                   </div>
                   <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="customers-total">{data.summary.totalCustomers}</p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">bought from your store</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">bought from your store</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800">
@@ -137,7 +137,7 @@ export function SellerCustomerInsightsPagePage() {
                     <span className="text-xs font-medium">Repeat buyers</span>
                   </div>
                   <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="customers-repeat">{data.summary.repeatCustomers}</p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">more than one order</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">more than one order</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800">
@@ -149,7 +149,7 @@ export function SellerCustomerInsightsPagePage() {
                   <p className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="customers-avg">
                     {data.summary.avgOrdersPerCustomer ?? '—'}
                   </p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">per customer</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">per customer</p>
                 </CardContent>
               </Card>
               <Card className="border-none shadow-sm dark:bg-gray-800">
@@ -159,7 +159,7 @@ export function SellerCustomerInsightsPagePage() {
                     <span className="text-xs font-medium">Lifetime earned</span>
                   </div>
                   <p className="mt-2 text-lg md:text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="customers-ltv">{bdt(data.summary.lifetimeValue)}</p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">all customers combined</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">all customers combined</p>
                 </CardContent>
               </Card>
             </div>
@@ -169,7 +169,7 @@ export function SellerCustomerInsightsPagePage() {
                 <CardContent className="p-10 text-center space-y-2">
                   <Inbox className="w-10 h-10 text-gray-300 mx-auto" />
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No customers yet</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     When a buyer orders one of your products, they appear here with their real order history.
                   </p>
                 </CardContent>
@@ -182,7 +182,7 @@ export function SellerCustomerInsightsPagePage() {
                     <div className="max-h-96 overflow-y-auto">
                       <table className="w-full text-sm">
                         <thead className="sticky top-0 bg-white dark:bg-gray-900 dark:bg-gray-800 z-10">
-                          <tr className="text-left text-xs text-gray-500 dark:text-gray-400 border-b">
+                          <tr className="text-left text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 border-b">
                             <th className="py-3 pl-4 pr-3 font-medium">Customer</th>
                             <th className="py-3 pr-3 font-medium text-right">Orders</th>
                             <th className="py-3 pr-3 font-medium text-right">Earned</th>
@@ -199,13 +199,13 @@ export function SellerCustomerInsightsPagePage() {
                                   <span className="font-medium truncate max-w-52" title={c.displayName}>{c.displayName}</span>
                                   {c.repeat && <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 text-[10px]">Repeat</Badge>}
                                 </div>
-                                <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate max-w-52">{c.email}</p>
+                                <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate max-w-52">{c.email}</p>
                               </td>
                               <td className="py-3 pr-3 text-right font-semibold tabular-nums">{c.ordersCount}</td>
                               <td className="py-3 pr-3 text-right font-semibold tabular-nums whitespace-nowrap">{bdt(c.totalSpent)}</td>
                               <td className="py-3 pr-3 text-center text-xs tabular-nums">{c.deliveredCount} / {c.openCount}</td>
-                              <td className="py-3 pr-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{fmtDate(c.firstOrderAt)}</td>
-                              <td className="py-3 pr-4 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{fmtDate(c.lastOrderAt)}</td>
+                              <td className="py-3 pr-3 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 whitespace-nowrap">{fmtDate(c.firstOrderAt)}</td>
+                              <td className="py-3 pr-4 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 whitespace-nowrap">{fmtDate(c.lastOrderAt)}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -223,7 +223,7 @@ export function SellerCustomerInsightsPagePage() {
                           <span className="font-semibold text-sm text-gray-900 dark:text-gray-100 dark:text-white truncate">{c.displayName}</span>
                           {c.repeat && <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 text-[10px] shrink-0">Repeat</Badge>}
                         </div>
-                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300">
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
                           <span>Orders</span><span className="text-right font-semibold">{c.ordersCount}</span>
                           <span>Earned</span><span className="text-right font-semibold">{bdt(c.totalSpent)}</span>
                           <span>Delivered / Open</span><span className="text-right">{c.deliveredCount} / {c.openCount}</span>

@@ -45,12 +45,12 @@ export function DataRightsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Your Data Rights (GDPR/PDPA)</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">Request Data Export, Correction, or Deletion</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Request Data Export, Correction, or Deletion</p>
         </div>
       </div>
 
@@ -59,7 +59,7 @@ export function DataRightsPage() {
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-3">
             <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
             <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Request Submitted Successfully</h2>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
               Your request reference is <strong>#{resultRef.slice(-8).toUpperCase()}</strong>. In accordance with statutory guidelines, our Data Governance Desk will process your request within 30 days.
             </p>
             <Button onClick={() => setSubmitted(false)} variant="outline" className="rounded-xl text-xs font-bold">
@@ -84,7 +84,7 @@ export function DataRightsPage() {
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100">{r.title}</h3>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed mt-0.5">{r.desc}</p>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed mt-0.5">{r.desc}</p>
                   </div>
                 </div>
               ))}

@@ -107,10 +107,10 @@ export function InspectionCard({ orderId, orderNumber }: { orderId: string; orde
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs">
+    <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2 text-xs font-bold">
-          <ClipboardCheck className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+          <ClipboardCheck className="h-4 w-4 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
           <span>Quality Inspection</span>
         </div>
         <Button
@@ -124,7 +124,7 @@ export function InspectionCard({ orderId, orderNumber }: { orderId: string; orde
         </Button>
       </div>
 
-      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+      <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1.5">
         Have the shipment checked before you accept the bulk order — {orderNumber ? `order #${orderNumber}` : 'this order'}.
         Only the platform team moves an inspection forward; you are notified at every step.
       </p>
@@ -132,7 +132,7 @@ export function InspectionCard({ orderId, orderNumber }: { orderId: string; orde
       {loading ? (
         <div className="h-10 rounded-lg bg-muted animate-pulse mt-3" aria-hidden />
       ) : rows.length === 0 ? (
-        <p className="text-[11px] text-slate-400 mt-3">No inspections requested for this order yet.</p>
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-3">No inspections requested for this order yet.</p>
       ) : (
         <div className="mt-3 space-y-2">
           {rows.map((r) => (
@@ -140,11 +140,11 @@ export function InspectionCard({ orderId, orderNumber }: { orderId: string; orde
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <Badge variant="outline" className={`text-[10px] capitalize ${STATUS_STYLES[r.status]}`}>{r.status}</Badge>
-                  <span className="text-[11px] text-slate-600 dark:text-slate-300">
+                  <span className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300">
                     {r.inspectorType === 'third_party' ? 'Third-party agency' : 'Self (your QC team)'}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">
                   Requested {fmt(r.createdAt)}
                   {r.scheduledAt ? ` · scheduled ${fmt(r.scheduledAt)}` : ''}
                   {r.completedAt ? ` · completed ${fmt(r.completedAt)}` : ''}

@@ -109,7 +109,7 @@ export function SpinWinPage() {
           <h2 className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-amber-400 via-rose-400 to-amber-200 bg-clip-text text-transparent">
             Spin the Lucky Wheel
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-400 dark:text-slate-500">
             Guaranteed discount vouchers or loyalty points on every turn!
           </p>
         </div>
@@ -172,7 +172,7 @@ export function SpinWinPage() {
             {spinning ? 'Spinning the Wheel...' : spinsRemaining > 0 ? `SPIN NOW (Free)` : 'No Spins Remaining Today'}
           </Button>
 
-          <p className="text-xs font-bold text-slate-400">
+          <p className="text-xs font-bold text-slate-400 dark:text-slate-500">
             Daily Spins Left: <strong className="text-amber-400">{spinsRemaining} of 3</strong>
           </p>
         </div>

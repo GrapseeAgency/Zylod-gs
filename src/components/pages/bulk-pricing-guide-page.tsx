@@ -57,7 +57,7 @@ export function BulkPricingGuidePage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Volume Discount &amp; Bulk Pricing</span>
@@ -78,7 +78,7 @@ export function BulkPricingGuidePage() {
 
         {/* Tier Cards */}
         <div className="space-y-3">
-          <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
+          <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
             Discount Tiers
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -100,9 +100,9 @@ export function BulkPricingGuidePage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{tier.label}</p>
-                  <p className="text-[11px] text-gray-400 dark:text-gray-500">{tier.units}</p>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{tier.units}</p>
                 </div>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">{tier.desc}</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{tier.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -116,7 +116,7 @@ export function BulkPricingGuidePage() {
           </div>
           <ul className="space-y-2.5 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-2.5 md:space-y-0">
             {rules.map((rule, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+              <li key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
                 <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
                 <span>{rule}</span>
               </li>

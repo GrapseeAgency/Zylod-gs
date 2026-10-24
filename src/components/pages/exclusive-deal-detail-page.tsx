@@ -33,7 +33,7 @@ export function ExclusiveDealDetailPage() {
               When a verified supplier posts a real bulk lot, it will appear here with its actual price, available quantity, and lead time. Zylod does not stage demo deals or invented allocations.
             </p>
           </div>
-          <p className="text-[11px] text-slate-400 pt-2 border-t border-slate-700">
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-700">
             Payments on Zylod are made by bank transfer or mobile banking (bKash/Nagad) — an order only advances once payment is verified.
           </p>
         </div>

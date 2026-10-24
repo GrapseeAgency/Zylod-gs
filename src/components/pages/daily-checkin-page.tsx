@@ -75,7 +75,7 @@ export function DailyCheckinPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export function DailyCheckinPage() {
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-xl lg:max-w-4xl mx-auto w-full space-y-6 pb-24 md:pb-8">
         {/* Streak Highlight Card */}
         <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-red-500 rounded-3xl p-6 text-white shadow-md text-center space-y-3">
-          <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm mx-auto flex items-center justify-center shadow-inner">
+          <div className="w-16 h-16 rounded-full bg-white dark:bg-gray-900/20 backdrop-blur-sm mx-auto flex items-center justify-center shadow-inner">
             <Flame className="w-8 h-8 text-amber-200 animate-pulse" />
           </div>
           <div className="space-y-0.5">
@@ -110,7 +110,7 @@ export function DailyCheckinPage() {
         {/* 7-Day Schedule Grid */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
-            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               7-Day Reward Ladder
             </h3>
             <span className="text-xs font-bold text-orange-600">Cycle Resets Day 7</span>
@@ -138,7 +138,7 @@ export function DailyCheckinPage() {
                   {isPastOrToday ? (
                     <CheckCircle2 className="w-4 h-4 text-green-600 mx-auto" />
                   ) : (
-                    <Gift className="w-4 h-4 text-gray-400 dark:text-gray-500 mx-auto" />
+                    <Gift className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 mx-auto" />
                   )}
                 </div>
               )
@@ -151,12 +151,12 @@ export function DailyCheckinPage() {
           <Button
             onClick={handleCheckin}
             disabled={checkedInToday || checkingIn}
-            className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-2xl shadow-lg text-sm transition-transform active:scale-95 disabled:bg-gray-200 disabled:text-gray-500"
+            className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-2xl shadow-lg text-sm transition-transform active:scale-95 disabled:bg-gray-200 disabled:text-gray-500 dark:text-gray-400 dark:text-gray-500"
           >
             {checkedInToday ? 'Checked in Today (Come back tomorrow)' : checkingIn ? 'Claiming Points...' : 'Claim Today’s Check-in Points'}
           </Button>
 
-          <p className="text-center text-xs text-gray-400 dark:text-gray-500">
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">
             Points can be converted into discount vouchers or wallet funds in the Redeem center.
           </p>
         </div>

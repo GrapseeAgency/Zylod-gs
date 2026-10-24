@@ -50,19 +50,19 @@ export function AdvancedSearchPage() {
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 pt-4 pb-3 flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-semibold text-gray-900 dark:text-gray-100">Advanced Search</span>
         </div>
-        <button onClick={handleReset} className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600">
+        <button onClick={handleReset} className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-red-600">
           Reset All
         </button>
       </div>
 
       <div className="hidden md:flex items-center justify-between max-w-3xl mx-auto w-full px-6 pt-6">
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Advanced Search</h1>
-        <button onClick={handleReset} className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600">
+        <button onClick={handleReset} className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-red-600">
           Reset All
         </button>
       </div>
@@ -161,7 +161,7 @@ export function AdvancedSearchPage() {
         >
           <div>
             <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">Verified Suppliers Only</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Show products from verified factories & wholesale depots</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Show products from verified factories & wholesale depots</p>
           </div>
           <div className={`w-5 h-5 rounded-md flex items-center justify-center border ${
             verifiedOnly ? 'bg-red-600 border-red-600 text-white' : 'border-gray-300 bg-white dark:bg-gray-900'

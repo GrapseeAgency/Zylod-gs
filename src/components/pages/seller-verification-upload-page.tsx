@@ -90,7 +90,7 @@ export const SellerVerificationUploadPage = () => {
           <CheckCircle className="w-10 h-10" />
         </div>
         <h2 className="text-2xl font-bold mb-2">Document submitted</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-8">Your document is now pending review. We will notify you once it is verified.</p>
+        <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-8">Your document is now pending review. We will notify you once it is verified.</p>
         <Button className="w-full" onClick={goBack}>Back to Verification Hub</Button>
       </div>
     );
@@ -99,7 +99,7 @@ export const SellerVerificationUploadPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 dark:bg-gray-900 flex flex-col">
       <header className="md:hidden bg-white dark:bg-gray-900 px-4 py-4 shadow-sm dark:bg-gray-800 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full dark:hover:bg-gray-700">
+        <button onClick={goBack} className="p-2 -ml-2 text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full dark:hover:bg-gray-700">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">Upload Document</h1>
@@ -132,7 +132,7 @@ export const SellerVerificationUploadPage = () => {
                 <FileText className="w-12 h-12 text-primary" />
                 <div>
                   <p className="font-medium text-sm text-gray-900 dark:text-gray-100 dark:text-white line-clamp-1">{file.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                 </div>
               </div>
             ) : (
@@ -142,7 +142,7 @@ export const SellerVerificationUploadPage = () => {
                 </div>
                 <div>
                   <p className="font-medium text-sm text-gray-900 dark:text-gray-100 dark:text-white">Drag &amp; drop or tap to browse</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Supports JPG, PNG, WebP (Max {MAX_MB}MB)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Supports JPG, PNG, WebP (Max {MAX_MB}MB)</p>
                 </div>
               </div>
             )}

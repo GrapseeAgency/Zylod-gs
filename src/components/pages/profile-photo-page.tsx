@@ -88,7 +88,7 @@ export function ProfilePhotoPage() {
 
       {/* Top Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={() => navigate('profile')} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+        <button onClick={() => navigate('profile')} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -105,7 +105,7 @@ export function ProfilePhotoPage() {
         {/* Back Link */}
         <button
           onClick={() => navigate('profile')}
-          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900"
+          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Profile</span>
@@ -126,11 +126,11 @@ export function ProfilePhotoPage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <User className="h-12 w-12 text-slate-400 dark:text-slate-500" />
+              <User className="h-12 w-12 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
             )}
           </div>
 
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-xs mx-auto leading-relaxed">
             A clear profile photo helps build trust with buyers and suppliers on Zylod.
           </p>
 
@@ -166,7 +166,7 @@ export function ProfilePhotoPage() {
             </p>
           )}
 
-          <p className="text-[10px] text-slate-400 dark:text-slate-500">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
             Max file size: 10MB. Formats: JPG, PNG, WebP.
           </p>
         </div>

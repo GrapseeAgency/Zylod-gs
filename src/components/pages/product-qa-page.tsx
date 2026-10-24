@@ -92,10 +92,10 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
-              <Search className="h-6 w-6 text-slate-500 dark:text-slate-400" />
+              <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">No product selected</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
               Q&amp;A is scoped to a single product. Open any product and choose its Q&amp;A tab to
               ask the supplier a question.
             </p>
@@ -121,7 +121,7 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back" aria-label="Back">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back" aria-label="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <h1 className="text-base font-black text-primary">Product Q&amp;A</h1>
@@ -132,7 +132,7 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
         <div className="hidden md:block">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Product Q&amp;A</h1>
           {productName && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 truncate">
               Questions about <span className="font-semibold text-slate-700 dark:text-slate-300">{productName}</span>
             </p>
           )}
@@ -142,7 +142,7 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs">
           <div className="min-w-0">
             <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{qas.length} question{qas.length === 1 ? '' : 's'} on record</p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
               {unanswered.length > 0
                 ? `${unanswered.length} awaiting the supplier's answer`
                 : answered.length > 0
@@ -161,7 +161,7 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
         {/* Search + filters */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
             <Input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -206,7 +206,7 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
                 <AlertCircle className="h-6 w-6 text-red-600" />
               </div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Couldn't load Q&amp;A</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 break-words">{errorMsg}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">{errorMsg}</p>
               <Button onClick={load} variant="outline" className="text-xs font-bold gap-2">
                 <Loader2 className="h-4 w-4" /> Retry
               </Button>
@@ -217,12 +217,12 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
           <Card className="rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
             <CardContent className="p-10 text-center space-y-3">
               <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
-                <HelpCircle className="h-6 w-6 text-slate-500 dark:text-slate-400" />
+                <HelpCircle className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
               </div>
               <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                 {qas.length === 0 ? 'No questions yet' : 'Nothing matches'}
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                 {qas.length === 0
                   ? 'Ask the supplier about specs, bulk pricing, lead times, or anything else — the question goes straight to their seller console.'
                   : 'Try a different search term or switch the filter.'}
@@ -243,7 +243,7 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 break-words">{qa.question}</h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">
                     Asked by <span className="font-semibold">{qa.askedBy}</span> · {fmt(qa.askedAt)}
                   </p>
                 </div>
@@ -258,10 +258,10 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
                 <div className="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 space-y-2">
                   <div className="flex items-center gap-1.5 text-[11px] font-bold text-primary">
                     <BadgeCheck className="h-3.5 w-3.5" /> Answered by the supplier
-                    {qa.answeredAt && <span className="text-slate-400 dark:text-slate-500 font-medium">· {fmt(qa.answeredAt)}</span>}
+                    {qa.answeredAt && <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">· {fmt(qa.answeredAt)}</span>}
                   </div>
                   <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed break-words">{qa.answer}</p>
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 pt-1">
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 pt-1">
                     <ThumbsUp className="h-3 w-3" /> {qa.helpful} found this helpful
                   </div>
                 </div>

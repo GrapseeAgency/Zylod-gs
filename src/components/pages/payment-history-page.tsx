@@ -58,8 +58,8 @@ export function PaymentHistoryPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Payment History</span>
@@ -109,7 +109,7 @@ export function PaymentHistoryPage() {
         {/* Payments List */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500">
+            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="text-xs font-bold">Loading Payment Records...</span>
             </div>
@@ -120,7 +120,7 @@ export function PaymentHistoryPage() {
                 <div
                   key={p.id}
                   onClick={() => navigate('order-detail', { orderId: p.orderId })}
-                  className="p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  className="p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
@@ -139,7 +139,7 @@ export function PaymentHistoryPage() {
                           {p.status.toUpperCase()}
                         </span>
                       </div>
-                      <span className="text-[11px] text-slate-400 dark:text-slate-500 block mt-0.5">
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-0.5">
                         Via {p.method} • {p.transactionId}
                       </span>
                     </div>
@@ -149,7 +149,7 @@ export function PaymentHistoryPage() {
                     <span className="text-xs font-black font-mono text-slate-900 dark:text-slate-100 block">
                       {formatPrice(p.amount)}
                     </span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
                       {p.paidAt ? new Date(p.paidAt).toLocaleDateString() : 'Pending'}
                     </span>
                   </div>
@@ -162,12 +162,12 @@ export function PaymentHistoryPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-red-50/50 text-left">
-                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Order</th>
-                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Method</th>
-                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Transaction</th>
-                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Status</th>
-                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 text-right">Amount</th>
-                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 text-right">Date</th>
+                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">Order</th>
+                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">Method</th>
+                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">Transaction</th>
+                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">Status</th>
+                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500 text-right">Amount</th>
+                    <th className="px-4 py-3 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500 text-right">Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -178,8 +178,8 @@ export function PaymentHistoryPage() {
                       className="cursor-pointer hover:bg-red-50/30"
                     >
                       <td className="px-4 py-3 text-xs font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">PO #{p.orderNumber}</td>
-                      <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">{p.method}</td>
-                      <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 font-mono max-w-[180px] truncate">{p.transactionId}</td>
+                      <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{p.method}</td>
+                      <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono max-w-[180px] truncate">{p.transactionId}</td>
                       <td className="px-4 py-3">
                         <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${
                           p.status === 'success' ? 'bg-emerald-50 text-emerald-700' :
@@ -191,7 +191,7 @@ export function PaymentHistoryPage() {
                       <td className="px-4 py-3 text-right text-xs font-black font-mono text-slate-900 dark:text-slate-100 whitespace-nowrap">
                         {formatPrice(p.amount)}
                       </td>
-                      <td className="px-4 py-3 text-right text-[10px] text-slate-400 dark:text-slate-500 whitespace-nowrap">
+                      <td className="px-4 py-3 text-right text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 whitespace-nowrap">
                         {p.paidAt ? new Date(p.paidAt).toLocaleDateString() : 'Pending'}
                       </td>
                     </tr>
@@ -201,9 +201,9 @@ export function PaymentHistoryPage() {
             </div>
             </>
           ) : (
-            <div className="py-12 text-center text-slate-400 dark:text-slate-500 space-y-1">
+            <div className="py-12 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 space-y-1">
               <CreditCard className="h-8 w-8 mx-auto text-slate-300 stroke-[1.5]" />
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-400 block">No payment records found</span>
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 block">No payment records found</span>
             </div>
           )}
         </div>

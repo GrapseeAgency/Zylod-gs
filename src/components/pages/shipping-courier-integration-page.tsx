@@ -12,7 +12,7 @@ export function ShippingCourierIntegrationPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
       <header className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400">
+          <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400 dark:text-gray-500">
             <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">API Integration</h1>
@@ -61,7 +61,7 @@ export function ShippingCourierIntegrationPage() {
             <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-1">Zylod Webhook URL (Read Only)</label>
               <div className="flex gap-2">
-                <input type="text" readOnly value="https://api.zylod.com/webhooks/courier" className="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-500 dark:text-gray-400" />
+                <input type="text" readOnly value="https://api.zylod.com/webhooks/courier" className="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500" />
               </div>
             </div>
           </div>

@@ -154,7 +154,7 @@ export function EditProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500">
+        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500 dark:text-slate-400">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="text-xs font-bold">Loading Profile...</span>
         </div>
@@ -166,7 +166,7 @@ export function EditProfilePage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Close">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Close">
           <X className="h-6 w-6 text-primary" />
         </button>
         <h1 className="text-base font-black text-primary">Edit Wholesale Profile</h1>
@@ -212,7 +212,7 @@ export function EditProfilePage() {
               <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-4 md:gap-y-4">
                 <div className="md:col-span-2">
                   <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Personal &amp; Contact Details</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Primary executive contact for procurement &amp; RFQs.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">Primary executive contact for procurement &amp; RFQs.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 md:col-span-2">
@@ -239,7 +239,7 @@ export function EditProfilePage() {
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Email Address</label>
                   <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                     <Input
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -252,7 +252,7 @@ export function EditProfilePage() {
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Phone Number</label>
                   <div className="relative">
-                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                     <Input
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -265,7 +265,7 @@ export function EditProfilePage() {
                 <div className="space-y-1 md:col-span-2">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Job Title / Designation</label>
                   <div className="relative">
-                    <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                    <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                     <Input
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
@@ -282,7 +282,7 @@ export function EditProfilePage() {
               <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-4 md:gap-y-4">
                 <div className="md:col-span-2">
                   <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Company &amp; Legal Entity</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Commercial registration and tax credentials.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">Commercial registration and tax credentials.</p>
                 </div>
 
                 <div className="space-y-1">
@@ -336,7 +336,7 @@ export function EditProfilePage() {
               <div className="space-y-4">
                 <div>
                   <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Manufacturing &amp; Facilities</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Showcase production footprint to global buyers.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">Showcase production footprint to global buyers.</p>
                 </div>
 
                 <div className="space-y-1">
@@ -387,7 +387,7 @@ export function EditProfilePage() {
               <div className="space-y-4">
                 <div>
                   <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Accreditations &amp; Testing</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Audited standards for trade compliance.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">Audited standards for trade compliance.</p>
                 </div>
 
                 <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
@@ -409,7 +409,7 @@ export function EditProfilePage() {
                 type="button"
                 variant="outline"
                 onClick={goBack}
-                className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-12 rounded-2xl text-xs"
+                className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-12 rounded-2xl text-xs"
               >
                 Cancel
               </Button>

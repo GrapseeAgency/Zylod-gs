@@ -68,7 +68,7 @@ export function NotificationSoundSettingsPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Sound &amp; Vibration Settings</span>
@@ -84,7 +84,7 @@ export function NotificationSoundSettingsPage() {
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-xl mx-auto lg:max-w-3xl w-full space-y-6 md:space-y-8 pb-24 md:pb-8">
         {/* Sound Selection Card */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Notification Tone
           </h2>
 
@@ -105,7 +105,7 @@ export function NotificationSoundSettingsPage() {
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">{opt.title}</p>
-                    <p className="text-[11px] text-gray-400 dark:text-gray-500">{opt.desc}</p>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{opt.desc}</p>
                   </div>
                 </div>
 
@@ -135,14 +135,14 @@ export function NotificationSoundSettingsPage() {
 
         {/* Haptic & In-app Options */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2.5">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2.5">
             Feedback Preferences
           </h2>
 
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">Vibration Feedback</p>
-              <p className="text-[11px] text-gray-400 dark:text-gray-500">Vibrate phone on high-priority orders and bids</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Vibrate phone on high-priority orders and bids</p>
             </div>
             <Switch checked={vibrate} onCheckedChange={setVibrate} />
           </div>
@@ -150,7 +150,7 @@ export function NotificationSoundSettingsPage() {
           <div className="flex items-center justify-between pt-2 border-t border-gray-50">
             <div>
               <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">In-App Notification Chimes</p>
-              <p className="text-[11px] text-gray-400 dark:text-gray-500">Play subtle audio while using the app</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Play subtle audio while using the app</p>
             </div>
             <Switch checked={inAppSound} onCheckedChange={setInAppSound} />
           </div>

@@ -78,7 +78,7 @@ export function PriceDropAlertsPage() {
       {/* Header (mobile only; desktop uses the global Header + desktop title row below) */}
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ export function PriceDropAlertsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('push-notification-settings')}
-            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition"
+            className="p-2 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-xl transition"
             title="Alert Settings"
           >
             <SlidersHorizontal className="w-4 h-4" />
@@ -117,7 +117,7 @@ export function PriceDropAlertsPage() {
             variant="outline"
             size="sm"
             onClick={() => navigate('push-notification-settings')}
-            className="border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400"
+            className="border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
             Alert Settings
@@ -177,7 +177,7 @@ export function PriceDropAlertsPage() {
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">
               {activeTab === 'active' ? 'No active price watches' : 'No alerts in this tab'}
             </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
               Set target prices on wholesale goods to get notified instantly when suppliers lower their rates.
             </p>
             <div className="pt-2">
@@ -200,7 +200,7 @@ export function PriceDropAlertsPage() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => navigate('product-detail', { productId: alert.productId })}
-                className={`bg-white rounded-2xl p-4 border transition cursor-pointer shadow-sm hover:shadow hover:border-red-200 ${
+                className={`bg-white dark:bg-gray-900 rounded-2xl p-4 border transition cursor-pointer shadow-sm hover:shadow hover:border-red-200 ${
                   hasTriggered ? 'border-green-200 bg-green-50/20' : 'border-gray-100 dark:border-gray-800'
                 }`}
               >
@@ -214,7 +214,7 @@ export function PriceDropAlertsPage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                     )}
                   </div>
 
@@ -226,14 +226,14 @@ export function PriceDropAlertsPage() {
                     {/* Price Comparison Row */}
                     <div className="flex items-center gap-3 mt-1.5 text-xs">
                       <div>
-                        <span className="text-[10px] text-gray-400 dark:text-gray-500 block">Current Price</span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 block">Current Price</span>
                         <span className="font-bold text-gray-900 dark:text-gray-100">
                           {formatPrice(alert.currentPrice)}
                         </span>
                       </div>
                       <div className="text-gray-300">→</div>
                       <div>
-                        <span className="text-[10px] text-gray-400 dark:text-gray-500 block">Target Alert Price</span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 block">Target Alert Price</span>
                         <span className="font-bold text-red-600">
                           {formatPrice(alert.targetPrice)}
                         </span>
@@ -247,7 +247,7 @@ export function PriceDropAlertsPage() {
                     </div>
 
                     <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-50 text-[11px]">
-                      <span className="text-gray-400 dark:text-gray-500">
+                      <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">
                         Created {new Date(alert.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </span>
 

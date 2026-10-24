@@ -49,12 +49,12 @@ export function PressMediaPage() {
     <div className="overflow-x-hidden flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div>
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Press & Media Hub</h1>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Official News, Announcements & Media Assets</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Official News, Announcements & Media Assets</p>
           </div>
         </div>
         <button
@@ -70,7 +70,7 @@ export function PressMediaPage() {
         <div className="hidden md:flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Press &amp; Media Hub</h1>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Official News, Announcements &amp; Media Assets</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Official News, Announcements &amp; Media Assets</p>
           </div>
           <button
             onClick={() => navigate('media-kit')}
@@ -101,7 +101,7 @@ export function PressMediaPage() {
             <Button
               onClick={() => navigate('investor-relations')}
               variant="outline"
-              className="bg-white/10 hover:bg-white/20 border-white/20 text-white rounded-xl text-xs font-bold py-2"
+              className="bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 border-white/20 text-white rounded-xl text-xs font-bold py-2"
             >
               Investor Relations →
             </Button>
@@ -142,7 +142,7 @@ export function PressMediaPage() {
               {[1, 2, 3].map(i => <div key={i} className="h-32 bg-gray-200 rounded-3xl" />)}
             </div>
           ) : filteredReleases.length === 0 ? (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 text-center text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-gray-800">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 text-center text-gray-400 dark:text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-800">
               No press releases found in this category.
             </div>
           ) : (
@@ -170,11 +170,11 @@ export function PressMediaPage() {
                   )}
                 </div>
 
-                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 line-clamp-2 leading-relaxed">
                   {pr.summary}
                 </p>
 
-                <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 pt-1 border-t border-gray-50">
+                <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 pt-1 border-t border-gray-50">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
                     {new Date(pr.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}

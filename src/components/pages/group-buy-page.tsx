@@ -45,7 +45,7 @@ export function GroupBuyPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -80,7 +80,7 @@ export function GroupBuyPage() {
               </div>
             ))
           ) : campaigns.length === 0 ? (
-            <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500">
               No active group buy pools at this moment.
             </div>
           ) : (
@@ -97,7 +97,7 @@ export function GroupBuyPage() {
                       <Badge className="bg-red-50 text-red-700 hover:bg-red-50 border-red-200 text-[10px] font-bold">
                         Save {camp.savingsPercent}%
                       </Badge>
-                      <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" /> Ends: {new Date(camp.expiresAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </span>
                     </div>
@@ -106,7 +106,7 @@ export function GroupBuyPage() {
 
                   <div className="text-right flex-shrink-0">
                     <p className="text-base font-black text-red-600">{formatPrice(camp.discountedPrice)}</p>
-                    <p className="text-[11px] text-gray-400 dark:text-gray-500 line-through">{formatPrice(camp.originalPrice)}</p>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 line-through">{formatPrice(camp.originalPrice)}</p>
                   </div>
                 </div>
 
@@ -125,7 +125,7 @@ export function GroupBuyPage() {
                 </div>
 
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">
                     Live pool progress — updates as merchants join
                   </span>
                   <Button

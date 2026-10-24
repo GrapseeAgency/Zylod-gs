@@ -85,7 +85,7 @@ export function HomeLoadingScreen() {
             <div className="border border-border/60 bg-card rounded-lg overflow-hidden">
               {/* Red "All Categories" header */}
               <div className="px-4 py-3 bg-primary">
-                <Shimmer className="h-4 w-[120px] bg-white/30" />
+                <Shimmer className="h-4 w-[120px] bg-white dark:bg-gray-900/30" />
               </div>
               {/* Category rows */}
               <div className="py-0.5">

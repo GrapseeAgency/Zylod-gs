@@ -69,9 +69,9 @@ export function SavedSearchesPage() {
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 pt-4 pb-3">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
           <span className="font-semibold text-gray-900 dark:text-gray-100 flex-1 md:text-xl">Saved Searches</span>
-          <button onClick={() => navigate('search-home')} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-red-600">
+          <button onClick={() => navigate('search-home')} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 text-red-600">
             <Plus className="w-5 h-5" />
           </button>
         </div>
@@ -85,8 +85,8 @@ export function SavedSearchesPage() {
         ) : saved.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 gap-3 px-6 text-center">
             <Bookmark className="w-12 h-12 text-gray-200" />
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">No saved searches</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Save a search to get notified when new products match your criteria</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">No saved searches</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Save a search to get notified when new products match your criteria</p>
             <button onClick={() => navigate('search-home')} className="px-4 py-2 bg-red-600 text-white text-sm rounded-xl font-medium mt-2">Start Searching</button>
           </div>
         ) : (
@@ -107,17 +107,17 @@ export function SavedSearchesPage() {
                         <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{s.name}</p>
                         {/* Filter pills */}
                         <div className="flex flex-wrap gap-1 mt-1">
-                          {f.query && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400">"{f.query}"</span>}
-                          {f.category && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400">{f.category}</span>}
-                          {f.minPrice && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400">Min ৳{f.minPrice}</span>}
-                          {f.maxPrice && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400">Max ৳{f.maxPrice}</span>}
-                          {f.moq && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400">MOQ ≤{f.moq}</span>}
+                          {f.query && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500">"{f.query}"</span>}
+                          {f.category && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500">{f.category}</span>}
+                          {f.minPrice && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500">Min ৳{f.minPrice}</span>}
+                          {f.maxPrice && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500">Max ৳{f.maxPrice}</span>}
+                          {f.moq && <span className="text-xs bg-white dark:bg-gray-900 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 dark:text-gray-500">MOQ ≤{f.moq}</span>}
                         </div>
                       </div>
                       <button
                         onClick={() => deleteSearch(s.id)}
                         disabled={deleting === s.id}
-                        className="p-1.5 opacity-0 group-hover:opacity-100 transition text-gray-400 dark:text-gray-500 hover:text-red-500">
+                        className="p-1.5 opacity-0 group-hover:opacity-100 transition text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-red-500">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -126,7 +126,7 @@ export function SavedSearchesPage() {
                         className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition">
                         <Search className="w-3 h-3" /> Search Now
                       </button>
-                      <button className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-xs text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                      <button className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 rounded-lg hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition">
                         <Bell className="w-3 h-3" /> Alert
                       </button>
                     </div>

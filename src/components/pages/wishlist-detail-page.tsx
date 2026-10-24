@@ -101,7 +101,7 @@ export function WishlistDetailPage() {
   if (!item) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <p className="text-gray-500 dark:text-gray-400 mb-4">Item not found.</p>
+        <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4">Item not found.</p>
         <Button onClick={() => goBack()}>Go Back</Button>
       </div>
     )
@@ -116,7 +116,7 @@ export function WishlistDetailPage() {
       className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col pb-24 md:pb-10"
     >
       <header className="md:hidden bg-white dark:bg-gray-900 h-14 flex items-center px-4 fixed top-0 w-full z-20 shadow-sm">
-        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 mr-2">
+        <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 mr-2">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <h1 className="text-base font-semibold flex-1 truncate">Wishlist Item</h1>
@@ -136,12 +136,12 @@ export function WishlistDetailPage() {
           </div>
           <div className="flex items-center gap-2 mb-4">
             <span className="text-xl font-bold text-primary">${item.product.basePrice.toFixed(2)}</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400">/ unit</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">/ unit</span>
             <div className="ml-auto bg-green-50 text-green-700 px-2 py-1 rounded text-xs font-medium flex items-center">
               <TrendingDown className="w-3 h-3 mr-1" /> -5% this week
             </div>
           </div>
-          <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-950 p-2 rounded-lg">
+          <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-950 p-2 rounded-lg">
             <span className="font-medium mr-2">Supplier:</span> 
             {item.product.supplier.companyName}
             {item.product.supplier.isVerified && (

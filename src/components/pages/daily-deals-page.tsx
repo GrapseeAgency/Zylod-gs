@@ -122,7 +122,7 @@ export function DailyDealsPage() {
       <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -130,7 +130,7 @@ export function DailyDealsPage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -167,7 +167,7 @@ export function DailyDealsPage() {
 
         {!isLoading && !loadError && deals.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
-            <Sun className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+            <Sun className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               Today&apos;s picks have sold out. A fresh selection drops at midnight.
             </p>
@@ -271,7 +271,7 @@ export function DailyDealsPage() {
                     <div className="text-base font-bold text-[#C8102E] mt-1">
                       {formatPrice(deal.dealPrice)}
                       <span className="text-xs font-normal text-[#6B7280]"> / {deal.unit}</span>{' '}
-                      <span className="text-xs font-normal text-gray-400 dark:text-gray-500 line-through">{formatPrice(deal.originalPrice)}</span>
+                      <span className="text-xs font-normal text-gray-400 dark:text-gray-500 dark:text-gray-400 line-through">{formatPrice(deal.originalPrice)}</span>
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
@@ -301,7 +301,7 @@ export function DailyDealsPage() {
             </div>
             <div className="flex-1">
               <h4 className="text-sm font-bold text-white">Flash Deals live now</h4>
-              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Steeper cuts, ticking clock — while stock lasts.</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-0.5">Steeper cuts, ticking clock — while stock lasts.</p>
             </div>
           </button>
         )}

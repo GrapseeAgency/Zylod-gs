@@ -58,7 +58,7 @@ export function ContactUsPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Contact Zylod Support</span>
@@ -78,21 +78,21 @@ export function ContactUsPage() {
             <Phone className="w-5 h-5 text-red-600 mb-2" />
             <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">Support Hotline</p>
             <p className="text-xs font-bold text-red-600">+880 9612-345678</p>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">9:00 AM – 10:00 PM Daily</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">9:00 AM – 10:00 PM Daily</p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <Mail className="w-5 h-5 text-red-600 mb-2" />
             <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">Email Support</p>
             <p className="text-xs font-bold text-gray-800 dark:text-gray-200">support@zylod.com.bd</p>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">24-hour response SLA</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">24-hour response SLA</p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <MapPin className="w-5 h-5 text-red-600 mb-2" />
             <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">Dhaka Headquarters</p>
             <p className="text-xs text-gray-700 dark:text-gray-300">Gulshan-2, Dhaka 1212</p>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">Bangladesh</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Bangladesh</p>
           </div>
         </div>
 
@@ -108,7 +108,7 @@ export function ContactUsPage() {
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Inquiry Received</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-sm mx-auto">
                 Thank you for contacting Zylod Wholesale. A support representative will review your message and reach out via phone or email within 24 hours.
               </p>
               <button
@@ -125,7 +125,7 @@ export function ContactUsPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="border-b border-gray-100 dark:border-gray-800 pb-3">
                 <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Send an Inquiry</h2>
-                <p className="text-xs text-gray-400 dark:text-gray-500">Fill out this form and our merchant support team will respond promptly.</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Fill out this form and our merchant support team will respond promptly.</p>
               </div>
 
               {errorMsg && (

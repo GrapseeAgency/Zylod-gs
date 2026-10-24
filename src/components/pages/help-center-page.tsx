@@ -82,7 +82,7 @@ export function HelpCenterPage() {
       {/* Hero Header */}
       <div className="bg-gradient-to-b from-red-600 to-red-700 text-white px-4 pt-4 pb-8 rounded-b-3xl shadow-lg">
         <div className="flex items-center gap-3 mb-6 md:hidden">
-          <button onClick={goBack} className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+          <button onClick={goBack} className="p-2 rounded-full bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 transition">
             <ArrowLeft className="w-5 h-5 text-white" />
           </button>
           <span className="font-semibold text-lg">Help & Support Center</span>
@@ -101,9 +101,9 @@ export function HelpCenterPage() {
               placeholder="Search help, policies, payments, disputes..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl pl-11 pr-4 py-3.5 text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 placeholder:text-gray-400"
+              className="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl pl-11 pr-4 py-3.5 text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 placeholder:text-gray-400 dark:text-gray-500"
             />
-            <Search className="w-5 h-5 text-gray-400 dark:text-gray-500 absolute left-3.5 top-3.5" />
+            <Search className="w-5 h-5 text-gray-400 dark:text-gray-500 dark:text-gray-400 absolute left-3.5 top-3.5" />
           </form>
         </div>
       </div>
@@ -120,7 +120,7 @@ export function HelpCenterPage() {
             </div>
             <div>
               <p className="text-sm font-bold text-gray-900 dark:text-gray-100">AI Assistant</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Instant policy lookups</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Instant policy lookups</p>
             </div>
           </button>
 
@@ -133,7 +133,7 @@ export function HelpCenterPage() {
             </div>
             <div>
               <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Live Chat</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Human support rep</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Human support rep</p>
             </div>
           </button>
         </div>
@@ -145,7 +145,7 @@ export function HelpCenterPage() {
               <MessageSquare className="w-4 h-4 text-red-600" />
               Reach the Team
             </h2>
-            <span className="text-[11px] text-gray-400 dark:text-gray-500">Official channels</span>
+            <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Official channels</span>
           </div>
 
           <div className="pt-3 space-y-2.5">
@@ -164,7 +164,7 @@ export function HelpCenterPage() {
                       <Mail className="w-4 h-4" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-[11px] text-gray-400 dark:text-gray-500">Email</span>
+                      <span className="block text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Email</span>
                       <span className="block text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-red-600 transition truncate">{supportEmail}</span>
                     </span>
                   </a>
@@ -178,17 +178,17 @@ export function HelpCenterPage() {
                       <Phone className="w-4 h-4" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-[11px] text-gray-400 dark:text-gray-500">Phone</span>
+                      <span className="block text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Phone</span>
                       <span className="block text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-red-600 transition">{supportPhone}</span>
                     </span>
                   </a>
                 )}
-                <p className="text-[11px] text-gray-400 dark:text-gray-500 border-t border-gray-50 pt-2.5">
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 border-t border-gray-50 pt-2.5">
                   Managed by site admins under Admin → System Settings.
                 </p>
               </>
             ) : (
-              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
                 {contactsError
                   ? 'Support contacts could not be loaded right now — please try again later.'
                   : 'No support contact published yet — the site owner has not configured one under Admin → System Settings.'}
@@ -226,9 +226,9 @@ export function HelpCenterPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-red-600 transition">{topic.title}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{topic.desc}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">{topic.desc}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 mt-1" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-1" />
                 </motion.button>
               )
             })}
@@ -265,7 +265,7 @@ export function HelpCenterPage() {
                   <span className="text-xs font-medium text-gray-800 dark:text-gray-200 group-hover:text-red-600 pr-2">
                     {faq.questionEn}
                   </span>
-                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 flex-shrink-0" />
                 </button>
               ))}
             </div>
@@ -313,8 +313,8 @@ export function HelpCenterPage() {
                 System Status: <span className="text-green-600">{status.overallStatus}</span>
               </p>
             </div>
-            <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
-              <Activity className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+            <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <Activity className="w-3 h-3 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
               All Courier APIs Active
             </span>
           </div>

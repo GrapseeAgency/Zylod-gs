@@ -44,12 +44,12 @@ export function SellerReviewReplyPage({ id }: { id?: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4">
+    <div className="min-h-screen bg-white dark:bg-gray-900 p-4">
       <header className="md:hidden flex items-center mb-6">
         <button onClick={goBack} className="mr-4">←</button>
         <h1 className="text-xl font-bold">Reply to Review</h1>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">Reply to Review</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Reply to Review</h1>
       <textarea className="w-full h-40 border rounded p-3 mb-2" placeholder="Write a polite response to the customer..." value={reply} onChange={(e) => setReply(e.target.value)}></textarea>
       {error && (
         <p className="flex items-start gap-1.5 text-xs text-red-600 mb-2">

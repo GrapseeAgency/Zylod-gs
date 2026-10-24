@@ -57,10 +57,10 @@ export function LiveShoppingDetailPage() {
         <div className="flex items-center gap-2">
           {stream?.isLive && (
             <span className="bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" /> LIVE
+              <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-gray-900 animate-ping" /> LIVE
             </span>
           )}
-          <span className="text-xs text-slate-400 flex items-center gap-1">
+          <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
             <Eye className="w-3.5 h-3.5" /> {stream?.viewerCount ?? 0}
           </span>
         </div>
@@ -77,8 +77,8 @@ export function LiveShoppingDetailPage() {
             />
           ) : (
             <div className="text-center space-y-2">
-              <Radio className="w-10 h-10 text-slate-600 mx-auto" />
-              <p className="text-xs text-slate-500">No stream video yet</p>
+              <Radio className="w-10 h-10 text-slate-600 dark:text-slate-400 dark:text-slate-500 mx-auto" />
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">No stream video yet</p>
             </div>
           )}
 
@@ -98,11 +98,11 @@ export function LiveShoppingDetailPage() {
 
         {/* Live Chat & Messages */}
         <div className="bg-slate-900/90 rounded-3xl p-4 border border-slate-800 space-y-3 lg:col-span-1">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Live Factory Floor Q&amp;A</h3>
+          <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Live Factory Floor Q&amp;A</h3>
 
           <div className="space-y-2 max-h-48 lg:max-h-[420px] overflow-y-auto pr-1">
             {messages.length === 0 ? (
-              <p className="text-[11px] text-slate-500 leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                 No messages yet. Live chat opens for everyone once the host starts broadcasting.
               </p>
             ) : (

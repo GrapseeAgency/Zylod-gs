@@ -37,7 +37,7 @@ export function EscrowProtectionGuidePage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition" aria-label="Go back">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition" aria-label="Go back">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">How Payments Work</span>
@@ -74,7 +74,7 @@ export function EscrowProtectionGuidePage() {
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{f.title}</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{f.desc}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{f.desc}</p>
                 </div>
               </motion.div>
             )
@@ -90,15 +90,15 @@ export function EscrowProtectionGuidePage() {
             <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
               <Building2 className="w-5 h-5 mx-auto mb-1 text-slate-700 dark:text-slate-300" />
               <span className="text-slate-800 dark:text-slate-200 font-bold block mb-0.5">Bank Transfer</span>
-              <span className="text-[10px] text-gray-400 dark:text-gray-500">Account details shown per order</span>
+              <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Account details shown per order</span>
             </div>
             <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
               <Smartphone className="w-5 h-5 mx-auto mb-1 text-pink-600" />
               <span className="text-pink-600 font-bold block mb-0.5">Mobile Banking</span>
-              <span className="text-[10px] text-gray-400 dark:text-gray-500">bKash / Nagad merchant numbers</span>
+              <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">bKash / Nagad merchant numbers</span>
             </div>
           </div>
-          <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed pt-1">
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed pt-1">
             Card payments and escrow holding are not available yet. Until a dedicated escrow service exists, never send more than the verified order total, and always pay using the exact account details shown on your order.
           </p>
         </div>

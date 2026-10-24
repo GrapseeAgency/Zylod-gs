@@ -25,7 +25,7 @@ export function MobileProductCard({ product }: MobileProductCardProps) {
       onClick={handleCardClick}
     >
       {/* Image - slightly taller than wide, like reference ~5:6 */}
-      <div className="relative overflow-hidden bg-white" style={{ aspectRatio: '5/6' }}>
+      <div className="relative overflow-hidden bg-white dark:bg-gray-900" style={{ aspectRatio: '5/6' }}>
         {hasImage ? (
           <Image
             src={product.images[0]}
@@ -35,7 +35,7 @@ export function MobileProductCard({ product }: MobileProductCardProps) {
             sizes="(max-width: 768px) 50vw, 180px"
           />
         ) : (
-          <div className="w-full h-full bg-white" />
+          <div className="w-full h-full bg-white dark:bg-gray-900" />
         )}
       </div>
 

@@ -24,12 +24,12 @@ export function VipBenefitsPage() {
           </div>
         </div>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">VIP Wholesale Enterprise Club</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">VIP Wholesale Enterprise Club</h1>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24">
         <div className="text-center space-y-1">
           <h2 className="text-xl font-black text-amber-400">Enterprise Procurement Privileges</h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-400 dark:text-slate-500">
             Engineered exclusively for volume buyers and industrial manufacturing plants in Bangladesh.
           </p>
         </div>
@@ -64,7 +64,7 @@ export function VipBenefitsPage() {
                 </div>
                 <h3 className="text-sm font-bold text-white">{b.title}</h3>
               </div>
-              <p className="text-xs text-slate-400 pl-13 leading-relaxed">{b.desc}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 pl-13 leading-relaxed">{b.desc}</p>
             </div>
           ))}
         </div>

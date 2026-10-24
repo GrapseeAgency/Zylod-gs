@@ -34,7 +34,7 @@ export function OfflineOrdersPage() {
       </div>
 
       <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 p-8 text-center space-y-3">
-        <WifiOff className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500" />
+        <WifiOff className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500 dark:text-gray-400" />
         <h2 className="text-sm font-bold text-foreground">The web client is always online</h2>
         <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
           Offline order caching is native to the Android app — when a buyer or seller loses cellular signal, the

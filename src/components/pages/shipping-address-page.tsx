@@ -72,7 +72,7 @@ export function ShippingAddressPage() {
       {/* Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Shipping Address</h1>
@@ -91,17 +91,17 @@ export function ShippingAddressPage() {
           </div>
           <div className="flex-1 h-0.5 bg-slate-200 mx-2" />
           <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs font-bold">
               2
             </div>
-            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wide">Delivery</span>
+            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wide">Delivery</span>
           </div>
           <div className="flex-1 h-0.5 bg-slate-200 mx-2" />
           <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs font-bold">
               3
             </div>
-            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wide">Payment</span>
+            <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wide">Payment</span>
           </div>
         </div>
 
@@ -128,7 +128,7 @@ export function ShippingAddressPage() {
 
         {!loading && addresses.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
-            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">No saved addresses yet.</p>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500">No saved addresses yet.</p>
             <Button
               onClick={() => navigate('add-address')}
               className="bg-primary hover:bg-primary/90 text-white text-xs font-bold h-10 px-6 rounded-2xl"
@@ -170,20 +170,20 @@ export function ShippingAddressPage() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs font-black text-slate-900 dark:text-slate-100">{addr.label}</span>
                           {addr.isDefault && (
-                            <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">
                               Default
                             </span>
                           )}
                         </div>
 
-                        <div className="text-xs text-slate-600 dark:text-slate-400 mt-1.5 space-y-0.5 leading-relaxed">
+                        <div className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 mt-1.5 space-y-0.5 leading-relaxed">
                           <p className="font-bold text-slate-800 dark:text-slate-200">{addr.companyName}</p>
                           {addr.contactName && <p>Attn: {addr.contactName}</p>}
                           <p>{addr.streetLine1}</p>
                           {addr.area && <p>{addr.area}</p>}
                           <p>{addr.city}, {addr.country}</p>
                           {addr.phone && (
-                            <p className="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-[11px] pt-0.5">
+                            <p className="flex items-center gap-1 text-slate-500 dark:text-slate-400 dark:text-slate-500 text-[11px] pt-0.5">
                               <Phone className="h-3 w-3" />
                               {addr.phone}
                             </p>
@@ -197,7 +197,7 @@ export function ShippingAddressPage() {
                         e.stopPropagation()
                         navigate('edit-address', { addressId: addr.id })
                       }}
-                      className="text-slate-400 dark:text-slate-500 hover:text-slate-700 p-1 shrink-0"
+                      className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300 p-1 shrink-0"
                       title="Edit address"
                     >
                       <Pencil className="h-4 w-4" />
@@ -211,10 +211,10 @@ export function ShippingAddressPage() {
       </main>
 
       {/* Bottom sticky Continue */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <div className="max-w-lg mx-auto space-y-2">
           {selectedAddress && (
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
               Shipping to: <strong className="text-slate-800 dark:text-slate-200">{selectedAddress.companyName || selectedAddress.label}</strong>
             </p>
           )}

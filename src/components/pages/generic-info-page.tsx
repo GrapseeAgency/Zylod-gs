@@ -1323,7 +1323,7 @@ function ChatListPage({ navigate }: { navigate: (page: string, params?: Record<s
             return (
               <Card
                 key={c.id}
-                className="border-0 bg-white/70 backdrop-blur-sm shadow-sm cursor-pointer hover:bg-white hover:shadow-md transition-all rounded-2xl"
+                className="border-0 bg-white dark:bg-gray-900/70 backdrop-blur-sm shadow-sm cursor-pointer hover:bg-white dark:hover:bg-gray-800 dark:bg-gray-900 hover:shadow-md transition-all rounded-2xl"
                 onClick={() => navigate('chat-detail', { conversationId: c.id, supplierId: c.otherPartyId, supplierName: c.otherPartyName })}
               >
                 <CardContent className="p-3 flex items-center gap-3">
@@ -1351,7 +1351,7 @@ function ChatListPage({ navigate }: { navigate: (page: string, params?: Record<s
             )
           })}
           {filtered.length === 0 && (
-            <Card className="border-0 bg-white/70 backdrop-blur-sm shadow-sm rounded-2xl">
+            <Card className="border-0 bg-white dark:bg-gray-900/70 backdrop-blur-sm shadow-sm rounded-2xl">
               <CardContent className="p-8 text-center text-sm text-muted-foreground space-y-2">
                 <MessageSquare className="h-8 w-8 mx-auto opacity-50" />
                 <p className="font-medium">{query ? 'No conversations found' : 'No conversations yet'}</p>
@@ -1561,7 +1561,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
             groups.map(group => (
               <div key={group.label} className="space-y-2.5">
                 <div className="flex justify-center">
-                  <span className="text-[10px] font-medium text-muted-foreground bg-white/80 px-3 py-1 rounded-full shadow-sm">{group.label}</span>
+                  <span className="text-[10px] font-medium text-muted-foreground bg-white dark:bg-gray-900/80 px-3 py-1 rounded-full shadow-sm">{group.label}</span>
                 </div>
                 {group.items.map(m => {
                   const mine = m.senderId === userId
@@ -2012,7 +2012,7 @@ function NotificationsPage() {
       {loading ? (
         [1, 2, 3, 4].map(i => <Skeleton key={i} className="h-20 w-full rounded-2xl" />)
       ) : notifications.length === 0 ? (
-        <Card className="border-0 bg-white/70 backdrop-blur-sm shadow-sm rounded-2xl">
+        <Card className="border-0 bg-white dark:bg-gray-900/70 backdrop-blur-sm shadow-sm rounded-2xl">
           <CardContent className="p-8 text-center text-sm text-muted-foreground space-y-2">
             <Bell className="h-8 w-8 mx-auto opacity-50" />
             <p className="font-medium">No notifications yet</p>
@@ -2023,7 +2023,7 @@ function NotificationsPage() {
         notifications.map((n) => (
           <Card
             key={n.id}
-            className={`border-0 backdrop-blur-sm shadow-sm cursor-pointer hover:shadow-md transition-all rounded-2xl ${n.isRead ? 'bg-white/50' : 'bg-white/90 border-l-4 border-l-primary'}`}
+            className={`border-0 backdrop-blur-sm shadow-sm cursor-pointer hover:shadow-md transition-all rounded-2xl ${n.isRead ? 'bg-white/50 dark:bg-gray-900/50' : 'bg-white/90 dark:bg-gray-900/90 border-l-4 border-l-primary'}`}
             onClick={() => { if (!n.isRead) markAsRead(n.id) }}
           >
             <CardContent className="p-3 flex items-start gap-3">

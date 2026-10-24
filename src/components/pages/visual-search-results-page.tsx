@@ -51,13 +51,13 @@ export function VisualSearchResultsPage() {
     <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 pt-4 pb-3">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
           <span className="font-semibold text-gray-900 dark:text-gray-100 flex-1">Visual Search Results</span>
         </div>
         {imageUrl && (
           <div className="mt-2 flex items-center gap-2">
             <img src={imageUrl} alt="search" className="w-10 h-10 rounded-lg object-cover border border-gray-200 dark:border-gray-800" />
-            <p className="text-xs text-gray-500 dark:text-gray-400">Products matching your image</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Products matching your image</p>
           </div>
         )}
       </div>
@@ -71,13 +71,13 @@ export function VisualSearchResultsPage() {
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 gap-3 px-6 text-center">
             <ImageIcon className="w-12 h-12 text-gray-200" />
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">No matching products found</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Try uploading a clearer image or different angle</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">No matching products found</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Try uploading a clearer image or different angle</p>
             <button onClick={() => navigate('image-search')} className="px-4 py-2 bg-red-600 text-white text-sm rounded-xl font-medium mt-2">Try Again</button>
           </div>
         ) : (
           <>
-            <p className="px-4 pt-3 text-xs text-gray-400 dark:text-gray-500">{products.length} similar products found</p>
+            <p className="px-4 pt-3 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{products.length} similar products found</p>
             <div className="grid grid-cols-2 gap-3 p-4">
               {products.map((p, idx) => (
                 <motion.button key={p.id}
@@ -94,9 +94,9 @@ export function VisualSearchResultsPage() {
                   </div>
                   <div className="p-2.5">
                     <p className="text-xs font-medium text-gray-800 dark:text-gray-200 line-clamp-2">{p.name}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{p.supplier.companyName}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-0.5 truncate">{p.supplier.companyName}</p>
                     <p className="text-sm font-bold text-red-600 mt-1">{formatPrice(p.basePrice)}/{p.unit}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">MOQ: {p.moq}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">MOQ: {p.moq}</p>
                   </div>
                 </motion.button>
               ))}

@@ -65,7 +65,7 @@ export function PromoPreferencesPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Promotion Preferences</span>
@@ -89,7 +89,7 @@ export function PromoPreferencesPage() {
         </div>
         {/* Main Channels */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2.5">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2.5">
             Delivery Channels
           </h2>
 
@@ -100,7 +100,7 @@ export function PromoPreferencesPage() {
               </div>
               <div>
                 <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">Push Notifications</p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500">Receive deal popups on mobile and desktop</p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Receive deal popups on mobile and desktop</p>
               </div>
             </div>
             <Switch
@@ -116,7 +116,7 @@ export function PromoPreferencesPage() {
               </div>
               <div>
                 <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100">Email Newsletters &amp; Circulars</p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500">Weekly B2B factory discount bulletins</p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Weekly B2B factory discount bulletins</p>
               </div>
             </div>
             <Switch
@@ -128,7 +128,7 @@ export function PromoPreferencesPage() {
 
         {/* Campaign Categories */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2.5">
+          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2.5">
             Interested Deal Types
           </h2>
 

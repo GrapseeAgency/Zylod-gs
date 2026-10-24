@@ -72,7 +72,7 @@ export function DocsSearchResultsPage() {
       {/* Search Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition md:hidden">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <form onSubmit={handleSearch} className="flex-1 relative">
@@ -83,7 +83,7 @@ export function DocsSearchResultsPage() {
               onChange={e => setQuery(e.target.value)}
               className="w-full bg-gray-100 dark:bg-gray-900 rounded-xl pl-9 pr-4 py-2 text-xs text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-red-500"
             />
-            <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 absolute left-3 top-2.5" />
           </form>
         </div>
       </div>
@@ -93,7 +93,7 @@ export function DocsSearchResultsPage() {
           <h1 className="text-sm md:text-xl font-bold text-gray-900 dark:text-gray-100">
             {loading ? 'Searching...' : `Search Results for "${query}" (${totalMatches} found)`}
           </h1>
-          <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500">Documentation articles and answered questions</p>
+          <p className="text-xs md:text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400">Documentation articles and answered questions</p>
         </div>
 
         {loading ? (
@@ -104,14 +104,14 @@ export function DocsSearchResultsPage() {
           <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 space-y-2">
             <BookOpen className="w-12 h-12 text-gray-300 mx-auto" />
             <p className="text-sm font-bold text-gray-800 dark:text-gray-200">No matching documentation</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Try searching for keywords like "payment", "moq", "verification", or "dispute".</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Try searching for keywords like "payment", "moq", "verification", or "dispute".</p>
           </div>
         ) : (
           <div className="space-y-6">
             {/* Policy Articles Section */}
             {articles.length > 0 && (
               <div className="space-y-2.5">
-                <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Policy Documents ({articles.length})
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
@@ -132,7 +132,7 @@ export function DocsSearchResultsPage() {
                           {art.titleEn}
                         </h3>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-red-600 transition flex-shrink-0" />
+                      <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 group-hover:text-red-600 transition flex-shrink-0" />
                     </motion.div>
                   ))}
                 </div>
@@ -142,7 +142,7 @@ export function DocsSearchResultsPage() {
             {/* FAQs Section */}
             {faqs.length > 0 && (
               <div className="space-y-2.5">
-                <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Matching FAQs ({faqs.length})
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
@@ -158,7 +158,7 @@ export function DocsSearchResultsPage() {
                       <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-red-600 transition">
                         {faq.questionEn}
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 line-clamp-2 leading-relaxed">
                         {faq.answerEn}
                       </p>
                     </motion.div>

@@ -149,7 +149,7 @@ export function AdminAuditLogsPage() {
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4 space-y-3 shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
-              <label htmlFor="audit-action" className="text-xs font-bold text-gray-600 dark:text-gray-400">Action contains</label>
+              <label htmlFor="audit-action" className="text-xs font-bold text-gray-600 dark:text-gray-400 dark:text-gray-500">Action contains</label>
               <Input
                 id="audit-action"
                 placeholder="e.g. payment, product_updated…"
@@ -160,7 +160,7 @@ export function AdminAuditLogsPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="audit-type" className="text-xs font-bold text-gray-600 dark:text-gray-400">Entity type</label>
+              <label htmlFor="audit-type" className="text-xs font-bold text-gray-600 dark:text-gray-400 dark:text-gray-500">Entity type</label>
               <Input
                 id="audit-type"
                 placeholder="e.g. products, orders, payments"
@@ -177,7 +177,7 @@ export function AdminAuditLogsPage() {
               </datalist>
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="audit-entity" className="text-xs font-bold text-gray-600 dark:text-gray-400">Entity id</label>
+              <label htmlFor="audit-entity" className="text-xs font-bold text-gray-600 dark:text-gray-400 dark:text-gray-500">Entity id</label>
               <Input
                 id="audit-entity"
                 placeholder="one entity's full history"
@@ -227,23 +227,23 @@ export function AdminAuditLogsPage() {
             <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-800/60">
-                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400">When</th>
-                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400">Actor</th>
-                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400">Action</th>
-                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400">Entity</th>
-                    <th className="text-right px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400">Evidence</th>
+                  <tr className="border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950/60 dark:bg-gray-800/60">
+                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">When</th>
+                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">Actor</th>
+                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">Action</th>
+                    <th className="text-left px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">Entity</th>
+                    <th className="text-right px-4 py-2.5 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">Evidence</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((r) => (
                     <React.Fragment key={r.id}>
                       <tr
-                        className="border-b border-gray-50 dark:border-gray-800/60 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 cursor-pointer"
+                        className="border-b border-gray-50 dark:border-gray-800/60 hover:bg-gray-50 dark:bg-gray-950/60 dark:hover:bg-gray-800/40 cursor-pointer"
                         onClick={() => setExpandedId(expandedId === r.id ? null : r.id)}
                         data-testid="audit-row"
                       >
-                        <td className="px-4 py-2.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap font-mono">{fmt(r.createdAt)}</td>
+                        <td className="px-4 py-2.5 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 whitespace-nowrap font-mono">{fmt(r.createdAt)}</td>
                         <td className="px-4 py-2.5">
                           <div className="flex items-center gap-2 min-w-0">
                             <span className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate max-w-40">{r.actor?.name ?? 'System'}</span>
@@ -253,19 +253,19 @@ export function AdminAuditLogsPage() {
                           </div>
                         </td>
                         <td className="px-4 py-2.5 text-xs font-mono font-bold text-gray-800 dark:text-gray-200">{r.action}</td>
-                        <td className="px-4 py-2.5 text-xs text-gray-600 dark:text-gray-400">
+                        <td className="px-4 py-2.5 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
                           <span className="font-bold">{r.entityType}</span>
-                          {r.entityId && <span className="block font-mono text-[10px] text-gray-400 dark:text-gray-500 truncate max-w-48">{r.entityId}</span>}
+                          {r.entityId && <span className="block font-mono text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 truncate max-w-48">{r.entityId}</span>}
                         </td>
                         <td className="px-4 py-2.5 text-right">
                           {expandedId === r.id
-                            ? <ChevronDown className="h-4 w-4 inline text-gray-400 dark:text-gray-500" />
-                            : <ChevronRight className="h-4 w-4 inline text-gray-400 dark:text-gray-500" />}
+                            ? <ChevronDown className="h-4 w-4 inline text-gray-400 dark:text-gray-500 dark:text-gray-400" />
+                            : <ChevronRight className="h-4 w-4 inline text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
                         </td>
                       </tr>
                       {expandedId === r.id && (
                         <tr className="border-b border-gray-100 dark:border-gray-800">
-                          <td colSpan={5} className="px-4 py-3 bg-gray-50/80 dark:bg-gray-800/40">
+                          <td colSpan={5} className="px-4 py-3 bg-gray-50 dark:bg-gray-950/80 dark:bg-gray-800/40">
                             <pre className="text-[11px] leading-relaxed font-mono text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-all max-h-64 overflow-y-auto" data-testid="audit-metadata">
                               {prettyMeta(r.metadata)}
                             </pre>
@@ -289,8 +289,8 @@ export function AdminAuditLogsPage() {
                         {r.actor?.userType ?? 'system'}
                       </Badge>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{r.actor?.name ?? 'System'} · <span className="font-bold">{r.entityType}</span></p>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-mono">{fmt(r.createdAt)}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 truncate">{r.actor?.name ?? 'System'} · <span className="font-bold">{r.entityType}</span></p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 font-mono">{fmt(r.createdAt)}</p>
                   </button>
                   {expandedId === r.id && (
                     <pre className="mt-2.5 pt-2.5 border-t border-gray-100 dark:border-gray-800 text-[10px] leading-relaxed font-mono text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-all max-h-56 overflow-y-auto" data-testid="audit-metadata-mobile">

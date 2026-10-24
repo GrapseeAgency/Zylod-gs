@@ -145,14 +145,14 @@ export function VoiceSearchPage() {
       <div className="flex items-center justify-between px-4 pt-12 pb-4">
         <button
           onClick={() => { stopListening(); goBack() }}
-          className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+          className="p-2 rounded-full bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 transition"
         >
           <X className="w-5 h-5 text-white" />
         </button>
         <span className="text-base font-semibold">Voice Search</span>
         <button
           onClick={() => navigate('search-home')}
-          className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+          className="p-2 rounded-full bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 transition"
         >
           <Search className="w-4 h-4 text-white" />
         </button>
@@ -162,8 +162,8 @@ export function VoiceSearchPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 md:max-w-2xl md:mx-auto md:w-full">
         {state === 'unsupported' ? (
           <div className="text-center space-y-4">
-            <MicOff className="w-16 h-16 text-gray-500 dark:text-gray-400 mx-auto" />
-            <p className="text-gray-400 dark:text-gray-500 text-sm">Voice search is not supported in this browser.</p>
+            <MicOff className="w-16 h-16 text-gray-500 dark:text-gray-400 dark:text-gray-500 mx-auto" />
+            <p className="text-gray-400 dark:text-gray-500 dark:text-gray-400 text-sm">Voice search is not supported in this browser.</p>
             <button
               onClick={() => navigate('search-home')}
               className="px-4 py-2 bg-red-600 rounded-xl text-sm font-medium"
@@ -231,7 +231,7 @@ export function VoiceSearchPage() {
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-sm text-gray-300 bg-white/10 px-4 py-2 rounded-xl max-w-xs text-center"
+                  className="text-sm text-gray-300 bg-white dark:bg-gray-900/10 px-4 py-2 rounded-xl max-w-xs text-center"
                 >
                   &ldquo;{transcript}&rdquo;
                 </motion.p>
@@ -245,13 +245,13 @@ export function VoiceSearchPage() {
             {/* Suggested phrases */}
             {state === 'idle' && (
               <div className="text-center">
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Try saying:</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-2">Try saying:</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {suggestedPhrases.map(phrase => (
                     <button
                       key={phrase}
                       onClick={() => handleFinalResult(phrase)}
-                      className="text-xs px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-full transition text-gray-300"
+                      className="text-xs px-3 py-1.5 bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 rounded-full transition text-gray-300"
                     >
                       &ldquo;{phrase}&rdquo;
                     </button>
@@ -266,15 +266,15 @@ export function VoiceSearchPage() {
       {/* Voice history */}
       {voiceHistory.length > 0 && (
         <div className="px-4 pb-10">
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Recent voice searches</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-2">Recent voice searches</p>
           <div className="space-y-1">
             {voiceHistory.map(item => (
               <button
                 key={item.id}
                 onClick={() => navigate('search-results', { query: item.query, type: 'voice' })}
-                className="w-full text-left text-sm text-gray-300 px-3 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition flex items-center gap-2"
+                className="w-full text-left text-sm text-gray-300 px-3 py-2 bg-white dark:bg-gray-900/5 rounded-lg hover:bg-white dark:bg-gray-900/10 transition flex items-center gap-2"
               >
-                <Mic className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
+                <Mic className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
                 {item.query}
               </button>
             ))}

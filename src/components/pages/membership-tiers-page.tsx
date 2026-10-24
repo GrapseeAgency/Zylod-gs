@@ -30,24 +30,24 @@ export function MembershipTiersPage() {
   }, [])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-indigo-600" />
-            <h1 className="font-bold text-gray-900 text-base">Membership Tiers</h1>
+            <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Membership Tiers</h1>
           </div>
         </div>
       </div>
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-2xl mx-auto lg:max-w-6xl w-full space-y-6 md:space-y-8 pb-24 md:pb-8">
         <div className="text-center space-y-1">
-          <h2 className="text-xl sm:text-2xl font-black text-gray-900">Wholesale Volume Tiers</h2>
-          <p className="text-xs text-gray-500 max-w-sm mx-auto">
+          <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-gray-100">Wholesale Volume Tiers</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-sm mx-auto">
             Higher recorded procurement volume automatically unlocks the next tier and its listed benefits.
           </p>
         </div>
@@ -59,21 +59,21 @@ export function MembershipTiersPage() {
             return (
               <div
                 key={tier.id}
-                className={`bg-white rounded-3xl p-5 border shadow-sm space-y-3 transition ${
+                className={`bg-white dark:bg-gray-900 rounded-3xl p-5 border shadow-sm space-y-3 transition ${
                   isCurrent ? 'border-amber-400 ring-2 ring-amber-400/20' : 'border-gray-100'
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base font-extrabold text-gray-900">{tier.name}</h3>
+                      <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100">{tier.name}</h3>
                       {isCurrent && (
                         <Badge className="bg-amber-500 text-white text-[10px] uppercase font-bold">
                           Your Active Tier
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       Spend Threshold: <strong>{formatPrice(tier.minSpendBDT)} / year</strong>
                     </p>
                   </div>
@@ -81,9 +81,9 @@ export function MembershipTiersPage() {
                   <Crown className="w-5 h-5 text-amber-500 flex-shrink-0" />
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-gray-100">
+                <div className="space-y-2 pt-2 border-t border-gray-100 dark:border-gray-800">
                   {tier.benefits.map((b: string, i: number) => (
-                    <div key={i} className="flex items-center gap-2 text-xs text-gray-700 font-medium">
+                    <div key={i} className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300 font-medium">
                       <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                       <span>{b}</span>
                     </div>

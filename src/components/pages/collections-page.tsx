@@ -39,17 +39,17 @@ export function CollectionsPage() {
       {/* Header */}
       <header className="bg-white dark:bg-gray-900 sticky top-0 z-10 border-b px-4 md:px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full active:bg-gray-100 md:hidden">
+          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full active:bg-gray-100 dark:bg-gray-900 md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-800 dark:text-gray-200" />
           </button>
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight">My Collections</h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Organize your saved products</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Organize your saved products</p>
           </div>
         </div>
         <button 
           onClick={() => navigate('create-collection')}
-          className="p-2 -mr-2 rounded-full active:bg-gray-100"
+          className="p-2 -mr-2 rounded-full active:bg-gray-100 dark:bg-gray-900"
         >
           <Plus className="w-6 h-6 text-[#C8102E]" />
         </button>
@@ -95,10 +95,10 @@ export function CollectionsPage() {
             className="flex flex-col items-center justify-center text-center mt-20"
           >
             <div className="w-20 h-20 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center mb-4">
-              <Folder className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+              <Folder className="w-10 h-10 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">No collections yet</h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">Create your first collection to organize products.</p>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-6 text-sm">Create your first collection to organize products.</p>
             <button 
               onClick={() => navigate('create-collection')}
               className="bg-[#C8102E] text-white px-6 py-2.5 rounded-lg font-medium shadow-sm active:scale-95 transition-transform"
@@ -137,7 +137,7 @@ export function CollectionsPage() {
                     </div>
                   )}
                   {/* Privacy Badge */}
-                  <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-sm">
+                  <div className="absolute top-2 right-2 bg-white dark:bg-gray-900/90 backdrop-blur-sm p-1 rounded-full shadow-sm">
                     {col.privacy === 'PRIVATE' && <Lock className="w-3.5 h-3.5 text-gray-700 dark:text-gray-300" />}
                     {col.privacy === 'PUBLIC' && <Globe className="w-3.5 h-3.5 text-gray-700 dark:text-gray-300" />}
                     {col.privacy === 'SHARED' && <LinkIcon className="w-3.5 h-3.5 text-gray-700 dark:text-gray-300" />}
@@ -148,11 +148,11 @@ export function CollectionsPage() {
                 <div className="flex justify-between items-start px-1">
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm line-clamp-1">{col.name}</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{col._count?.items || 0} items</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{col._count?.items || 0} items</p>
                   </div>
                   <button 
                     onClick={(e) => { e.stopPropagation(); /* TODO: options modal */ }} 
-                    className="p-1 -mr-1 text-gray-400 dark:text-gray-500 hover:text-gray-700"
+                    className="p-1 -mr-1 text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300"
                   >
                     <MoreVertical className="w-4 h-4" />
                   </button>

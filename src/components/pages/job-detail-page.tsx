@@ -29,7 +29,7 @@ export function JobDetailPage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Job Opening</h1>
@@ -42,7 +42,7 @@ export function JobDetailPage() {
             {[1, 2, 3].map(i => <div key={i} className="h-32 bg-gray-200 rounded-3xl" />)}
           </div>
         ) : !job ? (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 text-center text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 text-center text-gray-400 dark:text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-800">
             Job opening not found or has expired.
           </div>
         ) : (
@@ -56,13 +56,13 @@ export function JobDetailPage() {
                 <h2 className="text-base md:text-xl font-black text-gray-900 dark:text-gray-100 leading-snug">{job.title}</h2>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs md:text-sm text-gray-500 dark:text-gray-400 pt-1">
+              <div className="flex flex-wrap items-center gap-3 text-xs md:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 pt-1">
                 <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+                  <MapPin className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                   {job.location}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+                  <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                   {job.employmentType?.replace('_', ' ').toUpperCase()}
                 </span>
                 {job.salaryMin && (
@@ -75,21 +75,21 @@ export function JobDetailPage() {
 
             {/* Role Overview */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 md:p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Role Overview</h3>
-              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">{job.descriptionEn}</p>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role Overview</h3>
+              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed whitespace-pre-wrap">{job.descriptionEn}</p>
             </div>
 
             {/* Requirements */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 md:p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Requirements & Skills</h3>
-              <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">{job.requirementsEn}</div>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">Requirements & Skills</h3>
+              <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed whitespace-pre-wrap">{job.requirementsEn}</div>
             </div>
 
             {/* Benefits */}
             {job.benefitsEn && (
               <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 md:p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-                <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Perks & Compensation</h3>
-                <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">{job.benefitsEn}</div>
+                <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">Perks & Compensation</h3>
+                <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed whitespace-pre-wrap">{job.benefitsEn}</div>
               </div>
             )}
 

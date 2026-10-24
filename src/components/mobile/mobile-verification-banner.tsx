@@ -32,7 +32,7 @@ export function MobileVerificationBanner() {
         className="w-full bg-primary p-4 rounded-xl shadow-sm flex items-center justify-between relative overflow-hidden group active:scale-[0.98] transition-transform"
       >
         <div className="z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-900/20 flex items-center justify-center">
             <span className="material-symbols-outlined text-primary-foreground" style={{ fontSize: 20, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span>
           </div>
           <div className="text-left">
@@ -48,8 +48,8 @@ export function MobileVerificationBanner() {
           <ChevronRight className="w-5 h-5 text-primary-foreground" />
         </div>
         {/* Abstract decorative shape */}
-        <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-700" />
-        <div className="absolute -left-8 -bottom-8 w-20 h-20 bg-white/5 rounded-full blur-xl" />
+        <div className="absolute -right-4 -top-4 w-24 h-24 bg-white dark:bg-gray-900/10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-700" />
+        <div className="absolute -left-8 -bottom-8 w-20 h-20 bg-white dark:bg-gray-900/5 rounded-full blur-xl" />
       </motion.button>
     </section>
   )

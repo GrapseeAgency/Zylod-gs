@@ -118,7 +118,7 @@ export function MobilePromoBanner() {
           </p>
           <button
             onClick={() => navigate(slide.navigateTo as any)}
-            className="mt-3 bg-white text-primary font-semibold text-sm px-4 py-2 rounded-lg w-fit transition-transform active:scale-95 shadow-sm"
+            className="mt-3 bg-white dark:bg-gray-900 text-primary font-semibold text-sm px-4 py-2 rounded-lg w-fit transition-transform active:scale-95 shadow-sm"
           >
             Shop Bulk
           </button>
@@ -127,14 +127,14 @@ export function MobilePromoBanner() {
         {/* Navigation arrows */}
         <button
           onClick={prevSlide}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-7 h-7 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center active:scale-90 transition-transform"
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-30 w-7 h-7 bg-white dark:bg-gray-900/20 backdrop-blur-sm rounded-full flex items-center justify-center active:scale-90 transition-transform"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-4 h-4 text-white" />
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-7 h-7 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center active:scale-90 transition-transform"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-30 w-7 h-7 bg-white dark:bg-gray-900/20 backdrop-blur-sm rounded-full flex items-center justify-center active:scale-90 transition-transform"
           aria-label="Next slide"
         >
           <ChevronRight className="w-4 h-4 text-white" />
@@ -147,7 +147,7 @@ export function MobilePromoBanner() {
               key={i}
               onClick={() => setCurrentSlide(i)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === currentSlide ? 'w-6 bg-white' : 'w-1.5 bg-white/50'
+                i === currentSlide ? 'w-6 bg-white' : 'w-1.5 bg-white/50 dark:bg-gray-900/50'
               }`}
               aria-label={`Go to slide ${i + 1}`}
             />

@@ -84,8 +84,8 @@ function StaffStatCard({
       </div>
       <div>
         <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono leading-none">{value}</div>
-        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block mt-1 uppercase tracking-wider">{label}</span>
-        {sub && <span className="text-[10px] text-slate-400 dark:text-slate-500 block">{sub}</span>}
+        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-1 uppercase tracking-wider">{label}</span>
+        {sub && <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">{sub}</span>}
       </div>
     </div>
   )
@@ -317,14 +317,14 @@ export function StaffProfilePage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28 md:pb-10">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('home')} className="md:hidden p-1 text-slate-700 dark:text-slate-300" title="Home">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div>
+          <div className="md:hidden">
             <span className="text-lg font-black tracking-tight text-primary">Zylod</span>
-            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block -mt-0.5 uppercase tracking-widest">
+            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block -mt-0.5 uppercase tracking-widest">
               Staff Operations
             </span>
           </div>
@@ -362,7 +362,7 @@ export function StaffProfilePage() {
             <div className="flex items-end justify-between">
               <div className="relative">
                 <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-slate-200 dark:ring-slate-800 flex items-center justify-center bg-slate-100 dark:bg-slate-900">
-                  <HardHat className="h-8 w-8 text-slate-600 dark:text-slate-400" />
+                  <HardHat className="h-8 w-8 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
                 </div>
               </div>
 
@@ -392,7 +392,7 @@ export function StaffProfilePage() {
                   {clockedIn ? 'On Duty' : 'Off Duty'}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Warehouse &amp; Logistics Staff</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">Warehouse &amp; Logistics Staff</p>
             </div>
           </div>
         </div>
@@ -487,12 +487,12 @@ export function StaffProfilePage() {
                         {shiftLogs.map((log) => (
                           <div key={log.id} className="py-2.5 flex justify-between text-xs">
                             <span className="font-bold text-slate-800 dark:text-slate-200">{log.date}</span>
-                            <span className="text-slate-500 dark:text-slate-400 font-mono">{log.clockIn} - {log.clockOut || 'Active'}</span>
+                            <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono">{log.clockIn} - {log.clockOut || 'Active'}</span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400 dark:text-slate-500 py-4 text-center">No previous shift records found. Clock in to log current shift.</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-4 text-center">No previous shift records found. Clock in to log current shift.</p>
                     )}
                   </div>
                 </>
@@ -522,14 +522,14 @@ export function StaffProfilePage() {
                           <div key={s.id} className="py-2.5 flex justify-between text-xs">
                             <div>
                               <span className="font-bold text-slate-800 dark:text-slate-200 block">{s.productName || s.barcode}</span>
-                              <span className="text-[10px] text-slate-400 dark:text-slate-500">{s.action}</span>
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{s.action}</span>
                             </div>
-                            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">{new Date(s.scannedAt).toLocaleTimeString()}</span>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">{new Date(s.scannedAt).toLocaleTimeString()}</span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400 dark:text-slate-500 py-4 text-center">No recent scan activity recorded.</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-4 text-center">No recent scan activity recorded.</p>
                     )}
                   </div>
                 </>
@@ -551,7 +551,7 @@ export function StaffProfilePage() {
                           <div key={v.id} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl flex justify-between items-center text-xs">
                             <div>
                               <span className="font-bold text-slate-900 dark:text-slate-100 block">{v.plateNumber}</span>
-                              <span className="text-[10px] text-slate-500 dark:text-slate-400">Driver: {v.driverName} • Route: {v.route}</span>
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Driver: {v.driverName} • Route: {v.route}</span>
                             </div>
                             <span className="text-[10px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100">
                               {v.status}
@@ -560,7 +560,7 @@ export function StaffProfilePage() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400 dark:text-slate-500 py-4 text-center">No vehicles currently assigned to this dock.</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-4 text-center">No vehicles currently assigned to this dock.</p>
                     )}
                   </div>
                 </>

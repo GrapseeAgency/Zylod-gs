@@ -42,13 +42,13 @@ export function SearchVoiceHistoryPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 pt-4 pb-3 flex items-center justify-between md:px-6">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 pt-4 pb-3 flex items-center justify-between md:px-6">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100">
-            <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
-          <span className="font-semibold text-gray-900 md:text-xl">Voice Search History</span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100 md:text-xl">Voice Search History</span>
         </div>
         <button
           onClick={() => navigate('voice-search')}
@@ -68,8 +68,8 @@ export function SearchVoiceHistoryPage() {
         ) : items.length === 0 ? (
           <div className="text-center py-20 px-4">
             <Mic className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm font-semibold text-gray-800">No voice searches recorded</p>
-            <p className="text-xs text-gray-400 mt-1">Tap below to try voice search</p>
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">No voice searches recorded</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Tap below to try voice search</p>
             <button
               onClick={() => navigate('voice-search')}
               className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-semibold"
@@ -85,7 +85,7 @@ export function SearchVoiceHistoryPage() {
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.03 }}
-                className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50"
+                className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950"
               >
                 <div
                   onClick={() => navigate('search-results', { query: item.query, type: 'voice' })}
@@ -95,8 +95,8 @@ export function SearchVoiceHistoryPage() {
                     <Mic className="w-4 h-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">&ldquo;{item.query}&rdquo;</p>
-                    <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">&ldquo;{item.query}&rdquo;</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-0.5">
                       <Clock className="w-3 h-3" />
                       {new Date(item.createdAt).toLocaleDateString()}
                     </p>
@@ -104,7 +104,7 @@ export function SearchVoiceHistoryPage() {
                 </div>
                 <button
                   onClick={() => deleteVoiceItem(item.query)}
-                  className="p-1.5 text-gray-400 hover:text-red-500"
+                  className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-500"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

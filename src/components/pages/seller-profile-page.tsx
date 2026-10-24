@@ -132,8 +132,8 @@ function StatCard({
             <span className="text-[10px] font-bold text-emerald-600">{trend}</span>
           </div>
         )}
-        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block mt-1 uppercase tracking-wider">{label}</span>
-        {sub && <span className="text-[10px] text-slate-400 dark:text-slate-500">{sub}</span>}
+        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-1 uppercase tracking-wider">{label}</span>
+        {sub && <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{sub}</span>}
       </div>
     </div>
   )
@@ -486,14 +486,14 @@ export function SellerProfilePage() {
       />
 
       {/* ─── HEADER ─────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('home')} className="md:hidden p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Home">
+          <button onClick={() => navigate('home')} className="md:hidden p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Home">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div>
+          <div className="md:hidden">
             <span className="text-lg font-black tracking-tight text-primary">Zylod</span>
-            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block -mt-0.5 uppercase tracking-widest">
+            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block -mt-0.5 uppercase tracking-widest">
               {isOwner ? 'My Seller Portal' : 'Verified Supplier'}
             </span>
           </div>
@@ -539,7 +539,7 @@ export function SellerProfilePage() {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-slate-800 opacity-60">
-                <Building2 className="h-16 w-16 text-slate-600 dark:text-slate-400" />
+                <Building2 className="h-16 w-16 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
               </div>
             )}
 
@@ -577,7 +577,7 @@ export function SellerProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Building2 className="h-10 w-10 text-slate-400 dark:text-slate-500" />
+                    <Building2 className="h-10 w-10 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                   )}
                 </div>
 
@@ -650,7 +650,7 @@ export function SellerProfilePage() {
                 <h3 className="text-xs font-black text-slate-900 dark:text-slate-100 uppercase tracking-wider">Quick Edit Profile</h3>
                 <div className="space-y-2">
                   <div>
-                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Company / Store Name</label>
+                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500">Company / Store Name</label>
                     <Input
                       value={editCompanyName}
                       onChange={(e) => setEditCompanyName(e.target.value)}
@@ -659,7 +659,7 @@ export function SellerProfilePage() {
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Phone</label>
+                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500">Phone</label>
                     <Input
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
@@ -668,7 +668,7 @@ export function SellerProfilePage() {
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Email</label>
+                    <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500">Email</label>
                     <Input
                       value={editEmail}
                       onChange={(e) => setEditEmail(e.target.value)}
@@ -689,7 +689,7 @@ export function SellerProfilePage() {
                   <Button
                     variant="outline"
                     onClick={() => setIsEditing(false)}
-                    className="h-8 px-3 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
+                    className="h-8 px-3 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-500"
                   >
                     Cancel
                   </Button>
@@ -714,20 +714,20 @@ export function SellerProfilePage() {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                   Verified Wholesale Manufacturer on Zylod Platform. ISO-standard quality controls, bulk supply agreements, and direct factory distribution.
                 </p>
               </div>
             )}
 
             {/* Meta chips */}
-            <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 flex-wrap">
+            <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex-wrap">
               <span className="flex items-center gap-1.5 font-semibold">
                 <MapPin className="h-3.5 w-3.5 text-primary" />
                 Dhaka, Bangladesh
               </span>
               <span className="flex items-center gap-1.5 font-semibold">
-                <Calendar className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                <Calendar className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                 Active on Zylod
               </span>
               <span className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
@@ -751,7 +751,7 @@ export function SellerProfilePage() {
               ].map((stat) => (
                 <div key={stat.label} className="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800">
                   <div className="text-xs font-black text-slate-900 dark:text-slate-100 font-mono">{stat.value}</div>
-                  <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block uppercase tracking-wider leading-tight mt-0.5">{stat.label}</span>
+                  <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase tracking-wider leading-tight mt-0.5">{stat.label}</span>
                 </div>
               ))}
             </div>
@@ -837,7 +837,7 @@ export function SellerProfilePage() {
                         { label: 'Shipping Port', value: 'Chittagong Port (BDCGP) / Dhaka Dry Port' },
                       ].map(({ label, value }) => (
                         <div key={label} className="flex justify-between py-2.5 items-start gap-3">
-                          <span className="text-slate-400 dark:text-slate-500 shrink-0 w-2/5">{label}</span>
+                          <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0 w-2/5">{label}</span>
                           <span className="font-bold text-slate-900 dark:text-slate-100 text-right">{value}</span>
                         </div>
                       ))}
@@ -850,7 +850,7 @@ export function SellerProfilePage() {
                       <ShieldCheck className="h-4 w-4 text-emerald-600" />
                       Quality &amp; Sourcing Standards
                     </h2>
-                    <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                       <div className="flex items-start gap-2.5">
                         <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                         <span>Order payments are verified by Zylod before the supplier ships.</span>
@@ -876,7 +876,7 @@ export function SellerProfilePage() {
                   {/* Search + Sort + Filter Row */}
                   <div className="space-y-3">
                     <div className="relative">
-                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
+                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 pointer-events-none" />
                       <Input
                         value={searchProduct}
                         onChange={(e) => {
@@ -953,7 +953,7 @@ export function SellerProfilePage() {
                               <span className="text-sm font-black text-primary">
                                 {formatPrice(item.base_price)}
                               </span>
-                              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">
                                 /{item.unit}
                               </span>
                             </div>
@@ -965,7 +965,7 @@ export function SellerProfilePage() {
                               <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                                 <button
                                   onClick={(e) => { e.stopPropagation(); setProductQuantity(item.id, item.moq, -item.moq) }}
-                                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
+                                  className="p-1.5 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-500 transition-colors"
                                 >
                                   <Minus className="h-3 w-3" />
                                 </button>
@@ -974,12 +974,12 @@ export function SellerProfilePage() {
                                 </span>
                                 <button
                                   onClick={(e) => { e.stopPropagation(); setProductQuantity(item.id, item.moq, item.moq) }}
-                                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
+                                  className="p-1.5 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-500 transition-colors"
                                 >
                                   <Plus className="h-3 w-3" />
                                 </button>
                               </div>
-                              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">
                                 = {formatPrice(item.base_price * getProductQuantity(item.id, item.moq))}
                               </span>
                             </div>
@@ -998,7 +998,7 @@ export function SellerProfilePage() {
                   ) : (
                     <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
                       <Boxes className="h-10 w-10 text-slate-200 mx-auto" />
-                      <p className="text-sm font-bold text-slate-400 dark:text-slate-500">No products found</p>
+                      <p className="text-sm font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">No products found</p>
                       {isOwner ? (
                         <Button
                           onClick={() => navigate('add-product')}
@@ -1007,7 +1007,7 @@ export function SellerProfilePage() {
                           + Upload Products
                         </Button>
                       ) : (
-                        <p className="text-xs text-slate-400 dark:text-slate-500">This supplier has not listed products under this filter yet.</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">This supplier has not listed products under this filter yet.</p>
                       )}
                     </div>
                   )}
@@ -1024,7 +1024,7 @@ export function SellerProfilePage() {
                       <Factory className="h-4 w-4 text-primary" />
                       Manufacturing &amp; Facility Operations
                     </h2>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                       Production facilities and warehouse storage managed according to national and international manufacturing best practices.
                     </p>
 
@@ -1038,7 +1038,7 @@ export function SellerProfilePage() {
                         <div key={label} className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 space-y-1">
                           <div className="flex items-center gap-1.5">
                             <Icon className="h-3.5 w-3.5 text-primary" />
-                            <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-wider">{label}</span>
+                            <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400 tracking-wider">{label}</span>
                           </div>
                           <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{value}</p>
                         </div>
@@ -1079,7 +1079,7 @@ export function SellerProfilePage() {
                               </div>
                               <div>
                                 <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{doc.documentType}</h3>
-                                <p className="text-[10px] text-slate-400 dark:text-slate-500">{new Date(doc.uploadedAt).toLocaleDateString()}</p>
+                                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{new Date(doc.uploadedAt).toLocaleDateString()}</p>
                               </div>
                             </div>
                             <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
@@ -1091,7 +1091,7 @@ export function SellerProfilePage() {
                     ) : (
                       <div className="text-center py-6 space-y-2">
                         <FileCheck2 className="h-10 w-10 text-slate-200 mx-auto" />
-                        <p className="text-xs text-slate-400 dark:text-slate-500">Trade License &amp; Government Accreditations verified through Zylod Merchant KYC.</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">Trade License &amp; Government Accreditations verified through Zylod Merchant KYC.</p>
                       </div>
                     )}
                   </div>
@@ -1125,8 +1125,8 @@ export function SellerProfilePage() {
                               </span>
                               <StarRating value={review.rating} />
                             </div>
-                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{review.comment}</p>
-                            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono block">
+                            <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">{review.comment}</p>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono block">
                               {new Date(review.createdAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -1135,8 +1135,8 @@ export function SellerProfilePage() {
                     ) : (
                       <div className="text-center py-8 space-y-2">
                         <Star className="h-10 w-10 text-slate-200 mx-auto" />
-                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500">No reviews yet</p>
-                        <p className="text-[11px] text-slate-400 dark:text-slate-500">Verified buyer reviews for completed purchase orders will appear here.</p>
+                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">No reviews yet</p>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Verified buyer reviews for completed purchase orders will appear here.</p>
                       </div>
                     )}
                   </div>
@@ -1167,7 +1167,7 @@ export function SellerProfilePage() {
                       <FileText className="h-4 w-4 text-primary" />
                       Request a Wholesale Quote
                     </h2>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                       Submit your bulk quantity and delivery destination to receive direct pricing from this supplier.
                     </p>
 
@@ -1262,15 +1262,15 @@ export function SellerProfilePage() {
 
                     <div className="divide-y divide-slate-50 text-xs">
                       <div className="py-2.5 flex justify-between">
-                        <span className="text-slate-400 dark:text-slate-500">Headquarters</span>
+                        <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400">Headquarters</span>
                         <span className="font-bold text-slate-900 dark:text-slate-100">Dhaka, Bangladesh</span>
                       </div>
                       <div className="py-2.5 flex justify-between">
-                        <span className="text-slate-400 dark:text-slate-500">Support Hours</span>
+                        <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400">Support Hours</span>
                         <span className="font-bold text-slate-900 dark:text-slate-100">Sun - Thu: 09:00 AM - 06:00 PM BST</span>
                       </div>
                       <div className="py-2.5 flex justify-between">
-                        <span className="text-slate-400 dark:text-slate-500">Messaging</span>
+                        <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400">Messaging</span>
                         <span className="font-bold text-primary">Direct Chat via Zylod</span>
                       </div>
                     </div>

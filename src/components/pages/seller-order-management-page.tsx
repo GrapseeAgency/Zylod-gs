@@ -459,7 +459,7 @@ export function SellerOrderManagementPage() {
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-8 max-w-sm w-full text-center">
           <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Supplier sign-in required</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Sign in with a seller account to view your orders.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4">Sign in with a seller account to view your orders.</p>
           <button
             onClick={() => navigate('login')}
             className="min-h-11 px-6 bg-[#C8102E] text-white rounded-lg font-medium w-full"
@@ -525,7 +525,7 @@ export function SellerOrderManagementPage() {
                 <span className="text-xs bg-[#C8102E] text-white px-2 py-0.5 rounded-full font-medium">{payments.length} pending</span>
               )}
             </span>
-            {paymentsOpen ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />}
+            {paymentsOpen ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
           </button>
 
           {paymentsOpen && (
@@ -536,20 +536,20 @@ export function SellerOrderManagementPage() {
               {paymentsLoading ? (
                 <div className="h-16 bg-gray-100 dark:bg-gray-900 rounded-lg animate-pulse" />
               ) : payments.length === 0 && !paymentsError ? (
-                <p className="text-xs text-gray-400 dark:text-gray-500 py-2">No pending payment submissions right now.</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 py-2">No pending payment submissions right now.</p>
               ) : (
                 payments.map((p) => (
                   <div key={p.id} className="border border-gray-100 dark:border-gray-800 rounded-lg p-3 space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">#{p.orderNumber}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">
                           {p.itemCount > 0 ? `${p.itemSummary.join(', ')}${p.itemCount > p.itemSummary.length ? '…' : ''}` : 'Items on order'}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-sm font-bold text-[#C8102E]">৳{p.amount?.toLocaleString()}</p>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-500">of ৳{p.orderTotal?.toLocaleString()}</p>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">of ৳{p.orderTotal?.toLocaleString()}</p>
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
@@ -558,7 +558,7 @@ export function SellerOrderManagementPage() {
                       </span>
                       <span className="px-2 py-0.5 rounded bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 font-mono">{p.transactionId || '--'}</span>
                       {p.submittedAt && (
-                        <span className="text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                        <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400 flex items-center gap-1">
                           <Hourglass className="w-3 h-3" /> {format(new Date(p.submittedAt), 'MMM dd, HH:mm')}
                         </span>
                       )}
@@ -609,7 +609,7 @@ export function SellerOrderManagementPage() {
                 <span className="text-xs bg-[#C8102E] text-white px-2 py-0.5 rounded-full font-medium">{returns.length}</span>
               )}
             </span>
-            {returnsOpen ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />}
+            {returnsOpen ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
           </button>
 
           {returnsOpen && (
@@ -620,10 +620,10 @@ export function SellerOrderManagementPage() {
               {returnsLoading ? (
                 <div className="h-16 bg-gray-100 dark:bg-gray-900 rounded-lg animate-pulse" />
               ) : returns.length === 0 && !returnsError ? (
-                <p className="text-xs text-gray-400 dark:text-gray-500 py-2">No return requests touching your goods right now.</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 py-2">No return requests touching your goods right now.</p>
               ) : (
                 <>
-                  <p className="text-[11px] text-gray-400 dark:text-gray-500">
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                     The Zylod team reviews and resolves every return. Once a return is APPROVED, confirm receipt below when the returned goods physically reach your warehouse — that confirmation restores your stock.
                   </p>
                   {returns.map((r) => (
@@ -631,13 +631,13 @@ export function SellerOrderManagementPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{r.returnNumber}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Order #{r.orderNumber ?? '—'} · {r.shippingMethod}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Order #{r.orderNumber ?? '—'} · {r.shippingMethod}</p>
                         </div>
                         <div className="text-right shrink-0">
                           <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium capitalize ${RETURN_STATUS_CHIP[r.status] || 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300'}`}>
                             {r.status}
                           </span>
-                          <p className="text-xs font-bold text-[#C8102E] mt-1">৳{r.sellerShare?.toLocaleString()} <span className="font-normal text-gray-400 dark:text-gray-500">your share</span></p>
+                          <p className="text-xs font-bold text-[#C8102E] mt-1">৳{r.sellerShare?.toLocaleString()} <span className="font-normal text-gray-400 dark:text-gray-500 dark:text-gray-400">your share</span></p>
                         </div>
                       </div>
                       <div className="space-y-1.5">
@@ -647,18 +647,18 @@ export function SellerOrderManagementPage() {
                               <p className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">
                                 {it.productName ?? 'Item'}{it.variant ? ` (${it.variant})` : ''}
                               </p>
-                              <span className="text-[11px] text-gray-500 dark:text-gray-400 shrink-0">
+                              <span className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 shrink-0">
                                 {it.quantity}/{it.orderedQuantity ?? '?'} {it.unit ?? ''} · ৳{it.estimatedItemValue?.toLocaleString()}
                               </span>
                             </div>
-                            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Reason: {it.reason}{it.comments ? ` — “${it.comments}”` : ''}</p>
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">Reason: {it.reason}{it.comments ? ` — “${it.comments}”` : ''}</p>
                           </div>
                         ))}
                       </div>
-                      <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
+                      <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                         <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {format(new Date(r.createdAt), 'MMM dd, HH:mm')}</span>
                         <span>· full-request refund estimate ৳{r.estimatedRefund?.toLocaleString()}</span>
-                        {r.resolutionNote && <span className="text-gray-600 dark:text-gray-400">· note: {r.resolutionNote}</span>}
+                        {r.resolutionNote && <span className="text-gray-600 dark:text-gray-400 dark:text-gray-500">· note: {r.resolutionNote}</span>}
                       </div>
 
                       {/* Task 60-a — the physical half of the returns flow */}
@@ -705,7 +705,7 @@ export function SellerOrderManagementPage() {
                                 </button>
                                 <button
                                   onClick={() => setReceiptConfirmFor(null)}
-                                  className="min-h-10 px-3 bg-white dark:bg-gray-900 border border-gray-300 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                  className="min-h-10 px-3 bg-white dark:bg-gray-900 border border-gray-300 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-md hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition-colors"
                                 >
                                   Not yet
                                 </button>
@@ -723,7 +723,7 @@ export function SellerOrderManagementPage() {
         </div>
 
         <div className="relative">
-          <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+          <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           <input
             type="text"
             placeholder="Search loaded orders by number or buyer"
@@ -748,7 +748,7 @@ export function SellerOrderManagementPage() {
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-12 text-gray-500 dark:text-gray-400 dark:text-gray-500">
             <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
             <p>{searchQuery ? 'No loaded orders match your search' : 'No orders for this status yet'}</p>
           </div>
@@ -773,7 +773,7 @@ export function SellerOrderManagementPage() {
                         {order.status}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center gap-1">
                       <Calendar className="w-3 h-3" /> {format(new Date(order.createdAt), 'MMM dd, yyyy HH:mm')}
                     </div>
                   </div>
@@ -790,7 +790,7 @@ export function SellerOrderManagementPage() {
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                         {order.buyerCompanyName || order.buyerName}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 line-clamp-1">
                         {order.items?.length} line(s) • {order.moqPackCount} units
                         {order.items?.[0]?.unit ? ` • per ${order.items[0].unit}` : ''}
                       </p>

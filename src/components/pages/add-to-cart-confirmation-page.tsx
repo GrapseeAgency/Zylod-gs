@@ -132,7 +132,7 @@ export function AddToCartConfirmationPage() {
               {lastItem ? 'Added to cart' : 'Your cart'}
             </h2>
           </div>
-          <button onClick={goBack} className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-700" title="Close" aria-label="Close">
+          <button onClick={goBack} className="p-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300" title="Close" aria-label="Close">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -145,7 +145,7 @@ export function AddToCartConfirmationPage() {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1 leading-snug">{lastItem.productName}</h3>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                 {lastItem.supplierName}
                 {lastItem.variantName ? ` · ${lastItem.variantName}` : ''}
               </p>
@@ -154,7 +154,7 @@ export function AddToCartConfirmationPage() {
                   Qty: <strong className="text-slate-900 dark:text-slate-100">{lastItem.quantity}</strong>
                 </span>
                 <span className="text-xs font-black text-primary">{formatPrice(lastItem.totalPrice)}</span>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">
                   ({formatPrice(lastItem.unitPrice)}/unit)
                 </span>
               </div>
@@ -164,13 +164,13 @@ export function AddToCartConfirmationPage() {
           <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-8 border border-slate-100 dark:border-slate-800 text-center space-y-2">
             <Package className="h-8 w-8 text-slate-300 mx-auto" />
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Nothing added yet</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Open a product and add it to your cart — your latest line shows up here.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Open a product and add it to your cart — your latest line shows up here.</p>
           </div>
         )}
 
         {/* Real add-ons from the public catalog */}
         <div className="space-y-3 pt-1">
-          <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
             Frequently bought by wholesale buyers
           </h3>
 
@@ -181,15 +181,15 @@ export function AddToCartConfirmationPage() {
           )}
           {addonsState === 'error' && (
             <div className="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 text-center space-y-2">
-              <AlertCircle className="h-5 w-5 text-slate-400 dark:text-slate-500 mx-auto" />
-              <p className="text-xs text-slate-500 dark:text-slate-400">Couldn't load suggestions right now.</p>
+              <AlertCircle className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mx-auto" />
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Couldn't load suggestions right now.</p>
               <Button onClick={() => { setAddonsState('loading'); fetch('/api/products?limit=4', { credentials: 'include' }).then(r => r.json()).then(json => { setAddons((Array.isArray(json?.data) ? json.data : []).slice(0, 4)); setAddonsState('ready') }).catch(() => setAddonsState('error')) }} variant="outline" className="h-8 text-[11px] font-bold">
                 Retry
               </Button>
             </div>
           )}
           {addonsState === 'ready' && addons.length === 0 && (
-            <p className="text-xs text-slate-500 dark:text-slate-400">No suggestions available right now.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">No suggestions available right now.</p>
           )}
           {addonsState === 'ready' && addons.map(p => (
             <div key={p.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 p-3 flex gap-3 items-center">
@@ -198,7 +198,7 @@ export function AddToCartConfirmationPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1">{p.name}</h4>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                   MOQ {p.moq} {p.unit} · {formatPrice(p.basePrice)}/{p.unit}
                   {p.supplier?.companyName ? ` · ${p.supplier.companyName}` : ''}
                 </p>

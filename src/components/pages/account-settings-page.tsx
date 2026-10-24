@@ -62,7 +62,7 @@ function ToggleRow({
               </span>
             )}
           </div>
-          {sub && <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">{sub}</p>}
+          {sub && <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 truncate">{sub}</p>}
         </div>
       </div>
       <Switch
@@ -127,11 +127,11 @@ function SettingsRow({
               </span>
             )}
           </div>
-          {sub && <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{sub}</p>}
+          {sub && <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">{sub}</p>}
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0 ml-3">
-        {value && <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">{value}</span>}
+        {value && <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{value}</span>}
         {onClick && <ChevronRight className={`h-4 w-4 ${danger ? 'text-rose-300' : 'text-slate-300'}`} />}
       </div>
     </button>
@@ -275,17 +275,17 @@ export function AccountSettingsPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
         <button
           onClick={() => navigate('profile')}
-          className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900"
+          className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100"
           title="Back"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
         <div>
           <span className="text-lg font-black tracking-tight text-primary">Zylod</span>
-          <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block -mt-0.5 uppercase tracking-widest text-center">Settings</span>
+          <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block -mt-0.5 uppercase tracking-widest text-center">Settings</span>
         </div>
         <button
           onClick={() => navigate('profile')}
@@ -300,7 +300,7 @@ export function AccountSettingsPage() {
         {/* Page Title */}
         <div className="px-4 md:px-6 py-5 md:py-6 space-y-1">
           <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Account Settings</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             Manage your credentials, alerts, privacy, and account security.
           </p>
         </div>
@@ -382,18 +382,18 @@ export function AccountSettingsPage() {
 
                   {/* Account Verification Details */}
                   <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Account Credentials</h2>
+                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Account Credentials</h2>
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between py-2 border-b border-slate-50">
-                        <span className="text-slate-500 dark:text-slate-400">Email Address</span>
+                        <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Email Address</span>
                         <span className="font-bold text-slate-900 dark:text-slate-100">{user?.email || 'N/A'}</span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-slate-50">
-                        <span className="text-slate-500 dark:text-slate-400">Phone Number</span>
+                        <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Phone Number</span>
                         <span className="font-bold text-slate-900 dark:text-slate-100">{user?.phone || 'Not configured'}</span>
                       </div>
                       <div className="flex justify-between py-2">
-                        <span className="text-slate-500 dark:text-slate-400">Account Role</span>
+                        <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Account Role</span>
                         <span className="font-bold text-primary capitalize">{user?.userType || 'User'}</span>
                       </div>
                     </div>
@@ -496,7 +496,7 @@ export function AccountSettingsPage() {
               {activeSection === 'appearance' && (
                 <>
                   <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Display Theme</h2>
+                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Display Theme</h2>
                     <div className="grid grid-cols-3 gap-3">
                       {[
                         { key: 'light', label: 'Light', icon: Sun },

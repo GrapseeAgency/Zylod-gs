@@ -39,11 +39,11 @@ export function ShippingPoliciesPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Logistics Suite</span>
-        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="More">
+        <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="More">
           <MoreVertical className="h-5 w-5" />
         </button>
       </header>
@@ -55,7 +55,7 @@ export function ShippingPoliciesPage() {
           <h1 className="text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
             Shipping &amp; Logistics Policies
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
             Comprehensive documentation for global logistics, shipping terms, insurance, and claims procedures. Review these policies carefully before initiating large-scale freight operations.
           </p>
         </div>
@@ -66,7 +66,7 @@ export function ShippingPoliciesPage() {
             <ShieldCheck className="h-5 w-5" />
           </div>
           <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Standard Incoterms 2020</h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
             Our primary operating terms default to FOB (Free on Board) and CIF (Cost, Insurance, and Freight). Please verify your specific contract.
           </p>
         </div>
@@ -77,7 +77,7 @@ export function ShippingPoliciesPage() {
             <ShieldAlert className="h-5 w-5" />
           </div>
           <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Freight Insurance</h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
             All high-value shipments (&gt; $50,000 USD) mandate comprehensive cargo insurance. Claims must be filed within 72 hours of receipt.
           </p>
         </div>
@@ -94,7 +94,7 @@ export function ShippingPoliciesPage() {
               >
                 <button
                   onClick={() => toggleSection(idx)}
-                  className="w-full p-4 flex items-center justify-between text-left font-bold text-xs text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  className="w-full p-4 flex items-center justify-between text-left font-bold text-xs text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
                 >
                   <span>{sec.title}</span>
                   <ChevronDown
@@ -110,7 +110,7 @@ export function ShippingPoliciesPage() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="px-4 pb-4 pt-1 text-xs text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 leading-relaxed"
+                      className="px-4 pb-4 pt-1 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-800 leading-relaxed"
                     >
                       {sec.content}
                     </motion.div>
@@ -122,10 +122,10 @@ export function ShippingPoliciesPage() {
         </div>
 
         {/* Support Card */}
-        <div className="bg-slate-100/70 rounded-3xl p-5 border border-slate-200/80 space-y-3">
+        <div className="bg-slate-100 dark:bg-slate-900/70 rounded-3xl p-5 border border-slate-200 dark:border-slate-800/80 space-y-3">
           <div>
             <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Need further clarification?</h3>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 leading-relaxed">
               Our logistics support team is available 24/7 for complex routing inquiries.
             </p>
           </div>

@@ -99,7 +99,7 @@ export function PriceAlertCreatePage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Create Price Drop Alert</span>
@@ -113,7 +113,7 @@ export function PriceAlertCreatePage() {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-gray-100">Price Watch Activated!</h2>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
               We are actively monitoring <strong>{selectedProduct?.name}</strong>. As soon as the price hits <strong>{formatPrice(Number(targetPrice))}</strong> or lower, you will receive an instant push notification.
             </p>
             <div className="pt-3 flex gap-3 justify-center">
@@ -175,12 +175,12 @@ export function PriceAlertCreatePage() {
                           {p.thumbnailUrl ? (
                             <img src={p.thumbnailUrl} alt={p.name} className="w-full h-full object-cover" />
                           ) : (
-                            <Package className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                            <Package className="w-5 h-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                           )}
                         </div>
                         <div>
                           <p className="text-xs font-bold text-gray-900 dark:text-gray-100 line-clamp-1">{p.name}</p>
-                          <p className="text-[11px] text-gray-500 dark:text-gray-400">Current: {formatPrice(p.basePrice)}</p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Current: {formatPrice(p.basePrice)}</p>
                         </div>
                       </div>
                       <span className="text-xs font-bold text-red-600">Select →</span>
@@ -206,12 +206,12 @@ export function PriceAlertCreatePage() {
                     {selectedProduct.thumbnailUrl ? (
                       <img src={selectedProduct.thumbnailUrl} alt={selectedProduct.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{selectedProduct.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       Current Price: <strong>{formatPrice(selectedProduct.basePrice)}</strong>
                     </p>
                   </div>

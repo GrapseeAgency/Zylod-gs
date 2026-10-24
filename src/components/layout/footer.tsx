@@ -513,7 +513,7 @@ export function Footer() {
             <div className="w-px h-6 bg-border hidden sm:block" />
             <div className="flex items-center gap-2 flex-wrap">
               {/* bKash */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="bKash">
+              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="bKash">
                 <svg width="40" height="20" viewBox="0 0 40 20" fill="none">
                   <path d="M8 4c2-2 5-1 6 1s1 5-1 7c-2 1-5 0-6-2s-1-4 1-6z" fill="#E2136E"/>
                   <path d="M6 8c1-1 3 0 4 1s1 3 0 4c-1 2-3 1-4 0s-1-3 0-5z" fill="#E2136E" opacity=".7"/>
@@ -521,7 +521,7 @@ export function Footer() {
                 </svg>
               </div>
               {/* Nagad */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="Nagad">
+              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="Nagad">
                 <svg width="48" height="20" viewBox="0 0 48 20" fill="none">
                   <circle cx="10" cy="10" r="8" fill="#F26522"/>
                   <path d="M7 7l6 6M13 7l-6 6" stroke="white" strokeWidth="2" strokeLinecap="round"/>
@@ -529,7 +529,7 @@ export function Footer() {
                 </svg>
               </div>
               {/* Rocket */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="Rocket">
+              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="Rocket">
                 <svg width="44" height="20" viewBox="0 0 44 20" fill="none">
                   <path d="M10 2l3 8-3 8c-4-2-6-6-6-8s2-6 6-8z" fill="#8C3494"/>
                   <path d="M10 6l2 4-2 4" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
@@ -538,7 +538,7 @@ export function Footer() {
                 </svg>
               </div>
               {/* Upay */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="Upay">
+              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="Upay">
                 <svg width="44" height="20" viewBox="0 0 44 20" fill="none">
                   <path d="M10 3c4 0 7 3 7 7s-3 7-7 7-7-3-7-7 3-7 7-7z" fill="#1B3B7C"/>
                   <path d="M7 8h6M10 8v5" stroke="#FFD700" strokeWidth="1.8" strokeLinecap="round"/>
@@ -546,7 +546,7 @@ export function Footer() {
                 </svg>
               </div>
               {/* Tap */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[52px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="Tap">
+              <div className="inline-flex items-center justify-center h-10 min-w-[52px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="Tap">
                 <svg width="38" height="20" viewBox="0 0 38 20" fill="none">
                   <circle cx="10" cy="10" r="8" fill="#00A651"/>
                   <circle cx="10" cy="10" r="6" fill="none" stroke="#E3272E" strokeWidth="2"/>
@@ -555,7 +555,7 @@ export function Footer() {
                 </svg>
               </div>
               {/* SureCash */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[72px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="SureCash">
+              <div className="inline-flex items-center justify-center h-10 min-w-[72px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="SureCash">
                 <svg width="64" height="20" viewBox="0 0 64 20" fill="none">
                   <rect x="1" y="3" width="18" height="14" rx="3" fill="#0066B3"/>
                   <path d="M5 10h10M10 7v6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
@@ -563,14 +563,14 @@ export function Footer() {
                 </svg>
               </div>
               {/* Visa */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[56px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="Visa">
+              <div className="inline-flex items-center justify-center h-10 min-w-[56px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="Visa">
                 <svg width="44" height="20" viewBox="0 0 44 20" fill="none">
                   <text x="2" y="15" fontSize="12" fontWeight="800" fontStyle="italic" fill="#1A1F71">VISA</text>
                   <path d="M36 6l2 4-2 4" stroke="#F9A51A" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </div>
               {/* Mastercard */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[56px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="Mastercard">
+              <div className="inline-flex items-center justify-center h-10 min-w-[56px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="Mastercard">
                 <svg width="44" height="20" viewBox="0 0 44 20" fill="none">
                   <circle cx="14" cy="10" r="7" fill="#EB001B"/>
                   <circle cx="24" cy="10" r="7" fill="#F79E1B"/>
@@ -578,7 +578,7 @@ export function Footer() {
                 </svg>
               </div>
               {/* DBBL Nexus */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="DBBL Nexus">
+              <div className="inline-flex items-center justify-center h-10 min-w-[64px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="DBBL Nexus">
                 <svg width="52" height="20" viewBox="0 0 52 20" fill="none">
                   <circle cx="10" cy="10" r="8" fill="none" stroke="#0066B3" strokeWidth="2"/>
                   <path d="M6 10a4 4 0 018 0" stroke="#E3272E" strokeWidth="2" strokeLinecap="round"/>
@@ -587,7 +587,7 @@ export function Footer() {
                 </svg>
               </div>
               {/* SSLCommerz */}
-              <div className="inline-flex items-center justify-center h-10 min-w-[80px] px-3 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow" title="SSLCommerz">
+              <div className="inline-flex items-center justify-center h-10 min-w-[80px] px-3 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow" title="SSLCommerz">
                 <svg width="72" height="20" viewBox="0 0 72 20" fill="none">
                   <rect x="1" y="2" width="18" height="16" rx="3" fill="#0033A0"/>
                   <path d="M5 10h4M7 8v4M12 10h4" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>

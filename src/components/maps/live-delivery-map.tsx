@@ -274,7 +274,7 @@ export default function LiveDeliveryMap({ data, className }: Props) {
       {/* ── Status overlay card ── */}
       <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-2">
         {/* Live badge + driver */}
-        <div className="rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-slate-700 px-3 py-2 shadow-sm">
+        <div className="rounded-xl bg-white dark:bg-gray-900/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-slate-800 dark:border-slate-700 px-3 py-2 shadow-sm">
           {ping ? (
             <div className="flex items-center gap-2">
               <span className="relative flex h-2.5 w-2.5">
@@ -285,15 +285,15 @@ export default function LiveDeliveryMap({ data, className }: Props) {
                 <p className="text-[11px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-wide">
                   Live
                 </p>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[140px]">
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 truncate max-w-[140px]">
                   {driverName ? `Driver ${driverName}` : 'Driver on the way'}
                 </p>
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Radio className="h-3.5 w-3.5 text-slate-400" />
-              <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
+              <Radio className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+              <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300">
                 Waiting for driver location…
               </p>
             </div>
@@ -302,7 +302,7 @@ export default function LiveDeliveryMap({ data, className }: Props) {
 
         {/* Distance / ETA chip */}
         {(shownDistance || eta || isStraight) && (
-          <div className="rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-slate-700 px-3 py-2 shadow-sm text-right">
+          <div className="rounded-xl bg-white dark:bg-gray-900/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-slate-800 dark:border-slate-700 px-3 py-2 shadow-sm text-right">
             {eta ? (
               <p className="text-sm font-black text-slate-900 dark:text-slate-100 leading-tight">{eta}</p>
             ) : (
@@ -311,7 +311,7 @@ export default function LiveDeliveryMap({ data, className }: Props) {
               </p>
             )}
             {shownDistance && (
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
                 {isStraight ? 'straight-line ' : ''}
                 {shownDistance}
               </p>
@@ -323,7 +323,7 @@ export default function LiveDeliveryMap({ data, className }: Props) {
       {/* Honest footnote for degraded states */}
       {(isStraight || !ping || !dest) && (
         <div className="absolute inset-x-3 bottom-9 z-10">
-          <p className="rounded-lg bg-white/92 dark:bg-slate-900/92 backdrop-blur border border-slate-200 dark:border-slate-700 px-3 py-2 text-[10.5px] leading-snug text-slate-600 dark:text-slate-300">
+          <p className="rounded-lg bg-white dark:bg-gray-900/92 dark:bg-slate-900/92 backdrop-blur border border-slate-200 dark:border-slate-800 dark:border-slate-700 px-3 py-2 text-[10.5px] leading-snug text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300">
             {!ping && 'The driver has not sent a location yet — the map shows no driver position.'}
             {!dest && ping && ' The delivery address has no map coordinates, so only the driver position is shown.'}
             {isStraight && ' Road routing is unavailable — the dashed line is a straight-line distance, not a route, and no ETA is shown.'}
@@ -332,14 +332,14 @@ export default function LiveDeliveryMap({ data, className }: Props) {
       )}
 
       {/* Legend */}
-      <div className="pointer-events-none absolute left-3 bottom-9 z-10 hidden md:flex flex-col gap-1 rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-slate-700 px-3 py-2 shadow-sm">
-        <span className="flex items-center gap-2 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+      <div className="pointer-events-none absolute left-3 bottom-9 z-10 hidden md:flex flex-col gap-1 rounded-xl bg-white dark:bg-gray-900/90 dark:bg-slate-900/90 backdrop-blur border border-slate-200 dark:border-slate-800 dark:border-slate-700 px-3 py-2 shadow-sm">
+        <span className="flex items-center gap-2 text-[10px] font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300">
           <span className="h-2 w-2 rounded-full bg-[var(--primary,#c0392b)]" /> Driver
         </span>
-        <span className="flex items-center gap-2 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+        <span className="flex items-center gap-2 text-[10px] font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300">
           <MapPin className="h-2.5 w-2.5 text-[var(--primary,#c0392b)]" /> Delivery address
         </span>
-        <span className="flex items-center gap-2 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+        <span className="flex items-center gap-2 text-[10px] font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300">
           <Navigation className="h-2.5 w-2.5 text-[var(--primary,#c0392b)]" /> Route to you
         </span>
       </div>

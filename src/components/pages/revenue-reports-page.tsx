@@ -128,7 +128,7 @@ export function RevenueReportsPagePage() {
       <header className="md:hidden sticky top-0 z-50 bg-white border-b px-4 py-3 flex items-center gap-3 dark:bg-gray-900 dark:border-gray-800">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
@@ -167,9 +167,9 @@ export function RevenueReportsPagePage() {
         ) : authRequired ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
             <CardContent className="p-8 text-center space-y-3">
-              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600" />
+              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
               <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Seller sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 Sign in with a supplier account to view your revenue reports.
               </p>
               <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
@@ -177,7 +177,7 @@ export function RevenueReportsPagePage() {
           </Card>
         ) : error && !earnings && !commissions ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
               {error}
               <div className="mt-3">
                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
@@ -207,7 +207,7 @@ export function RevenueReportsPagePage() {
                       <p className="mt-2 text-lg font-bold text-gray-900 dark:text-gray-100">
                         {bdt(earnings.grossGMV)}
                       </p>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400">{earnings.totalOrders} orders</p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">{earnings.totalOrders} orders</p>
                     </CardContent>
                   </Card>
                   <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
@@ -219,7 +219,7 @@ export function RevenueReportsPagePage() {
                       <p className="mt-2 text-lg font-bold text-gray-900 dark:text-gray-100">
                         {bdt(earnings.netEarnings)}
                       </p>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400">after {earnings.commissionRate} commission</p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">after {earnings.commissionRate} commission</p>
                     </CardContent>
                   </Card>
                   <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
@@ -231,7 +231,7 @@ export function RevenueReportsPagePage() {
                       <p className="mt-2 text-lg font-bold text-gray-900 dark:text-gray-100">
                         {bdt(earnings.platformCommission)}
                       </p>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400">{earnings.commissionRate} of GMV</p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">{earnings.commissionRate} of GMV</p>
                     </CardContent>
                   </Card>
                   <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
@@ -243,7 +243,7 @@ export function RevenueReportsPagePage() {
                       <p className="mt-2 text-lg font-bold text-gray-900 dark:text-gray-100">
                         {bdt(earnings.availablePayout)}
                       </p>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400">wallet minus on-hold payouts</p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">wallet minus on-hold payouts</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -252,15 +252,15 @@ export function RevenueReportsPagePage() {
                 <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
                   <CardContent className="p-4 grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
                     <div>
-                      <p className="text-gray-500 dark:text-gray-400">On Hold for Payouts</p>
+                      <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">On Hold for Payouts</p>
                       <p className="font-bold text-gray-900 mt-1 dark:text-gray-100">{bdt(earnings.onHoldForPayouts)}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500 dark:text-gray-400">Pending Escrow</p>
+                      <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Pending Escrow</p>
                       <p className="font-bold text-gray-900 mt-1 dark:text-gray-100">{bdt(earnings.pendingEscrow)}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500 dark:text-gray-400">Total Paid Out</p>
+                      <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Paid Out</p>
                       <p className="font-bold text-gray-900 mt-1 dark:text-gray-100">{bdt(earnings.totalPaidOut)}</p>
                     </div>
                   </CardContent>
@@ -270,13 +270,13 @@ export function RevenueReportsPagePage() {
                 <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base dark:text-gray-100">Recent Sales</CardTitle>
-                    <CardDescription className="dark:text-gray-400">
+                    <CardDescription className="dark:text-gray-400 dark:text-gray-500">
                       Your most recent sub-order totals — server-computed
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     {earnings.recentSales.length === 0 ? (
-                      <p className="text-sm text-gray-400 py-4 text-center dark:text-gray-500">
+                      <p className="text-sm text-gray-400 py-4 text-center dark:text-gray-500 dark:text-gray-400">
                         No sales yet — your recent sales totals will appear here.
                       </p>
                     ) : (
@@ -286,7 +286,7 @@ export function RevenueReportsPagePage() {
                             key={i}
                             className="flex items-center justify-between border-b border-gray-100 pb-2 last:border-0 last:pb-0 dark:border-gray-800"
                           >
-                            <span className="text-xs text-gray-500 dark:text-gray-400">{fmtDate(s.date)}</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{fmtDate(s.date)}</span>
                             <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{bdt(s.total)}</span>
                           </div>
                         ))}
@@ -302,16 +302,16 @@ export function RevenueReportsPagePage() {
               <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base dark:text-gray-100">Commission History</CardTitle>
-                  <CardDescription className="dark:text-gray-400">
+                  <CardDescription className="dark:text-gray-400 dark:text-gray-500">
                     Per-order commission at the standard {commissions.items[0]?.ratePercent || '3.0%'} B2B rate
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {commissions.items.length === 0 ? (
                     <div className="py-8 text-center space-y-2">
-                      <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600" />
+                      <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
                       <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No commission rows yet</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
                         When buyers place orders on your products, the platform-fee breakdown per order will appear here.
                       </p>
                     </div>
@@ -319,11 +319,11 @@ export function RevenueReportsPagePage() {
                     <>
                       <div className="mb-3 grid grid-cols-2 gap-3 text-xs">
                         <div className="rounded-lg border border-gray-100 p-3 dark:border-gray-800">
-                          <p className="text-gray-500 dark:text-gray-400">Total Gross</p>
+                          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Gross</p>
                           <p className="font-bold text-gray-900 mt-1 dark:text-gray-100">{bdt(commissions.totalGross)}</p>
                         </div>
                         <div className="rounded-lg border border-gray-100 p-3 dark:border-gray-800">
-                          <p className="text-gray-500 dark:text-gray-400">Total Commissions</p>
+                          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Commissions</p>
                           <p className="font-bold text-gray-900 mt-1 dark:text-gray-100">{bdt(commissions.totalCommissions)}</p>
                         </div>
                       </div>
@@ -332,7 +332,7 @@ export function RevenueReportsPagePage() {
                       <div className="hidden md:block max-h-96 overflow-y-auto">
                         <table className="w-full text-sm">
                           <thead className="sticky top-0 bg-white dark:bg-gray-900">
-                            <tr className="text-left text-xs text-gray-500 border-b dark:text-gray-400 dark:border-gray-800">
+                            <tr className="text-left text-xs text-gray-500 border-b dark:text-gray-400 dark:text-gray-500 dark:border-gray-800">
                               <th className="py-2 pr-3 font-medium">Date</th>
                               <th className="py-2 pr-3 font-medium">Order</th>
                               <th className="py-2 pr-3 font-medium">Sub-order</th>
@@ -346,7 +346,7 @@ export function RevenueReportsPagePage() {
                           <tbody>
                             {commissions.items.map((r) => (
                               <tr key={r.id} className="border-b last:border-0 text-gray-800 dark:text-gray-200 dark:border-gray-800">
-                                <td className="py-2.5 pr-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{fmtDate(r.date)}</td>
+                                <td className="py-2.5 pr-3 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 whitespace-nowrap">{fmtDate(r.date)}</td>
                                 <td className="py-2.5 pr-3 font-mono text-xs">{r.orderNumber}</td>
                                 <td className="py-2.5 pr-3 font-mono text-xs">{r.subOrderNumber}</td>
                                 <td className="py-2.5 pr-3 text-right">{bdt(r.grossAmount)}</td>
@@ -366,20 +366,20 @@ export function RevenueReportsPagePage() {
                           <div key={r.id} className="border border-gray-100 rounded-xl p-3 space-y-2 dark:border-gray-800">
                             <div className="flex items-start justify-between gap-2">
                               <div className="min-w-0">
-                                <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{r.orderNumber}</p>
-                                <p className="text-[11px] text-gray-400 dark:text-gray-500">{fmtDate(r.date)}</p>
+                                <p className="text-xs font-mono text-gray-500 dark:text-gray-400 dark:text-gray-500">{r.orderNumber}</p>
+                                <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{fmtDate(r.date)}</p>
                               </div>
                               <div className="text-right shrink-0">
                                 <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{bdt(r.netPayout)}</p>
-                                <p className="text-[11px] text-gray-500 dark:text-gray-400">net payout</p>
+                                <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">net payout</p>
                               </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300">
-                              <span className="text-gray-500 dark:text-gray-400">Gross</span>
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
+                              <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Gross</span>
                               <span className="text-right">{bdt(r.grossAmount)}</span>
-                              <span className="text-gray-500 dark:text-gray-400">Rate</span>
+                              <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Rate</span>
                               <span className="text-right">{r.ratePercent}</span>
-                              <span className="text-gray-500 dark:text-gray-400">Commission</span>
+                              <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Commission</span>
                               <span className="text-right">{bdt(r.commissionAmount)}</span>
                             </div>
                             <div className="pt-1">{statusChip(r.status)}</div>
@@ -396,7 +396,7 @@ export function RevenueReportsPagePage() {
             <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
               <CardContent className="p-4 flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-primary mt-0.5 shrink-0" />
-                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed dark:text-gray-300">
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed dark:text-gray-300">
                   Earnings are settled by the finance team. Commission is the standard B2B wholesale
                   rate applied to gross GMV. Money only leaves your wallet when a payout is
                   <span className="font-semibold"> completed with a reference</span> — a request alone never moves funds.

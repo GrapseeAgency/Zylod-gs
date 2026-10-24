@@ -134,12 +134,12 @@ export function ReportUserPage() {
       {/* Top Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div>
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base md:text-xl">Report Policy Violation</h1>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">Trust & Safety Moderation Intake</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Trust & Safety Moderation Intake</p>
           </div>
         </div>
         <button
@@ -162,11 +162,11 @@ export function ReportUserPage() {
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Report Saved</h2>
-              <p className="text-xs text-gray-600 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 max-w-md mx-auto leading-relaxed">
                 Your report has been saved for review by the Zylod team. If fraudulent activity or counterfeit merchandise is confirmed, the account may face restriction and, where required, referral to the relevant authorities. Zylod does not hold funds in escrow — report any payment made outside the official order instructions immediately.
               </p>
               {reportRef && (
-                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-sm mx-auto">
                   Report Reference: <span className="font-mono font-bold text-gray-900 dark:text-gray-100">{reportRef}</span>
                 </div>
               )}
@@ -192,7 +192,7 @@ export function ReportUserPage() {
                   <ShieldAlert className="w-4 h-4 text-red-600" />
                   Report User, Supplier, or Storefront
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">
                   Select the registered supplier, manufacturer, or user ID violating wholesale regulations.
                 </p>
               </div>
@@ -212,7 +212,7 @@ export function ReportUserPage() {
                     <button
                       type="button"
                       onClick={copyId}
-                      className="text-[11px] text-gray-400 dark:text-gray-500 hover:text-red-600 font-mono flex items-center gap-1"
+                      className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-red-600 font-mono flex items-center gap-1"
                     >
                       {copied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
                       ID: {formData.reportedUserId.slice(0, 14)}...
@@ -235,8 +235,8 @@ export function ReportUserPage() {
                     onFocus={() => setShowSupplierDropdown(true)}
                     className="w-full border border-gray-200 dark:border-gray-800 rounded-xl pl-9 pr-8 py-2.5 text-xs focus:outline-none focus:border-red-500 font-medium"
                   />
-                  <Store className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-3" />
-                  <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute right-3 top-3 cursor-pointer" onClick={() => setShowSupplierDropdown(!showSupplierDropdown)} />
+                  <Store className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 absolute left-3 top-3" />
+                  <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 absolute right-3 top-3 cursor-pointer" onClick={() => setShowSupplierDropdown(!showSupplierDropdown)} />
                 </div>
 
                 {/* Autocomplete Dropdown */}
@@ -257,10 +257,10 @@ export function ReportUserPage() {
                         >
                           <div>
                             <p className="font-bold text-gray-900 dark:text-gray-100">{sup.companyName}</p>
-                            <p className="text-[10px] text-gray-400 dark:text-gray-500 font-mono">ID: {sup.id}</p>
+                            <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 font-mono">ID: {sup.id}</p>
                           </div>
                           {sup.businessCity && (
-                            <span className="text-[10px] bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 dark:text-gray-500 px-2 py-0.5 rounded-full">
                               {sup.businessCity}
                             </span>
                           )}
@@ -320,7 +320,7 @@ export function ReportUserPage() {
               {/* Confidentiality Notice */}
               <div className="bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-3.5 flex items-start gap-2.5">
                 <Lock className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-                <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
                   <strong>Reporter Anonymity Protected:</strong> The reported supplier will never see your identity. All claims are independently evaluated by Zylod Trust & Safety Compliance.
                 </p>
               </div>

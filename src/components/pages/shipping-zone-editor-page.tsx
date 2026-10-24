@@ -234,7 +234,7 @@ export function ShippingZoneEditorPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
         <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Shipping Zones</h1>
@@ -249,7 +249,7 @@ export function ShippingZoneEditorPage() {
                   Sign in
                 </button>
               )}
-              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
+              <button onClick={load} className="min-h-11 px-4 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 inline-flex items-center justify-center gap-2">
                 <RefreshCw className="w-4 h-4" /> Retry
               </button>
             </div>
@@ -268,12 +268,12 @@ export function ShippingZoneEditorPage() {
     >
       <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Shipping Zones</h1>
         </div>
-        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+        <button onClick={load} aria-label="Refresh" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
           <RefreshCw className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         </button>
       </div>
@@ -281,19 +281,19 @@ export function ShippingZoneEditorPage() {
       <div className="p-4 md:max-w-3xl md:mx-auto md:p-6 md:pt-8 space-y-4">
         <div className="hidden md:flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Shipping Zones</h1>
-          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary inline-flex items-center gap-1">
+          <button onClick={load} className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:text-primary inline-flex items-center gap-1">
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 -mt-2">
+        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 -mt-2">
           Zones cover districts (not postcodes). A district can belong to only one active zone. Rates are managed in the admin shipping console.
         </p>
 
         {zones.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-2">
-            <MapPin className="w-8 h-8 text-gray-400 mx-auto" />
+            <MapPin className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto" />
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No shipping zones yet</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Create the first zone to start covering districts.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Create the first zone to start covering districts.</p>
           </div>
         ) : (
           zones.map((z) => {
@@ -317,7 +317,7 @@ export function ShippingZoneEditorPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Covered districts (comma-separated)</label>
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Covered districts (comma-separated)</label>
                   <textarea
                     value={form.districts}
                     onChange={(e) => updateEdit(z.id, { districts: e.target.value })}
@@ -337,7 +337,7 @@ export function ShippingZoneEditorPage() {
                   Active (matches buyers at checkout)
                 </label>
 
-                <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   <span>{z.rateCount} rate(s) attached · created {new Date(z.createdAt).toLocaleDateString()}</span>
                   <div className="flex items-center gap-2">
                     <button
@@ -366,12 +366,12 @@ export function ShippingZoneEditorPage() {
           <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border-2 border-primary shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">New zone</h3>
-              <button onClick={() => setShowCreate(false)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
-                <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <button onClick={() => setShowCreate(false)} className="p-1 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded">
+                <X className="w-4 h-4 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
               </button>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Zone name</label>
+              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Zone name</label>
               <input
                 type="text"
                 value={createForm.name}
@@ -381,7 +381,7 @@ export function ShippingZoneEditorPage() {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Districts (comma-separated)</label>
+              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">Districts (comma-separated)</label>
               <textarea
                 value={createForm.districts}
                 onChange={(e) => setCreateForm((f) => ({ ...f, districts: e.target.value }))}

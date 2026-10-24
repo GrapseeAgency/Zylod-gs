@@ -115,7 +115,7 @@ export function SaveForLaterPage() {
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b px-4 py-3 flex items-center justify-between md:px-6">
-        <button onClick={() => goBack()} className="md:hidden p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+        <button onClick={() => goBack()} className="md:hidden p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
           <ArrowLeft size={24} />
         </button>
         <div className="text-center">
@@ -124,7 +124,7 @@ export function SaveForLaterPage() {
         <button 
           onClick={handleClearAll}
           disabled={items.length === 0 || isProcessing}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 text-gray-500 dark:text-gray-400"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 disabled:opacity-50 text-gray-500 dark:text-gray-400 dark:text-gray-500"
         >
           <Trash2 size={20} />
         </button>
@@ -170,11 +170,11 @@ export function SaveForLaterPage() {
           <div className="text-center text-red-500 py-10">{error}</div>
         ) : displayedItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500 rounded-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500 dark:text-gray-400 rounded-full flex items-center justify-center mb-4">
               <ShoppingBag size={32} />
             </div>
             <h2 className="text-lg font-semibold mb-2">Nothing saved for later</h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-[250px]">Items you save from your cart will appear here.</p>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-6 max-w-[250px]">Items you save from your cart will appear here.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -196,12 +196,12 @@ export function SaveForLaterPage() {
                     
                     <div className="flex-1">
                       <h3 className="font-medium text-sm line-clamp-2 leading-tight mb-1">{item.productName}</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.supplierName}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1">{item.supplierName}</p>
                       
                       <div className="flex items-end justify-between mt-2">
                         <div>
                           <p className="font-bold text-primary text-sm">${item.price.toFixed(2)}</p>
-                          <p className="text-[10px] text-gray-500 dark:text-gray-400">MOQ: {item.moq}</p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500">MOQ: {item.moq}</p>
                         </div>
                       </div>
                     </div>
@@ -209,7 +209,7 @@ export function SaveForLaterPage() {
 
                   {/* Middle: Badges */}
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 px-2 py-1 rounded text-[10px] font-medium">
+                    <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-400 dark:text-gray-500 px-2 py-1 rounded text-[10px] font-medium">
                       <Clock size={12} />
                       Saved {formatTimeAgo(item.dateSaved)}
                     </div>
@@ -226,7 +226,7 @@ export function SaveForLaterPage() {
                     <button 
                       onClick={(e) => handleRemove(item.id, e)}
                       disabled={isProcessing}
-                      className="flex-1 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-800 rounded-full disabled:opacity-50"
+                      className="flex-1 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-800 rounded-full disabled:opacity-50"
                     >
                       Remove
                     </button>
@@ -247,7 +247,7 @@ export function SaveForLaterPage() {
 
       {/* Global Actions */}
       {displayedItems.length > 0 && (
-        <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 flex gap-3 z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+        <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 flex gap-3 z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
           <button 
             onClick={handleMoveAllToCart}
             disabled={isProcessing}

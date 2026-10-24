@@ -86,7 +86,7 @@ function StatMiniCard({
             {trend.value}
           </div>
         )}
-        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block mt-1 uppercase tracking-wider">{label}</span>
+        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-1 uppercase tracking-wider">{label}</span>
         {badge && (
           <span className="text-[10px] font-bold text-primary bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full mt-1 inline-block">
             {badge}
@@ -290,14 +290,14 @@ export function BuyerProfilePage() {
       />
 
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('home')} className="p-1 text-slate-700 dark:text-slate-300" title="Home">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
             <span className="text-lg font-black tracking-tight text-primary">Zylod</span>
-            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 block -mt-0.5 uppercase tracking-widest">
+            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block -mt-0.5 uppercase tracking-widest">
               Buyer Portal
             </span>
           </div>
@@ -344,7 +344,7 @@ export function BuyerProfilePage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <User className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+                    <User className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                   )}
                 </div>
                 <button
@@ -382,15 +382,15 @@ export function BuyerProfilePage() {
                   Wholesale Buyer
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium mt-0.5">
                 {profileData?.email || user?.email || 'Active Account'}
               </p>
             </div>
 
             {/* Meta chips */}
-            <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 flex-wrap">
+            <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex-wrap">
               <span className="flex items-center gap-1.5 font-semibold">
-                <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                 Bangladesh
               </span>
               <span className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
@@ -481,8 +481,8 @@ export function BuyerProfilePage() {
                     <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs" data-testid="profile-completion-card">
                       <div className="flex items-center justify-between gap-3">
                         <div>
-                          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Profile strength</h2>
-                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Profile strength</h2>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 dark:text-slate-500 mt-1">
                             {completion.overallCompletionPct >= 100
                               ? 'Your profile is complete — buyers and suppliers can trust every detail.'
                               : 'Complete these to build trust with suppliers and speed up checkout.'}
@@ -517,7 +517,7 @@ export function BuyerProfilePage() {
 
                   {/* Procurement Quick Actions */}
                   <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       Procurement Quick Actions
                     </h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
@@ -542,13 +542,13 @@ export function BuyerProfilePage() {
                           <button
                             key={label}
                             onClick={() => navigate(page)}
-                            className="p-3.5 bg-slate-50 dark:bg-slate-950 hover:bg-white rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-slate-200 text-left space-y-1 transition-all group hover:shadow-xs"
+                            className="p-3.5 bg-slate-50 dark:bg-slate-950 hover:bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-slate-200 text-left space-y-1 transition-all group hover:shadow-xs"
                           >
                             <div className={`w-8 h-8 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${colorMap[color]}`}>
                               <Icon className="h-4 w-4" />
                             </div>
                             <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary leading-snug">{label}</h3>
-                            <p className="text-[10px] text-slate-400 dark:text-slate-500">{sub}</p>
+                            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{sub}</p>
                           </button>
                         )
                       })}
@@ -564,7 +564,7 @@ export function BuyerProfilePage() {
                 <>
                   <div className="space-y-3">
                     <div className="relative">
-                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
+                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 pointer-events-none" />
                       <Input
                         value={orderSearch}
                         onChange={(e) => setOrderSearch(e.target.value)}
@@ -611,14 +611,14 @@ export function BuyerProfilePage() {
                               <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">
                                 #{order.orderNumber}
                               </h3>
-                              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                              <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
                                 {order.supplierName || 'Supplier'} • {order.itemsCount || 1} items
                               </p>
                             </div>
                             <OrderStatusBadge status={order.status} />
                           </div>
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-slate-500 dark:text-slate-400 font-mono">
+                            <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono">
                               {new Date(order.placedAt).toLocaleDateString()}
                             </span>
                             <span className="font-black text-slate-900 dark:text-slate-100">{formatPrice(order.totalAmount)}</span>
@@ -643,7 +643,7 @@ export function BuyerProfilePage() {
                   ) : (
                     <div className="bg-white dark:bg-gray-900 rounded-3xl p-12 border border-slate-200 dark:border-slate-800 text-center space-y-3">
                       <Package className="h-12 w-12 text-slate-200 mx-auto" />
-                      <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500">No orders found</h3>
+                      <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">No orders found</h3>
                       <Button onClick={() => navigate('wholesale-catalog')} className="bg-primary text-white font-bold h-10 rounded-xl text-xs px-6">
                         Browse Wholesale Catalog
                       </Button>
@@ -700,7 +700,7 @@ export function BuyerProfilePage() {
                             </div>
                             <div>
                               <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">{sup.name}</h3>
-                              <p className="text-[10px] text-slate-400 dark:text-slate-500">{sup.category || 'Manufacturer'}</p>
+                              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{sup.category || 'Manufacturer'}</p>
                             </div>
                           </div>
                           <Button
@@ -716,8 +716,8 @@ export function BuyerProfilePage() {
                   ) : (
                     <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-3">
                       <Building2 className="h-12 w-12 text-slate-200 mx-auto" />
-                      <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500">No saved factories yet</h3>
-                      <p className="text-xs text-slate-400 dark:text-slate-500">Follow supplier stores to build your shortlist.</p>
+                      <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">No saved factories yet</h3>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">Follow supplier stores to build your shortlist.</p>
                       <Button onClick={() => navigate('wholesale-catalog')} className="bg-primary text-white font-bold h-10 rounded-xl text-xs px-6">
                         Browse Verified Factories
                       </Button>
@@ -736,16 +736,16 @@ export function BuyerProfilePage() {
                       <CreditCard className="h-4 w-4 text-primary" />
                       Trade Credit Facility
                     </h2>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                       Zylod Trade Credit enables verified wholesale buyers to place bulk orders with flexible payment terms (Net-30 / Net-60) after credit verification.
                     </p>
                     <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-2">
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-500 dark:text-slate-400">Credit Status</span>
+                        <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Credit Status</span>
                         <span className="font-bold text-emerald-600">Active Trade Account</span>
                       </div>
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-500 dark:text-slate-400">Payment Security</span>
+                        <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Payment Security</span>
                         <span className="font-bold text-slate-800 dark:text-slate-200">Trade Assurance Protected</span>
                       </div>
                     </div>
@@ -760,8 +760,8 @@ export function BuyerProfilePage() {
                 <>
                   <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
                     <Heart className="h-10 w-10 text-slate-200 mx-auto" />
-                    <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500">Wishlist is empty</h3>
-                    <p className="text-xs text-slate-400 dark:text-slate-500">Save products to quickly reorder or monitor wholesale price updates.</p>
+                    <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">Wishlist is empty</h3>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">Save products to quickly reorder or monitor wholesale price updates.</p>
                     <Button onClick={() => navigate('wholesale-catalog')} className="bg-primary text-white font-bold h-10 rounded-xl text-xs px-6">
                       Explore Products
                     </Button>
@@ -788,10 +788,10 @@ export function BuyerProfilePage() {
                         <button
                           key={title}
                           onClick={() => navigate(page)}
-                          className="w-full flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
+                          className="w-full flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
                         >
                           <span>{title}</span>
-                          <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                          <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                         </button>
                       ))}
                     </div>
@@ -807,7 +807,7 @@ export function BuyerProfilePage() {
                   <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden">
                     <button
                       onClick={() => navigate('account-settings')}
-                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-800"
+                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
                     >
                       <div className="flex items-center gap-3">
                         <Settings className="h-4 w-4 text-primary" />
@@ -817,7 +817,7 @@ export function BuyerProfilePage() {
                     </button>
                     <button
                       onClick={() => navigate('notification-preferences')}
-                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-800"
+                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
                     >
                       <div className="flex items-center gap-3">
                         <Bell className="h-4 w-4 text-primary" />
@@ -827,7 +827,7 @@ export function BuyerProfilePage() {
                     </button>
                     <button
                       onClick={() => navigate('chat-list')}
-                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-800"
+                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
                     >
                       <div className="flex items-center gap-3">
                         <MessageSquare className="h-4 w-4 text-primary" />

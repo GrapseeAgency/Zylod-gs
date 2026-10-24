@@ -209,7 +209,7 @@ export function NotificationsPage() {
       case 'chat':
         return <MessageSquare className="w-5 h-5 text-indigo-600" />
       default:
-        return <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        return <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
     }
   }
 
@@ -242,7 +242,7 @@ export function NotificationsPage() {
       {/* Sticky Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="md:hidden p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -258,14 +258,14 @@ export function NotificationsPage() {
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => navigate('notification-search')}
-            className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className="p-2 rounded-xl text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition"
             title="Search notifications"
           >
             <Search className="w-4 h-4" />
           </button>
           <button
             onClick={() => navigate('push-notification-settings')}
-            className="p-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className="p-2 rounded-xl text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition"
             title="Notification Settings"
           >
             <SlidersHorizontal className="w-4 h-4" />
@@ -355,7 +355,7 @@ export function NotificationsPage() {
                     'No notifications found' implied they had an (empty)
                     inbox; the honest state asks them to sign in. */}
                 <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Sign in to see your notifications</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
                   Orders, deliveries, price-drop watches, and deal alerts all land here once you are signed in.
                 </p>
                 <div className="pt-2">
@@ -367,7 +367,7 @@ export function NotificationsPage() {
             ) : (
               <>
                 <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No notifications found</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
                   {activeTab === 'unread' ? 'You have caught up on all your alerts.' : 'You will be notified about orders, deliveries, price changes, and deals here.'}
                 </p>
                 <div className="pt-2">
@@ -413,12 +413,12 @@ export function NotificationsPage() {
                         <span className="w-2 h-2 rounded-full bg-red-600 flex-shrink-0" />
                       )}
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 line-clamp-2 leading-relaxed">
                       {notif.message}
                     </p>
-                    <div className="flex items-center justify-between mt-2 pt-1 border-t border-gray-50 text-[11px] text-gray-400 dark:text-gray-500">
+                    <div className="flex items-center justify-between mt-2 pt-1 border-t border-gray-50 text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                       <span>{formatTime(notif.timestamp)}</span>
-                      <span className="capitalize font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1 group-hover:text-red-600 transition">
+                      <span className="capitalize font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center gap-1 group-hover:text-red-600 transition">
                         View details <ChevronRight className="w-3 h-3" />
                       </span>
                     </div>
@@ -428,7 +428,7 @@ export function NotificationsPage() {
                 {/* Delete Button */}
                 <button
                   onClick={(e) => handleDelete(notif.id, e)}
-                  className="absolute top-3 right-3 p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition opacity-0 group-hover:opacity-100 sm:opacity-70"
+                  className="absolute top-3 right-3 p-1.5 text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition opacity-0 group-hover:opacity-100 sm:opacity-70"
                   title="Delete notification"
                 >
                   <Trash2 className="w-3.5 h-3.5" />

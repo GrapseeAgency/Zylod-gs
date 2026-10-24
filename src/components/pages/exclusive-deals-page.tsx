@@ -48,7 +48,7 @@ export function ExclusiveDealsPage() {
         <Button
           size="sm"
           onClick={() => navigate('vip-membership')}
-          className="h-8 text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-xl"
+          className="h-8 text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-900 dark:text-slate-100 rounded-xl"
         >
           My VIP Status
         </Button>
@@ -58,11 +58,11 @@ export function ExclusiveDealsPage() {
         {/* Banner */}
         <div className="bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 rounded-3xl p-5 md:p-6 text-slate-950 shadow-xl space-y-1.5 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-slate-900">
+            <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
               <Sparkles className="w-4 h-4" /> Tier Member Special Allocations
             </div>
             <h2 className="text-base sm:text-lg md:text-2xl font-black">Direct-From-Mill Factory Clearances</h2>
-            <p className="text-xs text-slate-900">
+            <p className="text-xs text-slate-900 dark:text-slate-100">
               Exclusive wholesale export lots unlocked exclusively for Silver, Gold, and Platinum tier verified accounts.
             </p>
           </div>
@@ -86,7 +86,7 @@ export function ExclusiveDealsPage() {
               </div>
             ))
           ) : deals.length === 0 ? (
-            <div className="col-span-2 lg:col-span-3 text-center py-16 text-slate-400">
+            <div className="col-span-2 lg:col-span-3 text-center py-16 text-slate-400 dark:text-slate-500">
               No exclusive deals active at this moment.
             </div>
           ) : (
@@ -101,7 +101,7 @@ export function ExclusiveDealsPage() {
                     <Badge className="bg-amber-400/10 text-amber-400 border border-amber-400/30 text-[10px] uppercase font-bold">
                       {deal.requiredTier} Tier
                     </Badge>
-                    <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
                       <Clock className="w-3 h-3" /> Ends in {deal.expiresInHours}h
                     </span>
                   </div>
@@ -116,7 +116,7 @@ export function ExclusiveDealsPage() {
 
                   <div>
                     <h3 className="text-xs sm:text-sm font-bold text-white line-clamp-2">{deal.name}</h3>
-                    <p className="text-[11px] text-slate-400">MOQ: {deal.moq} Units</p>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500">MOQ: {deal.moq} Units</p>
                   </div>
                 </div>
 
@@ -124,7 +124,7 @@ export function ExclusiveDealsPage() {
                   <div>
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-base font-black text-amber-400">{formatPrice(deal.vipPriceBDT)}</span>
-                      <span className="text-[11px] text-slate-500 line-through">{formatPrice(deal.regularPriceBDT)}</span>
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 line-through">{formatPrice(deal.regularPriceBDT)}</span>
                     </div>
                     <span className="text-[10px] text-emerald-400 font-bold">
                       Save {formatPrice(deal.savingsPerUnitBDT)}/unit

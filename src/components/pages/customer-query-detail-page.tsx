@@ -144,7 +144,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
         <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
           <Inbox className="w-10 h-10 text-gray-300 mx-auto" />
           <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No query selected</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Open a query from the Customer Queries list.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Open a query from the Customer Queries list.</p>
           <Button onClick={goBack} variant="outline" className="h-9 text-xs font-bold">Go back</Button>
         </div>
       </div>
@@ -157,7 +157,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
         <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
           <AlertCircle className="w-10 h-10 text-amber-400 mx-auto" />
           <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">Sign in required</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Only the seller who owns this query (or an admin) can view it.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Only the seller who owns this query (or an admin) can view it.</p>
         </div>
       </div>
     );
@@ -169,7 +169,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
         <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow text-center max-w-xs space-y-3">
           <Inbox className="w-10 h-10 text-gray-300 mx-auto" />
           <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">Query not found</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">It may have been removed, or it belongs to another seller.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">It may have been removed, or it belongs to another seller.</p>
         </div>
       </div>
     );
@@ -193,7 +193,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
-        <div className="flex items-center gap-2 text-xs font-bold text-gray-400 dark:text-gray-500">
+        <div className="flex items-center gap-2 text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400">
           <Loader2 className="h-4 w-4 animate-spin" /> Loading query thread…
         </div>
       </div>
@@ -222,7 +222,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div className="min-w-0">
               <h2 className="text-sm font-black text-gray-900 dark:text-gray-100">{query.subject}</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">
                 {query.buyerName} · {new Date(query.createdAt).toLocaleString()}
               </p>
             </div>
@@ -231,7 +231,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 flex-wrap">
+          <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 flex-wrap">
             <span className="font-bold uppercase tracking-wide text-[9px] bg-gray-100 dark:bg-gray-900 rounded px-1.5 py-0.5">{query.queryType.replace(/_/g, ' ')}</span>
             {query.productName && (
               <span className="flex items-center gap-1 truncate">
@@ -242,7 +242,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
 
           {/* The buyer's real message */}
           <div className="bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl p-3.5" data-testid="query-buyer-message">
-            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1.5">
+            <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 dark:text-gray-400 mb-1.5">
               <MessageCircle className="h-3 w-3" /> {query.buyerName}
             </div>
             <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{query.message}</p>
@@ -287,7 +287,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
               <Button
                 variant="outline" size="sm" disabled={statusMoving}
                 onClick={() => moveStatus('closed')}
-                className="h-8 text-[11px] font-bold gap-1.5 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                className="h-8 text-[11px] font-bold gap-1.5 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
               >
                 <XCircle className="h-3.5 w-3.5" /> Close
               </Button>

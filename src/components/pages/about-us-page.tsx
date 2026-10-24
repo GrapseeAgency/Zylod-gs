@@ -50,12 +50,12 @@ export function AboutUsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">About Zylod</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">B2B Wholesale Marketplace</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">B2B Wholesale Marketplace</p>
         </div>
       </div>
 
@@ -67,7 +67,7 @@ export function AboutUsPage() {
         ) : !data ? (
           <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800">
             <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200">Company profile unavailable right now</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xs mx-auto">We could not load the company story. Please try again in a moment.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1 max-w-xs mx-auto">We could not load the company story. Please try again in a moment.</p>
           </div>
         ) : (
           <>
@@ -85,25 +85,25 @@ export function AboutUsPage() {
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
                 <div className="text-center">
                   <p className="text-lg md:text-2xl font-black text-blue-400">{data.stats.verifiedSuppliers.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Verified Suppliers</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Verified Suppliers</p>
                 </div>
                 <div className="text-center">
                   <p className="text-lg md:text-2xl font-black text-emerald-400">{data.stats.registeredBuyers.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Registered Buyers</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Registered Buyers</p>
                 </div>
                 <div className="text-center">
                   <p className="text-lg md:text-2xl font-black text-amber-400">{data.stats.activeProducts.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Live Products</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Live Products</p>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
                 These are live counts from our database. Zylod has just launched, so they start at zero — no demo or placeholder figures.
               </p>
             </div>
 
             {/* Quick Nav Sub-pages */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">Company Links</h3>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Company Links</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {[
                   { label: 'Company Milestones', id: 'company-milestones' },
@@ -132,7 +132,7 @@ export function AboutUsPage() {
                   <Target className="w-5 h-5" />
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Our Mission</h3>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
                   {data.companyInfo.mission}
                 </p>
               </div>
@@ -142,7 +142,7 @@ export function AboutUsPage() {
                   <Eye className="w-5 h-5" />
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Our Vision</h3>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
                   {data.companyInfo.vision}
                 </p>
               </div>
@@ -158,7 +158,7 @@ export function AboutUsPage() {
                 {data.companyInfo.values.map(val => (
                   <div key={val.title} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl space-y-1">
                     <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{val.title}</p>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">{val.desc}</p>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{val.desc}</p>
                   </div>
                 ))}
               </div>
@@ -181,7 +181,7 @@ export function AboutUsPage() {
                 )}
               </div>
               {data.milestones.length === 0 ? (
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
                   No milestones published yet. Zylod only posts real milestones — they will appear here as the platform grows.
                 </p>
               ) : (
@@ -193,7 +193,7 @@ export function AboutUsPage() {
                       </div>
                       <div>
                         <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{m.title} ({m.year})</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{m.description}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">{m.description}</p>
                       </div>
                     </div>
                   ))}

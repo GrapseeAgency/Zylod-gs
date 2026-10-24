@@ -22,8 +22,8 @@ export function VersionHistoryPage() {
         <p className="text-xs text-muted-foreground mt-0.5">Real release notes only — published as versions actually ship</p>
       </div>
 
-      <div className="rounded-2xl border border-dashed border-gray-200 bg-slate-50 p-8 text-center space-y-2">
-        <History className="h-8 w-8 mx-auto text-gray-400" />
+      <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 p-8 text-center space-y-2">
+        <History className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500" />
         <h2 className="text-sm font-bold text-foreground">No releases published yet</h2>
         <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
           When Zylod ships a real update, it will be listed here with its actual version number, date, and change notes. We do not publish invented changelog entries.

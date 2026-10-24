@@ -109,7 +109,7 @@ export function CategoryBrowserPage() {
       <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#C8102E]" />
@@ -117,7 +117,7 @@ export function CategoryBrowserPage() {
         <span className="text-lg font-bold text-[#C8102E]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
           <HelpCircle className="h-5 w-5 text-[#6B7280]" />
@@ -139,7 +139,7 @@ export function CategoryBrowserPage() {
 
         {/* ─── Search Bar ─── */}
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           <input
             type="text"
             placeholder="Search wholesale categories..."
@@ -164,7 +164,7 @@ export function CategoryBrowserPage() {
         )}
         {!isLoading && !loadError && filteredCategories.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
-            <Layers className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+            <Layers className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <p className="text-sm text-[#6B7280] max-w-[260px]">
               No categories match &ldquo;{search}&rdquo;.
             </p>
@@ -193,7 +193,7 @@ export function CategoryBrowserPage() {
 
                 {/* Content */}
                 <div className="relative z-10 text-white">
-                  <div className="w-7 h-7 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center mb-1.5 border border-white/20">
+                  <div className="w-7 h-7 rounded-lg bg-white dark:bg-gray-900/20 backdrop-blur-md flex items-center justify-center mb-1.5 border border-white/20">
                     <Icon className="h-4 w-4 text-white" />
                   </div>
 

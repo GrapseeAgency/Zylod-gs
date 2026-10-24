@@ -86,7 +86,7 @@ export function StockAlertCreatePage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Back in Stock Notification</span>
@@ -100,7 +100,7 @@ export function StockAlertCreatePage() {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Restock Alert Enabled!</h2>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
               We will notify you immediately once <strong>{selectedProduct?.name}</strong> is back in stock at supplier factories.
             </p>
             <div className="pt-3 flex gap-3 justify-center">
@@ -146,12 +146,12 @@ export function StockAlertCreatePage() {
                           {p.thumbnailUrl ? (
                             <img src={p.thumbnailUrl} alt={p.name} className="w-full h-full object-cover" />
                           ) : (
-                            <Package className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                            <Package className="w-5 h-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                           )}
                         </div>
                         <div>
                           <p className="text-xs font-bold text-gray-900 dark:text-gray-100 line-clamp-1">{p.name}</p>
-                          <p className="text-[11px] text-gray-500 dark:text-gray-400">{formatPrice(p.basePrice)} • Stock: {p.stockQuantity}</p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">{formatPrice(p.basePrice)} • Stock: {p.stockQuantity}</p>
                         </div>
                       </div>
                       <span className="text-xs font-bold text-teal-600">Select →</span>
@@ -176,12 +176,12 @@ export function StockAlertCreatePage() {
                     {selectedProduct.thumbnailUrl ? (
                       <img src={selectedProduct.thumbnailUrl} alt={selectedProduct.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{selectedProduct.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       Wholesale Rate: {formatPrice(selectedProduct.basePrice)}
                     </p>
                   </div>

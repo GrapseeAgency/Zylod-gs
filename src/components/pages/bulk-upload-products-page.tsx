@@ -74,7 +74,7 @@ export function BulkUploadProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       <header className="bg-primary text-white p-4 flex items-center justify-between md:hidden">
         <div className="flex items-center">
           <button onClick={goBack} className="mr-4" aria-label="Back">←</button>
@@ -88,7 +88,7 @@ export function BulkUploadProductsPage() {
         <div className="hidden md:flex items-center justify-between max-w-3xl mx-auto mb-6">
           <div className="flex items-center gap-3">
             <UploadCloud className="w-7 h-7 text-primary" />
-            <h1 className="text-2xl font-bold text-slate-900">Bulk Upload Products</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Bulk Upload Products</h1>
           </div>
           <Button variant="outline" onClick={() => navigate('bulk-upload-history')} className="rounded-xl text-xs font-bold gap-2">
             <History className="w-4 h-4" /> History
@@ -97,13 +97,13 @@ export function BulkUploadProductsPage() {
 
         <div className="max-w-3xl mx-auto space-y-4">
           {/* Task 77: the REAL upload card — file picker + server truth. */}
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-2xs p-5 md:p-6 space-y-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xs p-5 md:p-6 space-y-4">
             <div className="flex items-start gap-3">
               <FileSpreadsheet className="w-5 h-5 text-primary mt-0.5" />
-              <div className="text-xs text-gray-600 leading-relaxed">
-                <p className="font-bold text-gray-900">Upload a CSV of products</p>
+              <div className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
+                <p className="font-bold text-gray-900 dark:text-gray-100">Upload a CSV of products</p>
                 <p className="mt-1 break-words">
-                  Header must be exactly <code className="bg-gray-100 px-1 rounded font-mono text-[11px] break-all">name,categoryId,unit,moq,basePrice,stockQuantity</code> — one product per row, max 100 rows.
+                  Header must be exactly <code className="bg-gray-100 dark:bg-gray-900 px-1 rounded font-mono text-[11px] break-all">name,categoryId,unit,moq,basePrice,stockQuantity</code> — one product per row, max 100 rows.
                   Valid rows become products in the moderation queue (isApproved=false) for your store.
                   Get the template with your live category ids from the <button onClick={() => navigate('bulk-upload-template')} className="text-primary font-bold underline">template page</button>.
                 </p>
@@ -118,11 +118,11 @@ export function BulkUploadProductsPage() {
                 className="hidden"
                 onChange={(e) => pick(e.target.files?.[0] ?? null)}
               />
-              <UploadCloud className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <span className="text-xs font-bold text-gray-700 block">
+              <UploadCloud className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+              <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block">
                 {file ? file.name : 'Click to choose a CSV file'}
               </span>
-              {file && <span className="text-[10px] text-gray-400 block mt-0.5">{(file.size / 1024).toFixed(1)} KB — click to change</span>}
+              {file && <span className="text-[10px] text-gray-400 dark:text-gray-500 block mt-0.5">{(file.size / 1024).toFixed(1)} KB — click to change</span>}
             </label>
 
             {error && (
@@ -152,21 +152,21 @@ export function BulkUploadProductsPage() {
                 {result.failureCount === 0
                   ? <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                   : <FileWarning className="w-5 h-5 text-amber-600" />}
-                <span className="text-sm font-black text-gray-900">
+                <span className="text-sm font-black text-gray-900 dark:text-gray-100">
                   {result.successCount} of {result.totalRows} rows created
                   {result.failureCount > 0 ? ` · ${result.failureCount} failed` : ''}
                 </span>
               </div>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 Created products land in the moderation queue — an admin approves them onto the marketplace.
                 Upload id <span className="font-mono">{result.uploadId.slice(-8)}</span> is recorded in your history.
               </p>
               {result.errors.length > 0 && (
-                <div className="bg-white rounded-2xl border border-red-100 max-h-56 overflow-y-auto divide-y divide-gray-50">
+                <div className="bg-white dark:bg-gray-900 rounded-2xl border border-red-100 max-h-56 overflow-y-auto divide-y divide-gray-50">
                   {result.errors.map((e) => (
                     <div key={e.row} className="px-3 py-2 text-xs">
                       <span className="font-black text-red-600 mr-2">Row {e.row}</span>
-                      <span className="text-gray-700">{e.error}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{e.error}</span>
                     </div>
                   ))}
                 </div>

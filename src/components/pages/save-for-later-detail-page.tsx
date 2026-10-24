@@ -72,7 +72,7 @@ export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8">
       <header className="bg-white dark:bg-gray-900 border-b px-4 py-3 flex items-center sticky top-0 z-20 md:px-6">
-        <button onClick={() => goBack()} className="md:hidden p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+        <button onClick={() => goBack()} className="md:hidden p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
           <ArrowLeft className="w-6 h-6 text-gray-800 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold ml-2">Saved Item</h1>
@@ -85,12 +85,12 @@ export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
             {item.imageUrl ? (
               <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500">No Image</div>
+              <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 dark:text-gray-400">No Image</div>
             )}
           </div>
           
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer hover:underline" onClick={() => navigate('seller-profile', { supplierId: item.supplier.id })}>
+            <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 cursor-pointer hover:underline" onClick={() => navigate('seller-profile', { supplierId: item.supplier.id })}>
               {item.supplier.name}
             </span>
             {item.supplier.isVerified && <ShieldCheck className="w-4 h-4 text-green-600" />}
@@ -100,7 +100,7 @@ export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
 
           <div className="flex items-end gap-3 mb-4">
             <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">${item.currentPrice.toFixed(2)}</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">/ unit</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1">/ unit</span>
           </div>
 
           {priceDiff !== 0 && (
@@ -130,7 +130,7 @@ export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
             <div className="space-y-2">
               {Object.entries(item.specs).map(([key, val]) => (
                 <div key={key} className="flex justify-between text-sm py-2 border-b border-gray-50 last:border-0">
-                  <span className="text-gray-500 dark:text-gray-400">{key}</span>
+                  <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">{key}</span>
                   <span className="font-medium text-gray-900 dark:text-gray-100">{val}</span>
                 </div>
               ))}
@@ -157,12 +157,12 @@ export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
         )}
       </main>
 
-      <footer className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-20 space-y-3">
+      <footer className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-20 space-y-3 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <button className="w-full py-3.5 bg-primary text-white rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50" disabled={!item.inStock}>
           <ShoppingCart className="w-5 h-5" /> Move to Cart
         </button>
         <div className="flex gap-3">
-          <button className="flex-1 py-2.5 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800">
+          <button className="flex-1 py-2.5 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800">
             <Heart className="w-4 h-4" /> Wishlist
           </button>
           <button className="flex-1 py-2.5 border border-gray-300 text-red-600 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-red-50">

@@ -83,7 +83,7 @@ export function SellerReviewsPage() {
         ) : error ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded shadow text-center">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 mb-3">{error}</p>
             <Button variant="outline" size="sm" onClick={load}>
               <RefreshCw className="w-4 h-4 mr-1" /> Retry
             </Button>
@@ -99,13 +99,13 @@ export function SellerReviewsPage() {
                 <span className="text-2xl font-bold">
                   {totalReviews > 0 ? averageRating.toFixed(1) : '—'}
                 </span>
-                <span className="text-gray-500 dark:text-gray-400">({totalReviews} product review{totalReviews !== 1 ? 's' : ''})</span>
+                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">({totalReviews} product review{totalReviews !== 1 ? 's' : ''})</span>
               </div>
               {storeTotalReviews > 0 && (
                 <div className="flex items-center space-x-2 mt-1">
                   <Star className="w-4 h-4 text-yellow-500" />
                   <span className="text-sm font-semibold">{storeAverageRating.toFixed(1)}</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">({storeTotalReviews} store review{storeTotalReviews !== 1 ? 's' : ''})</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">({storeTotalReviews} store review{storeTotalReviews !== 1 ? 's' : ''})</span>
                 </div>
               )}
             </div>
@@ -114,7 +114,7 @@ export function SellerReviewsPage() {
                 <div className="bg-white dark:bg-gray-900 p-8 rounded shadow text-center">
                   <Star className="w-10 h-10 text-gray-300 mx-auto mb-2" />
                   <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No reviews yet</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
                     Buyer reviews for your products will appear here once buyers start reviewing.
                   </p>
                 </div>
@@ -124,7 +124,7 @@ export function SellerReviewsPage() {
                     <div className="flex justify-between items-start">
                       <div>
                         <span className="font-bold">{review.buyerName}</span>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                           {review.productName ?? 'Store review'}
                         </p>
                       </div>
@@ -137,7 +137,7 @@ export function SellerReviewsPage() {
                             <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-200'}`} />
                           ))}
                         </span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{new Date(review.createdAt).toLocaleDateString()}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
                     {review.comment && <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">{review.comment}</p>}

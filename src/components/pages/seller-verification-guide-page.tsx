@@ -38,7 +38,7 @@ export function SellerVerificationGuidePage() {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Supplier Verification Guide</span>
@@ -76,7 +76,7 @@ export function SellerVerificationGuidePage() {
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{r.title}</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{r.desc}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{r.desc}</p>
                 </div>
               </motion.div>
             )
@@ -89,7 +89,7 @@ export function SellerVerificationGuidePage() {
             <CheckCircle2 className="w-4 h-4 text-green-600" />
             Review SLA & Timeline
           </h2>
-          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+          <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
             Our compliance team inspects submitted documents within **24–48 business hours**. Once approved, your storefront is automatically upgraded with the **Verified Supplier** trust badge.
           </p>
         </div>

@@ -83,7 +83,7 @@ export function PickupPointPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back" aria-label="Back">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back" aria-label="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Pickup Points</span>
@@ -93,7 +93,7 @@ export function PickupPointPage() {
       <main className="px-4 py-4 md:px-6 md:py-6 space-y-4 max-w-lg mx-auto md:max-w-3xl lg:max-w-5xl">
         <div className="hidden md:block">
           <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Pickup points</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
             Verified supplier warehouses where you can collect your orders
           </p>
         </div>
@@ -101,7 +101,7 @@ export function PickupPointPage() {
         {/* Honest explainer */}
         <div className="flex items-start gap-3 bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs">
           <Warehouse className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-          <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
             Every location below is a real warehouse registered by a verified supplier. Collection
             windows are arranged directly with the supplier after your order is confirmed — open their
             storefront to coordinate.
@@ -110,7 +110,7 @@ export function PickupPointPage() {
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
           <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -159,7 +159,7 @@ export function PickupPointPage() {
           <div className="rounded-3xl bg-white dark:bg-gray-900 border border-red-200 p-8 text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-red-500 mx-auto" />
             <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">Couldn't load pickup points</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 break-words">{error}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">{error}</p>
             <Button onClick={() => load(search)} variant="outline" className="text-xs font-bold gap-2">
               <Loader2 className="h-4 w-4" /> Retry
             </Button>
@@ -171,7 +171,7 @@ export function PickupPointPage() {
             <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
               {search || district !== 'all' ? 'No pickup points match' : 'No pickup points yet'}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
               {search || district !== 'all'
                 ? 'Try a different search term or clear the district filter.'
                 : 'Verified suppliers register their warehouses here. Check back soon.'}
@@ -200,7 +200,7 @@ export function PickupPointPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 break-words">{w.name}</h2>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
                         {w.companyName}
                       </p>
                     </div>
@@ -213,8 +213,8 @@ export function PickupPointPage() {
                     )}
                   </div>
 
-                  <div className="flex items-start gap-1.5 text-[11px] text-slate-600 dark:text-slate-400">
-                    <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
+                  <div className="flex items-start gap-1.5 text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
+                    <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                     <span className="break-words">
                       {[w.addressLine1, w.addressLine2, w.city, w.district].filter(Boolean).join(', ')}
                     </span>
@@ -228,7 +228,7 @@ export function PickupPointPage() {
                   )}
 
                   <div className="pt-2 border-t border-slate-50 flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
                       {w.district || w.city}
                     </span>
                     <Button

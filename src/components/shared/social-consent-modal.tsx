@@ -97,7 +97,7 @@ export function SocialConsentModal() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="w-full max-w-[400px] bg-white rounded-2xl shadow-2xl overflow-hidden"
+            className="w-full max-w-[400px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Provider header */}

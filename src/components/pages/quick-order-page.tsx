@@ -185,7 +185,7 @@ export function QuickOrderPage() {
       {/* Top Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -196,7 +196,7 @@ export function QuickOrderPage() {
         {/* Title */}
         <div>
           <h1 className="text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">Quick Order</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
             Add real catalog products by their SKU code.
           </p>
         </div>
@@ -250,10 +250,10 @@ export function QuickOrderPage() {
             {orderItems.length === 0 && (
               <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs p-8 text-center">
                 <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto mb-3">
-                  <Package className="h-7 w-7 text-slate-400 dark:text-slate-500" />
+                  <Package className="h-7 w-7 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                 </div>
                 <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">No items on this order yet</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
+                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                   Enter a real product SKU above — products are looked up live from
                   the catalog and added with their actual price.
                 </p>
@@ -271,12 +271,12 @@ export function QuickOrderPage() {
                     {item.image ? (
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     ) : (
-                      <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                      <Package className="h-5 w-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                     )}
                   </div>
 
                   <div className="min-w-0">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
                       SKU: {item.sku}
                     </span>
                     <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1 leading-snug">
@@ -287,7 +287,7 @@ export function QuickOrderPage() {
                     </p>
                     <button
                       onClick={() => handleRemoveItem(item.productId)}
-                      className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 hover:text-red-600 mt-0.5"
+                      className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-red-600 mt-0.5"
                     >
                       Remove
                     </button>
@@ -295,10 +295,10 @@ export function QuickOrderPage() {
                 </div>
 
                 {/* Stepper */}
-                <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/80 p-1 shrink-0">
+                <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-950/80 p-1 shrink-0">
                   <button
                     onClick={() => handleQtyChange(item.productId, -1)}
-                    className="w-6 h-6 rounded-lg bg-white dark:bg-gray-900 shadow-2xs flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 active:scale-95"
+                    className="w-6 h-6 rounded-lg bg-white dark:bg-gray-900 shadow-2xs flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100 active:scale-95"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
@@ -307,7 +307,7 @@ export function QuickOrderPage() {
                   </span>
                   <button
                     onClick={() => handleQtyChange(item.productId, 1)}
-                    className="w-6 h-6 rounded-lg bg-white dark:bg-gray-900 shadow-2xs flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 active:scale-95"
+                    className="w-6 h-6 rounded-lg bg-white dark:bg-gray-900 shadow-2xs flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100 active:scale-95"
                   >
                     <Plus className="h-3 w-3" />
                   </button>
@@ -319,10 +319,10 @@ export function QuickOrderPage() {
       </main>
 
       {/* Sticky Bottom Summary Bar */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <div className="max-w-lg md:max-w-3xl mx-auto space-y-3">
           <div className="flex justify-between items-baseline">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
               Subtotal ({orderItems.length} item{orderItems.length === 1 ? '' : 's'})
             </span>
             <div className="text-lg font-black text-primary">

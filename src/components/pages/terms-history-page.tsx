@@ -29,13 +29,13 @@ export function TermsHistoryPage() {
         <button
           onClick={goBack}
           aria-label="Go back"
-          className="p-1.5 min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+          className="p-1.5 min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition"
         >
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div className="min-w-0">
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Terms Version History</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">Historical Amendments & Audit Logs</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Historical Amendments & Audit Logs</p>
         </div>
       </div>
 
@@ -51,7 +51,7 @@ export function TermsHistoryPage() {
         </div>
 
         <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 p-8 text-center space-y-3">
-          <History className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500" />
+          <History className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           <h2 className="text-sm font-bold text-foreground">No version history published yet</h2>
           <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
             When Zylod publishes an actual amendment to the Terms of Service, it will be listed here with its real

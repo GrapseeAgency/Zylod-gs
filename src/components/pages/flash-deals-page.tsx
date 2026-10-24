@@ -127,7 +127,7 @@ export function FlashDealsPage() {
       <header className="md:hidden sticky top-0 z-40 bg-[#1A1A1A] border-b border-[#2C2C2C] h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-white dark:bg-gray-900/10 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-[#FF4D6D]" />
@@ -135,10 +135,10 @@ export function FlashDealsPage() {
         <span className="text-lg font-bold text-[#FF4D6D]">Zylod</span>
         <button
           onClick={() => navigate('help-center')}
-          className="p-2 -mr-2 rounded-full hover:bg-white/10 transition-colors"
+          className="p-2 -mr-2 rounded-full hover:bg-white dark:bg-gray-900/10 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-gray-400" />
+          <HelpCircle className="h-5 w-5 text-gray-400 dark:text-gray-500" />
         </button>
       </header>
 
@@ -151,30 +151,30 @@ export function FlashDealsPage() {
           <h1 className="text-2xl md:text-3xl font-black tracking-widest text-[#FF4D6D] uppercase">
             Flash Deals
           </h1>
-          <p className="text-xs text-gray-400 mt-1 max-w-[280px] mx-auto leading-relaxed">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 max-w-[280px] mx-auto leading-relaxed">
             Premium B2B inventory at lowest prices. Limited stock. Offers expire soon.
           </p>
 
           {/* Countdown timer container */}
           {timeLeft && (
             <div className="bg-[#121212]/90 border border-[#333333] rounded-xl p-3 mt-4">
-              <span className="text-[10px] font-bold text-gray-400 tracking-widest uppercase block mb-2">
+              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 tracking-widest uppercase block mb-2">
                 Ends In
               </span>
               <div className="flex items-center justify-center gap-2">
                 <div className="bg-[#242424] border border-[#383838] rounded-lg px-3 py-1.5 min-w-[56px] text-center">
                   <span className="text-lg font-black text-white">{formatDigit(timeLeft.hours)}</span>
-                  <span className="text-[9px] font-bold text-gray-400 block tracking-wider">HOURS</span>
+                  <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 block tracking-wider">HOURS</span>
                 </div>
                 <span className="text-[#FF4D6D] font-bold text-lg">:</span>
                 <div className="bg-[#242424] border border-[#383838] rounded-lg px-3 py-1.5 min-w-[56px] text-center">
                   <span className="text-lg font-black text-white">{formatDigit(timeLeft.minutes)}</span>
-                  <span className="text-[9px] font-bold text-gray-400 block tracking-wider">MINS</span>
+                  <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 block tracking-wider">MINS</span>
                 </div>
                 <span className="text-[#FF4D6D] font-bold text-lg">:</span>
                 <div className="bg-[#242424] border border-[#383838] rounded-lg px-3 py-1.5 min-w-[56px] text-center">
                   <span className="text-lg font-black text-[#FF4D6D]">{formatDigit(timeLeft.seconds)}</span>
-                  <span className="text-[9px] font-bold text-gray-400 block tracking-wider">SECS</span>
+                  <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 block tracking-wider">SECS</span>
                 </div>
               </div>
             </div>
@@ -185,7 +185,7 @@ export function FlashDealsPage() {
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-16">
             <Loader2 className="w-7 h-7 text-[#FF4D6D] animate-spin" />
-            <p className="text-sm text-gray-400">Loading live deals...</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">Loading live deals...</p>
           </div>
         )}
 
@@ -199,8 +199,8 @@ export function FlashDealsPage() {
 
         {!isLoading && !loadError && deals.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
-            <Zap className="w-8 h-8 text-gray-500" />
-            <p className="text-sm text-gray-400 max-w-[260px]">
+            <Zap className="w-8 h-8 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+            <p className="text-sm text-gray-400 dark:text-gray-500 max-w-[260px]">
               No flash deals are running right now. Check back soon — new drops go live regularly.
             </p>
             <button
@@ -240,7 +240,7 @@ export function FlashDealsPage() {
                   <img src={deal.productThumbnail} alt={deal.productName} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Zap className="h-10 w-10 text-gray-700" />
+                    <Zap className="h-10 w-10 text-gray-700 dark:text-gray-300" />
                   </div>
                 )}
                 <span className="absolute top-3 right-3 bg-[#C8102E] text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded shadow">
@@ -257,15 +257,15 @@ export function FlashDealsPage() {
                   <span className="text-lg font-black text-white">
                     {formatPrice(deal.dealPrice)}
                   </span>
-                  <span className="text-xs text-gray-500 line-through">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 line-through">
                     {formatPrice(deal.originalPrice)}
                   </span>
-                  <span className="text-[11px] text-gray-400">/ {deal.unit}</span>
+                  <span className="text-[11px] text-gray-400 dark:text-gray-500">/ {deal.unit}</span>
                 </div>
 
                 {/* Stock level progress bar */}
                 <div className="mt-3">
-                  <div className="flex items-center justify-between text-[11px] text-gray-400 mb-1">
+                  <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 mb-1">
                     <span>Stock Level</span>
                     <span className="text-gray-300 font-semibold">{stockText}</span>
                   </div>

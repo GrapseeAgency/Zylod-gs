@@ -49,7 +49,7 @@ export function LoyaltyPointsPage() {
       {/* Header */}
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -70,7 +70,7 @@ export function LoyaltyPointsPage() {
         {/* Points Card */}
         <div className={`bg-gradient-to-r ${getTierColor(loyalty?.tier)} rounded-3xl p-6 md:p-8 text-white shadow-xl space-y-4`}>
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
+            <span className="text-[11px] font-extrabold uppercase tracking-widest bg-white dark:bg-gray-900/20 px-3 py-1 rounded-full backdrop-blur-sm">
               {loyalty?.tier || 'Bronze'} Tier Merchant
             </span>
             <span className="text-xs text-white/80">10 Pts = ৳1 BDT</span>
@@ -118,7 +118,7 @@ export function LoyaltyPointsPage() {
 
         {/* Ways to Earn Points */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
-          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Quick Ways to Earn Points
           </h3>
 

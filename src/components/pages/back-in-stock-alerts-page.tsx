@@ -77,7 +77,7 @@ export function BackInStockAlertsPage() {
       {/* Header */}
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -155,7 +155,7 @@ export function BackInStockAlertsPage() {
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">
               {activeTab === 'active' ? 'No stock watches active' : 'No restocked alerts here'}
             </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
               Get notified immediately when sold-out wholesale inventory is replenished by factories.
             </p>
             <div className="pt-2">
@@ -176,7 +176,7 @@ export function BackInStockAlertsPage() {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => navigate('product-detail', { productId: alert.productId })}
-              className={`bg-white rounded-2xl p-4 border transition cursor-pointer shadow-sm hover:shadow hover:border-teal-200 ${
+              className={`bg-white dark:bg-gray-900 rounded-2xl p-4 border transition cursor-pointer shadow-sm hover:shadow hover:border-teal-200 ${
                 alert.inStock ? 'border-teal-300 bg-teal-50/20' : 'border-gray-100 dark:border-gray-800'
               }`}
             >
@@ -189,7 +189,7 @@ export function BackInStockAlertsPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Package className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                    <Package className="w-6 h-6 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                   )}
                 </div>
 
@@ -203,7 +203,7 @@ export function BackInStockAlertsPage() {
                         {alert.stockQuantity} units available
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 text-[10px] font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 rounded-md flex-shrink-0">
+                      <span className="px-2 py-0.5 text-[10px] font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-900 rounded-md flex-shrink-0">
                         Awaiting Restock
                       </span>
                     )}
@@ -225,7 +225,7 @@ export function BackInStockAlertsPage() {
                   </p>
 
                   <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-50 text-[11px]">
-                    <span className="text-gray-400 dark:text-gray-500">
+                    <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">
                       Watched since {new Date(alert.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                     </span>
 

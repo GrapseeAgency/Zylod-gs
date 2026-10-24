@@ -52,7 +52,7 @@ export function MobileSubsidySection() {
                 onClick={() => navigate('product-detail', { productId: product.id })}
                 className="flex-none w-[58px] text-left transition-all active:scale-[0.97]"
               >
-                <div className="relative aspect-square overflow-hidden bg-white rounded-md">
+                <div className="relative aspect-square overflow-hidden bg-white dark:bg-gray-900 rounded-md">
                   {product.image ? (
                      
                     <img src={product.image} alt={product.name} className="object-cover w-full h-full" />

@@ -57,12 +57,12 @@ export function SitemapPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Platform Sitemap</h1>
-          <p className="text-xs text-gray-400 dark:text-gray-500">Complete Directory of Platform Architecture</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Complete Directory of Platform Architecture</p>
         </div>
       </div>
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Platform Sitemap</h1>
@@ -70,7 +70,7 @@ export function SitemapPage() {
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-5 pb-24">
         {/* Search filter */}
         <div className="relative">
-          <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
@@ -111,7 +111,7 @@ export function SitemapPage() {
                     </div>
                     <div>
                       <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{section.label}</h3>
-                      <p className="text-[11px] text-gray-400 dark:text-gray-500">{filteredPages.length} active routes</p>
+                      <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{filteredPages.length} active routes</p>
                     </div>
                   </div>
 
@@ -120,13 +120,13 @@ export function SitemapPage() {
                       <button
                         key={page.id}
                         onClick={() => navigate(page.id)}
-                        className="w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition text-left group"
+                        className="w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition text-left group"
                       >
                         <div>
                           <p className="text-xs font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 transition">
                             {page.label}
                           </p>
-                          <p className="text-[11px] text-gray-400 dark:text-gray-500">{page.description}</p>
+                          <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{page.description}</p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-600 transition flex-shrink-0" />
                       </button>

@@ -74,8 +74,8 @@ export function AddCardPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Add Payment Card</span>
@@ -91,7 +91,7 @@ export function AddCardPage() {
           </div>
 
           <div className="py-2">
-            <span className="text-xs text-slate-400 dark:text-slate-500 block font-mono">Card Number</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block font-mono">Card Number</span>
             <span className="text-lg font-black font-mono tracking-widest text-slate-100 mt-0.5 block">
               {cardNumber || '•••• •••• •••• ••••'}
             </span>
@@ -99,11 +99,11 @@ export function AddCardPage() {
 
           <div className="flex justify-between items-center text-xs">
             <div>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase font-bold">Cardholder</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold">Cardholder</span>
               <span className="font-bold text-slate-200 uppercase">{holderName || 'AUTHORIZED SIGNATORY'}</span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase font-bold">Expires</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold">Expires</span>
               <span className="font-bold font-mono text-slate-200">{expiry || 'MM/YY'}</span>
             </div>
           </div>
@@ -182,7 +182,7 @@ export function AddCardPage() {
             <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div>
                 <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">Set as Primary Card</span>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 block">Use for 1-click wholesale checkout</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Use for 1-click wholesale checkout</span>
               </div>
               <Switch checked={isDefault} onCheckedChange={setIsDefault} className="data-[state=checked]:bg-primary" />
             </div>

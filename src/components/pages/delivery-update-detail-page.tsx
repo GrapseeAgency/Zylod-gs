@@ -37,12 +37,12 @@ export function DeliveryUpdateDetailPage() {
   }, [id, token])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <div className="sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm md:hidden">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <span className="font-bold text-gray-900 text-base">Consignment Notice</span>
+        <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Consignment Notice</span>
       </div>
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-xl mx-auto w-full space-y-6 pb-24 md:pb-8 lg:max-w-3xl">
@@ -52,7 +52,7 @@ export function DeliveryUpdateDetailPage() {
             <Skeleton className="h-40 w-full rounded-3xl" />
           </div>
         ) : !notif ? (
-          <div className="text-center py-16 text-gray-500">Notice not found.</div>
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500">Notice not found.</div>
         ) : (
           <>
             {/* Banner */}
@@ -66,9 +66,9 @@ export function DeliveryUpdateDetailPage() {
             </div>
 
             {/* Message Body */}
-            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-4">
-              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Dispatch Progress</h2>
-              <p className="text-xs sm:text-sm text-gray-800 leading-relaxed">{notif.message}</p>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+              <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Dispatch Progress</h2>
+              <p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 leading-relaxed">{notif.message}</p>
             </div>
 
             <Button

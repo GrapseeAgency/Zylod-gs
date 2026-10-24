@@ -65,7 +65,7 @@ export function SizeGuidePage({ pageParams: _pageParams }: { pageParams?: Record
         <div className="relative flex items-center justify-center">
           <button
             onClick={goBack}
-            className="absolute left-0 p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900"
+            className="absolute left-0 p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100"
             title="Close"
             aria-label="Close"
           >
@@ -86,7 +86,7 @@ export function SizeGuidePage({ pageParams: _pageParams }: { pageParams?: Record
             <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">
               {productName ? `Sizing for ${productName}` : 'General garment size chart'}
             </h2>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 leading-relaxed">
               {productName
                 ? `Reference measurements for this product's category${productCategory ? ` (${productCategory})` : ''}. For exact fit, contact the supplier before placing a bulk order.`
                 : 'Reference measurements for woven garments (shirts, kameez, workwear). For knitwear, denim, or outerwear, ask the supplier for their category-specific chart.'}
@@ -141,7 +141,7 @@ export function SizeGuidePage({ pageParams: _pageParams }: { pageParams?: Record
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse min-w-[320px]">
               <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 text-slate-500 dark:text-slate-400 font-bold text-[11px]">
+                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70 text-slate-500 dark:text-slate-400 dark:text-slate-500 font-bold text-[11px]">
                   <th scope="col" className="p-3.5">Size</th>
                   <th scope="col" className="p-3.5">A. Chest</th>
                   <th scope="col" className="p-3.5">B. Length</th>
@@ -173,7 +173,7 @@ export function SizeGuidePage({ pageParams: _pageParams }: { pageParams?: Record
             ].map(m => (
               <div key={m.k} className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{m.k}</div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                   <strong className="text-slate-800 dark:text-slate-200">{m.label}:</strong> {m.text}
                 </p>
               </div>
@@ -182,9 +182,9 @@ export function SizeGuidePage({ pageParams: _pageParams }: { pageParams?: Record
         </div>
 
         {/* Honest disclaimer */}
-        <div className="bg-slate-100/60 rounded-3xl p-4 border border-slate-200/80 flex gap-3 items-start">
+        <div className="bg-slate-100 dark:bg-slate-900/60 rounded-3xl p-4 border border-slate-200 dark:border-slate-800/80 flex gap-3 items-start">
           <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-          <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
             These are reference body measurements, not garment dimensions. Suppliers may cut to
             their own blocks; always request a sample for bulk orders where fit is critical.
           </p>

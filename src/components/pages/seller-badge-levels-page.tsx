@@ -25,7 +25,7 @@ export function SellerBadgeLevelsPagePage() {
     >
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 dark:bg-gray-800 border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700" aria-label="Go back">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
         </button>
         <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">Badge levels</h1>
@@ -46,7 +46,7 @@ export function SellerBadgeLevelsPagePage() {
                   Verified Supplier badge
                   <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">LIVE</span>
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-lg">
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5 max-w-lg">
                   Earned by passing real KYC + trade-license verification — the badge buyers see on your
                   storefront. Not a level, not a score: it is a verified fact.
                 </p>
@@ -64,7 +64,7 @@ export function SellerBadgeLevelsPagePage() {
             <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 dark:text-white" data-testid="badges-honest">
               Level badges aren&apos;t live yet
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300 leading-relaxed max-w-md mx-auto">
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300 leading-relaxed max-w-md mx-auto">
               Bronze-to-diamond style level badges need a real award engine — none exists yet, so none are
               shown. When badge levels launch, they will be earned from measured store history, never
               granted for show.
@@ -76,7 +76,7 @@ export function SellerBadgeLevelsPagePage() {
           <Card className="border-none shadow-sm dark:bg-gray-800">
             <CardContent className="p-4 flex items-center gap-3">
               <Star className="w-4 h-4 text-amber-500 shrink-0" />
-              <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300">
+              <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
                 Your <button className="font-semibold underline underline-offset-2" onClick={() => navigate('seller-rankings')}>product rankings</button> already show real sales standings.
               </p>
             </CardContent>
@@ -84,7 +84,7 @@ export function SellerBadgeLevelsPagePage() {
           <Card className="border-none shadow-sm dark:bg-gray-800">
             <CardContent className="p-4 flex items-center gap-3">
               <TrendingUp className="w-4 h-4 text-primary shrink-0" />
-              <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-300">
+              <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
                 Your <button className="font-semibold underline underline-offset-2" onClick={() => navigate('seller-sales-funnel')}>fulfillment rate</button> is the metric future badges will read.
               </p>
             </CardContent>

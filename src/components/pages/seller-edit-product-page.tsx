@@ -465,7 +465,7 @@ export function SellerEditProductPage() {
         className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
       >
         <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+          <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Edit Product</h1>
@@ -485,7 +485,7 @@ export function SellerEditProductPage() {
               <button
                 type="button"
                 onClick={fetchProduct}
-                className="min-h-11 px-4 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="min-h-11 px-4 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800"
               >
                 Retry
               </button>
@@ -504,7 +504,7 @@ export function SellerEditProductPage() {
       className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
     >
       <div className="md:hidden sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
+        <button onClick={goBack} aria-label="Go back" className="min-h-11 min-w-11 p-2 hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-full flex items-center justify-center">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Edit Product</h1>
@@ -611,9 +611,9 @@ export function SellerEditProductPage() {
             "Certifications" tab serves exactly these rows to buyers. */}
         {productId && !notFound && (
           <section className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60">
+            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60">
               <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Certifications &amp; compliance</h2>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
                 Shown to every buyer on the product page. File real, verifiable
                 certificates only — false claims are strictly penalized.
               </p>

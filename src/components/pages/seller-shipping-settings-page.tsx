@@ -106,12 +106,12 @@ export function SellerShippingSettingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8">
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center justify-between">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 md:px-6 py-3 sticky top-0 z-10 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 -ml-1 text-gray-600 dark:text-gray-400">
+          <button onClick={goBack} className="md:hidden p-1 -ml-1 text-gray-600 dark:text-gray-400 dark:text-gray-500">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Shipping Settings</h1>
+          <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100">Shipping Settings</h1>
         </div>
         <button 
           onClick={handleSave}
@@ -126,7 +126,7 @@ export function SellerShippingSettingsPage() {
         <div className="p-4">
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
             <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-400">{error}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{error}</p>
           </div>
         </div>
       ) : configs.length === 0 ? (
@@ -134,7 +134,7 @@ export function SellerShippingSettingsPage() {
           <div className="bg-white dark:bg-gray-900 p-8 rounded-xl border border-gray-200 dark:border-gray-800 text-center">
             <Truck className="w-10 h-10 text-gray-300 mx-auto mb-2" />
             <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300">No shipping rates configured yet</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Save a rate for at least one zone to enable shipping.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Save a rate for at least one zone to enable shipping.</p>
           </div>
         </div>
       ) : (
@@ -157,7 +157,7 @@ export function SellerShippingSettingsPage() {
                 <div key={config.zone} className="border-b border-gray-100 dark:border-gray-800 pb-4 last:border-0 last:pb-0">
                   <div className="flex items-center justify-between mb-2">
                     <p className="font-medium text-sm text-gray-800 dark:text-gray-200">{ZONE_LABELS[config.zone] || config.zone}</p>
-                    <label className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                    <label className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       <input
                         type="checkbox"
                         checked={config.isActive}
@@ -169,7 +169,7 @@ export function SellerShippingSettingsPage() {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <div>
-                      <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Base Fee (৳)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1 block">Base Fee (৳)</label>
                       <input 
                         type="number" 
                         min={0}
@@ -179,7 +179,7 @@ export function SellerShippingSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Per Kg (৳)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1 block">Per Kg (৳)</label>
                       <input 
                         type="number" 
                         min={0}
@@ -189,7 +189,7 @@ export function SellerShippingSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Free above (৳)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1 block">Free above (৳)</label>
                       <input 
                         type="number" 
                         min={0}
@@ -200,7 +200,7 @@ export function SellerShippingSettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Est. delivery</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-1 block">Est. delivery</label>
                       <input 
                         type="text"
                         value={config.estimatedDays ?? ''}

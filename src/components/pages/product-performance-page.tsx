@@ -116,7 +116,7 @@ export function ProductPerformancePagePage() {
       <header className="md:hidden sticky top-0 z-50 bg-white border-b px-4 py-3 flex items-center gap-3 dark:bg-gray-900 dark:border-gray-800">
         <button
           onClick={goBack}
-          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />
@@ -151,9 +151,9 @@ export function ProductPerformancePagePage() {
         ) : authRequired ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
             <CardContent className="p-8 text-center space-y-3">
-              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600" />
+              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
               <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Seller sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 Sign in with a supplier account to see how your products are performing.
               </p>
               <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
@@ -161,7 +161,7 @@ export function ProductPerformancePagePage() {
           </Card>
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
-            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-300">
+            <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">
               {error}
               <div className="mt-3">
                 <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
@@ -178,7 +178,7 @@ export function ProductPerformancePagePage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400">GMV</p>
+                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400 dark:text-gray-500">GMV</p>
                       <h3 className="text-lg font-bold text-gray-900 mt-1 dark:text-gray-100">
                         {bdt(data.overview.gmv)}
                       </h3>
@@ -193,7 +193,7 @@ export function ProductPerformancePagePage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400">Orders</p>
+                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400 dark:text-gray-500">Orders</p>
                       <h3 className="text-lg font-bold text-gray-900 mt-1 dark:text-gray-100">
                         {data.overview.totalOrders.toLocaleString()}
                       </h3>
@@ -208,7 +208,7 @@ export function ProductPerformancePagePage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400">Units Sold</p>
+                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400 dark:text-gray-500">Units Sold</p>
                       <h3 className="text-lg font-bold text-gray-900 mt-1 dark:text-gray-100">
                         {data.overview.unitsSold.toLocaleString()}
                       </h3>
@@ -223,7 +223,7 @@ export function ProductPerformancePagePage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400">Avg. Order</p>
+                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400 dark:text-gray-500">Avg. Order</p>
                       <h3 className="text-lg font-bold text-gray-900 mt-1 dark:text-gray-100">
                         {bdt(data.overview.aov)}
                       </h3>
@@ -242,14 +242,14 @@ export function ProductPerformancePagePage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400">Conversion Rate</p>
-                      <p className="mt-1 text-sm text-gray-400 font-medium dark:text-gray-500">
+                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400 dark:text-gray-500">Conversion Rate</p>
+                      <p className="mt-1 text-sm text-gray-400 font-medium dark:text-gray-500 dark:text-gray-400">
                         Not available yet
                       </p>
                     </div>
-                    <Activity className="h-4 w-4 text-gray-300 dark:text-gray-600 shrink-0" />
+                    <Activity className="h-4 w-4 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 shrink-0" />
                   </div>
-                  <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400">
+                  <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     Conversion needs product-view tracking, which the platform does not collect yet.
                   </p>
                 </CardContent>
@@ -258,14 +258,14 @@ export function ProductPerformancePagePage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="min-w-0">
-                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400">Page Views</p>
-                      <p className="mt-1 text-sm text-gray-400 font-medium dark:text-gray-500">
+                      <p className="text-xs text-gray-500 font-medium uppercase dark:text-gray-400 dark:text-gray-500">Page Views</p>
+                      <p className="mt-1 text-sm text-gray-400 font-medium dark:text-gray-500 dark:text-gray-400">
                         Not available yet
                       </p>
                     </div>
-                    <BarChart3 className="h-4 w-4 text-gray-300 dark:text-gray-600 shrink-0" />
+                    <BarChart3 className="h-4 w-4 text-gray-300 dark:text-gray-600 dark:text-gray-400 dark:text-gray-500 shrink-0" />
                   </div>
-                  <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400">
+                  <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     A page-view tracking source does not exist; no number is shown rather than inventing one.
                   </p>
                 </CardContent>
@@ -276,7 +276,7 @@ export function ProductPerformancePagePage() {
             <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base dark:text-gray-100">Sales — last 30 days</CardTitle>
-                <CardDescription className="dark:text-gray-400">
+                <CardDescription className="dark:text-gray-400 dark:text-gray-500">
                   Daily gross from paid, non-reversed order lines
                 </CardDescription>
               </CardHeader>
@@ -302,7 +302,7 @@ export function ProductPerformancePagePage() {
                     );
                   })}
                 </div>
-                <div className="mt-2 flex justify-between text-[10px] text-gray-400 dark:text-gray-500">
+                <div className="mt-2 flex justify-between text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                   <span>{fmtDay(data.salesPerformance[0]?.date || new Date().toISOString())}</span>
                   <span>{fmtDay(data.salesPerformance[data.salesPerformance.length - 1]?.date || new Date().toISOString())}</span>
                 </div>
@@ -313,16 +313,16 @@ export function ProductPerformancePagePage() {
             <Card className="shadow-sm dark:bg-gray-900 dark:border-gray-800">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base dark:text-gray-100">Top Products</CardTitle>
-                <CardDescription className="dark:text-gray-400">
+                <CardDescription className="dark:text-gray-400 dark:text-gray-500">
                   By recognized revenue — your best sellers first
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {data.topProducts.length === 0 ? (
                   <div className="py-8 text-center space-y-2">
-                    <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600" />
+                    <Inbox className="h-8 w-8 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">No sales yet</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
                       Your top products will appear here once buyers place and pay for orders on your catalog.
                     </p>
                   </div>
@@ -333,12 +333,12 @@ export function ProductPerformancePagePage() {
                         key={p.id}
                         className="flex items-center gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0 dark:border-gray-800"
                       >
-                        <div className="h-10 w-10 bg-gray-100 dark:bg-gray-900 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 font-bold dark:bg-gray-800 dark:text-gray-400">
+                        <div className="h-10 w-10 bg-gray-100 dark:bg-gray-900 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 font-bold dark:bg-gray-800 dark:text-gray-400 dark:text-gray-500">
                           #{i + 1}
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-gray-900 truncate dark:text-gray-100">{p.name}</h4>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{p.unitsSold} units sold</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{p.unitsSold} units sold</p>
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{bdt(p.revenue)}</p>
@@ -364,13 +364,13 @@ export function ProductPerformancePagePage() {
                     </Badge>
                   )}
                 </CardTitle>
-                <CardDescription className="dark:text-gray-400">
+                <CardDescription className="dark:text-gray-400 dark:text-gray-500">
                   Buyers who set a restock watch on your sold-out goods — real rows, not estimates
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {data.restockDemand.products.length === 0 ? (
-                  <p className="text-sm text-gray-400 py-3 text-center dark:text-gray-500">
+                  <p className="text-sm text-gray-400 py-3 text-center dark:text-gray-500 dark:text-gray-400">
                     No active restock watches right now — buyers waiting on your sold-out products will appear here.
                   </p>
                 ) : (
@@ -383,7 +383,7 @@ export function ProductPerformancePagePage() {
                       >
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-gray-900 truncate dark:text-gray-100">{p.productName}</h4>
-                          <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400">
+                          <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400 dark:text-gray-500">
                             {p.isActive
                               ? p.stockQuantity <= 0
                                 ? 'Out of stock'

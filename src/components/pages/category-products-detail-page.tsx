@@ -78,14 +78,14 @@ export function CategoryProductsDetailPage() {
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 md:px-6 pt-4 pb-2 max-w-6xl mx-auto">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 md:hidden"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
           <div className="flex-1 min-w-0">
             <h1 className="font-semibold text-gray-900 dark:text-gray-100 truncate md:text-lg">{categoryInfo?.name || categorySlug || 'Products'}</h1>
-            {!loading && <p className="text-xs text-gray-400 dark:text-gray-500">{total} products</p>}
+            {!loading && <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{total} products</p>}
           </div>
-          <button onClick={() => navigate('search-home')} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"><Search className="w-4 h-4 text-gray-600 dark:text-gray-400" /></button>
-          <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            {layout === 'grid' ? <List className="w-4 h-4 text-gray-600 dark:text-gray-400" /> : <LayoutGrid className="w-4 h-4 text-gray-600 dark:text-gray-400" />}
+          <button onClick={() => navigate('search-home')} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"><Search className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" /></button>
+          <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
+            {layout === 'grid' ? <List className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" /> : <LayoutGrid className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" />}
           </button>
         </div>
 
@@ -120,7 +120,7 @@ export function CategoryProductsDetailPage() {
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 gap-3">
             <Package className="w-12 h-12 text-gray-200" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">No products in this category yet</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">No products in this category yet</p>
           </div>
         ) : layout === 'grid' ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 p-4 md:px-6">
@@ -134,9 +134,9 @@ export function CategoryProductsDetailPage() {
                 </div>
                 <div className="p-2.5">
                   <p className="text-xs font-medium text-gray-800 dark:text-gray-200 line-clamp-2 min-h-[2.5rem]">{p.name}</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{p.supplier.companyName}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-0.5 truncate">{p.supplier.companyName}</p>
                   <p className="text-sm font-bold text-red-600 mt-1">{formatPrice(p.basePrice)}/{p.unit}</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">MOQ: {p.moq}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">MOQ: {p.moq}</p>
                 </div>
               </motion.button>
             ))}
@@ -147,19 +147,19 @@ export function CategoryProductsDetailPage() {
               <motion.button key={p.id}
                 initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.03 }}
                 onClick={() => navigate('product-detail', { productId: p.id })}
-                className="w-full flex gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-left">
+                className="w-full flex gap-3 px-4 py-3 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition text-left">
                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-900 rounded-xl overflow-hidden flex-shrink-0">
                   {p.thumbnailUrl && <img src={p.thumbnailUrl} alt={p.name} className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-800 dark:text-gray-200 line-clamp-2">{p.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{p.supplier.companyName}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{p.supplier.companyName}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-sm font-bold text-red-600">{formatPrice(p.basePrice)}/{p.unit}</span>
-                    {p.ratingAvg > 0 && <span className="text-xs text-gray-400 dark:text-gray-500">⭐{p.ratingAvg.toFixed(1)}</span>}
+                    {p.ratingAvg > 0 && <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">⭐{p.ratingAvg.toFixed(1)}</span>}
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0 mt-2" />
+                <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 flex-shrink-0 mt-2" />
               </motion.button>
             ))}
           </div>
@@ -170,7 +170,7 @@ export function CategoryProductsDetailPage() {
           <div className="flex items-center justify-center gap-2 py-4 px-4">
             <button disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))}
               className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-800 text-sm disabled:opacity-40">Previous</button>
-            <span className="text-sm text-gray-500 dark:text-gray-400">{page} / {totalPages}</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{page} / {totalPages}</span>
             <button disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-800 text-sm disabled:opacity-40">Next</button>
           </div>

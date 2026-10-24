@@ -160,7 +160,7 @@ export function AddPaymentMethodPage() {
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Add Payment Method</h1>
@@ -208,9 +208,9 @@ export function AddPaymentMethodPage() {
         {/* Card Form — tokenized */}
         {activeTab === 'card' && (
           <form onSubmit={saveCard} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Debit / Credit / Corporate Card</h2>
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Debit / Credit / Corporate Card</h2>
 
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
               The platform tokenizes cards: it stores ONLY the last 4 digits, network, expiry, and holder — never a
               full card number or CVV. Actual charges run through the gateways at checkout.
             </div>
@@ -299,7 +299,7 @@ export function AddPaymentMethodPage() {
         {/* MFS Form */}
         {activeTab === 'mfs' && (
           <form onSubmit={saveMfs} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Mobile Financial Services</h2>
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Mobile Financial Services</h2>
 
             <div className="flex gap-2">
               {[
@@ -333,7 +333,7 @@ export function AddPaymentMethodPage() {
                 className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
                 required
               />
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1">
                 The server validates the Bangladeshi mobile format — an invalid number is refused with the real reason.
               </p>
             </div>
@@ -351,7 +351,7 @@ export function AddPaymentMethodPage() {
         {/* Bank Form */}
         {activeTab === 'bank' && (
           <form onSubmit={saveBank} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Corporate Bank Account / L/C</h2>
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Corporate Bank Account / L/C</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
@@ -404,7 +404,7 @@ export function AddPaymentMethodPage() {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="pm-branch" className="text-xs font-semibold text-slate-700 dark:text-slate-300">Branch <span className="text-slate-400 dark:text-slate-500 font-normal">(optional)</span></label>
+              <label htmlFor="pm-branch" className="text-xs font-semibold text-slate-700 dark:text-slate-300">Branch <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">(optional)</span></label>
               <Input
                 id="pm-branch"
                 placeholder="e.g. Gulshan Corporate Branch"
@@ -425,7 +425,7 @@ export function AddPaymentMethodPage() {
         )}
 
         {/* Security badge */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-200 dark:border-slate-800 flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-slate-400">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-200 dark:border-slate-800 flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
           <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
           <span>Every link above is a real database row with a financial-audit entry — the server&apos;s verdict is shown verbatim, success is never faked.</span>
         </div>

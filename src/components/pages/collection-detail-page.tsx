@@ -156,7 +156,7 @@ export function CollectionDetailPage() {
       {/* Header */}
       <header className="bg-white dark:bg-gray-900 sticky top-0 z-20 border-b px-4 md:px-6 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full active:bg-gray-100 shrink-0 md:hidden">
+          <button onClick={() => goBack()} className="p-2 -ml-2 rounded-full active:bg-gray-100 dark:bg-gray-900 shrink-0 md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-800 dark:text-gray-200" />
           </button>
           <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 truncate pr-2">{collection.name}</h1>
@@ -164,12 +164,12 @@ export function CollectionDetailPage() {
         <div className="flex items-center gap-1 shrink-0">
           <button 
             onClick={() => navigate('create-collection', { collectionId: collection.id })}
-            className="p-2 text-[#C8102E] font-medium text-sm rounded-full active:bg-gray-100"
+            className="p-2 text-[#C8102E] font-medium text-sm rounded-full active:bg-gray-100 dark:bg-gray-900"
           >
             Edit
           </button>
-          <button className="p-2 rounded-full active:bg-gray-100">
-            <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <button className="p-2 rounded-full active:bg-gray-100 dark:bg-gray-900">
+            <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
           </button>
         </div>
       </header>
@@ -187,16 +187,16 @@ export function CollectionDetailPage() {
                 {collection.privacy === 'PUBLIC' && <><Globe className="w-3 h-3" /> Public</>}
                 {collection.privacy === 'SHARED' && <><LinkIcon className="w-3 h-3" /> Shared</>}
               </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+              <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">
                 {items.length} items
               </span>
             </div>
             
             {collection.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">{collection.description}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 mt-2 line-clamp-2">{collection.description}</p>
             )}
             
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
+            <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-3">
               Updated {formatDistanceToNow(new Date(collection.updatedAt), { addSuffix: true })}
             </p>
           </div>
@@ -261,7 +261,7 @@ export function CollectionDetailPage() {
                 <Plus className="w-8 h-8 text-[#C8102E]" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Collection is empty</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Start adding products to this collection.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-6">Start adding products to this collection.</p>
               <button
                 onClick={() => navigate('create-collection', { collectionId: collection.id })}
                 className="bg-[#C8102E] text-white px-6 py-2.5 rounded-lg font-medium shadow-sm active:scale-95"
@@ -286,7 +286,7 @@ export function CollectionDetailPage() {
                       // Task 96 lesson: the PDP reads productId, not id.
                       else navigate('product-detail', { productId: prod.id })
                     }}
-                    className={`bg-white rounded-xl border overflow-hidden relative ${
+                    className={`bg-white dark:bg-gray-900 rounded-xl border overflow-hidden relative ${
                       viewMode === 'list' ? 'flex' : 'flex flex-col'
                     } ${isSelected ? 'border-[#C8102E] ring-1 ring-[#C8102E]' : 'border-gray-200 dark:border-gray-800'}`}
                   >
@@ -316,7 +316,7 @@ export function CollectionDetailPage() {
                         </p>
                       </div>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium px-2 py-0.5 bg-gray-100 dark:bg-gray-900 rounded">
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium px-2 py-0.5 bg-gray-100 dark:bg-gray-900 rounded">
                           MOQ: {prod.moq} {prod.unit}
                         </span>
                         {!isBatchMode && (
@@ -343,7 +343,7 @@ export function CollectionDetailPage() {
         <motion.div 
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] z-20 flex gap-3"
+          className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] z-20 flex gap-3 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none"
         >
           <button
             onClick={removeSelected}

@@ -52,12 +52,12 @@ export function VipMembershipPage() {
         <Button
           size="sm"
           onClick={() => navigate('membership-tiers')}
-          className="h-8 text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-900 rounded-xl"
+          className="h-8 text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-900 dark:text-slate-100 rounded-xl"
         >
           All Tiers →
         </Button>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900">VIP Wholesale Club</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">VIP Wholesale Club</h1>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24">
         {/* VIP Status Card */}
@@ -70,9 +70,9 @@ export function VipMembershipPage() {
           </div>
 
           <div className="space-y-1">
-            <p className="text-xs font-bold text-slate-800 uppercase tracking-wider">Annual Wholesale Volume</p>
+            <p className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">Annual Wholesale Volume</p>
             <h2 className="text-3xl font-black">{formatPrice(vipData?.totalSpendBDT ?? 0)}</h2>
-            <p className="text-xs text-slate-900 font-medium">
+            <p className="text-xs text-slate-900 dark:text-slate-100 font-medium">
               Cumulative purchase turnover recorded on Zylod
             </p>
           </div>
@@ -80,7 +80,7 @@ export function VipMembershipPage() {
 
         {/* Exclusive VIP Privileges */}
         <div className="bg-slate-800/80 rounded-3xl p-5 border border-slate-700/80 shadow-sm space-y-4">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
             Your VIP Enterprise Privileges
           </h3>
 
@@ -97,7 +97,7 @@ export function VipMembershipPage() {
                 </div>
                 <div className="min-w-0">
                   <h4 className="text-xs sm:text-sm font-bold text-white">{item.title}</h4>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">{item.desc}</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}

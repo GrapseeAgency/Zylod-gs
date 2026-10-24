@@ -70,17 +70,17 @@ export function SellerAnalyticsPage() {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-gray-50 pb-20 md:pb-8"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 md:pb-8"
     >
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100">
-          <ArrowLeft className="h-5 w-5 text-gray-700" />
+      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b px-4 py-3 flex items-center gap-3">
+        <button onClick={goBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900">
+          <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-900">Seller Analytics</h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Seller Analytics</h1>
       </header>
 
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
-        <h1 className="hidden md:block text-2xl font-semibold text-gray-900">Seller Analytics</h1>
+        <h1 className="hidden md:block text-2xl font-semibold text-gray-900 dark:text-gray-100">Seller Analytics</h1>
         <Tabs defaultValue="7D" onValueChange={setTimeRange} className="w-full">
           <TabsList className="w-full grid grid-cols-4 bg-gray-200">
             <TabsTrigger value="Today">Today</TabsTrigger>
@@ -93,7 +93,7 @@ export function SellerAnalyticsPage() {
         {loading || !data ? (
           error ? (
             <div className="text-center py-14">
-              <p className="text-sm text-gray-600">{error}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{error}</p>
             </div>
           ) : (
             <div className="flex items-center justify-center py-20">
@@ -107,8 +107,8 @@ export function SellerAnalyticsPage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-xs text-gray-500 font-medium uppercase">GMV</p>
-                      <h3 className="text-lg font-bold text-gray-900 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium uppercase">GMV</p>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mt-1">
                         ৳{data.overview.gmv.toLocaleString()}
                       </h3>
                     </div>
@@ -123,8 +123,8 @@ export function SellerAnalyticsPage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-xs text-gray-500 font-medium uppercase">Orders</p>
-                      <h3 className="text-lg font-bold text-gray-900 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium uppercase">Orders</p>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mt-1">
                         {data.overview.totalOrders.toLocaleString()}
                       </h3>
                     </div>
@@ -139,8 +139,8 @@ export function SellerAnalyticsPage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-xs text-gray-500 font-medium uppercase">Units Sold</p>
-                      <h3 className="text-lg font-bold text-gray-900 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium uppercase">Units Sold</p>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mt-1">
                         {data.overview.unitsSold.toLocaleString()}
                       </h3>
                     </div>
@@ -155,8 +155,8 @@ export function SellerAnalyticsPage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-xs text-gray-500 font-medium uppercase">Avg. Order Value</p>
-                      <h3 className="text-lg font-bold text-gray-900 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium uppercase">Avg. Order Value</p>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mt-1">
                         ৳{data.overview.aov.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                       </h3>
                     </div>
@@ -171,11 +171,11 @@ export function SellerAnalyticsPage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-xs text-gray-500 font-medium uppercase">Conv. Rate</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium uppercase">Conv. Rate</p>
                       <h3 className="text-lg font-bold mt-1">
                         {/* Not tracked yet — the API returns null and the UI
                             says so instead of showing an invented rate. */}
-                        {data.overview.conversionRate != null ? `${data.overview.conversionRate}%` : <span className="text-sm text-gray-400 font-medium">Not available yet</span>}
+                        {data.overview.conversionRate != null ? `${data.overview.conversionRate}%` : <span className="text-sm text-gray-400 dark:text-gray-500 font-medium">Not available yet</span>}
                       </h3>
                     </div>
                     <div className="p-2 bg-green-50 rounded-lg">
@@ -189,9 +189,9 @@ export function SellerAnalyticsPage() {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-xs text-gray-500 font-medium uppercase">Views</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium uppercase">Views</p>
                       <h3 className="text-lg font-bold mt-1">
-                        {data.overview.pageViews != null ? data.overview.pageViews.toLocaleString() : <span className="text-sm text-gray-400 font-medium">Not available yet</span>}
+                        {data.overview.pageViews != null ? data.overview.pageViews.toLocaleString() : <span className="text-sm text-gray-400 dark:text-gray-500 font-medium">Not available yet</span>}
                       </h3>
                     </div>
                     <div className="p-2 bg-purple-50 rounded-lg">
@@ -221,7 +221,7 @@ export function SellerAnalyticsPage() {
               </CardHeader>
               <CardContent>
                 {data.restockDemand.products.length === 0 ? (
-                  <p className="text-sm text-gray-400 py-3 text-center">
+                  <p className="text-sm text-gray-400 dark:text-gray-500 py-3 text-center">
                     No active restock watches right now — buyers watching your sold-out products will appear here.
                   </p>
                 ) : (
@@ -229,12 +229,12 @@ export function SellerAnalyticsPage() {
                     {data.restockDemand.products.map((p) => (
                       <div
                         key={p.productId}
-                        className="flex items-start gap-3 border border-gray-100 rounded-xl p-3 cursor-pointer hover:border-amber-200 transition"
+                        className="flex items-start gap-3 border border-gray-100 dark:border-gray-800 rounded-xl p-3 cursor-pointer hover:border-amber-200 transition"
                         onClick={() => navigate('edit-product', { productId: p.productId })}
                       >
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">{p.productName}</h4>
-                          <p className="text-xs text-gray-500 mt-0.5">
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{p.productName}</h4>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5">
                             {p.isActive
                               ? p.stockQuantity <= 0
                                 ? 'Out of stock'
@@ -265,7 +265,7 @@ export function SellerAnalyticsPage() {
               </CardHeader>
               <CardContent>
                 {data.trafficSources.length === 0 ? (
-                  <p className="text-sm text-gray-400 py-3 text-center">
+                  <p className="text-sm text-gray-400 dark:text-gray-500 py-3 text-center">
                     Traffic-source tracking is not available yet.
                   </p>
                 ) : (
@@ -273,11 +273,11 @@ export function SellerAnalyticsPage() {
                     {data.trafficSources.map((source, index) => (
                       <div key={index} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <MousePointerClick className="h-4 w-4 text-gray-400" />
+                          <MousePointerClick className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                           <span className="text-sm font-medium">{source.source}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="w-24 h-2 bg-gray-100 dark:bg-gray-900 rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-primary rounded-full" 
                               style={{ width: `${source.percentage}%` }}
@@ -303,22 +303,22 @@ export function SellerAnalyticsPage() {
               </CardHeader>
               <CardContent>
                 {data.topProducts.length === 0 ? (
-                  <p className="text-sm text-gray-400 py-3 text-center">
+                  <p className="text-sm text-gray-400 dark:text-gray-500 py-3 text-center">
                     No sales yet — your top products will appear here once paid orders come in.
                   </p>
                 ) : (
                   <div className="space-y-4">
                     {data.topProducts.map((product, index) => (
-                      <div key={product.id} className="flex items-center gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                        <div className="h-12 w-12 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 font-bold">
+                      <div key={product.id} className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-3 last:border-0 last:pb-0">
+                        <div className="h-12 w-12 bg-gray-100 dark:bg-gray-900 rounded-md flex items-center justify-center flex-shrink-0 text-gray-500 dark:text-gray-400 dark:text-gray-500 font-bold">
                           #{index + 1}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">{product.name}</h4>
-                          <p className="text-xs text-gray-500">{product.unitsSold} units sold</p>
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{product.name}</h4>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{product.unitsSold} units sold</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-bold text-gray-900">৳{product.revenue.toLocaleString()}</p>
+                          <p className="text-sm font-bold text-gray-900 dark:text-gray-100">৳{product.revenue.toLocaleString()}</p>
                         </div>
                       </div>
                     ))}

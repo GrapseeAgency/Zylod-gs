@@ -190,12 +190,12 @@ export function LinkGeneratorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 md:pb-8">
-      <div className="md:hidden sticky top-0 z-20 bg-white border-b border-gray-100 px-4 py-3.5 flex items-center gap-3 shadow-sm">
-        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 transition" aria-label="Back">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-8">
+      <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm">
+        <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition" aria-label="Back">
+          <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
-        <span className="font-bold text-gray-900 text-base">Deep Link Generator</span>
+        <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Deep Link Generator</span>
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-5 md:py-8 space-y-5">
@@ -266,7 +266,7 @@ export function LinkGeneratorPage() {
                         className="text-xs pl-9"
                       />
                     </div>
-                    <div className="max-h-56 overflow-y-auto rounded-xl border border-gray-100 bg-white divide-y divide-gray-50">
+                    <div className="max-h-56 overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 divide-y divide-gray-50">
                       {filteredOptions.length === 0 ? (
                         <div className="p-3 text-xs text-muted-foreground text-center">No matches.</div>
                       ) : (
@@ -280,7 +280,7 @@ export function LinkGeneratorPage() {
                             }`}
                           >
                             <div className="min-w-0">
-                              <p className="text-xs font-bold text-gray-900 truncate">{o.label}</p>
+                              <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{o.label}</p>
                               <p className="text-[11px] text-muted-foreground truncate">{o.sub}</p>
                             </div>
                             {paramId === o.id && <Check className="h-4 w-4 text-primary shrink-0" />}
