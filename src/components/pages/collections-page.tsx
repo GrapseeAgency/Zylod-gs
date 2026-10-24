@@ -150,9 +150,10 @@ export function CollectionsPage() {
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm line-clamp-1">{col.name}</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{col._count?.items || 0} items</p>
                   </div>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); /* TODO: options modal */ }} 
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate('edit-collection', { collectionId: col.id }) }}
                     className="p-1 -mr-1 text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300"
+                    aria-label={`Edit ${col.name}`}
                   >
                     <MoreVertical className="w-4 h-4" />
                   </button>
