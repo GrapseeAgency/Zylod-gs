@@ -34,6 +34,10 @@ export type DevicePrefs = {
   // Cache settings (Task 171)
   swPrecache: boolean
   memoryQueryCache: boolean
+  // Language (Task 176-c) — client-side UI language preference. The web
+  // client renders the same strings today; this is persisted so a future
+  // Bengali-translation pass can read it without re-asking the user.
+  language: 'en' | 'bn'
 }
 
 export const DEFAULT_DEVICE_PREFS: DevicePrefs = {
@@ -48,6 +52,7 @@ export const DEFAULT_DEVICE_PREFS: DevicePrefs = {
   imageCacheMaxMb: 200,
   swPrecache: true,
   memoryQueryCache: true,
+  language: 'en',
 }
 
 function readRaw(): DevicePrefs {
