@@ -112,7 +112,7 @@ export function ClearanceSalePage() {
   return (
     <div className="min-h-screen bg-[#FDF2F4] pb-24 md:pb-8">
       {/* ─── Top Header ─── */}
-      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:px-6">
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4 md:px-6">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors md:hidden"
@@ -126,7 +126,7 @@ export function ClearanceSalePage() {
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </header>
 
@@ -136,7 +136,7 @@ export function ClearanceSalePage() {
           <h1 className="text-2xl md:text-4xl font-black tracking-tight text-[#C8102E] uppercase">
             Clearance Sale
           </h1>
-          <p className="text-xs text-[#4B5563] mt-2 max-w-[280px] mx-auto leading-relaxed">
+          <p className="text-xs text-[#4B5563] dark:text-gray-300 mt-2 max-w-[280px] mx-auto leading-relaxed">
             End-of-line wholesale inventory moving at clearance prices. Once it&apos;s gone, it&apos;s gone.
           </p>
 
@@ -158,7 +158,7 @@ export function ClearanceSalePage() {
                   className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                     isActive
                       ? 'bg-[#C8102E] text-white shadow-sm'
-                      : 'bg-white dark:bg-gray-900 text-[#4B5563] border border-[#E5E7EB] hover:bg-gray-50 dark:hover:bg-gray-800'
+                      : 'bg-white dark:bg-gray-900 text-[#4B5563] dark:text-gray-300 border border-[#E5E7EB] dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                 >
                   {tab.label}
@@ -172,19 +172,19 @@ export function ClearanceSalePage() {
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-            <p className="text-sm text-[#6B7280]">Loading clearance lots...</p>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading clearance lots...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
         {!isLoading && !loadError && items.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
             <Percent className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-            <p className="text-sm text-[#6B7280] max-w-[260px]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400 max-w-[260px]">
               Nothing on clearance in this category right now.
             </p>
           </div>
@@ -196,7 +196,7 @@ export function ClearanceSalePage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={() => navigate('product-detail', { productId: heroItem.id })}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer md:flex"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer md:flex"
           >
             <div className="relative aspect-[16/11] w-full bg-gray-100 dark:bg-gray-900 md:w-1/2">
               { }
@@ -211,7 +211,7 @@ export function ClearanceSalePage() {
             </div>
 
             <div className="p-4 md:w-1/2 md:p-6">
-              <h3 className="font-bold text-sm text-[#1A1A1A] leading-snug">
+              <h3 className="font-bold text-sm text-[#1A1A1A] dark:text-white leading-snug">
                 {heroItem.name}
               </h3>
 
@@ -219,18 +219,18 @@ export function ClearanceSalePage() {
                 <span className="text-lg font-bold text-[#C8102E]">
                   {formatPrice(heroItem.basePrice)}
                 </span>
-                <span className="text-xs text-[#6B7280]">/ {heroItem.unit || 'unit'}</span>
+                <span className="text-xs text-[#6B7280] dark:text-gray-400">/ {heroItem.unit || 'unit'}</span>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-[#6B7280] mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
+              <div className="flex items-center justify-between text-xs text-[#6B7280] dark:text-gray-400 mt-3 pt-2 border-t border-gray-100 dark:border-gray-800">
                 <div>
-                  <span className="block text-[10px] uppercase font-bold text-[#9CA3AF]">MOQ</span>
-                  <span className="font-bold text-[#1A1A1A]">{heroItem.moq} {heroItem.unit || 'units'}</span>
+                  <span className="block text-[10px] uppercase font-bold text-[#9CA3AF] dark:text-gray-500">MOQ</span>
+                  <span className="font-bold text-[#1A1A1A] dark:text-white">{heroItem.moq} {heroItem.unit || 'units'}</span>
                 </div>
 
                 <button
                   onClick={(e) => handleQuickAdd(e, heroItem)}
-                  className="w-9 h-9 rounded-full bg-[#F3F4F6] hover:bg-[#FFE4E6] text-[#C8102E] flex items-center justify-center transition-colors shadow-sm"
+                  className="w-9 h-9 rounded-full bg-[#F3F4F6] dark:bg-gray-900 hover:bg-[#FFE4E6] text-[#C8102E] flex items-center justify-center transition-colors shadow-sm"
                   title="Add to Cart"
                 >
                   <ShoppingCart className="h-4 w-4" />
@@ -249,7 +249,7 @@ export function ClearanceSalePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
               onClick={() => navigate('product-detail', { productId: item.id })}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between"
             >
               <div>
                 <div className="relative aspect-square w-full bg-gray-100 dark:bg-gray-900">
@@ -265,17 +265,17 @@ export function ClearanceSalePage() {
                 </div>
 
                 <div className="p-3">
-                  <h4 className="font-bold text-xs text-[#1A1A1A] line-clamp-2 leading-tight">
+                  <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white line-clamp-2 leading-tight">
                     {item.name}
                   </h4>
                   <div className="text-sm font-bold text-[#C8102E] mt-1.5">
                     {formatPrice(item.basePrice)}
-                    <span className="text-[10px] font-normal text-[#6B7280]"> / {item.unit || 'unit'}</span>
+                    <span className="text-[10px] font-normal text-[#6B7280] dark:text-gray-400"> / {item.unit || 'unit'}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="p-3 pt-0 flex items-center justify-between text-[11px] text-[#6B7280]">
+              <div className="p-3 pt-0 flex items-center justify-between text-[11px] text-[#6B7280] dark:text-gray-400">
                 <span>MOQ: {item.moq}</span>
                 <button
                   onClick={(e) => handleQuickAdd(e, item)}
@@ -295,7 +295,7 @@ export function ClearanceSalePage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={() => navigate('product-detail', { productId: bottomDeal.id })}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
           >
             <div className="relative w-20 h-20 rounded-xl bg-gray-100 dark:bg-gray-900 overflow-hidden shrink-0">
               { }
@@ -311,13 +311,13 @@ export function ClearanceSalePage() {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline justify-between gap-1">
-                <h4 className="font-bold text-xs text-[#1A1A1A] truncate">{bottomDeal.name}</h4>
+                <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white truncate">{bottomDeal.name}</h4>
                 <span className="font-bold text-xs text-[#C8102E] whitespace-nowrap">
                   {formatPrice(bottomDeal.basePrice)}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-[11px] text-[#6B7280] mt-1">
+              <div className="flex items-center justify-between text-[11px] text-[#6B7280] dark:text-gray-400 mt-1">
                 <div>
                   <span>MOQ: {bottomDeal.moq} {bottomDeal.unit || 'units'}</span>
                   <span className="block text-[#C8102E] font-bold mt-0.5">

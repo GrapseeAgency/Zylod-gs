@@ -64,7 +64,7 @@ export function SuppliersDirectoryPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-[calc(64px+env(safe-area-inset-bottom)+24px)]">
       {/* ─── Top Nav Bar ─── */}
-      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -78,14 +78,14 @@ export function SuppliersDirectoryPage() {
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </header>
 
       <div className="max-w-md mx-auto px-4 pt-4 space-y-4 md:max-w-2xl md:px-6 md:py-6">
         <div className="text-center">
-          <h1 className="text-xl font-black text-[#1A1A1A] tracking-tight">Verified Suppliers</h1>
-          <p className="text-xs text-[#6B7280] mt-1">Trade-assured manufacturers ready for bulk orders.</p>
+          <h1 className="text-xl font-black text-[#1A1A1A] dark:text-white tracking-tight">Verified Suppliers</h1>
+          <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">Trade-assured manufacturers ready for bulk orders.</p>
         </div>
 
         {/* ─── Search ─── */}
@@ -96,7 +96,7 @@ export function SuppliersDirectoryPage() {
             placeholder="Search suppliers..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-11 pl-10 pr-4 bg-white dark:bg-gray-900 border border-[#E0E0E0] rounded-xl text-sm text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-[#C8102E] shadow-sm"
+            className="w-full h-11 pl-10 pr-4 bg-white dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 rounded-xl text-sm text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-[#C8102E] shadow-sm"
           />
         </div>
 
@@ -104,19 +104,19 @@ export function SuppliersDirectoryPage() {
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-            <p className="text-sm text-[#6B7280]">Loading suppliers...</p>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading suppliers...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
         {!isLoading && !loadError && suppliers.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
             <Building2 className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-            <p className="text-sm text-[#6B7280] max-w-[260px]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400 max-w-[260px]">
               No verified suppliers match &ldquo;{search}&rdquo;.
             </p>
           </div>
@@ -131,7 +131,7 @@ export function SuppliersDirectoryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(idx * 0.04, 0.3) }}
               onClick={() => navigate('seller-storefront', { supplierId: sup.id })}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-4 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-4 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
             >
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FFE4E6] to-[#FECDD3] flex items-center justify-center shrink-0">
                 <span className="text-sm font-black text-[#C8102E]">
@@ -141,12 +141,12 @@ export function SuppliersDirectoryPage() {
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-bold text-sm text-[#1A1A1A] truncate">{sup.companyName}</h3>
+                  <h3 className="font-bold text-sm text-[#1A1A1A] dark:text-white truncate">{sup.companyName}</h3>
                   {sup.verificationStatus === 'approved' && (
                     <ShieldCheck className="h-3.5 w-3.5 text-[#059669] shrink-0" />
                   )}
                 </div>
-                <div className="flex items-center gap-3 mt-1 text-xs text-[#6B7280]">
+                <div className="flex items-center gap-3 mt-1 text-xs text-[#6B7280] dark:text-gray-400">
                   {sup.ratingAvg !== null && sup.ratingAvg > 0 ? (
                     <span className="flex items-center gap-1 font-semibold text-[#C8102E]">
                       <Star className="h-3 w-3 fill-[#C8102E]" />

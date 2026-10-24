@@ -50,7 +50,7 @@ function HeaderBar({ onBack }: { onBack: () => void }) {
         className="p-2 -mr-2 rounded-lg active:scale-95 transition-transform"
         aria-label="Help"
       >
-        <HelpCircle className="w-5 h-5 text-[#6B7280]" />
+        <HelpCircle className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
       </button>
     </div>
   )
@@ -75,7 +75,7 @@ function DesktopHeader({ onBack }: { onBack: () => void }) {
           className="p-2 -mr-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="w-5 h-5 text-[#6B7280]" />
+          <HelpCircle className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </div>
     </header>
@@ -99,14 +99,14 @@ function FeatureBadge({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className="flex items-center gap-3 p-3.5 rounded-xl bg-[#F3F4F6] border border-[#E0E0E0]"
+      className="flex items-center gap-3 p-3.5 rounded-xl bg-[#F3F4F6] dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800"
     >
       <div className="flex-shrink-0 w-9 h-9 rounded-full bg-white dark:bg-gray-900 flex items-center justify-center shadow-sm">
         {icon}
       </div>
       <div>
-        <p className="text-sm font-semibold text-[#1A1A1A]">{title}</p>
-        <p className="text-xs text-[#6B7280]">{subtitle}</p>
+        <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">{title}</p>
+        <p className="text-xs text-[#6B7280] dark:text-gray-400">{subtitle}</p>
       </div>
     </motion.div>
   )
@@ -290,7 +290,7 @@ export default function EmailVerificationPage() {
 
       {/* Heading */}
       <motion.div variants={fadeSlideUp} className="text-center mt-6 mb-2">
-        <h1 className="text-[26px] font-bold text-[#1A1A1A] leading-tight">
+        <h1 className="text-[26px] font-bold text-[#1A1A1A] dark:text-white leading-tight">
           {isVerified ? 'Email Verified!' : 'Please check your inbox'}
         </h1>
       </motion.div>
@@ -302,15 +302,15 @@ export default function EmailVerificationPage() {
             Your email has been verified successfully. You can now access all features of your Zylod account.
           </p>
         ) : flow === 'forgot-password' ? (
-          <p className="text-[16px] text-[#6B7280] leading-relaxed">
+          <p className="text-[16px] text-[#6B7280] dark:text-gray-400 leading-relaxed">
             We&apos;ve sent a password reset link to{' '}
-            <span className="font-bold text-[#1A1A1A]">{email || 'your email'}</span>. Open the
+            <span className="font-bold text-[#1A1A1A] dark:text-white">{email || 'your email'}</span>. Open the
             link to set a new password.
           </p>
         ) : (
-          <p className="text-[16px] text-[#6B7280] leading-relaxed">
+          <p className="text-[16px] text-[#6B7280] dark:text-gray-400 leading-relaxed">
             We&apos;ve sent a verification link to{' '}
-            <span className="font-bold text-[#1A1A1A]">{email || 'your email'}</span>. Click the
+            <span className="font-bold text-[#1A1A1A] dark:text-white">{email || 'your email'}</span>. Click the
             link in the email to activate your account.
           </p>
         )}
@@ -368,7 +368,7 @@ export default function EmailVerificationPage() {
               <Button
                 onClick={handleOpenEmailApp}
                 variant="outline"
-                className="w-full h-[52px] border-[#E0E0E0] bg-white dark:bg-gray-900 hover:bg-[#F8F9FA] text-[#1A1A1A] rounded-xl text-base font-semibold"
+                className="w-full h-[52px] border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-[#F8F9FA] text-[#1A1A1A] dark:text-white rounded-xl text-base font-semibold"
                 size="lg"
               >
                 <ExternalLink className="w-5 h-5 mr-2" />
@@ -385,7 +385,7 @@ export default function EmailVerificationPage() {
           variants={fadeSlideUp}
           className="flex flex-col items-center gap-3 mt-5"
         >
-          <p className="text-sm text-[#6B7280]">
+          <p className="text-sm text-[#6B7280] dark:text-gray-400">
             Didn&apos;t receive the email?
           </p>
           <div className={`flex items-center gap-4 ${flow === 'forgot-password' ? '' : 'flex-wrap justify-center'}`}>
@@ -404,7 +404,7 @@ export default function EmailVerificationPage() {
             </button>
             <button
               onClick={handleChangeEmail}
-              className="flex items-center gap-1.5 text-sm text-[#6B7280] hover:text-[#1A1A1A] transition-colors"
+              className="flex items-center gap-1.5 text-sm text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white transition-colors"
               type="button"
             >
               <Pencil className="w-3.5 h-3.5" />

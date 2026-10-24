@@ -68,7 +68,7 @@ export function AccountRecoveryPage() {
 
   /* ─── Header Bar (mobile) ─── */
   const headerBar = (
-    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]">
+    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800">
       <button
         onClick={goBack}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
@@ -76,7 +76,7 @@ export function AccountRecoveryPage() {
       >
         <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
       </button>
-      <span className="text-lg font-bold text-[#1A1A1A]">Account Recovery</span>
+      <span className="text-lg font-bold text-[#1A1A1A] dark:text-white">Account Recovery</span>
       <button className="p-1.5 rounded-lg" aria-label="Notifications">
         <Bell className="w-5 h-5 text-[#C8102E]" />
       </button>
@@ -129,10 +129,10 @@ export function AccountRecoveryPage() {
       animate="visible"
       className="text-center px-6 pb-2"
     >
-      <h1 className="text-[26px] leading-tight font-bold text-[#1A1A1A]">
+      <h1 className="text-[26px] leading-tight font-bold text-[#1A1A1A] dark:text-white">
         Recover Your Account
       </h1>
-      <p className="text-[14px] text-[#6B7280] mt-2 leading-relaxed">
+      <p className="text-[14px] text-[#6B7280] dark:text-gray-400 mt-2 leading-relaxed">
         Lost access to your password and 2FA device? Follow the steps below to securely
         verify your identity and regain access.
       </p>
@@ -165,9 +165,9 @@ export function AccountRecoveryPage() {
         {/* Step 2 - Inactive */}
         <div className="flex flex-col items-center gap-1.5">
           <div className="w-9 h-9 rounded-full bg-[#E5E7EB] flex items-center justify-center">
-            <span className="text-[#6B7280] text-sm font-bold">2</span>
+            <span className="text-[#6B7280] dark:text-gray-400 text-sm font-bold">2</span>
           </div>
-          <span className="text-[10px] font-bold text-[#9CA3AF] tracking-wider">
+          <span className="text-[10px] font-bold text-[#9CA3AF] dark:text-gray-500 tracking-wider">
             IDENTIFY
           </span>
         </div>
@@ -178,9 +178,9 @@ export function AccountRecoveryPage() {
         {/* Step 3 - Inactive */}
         <div className="flex flex-col items-center gap-1.5">
           <div className="w-9 h-9 rounded-full bg-[#E5E7EB] flex items-center justify-center">
-            <span className="text-[#6B7280] text-sm font-bold">3</span>
+            <span className="text-[#6B7280] dark:text-gray-400 text-sm font-bold">3</span>
           </div>
-          <span className="text-[10px] font-bold text-[#9CA3AF] tracking-wider">
+          <span className="text-[10px] font-bold text-[#9CA3AF] dark:text-gray-500 tracking-wider">
             REVIEW
           </span>
         </div>
@@ -199,20 +199,20 @@ export function AccountRecoveryPage() {
     >
       <Card className="rounded-xl shadow-md border-0 bg-white dark:bg-gray-900 py-0 gap-0">
         <CardContent className="p-5 space-y-3">
-          <Label className="text-[14px] font-semibold text-[#1A1A1A]">
+          <Label className="text-[14px] font-semibold text-[#1A1A1A] dark:text-white">
             Original Registered Email
           </Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF] dark:text-gray-500" />
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. name@company.com"
-              className="h-11 pl-10 rounded-xl border-[#E0E0E0] text-[14px] focus-visible:border-[#C8102E] focus-visible:ring-[#C8102E]/20"
+              className="h-11 pl-10 rounded-xl border-[#E0E0E0] dark:border-gray-800 text-[14px] focus-visible:border-[#C8102E] focus-visible:ring-[#C8102E]/20"
             />
           </div>
-          <p className="text-[12px] text-[#6B7280] leading-relaxed">
+          <p className="text-[12px] text-[#6B7280] dark:text-gray-400 leading-relaxed">
             This must be the email address you used to create your Zylod account.
           </p>
         </CardContent>
@@ -229,7 +229,7 @@ export function AccountRecoveryPage() {
       animate="visible"
       className="px-4 pt-5 space-y-3"
     >
-      <p className="text-[14px] font-semibold text-[#1A1A1A] px-1">
+      <p className="text-[14px] font-semibold text-[#1A1A1A] dark:text-white px-1">
         Select Recovery Method
       </p>
 
@@ -239,7 +239,7 @@ export function AccountRecoveryPage() {
         className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'identity'
             ? 'border-[#C8102E] bg-[#FFF5F5] shadow-md'
-            : 'border-[#E0E0E0] shadow-sm'
+            : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         }`}
       >
         <div className="flex items-start gap-3">
@@ -247,10 +247,10 @@ export function AccountRecoveryPage() {
             <IdCard className="w-5 h-5 text-[#C8102E]" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[14px] font-semibold text-[#1A1A1A]">
+            <p className="text-[14px] font-semibold text-[#1A1A1A] dark:text-white">
               Recover via Identity Verification
             </p>
-            <p className="text-[12px] text-[#6B7280] mt-1 leading-relaxed">
+            <p className="text-[12px] text-[#6B7280] dark:text-gray-400 mt-1 leading-relaxed">
               Securely upload a photo ID (Passport or Driver&apos;s License) to confirm your
               identity. Fast and secure.
             </p>
@@ -279,18 +279,18 @@ export function AccountRecoveryPage() {
         className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'security-team'
             ? 'border-[#C8102E] bg-[#FFF5F5] shadow-md'
-            : 'border-[#E0E0E0] shadow-sm'
+            : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         }`}
       >
         <div className="flex items-start gap-3">
-          <div className="w-11 h-11 rounded-lg bg-[#F3F4F6] flex items-center justify-center shrink-0">
-            <Headphones className="w-5 h-5 text-[#6B7280]" />
+          <div className="w-11 h-11 rounded-lg bg-[#F3F4F6] dark:bg-gray-900 flex items-center justify-center shrink-0">
+            <Headphones className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[14px] font-semibold text-[#1A1A1A]">
+            <p className="text-[14px] font-semibold text-[#1A1A1A] dark:text-white">
               Contact Security Team
             </p>
-            <p className="text-[12px] text-[#6B7280] mt-1 leading-relaxed">
+            <p className="text-[12px] text-[#6B7280] dark:text-gray-400 mt-1 leading-relaxed">
               If you don&apos;t have access to your ID, speak with a security specialist to
               manually verify your business ownership.
             </p>
@@ -321,8 +321,8 @@ export function AccountRecoveryPage() {
       <div className="flex items-start gap-3 bg-white dark:bg-gray-900 rounded-xl p-4 border-l-4 border-l-[#C8102E] shadow-sm">
         <Info className="w-5 h-5 text-[#C8102E] shrink-0 mt-0.5" />
         <div>
-          <p className="text-[13px] font-bold text-[#1A1A1A]">Verification Notice:</p>
-          <p className="text-[12px] text-[#6B7280] mt-1 leading-relaxed">
+          <p className="text-[13px] font-bold text-[#1A1A1A] dark:text-white">Verification Notice:</p>
+          <p className="text-[12px] text-[#6B7280] dark:text-gray-400 mt-1 leading-relaxed">
             Our security team typically reviews recovery requests within 24 hours. You will
             receive an update at your registered email address.
           </p>
@@ -362,12 +362,12 @@ export function AccountRecoveryPage() {
     >
       <div className="flex flex-col items-center gap-2">
         <div className="flex items-center gap-2">
-          <Lock className="w-3.5 h-3.5 text-[#9CA3AF]" />
-          <span className="text-[10px] font-bold text-[#9CA3AF] tracking-wider uppercase">
+          <Lock className="w-3.5 h-3.5 text-[#9CA3AF] dark:text-gray-500" />
+          <span className="text-[10px] font-bold text-[#9CA3AF] dark:text-gray-500 tracking-wider uppercase">
             End-to-End Encrypted Verification
           </span>
         </div>
-        <p className="text-[11px] text-[#9CA3AF] text-center leading-relaxed max-w-xs">
+        <p className="text-[11px] text-[#9CA3AF] dark:text-gray-500 text-center leading-relaxed max-w-xs">
           Zylod uses industry-standard encryption to protect your sensitive data
           during recovery.
         </p>

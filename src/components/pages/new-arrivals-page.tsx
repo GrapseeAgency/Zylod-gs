@@ -123,7 +123,7 @@ export function NewArrivalsPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-8">
       {/* ─── Top Nav Bar ─── */}
-      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -137,7 +137,7 @@ export function NewArrivalsPage() {
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </header>
 
@@ -181,7 +181,7 @@ export function NewArrivalsPage() {
                 className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                   isActive
                     ? 'bg-[#C8102E] text-white shadow-sm'
-                    : 'bg-[#EAEAEA] text-[#4B5563] hover:bg-[#E0E0E0]'
+                    : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0]'
                 }`}
               >
                 {tab.label}
@@ -194,20 +194,20 @@ export function NewArrivalsPage() {
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-            <p className="text-sm text-[#6B7280]">Loading fresh listings...</p>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading fresh listings...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
 
         {!isLoading && !loadError && products.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
             <Sparkles className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-            <p className="text-sm text-[#6B7280] max-w-[260px]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400 max-w-[260px]">
               No arrivals in this category yet — check another tab or come back soon.
             </p>
           </div>
@@ -217,7 +217,7 @@ export function NewArrivalsPage() {
         {!isLoading && heroArrival && (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base md:text-lg font-bold text-[#1A1A1A]">Featured Arrivals</h2>
+              <h2 className="text-base md:text-lg font-bold text-[#1A1A1A] dark:text-white">Featured Arrivals</h2>
               <button
                 onClick={() => navigate('category-products', { filter: 'new' })}
                 className="text-xs font-bold text-[#C8102E] flex items-center gap-1 hover:underline"
@@ -231,7 +231,7 @@ export function NewArrivalsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => navigate('product-detail', { productId: heroArrival.id })}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer mb-3"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer mb-3"
             >
               <div className="relative aspect-[16/10] md:aspect-[16/6] w-full bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
                 { }
@@ -255,19 +255,19 @@ export function NewArrivalsPage() {
               </div>
 
               <div className="p-4">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280]">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280] dark:text-gray-400">
                   {heroArrival.category?.name || 'Wholesale'} · {timeAgo(heroArrival.createdAt)}
                 </span>
-                <h3 className="font-bold text-[#1A1A1A] text-sm leading-snug mt-0.5">
+                <h3 className="font-bold text-[#1A1A1A] dark:text-white text-sm leading-snug mt-0.5">
                   {heroArrival.name}
                 </h3>
 
                 <div className="text-base font-bold text-[#C8102E] mt-1">
                   {formatPrice(heroArrival.basePrice)}
-                  <span className="text-xs font-normal text-[#6B7280]"> / {heroArrival.unit || 'unit'}</span>
+                  <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400"> / {heroArrival.unit || 'unit'}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                <div className="flex items-center justify-between text-xs text-[#6B7280] dark:text-gray-400 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
                   <span>MOQ: {heroArrival.moq} {heroArrival.unit || 'units'}</span>
                   {heroArrival.supplier?.verificationStatus === 'approved' && (
                     <span className="text-[#059669] font-medium flex items-center gap-1">
@@ -288,7 +288,7 @@ export function NewArrivalsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => navigate('product-detail', { productId: item.id })}
-                  className="bg-white dark:bg-gray-900 rounded-xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col"
+                  className="bg-white dark:bg-gray-900 rounded-xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col"
                 >
                   <div className="relative aspect-square w-full bg-gray-100 dark:bg-gray-900">
                     { }
@@ -303,15 +303,15 @@ export function NewArrivalsPage() {
                   </div>
 
                   <div className="p-3 flex-1 flex flex-col justify-between">
-                    <h4 className="font-bold text-xs text-[#1A1A1A] line-clamp-2 leading-tight">
+                    <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white line-clamp-2 leading-tight">
                       {item.name}
                     </h4>
                     <div className="mt-2">
                       <div className="text-sm font-bold text-[#C8102E]">
                         {formatPrice(item.basePrice)}
-                        <span className="text-[10px] font-normal text-[#6B7280]"> / {item.unit || 'unit'}</span>
+                        <span className="text-[10px] font-normal text-[#6B7280] dark:text-gray-400"> / {item.unit || 'unit'}</span>
                       </div>
-                      <div className="text-[10px] text-[#6B7280] mt-0.5">MOQ: {item.moq}</div>
+                      <div className="text-[10px] text-[#6B7280] dark:text-gray-400 mt-0.5">MOQ: {item.moq}</div>
                     </div>
                   </div>
                 </motion.div>
@@ -323,9 +323,9 @@ export function NewArrivalsPage() {
         {/* ─── Section: Just Added Timeline ─── */}
         {!isLoading && latestAdded.length > 0 && (
           <div>
-            <h2 className="text-base md:text-lg font-bold text-[#1A1A1A] mb-3">Just Added to Catalog</h2>
+            <h2 className="text-base md:text-lg font-bold text-[#1A1A1A] dark:text-white mb-3">Just Added to Catalog</h2>
 
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-4 space-y-4 shadow-sm">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-4 space-y-4 shadow-sm">
               {latestAdded.map((item, idx) => (
                 <div
                   key={item.id}
@@ -345,15 +345,15 @@ export function NewArrivalsPage() {
                   />
 
                   <div className="flex items-center justify-between gap-2">
-                    <h4 className="font-bold text-xs text-[#1A1A1A] line-clamp-1 group-hover:text-[#C8102E] transition-colors">
+                    <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white line-clamp-1 group-hover:text-[#C8102E] transition-colors">
                       {item.name}
                     </h4>
-                    <span className="text-[10px] font-semibold bg-gray-100 dark:bg-gray-900 text-[#4B5563] px-2 py-0.5 rounded whitespace-nowrap">
+                    <span className="text-[10px] font-semibold bg-gray-100 dark:bg-gray-900 text-[#4B5563] dark:text-gray-300 px-2 py-0.5 rounded whitespace-nowrap">
                       {timeAgo(item.createdAt)}
                     </span>
                   </div>
 
-                  <p className="text-xs text-[#6B7280] mt-1 leading-relaxed line-clamp-1">
+                  <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1 leading-relaxed line-clamp-1">
                     {item.category?.name || 'Wholesale'} · {formatPrice(item.basePrice)} / {item.unit || 'unit'} · MOQ {item.moq}
                   </p>
                 </div>

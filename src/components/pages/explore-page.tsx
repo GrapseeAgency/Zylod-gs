@@ -145,7 +145,7 @@ export function ExplorePage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-8">
       {/* ─── Top Nav Bar ─── */}
-      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors md:hidden"
@@ -159,7 +159,7 @@ export function ExplorePage() {
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </header>
 
@@ -177,7 +177,7 @@ export function ExplorePage() {
             placeholder="Search categories, suppliers, ..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-12 pl-12 pr-12 rounded-full bg-white dark:bg-gray-900/95 text-[#1A1A1A] placeholder:text-[#9CA3AF] text-sm focus:outline-none focus:ring-2 focus:ring-[#C8102E] shadow-md"
+            className="w-full h-12 pl-12 pr-12 rounded-full bg-white dark:bg-gray-900/95 text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#C8102E] shadow-md"
           />
           <button
             type="button"
@@ -198,7 +198,7 @@ export function ExplorePage() {
             className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
               activeCategory === null
                 ? 'bg-[#C8102E] text-white shadow-sm'
-                : 'bg-[#EAEAEA] text-[#4B5563] hover:bg-[#E0E0E0]'
+                : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0]'
             }`}
           >
             All Categories
@@ -210,7 +210,7 @@ export function ExplorePage() {
               className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                 activeCategory === cat.slug
                   ? 'bg-[#C8102E] text-white shadow-sm'
-                  : 'bg-[#EAEAEA] text-[#4B5563] hover:bg-[#E0E0E0]'
+                  : 'bg-[#EAEAEA] text-[#4B5563] dark:text-gray-300 hover:bg-[#E0E0E0]'
               }`}
             >
               {cat.label}
@@ -222,7 +222,7 @@ export function ExplorePage() {
         <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start">
         <div className="mt-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold text-[#1A1A1A]">Personalized for You</h2>
+            <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white">Personalized for You</h2>
             <button
               onClick={() => navigate('recommended')}
               className="text-xs font-bold text-[#C8102E] hover:underline"
@@ -235,19 +235,19 @@ export function ExplorePage() {
           {isLoading && (
             <div className="flex flex-col items-center gap-3 py-14">
               <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-              <p className="text-sm text-[#6B7280]">Finding picks for you...</p>
+              <p className="text-sm text-[#6B7280] dark:text-gray-400">Finding picks for you...</p>
             </div>
           )}
           {!isLoading && loadError && (
             <div className="flex flex-col items-center gap-3 py-14">
               <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-              <p className="text-sm text-[#4B5563]">{loadError}</p>
+              <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
             </div>
           )}
           {!isLoading && !loadError && products.length === 0 && (
             <div className="flex flex-col items-center gap-3 py-14 text-center">
               <Search className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-              <p className="text-sm text-[#6B7280] max-w-[260px]">
+              <p className="text-sm text-[#6B7280] dark:text-gray-400 max-w-[260px]">
                 Nothing listed in this category yet — try another one.
               </p>
             </div>
@@ -259,7 +259,7 @@ export function ExplorePage() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => navigate('product-detail', { productId: heroProduct.id })}
               >
                 <div className="relative aspect-[16/10] bg-gray-100 dark:bg-gray-900">
@@ -283,16 +283,16 @@ export function ExplorePage() {
                 </div>
 
                 <div className="p-4">
-                  <h3 className="font-bold text-[#1A1A1A] text-base leading-snug mb-1 line-clamp-2">
+                  <h3 className="font-bold text-[#1A1A1A] dark:text-white text-base leading-snug mb-1 line-clamp-2">
                     {heroProduct.name}
                   </h3>
                   <div className="flex items-baseline gap-1 text-[#C8102E] font-bold text-lg">
                     {formatPrice(heroProduct.basePrice)}
-                    <span className="text-xs font-normal text-[#6B7280]">/ {heroProduct.unit || 'unit'}</span>
+                    <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400">/ {heroProduct.unit || 'unit'}</span>
                   </div>
 
                   <div className="flex items-center justify-between mt-3 pt-2">
-                    <span className="text-xs font-medium text-[#6B7280]">
+                    <span className="text-xs font-medium text-[#6B7280] dark:text-gray-400">
                       MOQ: {heroProduct.moq} {heroProduct.unit || 'units'}
                     </span>
                     <button
@@ -316,7 +316,7 @@ export function ExplorePage() {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     onClick={() => navigate('product-detail', { productId: item.id })}
-                    className="bg-white dark:bg-gray-900 rounded-xl border border-[#E0E0E0] p-3 flex items-center gap-3 hover:border-gray-300 transition-colors cursor-pointer shadow-sm"
+                    className="bg-white dark:bg-gray-900 rounded-xl border border-[#E0E0E0] dark:border-gray-800 p-3 flex items-center gap-3 hover:border-gray-300 transition-colors cursor-pointer shadow-sm"
                   >
                     <div className="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-900 overflow-hidden shrink-0">
                       { }
@@ -327,12 +327,12 @@ export function ExplorePage() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-[#1A1A1A] truncate">{item.name}</h4>
+                      <h4 className="text-sm font-semibold text-[#1A1A1A] dark:text-white truncate">{item.name}</h4>
                       <p className="text-sm font-bold text-[#C8102E] mt-0.5">
                         {formatPrice(item.basePrice)}
-                        <span className="text-xs font-normal text-[#6B7280]"> / {item.unit || 'unit'}</span>
+                        <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400"> / {item.unit || 'unit'}</span>
                       </p>
-                      <p className="text-[11px] text-[#6B7280] mt-0.5 truncate">
+                      <p className="text-[11px] text-[#6B7280] dark:text-gray-400 mt-0.5 truncate">
                         {item.supplier?.companyName || item.category?.name || 'Wholesale'}
                       </p>
                     </div>
@@ -346,9 +346,9 @@ export function ExplorePage() {
         {/* ─── Section: Supplier Spotlight ─── */}
         {suppliers.length > 0 && (
           <div className="mt-8 lg:col-span-1">
-            <div className="bg-[#F3F4F6] rounded-2xl p-4 border border-[#E5E7EB]">
+            <div className="bg-[#F3F4F6] dark:bg-gray-900 rounded-2xl p-4 border border-[#E5E7EB] dark:border-gray-800">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-bold text-[#1A1A1A]">Supplier Spotlight</h2>
+                <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white">Supplier Spotlight</h2>
                 <button
                   onClick={() => navigate('suppliers')}
                   className="text-xs font-bold text-[#C8102E] hover:underline"
@@ -362,14 +362,14 @@ export function ExplorePage() {
                   <div
                     key={sup.id}
                     onClick={() => navigate('seller-storefront', { supplierId: sup.id })}
-                    className="bg-white dark:bg-gray-900 rounded-xl p-3 flex flex-col items-center text-center border border-[#E0E0E0] shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer group"
+                    className="bg-white dark:bg-gray-900 rounded-xl p-3 flex flex-col items-center text-center border border-[#E0E0E0] dark:border-gray-800 shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer group"
                   >
                     <div className="w-12 h-12 rounded-full border-2 border-red-100 flex items-center justify-center mb-2 bg-gray-50 dark:bg-gray-950 group-hover:scale-105 transition-transform">
                       <span className="text-sm font-black text-[#C8102E]">
                         {sup.companyName.slice(0, 2).toUpperCase()}
                       </span>
                     </div>
-                    <span className="text-xs font-bold text-[#1A1A1A] line-clamp-1 group-hover:text-[#C8102E] transition-colors">
+                    <span className="text-xs font-bold text-[#1A1A1A] dark:text-white line-clamp-1 group-hover:text-[#C8102E] transition-colors">
                       {sup.companyName}
                     </span>
                     <div className="flex items-center gap-1 mt-1 text-[11px] font-semibold text-[#C8102E]">

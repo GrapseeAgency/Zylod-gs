@@ -36,27 +36,27 @@ function RoleCard({ icon, title, description, selected, onClick }: RoleCardProps
       className={`flex-1 flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all cursor-pointer text-center ${
         selected
           ? 'border-[#C8102E] bg-[#C8102E]/5 shadow-sm'
-          : 'border-[#E0E0E0] bg-white dark:bg-gray-900 hover:border-[#C8102E]/30 hover:bg-[#C8102E]/[0.02]'
+          : 'border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-[#C8102E]/30 hover:bg-[#C8102E]/[0.02]'
       }`}
     >
       <div
         className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
-          selected ? 'bg-[#C8102E]/10' : 'bg-[#F3F4F6]'
+          selected ? 'bg-[#C8102E]/10' : 'bg-[#F3F4F6] dark:bg-gray-900'
         }`}
       >
-        <div className={selected ? 'text-[#C8102E]' : 'text-[#6B7280]'}>
+        <div className={selected ? 'text-[#C8102E]' : 'text-[#6B7280] dark:text-gray-400'}>
           {icon}
         </div>
       </div>
       <div>
         <h3
           className={`text-[15px] font-semibold transition-colors ${
-            selected ? 'text-[#C8102E]' : 'text-[#1A1A1A]'
+            selected ? 'text-[#C8102E]' : 'text-[#1A1A1A] dark:text-white'
           }`}
         >
           {title}
         </h3>
-        <p className="text-[13px] text-[#6B7280] mt-1 leading-snug">
+        <p className="text-[13px] text-[#6B7280] dark:text-gray-400 mt-1 leading-snug">
           {description}
         </p>
       </div>
@@ -106,10 +106,10 @@ export function RegisterPage() {
         transition={{ delay: 0.1 }}
         className="text-center space-y-2 mb-8"
       >
-        <h2 className={`font-bold text-[#1A1A1A] ${isMobile ? 'text-[22px]' : 'text-[24px]'}`}>
+        <h2 className={`font-bold text-[#1A1A1A] dark:text-white ${isMobile ? 'text-[22px]' : 'text-[24px]'}`}>
           Join the Marketplace
         </h2>
-        <p className="text-[15px] text-[#6B7280] leading-relaxed">
+        <p className="text-[15px] text-[#6B7280] dark:text-gray-400 leading-relaxed">
           Start sourcing or selling today. Let&apos;s set up your account.
         </p>
       </motion.div>
@@ -119,7 +119,7 @@ export function RegisterPage() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="text-[15px] font-semibold text-[#1A1A1A] mb-4"
+        className="text-[15px] font-semibold text-[#1A1A1A] dark:text-white mb-4"
       >
         I want to register as:
       </motion.p>
@@ -154,27 +154,27 @@ export function RegisterPage() {
         transition={{ delay: 0.25 }}
         className="mb-6 space-y-2"
       >
-        <div className="flex items-center gap-2 text-sm font-medium text-[#1A1A1A]">
+        <div className="flex items-center gap-2 text-sm font-medium text-[#1A1A1A] dark:text-white">
           <ShieldAlert className="w-3.5 h-3.5 text-[#C8102E]" />
           <span>Verify you&apos;re human</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] border border-[#E0E0E0] rounded-lg px-3 py-2.5">
-            <span className="text-sm font-semibold text-[#1A1A1A] whitespace-nowrap">{captcha.question}</span>
-            <span className="text-[#6B7280]">=</span>
+          <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] border border-[#E0E0E0] dark:border-gray-800 rounded-lg px-3 py-2.5">
+            <span className="text-sm font-semibold text-[#1A1A1A] dark:text-white whitespace-nowrap">{captcha.question}</span>
+            <span className="text-[#6B7280] dark:text-gray-400">=</span>
             <Input
               type="text"
               inputMode="numeric"
               placeholder="Answer"
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
-              className="w-20 h-8 border-[#E0E0E0] bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+              className="w-20 h-8 border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
             />
           </div>
           <button
             type="button"
             onClick={refresh}
-            className="p-2 rounded-lg hover:bg-[#F3F4F6] transition-colors text-[#6B7280] hover:text-[#1A1A1A]"
+            className="p-2 rounded-lg hover:bg-[#F3F4F6] dark:bg-gray-900 transition-colors text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white"
             aria-label="Refresh CAPTCHA"
           >
             <RefreshCw className="w-4 h-4" />
@@ -209,7 +209,7 @@ export function RegisterPage() {
             onCheckedChange={(checked) => setTermsAccepted(checked === true)}
             className="mt-0.5 data-[state=checked]:bg-[#C8102E] data-[state=checked]:border-[#C8102E]"
           />
-          <label htmlFor="terms" className="text-sm text-[#6B7280] leading-snug cursor-pointer">
+          <label htmlFor="terms" className="text-sm text-[#6B7280] dark:text-gray-400 leading-snug cursor-pointer">
             I agree to the{' '}
             <button
               type="button"
@@ -252,7 +252,7 @@ export function RegisterPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="text-center text-[14px] text-[#6B7280] mt-5"
+        className="text-center text-[14px] text-[#6B7280] dark:text-gray-400 mt-5"
       >
         Already have an account?{' '}
         <button
@@ -275,13 +275,13 @@ export function RegisterPage() {
         className="min-h-screen bg-[#F8F9FA] flex flex-col"
       >
         {/* Header Bar */}
-        <header className="flex items-center justify-between px-4 h-14 border-b border-[#E0E0E0]/60 bg-white dark:bg-gray-900">
+        <header className="flex items-center justify-between px-4 h-14 border-b border-[#E0E0E0] dark:border-gray-800/60 bg-white dark:bg-gray-900">
           <button
             onClick={goBack}
             className="p-2 rounded-lg active:scale-95 transition-transform"
             aria-label="Go back"
           >
-            <ArrowLeft className="w-5 h-5 text-[#1A1A1A]" />
+            <ArrowLeft className="w-5 h-5 text-[#1A1A1A] dark:text-white" />
           </button>
           <h1 className="text-lg font-bold text-[#C8102E] tracking-tight">
             Zylod
@@ -291,7 +291,7 @@ export function RegisterPage() {
             className="p-2 rounded-lg active:scale-95 transition-transform"
             aria-label="Help"
           >
-            <HelpCircle className="w-5 h-5 text-[#6B7280]" />
+            <HelpCircle className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
           </button>
         </header>
 
@@ -326,26 +326,26 @@ export function RegisterPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden"
+        className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden"
       >
         {/* Header Bar */}
-        <header className="flex items-center justify-between px-5 h-14 border-b border-[#E0E0E0]/60">
+        <header className="flex items-center justify-between px-5 h-14 border-b border-[#E0E0E0] dark:border-gray-800/60">
           <button
             onClick={goBack}
-            className="p-2 rounded-lg hover:bg-[#F3F4F6] transition-colors"
+            className="p-2 rounded-lg hover:bg-[#F3F4F6] dark:bg-gray-900 transition-colors"
             aria-label="Go back"
           >
-            <ArrowLeft className="w-5 h-5 text-[#1A1A1A]" />
+            <ArrowLeft className="w-5 h-5 text-[#1A1A1A] dark:text-white" />
           </button>
           <h1 className="text-lg font-bold text-[#C8102E] tracking-tight">
             Zylod
           </h1>
           <button
             onClick={() => navigate('help-center')}
-            className="p-2 rounded-lg hover:bg-[#F3F4F6] transition-colors"
+            className="p-2 rounded-lg hover:bg-[#F3F4F6] dark:bg-gray-900 transition-colors"
             aria-label="Help"
           >
-            <HelpCircle className="w-5 h-5 text-[#6B7280]" />
+            <HelpCircle className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
           </button>
         </header>
 

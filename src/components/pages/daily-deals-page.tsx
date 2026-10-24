@@ -119,7 +119,7 @@ export function DailyDealsPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-8">
       {/* ─── Top Nav Bar ─── */}
-      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -133,17 +133,17 @@ export function DailyDealsPage() {
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </header>
 
       <div className="max-w-md mx-auto px-4 pt-6 space-y-6 md:max-w-5xl md:px-6 md:pt-8">
         {/* ─── Editorial Headline ─── */}
         <div className="text-center">
-          <h1 className="text-2xl md:text-3xl font-serif font-black text-[#1A1A1A] tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-serif font-black text-[#1A1A1A] dark:text-white tracking-tight">
             Curated Daily Deals
           </h1>
-          <p className="text-xs text-[#6B7280] mt-1.5 leading-relaxed">
+          <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1.5 leading-relaxed">
             Exclusive wholesale lots, available for 24 hours.
             {hoursLeft !== null && hoursLeft > 0 && ` ${hoursLeft}h left today.`}
           </p>
@@ -153,7 +153,7 @@ export function DailyDealsPage() {
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-16">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-            <p className="text-sm text-[#6B7280]">Loading today&apos;s deals...</p>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading today&apos;s deals...</p>
           </div>
         )}
 
@@ -161,14 +161,14 @@ export function DailyDealsPage() {
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-16">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
 
         {!isLoading && !loadError && deals.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
             <Sun className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-            <p className="text-sm text-[#6B7280] max-w-[260px]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400 max-w-[260px]">
               Today&apos;s picks have sold out. A fresh selection drops at midnight.
             </p>
             <button
@@ -186,7 +186,7 @@ export function DailyDealsPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={() => navigate('product-detail', { productId: heroDeal.productId })}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer md:max-w-3xl md:mx-auto md:w-full"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer md:max-w-3xl md:mx-auto md:w-full"
           >
             <div className="relative aspect-[16/10] w-full bg-gray-100 dark:bg-gray-900">
               {heroDeal.productThumbnail ? (
@@ -208,7 +208,7 @@ export function DailyDealsPage() {
                 Deal of the Day · -{heroDeal.discountPercent}%
               </span>
 
-              <h2 className="font-serif font-bold text-base text-[#1A1A1A] leading-snug line-clamp-2">
+              <h2 className="font-serif font-bold text-base text-[#1A1A1A] dark:text-white leading-snug line-clamp-2">
                 {heroDeal.productName}
               </h2>
 
@@ -216,9 +216,9 @@ export function DailyDealsPage() {
                 <div>
                   <div className="text-xl font-bold text-[#C8102E]">
                     {formatPrice(heroDeal.dealPrice)}
-                    <span className="text-xs font-normal text-[#6B7280]"> / {heroDeal.unit}</span>
+                    <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400"> / {heroDeal.unit}</span>
                   </div>
-                  <div className="text-xs text-[#6B7280]">
+                  <div className="text-xs text-[#6B7280] dark:text-gray-400">
                     <span className="line-through">{formatPrice(heroDeal.originalPrice)}</span> MSRP · MOQ {heroDeal.moq}
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export function DailyDealsPage() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Sun className="h-4 w-4 text-[#F59E0B]" />
-              <h2 className="text-lg font-serif font-bold text-[#1A1A1A]">Today&apos;s Picks</h2>
+              <h2 className="text-lg font-serif font-bold text-[#1A1A1A] dark:text-white">Today&apos;s Picks</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
@@ -250,7 +250,7 @@ export function DailyDealsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => navigate('product-detail', { productId: deal.productId })}
-                  className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                 >
                   <div className="relative aspect-[16/8] w-full bg-gray-100 dark:bg-gray-900">
                     {deal.productThumbnail ? (
@@ -267,14 +267,14 @@ export function DailyDealsPage() {
                   </div>
 
                   <div className="p-4">
-                    <h3 className="font-bold text-sm text-[#1A1A1A] line-clamp-1">{deal.productName}</h3>
+                    <h3 className="font-bold text-sm text-[#1A1A1A] dark:text-white line-clamp-1">{deal.productName}</h3>
                     <div className="text-base font-bold text-[#C8102E] mt-1">
                       {formatPrice(deal.dealPrice)}
-                      <span className="text-xs font-normal text-[#6B7280]"> / {deal.unit}</span>{' '}
+                      <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400"> / {deal.unit}</span>{' '}
                       <span className="text-xs font-normal text-gray-400 dark:text-gray-500 dark:text-gray-400 line-through">{formatPrice(deal.originalPrice)}</span>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center justify-between text-xs text-[#6B7280] dark:text-gray-400 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
                       <span>MOQ: {deal.moq} {deal.unit}</span>
                       <button
                         onClick={(e) => handleAddToCart(e, deal)}

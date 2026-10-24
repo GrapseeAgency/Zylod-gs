@@ -108,7 +108,7 @@ export function SeasonalSalePage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-10">
       {/* ─── Top Header ─── */}
-      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -122,7 +122,7 @@ export function SeasonalSalePage() {
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </header>
 
@@ -141,34 +141,34 @@ export function SeasonalSalePage() {
           <div className="w-12 h-12 rounded-full bg-[#C8102E]/10 text-[#C8102E] flex items-center justify-center mx-auto mb-3">
             {seasonIcon('h-6 w-6')}
           </div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-tight">
+          <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white tracking-tight">
             {season.label}
           </h1>
-          <p className="text-xs text-[#4B5563] mt-2 leading-relaxed">
+          <p className="text-xs text-[#4B5563] dark:text-gray-300 mt-2 leading-relaxed">
             Exclusive wholesale pricing on curated seasonal collections to stock your inventory.
           </p>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-4 pt-6 space-y-4 md:max-w-5xl md:px-6">
-        <h1 className="hidden md:block text-2xl font-black text-[#1A1A1A] tracking-tight">Seasonal Sale</h1>
+        <h1 className="hidden md:block text-2xl font-black text-[#1A1A1A] dark:text-white tracking-tight">Seasonal Sale</h1>
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-            <p className="text-sm text-[#6B7280]">Gathering seasonal picks...</p>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">Gathering seasonal picks...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
         {!isLoading && !loadError && kits.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
             <Sparkles className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-            <p className="text-sm text-[#6B7280] max-w-[260px]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400 max-w-[260px]">
               The seasonal collection is being curated. Check back soon.
             </p>
           </div>
@@ -178,7 +178,7 @@ export function SeasonalSalePage() {
         {kits.length > 0 && (
           <>
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-[#1A1A1A]">Curated Kits</h2>
+              <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white">Curated Kits</h2>
               <button
                 onClick={() => navigate('category-products', { filter: 'seasonal' })}
                 className="text-xs font-bold text-[#C8102E] hover:underline"
@@ -195,7 +195,7 @@ export function SeasonalSalePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => navigate('category-products', { category: kit.slug })}
-                  className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-3 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                 >
                   <div className="w-24 h-24 rounded-xl bg-gray-100 dark:bg-gray-900 overflow-hidden shrink-0">
                     { }
@@ -207,17 +207,17 @@ export function SeasonalSalePage() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-sm text-[#1A1A1A] leading-snug line-clamp-1">
+                    <h3 className="font-bold text-sm text-[#1A1A1A] dark:text-white leading-snug line-clamp-1">
                       {kit.name}
                     </h3>
-                    <p className="text-xs text-[#6B7280] mt-0.5">
+                    <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-0.5">
                       {kit.count} SKUs • <span className="text-[#059669] font-medium">Season Pick</span>
                     </p>
 
                     <div className="flex items-center justify-between mt-3">
-                      <span className="font-bold text-base text-[#1A1A1A]">
+                      <span className="font-bold text-base text-[#1A1A1A] dark:text-white">
                         {formatPrice(kit.startingPrice)}
-                        <span className="text-[10px] font-normal text-[#6B7280]"> starting</span>
+                        <span className="text-[10px] font-normal text-[#6B7280] dark:text-gray-400"> starting</span>
                       </span>
                       <button
                         onClick={(e) => {

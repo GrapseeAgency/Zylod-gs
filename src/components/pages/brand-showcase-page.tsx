@@ -75,7 +75,7 @@ export function BrandShowcasePage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-8">
       {/* ─── Top Header ─── */}
-      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -89,7 +89,7 @@ export function BrandShowcasePage() {
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </header>
 
@@ -110,10 +110,10 @@ export function BrandShowcasePage() {
             <span className="text-[10px] font-black tracking-widest text-[#C8102E] uppercase block mb-1">
               Top-Tier Manufacturers
             </span>
-            <h1 className="text-xl md:text-3xl font-bold text-[#1A1A1A] tracking-tight">
+            <h1 className="text-xl md:text-3xl font-bold text-[#1A1A1A] dark:text-white tracking-tight">
               Elite Brand Showcase
             </h1>
-            <p className="text-xs text-[#4B5563] mt-2.5 leading-relaxed">
+            <p className="text-xs text-[#4B5563] dark:text-gray-300 mt-2.5 leading-relaxed">
               {brands.length > 0
                 ? `${brands.length} verified brands with ${brands.reduce((s, b) => s + b.productCount, 0)} active listings on the marketplace.`
                 : 'Discover verified manufacturers offering premium quality for your B2B sourcing needs.'}
@@ -133,19 +133,19 @@ export function BrandShowcasePage() {
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-            <p className="text-sm text-[#6B7280]">Loading brand directory...</p>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading brand directory...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
         {!isLoading && !loadError && brands.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
             <Building2 className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-            <p className="text-sm text-[#6B7280] max-w-[260px]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400 max-w-[260px]">
               No branded listings yet — brands appear here as suppliers add them.
             </p>
           </div>
@@ -155,7 +155,7 @@ export function BrandShowcasePage() {
         {!isLoading && hero && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-[#1A1A1A]">Featured Brands</h2>
+              <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white">Featured Brands</h2>
               <button
                 onClick={() => navigate('suppliers')}
                 className="text-xs font-bold text-[#C8102E] hover:underline"
@@ -169,7 +169,7 @@ export function BrandShowcasePage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => openBrand(hero.name)}
-              className="relative rounded-2xl overflow-hidden border border-[#E0E0E0] shadow-sm bg-[#1E293B] text-white cursor-pointer group"
+              className="relative rounded-2xl overflow-hidden border border-[#E0E0E0] dark:border-gray-800 shadow-sm bg-[#1E293B] text-white cursor-pointer group"
             >
               <div className="relative aspect-[16/9] w-full">
                 { }
@@ -185,7 +185,7 @@ export function BrandShowcasePage() {
                 </div>
 
                 <div className="absolute bottom-3 left-3 right-3">
-                  <div className="bg-white dark:bg-gray-900/95 text-[#1A1A1A] rounded-xl p-2.5 flex items-center justify-between shadow-md mb-2">
+                  <div className="bg-white dark:bg-gray-900/95 text-[#1A1A1A] dark:text-white rounded-xl p-2.5 flex items-center justify-between shadow-md mb-2">
                     <span className="font-bold text-xs">{hero.name}</span>
                     <span className="bg-[#FFF1F2] text-[#C8102E] border border-[#FECDD3] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Package className="h-3 w-3" /> {hero.productCount} products
@@ -206,7 +206,7 @@ export function BrandShowcasePage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => openBrand(brand.name)}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-3 flex items-center justify-between gap-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-3 flex items-center justify-between gap-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-16 h-16 rounded-xl bg-gray-100 dark:bg-gray-900 overflow-hidden shrink-0">
@@ -218,8 +218,8 @@ export function BrandShowcasePage() {
                     />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="font-bold text-xs text-[#1A1A1A] truncate">{brand.name}</h4>
-                    <p className="text-[11px] text-[#6B7280] mt-0.5 leading-snug line-clamp-1">
+                    <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white truncate">{brand.name}</h4>
+                    <p className="text-[11px] text-[#6B7280] dark:text-gray-400 mt-0.5 leading-snug line-clamp-1">
                       {brand.representativeProduct?.categoryName || 'Wholesale'} · {brand.productCount} products
                     </p>
                     {brand.avgRating !== null && brand.avgRating > 0 && (
@@ -231,7 +231,7 @@ export function BrandShowcasePage() {
                   </div>
                 </div>
 
-                <button className="px-3 py-1.5 bg-[#F3F4F6] hover:bg-gray-200 text-[#1A1A1A] text-xs font-semibold rounded-lg shrink-0 flex items-center gap-1 transition-colors">
+                <button className="px-3 py-1.5 bg-[#F3F4F6] dark:bg-gray-900 hover:bg-gray-200 text-[#1A1A1A] dark:text-white text-xs font-semibold rounded-lg shrink-0 flex items-center gap-1 transition-colors">
                   <span>View</span>
                   <ChevronRight className="h-3 w-3" />
                 </button>
@@ -242,7 +242,7 @@ export function BrandShowcasePage() {
             {/* Remaining Brand Grid */}
             {rest.length > 0 && (
               <>
-                <h3 className="text-sm font-bold text-[#1A1A1A] pt-2">More Brands</h3>
+                <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white pt-2">More Brands</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {rest.map((brand, idx) => (
                     <motion.button
@@ -251,7 +251,7 @@ export function BrandShowcasePage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.03 }}
                       onClick={() => openBrand(brand.name)}
-                      className="bg-white dark:bg-gray-900 rounded-xl border border-[#E0E0E0] p-3 text-left shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
+                      className="bg-white dark:bg-gray-900 rounded-xl border border-[#E0E0E0] dark:border-gray-800 p-3 text-left shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
                     >
                       <div className="w-full aspect-[16/10] rounded-lg bg-gray-100 dark:bg-gray-900 overflow-hidden mb-2">
                         { }
@@ -261,8 +261,8 @@ export function BrandShowcasePage() {
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <h4 className="font-bold text-xs text-[#1A1A1A] truncate">{brand.name}</h4>
-                      <p className="text-[10px] text-[#6B7280] mt-0.5">
+                      <h4 className="font-bold text-xs text-[#1A1A1A] dark:text-white truncate">{brand.name}</h4>
+                      <p className="text-[10px] text-[#6B7280] dark:text-gray-400 mt-0.5">
                         {brand.productCount} products
                         {brand.startingPrice !== null && ` · from ${formatPrice(brand.startingPrice)}`}
                       </p>

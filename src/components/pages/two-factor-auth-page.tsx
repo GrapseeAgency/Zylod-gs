@@ -293,7 +293,7 @@ export function TwoFactorAuthPage() {
 
   // ─── Header Bar (mobile) ───
   const headerBar = (
-    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]">
+    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800">
       <button
         onClick={handleHeaderBack}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
@@ -307,7 +307,7 @@ export function TwoFactorAuthPage() {
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
         aria-label="Help"
       >
-        <HelpCircle className="w-5 h-5 text-[#6B7280]" />
+        <HelpCircle className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
       </button>
     </header>
   )
@@ -362,7 +362,7 @@ export function TwoFactorAuthPage() {
       animate="visible"
       className="text-center px-6 pb-2"
     >
-      <h1 className="text-[24px] leading-tight font-bold text-[#1A1A1A]">
+      <h1 className="text-[24px] leading-tight font-bold text-[#1A1A1A] dark:text-white">
         {isLoginChallenge
           ? 'Two-Factor Verification'
           : step === 'select'
@@ -371,7 +371,7 @@ export function TwoFactorAuthPage() {
               ? 'Set Up Authenticator'
               : 'Verify Code'}
       </h1>
-      <p className="text-[15px] text-[#6B7280] mt-2 leading-relaxed">
+      <p className="text-[15px] text-[#6B7280] dark:text-gray-400 mt-2 leading-relaxed">
         {isLoginChallenge
           ? selectedMethod === 'sms'
             ? maskedPhone
@@ -404,7 +404,7 @@ export function TwoFactorAuthPage() {
         className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'authenticator'
             ? 'border-[#C8102E] shadow-md'
-            : 'border-[#E0E0E0] shadow-sm'
+            : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         }`}
         type="button"
       >
@@ -412,8 +412,8 @@ export function TwoFactorAuthPage() {
           <Smartphone className="w-6 h-6 text-[#C8102E]" />
         </div>
         <div className="flex-1 min-w-0 text-left">
-          <p className="text-sm font-semibold text-[#1A1A1A]">Authenticator App</p>
-          <p className="text-[12px] text-[#6B7280] mt-0.5 leading-relaxed">
+          <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">Authenticator App</p>
+          <p className="text-[12px] text-[#6B7280] dark:text-gray-400 mt-0.5 leading-relaxed">
             Use Google Authenticator or Authy for maximum security without cellular signal.
           </p>
         </div>
@@ -435,16 +435,16 @@ export function TwoFactorAuthPage() {
         className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'sms'
             ? 'border-[#C8102E] shadow-md'
-            : 'border-[#E0E0E0] shadow-sm'
+            : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         } ${!availableMethods.includes('sms') ? 'opacity-50 cursor-not-allowed' : ''}`}
         type="button"
       >
-        <div className="w-12 h-12 rounded-lg bg-[#F3F4F6] flex items-center justify-center shrink-0">
-          <MessageSquare className="w-6 h-6 text-[#6B7280]" />
+        <div className="w-12 h-12 rounded-lg bg-[#F3F4F6] dark:bg-gray-900 flex items-center justify-center shrink-0">
+          <MessageSquare className="w-6 h-6 text-[#6B7280] dark:text-gray-400" />
         </div>
         <div className="flex-1 min-w-0 text-left">
-          <p className="text-sm font-semibold text-[#1A1A1A]">SMS Message</p>
-          <p className="text-[12px] text-[#6B7280] mt-0.5 leading-relaxed">
+          <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">SMS Message</p>
+          <p className="text-[12px] text-[#6B7280] dark:text-gray-400 mt-0.5 leading-relaxed">
             {availableMethods.includes('sms')
               ? 'Receive a 6-digit code via text message to your registered phone number.'
               : 'No phone number on this account. Add one in Profile to enable SMS codes.'}
@@ -500,27 +500,27 @@ export function TwoFactorAuthPage() {
               </div>
             )}
           </div>
-          <p className="text-xs text-[#6B7280] -mt-2 mb-4">
+          <p className="text-xs text-[#6B7280] dark:text-gray-400 -mt-2 mb-4">
             Scan with Google Authenticator / Authy
           </p>
 
           {/* Manual Entry Key */}
           <div className="w-full">
-            <p className="text-xs font-semibold text-[#1A1A1A] mb-2">Manual Entry Key</p>
+            <p className="text-xs font-semibold text-[#1A1A1A] dark:text-white mb-2">Manual Entry Key</p>
             <div className="flex items-center gap-2">
-              <div className="flex-1 bg-[#F3F4F6] rounded-lg p-3 font-mono text-xs text-[#1A1A1A] break-all leading-relaxed">
+              <div className="flex-1 bg-[#F3F4F6] dark:bg-gray-900 rounded-lg p-3 font-mono text-xs text-[#1A1A1A] dark:text-white break-all leading-relaxed">
                 {secretKey || '...'}
               </div>
               <button
                 onClick={handleCopyKey}
-                className="p-2.5 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] transition-colors shrink-0"
+                className="p-2.5 rounded-lg bg-[#F3F4F6] dark:bg-gray-900 hover:bg-[#E5E7EB] transition-colors shrink-0"
                 aria-label="Copy secret key"
                 type="button"
               >
                 {isCopied ? (
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
                 ) : (
-                  <Copy className="w-4 h-4 text-[#6B7280]" />
+                  <Copy className="w-4 h-4 text-[#6B7280] dark:text-gray-400" />
                 )}
               </button>
             </div>
@@ -551,7 +551,7 @@ export function TwoFactorAuthPage() {
         <CardContent className="p-5 space-y-4">
           {/* Label row */}
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-[#1A1A1A]">
+            <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
               Verification Code
             </p>
             {selectedMethod === 'sms' ? (
@@ -593,7 +593,7 @@ export function TwoFactorAuthPage() {
                   <InputOTPSlot
                     key={index}
                     index={index}
-                    className="h-12 w-9 text-lg border-[#E0E0E0] data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 rounded-lg sm:w-12"
+                    className="h-12 w-9 text-lg border-[#E0E0E0] dark:border-gray-800 data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 rounded-lg sm:w-12"
                   />
                 ))}
               </InputOTPGroup>
@@ -601,7 +601,7 @@ export function TwoFactorAuthPage() {
           </div>
 
           {/* Helper text */}
-          <p className="text-center text-[12px] text-[#6B7280]">
+          <p className="text-center text-[12px] text-[#6B7280] dark:text-gray-400">
             {selectedMethod === 'authenticator'
               ? 'Enter the rotating 6-digit code shown in your authenticator app'
               : 'Enter the code sent to your phone'}
@@ -661,18 +661,18 @@ export function TwoFactorAuthPage() {
       className="px-4 pt-6 pb-8"
     >
       <div className="grid grid-cols-2 gap-3">
-        <div className="flex items-center gap-2 bg-[#F3F4F6] rounded-xl p-3">
-          <Shield className="w-5 h-5 text-[#6B7280] shrink-0" />
-          <span className="text-[10px] font-bold text-[#6B7280] tracking-wider leading-tight">
+        <div className="flex items-center gap-2 bg-[#F3F4F6] dark:bg-gray-900 rounded-xl p-3">
+          <Shield className="w-5 h-5 text-[#6B7280] dark:text-gray-400 shrink-0" />
+          <span className="text-[10px] font-bold text-[#6B7280] dark:text-gray-400 tracking-wider leading-tight">
             END-TO-END
             <br />
             ENCRYPTION
           </span>
         </div>
 
-        <div className="flex items-center gap-2 bg-[#F3F4F6] rounded-xl p-3">
-          <ShieldCheck className="w-5 h-5 text-[#6B7280] shrink-0" />
-          <span className="text-[10px] font-bold text-[#6B7280] tracking-wider leading-tight">
+        <div className="flex items-center gap-2 bg-[#F3F4F6] dark:bg-gray-900 rounded-xl p-3">
+          <ShieldCheck className="w-5 h-5 text-[#6B7280] dark:text-gray-400 shrink-0" />
+          <span className="text-[10px] font-bold text-[#6B7280] dark:text-gray-400 tracking-wider leading-tight">
             B2B VERIFIED
             <br />
             SECURITY

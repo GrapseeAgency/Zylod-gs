@@ -362,10 +362,10 @@ export function RfqListPage() {
   if (!isAuthenticated || needsAuth) {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-8 flex flex-col items-center gap-3 text-center shadow-sm max-w-sm w-full">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-8 flex flex-col items-center gap-3 text-center shadow-sm max-w-sm w-full">
           <LogIn className="w-8 h-8 text-[#C8102E]" />
-          <p className="text-sm font-semibold text-[#1A1A1A]">Sign in to view your quote requests</p>
-          <p className="text-xs text-[#6B7280] max-w-[260px]">
+          <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">Sign in to view your quote requests</p>
+          <p className="text-xs text-[#6B7280] dark:text-gray-400 max-w-[260px]">
             Your RFQ history and supplier quotes are tied to your account.
           </p>
           <button
@@ -392,7 +392,7 @@ export function RfqListPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-[calc(64px+env(safe-area-inset-bottom)+24px)]">
       {/* ─── Top Nav Bar (mobile) ─── */}
-      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -407,7 +407,7 @@ export function RfqListPage() {
             className="p-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
             aria-label="Help"
           >
-            <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+            <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
           </button>
           <button
             onClick={() => navigate('quote-request')}
@@ -422,8 +422,8 @@ export function RfqListPage() {
       <div className="max-w-md mx-auto px-4 pt-4 space-y-4 md:max-w-4xl md:px-6 md:py-6">
         <div className="hidden md:flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black text-[#1A1A1A] tracking-tight">My Quote Requests</h1>
-            <p className="text-xs text-[#6B7280] mt-1">Track RFQs and supplier responses in one place.</p>
+            <h1 className="text-2xl font-black text-[#1A1A1A] dark:text-white tracking-tight">My Quote Requests</h1>
+            <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">Track RFQs and supplier responses in one place.</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -438,26 +438,26 @@ export function RfqListPage() {
               className="p-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
               aria-label="Help"
             >
-              <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+              <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
             </button>
           </div>
         </div>
         <div className="text-center">
-          <h1 className="text-xl font-black text-[#1A1A1A] tracking-tight">My Quote Requests</h1>
-          <p className="text-xs text-[#6B7280] mt-1">Track RFQs and supplier responses in one place.</p>
+          <h1 className="text-xl font-black text-[#1A1A1A] dark:text-white tracking-tight">My Quote Requests</h1>
+          <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">Track RFQs and supplier responses in one place.</p>
         </div>
 
         {/* ─── Loading / Error States ─── */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-            <p className="text-sm text-[#6B7280]">Loading requests...</p>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading requests...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-8">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
             <button
               onClick={() => { setIsLoading(true); setLoadError(null); void loadList() }}
               className="mt-1 px-6 min-h-11 bg-[#C8102E] hover:bg-[#A50D24] text-white text-xs font-bold rounded-lg"
@@ -467,10 +467,10 @@ export function RfqListPage() {
           </div>
         )}
         {!isLoading && !loadError && rfqs.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-8 flex flex-col items-center gap-3 text-center shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-8 flex flex-col items-center gap-3 text-center shadow-sm">
             <FileText className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-            <p className="text-sm font-semibold text-[#1A1A1A]">No quote requests yet</p>
-            <p className="text-xs text-[#6B7280] max-w-[260px]">
+            <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">No quote requests yet</p>
+            <p className="text-xs text-[#6B7280] dark:text-gray-400 max-w-[260px]">
               Start a new RFQ, or open any product and tap &ldquo;Request Quote&rdquo;.
             </p>
             <button
@@ -500,7 +500,7 @@ export function RfqListPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.04, 0.3) }}
                 className={`bg-white dark:bg-gray-900 rounded-2xl border shadow-sm overflow-hidden ${
-                  awarded ? 'border-[#DDD6FE] ring-1 ring-[#DDD6FE]' : 'border-[#E0E0E0]'
+                  awarded ? 'border-[#DDD6FE] ring-1 ring-[#DDD6FE]' : 'border-[#E0E0E0] dark:border-gray-800'
                 }`}
               >
                 {/* Row header — 44px+ target, aria-expanded */}
@@ -510,7 +510,7 @@ export function RfqListPage() {
                   className="w-full text-left p-4 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-bold text-sm text-[#1A1A1A] leading-snug line-clamp-2 flex-1">
+                    <h3 className="font-bold text-sm text-[#1A1A1A] dark:text-white leading-snug line-clamp-2 flex-1">
                       {rfq.title || 'Quote Request'}
                     </h3>
                     <span
@@ -523,11 +523,11 @@ export function RfqListPage() {
                       {rfq.status}
                     </span>
                     <ChevronDown
-                      className={`h-4 w-4 shrink-0 text-[#9CA3AF] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      className={`h-4 w-4 shrink-0 text-[#9CA3AF] dark:text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                     />
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                  <div className="flex items-center justify-between text-xs text-[#6B7280] dark:text-gray-400 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
                     <span>
                       {typeof rfq.quantity === 'number'
                         ? `${rfq.quantity.toLocaleString()} ${rfq.unit || 'units'}`
@@ -562,13 +562,13 @@ export function RfqListPage() {
                       <div className="px-4 pb-4 pt-1 border-t border-gray-100 dark:border-gray-800 space-y-4">
                         {/* Description */}
                         {rfq.description && (
-                          <p className="text-xs text-[#4B5563] leading-relaxed whitespace-pre-line">
+                          <p className="text-xs text-[#4B5563] dark:text-gray-300 leading-relaxed whitespace-pre-line">
                             {rfq.description}
                           </p>
                         )}
 
                         {/* Meta */}
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#6B7280]">
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#6B7280] dark:text-gray-400">
                           {rfq.deliveryCity && <span>Deliver to: {rfq.deliveryCity}</span>}
                           {rfq.deadline && <span>Deadline: {formatDate(rfq.deadline)}</span>}
                           {rfq.categorySlug && <span>Category: {rfq.categorySlug}</span>}
@@ -577,22 +577,22 @@ export function RfqListPage() {
                         {/* Items */}
                         {rfq.items && rfq.items.length > 0 && (
                           <div className="space-y-1.5">
-                            <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF]">Items</p>
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] dark:text-gray-500">Items</p>
                             {rfq.items.map((item) => (
                               <div
                                 key={item.id}
                                 className="flex items-start justify-between gap-3 text-xs bg-[#F8F9FA] rounded-lg px-3 py-2"
                               >
                                 <div className="min-w-0">
-                                  <p className="font-semibold text-[#1A1A1A] truncate">{item.productName}</p>
+                                  <p className="font-semibold text-[#1A1A1A] dark:text-white truncate">{item.productName}</p>
                                   {item.specifications && (
-                                    <p className="text-[11px] text-[#6B7280] mt-0.5 whitespace-pre-line">{item.specifications}</p>
+                                    <p className="text-[11px] text-[#6B7280] dark:text-gray-400 mt-0.5 whitespace-pre-line">{item.specifications}</p>
                                   )}
                                 </div>
-                                <div className="shrink-0 text-right text-[#4B5563]">
+                                <div className="shrink-0 text-right text-[#4B5563] dark:text-gray-300">
                                   <p>{item.quantity.toLocaleString()} {item.unit}</p>
                                   {typeof item.targetPrice === 'number' && (
-                                    <p className="text-[11px] text-[#6B7280]">target {formatBDT(item.targetPrice)}</p>
+                                    <p className="text-[11px] text-[#6B7280] dark:text-gray-400">target {formatBDT(item.targetPrice)}</p>
                                   )}
                                 </div>
                               </div>
@@ -603,12 +603,12 @@ export function RfqListPage() {
                         {/* ─── Quote rail ─── */}
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF]">
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-[#9CA3AF] dark:text-gray-500">
                               Quotes{typeof detail?.quoteCount === 'number' ? ` (${detail.quoteCount})` : ''}
                             </p>
                             {/* Live indicator — only claims a live connection that actually exists */}
                             {isExpanded && (connected || denied) && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#6B7280]">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#6B7280] dark:text-gray-400">
                                 <RadioTower className={`h-3 w-3 ${denied ? 'text-gray-400 dark:text-gray-500' : 'text-emerald-600'}`} />
                                 {denied ? 'Live unavailable' : connected ? 'Live' : ''}
                               </span>
@@ -618,7 +618,7 @@ export function RfqListPage() {
                           {detailLoading && (
                             <div className="flex items-center gap-2 py-6 justify-center">
                               <Loader2 className="w-4 h-4 text-[#C8102E] animate-spin" />
-                              <p className="text-xs text-[#6B7280]">Loading quotes...</p>
+                              <p className="text-xs text-[#6B7280] dark:text-gray-400">Loading quotes...</p>
                             </div>
                           )}
 
@@ -631,7 +631,7 @@ export function RfqListPage() {
 
                           {!detailLoading && !detailError && detail && detail.quotes.length === 0 && (
                             <div className="bg-[#F8F9FA] rounded-lg px-3 py-4 text-center">
-                              <p className="text-xs font-semibold text-[#1A1A1A]">No quotes yet — sellers see this RFQ in their inbox.</p>
+                              <p className="text-xs font-semibold text-[#1A1A1A] dark:text-white">No quotes yet — sellers see this RFQ in their inbox.</p>
                             </div>
                           )}
 
@@ -645,10 +645,10 @@ export function RfqListPage() {
                                 return (
                                   <div
                                     key={quote.id}
-                                    className="border border-[#E0E0E0] rounded-xl p-3 space-y-2"
+                                    className="border border-[#E0E0E0] dark:border-gray-800 rounded-xl p-3 space-y-2"
                                   >
                                     <div className="flex items-start justify-between gap-2">
-                                      <p className="text-xs font-bold text-[#1A1A1A] truncate">
+                                      <p className="text-xs font-bold text-[#1A1A1A] dark:text-white truncate">
                                         {quote.supplier?.displayName || 'Supplier'}
                                       </p>
                                       <span
@@ -659,23 +659,23 @@ export function RfqListPage() {
                                       </span>
                                     </div>
 
-                                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-[#4B5563]">
-                                      <span className="font-semibold text-[#1A1A1A]">
-                                        {formatBDT(quote.pricePerUnit)} <span className="font-normal text-[#6B7280]">/ unit</span>
+                                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-[11px] text-[#4B5563] dark:text-gray-300">
+                                      <span className="font-semibold text-[#1A1A1A] dark:text-white">
+                                        {formatBDT(quote.pricePerUnit)} <span className="font-normal text-[#6B7280] dark:text-gray-400">/ unit</span>
                                       </span>
                                       <span>
-                                        {formatBDT(quote.totalPrice)} <span className="text-[#6B7280]">total</span>
+                                        {formatBDT(quote.totalPrice)} <span className="text-[#6B7280] dark:text-gray-400">total</span>
                                       </span>
                                       <span className="inline-flex items-center gap-1">
-                                        <Truck className="h-3 w-3 text-[#9CA3AF]" />
+                                        <Truck className="h-3 w-3 text-[#9CA3AF] dark:text-gray-500" />
                                         {typeof quote.deliveryDays === 'number' ? `${quote.deliveryDays} day${quote.deliveryDays === 1 ? '' : 's'}` : 'Delivery time not given'}
                                       </span>
                                       <span>{formatDate(quote.createdAt)}</span>
                                     </div>
 
                                     {quote.message && (
-                                      <div className="flex gap-1.5 text-[11px] text-[#4B5563] bg-[#F8F9FA] rounded-lg px-2.5 py-1.5">
-                                        <MessageSquareText className="h-3 w-3 shrink-0 mt-0.5 text-[#9CA3AF]" />
+                                      <div className="flex gap-1.5 text-[11px] text-[#4B5563] dark:text-gray-300 bg-[#F8F9FA] rounded-lg px-2.5 py-1.5">
+                                        <MessageSquareText className="h-3 w-3 shrink-0 mt-0.5 text-[#9CA3AF] dark:text-gray-500" />
                                         <span className="whitespace-pre-line">{quote.message}</span>
                                       </div>
                                     )}
@@ -723,7 +723,7 @@ export function RfqListPage() {
                                         </button>
                                       </div>
                                     ) : (
-                                      <p className="text-[11px] text-[#6B7280] pt-0.5">{blockReason}</p>
+                                      <p className="text-[11px] text-[#6B7280] dark:text-gray-400 pt-0.5">{blockReason}</p>
                                     )}
                                   </div>
                                 )
@@ -759,7 +759,7 @@ export function RfqListPage() {
                               Convert to order
                             </button>
                           ) : acceptedQuote ? (
-                            <p className="text-[11px] text-[#6B7280] bg-[#F8F9FA] rounded-lg px-3 py-2">
+                            <p className="text-[11px] text-[#6B7280] dark:text-gray-400 bg-[#F8F9FA] rounded-lg px-3 py-2">
                               This request is not linked to a marketplace product, so its accepted quote cannot be converted into an order.
                             </p>
                           ) : null
@@ -767,7 +767,7 @@ export function RfqListPage() {
 
                         {/* Row data fallback while detail loads keeps meta honest */}
                         {!detailLoading && !detailError && !detail && (
-                          <p className="text-[11px] text-[#6B7280]">Quotes will load here.</p>
+                          <p className="text-[11px] text-[#6B7280] dark:text-gray-400">Quotes will load here.</p>
                         )}
                       </div>
                     </motion.div>
@@ -788,11 +788,11 @@ export function RfqListPage() {
         >
           <DialogContent className="max-w-sm rounded-2xl">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-sm font-black text-[#1A1A1A]">
+              <DialogTitle className="flex items-center gap-2 text-sm font-black text-[#1A1A1A] dark:text-white">
                 <ShoppingBag className="h-4 w-4 text-[#C8102E]" />
                 Convert to order
               </DialogTitle>
-              <DialogDescription className="text-xs text-[#6B7280]">
+              <DialogDescription className="text-xs text-[#6B7280] dark:text-gray-400">
                 This places a real order from the accepted quote.
               </DialogDescription>
             </DialogHeader>
@@ -801,40 +801,40 @@ export function RfqListPage() {
               <div className="space-y-2 text-xs">
                 <div className="bg-[#F8F9FA] rounded-xl px-3 py-2.5 space-y-1.5">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-[#6B7280]">Quantity</span>
-                    <span className="font-bold text-[#1A1A1A]">
+                    <span className="text-[#6B7280] dark:text-gray-400">Quantity</span>
+                    <span className="font-bold text-[#1A1A1A] dark:text-white">
                       {convertTarget.quantity.toLocaleString()} {convertTarget.unit}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-[#6B7280]">Negotiated price</span>
-                    <span className="font-bold text-[#1A1A1A]">
+                    <span className="text-[#6B7280] dark:text-gray-400">Negotiated price</span>
+                    <span className="font-bold text-[#1A1A1A] dark:text-white">
                       {formatBDT(convertTarget.quote.pricePerUnit)} / {convertTarget.unit}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-3 border-t border-gray-200 dark:border-gray-800 pt-1.5">
-                    <span className="text-[#6B7280]">Order total</span>
+                    <span className="text-[#6B7280] dark:text-gray-400">Order total</span>
                     <span className="font-black text-[#C8102E]">
                       {formatBDT(roundQty(convertTarget.quantity * convertTarget.quote.pricePerUnit))}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-[#6B7280]">Delivery</span>
-                    <span className="inline-flex items-center gap-1 font-semibold text-[#1A1A1A]">
-                      <Truck className="h-3 w-3 text-[#9CA3AF]" />
+                    <span className="text-[#6B7280] dark:text-gray-400">Delivery</span>
+                    <span className="inline-flex items-center gap-1 font-semibold text-[#1A1A1A] dark:text-white">
+                      <Truck className="h-3 w-3 text-[#9CA3AF] dark:text-gray-500" />
                       {typeof convertTarget.quote.deliveryDays === 'number'
                         ? `${convertTarget.quote.deliveryDays} day${convertTarget.quote.deliveryDays === 1 ? '' : 's'}`
                         : 'time not given'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-[#6B7280]">Supplier</span>
-                    <span className="max-w-[60%] truncate text-right font-semibold text-[#1A1A1A]">
+                    <span className="text-[#6B7280] dark:text-gray-400">Supplier</span>
+                    <span className="max-w-[60%] truncate text-right font-semibold text-[#1A1A1A] dark:text-white">
                       {convertTarget.quote.supplier?.displayName || 'Quoted supplier'}
                     </span>
                   </div>
                 </div>
-                <p className="text-[11px] leading-relaxed text-[#6B7280]">
+                <p className="text-[11px] leading-relaxed text-[#6B7280] dark:text-gray-400">
                   The order uses the negotiated quote price, not the list price. Stock is reserved
                   immediately and this request is marked converted — this cannot be undone.
                 </p>
@@ -855,7 +855,7 @@ export function RfqListPage() {
               <button
                 onClick={() => setConvertTarget(null)}
                 disabled={converting}
-                className="min-h-11 px-4 rounded-lg border border-[#E0E0E0] bg-white dark:bg-gray-900 text-xs font-bold text-[#4B5563] hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="min-h-11 px-4 rounded-lg border border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 text-xs font-bold text-[#4B5563] dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>

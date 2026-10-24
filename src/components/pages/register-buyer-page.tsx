@@ -149,8 +149,8 @@ export default function RegisterBuyerPage() {
             <Building2 className="h-6 w-6" />
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Register as Buyer</h1>
-        <p className="text-sm text-[#6B7280]">Join Zylod to buy products at wholesale prices</p>
+        <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white">Register as Buyer</h1>
+        <p className="text-sm text-[#6B7280] dark:text-gray-400">Join Zylod to buy products at wholesale prices</p>
       </div>
 
       <Card className="border-0 shadow-lg">
@@ -194,7 +194,7 @@ export default function RegisterBuyerPage() {
                 type="button"
                 onClick={() => setUsePhone(true)}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                  usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] text-[#6B7280] border border-[#E0E0E0]'
+                  usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
                 }`}
               >
                 <Phone className="w-3.5 h-3.5 inline mr-1" />
@@ -204,7 +204,7 @@ export default function RegisterBuyerPage() {
                 type="button"
                 onClick={() => setUsePhone(false)}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                  !usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] text-[#6B7280] border border-[#E0E0E0]'
+                  !usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
                 }`}
               >
                 <Mail className="w-3.5 h-3.5 inline mr-1" />
@@ -216,7 +216,7 @@ export default function RegisterBuyerPage() {
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number *</Label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+                  <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280] dark:text-gray-400" />
                   <Input
                     id="phone"
                     type="tel"
@@ -227,13 +227,13 @@ export default function RegisterBuyerPage() {
                     required
                   />
                 </div>
-                <p className="text-xs text-[#6B7280]">We&apos;ll send a 6-digit OTP to verify your phone number</p>
+                <p className="text-xs text-[#6B7280] dark:text-gray-400">We&apos;ll send a 6-digit OTP to verify your phone number</p>
               </div>
             ) : (
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address *</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280] dark:text-gray-400" />
                   <Input
                     id="email"
                     type="email"
@@ -244,14 +244,14 @@ export default function RegisterBuyerPage() {
                     required
                   />
                 </div>
-                <p className="text-xs text-[#6B7280]">We&apos;ll send a verification code to your email</p>
+                <p className="text-xs text-[#6B7280] dark:text-gray-400">We&apos;ll send a verification code to your email</p>
               </div>
             )}
 
             <div className="space-y-2">
               <Label htmlFor="password">Password *</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280] dark:text-gray-400" />
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
@@ -264,7 +264,7 @@ export default function RegisterBuyerPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] dark:text-gray-400"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -308,7 +308,7 @@ export default function RegisterBuyerPage() {
           <Separator className="mt-4" />
 
           <div className="mt-4 text-center">
-            <p className="text-sm text-[#6B7280]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">
               Already have an account?{' '}
               <Button variant="link" size="sm" className="text-[#C8102E]" onClick={() => navigate('login')}>
                 Log In

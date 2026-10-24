@@ -60,7 +60,7 @@ function HeaderBar({ onBack }: { onBack: () => void }) {
         className="p-2 -mr-2 rounded-lg active:scale-95 transition-transform"
         aria-label="Help"
       >
-        <HelpCircle className="w-5 h-5 text-[#6B7280]" />
+        <HelpCircle className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
       </button>
     </div>
   )
@@ -85,7 +85,7 @@ function DesktopHeader({ onBack }: { onBack: () => void }) {
           className="p-2 -mr-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="w-5 h-5 text-[#6B7280]" />
+          <HelpCircle className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </div>
     </header>
@@ -109,14 +109,14 @@ function FeatureCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className="flex gap-3 p-4 rounded-xl bg-white dark:bg-gray-900 border border-[#E0E0E0]"
+      className="flex gap-3 p-4 rounded-xl bg-white dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800"
     >
-      <div className="flex-shrink-0 w-11 h-11 rounded-full bg-[#F3F4F6] flex items-center justify-center">
+      <div className="flex-shrink-0 w-11 h-11 rounded-full bg-[#F3F4F6] dark:bg-gray-900 flex items-center justify-center">
         {icon}
       </div>
       <div className="min-w-0">
-        <h4 className="text-sm font-semibold text-[#1A1A1A]">{title}</h4>
-        <p className="text-xs text-[#6B7280] mt-0.5 leading-relaxed">
+        <h4 className="text-sm font-semibold text-[#1A1A1A] dark:text-white">{title}</h4>
+        <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-0.5 leading-relaxed">
           {description}
         </p>
       </div>
@@ -205,8 +205,8 @@ export default function PhoneVerificationPage() {
 
   /* ─── Phone Input Card ─── */
   const phoneInputCard = (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-sm border border-[#E0E0E0]">
-      <Label className="text-sm font-medium text-[#1A1A1A] mb-2.5 block">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-sm border border-[#E0E0E0] dark:border-gray-800">
+      <Label className="text-sm font-medium text-[#1A1A1A] dark:text-white mb-2.5 block">
         Phone Number
       </Label>
       <div className="flex gap-2">
@@ -214,15 +214,15 @@ export default function PhoneVerificationPage() {
         <div className="relative">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-1 h-11 px-3 rounded-lg bg-[#F3F4F6] border border-[#E0E0E0] text-sm font-medium text-[#1A1A1A] min-w-[80px] justify-between"
+            className="flex items-center gap-1 h-11 px-3 rounded-lg bg-[#F3F4F6] dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 text-sm font-medium text-[#1A1A1A] dark:text-white min-w-[80px] justify-between"
             type="button"
             aria-label="Select country code"
           >
             <span>{countryCode}</span>
-            <ChevronDown className="w-4 h-4 text-[#6B7280]" />
+            <ChevronDown className="w-4 h-4 text-[#6B7280] dark:text-gray-400" />
           </button>
           {isDropdownOpen && (
-            <div className="absolute top-12 left-0 z-10 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-[#E0E0E0] py-1 min-w-[140px]">
+            <div className="absolute top-12 left-0 z-10 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-[#E0E0E0] dark:border-gray-800 py-1 min-w-[140px]">
               {COUNTRY_CODES.map((country) => (
                 <button
                   key={country.code}
@@ -230,7 +230,7 @@ export default function PhoneVerificationPage() {
                     setCountryCode(country.code)
                     setIsDropdownOpen(false)
                   }}
-                  className={`w-full text-left px-3 py-2 text-sm text-[#1A1A1A] hover:bg-[#F3F4F6] transition-colors ${
+                  className={`w-full text-left px-3 py-2 text-sm text-[#1A1A1A] dark:text-white hover:bg-[#F3F4F6] dark:bg-gray-900 transition-colors ${
                     countryCode === country.code ? 'bg-[#FFE4E6] font-semibold' : ''
                   }`}
                   type="button"
@@ -249,7 +249,7 @@ export default function PhoneVerificationPage() {
             placeholder={selectedCountry.placeholder}
             value={phoneNumber}
             onChange={(e) => handlePhoneChange(e.target.value)}
-            className={`h-11 bg-[#F3F4F6] border-[#E0E0E0] rounded-lg text-sm placeholder:text-[#9CA3AF] pr-10 ${
+            className={`h-11 bg-[#F3F4F6] dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-sm placeholder:text-[#9CA3AF] dark:text-gray-500 pr-10 ${
               showValidation && isPhoneValid ? 'border-green-400 focus-visible:border-green-400' : ''
             } ${
               showValidation && !isPhoneValid && phoneNumber.length >= 3 ? 'border-red-400 focus-visible:border-red-400' : ''
@@ -336,21 +336,21 @@ export default function PhoneVerificationPage() {
   const securityFooter = (
     <div className="flex flex-col items-center gap-3 mt-6">
       <div className="flex items-center justify-center gap-1.5">
-        <Lock className="w-3.5 h-3.5 text-[#9CA3AF]" />
-        <p className="text-xs text-[#9CA3AF]">
+        <Lock className="w-3.5 h-3.5 text-[#9CA3AF] dark:text-gray-500" />
+        <p className="text-xs text-[#9CA3AF] dark:text-gray-500">
           Your data is encrypted and never shared with third parties.
         </p>
       </div>
       {/* Trust badge icons row */}
       <div className="flex items-center justify-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] border border-[#E0E0E0] flex items-center justify-center">
-          <Shield className="w-5 h-5 text-[#6B7280]" />
+        <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 flex items-center justify-center">
+          <Shield className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
         </div>
-        <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] border border-[#E0E0E0] flex items-center justify-center">
-          <ShieldCheck className="w-5 h-5 text-[#6B7280]" />
+        <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 flex items-center justify-center">
+          <ShieldCheck className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
         </div>
-        <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] border border-[#E0E0E0] flex items-center justify-center">
-          <CheckCircle2 className="w-5 h-5 text-[#6B7280]" />
+        <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 flex items-center justify-center">
+          <CheckCircle2 className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
         </div>
       </div>
     </div>
@@ -374,10 +374,10 @@ export default function PhoneVerificationPage() {
             <div className="w-28 h-28 rounded-full bg-[#FFE4E6] flex items-center justify-center mb-5">
               <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
             </div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A] text-center">
+            <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white text-center">
               Verify your number
             </h1>
-            <p className="text-sm text-[#6B7280] text-center mt-2 max-w-xs leading-relaxed">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400 text-center mt-2 max-w-xs leading-relaxed">
               To keep your wholesale account secure and ensure accurate delivery logistics.
             </p>
           </motion.div>
@@ -418,10 +418,10 @@ export default function PhoneVerificationPage() {
               <div className="w-28 h-28 rounded-full bg-[#FFE4E6] flex items-center justify-center mb-5">
                 <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
               </div>
-              <h1 className="text-2xl font-bold text-[#1A1A1A] text-center">
+              <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white text-center">
                 Verify your number
               </h1>
-              <p className="text-sm text-[#6B7280] text-center mt-2 max-w-xs leading-relaxed">
+              <p className="text-sm text-[#6B7280] dark:text-gray-400 text-center mt-2 max-w-xs leading-relaxed">
                 To keep your wholesale account secure and ensure accurate delivery logistics.
               </p>
             </div>

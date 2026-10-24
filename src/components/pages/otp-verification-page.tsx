@@ -311,7 +311,7 @@ export default function OtpVerificationPage() {
             <InputOTPSlot
               key={index}
               index={index}
-              className="h-12 w-9 rounded-xl border-[#E0E0E0] text-lg font-semibold text-[#1A1A1A] data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 shadow-sm sm:h-[52px] sm:w-[48px]"
+              className="h-12 w-9 rounded-xl border-[#E0E0E0] dark:border-gray-800 text-lg font-semibold text-[#1A1A1A] dark:text-white data-[active=true]:border-[#C8102E] data-[active=true]:ring-[#C8102E]/20 shadow-sm sm:h-[52px] sm:w-[48px]"
             />
           ))}
         </InputOTPGroup>
@@ -333,7 +333,7 @@ export default function OtpVerificationPage() {
   // ─── Resend Section ───
   const resendSection = (
     <div className="text-center">
-      <p className="text-sm text-[#6B7280]">
+      <p className="text-sm text-[#6B7280] dark:text-gray-400">
         Didn&apos;t receive the code?{' '}
         {isRunning ? (
           <span className="text-[#C8102E] font-semibold">
@@ -380,10 +380,10 @@ export default function OtpVerificationPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.5 }}
-      className="w-full bg-gray-50 dark:bg-gray-950 border border-[#E0E0E0] rounded-xl p-4 flex items-start gap-3"
+      className="w-full bg-gray-50 dark:bg-gray-950 border border-[#E0E0E0] dark:border-gray-800 rounded-xl p-4 flex items-start gap-3"
     >
-      <Shield className="h-5 w-5 text-[#6B7280] shrink-0 mt-0.5" />
-      <p className="text-xs text-[#6B7280] leading-relaxed">
+      <Shield className="h-5 w-5 text-[#6B7280] dark:text-gray-400 shrink-0 mt-0.5" />
+      <p className="text-xs text-[#6B7280] dark:text-gray-400 leading-relaxed">
         Zylod will never ask for your account password or other sensitive details via SMS or email.
       </p>
     </motion.div>
@@ -394,13 +394,13 @@ export default function OtpVerificationPage() {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]">
+        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800">
           <button
             onClick={goBack}
             className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
             aria-label="Go back"
           >
-            <ArrowLeft className="h-5 w-5 text-[#1A1A1A]" />
+            <ArrowLeft className="h-5 w-5 text-[#1A1A1A] dark:text-white" />
           </button>
           <h1 className="text-lg font-bold text-[#C8102E]">Zylod</h1>
           <button
@@ -408,7 +408,7 @@ export default function OtpVerificationPage() {
             className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
             aria-label="Help"
           >
-            <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+            <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
           </button>
         </div>
 
@@ -433,12 +433,12 @@ export default function OtpVerificationPage() {
             </div>
 
             {/* Title & Subtitle */}
-            <h2 className="text-[25px] font-bold text-[#1A1A1A] text-center mb-2">
+            <h2 className="text-[25px] font-bold text-[#1A1A1A] dark:text-white text-center mb-2">
               Verify Your Identity
             </h2>
-            <p className="text-[15px] text-[#6B7280] text-center mb-8 max-w-xs leading-relaxed">
+            <p className="text-[15px] text-[#6B7280] dark:text-gray-400 text-center mb-8 max-w-xs leading-relaxed">
               We&apos;ve sent a code {getPurposeLabel()} to{' '}
-              <span className="font-medium text-[#1A1A1A]">{phoneOrEmail ? maskTarget(phoneOrEmail) : "your registered contact"}</span>. Please enter the 6-digit
+              <span className="font-medium text-[#1A1A1A] dark:text-white">{phoneOrEmail ? maskTarget(phoneOrEmail) : "your registered contact"}</span>. Please enter the 6-digit
               code below to continue.
             </p>
 
@@ -485,7 +485,7 @@ export default function OtpVerificationPage() {
               className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
               aria-label="Go back"
             >
-              <ArrowLeft className="h-5 w-5 text-[#1A1A1A]" />
+              <ArrowLeft className="h-5 w-5 text-[#1A1A1A] dark:text-white" />
             </button>
             <h1 className="text-lg font-bold text-[#C8102E]">Zylod</h1>
             <button
@@ -493,7 +493,7 @@ export default function OtpVerificationPage() {
               className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
               aria-label="Help"
             >
-              <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+              <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
             </button>
           </div>
 
@@ -510,12 +510,12 @@ export default function OtpVerificationPage() {
               </div>
             </div>
 
-            <h2 className="text-[26px] font-bold text-[#1A1A1A] text-center mb-2">
+            <h2 className="text-[26px] font-bold text-[#1A1A1A] dark:text-white text-center mb-2">
               Verify Your Identity
             </h2>
-            <p className="text-[15px] text-[#6B7280] text-center max-w-xs leading-relaxed">
+            <p className="text-[15px] text-[#6B7280] dark:text-gray-400 text-center max-w-xs leading-relaxed">
               We&apos;ve sent a code {getPurposeLabel()} to{' '}
-              <span className="font-medium text-[#1A1A1A]">{phoneOrEmail ? maskTarget(phoneOrEmail) : "your registered contact"}</span>. Please enter the 6-digit
+              <span className="font-medium text-[#1A1A1A] dark:text-white">{phoneOrEmail ? maskTarget(phoneOrEmail) : "your registered contact"}</span>. Please enter the 6-digit
               code below to continue.
             </p>
           </div>

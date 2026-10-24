@@ -177,7 +177,7 @@ function SlideContent({ slide }: { slide: Slide }) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
-        className="text-[26px] leading-tight font-bold text-[#1A1A1A]"
+        className="text-[26px] leading-tight font-bold text-[#1A1A1A] dark:text-white"
       >
         {slide.title}
       </motion.h2>
@@ -186,7 +186,7 @@ function SlideContent({ slide }: { slide: Slide }) {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="text-[15px] leading-relaxed text-[#6B7280] max-w-[300px] mx-auto"
+        className="text-[15px] leading-relaxed text-[#6B7280] dark:text-gray-400 max-w-[300px] mx-auto"
       >
         {slide.description}
       </motion.p>
@@ -349,7 +349,7 @@ export function WelcomePage() {
 
           <button
             onClick={handleSkip}
-            className="w-full text-center text-[15px] text-[#6B7280] font-medium py-2 hover:text-[#1A1A1A] transition-colors"
+            className="w-full text-center text-[15px] text-[#6B7280] dark:text-gray-400 font-medium py-2 hover:text-[#1A1A1A] dark:text-white transition-colors"
           >
             Skip
           </button>
@@ -381,7 +381,7 @@ export function WelcomePage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-[#E0E0E0] overflow-hidden"
+        className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden"
       >
         {/* Brand Header */}
         <div className="pt-10 pb-4 text-center">
@@ -433,7 +433,7 @@ export function WelcomePage() {
 
           <button
             onClick={handleSkip}
-            className="w-full text-center text-[15px] text-[#6B7280] font-medium py-2 hover:text-[#1A1A1A] transition-colors"
+            className="w-full text-center text-[15px] text-[#6B7280] dark:text-gray-400 font-medium py-2 hover:text-[#1A1A1A] dark:text-white transition-colors"
           >
             Skip
           </button>

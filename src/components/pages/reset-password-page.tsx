@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
       {/* Strength Bar */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-[#6B7280]">Password Strength</span>
+          <span className="text-xs text-[#6B7280] dark:text-gray-400">Password Strength</span>
           <span className="text-xs font-semibold" style={{ color: strengthInfo.color }}>
             {strengthInfo.label}
           </span>
@@ -129,14 +129,14 @@ export default function ResetPasswordPage() {
       <div className="flex items-center gap-2 flex-wrap">
         <Badge
           variant="outline"
-          className="text-[10px] font-medium border-[#E0E0E0] bg-[#F8F9FA]"
+          className="text-[10px] font-medium border-[#E0E0E0] dark:border-gray-800 bg-[#F8F9FA]"
         >
           <Info className="w-3 h-3 mr-1" />
           {strengthInfo.entropy} bits entropy
         </Badge>
         <Badge
           variant="outline"
-          className="text-[10px] font-medium border-[#E0E0E0]"
+          className="text-[10px] font-medium border-[#E0E0E0] dark:border-gray-800"
           style={{
             backgroundColor: strengthInfo.score >= 3 ? '#F0FDF4' : strengthInfo.score >= 2 ? '#FEFCE8' : '#FEF2F2',
             color: strengthInfo.color,
@@ -151,8 +151,8 @@ export default function ResetPasswordPage() {
       {strengthInfo.suggestions.length > 0 && (
         <div className="space-y-1">
           {strengthInfo.suggestions.map((suggestion, i) => (
-            <p key={i} className="text-[11px] text-[#6B7280] flex items-start gap-1.5">
-              <span className="text-[#9CA3AF] mt-0.5">•</span>
+            <p key={i} className="text-[11px] text-[#6B7280] dark:text-gray-400 flex items-start gap-1.5">
+              <span className="text-[#9CA3AF] dark:text-gray-500 mt-0.5">•</span>
               {suggestion}
             </p>
           ))}
@@ -164,10 +164,10 @@ export default function ResetPasswordPage() {
   // ─── Shared Form Content ───
   const formContent = (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-[#E0E0E0] space-y-5">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-[#E0E0E0] dark:border-gray-800 space-y-5">
         {/* New Password */}
         <div className="space-y-2">
-          <Label htmlFor="new-password" className="text-sm font-medium text-[#1A1A1A]">
+          <Label htmlFor="new-password" className="text-sm font-medium text-[#1A1A1A] dark:text-white">
             New Password
           </Label>
           <div className="relative">
@@ -180,12 +180,12 @@ export default function ResetPasswordPage() {
                 setNewPassword(e.target.value)
                 if (error) setError(null)
               }}
-              className="h-12 pr-12 rounded-xl border-[#E0E0E0] text-[#1A1A1A] placeholder:text-[#9CA3AF]"
+              className="h-12 pr-12 rounded-xl border-[#E0E0E0] dark:border-gray-800 text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500"
             />
             <button
               type="button"
               onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#1A1A1A] transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white transition-colors"
               aria-label={showNewPassword ? 'Hide password' : 'Show password'}
             >
               {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -196,7 +196,7 @@ export default function ResetPasswordPage() {
           {passwordStrengthSection}
 
           {!newPassword && (
-            <p className="text-xs text-[#6B7280]">
+            <p className="text-xs text-[#6B7280] dark:text-gray-400">
               Use at least 8 characters, with letters and numbers.
             </p>
           )}
@@ -204,7 +204,7 @@ export default function ResetPasswordPage() {
 
         {/* Confirm New Password */}
         <div className="space-y-2">
-          <Label htmlFor="confirm-password" className="text-sm font-medium text-[#1A1A1A]">
+          <Label htmlFor="confirm-password" className="text-sm font-medium text-[#1A1A1A] dark:text-white">
             Confirm New Password
           </Label>
           <div className="relative">
@@ -217,14 +217,14 @@ export default function ResetPasswordPage() {
                 setConfirmPassword(e.target.value)
                 if (error) setError(null)
               }}
-              className={`h-12 pr-12 rounded-xl border-[#E0E0E0] text-[#1A1A1A] placeholder:text-[#9CA3AF] ${
+              className={`h-12 pr-12 rounded-xl border-[#E0E0E0] dark:border-gray-800 text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 ${
                 passwordsDontMatch ? 'border-red-400 focus-visible:border-red-400' : ''
               } ${passwordsMatch ? 'border-green-400 focus-visible:border-green-400' : ''}`}
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#1A1A1A] transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white transition-colors"
               aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
             >
               {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -282,14 +282,14 @@ export default function ResetPasswordPage() {
       transition={{ delay: 0.4 }}
       className="flex items-center gap-2"
     >
-      <Shield className="h-4 w-4 text-[#6B7280]" />
-      <span className="text-xs text-[#6B7280]">Secured by Zylod Vault</span>
+      <Shield className="h-4 w-4 text-[#6B7280] dark:text-gray-400" />
+      <span className="text-xs text-[#6B7280] dark:text-gray-400">Secured by Zylod Vault</span>
     </motion.div>
   )
 
   // ─── Footer Links ───
   const footerLinks = (
-    <div className="flex items-center gap-4 text-xs text-[#6B7280]">
+    <div className="flex items-center gap-4 text-xs text-[#6B7280] dark:text-gray-400">
       <button
         type="button"
         onClick={() => navigate('privacy')}
@@ -313,7 +313,7 @@ export default function ResetPasswordPage() {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]">
+        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800">
           <button
             onClick={goBack}
             className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors"
@@ -344,10 +344,10 @@ export default function ResetPasswordPage() {
             </div>
 
             {/* Title & Subtitle */}
-            <h2 className="text-[28px] font-bold text-[#1A1A1A] text-center mb-2">
+            <h2 className="text-[28px] font-bold text-[#1A1A1A] dark:text-white text-center mb-2">
               Reset Password
             </h2>
-            <p className="text-[15px] text-[#6B7280] text-center mb-8 max-w-xs leading-relaxed">
+            <p className="text-[15px] text-[#6B7280] dark:text-gray-400 text-center mb-8 max-w-xs leading-relaxed">
               Ensure your account remains secure with a strong, unique password.
             </p>
 
@@ -402,10 +402,10 @@ export default function ResetPasswordPage() {
               </div>
             </div>
 
-            <h2 className="text-[30px] font-bold text-[#1A1A1A] text-center mb-2">
+            <h2 className="text-[30px] font-bold text-[#1A1A1A] dark:text-white text-center mb-2">
               Reset Password
             </h2>
-            <p className="text-[15px] text-[#6B7280] text-center max-w-xs leading-relaxed">
+            <p className="text-[15px] text-[#6B7280] dark:text-gray-400 text-center max-w-xs leading-relaxed">
               Ensure your account remains secure with a strong, unique password.
             </p>
           </div>

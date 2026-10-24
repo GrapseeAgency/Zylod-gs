@@ -75,7 +75,7 @@ export function TrendingProductsPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-10">
       {/* ─── Top Nav Bar ─── */}
-      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4">
+      <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -89,7 +89,7 @@ export function TrendingProductsPage() {
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </header>
 
@@ -104,10 +104,10 @@ export function TrendingProductsPage() {
             Live Market Data
           </span>
         </div>
-        <h1 className="text-2xl font-black text-[#1A1A1A] tracking-tight">
+        <h1 className="text-2xl font-black text-[#1A1A1A] dark:text-white tracking-tight">
           The World is Buying
         </h1>
-        <p className="text-xs text-[#6B7280] mt-1.5 leading-relaxed">
+        <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1.5 leading-relaxed">
           Ranked by real procurement volume across {totalTrending !== null ? totalTrending.toLocaleString() : 'all'} active listings.
         </p>
       </div>
@@ -117,7 +117,7 @@ export function TrendingProductsPage() {
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-16">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-            <p className="text-sm text-[#6B7280]">Ranking top movers...</p>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">Ranking top movers...</p>
           </div>
         )}
 
@@ -125,14 +125,14 @@ export function TrendingProductsPage() {
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-16">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
 
         {!isLoading && !loadError && products.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
             <TrendingUp className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-            <p className="text-sm text-[#6B7280] max-w-[260px]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400 max-w-[260px]">
               No sales recorded yet — rankings will appear as orders come in.
             </p>
           </div>
@@ -156,7 +156,7 @@ export function TrendingProductsPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
               {/* Badge #1 Trending Global */}
-              <div className="absolute top-3.5 left-3.5 bg-[#FFC107] text-[#1A1A1A] text-[11px] font-black px-2.5 py-1 rounded-md shadow-md flex items-center gap-1">
+              <div className="absolute top-3.5 left-3.5 bg-[#FFC107] text-[#1A1A1A] dark:text-white text-[11px] font-black px-2.5 py-1 rounded-md shadow-md flex items-center gap-1">
                 <span>🔥</span> #1 Trending Now
               </div>
 
@@ -186,7 +186,7 @@ export function TrendingProductsPage() {
                       e.stopPropagation()
                       navigate('product-detail', { productId: hero.id })
                     }}
-                    className="px-4 py-2 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 text-[#1A1A1A] font-bold text-xs rounded-lg shadow-md transition-colors"
+                    className="px-4 py-2 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 text-[#1A1A1A] dark:text-white font-bold text-xs rounded-lg shadow-md transition-colors"
                   >
                     View Details
                   </button>
@@ -206,7 +206,7 @@ export function TrendingProductsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
               onClick={() => navigate('product-detail', { productId: item.id })}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
             >
               {/* Top image with optional badge */}
               <div className="relative aspect-[16/8] w-full bg-gray-100 dark:bg-gray-900">
@@ -216,25 +216,25 @@ export function TrendingProductsPage() {
                   alt={item.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-3 left-3 bg-white dark:bg-gray-900/95 text-[#1A1A1A] text-[10px] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
+                <div className="absolute top-3 left-3 bg-white dark:bg-gray-900/95 text-[#1A1A1A] dark:text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
                   <span>⭐</span> #{idx + 2} Top Mover
                 </div>
               </div>
 
               <div className="p-4">
-                <h3 className="font-bold text-[#1A1A1A] text-sm leading-snug line-clamp-1">
+                <h3 className="font-bold text-[#1A1A1A] dark:text-white text-sm leading-snug line-clamp-1">
                   {item.name}
                 </h3>
                 <div className="text-base font-bold text-[#C8102E] mt-1">
                   {formatPrice(item.basePrice)}
-                  <span className="text-xs font-normal text-[#6B7280]"> / {item.unit || 'unit'}</span>
+                  <span className="text-xs font-normal text-[#6B7280] dark:text-gray-400"> / {item.unit || 'unit'}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-[#6B7280] mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                <div className="flex items-center justify-between text-xs text-[#6B7280] dark:text-gray-400 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
                   <span>MOQ: {item.moq} {item.unit || 'units'}</span>
-                  <span className="font-medium text-[#4B5563] flex items-center gap-1">
-                    {metric.icon === 'users' && <Users className="h-3 w-3 text-[#6B7280]" />}
-                    {metric.icon === 'package' && <Package className="h-3 w-3 text-[#6B7280]" />}
+                  <span className="font-medium text-[#4B5563] dark:text-gray-300 flex items-center gap-1">
+                    {metric.icon === 'users' && <Users className="h-3 w-3 text-[#6B7280] dark:text-gray-400" />}
+                    {metric.icon === 'package' && <Package className="h-3 w-3 text-[#6B7280] dark:text-gray-400" />}
                     {metric.text}
                   </span>
                 </div>
@@ -247,13 +247,13 @@ export function TrendingProductsPage() {
         {products.length > 0 && (
           <div
             onClick={() => navigate('category-products', { filter: 'trending' })}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] p-6 text-center shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-6 text-center shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
           >
             <div className="w-14 h-14 rounded-full bg-[#FFE4E6] text-[#C8102E] flex items-center justify-center mx-auto mb-3">
               <ArrowRight className="h-6 w-6" />
             </div>
-            <h3 className="font-bold text-base text-[#1A1A1A]">View All Trending</h3>
-            <p className="text-xs text-[#6B7280] mt-1">
+            <h3 className="font-bold text-base text-[#1A1A1A] dark:text-white">View All Trending</h3>
+            <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">
               Browse every active listing ranked by sales volume
             </p>
           </div>

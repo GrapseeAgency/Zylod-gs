@@ -175,8 +175,8 @@ export default function RegisterSupplierPage() {
             <Store className="h-6 w-6" />
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Register as Supplier</h1>
-        <p className="text-sm text-[#6B7280]">Start selling on the B2B wholesale marketplace</p>
+        <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white">Register as Supplier</h1>
+        <p className="text-sm text-[#6B7280] dark:text-gray-400">Start selling on the B2B wholesale marketplace</p>
       </div>
 
       {/* Progress indicator */}
@@ -184,7 +184,7 @@ export default function RegisterSupplierPage() {
         <Progress value={progressPct} className="h-2" />
         <div className="flex justify-between">
           {STEPS.map((s, i) => (
-            <div key={i} className={`flex items-center gap-1 text-xs ${step > i + 1 ? 'text-[#C8102E]' : step === i + 1 ? 'text-[#1A1A1A] font-medium' : 'text-[#6B7280]'}`}>
+            <div key={i} className={`flex items-center gap-1 text-xs ${step > i + 1 ? 'text-[#C8102E]' : step === i + 1 ? 'text-[#1A1A1A] dark:text-white font-medium' : 'text-[#6B7280] dark:text-gray-400'}`}>
               <s.icon className="h-3 w-3" />
               <span className="hidden sm:inline">{s.label}</span>
               <span className="sm:hidden">{i + 1}</span>
@@ -257,7 +257,7 @@ export default function RegisterSupplierPage() {
               <div className="space-y-2">
                 <Label htmlFor="password">Password *</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280] dark:text-gray-400" />
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
@@ -270,7 +270,7 @@ export default function RegisterSupplierPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] dark:text-gray-400"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -302,12 +302,12 @@ export default function RegisterSupplierPage() {
                     {nidFrontPreview ? (
                       <div className="border rounded-lg overflow-hidden">
                         <img src={nidFrontPreview} alt="NID front" className="w-full h-32 object-cover" />
-                        <div className="p-2 text-sm text-center text-[#6B7280]">Click to change</div>
+                        <div className="p-2 text-sm text-center text-[#6B7280] dark:text-gray-400">Click to change</div>
                       </div>
                     ) : (
                       <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-[#C8102E]/50 transition-colors">
-                        <Upload className="h-8 w-8 mx-auto text-[#6B7280] mb-2" />
-                        <p className="text-sm text-[#6B7280]">Click or drag to upload NID front photo</p>
+                        <Upload className="h-8 w-8 mx-auto text-[#6B7280] dark:text-gray-400 mb-2" />
+                        <p className="text-sm text-[#6B7280] dark:text-gray-400">Click or drag to upload NID front photo</p>
                       </div>
                     )}
                   </label>
@@ -327,12 +327,12 @@ export default function RegisterSupplierPage() {
                     {nidBackPreview ? (
                       <div className="border rounded-lg overflow-hidden">
                         <img src={nidBackPreview} alt="NID back" className="w-full h-32 object-cover" />
-                        <div className="p-2 text-sm text-center text-[#6B7280]">Click to change</div>
+                        <div className="p-2 text-sm text-center text-[#6B7280] dark:text-gray-400">Click to change</div>
                       </div>
                     ) : (
                       <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-[#C8102E]/50 transition-colors">
-                        <Upload className="h-8 w-8 mx-auto text-[#6B7280] mb-2" />
-                        <p className="text-sm text-[#6B7280]">Click or drag to upload NID back photo</p>
+                        <Upload className="h-8 w-8 mx-auto text-[#6B7280] dark:text-gray-400 mb-2" />
+                        <p className="text-sm text-[#6B7280] dark:text-gray-400">Click or drag to upload NID back photo</p>
                       </div>
                     )}
                   </label>
@@ -340,7 +340,7 @@ export default function RegisterSupplierPage() {
               </div>
               <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F8F9FA] text-sm">
                 <Shield className="h-4 w-4 text-[#C8102E] shrink-0" />
-                <span className="text-[#6B7280]">Your NID will be verified by our admin team before you can start selling.</span>
+                <span className="text-[#6B7280] dark:text-gray-400">Your NID will be verified by our admin team before you can start selling.</span>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setStep(1)} className="w-1/3">
@@ -373,12 +373,12 @@ export default function RegisterSupplierPage() {
                     {tradeLicensePreview ? (
                       <div className="border rounded-lg overflow-hidden">
                         <img src={tradeLicensePreview} alt="Trade license" className="w-full h-28 object-cover" />
-                        <div className="p-2 text-sm text-center text-[#6B7280]">Click to change</div>
+                        <div className="p-2 text-sm text-center text-[#6B7280] dark:text-gray-400">Click to change</div>
                       </div>
                     ) : (
                       <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-[#C8102E]/50 transition-colors">
-                        <Upload className="h-8 w-8 mx-auto text-[#6B7280] mb-2" />
-                        <p className="text-sm text-[#6B7280]">Upload trade license document (optional)</p>
+                        <Upload className="h-8 w-8 mx-auto text-[#6B7280] dark:text-gray-400 mb-2" />
+                        <p className="text-sm text-[#6B7280] dark:text-gray-400">Upload trade license document (optional)</p>
                       </div>
                     )}
                   </label>
@@ -419,7 +419,7 @@ export default function RegisterSupplierPage() {
               </div>
               <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F8F9FA] text-sm">
                 <Banknote className="h-4 w-4 text-[#C8102E] shrink-0" />
-                <span className="text-[#6B7280]">Your bank details will be used for receiving payments from buyer orders.</span>
+                <span className="text-[#6B7280] dark:text-gray-400">Your bank details will be used for receiving payments from buyer orders.</span>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setStep(3)} className="w-1/3">
@@ -436,7 +436,7 @@ export default function RegisterSupplierPage() {
           <Separator className="mt-4" />
 
           <div className="mt-4 text-center">
-            <p className="text-sm text-[#6B7280]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">
               Already have an account?{' '}
               <Button variant="link" size="sm" className="text-[#C8102E]" onClick={() => navigate('login')}>Log In</Button>
             </p>

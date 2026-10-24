@@ -128,7 +128,7 @@ export function BackupCodesPage() {
 
   /* ─── Header Bar (mobile) ─── */
   const headerBar = (
-    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0]">
+    <header className="md:hidden sticky top-0 z-50 flex items-center justify-between px-4 h-14 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800">
       <button
         onClick={goBack}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
@@ -136,7 +136,7 @@ export function BackupCodesPage() {
       >
         <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
       </button>
-      <span className="text-lg font-bold text-[#1A1A1A]">Backup Codes</span>
+      <span className="text-lg font-bold text-[#1A1A1A] dark:text-white">Backup Codes</span>
       <button
         onClick={() => navigate('notifications')}
         className="p-1.5 rounded-lg active:scale-95 transition-transform"
@@ -196,10 +196,10 @@ export function BackupCodesPage() {
     >
       <Card className="rounded-xl shadow-md border-0 bg-white dark:bg-gray-900 py-0 gap-0">
         <CardContent className="p-5 space-y-2">
-          <h2 className="text-[20px] font-bold text-[#1A1A1A]">
+          <h2 className="text-[20px] font-bold text-[#1A1A1A] dark:text-white">
             Secure Your Account
           </h2>
-          <p className="text-[14px] text-[#6B7280] leading-relaxed">
+          <p className="text-[14px] text-[#6B7280] dark:text-gray-400 leading-relaxed">
             Backup codes allow you to access your account if you lose your 2FA device.
             Each code works once and is stored only as a hash on our servers.
           </p>
@@ -222,7 +222,7 @@ export function BackupCodesPage() {
           {isLoading ? (
             <div className="flex flex-col items-center gap-3 py-10">
               <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-              <p className="text-sm text-[#6B7280]">Generating secure codes...</p>
+              <p className="text-sm text-[#6B7280] dark:text-gray-400">Generating secure codes...</p>
             </div>
           ) : loadError ? (
             <div className="flex flex-col items-center gap-3 py-8">
@@ -242,9 +242,9 @@ export function BackupCodesPage() {
               {codes.map((code, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-center rounded-lg bg-[#F3F4F6] py-2.5 px-3"
+                  className="flex items-center justify-center rounded-lg bg-[#F3F4F6] dark:bg-gray-900 py-2.5 px-3"
                 >
-                  <span className="font-mono text-[13px] font-semibold text-[#1A1A1A] tracking-wide">
+                  <span className="font-mono text-[13px] font-semibold text-[#1A1A1A] dark:text-white tracking-wide">
                     {code}
                   </span>
                 </div>
@@ -270,7 +270,7 @@ export function BackupCodesPage() {
         variant="outline"
         onClick={handleDownload}
         disabled={!hasCodes}
-        className="h-[52px] rounded-xl border-[#E0E0E0] text-[#1A1A1A] hover:bg-[#F3F4F6] gap-2 text-[13px] font-semibold flex-col py-2 disabled:opacity-50"
+        className="h-[52px] rounded-xl border-[#E0E0E0] dark:border-gray-800 text-[#1A1A1A] dark:text-white hover:bg-[#F3F4F6] dark:bg-gray-900 gap-2 text-[13px] font-semibold flex-col py-2 disabled:opacity-50"
       >
         <Download className="w-4 h-4" />
         <span className="text-[11px] leading-tight text-center">Download<br />Codes</span>
@@ -279,7 +279,7 @@ export function BackupCodesPage() {
         variant="outline"
         onClick={handleCopy}
         disabled={!hasCodes}
-        className="h-[52px] rounded-xl border-[#E0E0E0] text-[#1A1A1A] hover:bg-[#F3F4F6] gap-2 text-[13px] font-semibold flex-col py-2 disabled:opacity-50"
+        className="h-[52px] rounded-xl border-[#E0E0E0] dark:border-gray-800 text-[#1A1A1A] dark:text-white hover:bg-[#F3F4F6] dark:bg-gray-900 gap-2 text-[13px] font-semibold flex-col py-2 disabled:opacity-50"
       >
         {copied ? (
           <>
@@ -330,7 +330,7 @@ export function BackupCodesPage() {
           <p className="text-[13px] font-bold text-[#C8102E] uppercase tracking-wider">
             High Security Zone
           </p>
-          <p className="text-[12px] text-[#6B7280] italic mt-1 leading-relaxed">
+          <p className="text-[12px] text-[#6B7280] dark:text-gray-400 italic mt-1 leading-relaxed">
             Keep these in a safe place. Generating new codes invalidates any unused ones from previous sets.
           </p>
         </div>

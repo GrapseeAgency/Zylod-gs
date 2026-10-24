@@ -87,7 +87,7 @@ function LockoutOverlay({ remainingMs }: { remainingMs: number }) {
         </div>
         <div>
           <h3 className="text-sm font-semibold text-[#C8102E]">Account Temporarily Locked</h3>
-          <p className="text-xs text-[#6B7280] mt-1">
+          <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">
             Too many failed login attempts. Please try again in{' '}
             <span className="font-mono font-bold text-[#C8102E]">{formatted}</span>
           </p>
@@ -371,7 +371,7 @@ export function LoginPage() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-[#E0E0E0]/60 overflow-hidden"
+      className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-[#E0E0E0] dark:border-gray-800/60 overflow-hidden"
     >
       <div className="p-6 sm:p-8 space-y-6">
         {/* ─── Logo Section ─── */}
@@ -381,21 +381,21 @@ export function LoginPage() {
             alt="Zylod"
             className="w-44 sm:w-56 h-auto"
           />
-          <p className="text-sm text-[#6B7280] mt-1 text-center">
+          <p className="text-sm text-[#6B7280] dark:text-gray-400 mt-1 text-center">
             Efficient B2B Sourcing Starts Here
           </p>
         </motion.div>
 
         {/* ─── Tab Selector: Buyer / Supplier ─── */}
         <motion.div variants={itemVariants} custom={1} className="flex justify-center">
-          <div className="flex w-full max-w-[260px] border-b border-[#E0E0E0]">
+          <div className="flex w-full max-w-[260px] border-b border-[#E0E0E0] dark:border-gray-800">
             <button
               type="button"
               onClick={() => setActiveTab('buyer')}
               className={`flex-1 pb-2.5 text-sm font-semibold text-center transition-colors relative ${
                 activeTab === 'buyer'
                   ? 'text-[#C8102E]'
-                  : 'text-[#6B7280] hover:text-[#1A1A1A]'
+                  : 'text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white'
               }`}
             >
               Buyer
@@ -413,7 +413,7 @@ export function LoginPage() {
               className={`flex-1 pb-2.5 text-sm font-semibold text-center transition-colors relative ${
                 activeTab === 'supplier'
                   ? 'text-[#C8102E]'
-                  : 'text-[#6B7280] hover:text-[#1A1A1A]'
+                  : 'text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white'
               }`}
             >
               Supplier
@@ -432,11 +432,11 @@ export function LoginPage() {
         <motion.form variants={itemVariants} custom={2} onSubmit={handleSubmit} className="space-y-4">
           {/* Email or Phone */}
           <div className="space-y-1.5">
-            <Label htmlFor="login-email" className="text-sm font-medium text-[#1A1A1A]">
+            <Label htmlFor="login-email" className="text-sm font-medium text-[#1A1A1A] dark:text-white">
               Email or Phone Number
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-[#6B7280]" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-[#6B7280] dark:text-gray-400" />
               <Input
                 id="login-email"
                 type="text"
@@ -444,18 +444,18 @@ export function LoginPage() {
                 value={emailOrPhone}
                 onChange={(e) => { setEmailOrPhone(e.target.value); setError(null) }}
                 disabled={isLoading || rateLimitState.limited}
-                className="pl-10 h-11 bg-[#F8F9FA] border-[#E0E0E0] rounded-lg text-[#1A1A1A] placeholder:text-[#9CA3AF] focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                className="pl-10 h-11 bg-[#F8F9FA] border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
               />
             </div>
           </div>
 
           {/* Password */}
           <div className="space-y-1.5">
-            <Label htmlFor="login-password" className="text-sm font-medium text-[#1A1A1A]">
+            <Label htmlFor="login-password" className="text-sm font-medium text-[#1A1A1A] dark:text-white">
               Password
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-[#6B7280]" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-[#6B7280] dark:text-gray-400" />
               <Input
                 id="login-password"
                 type={showPassword ? 'text' : 'password'}
@@ -463,12 +463,12 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setError(null) }}
                 disabled={isLoading || rateLimitState.limited}
-                className="pl-10 pr-10 h-11 bg-[#F8F9FA] border-[#E0E0E0] rounded-lg text-[#1A1A1A] placeholder:text-[#9CA3AF] focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                className="pl-10 pr-10 h-11 bg-[#F8F9FA] border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#1A1A1A] transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white transition-colors"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
@@ -502,7 +502,7 @@ export function LoginPage() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-xs text-[#6B7280] flex items-center gap-1"
+              className="text-xs text-[#6B7280] dark:text-gray-400 flex items-center gap-1"
             >
               <AlertTriangle className="w-3 h-3 text-[#F97316]" />
               {rateLimitState.attemptsRemaining} attempt{rateLimitState.attemptsRemaining !== 1 ? 's' : ''} remaining before lockout
@@ -518,27 +518,27 @@ export function LoginPage() {
                 exit={{ opacity: 0, height: 0 }}
                 className="space-y-2"
               >
-                <Label className="text-sm font-medium text-[#1A1A1A] flex items-center gap-1.5">
+                <Label className="text-sm font-medium text-[#1A1A1A] dark:text-white flex items-center gap-1.5">
                   <ShieldAlert className="w-3.5 h-3.5 text-[#C8102E]" />
                   Verify you&apos;re human
                 </Label>
                 <div className="flex items-center gap-3">
-                  <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] border border-[#E0E0E0] rounded-lg px-3 py-2.5">
-                    <span className="text-sm font-semibold text-[#1A1A1A] whitespace-nowrap">{captcha.question}</span>
-                    <span className="text-[#6B7280]">=</span>
+                  <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] border border-[#E0E0E0] dark:border-gray-800 rounded-lg px-3 py-2.5">
+                    <span className="text-sm font-semibold text-[#1A1A1A] dark:text-white whitespace-nowrap">{captcha.question}</span>
+                    <span className="text-[#6B7280] dark:text-gray-400">=</span>
                     <Input
                       type="text"
                       inputMode="numeric"
                       placeholder="Answer"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      className="w-20 h-8 border-[#E0E0E0] bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                      className="w-20 h-8 border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 text-center text-sm font-semibold rounded-md px-2 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={refresh}
-                    className="p-2 rounded-lg hover:bg-[#F3F4F6] transition-colors text-[#6B7280] hover:text-[#1A1A1A]"
+                    className="p-2 rounded-lg hover:bg-[#F3F4F6] dark:bg-gray-900 transition-colors text-[#6B7280] dark:text-gray-400 hover:text-[#1A1A1A] dark:text-white"
                     aria-label="Refresh CAPTCHA"
                   >
                     <RefreshCw className="w-4 h-4" />
@@ -595,7 +595,7 @@ export function LoginPage() {
         {/* ─── Divider ─── */}
         <motion.div variants={itemVariants} custom={3} className="flex items-center gap-3">
           <div className="flex-1 h-px bg-[#E0E0E0]" />
-          <span className="text-xs font-medium text-[#6B7280] tracking-wider uppercase">
+          <span className="text-xs font-medium text-[#6B7280] dark:text-gray-400 tracking-wider uppercase">
             Or continue with
           </span>
           <div className="flex-1 h-px bg-[#E0E0E0]" />
@@ -607,11 +607,11 @@ export function LoginPage() {
             type="button"
             variant="outline"
             disabled={socialLoading !== null}
-            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] font-medium text-sm shadow-sm disabled:opacity-60"
+            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] dark:text-white font-medium text-sm shadow-sm disabled:opacity-60"
             onClick={() => handleSocialLogin('google')}
           >
             {socialLoading === 'google' ? (
-              <span className="w-5 h-5 border-2 border-[#E0E0E0] border-t-[#4285F4] rounded-full animate-spin" />
+              <span className="w-5 h-5 border-2 border-[#E0E0E0] dark:border-gray-800 border-t-[#4285F4] rounded-full animate-spin" />
             ) : (
               <GoogleIcon />
             )}
@@ -621,11 +621,11 @@ export function LoginPage() {
             type="button"
             variant="outline"
             disabled={socialLoading !== null}
-            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] font-medium text-sm shadow-sm disabled:opacity-60"
+            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] dark:text-white font-medium text-sm shadow-sm disabled:opacity-60"
             onClick={() => handleSocialLogin('facebook')}
           >
             {socialLoading === 'facebook' ? (
-              <span className="w-5 h-5 border-2 border-[#E0E0E0] border-t-[#1877F2] rounded-full animate-spin" />
+              <span className="w-5 h-5 border-2 border-[#E0E0E0] dark:border-gray-800 border-t-[#1877F2] rounded-full animate-spin" />
             ) : (
               <FacebookIcon />
             )}
@@ -635,7 +635,7 @@ export function LoginPage() {
 
         {/* ─── Footer ─── */}
         <motion.div variants={itemVariants} custom={5} className="text-center pt-2">
-          <p className="text-sm text-[#6B7280]">
+          <p className="text-sm text-[#6B7280] dark:text-gray-400">
             New to Zylod?{' '}
             <button
               type="button"
@@ -652,7 +652,7 @@ export function LoginPage() {
           <button
             type="button"
             onClick={() => navigate('help-center')}
-            className="flex items-center gap-1.5 text-xs text-[#6B7280] hover:text-[#C8102E] transition-colors"
+            className="flex items-center gap-1.5 text-xs text-[#6B7280] dark:text-gray-400 hover:text-[#C8102E] transition-colors"
           >
             <HelpCircle className="w-3.5 h-3.5" />
             Need help logging in?

@@ -106,7 +106,7 @@ export function CategoryBrowserPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-8">
       {/* ─── Top Header ─── */}
-      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] h-14 flex items-center justify-between px-4 md:hidden">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4 md:hidden">
         <button
           onClick={goBack}
           className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
@@ -120,17 +120,17 @@ export function CategoryBrowserPage() {
           className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors"
           aria-label="Help"
         >
-          <HelpCircle className="h-5 w-5 text-[#6B7280]" />
+          <HelpCircle className="h-5 w-5 text-[#6B7280] dark:text-gray-400" />
         </button>
       </header>
 
       <div className="max-w-md mx-auto px-4 pt-5 md:px-6 md:pt-6 space-y-4 md:space-y-6 lg:max-w-5xl">
         {/* ─── Title & Subtitle ─── */}
         <div className="text-center">
-          <h1 className="text-2xl font-black text-[#1A1A1A] tracking-tight">
+          <h1 className="text-2xl font-black text-[#1A1A1A] dark:text-white tracking-tight">
             Explore Categories
           </h1>
-          <p className="text-xs text-[#6B7280] mt-1">
+          <p className="text-xs text-[#6B7280] dark:text-gray-400 mt-1">
             {categories.length > 0
               ? `${categories.length} industries · ${totalProducts.toLocaleString()} wholesale products.`
               : 'Discover premium wholesale products across industries.'}
@@ -145,7 +145,7 @@ export function CategoryBrowserPage() {
             placeholder="Search wholesale categories..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 bg-white dark:bg-gray-900 border border-[#E0E0E0] rounded-xl text-xs text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-[#C8102E] shadow-sm"
+            className="w-full h-10 pl-10 pr-4 bg-white dark:bg-gray-900 border border-[#E0E0E0] dark:border-gray-800 rounded-xl text-xs text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#C8102E]/20 focus:border-[#C8102E] shadow-sm"
           />
         </div>
 
@@ -153,19 +153,19 @@ export function CategoryBrowserPage() {
         {isLoading && (
           <div className="flex flex-col items-center gap-3 py-14">
             <Loader2 className="w-7 h-7 text-[#C8102E] animate-spin" />
-            <p className="text-sm text-[#6B7280]">Loading categories...</p>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading categories...</p>
           </div>
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">
             <AlertTriangle className="w-8 h-8 text-[#C8102E]" />
-            <p className="text-sm text-[#4B5563]">{loadError}</p>
+            <p className="text-sm text-[#4B5563] dark:text-gray-300">{loadError}</p>
           </div>
         )}
         {!isLoading && !loadError && filteredCategories.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-14 text-center">
             <Layers className="w-8 h-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
-            <p className="text-sm text-[#6B7280] max-w-[260px]">
+            <p className="text-sm text-[#6B7280] dark:text-gray-400 max-w-[260px]">
               No categories match &ldquo;{search}&rdquo;.
             </p>
           </div>
