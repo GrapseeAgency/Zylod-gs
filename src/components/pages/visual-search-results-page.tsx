@@ -73,7 +73,7 @@ export function VisualSearchResultsPage() {
             <ImageIcon className="w-12 h-12 text-gray-200" />
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500">No matching products found</p>
             <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Try uploading a clearer image or different angle</p>
-            <button onClick={() => navigate('image-search')} className="px-4 py-2 bg-red-600 text-white text-sm rounded-xl font-medium mt-2">Try Again</button>
+            <button onClick={() => navigate('image-search')} className="px-4 py-2 bg-primary text-white text-sm rounded-xl font-medium mt-2">Try Again</button>
           </div>
         ) : (
           <>
@@ -95,7 +95,7 @@ export function VisualSearchResultsPage() {
                   <div className="p-2.5">
                     <p className="text-xs font-medium text-gray-800 dark:text-gray-200 line-clamp-2">{p.name}</p>
                     <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-0.5 truncate">{p.supplier.companyName}</p>
-                    <p className="text-sm font-bold text-red-600 mt-1">{formatPrice(p.basePrice)}/{p.unit}</p>
+                    <p className="text-sm font-bold text-primary mt-1">{formatPrice(p.basePrice)}/{p.unit}</p>
                     <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">MOQ: {p.moq}</p>
                   </div>
                 </motion.button>
