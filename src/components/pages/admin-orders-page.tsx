@@ -478,7 +478,7 @@ export function AdminOrdersPage() {
       {/* Task 128-b: record a VERIFIED payment — paper-receipt B2B leg of the
           payment doctrine. Only after the money has actually arrived. */}
       <Dialog open={verifyTarget !== null} onOpenChange={(open) => { if (!open && !verifyBusy) setVerifyTarget(null) }}>
-        <DialogContent className="max-w-md rounded-3xl">
+        <DialogContent className="max-w-md rounded-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-sm font-black flex items-center gap-2">
               <BadgeCheck className="h-4 w-4 text-emerald-600" /> Record verified payment — #{verifyTarget?.orderNumber ?? ''}

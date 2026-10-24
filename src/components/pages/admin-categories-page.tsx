@@ -736,7 +736,7 @@ export function AdminCategoriesPage() {
 
       {/* Delete confirm dialog */}
       <Dialog open={deleting !== null} onOpenChange={(open) => { if (!open) closeDelete() }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="sm:max-w-md rounded-2xl max-h-[85vh] overflow-y-auto">
           {deleting && (
             <>
               <DialogHeader>

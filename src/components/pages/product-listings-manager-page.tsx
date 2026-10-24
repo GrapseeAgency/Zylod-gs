@@ -519,7 +519,7 @@ export function ProductListingsManagerPage() {
       {/* Soft-delete confirmation — order history is preserved; the listing is hidden */}
       {/* Task 141: open a group-buy volume pool for this listing */}
       <Dialog open={poolProduct !== null} onOpenChange={(open) => !open && setPoolProduct(null)}>
-        <DialogContent>
+        <DialogContent className="max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Open a group-buy volume pool</DialogTitle>
             <DialogDescription>
@@ -587,7 +587,7 @@ export function ProductListingsManagerPage() {
       </Dialog>
 
       <Dialog open={confirmDelete !== null} onOpenChange={(open) => !open && setConfirmDelete(null)}>
-        <DialogContent>
+        <DialogContent className="max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Remove this listing?</DialogTitle>
             <DialogDescription>

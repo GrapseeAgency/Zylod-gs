@@ -83,7 +83,7 @@ export function EvidenceThumbs({ photos, label = 'Evidence' }: EvidenceThumbsPro
       </div>
 
       <Dialog open={openPhoto !== null} onOpenChange={(open) => { if (!open) setOpenPhoto(null) }}>
-        <DialogContent className="sm:max-w-2xl rounded-2xl">
+        <DialogContent className="sm:max-w-2xl rounded-2xl max-h-[85vh] overflow-y-auto">
           {openPhoto && (
             <>
               <DialogHeader>

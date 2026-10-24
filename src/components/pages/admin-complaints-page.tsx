@@ -505,7 +505,7 @@ export function AdminComplaintsPage() {
 
       {/* Resolve / Reject decision dialog */}
       <Dialog open={dialog !== null} onOpenChange={(open) => { if (!open) closeDialog() }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="sm:max-w-md rounded-2xl max-h-[85vh] overflow-y-auto">
           {dialog && (
             <>
               <DialogHeader>

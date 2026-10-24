@@ -483,7 +483,7 @@ export function AdminShippingPage() {
 
       {/* ─── CREATE ZONE ─── */}
       <Dialog open={zoneOpen} onOpenChange={setZoneOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-sm font-black">New shipping zone</DialogTitle>
             <DialogDescription className="text-xs">Districts are matched case-insensitively. A district can belong to only one active zone.</DialogDescription>
@@ -508,7 +508,7 @@ export function AdminShippingPage() {
 
       {/* ─── CREATE METHOD ─── */}
       <Dialog open={methodOpen} onOpenChange={setMethodOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-sm font-black">New shipping method</DialogTitle>
             <DialogDescription className="text-xs">The carrier line buyers choose from — name it the way they know it.</DialogDescription>
@@ -537,7 +537,7 @@ export function AdminShippingPage() {
 
       {/* ─── CREATE RATE ─── */}
       <Dialog open={rateOpen} onOpenChange={setRateOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-sm font-black">New rate</DialogTitle>
             <DialogDescription className="text-xs">Binds a weight band to a zone × method. Overlapping bands are refused — one weight, one price.</DialogDescription>

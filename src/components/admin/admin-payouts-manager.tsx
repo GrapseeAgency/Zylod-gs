@@ -234,7 +234,7 @@ export function AdminPayoutsManager() {
 
       {/* Decision dialog */}
       <Dialog open={!!dialog} onOpenChange={(o) => { if (!o) setDialog(null); }}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {dialog?.action === 'complete' ? 'Settle payout' : 'Reject payout'} · {dialog ? taka(dialog.row.amount) : ''}

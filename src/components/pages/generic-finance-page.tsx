@@ -527,7 +527,7 @@ function MethodsPanel({ methods, loading, token, onChanged, formatPrice }: {
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add payment method</DialogTitle>
             <DialogDescription>Pay with a mobile wallet or a card (Stripe-style, securely tokenized).</DialogDescription>

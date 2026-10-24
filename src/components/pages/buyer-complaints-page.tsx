@@ -360,7 +360,7 @@ export function BuyerComplaintsPage() {
 
       {/* Withdraw confirm dialog */}
       <Dialog open={withdrawing !== null} onOpenChange={(open) => { if (!open) closeWithdraw() }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="sm:max-w-md rounded-2xl max-h-[85vh] overflow-y-auto">
           {withdrawing && (
             <>
               <DialogHeader>

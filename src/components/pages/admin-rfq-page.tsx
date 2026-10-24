@@ -618,7 +618,7 @@ export function AdminRfqPage() {
 
       {/* Close confirmation dialog — the only admin write on an RFQ */}
       <Dialog open={closeTarget !== null} onOpenChange={(open) => { if (!open) closeDialog() }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="sm:max-w-md rounded-2xl max-h-[85vh] overflow-y-auto">
           {closeTarget && (
             <>
               <DialogHeader>

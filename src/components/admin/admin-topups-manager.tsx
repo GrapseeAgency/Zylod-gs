@@ -476,7 +476,7 @@ export function AdminTopupsManager() {
 
       {/* Verify / Reject confirm dialog */}
       <Dialog open={dialogTarget !== null} onOpenChange={(open) => { if (!deciding) { if (!open) setDialogTarget(null); setDialogError('') } }}>
-        <DialogContent className="max-w-md rounded-3xl">
+        <DialogContent className="max-w-md rounded-3xl max-h-[85vh] overflow-y-auto">
           {dialogTarget && (
             <>
               <DialogHeader>

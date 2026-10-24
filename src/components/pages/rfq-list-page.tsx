@@ -786,7 +786,7 @@ export function RfqListPage() {
             if (!open && !converting) setConvertTarget(null)
           }}
         >
-          <DialogContent className="max-w-sm rounded-2xl">
+          <DialogContent className="max-w-sm rounded-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-sm font-black text-[#1A1A1A] dark:text-white">
                 <ShoppingBag className="h-4 w-4 text-[#C8102E]" />

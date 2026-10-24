@@ -1072,7 +1072,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
 
       {/* Submit-payment dialog (Task 56-b manual leg) */}
       <Dialog open={payDialogOpen} onOpenChange={(open) => { if (!paySubmitting) { setPayDialogOpen(open); if (!open) setPayError('') } }}>
-        <DialogContent className="max-w-md rounded-3xl">
+        <DialogContent className="max-w-md rounded-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-sm font-black">Submit payment for order #{order?.orderNumber || '--'}</DialogTitle>
             <DialogDescription className="text-xs">
@@ -1281,7 +1281,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
 
       {/* Task 57-a/58: cancel confirmation — states the real consequences verbatim */}
       <Dialog open={cancelDialogOpen} onOpenChange={(open) => { setCancelDialogOpen(open); if (!open) setScopedShipment(null) }}>
-        <DialogContent className="max-w-md rounded-3xl">
+        <DialogContent className="max-w-md rounded-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base font-black">
               {scopedShipment

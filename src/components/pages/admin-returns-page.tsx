@@ -723,7 +723,7 @@ export function AdminReturnsPage() {
 
       {/* Approve / Reject decision dialog */}
       <Dialog open={dialog !== null} onOpenChange={(open) => { if (!open) closeDialog() }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="sm:max-w-md rounded-2xl max-h-[85vh] overflow-y-auto">
           {dialog && (
             <>
               <DialogHeader>
@@ -809,7 +809,7 @@ export function AdminReturnsPage() {
 
       {/* Record-refund dialog (approved rows only — documents real money movement) */}
       <Dialog open={refundDialog !== null} onOpenChange={(open) => { if (!open) closeRefundDialog() }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="sm:max-w-md rounded-2xl max-h-[85vh] overflow-y-auto">
           {refundDialog && (
             <>
               <DialogHeader>

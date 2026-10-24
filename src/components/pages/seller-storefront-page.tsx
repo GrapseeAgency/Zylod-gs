@@ -382,7 +382,7 @@ export const SellerStorefrontPage = () => {
 
       {/* Task 146: the ask dialog */}
       <Dialog open={askOpen} onOpenChange={setAskOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Ask {companyName || 'this store'}</DialogTitle>
             <DialogDescription>

@@ -382,10 +382,26 @@ export function MobileProductDetailPage() {
         </button>
         <h1 className="text-sm font-semibold text-foreground">Product Details</h1>
         <div className="flex items-center gap-0.5">
-          <button className="flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="Share">
+          <button
+            onClick={async () => {
+              const url = `${window.location.origin}/?page=product-detail&productId=${productId}`
+              const text = `Check out ${product?.name || 'this product'} on Zylod — ${formatPrice(product?.basePrice || 0)}`
+              if (navigator.share) {
+                try { await navigator.share({ title: product?.name || 'Zylod Product', text, url }) } catch {}
+              } else {
+                try { await navigator.clipboard.writeText(url); alert('Link copied to clipboard!') } catch {}
+              }
+            }}
+            className="flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors"
+            aria-label="Share"
+          >
             <Share2 className="w-[17px] h-[17px] text-foreground" />
           </button>
-          <button className="flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="QR Code">
+          <button
+            onClick={() => navigate('qr-deeplink')}
+            className="flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors"
+            aria-label="QR Code"
+          >
             <QrCode className="w-[17px] h-[17px] text-foreground" />
           </button>
           <button onClick={() => navigate('cart')} className="relative flex items-center justify-center w-8 h-8 rounded-full active:bg-gray-100 dark:bg-gray-900 transition-colors" aria-label="Cart">

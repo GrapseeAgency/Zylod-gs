@@ -176,7 +176,7 @@ export function AdminPressInvestorManager() {
       )}
 
       <Dialog open={aOpen} onOpenChange={setAOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add media kit asset</DialogTitle>
             <DialogDescription>The asset type groups it on the public press page.</DialogDescription>

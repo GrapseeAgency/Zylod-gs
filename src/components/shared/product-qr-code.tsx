@@ -90,13 +90,13 @@ export function ProductQRCodeDialog({
           className={cn('h-8 w-8 rounded-md hover:bg-red-50', className)}
           aria-label="Show QR code"
         >
-          <QrCode className="h-4 w-4" style={{ color: 'primary' }} />
+          <QrCode className="h-4 w-4 text-primary" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <QrCode className="h-5 w-5" style={{ color: 'primary' }} />
+            <QrCode className="h-5 w-5 text-primary" />
             QR Code
           </DialogTitle>
           <DialogDescription>

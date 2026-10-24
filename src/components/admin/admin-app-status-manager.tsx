@@ -315,7 +315,7 @@ export function AdminAppStatusManager() {
 
       {/* Maintenance dialog */}
       <Dialog open={winOpen} onOpenChange={setWinOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>New maintenance window</DialogTitle>
             <DialogDescription>Start must be before end. ACTIVE windows fire the maintenance endpoint immediately (whitelisted IPs bypass it).</DialogDescription>
@@ -348,7 +348,7 @@ export function AdminAppStatusManager() {
 
       {/* Observation dialog */}
       <Dialog open={obsOpen} onOpenChange={setObsOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Log service observation</DialogTitle>
             <DialogDescription>What was checked, what was found, when. The diagnostics page serves the last 10.</DialogDescription>

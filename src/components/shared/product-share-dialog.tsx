@@ -172,13 +172,13 @@ export function ProductShareDialog({
           className={cn('h-8 w-8 rounded-md hover:bg-red-50', className)}
           aria-label="Share this product"
         >
-          <Share2 className="h-4 w-4" style={{ color: 'primary' }} />
+          <Share2 className="h-4 w-4 text-primary" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Share2 className="h-5 w-5" style={{ color: 'primary' }} />
+            <Share2 className="h-5 w-5 text-primary" />
             Share Product
           </DialogTitle>
           <DialogDescription>

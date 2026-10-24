@@ -731,7 +731,7 @@ export function CustomerRfqInboxPage() {
 
       {/* Respond dialog — POST /api/supplier/rfqs/[id]/quote (Task 52-a) */}
       <Dialog open={respondRfq !== null} onOpenChange={(open) => { if (!open) closeRespond() }}>
-        <DialogContent className="max-w-md rounded-3xl p-6">
+        <DialogContent className="max-w-md rounded-3xl p-6 max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-sm font-black">
               {respondRfq?.myQuote ? 'Update your quote' : 'Respond with a quote'}

@@ -327,7 +327,7 @@ export function SupplierSamplesPage() {
       )}
 
       <Dialog open={shipDialog !== null} onOpenChange={(v) => { if (!v) setShipDialog(null) }}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-sm max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Ship sample</DialogTitle>
             <DialogDescription>

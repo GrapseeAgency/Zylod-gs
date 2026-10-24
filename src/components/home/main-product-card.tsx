@@ -91,7 +91,7 @@ export function MainProductCard({ product }: { product: MainProduct }) {
       <div className="p-3 cursor-pointer" onClick={() => setCurrentPage('product-detail', { productId: product.id })}>
         <p className="text-xs text-gray-800 dark:text-gray-200 font-semibold leading-tight line-clamp-2 h-8 mb-1.5 group-hover:text-red-600 transition-colors">{product.name}</p>
         <div className="flex items-baseline gap-1.5 mb-1">
-          <span className="text-sm font-bold" style={{ color: 'primary' }}>{formatPrice(product.price)}</span>
+          <span className="text-sm font-bold text-primary">{formatPrice(product.price)}</span>
           <span className="text-[10px] text-gray-400 dark:text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>
         </div>
         <div className="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 mb-1.5">

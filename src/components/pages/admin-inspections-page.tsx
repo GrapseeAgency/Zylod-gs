@@ -294,7 +294,7 @@ export function AdminInspectionsPage() {
       )}
 
       <Dialog open={dialog !== null} onOpenChange={(v) => { if (!v && !submitting) setDialog(null) }}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="capitalize">{dialog?.action} inspection</DialogTitle>
             <DialogDescription>

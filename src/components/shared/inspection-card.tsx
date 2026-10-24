@@ -169,7 +169,7 @@ export function InspectionCard({ orderId, orderNumber }: { orderId: string; orde
       )}
 
       <Dialog open={dialogOpen} onOpenChange={(v) => { if (!submitting) setDialogOpen(v) }}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <ClipboardCheck className="h-5 w-5 text-primary" /> Request inspection
