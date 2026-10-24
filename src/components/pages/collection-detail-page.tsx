@@ -168,7 +168,7 @@ export function CollectionDetailPage() {
           >
             Edit
           </button>
-          <button className="p-2 rounded-full active:bg-gray-100 dark:bg-gray-900">
+          <button onClick={() => navigate("edit-collection", { collectionId: col.id })} className="p-2 rounded-full active:bg-gray-100 dark:bg-gray-900" aria-label="Collection options">
             <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
           </button>
         </div>
