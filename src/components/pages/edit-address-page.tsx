@@ -12,7 +12,7 @@ type AddressLabel = 'Warehouse' | 'Shop' | 'Office' | 'Other'
 export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { goBack, navigate, pageParams: storeParams } = useNavigationStore()
   const pageParams = _pageParams || storeParams || {}
-  const addressId = pageParams.addressId || ''
+  const addressId = pageParams.addressId || pageParams.id || ''
 
   const [form, setForm] = useState({
     contactName: '',

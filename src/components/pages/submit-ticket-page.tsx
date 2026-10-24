@@ -19,7 +19,7 @@ interface UserOrder {
 
 export function SubmitTicketPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
-  const initialOrderId = pageParams.orderId || ''
+  const initialOrderId = pageParams.orderId || pageParams.id || ''
   const [orders, setOrders] = useState<UserOrder[]>([])
   const [formData, setFormData] = useState({
     category: 'order_issue',

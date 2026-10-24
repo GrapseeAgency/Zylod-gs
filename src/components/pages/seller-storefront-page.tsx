@@ -76,7 +76,7 @@ export const SellerStorefrontPage = () => {
 
   // Viewing a specific supplier's storefront (e.g. via "Visit store" on a
   // product page) vs. the signed-in supplier's own storefront.
-  const viewedSupplierId = pageParams.supplierId || '';
+  const viewedSupplierId = pageParams.supplierId || pageParams.id || '';
 
   // Task 105: extracted so the Reviews tab can trigger a refresh after a
   // write — the header aggregates and the list re-render from the same

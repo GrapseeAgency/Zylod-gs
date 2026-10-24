@@ -36,7 +36,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
   const { navigate, pageParams: storeParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const pageParams = _pageParams || storeParams || {}
-  const supplierId = pageParams.supplierId || ''
+  const supplierId = pageParams.supplierId || pageParams.id || ''
 
   const [profile, setProfile] = useState<SupplierProfile | null>(null)
   const [profileError, setProfileError] = useState<string | null>(null)

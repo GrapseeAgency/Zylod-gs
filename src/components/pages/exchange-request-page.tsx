@@ -58,7 +58,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
   const { formatPrice } = useCurrencyStore()
   const pageParams = _pageParams || storeParams || {}
   const orderId = pageParams.orderId || pageParams.id || ''
-  const itemId = pageParams.itemId || ''
+  const itemId = pageParams.itemId || pageParams.id || ''
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

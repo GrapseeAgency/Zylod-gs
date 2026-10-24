@@ -1692,7 +1692,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
 function QuoteRequestPage() {
   const pageParams = useNavigationStore(s => s.pageParams)
   const { user, token } = useAuthStore()
-  const product = pageParams.productId || ''
+  const product = pageParams.productId || pageParams.id || ''
   const [form, setForm] = useState({ product: product, quantity: '', unit: 'pcs', budget: '', deadline: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
