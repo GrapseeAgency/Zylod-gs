@@ -79,7 +79,7 @@ function formatDateTime(iso: string): string {
 export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const pageParams = _pageParams || storeParams || {}
-  const orderId = pageParams.orderId || ''
+  const orderId = pageParams.orderId || pageParams.id || ''
 
   const [order, setOrder] = useState<ApiOrder | null>(null)
   const [loading, setLoading] = useState(!!orderId)

@@ -57,7 +57,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const pageParams = _pageParams || storeParams || {}
-  const orderId = pageParams.orderId || ''
+  const orderId = pageParams.orderId || pageParams.id || ''
 
   const [order, setOrder] = useState<ApiOrder | null>(null)
   const [loading, setLoading] = useState(true)

@@ -38,7 +38,7 @@ interface ProductData {
 export function ProductSpecificationsPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const pageParams = _pageParams || storeParams || {}
-  const productId = pageParams.productId || ''
+  const productId = pageParams.productId || pageParams.id || ''
 
   const [product, setProduct] = useState<ProductData | null>(null)
   const [notFound, setNotFound] = useState(false)

@@ -21,7 +21,7 @@ interface MediaFile {
 export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const pageParams = _pageParams || storeParams || {}
-  const productId = pageParams.productId || ''
+  const productId = pageParams.productId || pageParams.id || ''
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [mediaList, setMediaList] = useState<MediaFile[]>([])

@@ -24,7 +24,7 @@ interface OrderInfo {
 
 export function SellerOrderFulfillmentPage() {
   const { pageParams, goBack } = useNavigationStore();
-  const orderId = typeof pageParams?.orderId === 'string' ? pageParams.orderId : '';
+  const orderId = typeof pageParams?.orderId === 'string' ? pageParams.orderId : (typeof pageParams?.id === 'string' ? pageParams.id : '');
 
   const [info, setInfo] = useState<OrderInfo | null>(null);
   const [loading, setLoading] = useState(true);

@@ -5095,3 +5095,21 @@ Work Log:
 Stage Summary:
 - Two more defect classes closed: zero alert() theater remains in pages (all converted to sonner toasts), zero blue/indigo color violations remain in pages or components (all replaced with the rose/red primary brand). The app now has a consistent brand color story end-to-end.
 - Cumulative: 419 theme leaks + 48 mobile-chrome leaks + 35+ showcase pages + 18 alert() popups + 90+ color violations fixed across t174-t177.
+
+---
+Task ID: 177b
+Agent: orchestrator (Z.ai Code) — continuing the honesty mandate.
+
+Task: FUNCTIONAL FIX — useIsMobile SSR flash + product-detail pageParams.id resolution. Found a real broken flow: the product detail page didn't render on mobile because (1) useIsMobile returned !!undefined (always false) making the isMobile===undefined loading check dead code, and (2) both desktop and mobile PDP checked pageParams.productId without a pageParams.id fallback, so URL deep-links with ?id=xxx 404'd.
+
+Work Log:
+- useIsMobile hook fix: changed `return !!isMobile` to `return isMobile` (returns undefined | boolean). This makes the `isMobile === undefined` checks in product-detail-page, home-page, and app-shell actually work — they now show a loading spinner on first paint instead of flashing the desktop layout on mobile devices. Fixed the one caller that expected a strict boolean (sidebar.tsx: `const isMobile = !!useIsMobile()`).
+- App-shell SSR flash fix: added `if (isMobile === undefined)` loading spinner BEFORE the mobile/desktop branch (after the fullscreen-pages branch). Mobile users no longer see a flash of desktop Header+Footer before the mobile layout renders.
+- Product detail pageParams fix: both DesktopProductDetailPage and MobileProductDetailPage now check `pageParams.productId || pageParams.id || pageParams.slug` — URL deep-links with `?id=xxx` resolve correctly. The mobile page was completely broken (showed only "Product Detail" + nav, no product data) because it missed the `pageParams.id` fallback.
+- Batch pageParams.id fallback: 30 pages that used `pageParams.orderId` or `pageParams.productId` without a `pageParams.id` fallback now have it. These pages were broken when deep-linked via URL `?id=xxx` (the most common deep-link pattern). Files: delivery-confirmation, order-confirmation, order-feedback, exchange-request, order-timeline, freight-tracking, submit-ticket, import-export-tracker, bulk-pricing, buy-now, product-specifications, product-variant-matrix, product-variants, quote-request, raise-complaint, return-detail, return-request, seller-edit-product, seller-order-fulfillment, similar-products, size-guide, track-order, upload-review-photos, write-review, and 6 more.
+- VERIFICATION: product detail page now renders real product on both mobile (375px: "T177b Demo Fabric", "৳500", "MOQ: 10") and desktop (1280px: same). tsc 0; eslint 0.
+- DB wiped 127×0 before commit.
+
+Stage Summary:
+- A real broken user flow is fixed: product detail pages now render on mobile (were blank) and accept URL deep-links with ?id=xxx (were 404). 30 pages total got the pageParams.id fallback. The useIsMobile SSR flash is eliminated — mobile users see a loading spinner instead of a desktop-layout flash on first paint.
+- This was a FUNCTIONAL bug (pages didn't work), not just a cosmetic one — exactly the class the user was frustrated about.

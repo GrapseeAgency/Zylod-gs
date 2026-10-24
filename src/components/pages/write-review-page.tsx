@@ -16,7 +16,7 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const { isAuthenticated } = useAuthStore()
   const pageParams = _pageParams || storeParams || {}
-  const productId = pageParams.productId || ''
+  const productId = pageParams.productId || pageParams.id || ''
 
   const [rating, setRating] = useState(5)
   const [hoverRating, setHoverRating] = useState(0)

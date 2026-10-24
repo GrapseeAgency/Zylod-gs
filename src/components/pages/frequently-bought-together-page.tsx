@@ -29,7 +29,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
   const { formatPrice } = useCurrencyStore()
   const { addItem } = useCartStore()
   const pageParams = _pageParams || storeParams || {}
-  const productId = pageParams.productId || ''
+  const productId = pageParams.productId || pageParams.id || ''
 
   const [loading, setLoading] = useState(true)
   const [items, setItems] = useState<BundleItem[]>([

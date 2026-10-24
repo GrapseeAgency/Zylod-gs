@@ -17,7 +17,7 @@ import {
 export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const pageParams = _pageParams || storeParams || {}
-  const orderId = pageParams.orderId || ''
+  const orderId = pageParams.orderId || pageParams.id || ''
 
   const [complaintType, setComplaintType] = useState('damaged')
   const [desiredOutcome, setDesiredOutcome] = useState('refund')

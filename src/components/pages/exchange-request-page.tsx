@@ -57,7 +57,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const pageParams = _pageParams || storeParams || {}
-  const orderId = pageParams.orderId || ''
+  const orderId = pageParams.orderId || pageParams.id || ''
   const itemId = pageParams.itemId || ''
 
   const [loading, setLoading] = useState(true)

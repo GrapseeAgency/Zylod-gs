@@ -226,7 +226,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const { formatPrice } = useCurrencyStore()
   const user = useAuthStore((s) => s.user)
   const pageParams = _pageParams || storeParams || {}
-  const orderId = pageParams.orderId || ''
+  const orderId = pageParams.orderId || pageParams.id || ''
   // Task 68-c: a payment notification deep-link carries the exact payments
   // row (?page=order-detail&orderId=X&payment=Y) — the matching chip is
   // highlighted and scrolled into view when the order loads.

@@ -99,7 +99,7 @@ export function QuoteRequestPage() {
   const { formatPrice } = useCurrencyStore()
 
   // product-detail-page navigates here with { productId: product?.id || '' }
-  const productId = typeof pageParams?.productId === 'string' ? pageParams.productId : ''
+  const productId = typeof pageParams?.productId === 'string' ? pageParams.productId : (typeof pageParams?.id === 'string' ? pageParams.id : '')
 
   /* ─── Product context (from param or picker) ─── */
   const [product, setProduct] = useState<PickerProduct | null>(null)

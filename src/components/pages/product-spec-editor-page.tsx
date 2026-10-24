@@ -31,7 +31,7 @@ type LoadState = 'loading' | 'auth' | 'error' | 'ready';
 export function ProductSpecEditorPage() {
   const { goBack, navigate, pageParams } = useNavigationStore();
   const token = useAuthStore((s) => s.token);
-  const productId = typeof pageParams?.productId === 'string' ? pageParams.productId : '';
+  const productId = typeof pageParams?.productId === 'string' ? pageParams.productId : (typeof pageParams?.id === 'string' ? pageParams.id : '');
 
   const [state, setState] = useState<LoadState>('loading');
   const [loadError, setLoadError] = useState('');

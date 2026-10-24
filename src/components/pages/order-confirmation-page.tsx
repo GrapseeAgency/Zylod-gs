@@ -47,7 +47,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
   const { navigate, pageParams: storeParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const pageParams = _pageParams || storeParams || {}
-  const orderId = pageParams.orderId || ''
+  const orderId = pageParams.orderId || pageParams.id || ''
 
   const [order, setOrder] = useState<ApiOrder | null>(null)
   const [loading, setLoading] = useState(true)

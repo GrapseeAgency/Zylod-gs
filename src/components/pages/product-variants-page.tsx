@@ -47,7 +47,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
   const { formatPrice } = useCurrencyStore()
   const { addItem } = useCartStore()
   const pageParams = _pageParams || storeParams || {}
-  const productId = pageParams.productId || ''
+  const productId = pageParams.productId || pageParams.id || ''
 
   const [activeFilter, setActiveFilter] = useState<'all' | 'instock'>('all')
   const [loading, setLoading] = useState(true)

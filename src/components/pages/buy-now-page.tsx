@@ -57,7 +57,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const pageParams = _pageParams || storeParams || {}
-  const productId = pageParams.productId || ''
+  const productId = pageParams.productId || pageParams.id || ''
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

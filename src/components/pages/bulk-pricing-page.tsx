@@ -41,7 +41,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
   const { formatPrice } = useCurrencyStore()
   const { addItem } = useCartStore()
   const pageParams = _pageParams || storeParams || {}
-  const productId = pageParams.productId || ''
+  const productId = pageParams.productId || pageParams.id || ''
 
   const [quantity, setQuantity] = useState(150)
   const [product, setProduct] = useState<ProductDetail | null>(null)

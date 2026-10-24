@@ -112,7 +112,7 @@ export function MobileProductDetailPage() {
   // the desktop PDP's semantics.
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
 
-  const productId = pageParams?.productId || pageParams?.slug || ''
+  const productId = pageParams?.productId || pageParams?.id || pageParams?.slug || ''
 
   useEffect(() => {
     if (!productId) return

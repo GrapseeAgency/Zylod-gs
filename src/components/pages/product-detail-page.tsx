@@ -315,7 +315,7 @@ function DesktopProductDetailPage() {
   const [showStickyBar, setShowStickyBar] = useState(false)
   const buyButtonRef = useRef<HTMLDivElement | null>(null)
 
-  const productId = pageParams.productId || pageParams.slug || ''
+  const productId = pageParams.productId || pageParams.id || pageParams.slug || ''
 
   useEffect(() => {
     async function fetchProduct() {

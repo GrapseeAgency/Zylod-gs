@@ -87,7 +87,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const pageParams = _pageParams || storeParams || {}
-  const orderId = pageParams.orderId || ''
+  const orderId = pageParams.orderId || pageParams.id || ''
   const returnId = pageParams.returnId || ''
 
   const [loading, setLoading] = useState(true)

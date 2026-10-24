@@ -36,7 +36,7 @@ interface ProductInfo {
 export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const pageParams = _pageParams || storeParams || {}
-  const productId = pageParams.productId || ''
+  const productId = pageParams.productId || pageParams.id || ''
 
   const [product, setProduct] = useState<ProductInfo | null>(null)
   const [reviews, setReviews] = useState<ReviewItem[]>([])

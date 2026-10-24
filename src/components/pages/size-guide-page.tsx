@@ -37,7 +37,7 @@ const GARMENT_SIZES: SizeSpec[] = [
 export function SizeGuidePage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { goBack } = useNavigationStore()
   const pageParams = _pageParams || {}
-  const productId = pageParams.productId || ''
+  const productId = pageParams.productId || pageParams.id || ''
   const [unit, setUnit] = useState<'inches' | 'cm'>('inches')
   const [productName, setProductName] = useState<string | null>(null)
   const [productCategory, setProductCategory] = useState<string | null>(null)

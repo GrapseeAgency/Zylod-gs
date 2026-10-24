@@ -72,7 +72,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
 export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, pageParams: storeParams } = useNavigationStore()
   const pageParams = _pageParams || storeParams || {}
-  const orderId = pageParams.orderId || ''
+  const orderId = pageParams.orderId || pageParams.id || ''
 
   const [order, setOrder] = useState<ApiOrder | null>(null)
   const [loading, setLoading] = useState(true)
