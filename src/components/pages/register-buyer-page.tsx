@@ -194,7 +194,7 @@ export default function RegisterBuyerPage() {
                 type="button"
                 onClick={() => setUsePhone(true)}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                  usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
+                  usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] dark:bg-gray-950 text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
                 }`}
               >
                 <Phone className="w-3.5 h-3.5 inline mr-1" />
@@ -204,7 +204,7 @@ export default function RegisterBuyerPage() {
                 type="button"
                 onClick={() => setUsePhone(false)}
                 className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                  !usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
+                  !usePhone ? 'bg-[#C8102E] text-white' : 'bg-[#F8F9FA] dark:bg-gray-950 text-[#6B7280] dark:text-gray-400 border border-[#E0E0E0] dark:border-gray-800'
                 }`}
               >
                 <Mail className="w-3.5 h-3.5 inline mr-1" />

@@ -338,7 +338,7 @@ export default function RegisterSupplierPage() {
                   </label>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F8F9FA] text-sm">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F8F9FA] dark:bg-gray-950 text-sm">
                 <Shield className="h-4 w-4 text-[#C8102E] shrink-0" />
                 <span className="text-[#6B7280] dark:text-gray-400">Your NID will be verified by our admin team before you can start selling.</span>
               </div>
@@ -417,7 +417,7 @@ export default function RegisterSupplierPage() {
                 <Label htmlFor="bankBranch">Branch Name</Label>
                 <Input id="bankBranch" placeholder="Branch name" value={bankBranch} onChange={(e) => setBankBranch(e.target.value)} />
               </div>
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F8F9FA] text-sm">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-[#F8F9FA] dark:bg-gray-950 text-sm">
                 <Banknote className="h-4 w-4 text-[#C8102E] shrink-0" />
                 <span className="text-[#6B7280] dark:text-gray-400">Your bank details will be used for receiving payments from buyer orders.</span>
               </div>

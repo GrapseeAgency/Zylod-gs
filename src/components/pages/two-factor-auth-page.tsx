@@ -344,7 +344,7 @@ export function TwoFactorAuthPage() {
       animate="visible"
       className="flex flex-col items-center pt-8 pb-2"
     >
-      <div className="w-28 h-28 rounded-full bg-[#FFE4E6] flex items-center justify-center">
+      <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
         <div className="relative">
           <Shield className="w-12 h-12 text-[#C8102E]" />
           <Lock className="w-5 h-5 text-[#C8102E] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
@@ -408,7 +408,7 @@ export function TwoFactorAuthPage() {
         }`}
         type="button"
       >
-        <div className="w-12 h-12 rounded-lg bg-[#FFE4E6] flex items-center justify-center shrink-0">
+        <div className="w-12 h-12 rounded-lg bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center shrink-0">
           <Smartphone className="w-6 h-6 text-[#C8102E]" />
         </div>
         <div className="flex-1 min-w-0 text-left">
@@ -702,7 +702,7 @@ export function TwoFactorAuthPage() {
   /* ─── Mobile Layout ─── */
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
         {headerBar}
         {desktopHeaderBar}
         <main className="flex-1 flex flex-col">
@@ -717,7 +717,7 @@ export function TwoFactorAuthPage() {
 
   /* ─── Desktop Layout ─── */
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
       {headerBar}
       {desktopHeaderBar}
       <main className="flex-1 flex justify-center px-4 py-10">

@@ -339,7 +339,7 @@ export function BackupCodesPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
       {headerBar}
       {desktopHeaderBar}
       <main className={`flex-1 flex flex-col ${isMobile ? '' : 'justify-center px-4 py-10'}`}>

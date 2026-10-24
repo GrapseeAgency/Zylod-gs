@@ -230,7 +230,7 @@ export function ClearanceSalePage() {
 
                 <button
                   onClick={(e) => handleQuickAdd(e, heroItem)}
-                  className="w-9 h-9 rounded-full bg-[#F3F4F6] dark:bg-gray-900 hover:bg-[#FFE4E6] text-[#C8102E] flex items-center justify-center transition-colors shadow-sm"
+                  className="w-9 h-9 rounded-full bg-[#F3F4F6] dark:bg-gray-900 hover:bg-[#FFE4E6] dark:bg-primary/10 text-[#C8102E] flex items-center justify-center transition-colors shadow-sm"
                   title="Add to Cart"
                 >
                   <ShoppingCart className="h-4 w-4" />

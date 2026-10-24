@@ -243,7 +243,7 @@ export function AccountRecoveryPage() {
         }`}
       >
         <div className="flex items-start gap-3">
-          <div className="w-11 h-11 rounded-lg bg-[#FFE4E6] flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-lg bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center shrink-0">
             <IdCard className="w-5 h-5 text-[#C8102E]" />
           </div>
           <div className="flex-1 min-w-0">
@@ -378,7 +378,7 @@ export function AccountRecoveryPage() {
   /* ─── Mobile Layout ─── */
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
         {headerBar}
         {desktopHeaderBar}
         <main className="flex-1 flex flex-col">
@@ -397,7 +397,7 @@ export function AccountRecoveryPage() {
 
   /* ─── Desktop Layout ─── */
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
       {headerBar}
       {desktopHeaderBar}
       <main className="flex-1 flex justify-center px-4 py-10">

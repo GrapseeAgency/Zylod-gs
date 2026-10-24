@@ -175,7 +175,7 @@ export function AccountSuspendedPage() {
       animate="visible"
       className="flex flex-col items-center pt-8 pb-4"
     >
-      <div className="w-28 h-28 rounded-full bg-[#FFE4E6] flex items-center justify-center">
+      <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
         <AlertCircle className="w-14 h-14 text-[#C8102E]" strokeWidth={3} />
       </div>
     </motion.div>
@@ -375,7 +375,7 @@ export function AccountSuspendedPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
       {headerBar}
       {desktopHeaderBar}
       <main className={`flex-1 flex flex-col ${isMobile ? '' : 'justify-center px-4 py-10'}`}>

@@ -73,7 +73,7 @@ export function TrendingProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-10">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 pb-24 md:pb-10">
       {/* ─── Top Nav Bar ─── */}
       <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4">
         <button
@@ -249,7 +249,7 @@ export function TrendingProductsPage() {
             onClick={() => navigate('category-products', { filter: 'trending' })}
             className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-6 text-center shadow-sm hover:border-[#C8102E]/40 transition-all cursor-pointer"
           >
-            <div className="w-14 h-14 rounded-full bg-[#FFE4E6] text-[#C8102E] flex items-center justify-center mx-auto mb-3">
+            <div className="w-14 h-14 rounded-full bg-[#FFE4E6] dark:bg-primary/10 text-[#C8102E] flex items-center justify-center mx-auto mb-3">
               <ArrowRight className="h-6 w-6" />
             </div>
             <h3 className="font-bold text-base text-[#1A1A1A] dark:text-white">View All Trending</h3>

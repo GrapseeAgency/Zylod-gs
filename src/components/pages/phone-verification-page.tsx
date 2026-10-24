@@ -231,7 +231,7 @@ export default function PhoneVerificationPage() {
                     setIsDropdownOpen(false)
                   }}
                   className={`w-full text-left px-3 py-2 text-sm text-[#1A1A1A] dark:text-white hover:bg-[#F3F4F6] dark:bg-gray-900 transition-colors ${
-                    countryCode === country.code ? 'bg-[#FFE4E6] font-semibold' : ''
+                    countryCode === country.code ? 'bg-[#FFE4E6] dark:bg-primary/10 font-semibold' : ''
                   }`}
                   type="button"
                 >
@@ -359,7 +359,7 @@ export default function PhoneVerificationPage() {
   /* ─── Mobile Layout ─── */
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
         <HeaderBar onBack={goBack} />
         <DesktopHeader onBack={goBack} />
 
@@ -371,7 +371,7 @@ export default function PhoneVerificationPage() {
         >
           {/* Hero Section */}
           <motion.div variants={fadeSlideUp} className="flex flex-col items-center mt-6 mb-6">
-            <div className="w-28 h-28 rounded-full bg-[#FFE4E6] flex items-center justify-center mb-5">
+            <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center mb-5">
               <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
             </div>
             <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white text-center">
@@ -402,7 +402,7 @@ export default function PhoneVerificationPage() {
   /* ─── Desktop Layout ─── */
   if (isMobile === false) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
         <HeaderBar onBack={goBack} />
         <DesktopHeader onBack={goBack} />
 
@@ -415,7 +415,7 @@ export default function PhoneVerificationPage() {
           >
             {/* Hero Section */}
             <div className="flex flex-col items-center mt-4 mb-6">
-              <div className="w-28 h-28 rounded-full bg-[#FFE4E6] flex items-center justify-center mb-5">
+              <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center mb-5">
                 <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
               </div>
               <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-white text-center">
@@ -442,9 +442,9 @@ export default function PhoneVerificationPage() {
 
   /* ─── SSR Loading State ─── */
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center">
       <div className="animate-pulse flex flex-col items-center gap-4">
-        <div className="w-28 h-28 rounded-full bg-[#FFE4E6]" />
+        <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10" />
         <div className="h-8 w-48 bg-gray-200 rounded" />
         <div className="h-4 w-64 bg-gray-100 dark:bg-gray-900 rounded" />
       </div>

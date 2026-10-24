@@ -361,7 +361,7 @@ export function RfqListPage() {
   /* ── Sign-in gate ── */
   if (!isAuthenticated || needsAuth) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center p-4">
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#E0E0E0] dark:border-gray-800 p-8 flex flex-col items-center gap-3 text-center shadow-sm max-w-sm w-full">
           <LogIn className="w-8 h-8 text-[#C8102E]" />
           <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">Sign in to view your quote requests</p>
@@ -390,7 +390,7 @@ export function RfqListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-[calc(64px+env(safe-area-inset-bottom)+24px)]">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 pb-[calc(64px+env(safe-area-inset-bottom)+24px)]">
       {/* ─── Top Nav Bar (mobile) ─── */}
       <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4">
         <button
@@ -581,7 +581,7 @@ export function RfqListPage() {
                             {rfq.items.map((item) => (
                               <div
                                 key={item.id}
-                                className="flex items-start justify-between gap-3 text-xs bg-[#F8F9FA] rounded-lg px-3 py-2"
+                                className="flex items-start justify-between gap-3 text-xs bg-[#F8F9FA] dark:bg-gray-950 rounded-lg px-3 py-2"
                               >
                                 <div className="min-w-0">
                                   <p className="font-semibold text-[#1A1A1A] dark:text-white truncate">{item.productName}</p>
@@ -630,7 +630,7 @@ export function RfqListPage() {
                           )}
 
                           {!detailLoading && !detailError && detail && detail.quotes.length === 0 && (
-                            <div className="bg-[#F8F9FA] rounded-lg px-3 py-4 text-center">
+                            <div className="bg-[#F8F9FA] dark:bg-gray-950 rounded-lg px-3 py-4 text-center">
                               <p className="text-xs font-semibold text-[#1A1A1A] dark:text-white">No quotes yet — sellers see this RFQ in their inbox.</p>
                             </div>
                           )}
@@ -674,7 +674,7 @@ export function RfqListPage() {
                                     </div>
 
                                     {quote.message && (
-                                      <div className="flex gap-1.5 text-[11px] text-[#4B5563] dark:text-gray-300 bg-[#F8F9FA] rounded-lg px-2.5 py-1.5">
+                                      <div className="flex gap-1.5 text-[11px] text-[#4B5563] dark:text-gray-300 bg-[#F8F9FA] dark:bg-gray-950 rounded-lg px-2.5 py-1.5">
                                         <MessageSquareText className="h-3 w-3 shrink-0 mt-0.5 text-[#9CA3AF] dark:text-gray-500" />
                                         <span className="whitespace-pre-line">{quote.message}</span>
                                       </div>
@@ -759,7 +759,7 @@ export function RfqListPage() {
                               Convert to order
                             </button>
                           ) : acceptedQuote ? (
-                            <p className="text-[11px] text-[#6B7280] dark:text-gray-400 bg-[#F8F9FA] rounded-lg px-3 py-2">
+                            <p className="text-[11px] text-[#6B7280] dark:text-gray-400 bg-[#F8F9FA] dark:bg-gray-950 rounded-lg px-3 py-2">
                               This request is not linked to a marketplace product, so its accepted quote cannot be converted into an order.
                             </p>
                           ) : null
@@ -799,7 +799,7 @@ export function RfqListPage() {
 
             {convertTarget && (
               <div className="space-y-2 text-xs">
-                <div className="bg-[#F8F9FA] rounded-xl px-3 py-2.5 space-y-1.5">
+                <div className="bg-[#F8F9FA] dark:bg-gray-950 rounded-xl px-3 py-2.5 space-y-1.5">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-[#6B7280] dark:text-gray-400">Quantity</span>
                     <span className="font-bold text-[#1A1A1A] dark:text-white">

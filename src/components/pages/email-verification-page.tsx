@@ -368,7 +368,7 @@ export default function EmailVerificationPage() {
               <Button
                 onClick={handleOpenEmailApp}
                 variant="outline"
-                className="w-full h-[52px] border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-[#F8F9FA] text-[#1A1A1A] dark:text-white rounded-xl text-base font-semibold"
+                className="w-full h-[52px] border-[#E0E0E0] dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-[#F8F9FA] dark:bg-gray-950 text-[#1A1A1A] dark:text-white rounded-xl text-base font-semibold"
                 size="lg"
               >
                 <ExternalLink className="w-5 h-5 mr-2" />
@@ -438,7 +438,7 @@ export default function EmailVerificationPage() {
   /* ─── Mobile Layout ─── */
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
         <HeaderBar onBack={goBack} />
         <DesktopHeader onBack={goBack} />
 
@@ -457,7 +457,7 @@ export default function EmailVerificationPage() {
   /* ─── Desktop Layout ─── */
   if (isMobile === false) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
         <HeaderBar onBack={goBack} />
         <DesktopHeader onBack={goBack} />
 
@@ -477,7 +477,7 @@ export default function EmailVerificationPage() {
 
   /* ─── SSR Loading State ─── */
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center">
       <div className="animate-pulse flex flex-col items-center gap-4">
         <div className="w-64 h-48 bg-gray-200 rounded" />
         <div className="h-8 w-48 bg-gray-200 rounded" />

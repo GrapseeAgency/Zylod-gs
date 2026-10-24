@@ -129,7 +129,7 @@ export default function ResetPasswordPage() {
       <div className="flex items-center gap-2 flex-wrap">
         <Badge
           variant="outline"
-          className="text-[10px] font-medium border-[#E0E0E0] dark:border-gray-800 bg-[#F8F9FA]"
+          className="text-[10px] font-medium border-[#E0E0E0] dark:border-gray-800 bg-[#F8F9FA] dark:bg-gray-950"
         >
           <Info className="w-3 h-3 mr-1" />
           {strengthInfo.entropy} bits entropy
@@ -311,7 +311,7 @@ export default function ResetPasswordPage() {
   // ─── Mobile Layout ───
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
         {/* Header Bar */}
         <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800">
           <button
@@ -335,7 +335,7 @@ export default function ResetPasswordPage() {
           >
             {/* Hero Section */}
             <div className="relative mb-6">
-              <div className="w-28 h-28 rounded-full bg-[#FFE4E6] flex items-center justify-center">
+              <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
                 <div className="relative">
                   <Lock className="h-10 w-10 text-[#C8102E]" strokeWidth={1.8} />
                   <RefreshCw className="h-5 w-5 text-[#C8102E] absolute -bottom-1 -right-2" strokeWidth={2} />
@@ -371,7 +371,7 @@ export default function ResetPasswordPage() {
   // ─── Desktop Layout ───
   if (isMobile === false) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center p-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -394,7 +394,7 @@ export default function ResetPasswordPage() {
           {/* Hero Section */}
           <div className="flex flex-col items-center mb-6">
             <div className="relative mb-5">
-              <div className="w-28 h-28 rounded-full bg-[#FFE4E6] flex items-center justify-center">
+              <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center">
                 <div className="relative">
                   <Lock className="h-10 w-10 text-[#C8102E]" strokeWidth={1.8} />
                   <RefreshCw className="h-5 w-5 text-[#C8102E] absolute -bottom-1 -right-2" strokeWidth={2} />
@@ -428,9 +428,9 @@ export default function ResetPasswordPage() {
 
   // ─── SSR Loading State ───
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center">
       <div className="animate-pulse flex flex-col items-center gap-4">
-        <div className="w-28 h-28 rounded-full bg-[#FFE4E6]" />
+        <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10" />
         <div className="h-8 w-48 bg-gray-200 rounded" />
         <div className="h-4 w-64 bg-gray-100 dark:bg-gray-900 rounded" />
       </div>

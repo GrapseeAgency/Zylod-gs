@@ -159,7 +159,7 @@ export function RegisterPage() {
           <span>Verify you&apos;re human</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] border border-[#E0E0E0] dark:border-gray-800 rounded-lg px-3 py-2.5">
+          <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] dark:bg-gray-950 border border-[#E0E0E0] dark:border-gray-800 rounded-lg px-3 py-2.5">
             <span className="text-sm font-semibold text-[#1A1A1A] dark:text-white whitespace-nowrap">{captcha.question}</span>
             <span className="text-[#6B7280] dark:text-gray-400">=</span>
             <Input
@@ -272,7 +272,7 @@ export function RegisterPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="min-h-screen bg-[#F8F9FA] flex flex-col"
+        className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col"
       >
         {/* Header Bar */}
         <header className="flex items-center justify-between px-4 h-14 border-b border-[#E0E0E0] dark:border-gray-800/60 bg-white dark:bg-gray-900">
@@ -308,7 +308,7 @@ export function RegisterPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-8"
+      className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center p-8"
     >
       {/* Subtle background pattern */}
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none">

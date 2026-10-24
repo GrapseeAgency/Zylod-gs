@@ -79,7 +79,7 @@ function LockoutOverlay({ remainingMs }: { remainingMs: number }) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="bg-[#FEF2F2] border border-[#C8102E]/20 rounded-xl p-4 mb-4"
+      className="bg-[#FEF2F2] dark:bg-red-950/30 border border-[#C8102E]/20 rounded-xl p-4 mb-4"
     >
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-full bg-[#C8102E]/10 flex items-center justify-center shrink-0">
@@ -444,7 +444,7 @@ export function LoginPage() {
                 value={emailOrPhone}
                 onChange={(e) => { setEmailOrPhone(e.target.value); setError(null) }}
                 disabled={isLoading || rateLimitState.limited}
-                className="pl-10 h-11 bg-[#F8F9FA] border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                className="pl-10 h-11 bg-[#F8F9FA] dark:bg-gray-950 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
               />
             </div>
           </div>
@@ -463,7 +463,7 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setError(null) }}
                 disabled={isLoading || rateLimitState.limited}
-                className="pl-10 pr-10 h-11 bg-[#F8F9FA] border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+                className="pl-10 pr-10 h-11 bg-[#F8F9FA] dark:bg-gray-950 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
               />
               <button
                 type="button"
@@ -523,7 +523,7 @@ export function LoginPage() {
                   Verify you&apos;re human
                 </Label>
                 <div className="flex items-center gap-3">
-                  <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] border border-[#E0E0E0] dark:border-gray-800 rounded-lg px-3 py-2.5">
+                  <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] dark:bg-gray-950 border border-[#E0E0E0] dark:border-gray-800 rounded-lg px-3 py-2.5">
                     <span className="text-sm font-semibold text-[#1A1A1A] dark:text-white whitespace-nowrap">{captcha.question}</span>
                     <span className="text-[#6B7280] dark:text-gray-400">=</span>
                     <Input
@@ -607,7 +607,7 @@ export function LoginPage() {
             type="button"
             variant="outline"
             disabled={socialLoading !== null}
-            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] dark:text-white font-medium text-sm shadow-sm disabled:opacity-60"
+            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 hover:bg-[#F8F9FA] dark:bg-gray-950 rounded-lg text-[#1A1A1A] dark:text-white font-medium text-sm shadow-sm disabled:opacity-60"
             onClick={() => handleSocialLogin('google')}
           >
             {socialLoading === 'google' ? (
@@ -621,7 +621,7 @@ export function LoginPage() {
             type="button"
             variant="outline"
             disabled={socialLoading !== null}
-            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 hover:bg-[#F8F9FA] rounded-lg text-[#1A1A1A] dark:text-white font-medium text-sm shadow-sm disabled:opacity-60"
+            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 hover:bg-[#F8F9FA] dark:bg-gray-950 rounded-lg text-[#1A1A1A] dark:text-white font-medium text-sm shadow-sm disabled:opacity-60"
             onClick={() => handleSocialLogin('facebook')}
           >
             {socialLoading === 'facebook' ? (
@@ -665,7 +665,7 @@ export function LoginPage() {
   /* ─── Mobile Layout ─── */
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center px-4 py-8">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-[400px]">
           {cardContent}
         </div>
@@ -675,7 +675,7 @@ export function LoginPage() {
 
   /* ─── Desktop Layout ─── */
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {cardContent}
       </div>

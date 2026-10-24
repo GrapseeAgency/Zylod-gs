@@ -62,7 +62,7 @@ export function SuppliersDirectoryPage() {
   }, [search, load])
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-[calc(64px+env(safe-area-inset-bottom)+24px)]">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 pb-[calc(64px+env(safe-area-inset-bottom)+24px)]">
       {/* ─── Top Nav Bar ─── */}
       <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4">
         <button

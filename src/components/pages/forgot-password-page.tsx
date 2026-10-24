@@ -186,7 +186,7 @@ export function ForgotPasswordPage() {
       <button
         type="button"
         onClick={() => navigate('login')}
-        className="p-2 rounded-lg hover:bg-[#F8F9FA] transition-colors active:scale-95"
+        className="p-2 rounded-lg hover:bg-[#F8F9FA] dark:bg-gray-950 transition-colors active:scale-95"
         aria-label="Go back to login"
       >
         <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
@@ -195,7 +195,7 @@ export function ForgotPasswordPage() {
       <button
         type="button"
         onClick={() => navigate('help-center')}
-        className="p-2 rounded-lg hover:bg-[#F8F9FA] transition-colors"
+        className="p-2 rounded-lg hover:bg-[#F8F9FA] dark:bg-gray-950 transition-colors"
         aria-label="Help"
       >
         <HelpCircle className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
@@ -213,7 +213,7 @@ export function ForgotPasswordPage() {
     >
       {/* ─── Hero Section: Lock icon in circular bg ─── */}
       <motion.div variants={itemVariants} custom={1} className="flex flex-col items-center mb-6">
-        <div className="w-28 h-28 rounded-full bg-[#FFE4E6] flex items-center justify-center mb-5 shadow-sm">
+        <div className="w-28 h-28 rounded-full bg-[#FFE4E6] dark:bg-primary/10 flex items-center justify-center mb-5 shadow-sm">
           <div className="relative">
             <KeyRound className="w-12 h-12 text-[#C8102E]" strokeWidth={1.8} />
             {/* Circular arrow overlay indicating reset */}
@@ -244,7 +244,7 @@ export function ForgotPasswordPage() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="w-full bg-[#FEF2F2] border border-[#C8102E]/20 rounded-lg p-4 mb-4"
+            className="w-full bg-[#FEF2F2] dark:bg-red-950/30 border border-[#C8102E]/20 rounded-lg p-4 mb-4"
           >
             <div className="flex items-start gap-3">
               <ShieldAlert className="w-5 h-5 text-[#C8102E] shrink-0 mt-0.5" />
@@ -292,7 +292,7 @@ export function ForgotPasswordPage() {
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(null) }}
               disabled={isLoading || isSuccess || isRateLimitedLocal}
-              className="pl-10 h-11 bg-[#F8F9FA] border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
+              className="pl-10 h-11 bg-[#F8F9FA] dark:bg-gray-950 border-[#E0E0E0] dark:border-gray-800 rounded-lg text-[#1A1A1A] dark:text-white placeholder:text-[#9CA3AF] dark:text-gray-500 focus-visible:ring-[#C8102E]/30 focus-visible:border-[#C8102E]"
             />
           </div>
         </div>
@@ -336,7 +336,7 @@ export function ForgotPasswordPage() {
               <span>Verify you&apos;re human</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] border border-[#E0E0E0] dark:border-gray-800 rounded-lg px-3 py-2.5">
+              <div className="flex-1 flex items-center gap-2 bg-[#F8F9FA] dark:bg-gray-950 border border-[#E0E0E0] dark:border-gray-800 rounded-lg px-3 py-2.5">
                 <span className="text-sm font-semibold text-[#1A1A1A] dark:text-white whitespace-nowrap">{captcha.question}</span>
                 <span className="text-[#6B7280] dark:text-gray-400">=</span>
                 <Input
@@ -446,7 +446,7 @@ export function ForgotPasswordPage() {
   /* ─── Mobile Layout ─── */
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex flex-col">
         {headerBar}
         <div className="flex-1 flex flex-col items-center">
           <div className="w-full max-w-[400px]">
@@ -466,7 +466,7 @@ export function ForgotPasswordPage() {
 
   /* ─── Desktop Layout ─── */
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <motion.div
           variants={containerVariants}
@@ -479,7 +479,7 @@ export function ForgotPasswordPage() {
             <button
               type="button"
               onClick={() => navigate('login')}
-              className="p-2 rounded-lg hover:bg-[#F8F9FA] transition-colors"
+              className="p-2 rounded-lg hover:bg-[#F8F9FA] dark:bg-gray-950 transition-colors"
               aria-label="Go back to login"
             >
               <ArrowLeft className="w-5 h-5 text-[#C8102E]" />
@@ -488,7 +488,7 @@ export function ForgotPasswordPage() {
             <button
               type="button"
               onClick={() => navigate('help-center')}
-              className="p-2 rounded-lg hover:bg-[#F8F9FA] transition-colors"
+              className="p-2 rounded-lg hover:bg-[#F8F9FA] dark:bg-gray-950 transition-colors"
               aria-label="Help"
             >
               <HelpCircle className="w-5 h-5 text-[#6B7280] dark:text-gray-400" />
