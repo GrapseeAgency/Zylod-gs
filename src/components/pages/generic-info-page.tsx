@@ -1530,7 +1530,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
       </div>
 
       {/* Messages area */}
-      <Card className="border-0 bg-[#F2F3F5] shadow-inner flex-1 overflow-hidden rounded-2xl">
+      <Card className="border-0 bg-[#F2F3F5] dark:bg-gray-900 shadow-inner flex-1 overflow-hidden rounded-2xl">
         <div ref={scrollRef} className="h-full overflow-y-auto px-4 py-3 space-y-4 scroll-smooth">
           {creatingConv ? (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-2">

@@ -423,7 +423,7 @@ export function TwoFactorAuthPage() {
               <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
             </div>
           ) : (
-            <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB]" />
+            <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB] dark:border-gray-700" />
           )}
         </div>
       </button>
@@ -456,7 +456,7 @@ export function TwoFactorAuthPage() {
               <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
             </div>
           ) : (
-            <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB]" />
+            <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB] dark:border-gray-700" />
           )}
         </div>
       </button>

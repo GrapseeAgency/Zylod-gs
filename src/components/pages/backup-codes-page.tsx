@@ -179,7 +179,7 @@ export function BackupCodesPage() {
       animate="visible"
       className="flex flex-col items-center pt-8 pb-2"
     >
-      <div className="w-28 h-28 rounded-full bg-[#FEE2E2] flex items-center justify-center">
+      <div className="w-28 h-28 rounded-full bg-[#FEE2E2] dark:bg-red-950/30 flex items-center justify-center">
         <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
       </div>
     </motion.div>
@@ -324,7 +324,7 @@ export function BackupCodesPage() {
       animate="visible"
       className="px-4 pt-6 pb-8"
     >
-      <div className="flex items-start gap-3 bg-[#FFF5F5] rounded-xl p-4 border border-[#FEE2E2]">
+      <div className="flex items-start gap-3 bg-[#FFF5F5] dark:bg-red-950/30 rounded-xl p-4 border border-[#FEE2E2]">
         <AlertTriangle className="w-5 h-5 text-[#C8102E] shrink-0 mt-0.5" />
         <div>
           <p className="text-[13px] font-bold text-[#C8102E] uppercase tracking-wider">

@@ -110,7 +110,7 @@ export function ClearanceSalePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDF2F4] pb-24 md:pb-8">
+    <div className="min-h-screen bg-[#FDF2F4] dark:bg-primary/5 pb-24 md:pb-8">
       {/* ─── Top Header ─── */}
       <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-[#E0E0E0] dark:border-gray-800 h-14 flex items-center justify-between px-4 md:px-6">
         <button

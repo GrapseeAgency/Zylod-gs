@@ -187,7 +187,7 @@ export function BrandShowcasePage() {
                 <div className="absolute bottom-3 left-3 right-3">
                   <div className="bg-white dark:bg-gray-900/95 text-[#1A1A1A] dark:text-white rounded-xl p-2.5 flex items-center justify-between shadow-md mb-2">
                     <span className="font-bold text-xs">{hero.name}</span>
-                    <span className="bg-[#FFF1F2] text-[#C8102E] border border-[#FECDD3] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <span className="bg-[#FFF1F2] dark:bg-rose-950/30 text-[#C8102E] border border-[#FECDD3] text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Package className="h-3 w-3" /> {hero.productCount} products
                     </span>
                   </div>

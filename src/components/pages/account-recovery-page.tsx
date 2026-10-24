@@ -114,7 +114,7 @@ export function AccountRecoveryPage() {
       animate="visible"
       className="flex flex-col items-center pt-8 pb-2"
     >
-      <div className="w-28 h-28 rounded-full bg-[#FEE2E2] flex items-center justify-center">
+      <div className="w-28 h-28 rounded-full bg-[#FEE2E2] dark:bg-red-950/30 flex items-center justify-center">
         <ShieldCheck className="w-14 h-14 text-[#C8102E]" strokeWidth={1.5} />
       </div>
     </motion.div>
@@ -238,7 +238,7 @@ export function AccountRecoveryPage() {
         onClick={() => setSelectedMethod('identity')}
         className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'identity'
-            ? 'border-[#C8102E] bg-[#FFF5F5] shadow-md'
+            ? 'border-[#C8102E] bg-[#FFF5F5] dark:bg-red-950/30 shadow-md'
             : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         }`}
       >
@@ -267,7 +267,7 @@ export function AccountRecoveryPage() {
                 <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
               </div>
             ) : (
-              <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB]" />
+              <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB] dark:border-gray-700" />
             )}
           </div>
         </div>
@@ -278,7 +278,7 @@ export function AccountRecoveryPage() {
         onClick={() => setSelectedMethod('security-team')}
         className={`w-full text-left p-4 rounded-xl border-2 transition-all bg-white dark:bg-gray-900 ${
           selectedMethod === 'security-team'
-            ? 'border-[#C8102E] bg-[#FFF5F5] shadow-md'
+            ? 'border-[#C8102E] bg-[#FFF5F5] dark:bg-red-950/30 shadow-md'
             : 'border-[#E0E0E0] dark:border-gray-800 shadow-sm'
         }`}
       >
@@ -301,7 +301,7 @@ export function AccountRecoveryPage() {
                 <div className="w-2 h-2 rounded-full bg-white dark:bg-gray-900" />
               </div>
             ) : (
-              <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB]" />
+              <div className="w-5 h-5 rounded-full border-2 border-[#D1D5DB] dark:border-gray-700" />
             )}
           </div>
         </div>

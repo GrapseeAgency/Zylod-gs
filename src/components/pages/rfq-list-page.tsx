@@ -715,7 +715,7 @@ export function RfqListPage() {
                                           className={`flex-1 min-h-11 rounded-lg text-xs font-bold border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                                             isArmed && armed?.action === 'reject'
                                               ? 'bg-[#C8102E] text-white border-[#C8102E] hover:bg-[#A50D24]'
-                                              : 'bg-white dark:bg-gray-900 text-[#C8102E] border-[#FECDD3] hover:bg-[#FFF1F2]'
+                                              : 'bg-white dark:bg-gray-900 text-[#C8102E] border-[#FECDD3] hover:bg-[#FFF1F2] dark:bg-rose-950/30'
                                           }`}
                                           aria-label={isArmed && armed?.action === 'reject' ? 'Confirm reject quote' : 'Reject quote'}
                                         >
@@ -839,7 +839,7 @@ export function RfqListPage() {
                   immediately and this request is marked converted — this cannot be undone.
                 </p>
                 {convertError && (
-                  <div className="rounded-lg border border-[#FECDD3] bg-[#FFF1F2] px-3 py-2 space-y-0.5">
+                  <div className="rounded-lg border border-[#FECDD3] bg-[#FFF1F2] dark:bg-rose-950/30 px-3 py-2 space-y-0.5">
                     <p className="text-[11px] font-semibold text-[#C8102E]">{convertError}</p>
                     {convertAvailable != null && (
                       <p className="text-[11px] text-[#C8102E]">

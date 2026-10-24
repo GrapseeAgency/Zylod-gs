@@ -291,7 +291,7 @@ export default function OtpVerificationPage() {
         <button
           type="button"
           onClick={() => setOtp(devCode)}
-          className="w-full max-w-[320px] flex items-center justify-center gap-2 bg-[#FFFBEB] border border-[#FDE68A] rounded-lg px-3 py-2 active:scale-[0.98] transition-transform"
+          className="w-full max-w-[320px] flex items-center justify-center gap-2 bg-[#FFFBEB] dark:bg-amber-950/30 border border-[#FDE68A] rounded-lg px-3 py-2 active:scale-[0.98] transition-transform"
         >
           <Info className="w-3.5 h-3.5 text-[#B45309] shrink-0" />
           <span className="text-xs text-[#92400E]">
