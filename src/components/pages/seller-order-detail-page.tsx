@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Package, User, MapPin, Receipt, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
@@ -10,6 +11,7 @@ export function SellerOrderDetailPage() {
   const { pageParams, goBack, navigate } = useNavigationStore();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [accepting, setAccepting] = useState(false);
 
   useEffect(() => {
     if (!pageParams?.orderId) {
@@ -149,8 +151,32 @@ export function SellerOrderDetailPage() {
             >
               Reject
             </button>
-            <button className="flex-1 py-3 px-4 bg-[#C8102E] text-white font-medium rounded-xl shadow-sm">
-              Accept Order
+            <button
+              onClick={async () => {
+                if (!order?.id) return
+                setAccepting(true)
+                try {
+                  const res = await fetch(`/api/supplier/orders/${order.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'confirmed' }),
+                  })
+                  if (!res.ok) throw new Error('Failed to accept order')
+                  const data = await res.json()
+                  setOrder((prev: any) => ({ ...prev, status: 'confirmed', ...(data?.order || {}) }))
+                  toast.success('Order accepted', { description: 'The buyer has been notified. Proceed to fulfillment.' })
+                } catch (err) {
+                  console.error(err)
+                  toast.error('Could not accept order')
+                } finally {
+                  setAccepting(false)
+                }
+              }}
+              disabled={accepting}
+              className="flex-1 py-3 px-4 bg-[#C8102E] text-white font-medium rounded-xl shadow-sm disabled:opacity-60"
+              aria-label="Accept this order"
+            >
+              {accepting ? 'Accepting…' : 'Accept Order'}
             </button>
           </>
         )}

@@ -86,7 +86,14 @@ export function FavoritesPage() {
           <h1 className="font-semibold text-lg md:text-2xl">Favorites</h1>
           <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Your highest-rated saved products</p>
         </div>
-        <button className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800">
+        <button
+          onClick={() => {
+            const idx = filters.indexOf(activeFilter)
+            setActiveFilter(filters[(idx + 1) % filters.length])
+          }}
+          className="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"
+          aria-label={`Filter: ${activeFilter}, tap to change`}
+        >
           <Filter size={20} />
         </button>
       </header>
@@ -184,7 +191,11 @@ export function FavoritesPage() {
                     <div className="mt-auto">
                       <p className="font-bold text-primary text-sm">${item.price.toFixed(2)}</p>
                       <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-2">Min. Order: {item.moq}</p>
-                      <button className="w-full bg-primary text-white py-1.5 rounded-full text-xs font-medium">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); navigate('product-detail', { productId: item.productId }) }}
+                        className="w-full bg-primary text-white py-1.5 rounded-full text-xs font-medium"
+                        aria-label={`Order ${item.productName} now`}
+                      >
                         Order Now
                       </button>
                     </div>

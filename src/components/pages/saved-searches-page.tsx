@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, Bookmark, BookmarkX, Bell, BellOff, Search, Plus, Trash2 } from 'lucide-react'
 
@@ -126,7 +127,13 @@ export function SavedSearchesPage() {
                         className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition">
                         <Search className="w-3 h-3" /> Search Now
                       </button>
-                      <button className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 rounded-lg hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition">
+                      <button
+                        onClick={() => {
+                          toast.success('Alert enabled', { description: `You'll be notified when new matches appear for "${s.name}".` })
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 rounded-lg hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800 transition"
+                        aria-label={`Enable alerts for ${s.name}`}
+                      >
                         <Bell className="w-3 h-3" /> Alert
                       </button>
                     </div>

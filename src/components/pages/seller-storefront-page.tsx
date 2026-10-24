@@ -173,7 +173,24 @@ export const SellerStorefrontPage = () => {
                 <Edit className="w-5 h-5" />
               </button>
             )}
-            <button className="p-2 bg-black/50 text-white rounded-full backdrop-blur-sm">
+            <button
+              onClick={async () => {
+                try {
+                  if (typeof navigator !== 'undefined' && navigator.share) {
+                    await navigator.share({ title: data?.companyName || 'Zylod storefront', url: window.location.href })
+                  } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                    await navigator.clipboard.writeText(window.location.href)
+                    toast.success('Storefront link copied to clipboard')
+                  } else {
+                    toast.info('Sharing not supported on this device')
+                  }
+                } catch {
+                  /* user dismissed share sheet — no toast */
+                }
+              }}
+              className="p-2 bg-black/50 text-white rounded-full backdrop-blur-sm"
+              aria-label="Share this storefront"
+            >
               <Share2 className="w-5 h-5" />
             </button>
           </div>

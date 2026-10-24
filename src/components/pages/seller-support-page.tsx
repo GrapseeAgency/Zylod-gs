@@ -58,7 +58,11 @@ export function SellerSupportPage() {
             <PlusCircle className="w-5 h-5 mr-2" />
             New Ticket
           </button>
-          <button className="flex-1 bg-primary text-white py-3 rounded-lg flex items-center justify-center font-bold">
+          <button
+            onClick={() => navigate('live-chat')}
+            className="flex-1 bg-primary text-white py-3 rounded-lg flex items-center justify-center font-bold"
+            aria-label="Open live chat with support"
+          >
             <LifeBuoy className="w-5 h-5 mr-2" />
             Live Chat
           </button>

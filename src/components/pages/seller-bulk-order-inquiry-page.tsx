@@ -509,6 +509,7 @@ export function SellerBulkOrderInquiryPage() {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 disabled
+                aria-label="RFQ-scoped messaging is not yet shipped — include notes in the quote text instead"
                 className="flex-1 min-h-12 py-3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 text-gray-400 dark:text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-800 dark:border-gray-700 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
               >
                 <MessageCircle className="w-4 h-4" /> Message

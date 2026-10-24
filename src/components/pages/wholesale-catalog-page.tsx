@@ -162,7 +162,11 @@ export function WholesaleCatalogPage() {
             placeholder="Search catalog..."
             className="pl-10 pr-10 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
           />
-          <button className="absolute right-3 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400">
+          <button
+            onClick={() => navigate('barcode-scanner')}
+            className="absolute right-3 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400"
+            aria-label="Scan QR code in search bar"
+          >
             <QrCode className="h-4 w-4" />
           </button>
         </div>

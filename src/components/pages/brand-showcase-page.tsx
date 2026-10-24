@@ -231,7 +231,10 @@ export function BrandShowcasePage() {
                   </div>
                 </div>
 
-                <button className="px-3 py-1.5 bg-[#F3F4F6] dark:bg-gray-900 hover:bg-gray-200 text-[#1A1A1A] dark:text-white text-xs font-semibold rounded-lg shrink-0 flex items-center gap-1 transition-colors">
+                <button
+                  onClick={(e) => { e.stopPropagation(); openBrand(brand.name) }}
+                  className="px-3 py-1.5 bg-[#F3F4F6] dark:bg-gray-900 hover:bg-gray-200 text-[#1A1A1A] dark:text-white text-xs font-semibold rounded-lg shrink-0 flex items-center gap-1 transition-colors"
+                >
                   <span>View</span>
                   <ChevronRight className="h-3 w-3" />
                 </button>

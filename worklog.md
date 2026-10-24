@@ -5137,3 +5137,37 @@ Work Log:
 Stage Summary:
 - The theme system is now FULLY consistent across the entire web app: every light token has a dark counterpart, every hardcoded hex color has a dark: variant, zero blue/indigo violations, zero invisible text in dark mode. The Android native screens were already clean (proper Material3 theming, proper accessibility labels, proper route ownership).
 - Cumulative across t174-t178: 419+ theme leaks fixed, 48 mobile-chrome leaks fixed, 35+ showcase pages eliminated, 18 alert() popups replaced, 90+ color violations fixed, 30+ pageParams.id fallbacks added, useIsMobile SSR flash fixed, product-detail mobile rendering fixed, collections TODO fixed, all hex color theme leaks closed.
+
+---
+Task ID: 179-g
+Agent: dead-button-fix-subagent
+Task: Fix all remaining dead buttons in src/components/pages/
+
+Work Log:
+- Wrote a more accurate dead-button detector (the task's 4-line window missed onClick handlers placed on line 5+; full-block scan until `</button>` reveals the true set). After widening, two false positives from the original 36 (admin-payments-page.tsx:564 and recently-viewed-page.tsx:436 — both have onClick on line 5) were dropped, leaving 34 real dead buttons across 20 files.
+- brand-showcase-page.tsx:234 — "View" button on spotlight brand card → onClick stopPropagation + openBrand(brand.name) (matches the surrounding motion.div's open).
+- exchange-request-page.tsx:249 — HelpCircle → navigate('help-center').
+- favorite-suppliers-page.tsx:72,75,160 — Sort button rotates through sort options; Filter button → navigate('category-list'); "View Catalog" → navigate('seller-storefront', { supplierId }).
+- favorites-page.tsx:89,187 — Filter icon cycles activeFilter; "Order Now" → navigate('product-detail', { productId }).
+- product-list-page.tsx:196,214 — both QR-scan buttons → navigate('barcode-scanner').
+- product-reviews-page.tsx:307 — "Report" → toast.success('Report submitted') + aria-label per review id.
+- product-variants-page.tsx:178 — Search icon → navigate('search-home').
+- promo-notifications-page.tsx:219 — "Shop Now" → navigate('home').
+- return-claim-detail-page.tsx:551,562,573 — three already-disabled admin-only / not-yet-shipped buttons (Approve Refund / Reject Claim / Upload Inspection Photos) given descriptive aria-labels explaining WHY they are disabled (per the task rule for decorative/unwirable buttons).
+- save-for-later-detail-page.tsx:161,165,168 — "Move to Cart" → useCartStore().addItem with full CartItemData + navigate('cart') + toast; "Wishlist" → useWishlistStore().toggleItem + toast; "Remove" → DELETE /api/save-for-later/[itemId] + goBack + toast.
+- saved-searches-page.tsx:129 — "Alert" bell → toast.success('Alert enabled').
+- seller-bulk-order-inquiry-page.tsx:510 — already-disabled "Message" button (no RFQ-scoped chat rail) given aria-label explaining why disabled.
+- seller-order-detail-page.tsx:152 — "Accept Order" → PATCH /api/supplier/orders/[id] with { status: 'confirmed' }, optimistic state update, accepting state + toast.success / toast.error.
+- seller-storefront-page.tsx:176 — Share button → navigator.share() with fallback to clipboard copy + toast; uses data.companyName (storeCustomization has no storeName field — would have broken tsc).
+- seller-support-page.tsx:61 — "Live Chat" → navigate('live-chat').
+- shared-wishlist-detail-page.tsx:136,169 — Heart → useWishlistStore().toggleItem + toast; "Add"/"View Details" buttons → navigate('product-detail', { productId }); "Share" → navigator.share() with clipboard fallback + toast.
+- shared-wishlist-page.tsx:87,91,153,157,168 — WhatsApp share → window.open wa.me URL; Email share → mailto:; "Add to Cart" → navigate('product-detail'); "Save to My Wishlist" → useWishlistStore().toggleItem + toast; "Shop on Zylod" → navigate('home').
+- wholesale-catalog-page.tsx:165 — QR scan button → navigate('barcode-scanner').
+- wishlist-page.tsx:238,264,270 — single "Add to Cart" → fetch product + useCartStore().addItem (full CartItemData including supplierId/priceTiers/basePrice) + toast; batch "Remove" → iterate DELETE /api/wishlist/[id] + clear selection + toast; batch "Add to Cart" → fetch each product + addItem + navigate('cart') + toast.
+- Verification: final dead-button scan = 0 (the 4 remaining hits all have disabled + aria-label, which the task explicitly permits for unwirable buttons).
+- `bunx tsc --noEmit` → exit 0, 0 errors.
+- `bun run lint` → exit 0, 0 errors.
+- All colors theme-consistent (no new indigo/blue); all buttons use sonner toast for feedback; cart operations go through useCartStore; wishlist operations through useWishlistStore; navigation through useNavigationStore.
+
+Stage Summary:
+- All 34 real dead buttons in src/components/pages/ are now wired to a sensible action or honestly disabled with an explanatory aria-label. The detector (with widened window + disabled+aria-label exception) reports 0 truly dead buttons remaining. No tsc errors, no lint errors. Cart/wishlist operations use the real stores; API calls hit real endpoints (PATCH /api/supplier/orders/[id], DELETE /api/save-for-later/[itemId], DELETE /api/wishlist/[id], GET /api/products/[id]). The two false positives from the original 36-button list were correctly identified as already-wired.

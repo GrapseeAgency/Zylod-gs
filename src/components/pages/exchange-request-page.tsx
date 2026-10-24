@@ -246,7 +246,12 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
             </button>
             <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Exchange Request</h1>
           </div>
-          <button className="p-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300" title="Help">
+          <button
+            onClick={() => navigate('help-center')}
+            className="p-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300"
+            title="Help"
+            aria-label="Open help center"
+          >
             <HelpCircle className="h-5 w-5" />
           </button>
         </div>

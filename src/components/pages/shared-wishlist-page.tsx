@@ -4,9 +4,13 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Copy, Share2, Check, QrCode } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useWishlistStore } from '@/store/wishlist-store'
+import { toast } from 'sonner'
 
 export function SharedWishlistPage() {
-  const { goBack, pageParams } = useNavigationStore()
+  const { goBack, navigate, pageParams } = useNavigationStore()
+  const toggleWishlist = useWishlistStore((s) => s.toggleItem)
+  const isInWishlist = useWishlistStore((s) => s.isInWishlist)
   const { mode, shareToken } = pageParams || {}
   
   const [shareData, setShareData] = useState<any>(null)
@@ -84,15 +88,29 @@ export function SharedWishlistPage() {
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              <button className="flex flex-col items-center gap-2 p-3 bg-green-50 text-green-700 rounded-lg">
+              <button
+                onClick={() => {
+                  const url = shareData?.token ? `${window.location.origin}/shared?token=${shareData.token}` : window.location.href
+                  window.open(`https://wa.me/?text=${encodeURIComponent(`Check out this wishlist: ${url}`)}`, '_blank', 'noopener,noreferrer')
+                }}
+                className="flex flex-col items-center gap-2 p-3 bg-green-50 text-green-700 rounded-lg"
+                aria-label="Share via WhatsApp"
+              >
                 <Share2 className="w-5 h-5" />
                 <span className="text-xs font-medium">WhatsApp</span>
               </button>
-              <button className="flex flex-col items-center gap-2 p-3 bg-primary/5 text-primary rounded-lg">
+              <button
+                onClick={() => {
+                  const url = shareData?.token ? `${window.location.origin}/shared?token=${shareData.token}` : window.location.href
+                  window.location.href = `mailto:?subject=${encodeURIComponent('Shared Zylod Wishlist')}&body=${encodeURIComponent(`Check out this wishlist: ${url}`)}`
+                }}
+                className="flex flex-col items-center gap-2 p-3 bg-primary/5 text-primary rounded-lg"
+                aria-label="Share via Email"
+              >
                 <Share2 className="w-5 h-5" />
                 <span className="text-xs font-medium">Email</span>
               </button>
-              <button onClick={copyToClipboard} className="flex flex-col items-center gap-2 p-3 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 rounded-lg">
+              <button onClick={copyToClipboard} className="flex flex-col items-center gap-2 p-3 bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 rounded-lg" aria-label="Copy share link">
                 <Copy className="w-5 h-5" />
                 <span className="text-xs font-medium">Copy Link</span>
               </button>
@@ -150,11 +168,33 @@ export function SharedWishlistPage() {
                 
                 <div className="mt-auto space-y-2">
                   {shareData.settings?.allowAddToCart && (
-                    <button className="w-full py-1.5 bg-primary text-white text-xs font-medium rounded active:bg-primary/90">
+                    <button
+                      onClick={() => navigate('product-detail', { productId: item.product.id })}
+                      className="w-full py-1.5 bg-primary text-white text-xs font-medium rounded active:bg-primary/90"
+                      aria-label={`View ${item.product.name}`}
+                    >
                       Add to Cart
                     </button>
                   )}
-                  <button className="w-full py-1.5 bg-white dark:bg-gray-900 border border-gray-300 text-gray-700 dark:text-gray-300 text-xs font-medium rounded active:bg-gray-50 dark:bg-gray-950">
+                  <button
+                    onClick={() => {
+                      toggleWishlist({
+                        id: item.product.id,
+                        name: item.product.name,
+                        price: item.product.basePrice || 0,
+                        originalPrice: item.product.basePrice || 0,
+                        moq: item.product.moq || 1,
+                        unit: item.product.unit || 'piece',
+                        supplier: '',
+                        location: '',
+                        category: '',
+                        customizable: false,
+                      })
+                      toast.success(isInWishlist(item.product.id) ? 'Removed from wishlist' : 'Saved to your wishlist')
+                    }}
+                    className="w-full py-1.5 bg-white dark:bg-gray-900 border border-gray-300 text-gray-700 dark:text-gray-300 text-xs font-medium rounded active:bg-gray-50 dark:bg-gray-950"
+                    aria-label={`Save ${item.product.name} to your wishlist`}
+                  >
                     Save to My Wishlist
                   </button>
                 </div>
@@ -165,7 +205,11 @@ export function SharedWishlistPage() {
       </main>
 
       <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t z-50 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
-        <button className="w-full py-3 bg-gray-900 text-white font-medium rounded-lg active:bg-gray-800">
+        <button
+          onClick={() => navigate('home')}
+          className="w-full py-3 bg-gray-900 text-white font-medium rounded-lg active:bg-gray-800"
+          aria-label="Shop on Zylod homepage"
+        >
           Shop on Zylod
         </button>
       </div>

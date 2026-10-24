@@ -193,7 +193,12 @@ export function ProductListPage() {
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:px-6">
         <div className="flex items-center justify-between mb-3 md:hidden md:max-w-7xl md:mx-auto">
-          <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Scan QR">
+          <button
+            onClick={() => navigate('barcode-scanner')}
+            className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100"
+            title="Scan QR"
+            aria-label="Scan QR code"
+          >
             <QrCode className="h-6 w-6 text-primary" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -211,7 +216,11 @@ export function ProductListPage() {
             placeholder="Search catalog..."
             className="pl-10 pr-10 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder:text-slate-400 dark:text-slate-500 focus-visible:ring-primary"
           />
-          <button className="absolute right-3 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400">
+          <button
+            onClick={() => navigate('barcode-scanner')}
+            className="absolute right-3 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400"
+            aria-label="Scan QR code in search bar"
+          >
             <QrCode className="h-4 w-4" />
           </button>
         </div>

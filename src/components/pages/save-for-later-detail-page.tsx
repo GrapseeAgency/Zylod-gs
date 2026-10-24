@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useCartStore } from '@/store/cart-store';
+import { useWishlistStore } from '@/store/wishlist-store';
+import { toast } from 'sonner';
 import { ArrowLeft, ShieldCheck, TrendingDown, TrendingUp, AlertCircle, ShoppingCart, Heart, Trash2 } from 'lucide-react';
 
 interface SavedItem {
@@ -25,6 +28,9 @@ interface SavedItem {
 export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
   const itemId = pageParams?.itemId;
   const { goBack, navigate } = useNavigationStore();
+  const addItem = useCartStore((s) => s.addItem);
+  const toggleWishlist = useWishlistStore((s) => s.toggleItem);
+  const isInWishlist = useWishlistStore((s) => s.isInWishlist);
   const [item, setItem] = useState<SavedItem | null>(null);
   const [similar, setSimilar] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -158,14 +164,76 @@ export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
       </main>
 
       <footer className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-20 space-y-3 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
-        <button className="w-full py-3.5 bg-primary text-white rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50" disabled={!item.inStock}>
+        <button
+          onClick={() => {
+            if (!item) return
+            addItem({
+              id: `${item.productId}-${Date.now()}`,
+              productId: item.productId,
+              productName: item.name,
+              productSlug: '',
+              productImage: item.imageUrl || null,
+              variantId: null,
+              variantName: null,
+              variantValue: null,
+              quantity: item.moq,
+              unitPrice: item.currentPrice,
+              totalPrice: item.currentPrice * item.moq,
+              moq: item.moq,
+              maxOrderQty: null,
+              supplierId: item.supplier.id,
+              supplierName: item.supplier.name,
+              supplierSlug: '',
+              unit: 'piece',
+              priceTiers: [],
+            })
+            toast.success('Moved to cart', { description: `${item.name} × ${item.moq} added` })
+            navigate('cart')
+          }}
+          className="w-full py-3.5 bg-primary text-white rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+          disabled={!item?.inStock}
+          aria-label="Move this saved item to cart"
+        >
           <ShoppingCart className="w-5 h-5" /> Move to Cart
         </button>
         <div className="flex gap-3">
-          <button className="flex-1 py-2.5 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800">
+          <button
+            onClick={() => {
+              if (!item) return
+              toggleWishlist({
+                id: item.productId,
+                name: item.name,
+                price: item.currentPrice,
+                originalPrice: item.savedPrice,
+                moq: item.moq,
+                unit: 'piece',
+                supplier: item.supplier.name,
+                location: '',
+                category: '',
+                customizable: false,
+              })
+              toast.success(isInWishlist(item.productId) ? 'Removed from wishlist' : 'Added to wishlist')
+            }}
+            className="flex-1 py-2.5 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-gray-50 dark:bg-gray-950 dark:hover:bg-gray-800"
+            aria-label="Toggle wishlist for this item"
+          >
             <Heart className="w-4 h-4" /> Wishlist
           </button>
-          <button className="flex-1 py-2.5 border border-gray-300 text-red-600 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-red-50">
+          <button
+            onClick={async () => {
+              if (!itemId) return
+              try {
+                await fetch(`/api/save-for-later/${itemId}`, { method: 'DELETE' })
+                toast.success('Removed from saved items')
+                goBack()
+              } catch (err) {
+                console.error(err)
+                toast.error('Could not remove item')
+              }
+            }}
+            className="flex-1 py-2.5 border border-gray-300 text-red-600 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-red-50"
+            aria-label="Remove this saved item"
+          >
             <Trash2 className="w-4 h-4" /> Remove
           </button>
         </div>

@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Heart, Share2, Info, ArrowRight } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useWishlistStore } from '@/store/wishlist-store'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -30,6 +32,8 @@ interface SharedWishlist {
 
 export function SharedWishlistDetailPage() {
   const { pageParams, navigate } = useNavigationStore()
+  const toggleWishlist = useWishlistStore((s) => s.toggleItem)
+  const isInWishlist = useWishlistStore((s) => s.isInWishlist)
   const token = pageParams?.token || pageParams?.shareToken
   
   const [data, setData] = useState<SharedWishlist | null>(null)
@@ -133,8 +137,26 @@ export function SharedWishlistDetailPage() {
               
               <div className="aspect-square bg-gray-100 dark:bg-gray-900 relative">
                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                <button className="absolute top-2 right-2 p-1.5 bg-white dark:bg-gray-900/80 backdrop-blur rounded-full text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-primary z-20">
-                  <Heart className="w-4 h-4" />
+                <button
+                  onClick={() => {
+                    toggleWishlist({
+                      id: item.id,
+                      name: item.name,
+                      price: item.price,
+                      originalPrice: item.price,
+                      moq: item.moq,
+                      unit: 'piece',
+                      supplier: '',
+                      location: '',
+                      category: '',
+                      customizable: false,
+                    })
+                    toast.success(isInWishlist(item.id) ? 'Removed from wishlist' : 'Saved to your wishlist')
+                  }}
+                  className="absolute top-2 right-2 p-1.5 bg-white dark:bg-gray-900/80 backdrop-blur rounded-full text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-primary z-20"
+                  aria-label={`Toggle wishlist for ${item.name}`}
+                >
+                  <Heart className={`w-4 h-4 ${isInWishlist(item.id) ? 'fill-primary text-primary' : ''}`} />
                 </button>
               </div>
               
@@ -147,11 +169,22 @@ export function SharedWishlistDetailPage() {
 
                 <div className="mt-auto">
                   {data.allowAddToCart && item.inStock ? (
-                    <Button size="sm" className="w-full bg-primary hover:bg-primary/90 text-white rounded-full h-8 text-xs">
+                    <Button
+                      size="sm"
+                      onClick={() => navigate('product-detail', { productId: item.id })}
+                      className="w-full bg-primary hover:bg-primary/90 text-white rounded-full h-8 text-xs"
+                      aria-label={`Add ${item.name} to cart`}
+                    >
                       <ShoppingCart className="w-3 h-3 mr-1" /> Add
                     </Button>
                   ) : (
-                    <Button size="sm" variant="outline" className="w-full rounded-full h-8 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => navigate('product-detail', { productId: item.id })}
+                      className="w-full rounded-full h-8 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500"
+                      aria-label={`View details for ${item.name}`}
+                    >
                       View Details
                     </Button>
                   )}
@@ -166,7 +199,25 @@ export function SharedWishlistDetailPage() {
       <div className="fixed bottom-0 md:static md:bottom-auto left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-20">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-medium text-gray-600 dark:text-gray-400 dark:text-gray-500">Share this list</span>
-          <button className="text-primary flex items-center text-sm font-semibold">
+          <button
+            onClick={async () => {
+              const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
+              try {
+                if (typeof navigator !== 'undefined' && navigator.share) {
+                  await navigator.share({ title: data?.name || 'Shared wishlist', url: shareUrl })
+                } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                  await navigator.clipboard.writeText(shareUrl)
+                  toast.success('Wishlist link copied to clipboard')
+                } else {
+                  toast.info('Sharing not supported on this device')
+                }
+              } catch {
+                /* user dismissed share sheet */
+              }
+            }}
+            className="text-primary flex items-center text-sm font-semibold"
+            aria-label="Share this wishlist"
+          >
             <Share2 className="w-4 h-4 mr-1" /> Share
           </button>
         </div>

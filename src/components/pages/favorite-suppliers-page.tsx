@@ -69,10 +69,22 @@ export function FavoriteSuppliersPage() {
 
       {/* Sort & Filter */}
       <div className="bg-white dark:bg-gray-900 border-b px-4 py-3 flex items-center justify-between shadow-sm">
-        <button className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-900 px-3 py-1.5 rounded-full">
+        <button
+          onClick={() => {
+            const opts = ['Recently Added', 'Top Rated', 'Most Products']
+            const idx = opts.indexOf(sortBy)
+            setSortBy(opts[(idx + 1) % opts.length])
+          }}
+          className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-900 px-3 py-1.5 rounded-full"
+          aria-label={`Sort by ${sortBy}, tap to change`}
+        >
           Sort: {sortBy} <ChevronDown className="w-4 h-4 ml-1" />
         </button>
-        <button className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-900 px-3 py-1.5 rounded-full">
+        <button
+          onClick={() => navigate('category-list')}
+          className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-900 px-3 py-1.5 rounded-full"
+          aria-label="Open filter page"
+        >
           <Filter className="w-4 h-4 mr-1" /> Filter
         </button>
       </div>
@@ -157,7 +169,11 @@ export function FavoriteSuppliersPage() {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-gray-50">
-                  <button className="w-full text-center text-primary font-medium text-sm py-1">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate('seller-storefront', { supplierId: supplier.id }) }}
+                    className="w-full text-center text-primary font-medium text-sm py-1"
+                    aria-label={`View ${supplier.name} catalog`}
+                  >
                     View Catalog
                   </button>
                 </div>

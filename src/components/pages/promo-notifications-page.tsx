@@ -216,7 +216,11 @@ export function PromoNotificationsPage() {
                     Limited Time Offer
                   </span>
 
-                  <button className="flex items-center gap-1 font-bold text-red-600 hover:text-red-700 text-xs">
+                  <button
+                    onClick={() => navigate('home')}
+                    className="flex items-center gap-1 font-bold text-red-600 hover:text-red-700 text-xs"
+                    aria-label={`Shop now: ${promo.title}`}
+                  >
                     Shop Now <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

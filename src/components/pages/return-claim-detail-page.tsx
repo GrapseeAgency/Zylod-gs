@@ -550,6 +550,7 @@ export function ReturnClaimDetailPage() {
 
           <button
             disabled
+            aria-label="Approve refund is admin-only — seller console cannot move money"
             className="w-full min-h-12 py-3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 text-gray-400 dark:text-gray-500 dark:text-gray-400 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <Check className="w-5 h-5" /> Approve Refund
@@ -561,6 +562,7 @@ export function ReturnClaimDetailPage() {
 
           <button
             disabled
+            aria-label="Reject claim is admin-only — seller console cannot reject a buyer return"
             className="w-full min-h-12 py-3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 text-gray-400 dark:text-gray-500 dark:text-gray-400 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <X className="w-5 h-5" /> Reject Claim
@@ -572,6 +574,7 @@ export function ReturnClaimDetailPage() {
 
           <button
             disabled
+            aria-label="Seller-side inspection photo upload is not yet shipped — only buyer evidence is supported"
             className="w-full min-h-12 py-3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 text-gray-400 dark:text-gray-500 dark:text-gray-400 rounded-xl font-medium flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <Camera className="w-5 h-5" /> Upload Inspection Photos

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { ArrowLeft, Share2, Heart, Search, MoreVertical, Trash2, ShoppingCart, Info, CheckSquare, Square } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useCartStore } from '@/store/cart-store'
+import { toast } from 'sonner'
 
 interface WishlistItem {
   id: string
@@ -21,6 +23,7 @@ interface WishlistItem {
 
 export function WishlistPage() {
   const { navigate, goBack } = useNavigationStore()
+  const addItem = useCartStore((s) => s.addItem)
   const [items, setItems] = useState<WishlistItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -235,7 +238,47 @@ export function WishlistPage() {
                         </div>
                         
                         {!isBatchMode && (
-                          <button className="bg-primary/10 text-primary px-3 py-1.5 rounded-full text-xs font-medium">
+                          <button
+                            onClick={async () => {
+                              try {
+                                const res = await fetch(`/api/products/${item.productId}`)
+                                if (!res.ok) throw new Error('Failed to load product')
+                                const json = await res.json()
+                                const p = json.data || json
+                                addItem({
+                                  id: `${p.id}-${Date.now()}`,
+                                  productId: p.id,
+                                  productName: p.name || item.productName,
+                                  productSlug: p.slug || '',
+                                  productImage: p.images?.[0]?.imageUrl || p.thumbnailUrl || item.imageUrl || null,
+                                  variantId: null,
+                                  variantName: null,
+                                  variantValue: null,
+                                  quantity: p.moq || item.moq || 1,
+                                  unitPrice: p.basePrice || item.price,
+                                  totalPrice: (p.basePrice || item.price) * (p.moq || item.moq || 1),
+                                  moq: p.moq || item.moq || 1,
+                                  maxOrderQty: p.maxOrderQty ?? null,
+                                  supplierId: p.supplierId || p.supplier?.id || '',
+                                  supplierName: p.supplier?.companyName || item.supplierName || '',
+                                  supplierSlug: p.supplier?.slug || '',
+                                  unit: p.unit || 'piece',
+                                  priceTiers: (p.priceTiers || []).map((t: any) => ({
+                                    minQty: t.minQty,
+                                    maxQty: t.maxQty,
+                                    pricePerUnit: t.pricePerUnit,
+                                  })),
+                                  basePrice: typeof p.basePrice === 'number' ? p.basePrice : null,
+                                })
+                                toast.success('Added to cart', { description: `${item.productName} × ${p.moq || item.moq || 1}` })
+                              } catch (err) {
+                                console.error(err)
+                                toast.error('Could not add to cart')
+                              }
+                            }}
+                            className="bg-primary/10 text-primary px-3 py-1.5 rounded-full text-xs font-medium"
+                            aria-label={`Add ${item.productName} to cart`}
+                          >
                             Add to Cart
                           </button>
                         )}
@@ -261,15 +304,71 @@ export function WishlistPage() {
       {/* Batch Mode Footer */}
       {isBatchMode && displayedItems.length > 0 && (
         <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t p-4 flex gap-3 z-20 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
-          <button 
+          <button
+            onClick={async () => {
+              const targets = items.filter((i) => selectedItems.has(i.id))
+              for (const it of targets) {
+                try {
+                  await fetch(`/api/wishlist/${it.id}`, { method: 'DELETE' })
+                } catch (err) { console.error(err) }
+              }
+              setItems(items.filter((i) => !selectedItems.has(i.id)))
+              toast.success(`Removed ${targets.length} item${targets.length !== 1 ? 's' : ''} from wishlist`)
+              setSelectedItems(new Set())
+              setIsBatchMode(false)
+            }}
             disabled={selectedItems.size === 0}
             className="flex-1 py-3 border border-red-200 text-red-600 rounded-full font-medium disabled:opacity-50"
+            aria-label={`Remove ${selectedItems.size} selected items`}
           >
             Remove ({selectedItems.size})
           </button>
-          <button 
+          <button
+            onClick={async () => {
+              const targets = items.filter((i) => selectedItems.has(i.id))
+              let added = 0
+              for (const it of targets) {
+                try {
+                  const res = await fetch(`/api/products/${it.productId}`)
+                  if (!res.ok) continue
+                  const json = await res.json()
+                  const p = json.data || json
+                  addItem({
+                    id: `${p.id}-${Date.now()}-${added}`,
+                    productId: p.id,
+                    productName: p.name || it.productName,
+                    productSlug: p.slug || '',
+                    productImage: p.images?.[0]?.imageUrl || p.thumbnailUrl || it.imageUrl || null,
+                    variantId: null,
+                    variantName: null,
+                    variantValue: null,
+                    quantity: p.moq || it.moq || 1,
+                    unitPrice: p.basePrice || it.price,
+                    totalPrice: (p.basePrice || it.price) * (p.moq || it.moq || 1),
+                    moq: p.moq || it.moq || 1,
+                    maxOrderQty: p.maxOrderQty ?? null,
+                    supplierId: p.supplierId || p.supplier?.id || '',
+                    supplierName: p.supplier?.companyName || it.supplierName || '',
+                    supplierSlug: p.supplier?.slug || '',
+                    unit: p.unit || 'piece',
+                    priceTiers: (p.priceTiers || []).map((t: any) => ({
+                      minQty: t.minQty,
+                      maxQty: t.maxQty,
+                      pricePerUnit: t.pricePerUnit,
+                    })),
+                    basePrice: typeof p.basePrice === 'number' ? p.basePrice : null,
+                  })
+                  added++
+                } catch (err) { console.error(err) }
+              }
+              toast.success(`Added ${added} item${added !== 1 ? 's' : ''} to cart`)
+              setSelectedItems(new Set())
+              setIsBatchMode(false)
+              navigate('cart')
+            }}
             disabled={selectedItems.size === 0}
             className="flex-1 py-3 bg-primary text-white rounded-full font-medium disabled:opacity-50"
+            aria-label={`Add ${selectedItems.size} selected items to cart`}
           >
             Add to Cart
           </button>

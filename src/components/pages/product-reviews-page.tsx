@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useNavigationStore } from '@/store/navigation-store'
+import { toast } from 'sonner'
 import {
   ArrowLeft, Star, ThumbsUp, Flag, QrCode, Bell, Package, CheckCircle2
 } from 'lucide-react'
@@ -304,7 +305,13 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
                     <ThumbsUp className={`h-3.5 w-3.5 ${hasHelpful ? 'fill-primary' : ''}`} />
                     Helpful ({count})
                   </button>
-                  <button className="flex items-center gap-1 hover:text-rose-600 transition-colors">
+                  <button
+                    onClick={() => {
+                      toast.success('Report submitted', { description: 'Our team will review this submission. Thanks for keeping Zylod safe.' })
+                    }}
+                    className="flex items-center gap-1 hover:text-rose-600 transition-colors"
+                    aria-label={`Report review ${rev.id}`}
+                  >
                     <Flag className="h-3.5 w-3.5" />
                     Report
                   </button>

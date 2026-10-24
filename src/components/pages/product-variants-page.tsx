@@ -175,7 +175,11 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
               {loading ? 'Product Variants' : product?.name || 'Product Variants'}
             </h1>
           </div>
-          <button className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100">
+          <button
+            onClick={() => navigate('search-home')}
+            className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100"
+            aria-label="Search products"
+          >
             <Search className="h-5 w-5" />
           </button>
         </div>
