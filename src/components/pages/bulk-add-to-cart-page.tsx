@@ -188,9 +188,9 @@ export function BulkAddToCartPage() {
           <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{selectedIds.size} selected</span>
         </div>
 
-        <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg flex items-start gap-2">
-          <Info className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
-          <p className="text-xs text-blue-800">Select items and set quantities to add multiple products to your cart at once.</p>
+        <div className="bg-primary/5 border border-primary/20 p-3 rounded-lg flex items-start gap-2">
+          <Info className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+          <p className="text-xs text-primary">Select items and set quantities to add multiple products to your cart at once.</p>
         </div>
 
         <div className="flex items-center justify-between px-1">

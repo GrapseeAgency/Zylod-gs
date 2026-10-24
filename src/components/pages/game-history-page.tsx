@@ -38,7 +38,7 @@ export function GameHistoryPage() {
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-indigo-600" />
+            <Trophy className="w-5 h-5 text-primary" />
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Mini Games Score History</h1>
           </div>
         </div>
@@ -46,7 +46,7 @@ export function GameHistoryPage() {
         <Button
           size="sm"
           onClick={() => navigate('mini-games')}
-          className="h-8 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl"
+          className="h-8 text-xs font-bold bg-primary hover:bg-primary/90 text-white rounded-xl"
         >
           Play Again
         </Button>
@@ -68,7 +68,7 @@ export function GameHistoryPage() {
               className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm flex items-center justify-between"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-primary/5 text-primary flex items-center justify-center">
                   <Gamepad2 className="w-5 h-5" />
                 </div>
                 <div>
@@ -81,7 +81,7 @@ export function GameHistoryPage() {
                 </div>
               </div>
 
-              <span className="text-xs font-extrabold text-indigo-600">
+              <span className="text-xs font-extrabold text-primary">
                 +{s.pointsWon} Pts
               </span>
             </div>

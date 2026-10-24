@@ -62,13 +62,13 @@ export function OrderUpdateDetailPage() {
         ) : (
           <>
             {/* Header Banner */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-3xl p-6 shadow-md space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-200">
+            <div className="bg-gradient-to-r from-primary to-primary/90 text-white rounded-3xl p-6 shadow-md space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary/50">
                 <Package className="w-4 h-4" />
                 Wholesale Order Milestone
               </div>
               <h1 className="text-base sm:text-lg font-bold">{notif.title}</h1>
-              <p className="text-xs text-blue-100">{new Date(notif.timestamp).toLocaleString()}</p>
+              <p className="text-xs text-primary/20">{new Date(notif.timestamp).toLocaleString()}</p>
             </div>
 
             {/* Content */}
@@ -94,7 +94,7 @@ export function OrderUpdateDetailPage() {
             {notif.relatedId && (
               <Button
                 onClick={() => navigate('order-detail', { orderId: notif.relatedId })}
-                className="w-full md:w-auto md:px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-md text-xs sm:text-sm"
+                className="w-full md:w-auto md:px-8 py-3.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-2xl shadow-md text-xs sm:text-sm"
               >
                 Open Order Console →
               </Button>

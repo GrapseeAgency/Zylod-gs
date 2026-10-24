@@ -104,7 +104,7 @@ export function PushNotificationSettingsPage() {
       title: 'Order Status & Tracking',
       desc: 'Confirmations, supplier packaging, and dispatch alerts',
       icon: Package,
-      iconBg: 'bg-blue-50 text-blue-600',
+      iconBg: 'bg-primary/5 text-primary',
       pushKey: 'pushOrderUpdates' as keyof Preferences,
       emailKey: 'emailOrderUpdates' as keyof Preferences,
     },
@@ -149,7 +149,7 @@ export function PushNotificationSettingsPage() {
       title: 'Supplier Chat & RFQs',
       desc: 'Direct supplier messages, quotes, and counter-offers',
       icon: MessageSquare,
-      iconBg: 'bg-indigo-50 text-indigo-600',
+      iconBg: 'bg-primary/5 text-primary',
       pushKey: 'pushChat' as keyof Preferences,
       emailKey: null,
     },
@@ -293,7 +293,7 @@ export function PushNotificationSettingsPage() {
                 onClick={() => navigate('notification-quiet-hours')}
                 className="bg-white dark:bg-gray-900 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm text-left hover:border-red-200 transition space-y-1"
               >
-                <Moon className="w-4 h-4 text-indigo-600" />
+                <Moon className="w-4 h-4 text-primary" />
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Quiet Hours</p>
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{prefs.quietHoursEnabled ? 'Active' : 'Disabled'}</p>
               </button>
@@ -323,7 +323,7 @@ export function PushNotificationSettingsPage() {
                 </h2>
                 <div className="flex items-center gap-6 text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   <span className="flex items-center gap-1">
-                    <Smartphone className="w-3.5 h-3.5 text-blue-600" /> Push
+                    <Smartphone className="w-3.5 h-3.5 text-primary" /> Push
                   </span>
                   <span className="flex items-center gap-1">
                     <Mail className="w-3.5 h-3.5 text-emerald-600" /> Email

@@ -37,7 +37,7 @@ export function LoyaltyPointsPage() {
 
   const getTierColor = (tier: string) => {
     switch (tier?.toLowerCase()) {
-      case 'platinum': return 'from-indigo-600 via-purple-600 to-indigo-800'
+      case 'platinum': return 'from-primary via-purple-600 to-primary/80'
       case 'gold': return 'from-amber-500 via-orange-500 to-yellow-600'
       case 'silver': return 'from-slate-600 via-slate-700 to-slate-800'
       default: return 'from-amber-700 via-orange-800 to-stone-800'
@@ -112,7 +112,7 @@ export function LoyaltyPointsPage() {
             onClick={() => navigate('membership-tiers')}
             className="py-4 bg-white dark:bg-gray-900 font-bold rounded-2xl border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-200 text-xs sm:text-sm gap-2"
           >
-            <Award className="w-4 h-4 text-indigo-600" /> View All Tiers
+            <Award className="w-4 h-4 text-primary" /> View All Tiers
           </Button>
         </div>
 

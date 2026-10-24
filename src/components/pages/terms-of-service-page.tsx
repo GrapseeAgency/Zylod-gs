@@ -107,27 +107,27 @@ export function TermsOfServicePage() {
         ) : (
           <>
             {/* Intro card */}
-            <div className="bg-blue-600 rounded-3xl p-5 text-white space-y-2">
+            <div className="bg-primary rounded-3xl p-5 text-white space-y-2">
               <div className="flex items-center gap-2">
                 <FileText className="w-5 h-5" />
                 <span className="font-bold text-sm">Platform Usage Agreement</span>
               </div>
-              <p className="text-xs text-blue-100 leading-relaxed">
+              <p className="text-xs text-primary/20 leading-relaxed">
                 By accessing Zylod Wholesale Marketplace, you agree to be bound by these terms.
                 This agreement governs all wholesale transactions conducted on our platform.
               </p>
               <div className="flex gap-3 pt-1">
                 <div className="text-center">
                   <p className="text-xs font-black">v{doc.version}</p>
-                  <p className="text-xs text-blue-200">Version</p>
+                  <p className="text-xs text-primary/50">Version</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs font-black">{new Date(doc.effectiveDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</p>
-                  <p className="text-xs text-blue-200">Effective</p>
+                  <p className="text-xs text-primary/50">Effective</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs font-black">{new Date(doc.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</p>
-                  <p className="text-xs text-blue-200">Updated</p>
+                  <p className="text-xs text-primary/50">Updated</p>
                 </div>
               </div>
             </div>
@@ -145,7 +145,7 @@ export function TermsOfServicePage() {
                   <button
                     key={link.id}
                     onClick={() => navigate(link.id)}
-                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-700 transition"
+                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-primary/5 hover:text-primary transition"
                   >
                     {link.label}
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -166,7 +166,7 @@ export function TermsOfServicePage() {
                     className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-black flex items-center justify-center">{idx + 1}</span>
+                      <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center">{idx + 1}</span>
                       <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{section.title}</span>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${openSection === String(idx) ? 'rotate-180' : ''}`} />
@@ -213,7 +213,7 @@ export function TermsOfServicePage() {
                 <BookOpen className="w-4 h-4 mr-1" />
                 Buyer Terms
               </Button>
-              <Button onClick={() => navigate('seller-terms')} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold">
+              <Button onClick={() => navigate('seller-terms')} className="bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold">
                 Seller Terms →
               </Button>
             </div>

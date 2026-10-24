@@ -124,7 +124,7 @@ export function TicketDetailPage() {
   }
 
   const statusColor: Record<string, string> = {
-    open: 'bg-blue-50 text-blue-700 border-blue-200',
+    open: 'bg-primary/5 text-primary border-primary/30',
     in_progress: 'bg-yellow-50 text-yellow-700 border-yellow-200',
     waiting_buyer: 'bg-purple-50 text-purple-700 border-purple-200',
     resolved: 'bg-green-50 text-green-700 border-green-200',

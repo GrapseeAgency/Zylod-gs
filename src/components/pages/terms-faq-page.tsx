@@ -58,7 +58,7 @@ export function TermsFaqPage() {
           </div>
         )}
 
-        <Button onClick={() => navigate('terms-of-service')} className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold py-3">
+        <Button onClick={() => navigate('terms-of-service')} className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-3">
           Back to Terms of Service
         </Button>
       </div>

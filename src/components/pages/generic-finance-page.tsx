@@ -109,7 +109,7 @@ export function GenericFinancePage({ pageId }: { pageId: string }) {
   return (
     <div className="min-h-screen bg-background pb-16">
       {/* Banner */}
-      <div className="relative overflow-hidden py-10 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-900 to-indigo-950 text-white">
+      <div className="relative overflow-hidden py-10 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-900 to-slate-900 text-white">
         <div className="max-w-7xl mx-auto relative z-10">
           <button
             onClick={() => navigate('buyer-dashboard')}

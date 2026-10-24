@@ -32,7 +32,7 @@ interface SampleRow {
 
 const STATUS_STYLES: Record<string, string> = {
   requested: 'bg-amber-100 text-amber-800 border-amber-200',
-  shipped: 'bg-blue-50 text-blue-700 border-blue-200',
+  shipped: 'bg-primary/5 text-primary border-primary/30',
   delivered: 'bg-green-100 text-green-800 border-green-200',
   cancelled: 'bg-neutral-100 text-neutral-600 border-neutral-200',
 }

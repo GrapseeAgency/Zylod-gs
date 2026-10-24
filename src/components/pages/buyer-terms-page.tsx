@@ -41,12 +41,12 @@ export function BuyerTermsPage() {
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 pb-24 md:pb-8 lg:max-w-4xl">
-        <div className="bg-blue-600 rounded-3xl p-5 text-white space-y-2">
+        <div className="bg-primary rounded-3xl p-5 text-white space-y-2">
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5" />
             <h2 className="font-bold text-sm">Wholesale Buyer Code of Conduct</h2>
           </div>
-          <p className="text-xs text-blue-100 leading-relaxed">
+          <p className="text-xs text-primary/20 leading-relaxed">
             These terms set honest expectations: orders are created UNPAID, payments go only to the official details shown on your order, and an order advances to the supplier only after payment is verified by Zylod.
           </p>
         </div>
@@ -55,7 +55,7 @@ export function BuyerTermsPage() {
           {terms.map((t, idx) => (
             <div key={t.title} className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1.5">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-black flex items-center justify-center">
+                <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center">
                   {idx + 1}
                 </span>
                 <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{t.title}</h3>
@@ -65,7 +65,7 @@ export function BuyerTermsPage() {
           ))}
         </div>
 
-        <Button onClick={() => navigate('terms-of-service')} className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold py-3">
+        <Button onClick={() => navigate('terms-of-service')} className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-3">
           Back to Main Terms of Service
         </Button>
       </div>

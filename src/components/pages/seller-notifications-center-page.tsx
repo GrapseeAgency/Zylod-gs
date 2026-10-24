@@ -76,7 +76,7 @@ const TYPE_META: Record<string, { label: string; icon: typeof Bell; tone: string
   system: { label: 'System', icon: Shield, tone: 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800' },
   chat: { label: 'Chat', icon: MessageSquare, tone: 'text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40' },
   review: { label: 'Review', icon: Star, tone: 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950/40' },
-  delivery: { label: 'Delivery', icon: Truck, tone: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40' },
+  delivery: { label: 'Delivery', icon: Truck, tone: 'text-primary dark:text-primary/70 bg-primary/5 dark:bg-primary/10' },
 };
 
 function typeMeta(type: string) {

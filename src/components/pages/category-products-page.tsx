@@ -549,7 +549,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
                   <span>MOQ: {featuredProduct.moq} {featuredProduct.unit}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-blue-500" />
+                  <Clock className="h-3.5 w-3.5 text-primary/80" />
                   <span>Lead Time: 7–10 Days</span>
                 </div>
               </div>

@@ -47,7 +47,7 @@ export function MediaKitPage() {
       <div className="flex-1 max-w-2xl mx-auto lg:max-w-5xl w-full px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 pb-24 md:pb-8">
         <div className="bg-slate-900 rounded-3xl p-5 md:p-6 text-white space-y-2">
           <div className="flex items-center gap-2">
-            <FolderDown className="w-5 h-5 text-blue-400" />
+            <FolderDown className="w-5 h-5 text-primary/70" />
             <h2 className="font-bold text-sm md:text-base">Official Brand Package</h2>
           </div>
           <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
@@ -67,7 +67,7 @@ export function MediaKitPage() {
                   {asset.thumbnailUrl ? (
                     <img src={asset.thumbnailUrl} alt={asset.title} className="w-12 h-12 rounded-2xl object-cover border border-gray-100 dark:border-gray-800 flex-shrink-0" />
                   ) : (
-                    <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 flex-shrink-0">
+                    <div className="p-3 rounded-2xl bg-primary/5 text-primary flex-shrink-0">
                       <FileText className="w-6 h-6" />
                     </div>
                   )}
@@ -83,7 +83,7 @@ export function MediaKitPage() {
                 <a
                   href={asset.fileUrl}
                   download
-                  className="p-2.5 bg-blue-50 text-blue-600 rounded-2xl hover:bg-blue-100 transition flex-shrink-0"
+                  className="p-2.5 bg-primary/5 text-primary rounded-2xl hover:bg-primary/10 transition flex-shrink-0"
                 >
                   <Download className="w-4 h-4" />
                 </a>

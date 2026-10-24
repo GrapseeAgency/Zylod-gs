@@ -438,7 +438,7 @@ export function CategoryTabsAndProducts() {
   const getSuggestionIcon = (type: Suggestion['type']) => {
     switch (type) {
       case 'product': return <Package className="h-3.5 w-3.5 text-red-500" />
-      case 'category': return <Tag className="h-3.5 w-3.5 text-blue-500" />
+      case 'category': return <Tag className="h-3.5 w-3.5 text-primary/80" />
       case 'supplier': return <Building2 className="h-3.5 w-3.5 text-green-500" />
       case 'fallback': return <Search className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
     }

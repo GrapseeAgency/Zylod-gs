@@ -131,7 +131,7 @@ export function SaveForLaterPage() {
       </header>
 
       {/* Info Banner */}
-      <div className="bg-blue-50 px-4 py-2.5 flex items-center gap-2 text-blue-700 text-xs font-medium">
+      <div className="bg-primary/5 px-4 py-2.5 flex items-center gap-2 text-primary text-xs font-medium">
         <InfoIcon />
         <span>Items moved here from your cart</span>
       </div>

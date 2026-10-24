@@ -44,7 +44,7 @@ type Stats = { total: number; pending?: number; scheduled?: number; completed?: 
 
 const STATUS_STYLES: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-800 border-amber-200',
-  scheduled: 'bg-blue-50 text-blue-700 border-blue-200',
+  scheduled: 'bg-primary/5 text-primary border-primary/30',
   completed: 'bg-green-100 text-green-800 border-green-200',
   failed: 'bg-red-50 text-red-700 border-red-200',
 }
@@ -217,7 +217,7 @@ export function AdminInspectionsPage() {
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Total</span><span className="font-semibold tabular-nums">{stats?.total ?? '…'}</span></span>
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Pending</span><span className="font-semibold tabular-nums text-amber-700">{stats?.pending ?? 0}</span></span>
-            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Scheduled</span><span className="font-semibold tabular-nums text-blue-700">{stats?.scheduled ?? 0}</span></span>
+            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Scheduled</span><span className="font-semibold tabular-nums text-primary">{stats?.scheduled ?? 0}</span></span>
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Completed</span><span className="font-semibold tabular-nums text-green-700">{stats?.completed ?? 0}</span></span>
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Failed</span><span className="font-semibold tabular-nums text-red-700">{stats?.failed ?? 0}</span></span>
             <div className="flex-1" />

@@ -24,10 +24,10 @@ export function LeadershipTeamPage() {
       <div className="flex-1 max-w-2xl mx-auto lg:max-w-5xl w-full px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-8 pb-24 md:pb-8">
         {/* Honest empty-roster notice — Zylod publishes no fabricated people */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-3">
-          <div className="w-14 h-14 rounded-3xl bg-blue-50 flex items-center justify-center mx-auto">
-            <Users className="w-7 h-7 text-blue-600" />
+          <div className="w-14 h-14 rounded-3xl bg-primary/5 flex items-center justify-center mx-auto">
+            <Users className="w-7 h-7 text-primary" />
           </div>
-          <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-bold uppercase">
+          <Badge className="bg-primary/5 text-primary border-primary/30 text-[10px] font-bold uppercase">
             Not Published Yet
           </Badge>
           <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">No named team members published yet</h2>
@@ -41,7 +41,7 @@ export function LeadershipTeamPage() {
         {/* Contact + Careers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-            <div className="flex items-center gap-2 text-blue-600">
+            <div className="flex items-center gap-2 text-primary">
               <Briefcase className="w-5 h-5" />
               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Work With Us</h3>
             </div>
@@ -63,14 +63,14 @@ export function LeadershipTeamPage() {
             </p>
             <a
               href="mailto:support@zylod.com"
-              className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold py-2.5 transition"
+              className="block w-full text-center bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-2.5 transition"
             >
               support@zylod.com
             </a>
           </div>
         </div>
 
-        <Button onClick={() => navigate('about-us')} className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold py-3 px-6">
+        <Button onClick={() => navigate('about-us')} className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-3 px-6">
           Back to About Us
         </Button>
       </div>

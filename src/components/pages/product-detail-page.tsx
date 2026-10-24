@@ -1219,7 +1219,7 @@ function DesktopProductDetailPage() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold">{productSupplier?.companyName || product?.supplier?.companyName || 'Supplier'}</h3>
                     {productSupplier?.verificationStatus === 'approved' && (
-                      <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] px-1.5 py-0">
+                      <Badge className="bg-primary/5 text-primary border-primary/30 text-[10px] px-1.5 py-0">
                         <span className="material-symbols-outlined mr-0.5" style={{ fontSize: 12, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span> Verified
                       </Badge>
                     )}

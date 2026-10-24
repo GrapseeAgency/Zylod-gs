@@ -91,7 +91,7 @@ export function SearchVoiceHistoryPage() {
                   onClick={() => navigate('search-results', { query: item.query, type: 'voice' })}
                   className="flex items-center gap-3 flex-1 cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 text-blue-500">
+                  <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center flex-shrink-0 text-primary/80">
                     <Mic className="w-4 h-4" />
                   </div>
                   <div className="min-w-0">

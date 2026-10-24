@@ -177,7 +177,7 @@ export function FavoritesPage() {
                     <div className="flex items-center gap-1 mb-2">
                       <p className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate">{item.supplierName}</p>
                       {item.isSupplierVerified && (
-                        <CheckCircle2 size={10} className="text-blue-500 shrink-0" />
+                        <CheckCircle2 size={10} className="text-primary/80 shrink-0" />
                       )}
                     </div>
 

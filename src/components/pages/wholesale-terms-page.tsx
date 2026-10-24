@@ -114,7 +114,7 @@ export function WholesaleTermsPage() {
           </div>
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-blue-600" />
+              <Users className="w-4 h-4 text-primary" />
               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Buyer Obligations</h3>
             </div>
             <ul className="space-y-2">

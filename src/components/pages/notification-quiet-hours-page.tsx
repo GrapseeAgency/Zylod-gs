@@ -81,13 +81,13 @@ export function NotificationQuietHoursPage() {
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-xl mx-auto lg:max-w-3xl w-full space-y-6 md:space-y-8 pb-24 md:pb-8">
         {/* Banner */}
-        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white rounded-3xl p-6 shadow-md space-y-2">
-          <div className="flex items-center gap-2 text-xs font-bold text-indigo-300 uppercase tracking-wide">
+        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-6 shadow-md space-y-2">
+          <div className="flex items-center gap-2 text-xs font-bold text-primary/60 uppercase tracking-wide">
             <Moon className="w-4 h-4" />
             Distraction-Free Rest Window
           </div>
           <h1 className="text-lg md:text-2xl font-bold">Automatic Do Not Disturb</h1>
-          <p className="text-xs text-indigo-200 leading-relaxed">
+          <p className="text-xs text-primary/50 leading-relaxed">
             Mute audible wholesale alerts and vibration during nighttime hours while still queuing critical updates.
           </p>
         </div>
@@ -137,9 +137,9 @@ export function NotificationQuietHoursPage() {
                 </div>
               </div>
 
-              <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 text-xs text-indigo-800 space-y-1">
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-3 text-xs text-primary space-y-1">
                 <p className="font-bold">What happens during Quiet Hours?</p>
-                <p className="text-[11px] text-indigo-700 leading-relaxed">
+                <p className="text-[11px] text-primary leading-relaxed">
                   Promotions, price drops, and general order notifications will not make sound or vibrate. High-priority security alerts will still come through.
                 </p>
               </div>

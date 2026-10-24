@@ -270,7 +270,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
 
               <div className="flex flex-col items-center">
                 <div className="flex items-center gap-1 text-xs font-black text-slate-900 dark:text-slate-100">
-                  <Package className="h-3.5 w-3.5 text-blue-500" />
+                  <Package className="h-3.5 w-3.5 text-primary/80" />
                   {profile.productCount.toLocaleString()}
                 </div>
                 <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">

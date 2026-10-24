@@ -31,7 +31,7 @@ interface InspectionRow {
 
 const STATUS_STYLES: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-800 border-amber-200',
-  scheduled: 'bg-blue-50 text-blue-700 border-blue-200',
+  scheduled: 'bg-primary/5 text-primary border-primary/30',
   completed: 'bg-green-100 text-green-800 border-green-200',
   failed: 'bg-red-50 text-red-700 border-red-200',
 }

@@ -43,7 +43,7 @@ export function LiveShoppingPage() {
 
       <div className="flex-1 px-4 py-4 max-w-3xl mx-auto lg:max-w-6xl w-full space-y-4 md:space-y-6 md:px-6 md:py-6 pb-24 md:pb-8">
         {/* Banner */}
-        <div className="bg-gradient-to-r from-red-600 via-rose-600 to-indigo-700 rounded-3xl p-5 md:p-6 text-white shadow-xl space-y-1.5">
+        <div className="bg-gradient-to-r from-red-600 via-rose-600 to-primary/90 rounded-3xl p-5 md:p-6 text-white shadow-xl space-y-1.5">
           <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-red-100">
             <Sparkles className="w-4 h-4 text-amber-300" /> Real-time Factory Walkthroughs
           </div>

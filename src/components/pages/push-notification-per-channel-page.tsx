@@ -80,7 +80,7 @@ export function PushNotificationPerChannelPage() {
         {/* Push Section */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-2.5">
-            <Smartphone className="w-4 h-4 text-blue-600" />
+            <Smartphone className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">Mobile &amp; Web Push</h2>
           </div>
 

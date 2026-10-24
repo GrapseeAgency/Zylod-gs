@@ -137,7 +137,7 @@ export const SellerVerificationUploadPage = () => {
               </div>
             ) : (
               <div className="flex flex-col items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-primary/5 text-primary flex items-center justify-center">
                   <UploadCloud className="w-6 h-6" />
                 </div>
                 <div>

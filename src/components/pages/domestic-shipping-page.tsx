@@ -54,12 +54,12 @@ export function DomesticShippingPage() {
           <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Coverage Across All 64 Districts in Bangladesh</p>
         </div>
 
-        <div className="bg-indigo-600 rounded-3xl p-5 text-white space-y-2">
+        <div className="bg-primary rounded-3xl p-5 text-white space-y-2">
           <div className="flex items-center gap-2">
             <Truck className="w-5 h-5" />
             <h2 className="font-bold text-sm">Nationwide Freight Coordination</h2>
           </div>
-          <p className="text-xs text-indigo-100 leading-relaxed">
+          <p className="text-xs text-primary/20 leading-relaxed">
             Every shipment on Zylod is tracked via API telemetry with carrier integration and SMS delivery milestone updates.
           </p>
         </div>
@@ -69,19 +69,19 @@ export function DomesticShippingPage() {
             <div key={t.title} className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100">{t.title}</h3>
-                <Badge className="bg-indigo-50 text-indigo-700 border-indigo-200 text-[10px] font-bold">
+                <Badge className="bg-primary/5 text-primary border-primary/30 text-[10px] font-bold">
                   {t.time}
                 </Badge>
               </div>
               <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500"><strong>Partners:</strong> {t.couriers}</p>
               <div className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-2xl">
-                <p className="text-xs text-indigo-900 font-semibold">{t.rates}</p>
+                <p className="text-xs text-primary font-semibold">{t.rates}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <Button onClick={() => navigate('shipping-calculator')} className="w-full md:w-auto md:px-8 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold py-3">
+        <Button onClick={() => navigate('shipping-calculator')} className="w-full md:w-auto md:px-8 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-3">
           Calculate Shipping Rate
         </Button>
       </div>

@@ -42,7 +42,7 @@ export function SubmitTicketPage() {
 
   const priorities = [
     { value: 'low', label: 'Low', color: 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900' },
-    { value: 'medium', label: 'Medium', color: 'text-blue-600 bg-blue-50' },
+    { value: 'medium', label: 'Medium', color: 'text-primary bg-primary/5' },
     { value: 'high', label: 'High', color: 'text-orange-600 bg-orange-50' },
     { value: 'urgent', label: 'Urgent', color: 'text-red-600 bg-red-50' },
   ]

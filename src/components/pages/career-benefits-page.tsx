@@ -13,8 +13,8 @@ export function CareerBenefitsPage() {
     { title: 'Market-Leading Compensation', desc: 'Top 10th percentile benchmarked compensation in BDT with quarterly performance bonuses.', icon: DollarSign, color: 'text-emerald-600 bg-emerald-50' },
     { title: 'Equity & Stock Options', desc: 'Own a piece of South Asia’s fastest growing B2B marketplace with ESOP grants.', icon: Sparkles, color: 'text-amber-600 bg-amber-50' },
     { title: 'Comprehensive Medical Coverage', desc: 'Full hospitalization, OPD, and dental coverage for you, your spouse, and children.', icon: Heart, color: 'text-rose-600 bg-rose-50' },
-    { title: 'Equipment & Workstation Stipend', desc: 'Latest Apple MacBook Pro / high-end Linux dev box + 4K dual monitor setup.', icon: Laptop, color: 'text-blue-600 bg-blue-50' },
-    { title: 'Two Festival Bonuses', desc: 'Full month base salary bonuses on Eid-ul-Fitr and Eid-ul-Adha / Puja.', icon: Umbrella, color: 'text-indigo-600 bg-indigo-50' },
+    { title: 'Equipment & Workstation Stipend', desc: 'Latest Apple MacBook Pro / high-end Linux dev box + 4K dual monitor setup.', icon: Laptop, color: 'text-primary bg-primary/5' },
+    { title: 'Two Festival Bonuses', desc: 'Full month base salary bonuses on Eid-ul-Fitr and Eid-ul-Adha / Puja.', icon: Umbrella, color: 'text-primary bg-primary/5' },
     { title: 'Learning & Conference Fund', desc: 'Annual $1,000 USD budget for books, online courses, and international developer conferences.', icon: GraduationCap, color: 'text-teal-600 bg-teal-50' },
   ]
 

@@ -179,7 +179,7 @@ export function MobileSearchBar() {
   const getSuggestionIcon = (type: Suggestion['type']) => {
     switch (type) {
       case 'product': return <Package className="w-4 h-4 text-primary" />
-      case 'category': return <Search className="w-4 h-4 text-blue-500" />
+      case 'category': return <Search className="w-4 h-4 text-primary/80" />
       case 'supplier': return <Factory className="w-4 h-4 text-green-500" />
       default: return <Search className="w-4 h-4 text-muted-foreground" />
     }

@@ -145,7 +145,7 @@ export function WishlistDetailPage() {
             <span className="font-medium mr-2">Supplier:</span> 
             {item.product.supplier.companyName}
             {item.product.supplier.isVerified && (
-              <span className="ml-2 text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[10px] font-bold">VERIFIED</span>
+              <span className="ml-2 text-primary bg-primary/5 px-1.5 py-0.5 rounded text-[10px] font-bold">VERIFIED</span>
             )}
           </div>
         </div>

@@ -204,17 +204,17 @@ export function CollectionDetailPage() {
 
         {/* Share Banner for public/shared */}
         {collection.privacy !== 'PRIVATE' && (
-          <div className="bg-blue-50 px-4 py-3 flex items-center justify-between border-b border-blue-100">
-            <div className="flex items-center gap-2 text-blue-800 text-sm">
+          <div className="bg-primary/5 px-4 py-3 flex items-center justify-between border-b border-primary/20">
+            <div className="flex items-center gap-2 text-primary text-sm">
               <Share2 className="w-4 h-4" />
               <span className="font-medium">{collection.privacy === 'SHARED' ? 'Anyone with the secret link can view' : 'Public — visible on your shared lists'}</span>
             </div>
             {collection.privacy === 'SHARED' ? (
-              <button onClick={copyShareLink} className="text-blue-700 text-sm font-semibold bg-white dark:bg-gray-900 px-3 py-1 rounded shadow-sm border border-blue-200 active:scale-95">
+              <button onClick={copyShareLink} className="text-primary text-sm font-semibold bg-white dark:bg-gray-900 px-3 py-1 rounded shadow-sm border border-primary/30 active:scale-95">
                 {copied ? 'Copied!' : 'Copy Link'}
               </button>
             ) : (
-              <span className="text-blue-600/60 text-xs">Sign in elsewhere to view</span>
+              <span className="text-primary/60 text-xs">Sign in elsewhere to view</span>
             )}
           </div>
         )}

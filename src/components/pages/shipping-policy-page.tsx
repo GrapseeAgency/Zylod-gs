@@ -61,18 +61,18 @@ export function ShippingPolicyPage() {
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-5 pb-24">
         {/* Hero */}
-        <div className="bg-indigo-600 rounded-3xl p-5 text-white space-y-2">
+        <div className="bg-primary rounded-3xl p-5 text-white space-y-2">
           <div className="flex items-center gap-2">
             <Truck className="w-5 h-5" />
             <span className="font-bold text-sm">Nationwide Wholesale Delivery</span>
           </div>
-          <p className="text-xs text-indigo-100 leading-relaxed">
+          <p className="text-xs text-primary/20 leading-relaxed">
             Zylod ships bulk wholesale orders across all 64 districts of Bangladesh via verified courier partners.
           </p>
           <div className="flex gap-4 pt-1">
-            <div><p className="text-xs font-black">64</p><p className="text-xs text-indigo-200">Districts</p></div>
-            <div><p className="text-xs font-black">5+</p><p className="text-xs text-indigo-200">Couriers</p></div>
-            <div><p className="text-xs font-black">72 hrs</p><p className="text-xs text-indigo-200">Processing</p></div>
+            <div><p className="text-xs font-black">64</p><p className="text-xs text-primary/50">Districts</p></div>
+            <div><p className="text-xs font-black">5+</p><p className="text-xs text-primary/50">Couriers</p></div>
+            <div><p className="text-xs font-black">72 hrs</p><p className="text-xs text-primary/50">Processing</p></div>
           </div>
         </div>
 
@@ -88,7 +88,7 @@ export function ShippingPolicyPage() {
               { label: 'Track Shipment', id: 'shipping-tracker' },
               { label: 'Delivery Zones', id: 'shipping-zone-editor' },
             ].map(link => (
-              <button key={link.id} onClick={() => navigate(link.id)} className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-indigo-50 hover:text-indigo-700 transition">
+              <button key={link.id} onClick={() => navigate(link.id)} className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-primary/5 hover:text-primary transition">
                 {link.label}
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -99,7 +99,7 @@ export function ShippingPolicyPage() {
         {/* Delivery zones table */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-indigo-600" />
+            <MapPin className="w-4 h-4 text-primary" />
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Delivery Zones & Rates</h3>
           </div>
           <div className="divide-y divide-gray-50">
@@ -109,7 +109,7 @@ export function ShippingPolicyPage() {
                   <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{zone.zone}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{zone.sla}</p>
                 </div>
-                <Badge className="bg-indigo-50 text-indigo-700 border-indigo-200 text-xs font-bold">{zone.rate}</Badge>
+                <Badge className="bg-primary/5 text-primary border-primary/30 text-xs font-bold">{zone.rate}</Badge>
               </div>
             ))}
           </div>
@@ -131,7 +131,7 @@ export function ShippingPolicyPage() {
                   <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{c.coverage}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-indigo-700">{c.sla}</p>
+                  <p className="text-xs font-bold text-primary">{c.sla}</p>
                   <Badge variant="outline" className="text-xs">{c.type}</Badge>
                 </div>
               </div>
@@ -163,7 +163,7 @@ export function ShippingPolicyPage() {
           </div>
         )}
 
-        <Button onClick={() => navigate('shipping-calculator')} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold py-3">
+        <Button onClick={() => navigate('shipping-calculator')} className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl text-sm font-bold py-3">
           <Truck className="w-4 h-4 mr-2" />
           Calculate Shipping Cost
         </Button>

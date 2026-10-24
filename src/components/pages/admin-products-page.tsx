@@ -369,7 +369,7 @@ export function AdminProductsPage() {
                         Media review · {images.length} image{images.length === 1 ? '' : 's'} · {videos.length} video{videos.length === 1 ? '' : 's'}
                       </span>
                       {videos.length > 0 && (
-                        <span className="text-[10px] font-bold bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-400 rounded-lg px-2 py-0.5 flex items-center gap-1">
+                        <span className="text-[10px] font-bold bg-primary/5 dark:bg-primary/10 border border-primary/30 dark:border-primary/30 text-primary dark:text-primary/70 rounded-lg px-2 py-0.5 flex items-center gap-1">
                           <Video className="h-3 w-3" /> {videos.length} video preview{videos.length === 1 ? '' : 's'} below
                         </span>
                       )}

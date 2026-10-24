@@ -88,7 +88,7 @@ export function SharedWishlistPage() {
                 <Share2 className="w-5 h-5" />
                 <span className="text-xs font-medium">WhatsApp</span>
               </button>
-              <button className="flex flex-col items-center gap-2 p-3 bg-blue-50 text-blue-700 rounded-lg">
+              <button className="flex flex-col items-center gap-2 p-3 bg-primary/5 text-primary rounded-lg">
                 <Share2 className="w-5 h-5" />
                 <span className="text-xs font-medium">Email</span>
               </button>

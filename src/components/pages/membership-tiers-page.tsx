@@ -38,7 +38,7 @@ export function MembershipTiersPage() {
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-indigo-600" />
+            <Award className="w-5 h-5 text-primary" />
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Membership Tiers</h1>
           </div>
         </div>

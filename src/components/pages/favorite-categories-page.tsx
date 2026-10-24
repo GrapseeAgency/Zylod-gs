@@ -58,7 +58,7 @@ export function FavoriteCategoriesPage() {
       </header>
 
       <main className="flex-1 p-4 pb-20 md:p-6 md:pb-8 md:max-w-5xl md:mx-auto w-full">
-        <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 mb-6 bg-blue-50 p-3 rounded-lg border border-blue-100">
+        <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 mb-6 bg-primary/5 p-3 rounded-lg border border-primary/20">
           Get updates on new arrivals in your favorite categories
         </p>
 

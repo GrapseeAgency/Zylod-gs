@@ -78,7 +78,7 @@ export function OrderUpdatesPage() {
       case 'delivered':
         return <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">Delivered</Badge>
       case 'shipped':
-        return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-blue-200">In Transit</Badge>
+        return <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-primary/30">In Transit</Badge>
       case 'processing':
       case 'confirmed':
         return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-amber-200">Processing</Badge>
@@ -98,14 +98,14 @@ export function OrderUpdatesPage() {
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
-            <Package className="w-5 h-5 text-blue-600" />
+            <Package className="w-5 h-5 text-primary" />
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Order Updates</h1>
           </div>
         </div>
 
         <button
           onClick={() => navigate('order-status-subscriptions')}
-          className="text-xs font-bold text-blue-600 hover:underline"
+          className="text-xs font-bold text-primary hover:underline"
         >
           Manage Alerts →
         </button>
@@ -125,7 +125,7 @@ export function OrderUpdatesPage() {
             onClick={() => setActiveFilter(tab.key as any)}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${
               activeFilter === tab.key
-                ? 'bg-blue-600 text-white shadow-sm'
+                ? 'bg-primary text-white shadow-sm'
                 : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
             }`}
           >
@@ -135,7 +135,7 @@ export function OrderUpdatesPage() {
 
         <button
           onClick={() => navigate('order-status-subscriptions')}
-          className="hidden md:block ml-auto text-xs font-bold text-blue-600 hover:underline"
+          className="hidden md:block ml-auto text-xs font-bold text-primary hover:underline"
         >
           Manage Alerts →
         </button>
@@ -155,7 +155,7 @@ export function OrderUpdatesPage() {
           </div>
         ) : updates.length === 0 ? (
           <div className="text-center py-16 space-y-3">
-            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+            <div className="w-16 h-16 bg-primary/5 text-primary rounded-3xl flex items-center justify-center mx-auto shadow-inner">
               <ShoppingBag className="w-8 h-8" />
             </div>
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">No order updates yet</h3>
@@ -182,11 +182,11 @@ export function OrderUpdatesPage() {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3 hover:border-blue-200 transition"
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3 hover:border-primary/30 transition"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-primary/5 text-primary flex items-center justify-center flex-shrink-0">
                     <Package className="w-4 h-4" />
                   </div>
                   <div>
@@ -220,7 +220,7 @@ export function OrderUpdatesPage() {
                     size="sm"
                     variant="outline"
                     onClick={() => navigate('order-detail', { orderId: item.relatedId! })}
-                    className="h-7 text-xs font-bold text-blue-600 border-blue-200 hover:bg-blue-50"
+                    className="h-7 text-xs font-bold text-primary border-primary/30 hover:bg-primary/5"
                   >
                     View Order →
                   </Button>
@@ -229,7 +229,7 @@ export function OrderUpdatesPage() {
                     size="sm"
                     variant="outline"
                     onClick={() => navigate('orders')}
-                    className="h-7 text-xs font-bold text-blue-600 border-blue-200 hover:bg-blue-50"
+                    className="h-7 text-xs font-bold text-primary border-primary/30 hover:bg-primary/5"
                   >
                     All Orders →
                   </Button>
@@ -278,7 +278,7 @@ export function OrderUpdatesPage() {
                           size="sm"
                           variant="outline"
                           onClick={() => navigate('order-detail', { orderId: item.relatedId! })}
-                          className="h-7 text-xs font-bold text-blue-600 border-blue-200 hover:bg-blue-50"
+                          className="h-7 text-xs font-bold text-primary border-primary/30 hover:bg-primary/5"
                         >
                           View Order →
                         </Button>
@@ -287,7 +287,7 @@ export function OrderUpdatesPage() {
                           size="sm"
                           variant="outline"
                           onClick={() => navigate('orders')}
-                          className="h-7 text-xs font-bold text-blue-600 border-blue-200 hover:bg-blue-50"
+                          className="h-7 text-xs font-bold text-primary border-primary/30 hover:bg-primary/5"
                         >
                           All Orders →
                         </Button>

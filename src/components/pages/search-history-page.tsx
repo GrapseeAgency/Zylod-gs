@@ -40,7 +40,7 @@ function groupByDate(items: HistoryItem[]): HistoryGroup[] {
 }
 
 const typeIcon = (t: string) => {
-  if (t === 'voice') return <Mic className="w-3.5 h-3.5 text-blue-400" />
+  if (t === 'voice') return <Mic className="w-3.5 h-3.5 text-primary/70" />
   if (t === 'image') return <Camera className="w-3.5 h-3.5 text-purple-400" />
   if (t === 'barcode') return <Smartphone className="w-3.5 h-3.5 text-green-400" />
   return <Search className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />

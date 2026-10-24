@@ -59,7 +59,7 @@ export function PressMediaPage() {
         </div>
         <button
           onClick={() => navigate('media-kit')}
-          className="flex items-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1.5 rounded-xl border border-blue-100"
+          className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/5 px-2.5 py-1.5 rounded-xl border border-primary/20"
         >
           <FolderDown className="w-3.5 h-3.5" />
           Media Kit
@@ -74,15 +74,15 @@ export function PressMediaPage() {
           </div>
           <button
             onClick={() => navigate('media-kit')}
-            className="flex items-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 px-3 py-2 rounded-xl border border-blue-100"
+            className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/5 px-3 py-2 rounded-xl border border-primary/20"
           >
             <FolderDown className="w-3.5 h-3.5" />
             Media Kit
           </button>
         </div>
         {/* Hero */}
-        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 rounded-3xl p-6 text-white space-y-3">
-          <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/30 text-xs">
+        <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-900 rounded-3xl p-6 text-white space-y-3">
+          <Badge className="bg-primary/10 text-primary/60 border-primary/30 text-xs">
             Corporate Newsroom
           </Badge>
           <h2 className="text-xl md:text-2xl font-black leading-tight">
@@ -94,7 +94,7 @@ export function PressMediaPage() {
           <div className="flex gap-2 pt-1">
             <Button
               onClick={() => navigate('media-kit')}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold py-2"
+              className="bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-2"
             >
               <Download className="w-3.5 h-3.5 mr-1.5" /> Download Media Kit
             </Button>
@@ -150,11 +150,11 @@ export function PressMediaPage() {
               <div
                 key={pr.id}
                 onClick={() => navigate('press-release-detail', { slug: pr.slug })}
-                className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 border border-gray-100 dark:border-gray-800 shadow-sm hover:border-blue-300 hover:shadow-md transition cursor-pointer space-y-3"
+                className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/40 hover:shadow-md transition cursor-pointer space-y-3"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1 flex-1">
-                    <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-bold uppercase">
+                    <Badge className="bg-primary/5 text-primary border-primary/30 text-[10px] font-bold uppercase">
                       {pr.category.replace('_', ' ')}
                     </Badge>
                     <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-snug">
@@ -179,7 +179,7 @@ export function PressMediaPage() {
                     <Calendar className="w-3.5 h-3.5" />
                     {new Date(pr.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
-                  <span className="text-xs font-bold text-blue-600 flex items-center gap-0.5">
+                  <span className="text-xs font-bold text-primary flex items-center gap-0.5">
                     Read Release <ChevronRight className="w-3.5 h-3.5" />
                   </span>
                 </div>

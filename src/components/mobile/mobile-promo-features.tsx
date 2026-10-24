@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 
 const PROMO_FEATURES = [
   { icon: Scissors, title: 'Daily Deals', color: 'text-primary', bg: 'bg-primary/10', desc: 'Bulk discounts', page: 'daily-deals' as const },
-  { icon: Globe, title: 'Cross-border', color: 'text-blue-600', bg: 'bg-blue-50', desc: 'International sourcing', page: 'cross-border' as const },
+  { icon: Globe, title: 'Cross-border', color: 'text-primary', bg: 'bg-primary/5', desc: 'International sourcing', page: 'cross-border' as const },
   { icon: Clock, title: 'Flash Sale', color: 'text-primary', bg: 'bg-primary/10', desc: 'Limited time offers', page: 'flash-sale' as const },
   { icon: Zap, title: 'Factory Direct', color: 'text-primary', bg: 'bg-primary/10', desc: 'Direct from manufacturers', page: 'factory-direct' as const },
 ]

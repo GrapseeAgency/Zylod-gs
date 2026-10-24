@@ -72,8 +72,8 @@ export function AboutUsPage() {
         ) : (
           <>
             {/* Hero Card */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 rounded-3xl p-6 text-white space-y-3">
-              <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/30 text-xs font-semibold">
+            <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-900 rounded-3xl p-6 text-white space-y-3">
+              <Badge className="bg-primary/10 text-primary/60 border-primary/30 text-xs font-semibold">
                 {data.companyInfo.hq} · B2B Wholesale Marketplace
               </Badge>
               <h2 className="text-xl md:text-2xl font-black leading-tight">
@@ -84,7 +84,7 @@ export function AboutUsPage() {
               </p>
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
                 <div className="text-center">
-                  <p className="text-lg md:text-2xl font-black text-blue-400">{data.stats.verifiedSuppliers.toLocaleString()}</p>
+                  <p className="text-lg md:text-2xl font-black text-primary/70">{data.stats.verifiedSuppliers.toLocaleString()}</p>
                   <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Verified Suppliers</p>
                 </div>
                 <div className="text-center">
@@ -116,7 +116,7 @@ export function AboutUsPage() {
                   <button
                     key={link.id}
                     onClick={() => navigate(link.id)}
-                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-700 transition"
+                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-primary/5 hover:text-primary transition"
                   >
                     {link.label}
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -128,7 +128,7 @@ export function AboutUsPage() {
             {/* Mission & Vision */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-                <div className="flex items-center gap-2 text-blue-600">
+                <div className="flex items-center gap-2 text-primary">
                   <Target className="w-5 h-5" />
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Our Mission</h3>
                 </div>
@@ -138,7 +138,7 @@ export function AboutUsPage() {
               </div>
 
               <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-                <div className="flex items-center gap-2 text-indigo-600">
+                <div className="flex items-center gap-2 text-primary">
                   <Eye className="w-5 h-5" />
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Our Vision</h3>
                 </div>
@@ -168,13 +168,13 @@ export function AboutUsPage() {
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Award className="w-5 h-5 text-indigo-600" />
+                  <Award className="w-5 h-5 text-primary" />
                   <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Journey & Milestones</h3>
                 </div>
                 {data.milestones.length > 0 && (
                   <button
                     onClick={() => navigate('company-milestones')}
-                    className="text-xs font-bold text-blue-600 hover:underline"
+                    className="text-xs font-bold text-primary hover:underline"
                   >
                     View All
                   </button>
@@ -185,10 +185,10 @@ export function AboutUsPage() {
                   No milestones published yet. Zylod only posts real milestones — they will appear here as the platform grows.
                 </p>
               ) : (
-                <div className="space-y-4 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-blue-100">
+                <div className="space-y-4 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-primary/10">
                   {data.milestones.slice(0, 4).map(m => (
                     <div key={m.id} className="relative flex items-start gap-3 pl-1">
-                      <div className="w-6 h-6 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center ring-4 ring-white z-10">
+                      <div className="w-6 h-6 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center ring-4 ring-white z-10">
                         {m.year.toString().slice(-2)}
                       </div>
                       <div>
@@ -207,7 +207,7 @@ export function AboutUsPage() {
                 <Users className="w-4 h-4 mr-1.5" />
                 Join Our Team
               </Button>
-              <Button onClick={() => navigate('contact-us')} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold py-2.5">
+              <Button onClick={() => navigate('contact-us')} className="bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-2.5">
                 Contact HQ →
               </Button>
             </div>

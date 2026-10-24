@@ -197,7 +197,7 @@ export function NotificationsPage() {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'order':
-        return <Package className="w-5 h-5 text-blue-600" />
+        return <Package className="w-5 h-5 text-primary" />
       case 'delivery':
         return <Truck className="w-5 h-5 text-emerald-600" />
       case 'promotion':
@@ -207,7 +207,7 @@ export function NotificationsPage() {
       case 'back_in_stock':
         return <Layers className="w-5 h-5 text-teal-600" />
       case 'chat':
-        return <MessageSquare className="w-5 h-5 text-indigo-600" />
+        return <MessageSquare className="w-5 h-5 text-primary" />
       default:
         return <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400 dark:text-gray-500" />
     }
@@ -215,12 +215,12 @@ export function NotificationsPage() {
 
   const getTypeBg = (type: string) => {
     switch (type) {
-      case 'order': return 'bg-blue-50 border-blue-100'
+      case 'order': return 'bg-primary/5 border-primary/20'
       case 'delivery': return 'bg-emerald-50 border-emerald-100'
       case 'promotion': return 'bg-amber-50 border-amber-100'
       case 'price_drop': return 'bg-red-50 border-red-100'
       case 'back_in_stock': return 'bg-teal-50 border-teal-100'
-      case 'chat': return 'bg-indigo-50 border-indigo-100'
+      case 'chat': return 'bg-primary/5 border-primary/20'
       default: return 'bg-gray-50 dark:bg-gray-950 border-gray-100 dark:border-gray-800'
     }
   }

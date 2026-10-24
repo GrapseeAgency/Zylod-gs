@@ -76,7 +76,7 @@ export function SitemapPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search pages and directories..."
-            className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+            className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-primary/40 shadow-sm"
           />
         </div>
 
@@ -106,7 +106,7 @@ export function SitemapPage() {
                   className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3"
                 >
                   <div className="flex items-center gap-2.5 border-b border-gray-50 pb-3">
-                    <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                    <div className="p-2 rounded-xl bg-primary/5 text-primary">
                       <Icon className="w-4 h-4" />
                     </div>
                     <div>
@@ -123,12 +123,12 @@ export function SitemapPage() {
                         className="w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition text-left group"
                       >
                         <div>
-                          <p className="text-xs font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 transition">
+                          <p className="text-xs font-bold text-gray-800 dark:text-gray-200 group-hover:text-primary transition">
                             {page.label}
                           </p>
                           <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">{page.description}</p>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-600 transition flex-shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-primary transition flex-shrink-0" />
                       </button>
                     ))}
                   </div>

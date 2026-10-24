@@ -118,7 +118,7 @@ export function CacheSettingsPage() {
         <Card className="rounded-2xl border shadow-sm">
           <CardHeader className="pb-3 border-b">
             <CardTitle className="text-base font-bold flex items-center gap-2">
-              <ImageIcon className="h-5 w-5 text-blue-600" />
+              <ImageIcon className="h-5 w-5 text-primary" />
               Image Cache Optimization
             </CardTitle>
             <CardDescription className="text-xs">WebP compression and LRU eviction policy</CardDescription>

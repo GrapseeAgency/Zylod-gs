@@ -41,7 +41,7 @@ const STATUS_TABS: { value: string; label: string }[] = [
 
 const STATUS_CHIP: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-700',
-  confirmed: 'bg-blue-100 text-blue-700',
+  confirmed: 'bg-primary/10 text-primary',
   packed: 'bg-purple-100 text-purple-700',
   shipped: 'bg-cyan-100 text-cyan-700',
   delivered: 'bg-green-100 text-green-700',
@@ -52,7 +52,7 @@ const STATUS_CHIP: Record<string, string> = {
 /** REAL returnRequests.status values (prisma/schema.prisma — Task 59-a). */
 const RETURN_STATUS_CHIP: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-700',
-  approved: 'bg-blue-100 text-blue-700',
+  approved: 'bg-primary/10 text-primary',
   rejected: 'bg-red-100 text-red-700',
   refunded: 'bg-emerald-100 text-emerald-700',
 };

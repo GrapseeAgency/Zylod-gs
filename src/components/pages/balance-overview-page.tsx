@@ -153,7 +153,7 @@ export function BalanceOverviewPage() {
 
             <div className="py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <RefreshCw className="h-4 w-4 text-blue-600" />
+                <RefreshCw className="h-4 w-4 text-primary" />
                 <span className="font-semibold text-slate-700 dark:text-slate-300">Order Refunds Received</span>
               </div>
               <span className="font-bold text-emerald-600 font-mono">+{formatPrice(data.totalRefunds)}</span>

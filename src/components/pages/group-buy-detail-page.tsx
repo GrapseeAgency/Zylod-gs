@@ -11,6 +11,7 @@ import {
   ArrowLeft, Users2, Clock, ShieldCheck,
   CheckCircle2, ShoppingBag, AlertCircle
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export function GroupBuyDetailPage() {
   const { currentPage, navigate, goBack, pageParams } = useNavigationStore()
@@ -43,7 +44,7 @@ export function GroupBuyDetailPage() {
     if (!campaignId) return
     const qtyNum = Number(quantity)
     if (!qtyNum || qtyNum <= 0) {
-      alert('Please enter a valid quantity')
+      toast.error('Please enter a valid quantity')
       return
     }
 
@@ -59,10 +60,10 @@ export function GroupBuyDetailPage() {
       })
       const data = await res.json()
       if (res.ok && data.success) {
-        alert(data.message || 'Successfully joined group buy pool!')
+        toast.success(data.message || 'Successfully joined group buy pool!')
         navigate('group-buy')
       } else {
-        alert(data.error || 'Failed to join group buy')
+        toast.error(data.error || 'Failed to join group buy')
       }
     } catch (err) {
       console.error(err)

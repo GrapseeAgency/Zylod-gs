@@ -59,7 +59,7 @@ export function CookiePreferencesPage() {
           {/* Necessary */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 border border-gray-100 dark:border-gray-800 shadow-sm flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-xs font-bold text-gray-900 dark:text-gray-100">Strictly Necessary Cookies</h3>

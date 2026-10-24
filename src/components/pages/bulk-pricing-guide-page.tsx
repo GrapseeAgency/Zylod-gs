@@ -24,7 +24,7 @@ export function BulkPricingGuidePage() {
       units: '200–499 units',
       discount: '10–15%',
       badge: 'Tier 2',
-      color: 'from-blue-600 to-blue-700',
+      color: 'from-primary to-primary/90',
       desc: 'Most popular tier for medium retailers. Price applied at checkout instantly.',
     },
     {

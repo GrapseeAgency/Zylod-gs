@@ -9,6 +9,7 @@ import {
   ArrowLeft, BarChart3, TrendingUp, DollarSign,
   MousePointerClick, ShoppingBag, CheckCircle2, Clock
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 export function AffiliateDashboardPage() {
   const { navigate, goBack } = useNavigationStore()
@@ -75,7 +76,7 @@ export function AffiliateDashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 font-bold">
-              <MousePointerClick className="w-4 h-4 text-blue-500" /> Clicks
+              <MousePointerClick className="w-4 h-4 text-primary/80" /> Clicks
             </div>
             <p className="text-xl font-black text-gray-900 dark:text-gray-100">{dashData?.stats?.totalClicks ?? 0}</p>
           </div>
@@ -117,7 +118,7 @@ export function AffiliateDashboardPage() {
           </div>
 
           <Button
-            onClick={() => alert('Payout request submitted for bKash/Bank settlement.')}
+            onClick={() => toast.success('Payout request submitted for bKash/Bank settlement.')}
             className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs sm:text-sm px-5 py-3 shadow-md"
           >
             Request Payout Transfer

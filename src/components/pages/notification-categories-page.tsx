@@ -17,7 +17,7 @@ export function NotificationCategoriesPage() {
       title: 'Order Status Updates',
       desc: 'Purchase confirmations, manufacturing progress, and invoices',
       icon: Package,
-      color: 'bg-blue-50 text-blue-600',
+      color: 'bg-primary/5 text-primary',
       badge: 'High Priority',
     },
     {

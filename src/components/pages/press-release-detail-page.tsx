@@ -49,7 +49,7 @@ export function PressReleaseDetailPage() {
           <>
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
               <div className="flex items-center gap-2">
-                <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-bold uppercase">
+                <Badge className="bg-primary/5 text-primary border-primary/30 text-[10px] font-bold uppercase">
                   {release.category?.replace('_', ' ')}
                 </Badge>
                 <span className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -88,7 +88,7 @@ export function PressReleaseDetailPage() {
                   <div
                     key={rel.id}
                     onClick={() => navigate('press-release-detail', { slug: rel.slug })}
-                    className="p-3.5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:border-blue-300 transition cursor-pointer flex items-center justify-between"
+                    className="p-3.5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:border-primary/40 transition cursor-pointer flex items-center justify-between"
                   >
                     <div>
                       <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">{rel.title}</h4>

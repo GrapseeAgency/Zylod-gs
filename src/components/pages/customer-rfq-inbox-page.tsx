@@ -110,7 +110,7 @@ const QUOTABLE_STATUSES = ['open', 'quoted']
 
 const statusChipClass: Record<string, string> = {
   open: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
-  quoted: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-900',
+  quoted: 'bg-primary/5 text-primary border-primary/30 dark:bg-primary/10 dark:text-primary/70 dark:border-primary/30',
   awarded: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-400 dark:border-violet-900',
   closed: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
   expired: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',

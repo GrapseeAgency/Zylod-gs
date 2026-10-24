@@ -42,12 +42,12 @@ export function SellerTermsPage() {
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Supplier & Factory Terms</h1>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-4 pb-24">
-        <div className="bg-indigo-600 rounded-3xl p-5 text-white space-y-2">
+        <div className="bg-primary rounded-3xl p-5 text-white space-y-2">
           <div className="flex items-center gap-2">
             <Store className="w-5 h-5" />
             <h2 className="font-bold text-sm">Verified Manufacturer Protocol</h2>
           </div>
-          <p className="text-xs text-indigo-100 leading-relaxed">
+          <p className="text-xs text-primary/20 leading-relaxed">
             Supplying direct to wholesale retailers requires compliance with quality standards, packaging integrity, and strict fulfillment SLAs.
           </p>
         </div>
@@ -56,7 +56,7 @@ export function SellerTermsPage() {
           {rules.map((r, idx) => (
             <div key={r.title} className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1.5">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-black flex items-center justify-center">
+                <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center">
                   {idx + 1}
                 </span>
                 <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">{r.title}</h3>
@@ -66,7 +66,7 @@ export function SellerTermsPage() {
           ))}
         </div>
 
-        <Button onClick={() => navigate('terms-of-service')} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold py-3">
+        <Button onClick={() => navigate('terms-of-service')} className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-3">
           Back to Main Terms of Service
         </Button>
       </div>

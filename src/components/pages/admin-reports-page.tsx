@@ -96,7 +96,7 @@ export function AdminReportsPage() {
 
   const statusBadges: Record<string, { label: string; class: string }> = {
     pending: { label: 'Pending Review', class: 'bg-yellow-50 text-yellow-800 border-yellow-200' },
-    under_review: { label: 'Under Investigation', class: 'bg-blue-50 text-blue-800 border-blue-200' },
+    under_review: { label: 'Under Investigation', class: 'bg-primary/5 text-primary border-primary/30' },
     action_taken: { label: 'Action Taken', class: 'bg-green-50 text-green-800 border-green-200' },
     dismissed: { label: 'Dismissed', class: 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800' },
   }

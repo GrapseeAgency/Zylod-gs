@@ -124,7 +124,7 @@ export function OrderStatusSubscriptionsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 md:gap-x-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-blue-500" />
+                <Clock className="w-4 h-4 text-primary/80" />
                 <span className="text-xs font-bold text-gray-800 dark:text-gray-200">Order Confirmed by Factory</span>
               </div>
               <Switch checked={stepConfirm} onCheckedChange={setStepConfirm} />
@@ -140,7 +140,7 @@ export function OrderStatusSubscriptionsPage() {
 
             <div className="flex items-center justify-between pt-2 border-t border-gray-50">
               <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4 text-indigo-500" />
+                <Truck className="w-4 h-4 text-primary/80" />
                 <span className="text-xs font-bold text-gray-800 dark:text-gray-200">Dispatched via Courier (Tracking Available)</span>
               </div>
               <Switch checked={stepShipped} onCheckedChange={setStepShipped} />

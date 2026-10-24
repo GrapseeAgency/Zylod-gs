@@ -79,7 +79,7 @@ export function DeepLinkHandlerPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6">
         <div>
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-blue-100 dark:bg-blue-950/50 flex items-center justify-center text-blue-600">
+            <div className="h-12 w-12 rounded-2xl bg-primary/10 dark:bg-primary/10/50 flex items-center justify-center text-primary">
               <Link2 className="h-6 w-6" />
             </div>
             <div>

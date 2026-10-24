@@ -107,7 +107,7 @@ export function CollectionSharedPage() {
         </button>
         <Link2 className="w-4 h-4 text-[#C8102E]" aria-hidden="true" />
         <h1 className="text-base md:text-lg font-bold text-gray-900 dark:text-gray-100 truncate">{collection.name}</h1>
-        <span className="ml-auto text-[10px] font-semibold uppercase tracking-wide text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded-full">
+        <span className="ml-auto text-[10px] font-semibold uppercase tracking-wide text-primary bg-primary/5 border border-primary/20 px-2 py-1 rounded-full">
           Shared
         </span>
       </header>

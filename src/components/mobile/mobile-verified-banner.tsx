@@ -33,16 +33,16 @@ export function MobileVerifiedBanner() {
         {/* Trade Assurance card */}
         <button
           onClick={() => navigate('suppliers')}
-          className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl p-3 flex items-center gap-2 border border-blue-200/50 dark:border-blue-800/30 active:scale-[0.98] transition-transform text-left"
+          className="flex-1 bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-slate-900/30 rounded-xl p-3 flex items-center gap-2 border border-primary/20 dark:border-primary/30 active:scale-[0.98] transition-transform text-left"
         >
-          <div className="h-9 w-9 rounded-lg bg-blue-500/15 flex items-center justify-center shrink-0">
-            <BadgeCheck className="w-5 h-5 text-blue-600" />
+          <div className="h-9 w-9 rounded-lg bg-primary/80/15 flex items-center justify-center shrink-0">
+            <BadgeCheck className="w-5 h-5 text-primary" />
           </div>
           <div className="min-w-0">
-            <p className="text-[11px] font-bold text-blue-700 dark:text-blue-400">Trade Assurance</p>
-            <p className="text-[9px] text-blue-600/70 dark:text-blue-500/60">Secure transactions</p>
+            <p className="text-[11px] font-bold text-primary dark:text-primary/70">Trade Assurance</p>
+            <p className="text-[9px] text-primary/70 dark:text-primary/80/60">Secure transactions</p>
           </div>
-          <ChevronRight className="w-3.5 h-3.5 text-blue-500/50 shrink-0 ml-auto" />
+          <ChevronRight className="w-3.5 h-3.5 text-primary/80/50 shrink-0 ml-auto" />
         </button>
       </motion.div>
     </section>

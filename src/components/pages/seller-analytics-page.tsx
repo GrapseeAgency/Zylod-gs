@@ -128,8 +128,8 @@ export function SellerAnalyticsPage() {
                         {data.overview.totalOrders.toLocaleString()}
                       </h3>
                     </div>
-                    <div className="p-2 bg-blue-50 rounded-lg">
-                      <ShoppingCart className="h-4 w-4 text-blue-600" />
+                    <div className="p-2 bg-primary/5 rounded-lg">
+                      <ShoppingCart className="h-4 w-4 text-primary" />
                     </div>
                   </div>
                 </CardContent>

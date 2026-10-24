@@ -89,7 +89,7 @@ export function AppSettingsPage() {
             title: 'Storage Manager',
             desc: `${realUsageKb} KB stored`,
             icon: HardDrive,
-            color: 'text-blue-600',
+            color: 'text-primary',
           },
           {
             id: 'cache-settings',

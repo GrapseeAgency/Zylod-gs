@@ -14,7 +14,7 @@ export function CompanyValuesPage() {
       title: 'Real Verification, Always Visible',
       desc: 'Every supplier profile on Zylod shows its real verification status, reviewed by a Zylod admin. If a profile is not verified yet, it says so — no inflated badges.',
       icon: Eye,
-      color: 'text-blue-600 bg-blue-50',
+      color: 'text-primary bg-primary/5',
     },
     {
       title: 'Honest Numbers',
@@ -63,7 +63,7 @@ export function CompanyValuesPage() {
           ))}
         </div>
 
-        <Button onClick={() => navigate('about-us')} className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold py-3">
+        <Button onClick={() => navigate('about-us')} className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-3">
           Back to About Us
         </Button>
       </div>

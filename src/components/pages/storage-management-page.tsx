@@ -66,7 +66,7 @@ export function StorageManagementPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6">
         <div>
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-blue-100 dark:bg-blue-950/50 flex items-center justify-center text-blue-600">
+            <div className="h-12 w-12 rounded-2xl bg-primary/10 dark:bg-primary/10/50 flex items-center justify-center text-primary">
               <HardDrive className="h-6 w-6" />
             </div>
             <div>
@@ -134,7 +134,7 @@ export function StorageManagementPage() {
         <Card className="rounded-2xl border shadow-sm">
           <CardHeader className="pb-3 border-b">
             <CardTitle className="text-base font-bold flex items-center gap-2">
-              <ImageIcon className="h-5 w-5 text-blue-600" />
+              <ImageIcon className="h-5 w-5 text-primary" />
               Factory Media & Image Thumbnails
             </CardTitle>
             <CardDescription className="text-xs">Compressed WebP & AVIF product previews</CardDescription>

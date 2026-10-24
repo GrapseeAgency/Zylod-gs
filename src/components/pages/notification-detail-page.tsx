@@ -167,7 +167,7 @@ export function NotificationDetailPage() {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'order': return <Package className="w-6 h-6 text-blue-600" />
+      case 'order': return <Package className="w-6 h-6 text-primary" />
       case 'delivery': return <Truck className="w-6 h-6 text-emerald-600" />
       case 'promotion': return <Tag className="w-6 h-6 text-amber-600" />
       case 'price_drop': return <TrendingDown className="w-6 h-6 text-red-600" />
@@ -178,7 +178,7 @@ export function NotificationDetailPage() {
 
   const getTypeHeaderBg = (type: string) => {
     switch (type) {
-      case 'order': return 'from-blue-600 to-indigo-700'
+      case 'order': return 'from-primary to-primary/90'
       case 'delivery': return 'from-emerald-600 to-teal-700'
       case 'promotion': return 'from-amber-600 to-orange-700'
       case 'price_drop': return 'from-red-600 to-rose-700'

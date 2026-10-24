@@ -32,7 +32,7 @@ export function AppSecuritySettingsPage() {
           <CardDescription className="text-xs">Device security features planned for the Zylod apps</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-50 border border-blue-100 text-xs text-blue-900 leading-relaxed">
+          <div className="flex items-start gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/20 text-xs text-primary leading-relaxed">
             <Info className="h-4 w-4 mt-0.5 shrink-0" />
             <p>
               Biometric authentication, screen-capture shielding, and quick-PIN locking are not available on the Zylod web app yet. Nothing on this page changes your account security today — we will not pretend to save settings that do nothing.

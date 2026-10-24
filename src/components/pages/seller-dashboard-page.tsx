@@ -70,9 +70,9 @@ interface CampaignParticipation {
 
 const STATUS_BADGE: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-200',
-  confirmed: 'bg-blue-50 text-blue-700 border-blue-200',
-  packed: 'bg-blue-50 text-blue-700 border-blue-200',
-  shipped: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  confirmed: 'bg-primary/5 text-primary border-primary/30',
+  packed: 'bg-primary/5 text-primary border-primary/30',
+  shipped: 'bg-primary/5 text-primary border-primary/30',
   delivered: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   cancelled: 'bg-red-50 text-red-700 border-red-200',
   returned: 'bg-red-50 text-red-700 border-red-200',
@@ -199,7 +199,7 @@ export const SellerDashboardPage = () => {
   const stats = [
     { label: "Paid Revenue (all time)", value: data ? `৳${data.stats.totalRevenueBDT.toLocaleString(undefined, { maximumFractionDigits: 2 })}` : '0', icon: DollarSign, color: "text-green-600" },
     { label: "Awaiting Payment", value: data ? `৳${data.stats.pendingPaymentBDT.toLocaleString(undefined, { maximumFractionDigits: 2 })}` : '0', icon: AlertTriangle, color: "text-orange-600" },
-    { label: "Pending Orders", value: data ? data.stats.pendingOrders : 0, icon: ShoppingCart, color: "text-blue-600" },
+    { label: "Pending Orders", value: data ? data.stats.pendingOrders : 0, icon: ShoppingCart, color: "text-primary" },
     { label: "Low Stock Alerts", value: data ? data.stats.lowStockCount : 0, icon: AlertTriangle, color: "text-red-600" },
     { label: "Unread Messages", value: data ? data.storeStats.messages : 0, icon: MessageCircle, color: "text-yellow-600", page: 'chat-list' as string | undefined },
   ];
@@ -446,7 +446,7 @@ export const SellerDashboardPage = () => {
                     >
                       <CardContent className="p-4 flex items-center justify-between">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-primary/5 text-primary flex items-center justify-center shrink-0">
                             <Package className="w-5 h-5" />
                           </div>
                           <div className="min-w-0">

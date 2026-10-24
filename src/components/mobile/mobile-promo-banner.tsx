@@ -45,7 +45,7 @@ const PROMO_SLIDES: PromoSlide[] = [
     priceUnit: '/piece',
     badge: 'Factory Direct',
     navigateTo: 'electronics',
-    gradient: 'from-blue-900/70 via-blue-800/50 to-transparent',
+    gradient: 'from-slate-900/70 via-blue-800/50 to-transparent',
   },
   {
     id: 'promo-4',

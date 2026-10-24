@@ -42,7 +42,7 @@ export function InternationalShippingPage() {
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-4 pb-24 md:px-6 md:py-6 md:pb-8 md:space-y-6 lg:max-w-5xl">
         <div className="bg-slate-900 rounded-3xl p-5 md:p-6 text-white space-y-2">
           <div className="flex items-center gap-2">
-            <Globe className="w-5 h-5 text-blue-400" />
+            <Globe className="w-5 h-5 text-primary/70" />
             <h2 className="font-bold text-sm md:text-base">Global RMG & Wholesale Export</h2>
           </div>
           <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
@@ -54,7 +54,7 @@ export function InternationalShippingPage() {
           {modes.map(m => (
             <div key={m.title} className="bg-white dark:bg-gray-900 rounded-3xl p-4.5 md:p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-2xl bg-blue-50 text-blue-600">
+                <div className="p-2 rounded-2xl bg-primary/5 text-primary">
                   <m.icon className="w-4 h-4" />
                 </div>
                 <h3 className="text-xs md:text-sm font-bold text-gray-900 dark:text-gray-100">{m.title}</h3>

@@ -174,7 +174,7 @@ export function AffiliateProgramPage() {
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
-            <Share2 className="w-5 h-5 text-blue-600" />
+            <Share2 className="w-5 h-5 text-primary" />
             <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">60-Day Cookie Window</h4>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Commissions attributed even if buyers return up to 2 months later.</p>
           </div>

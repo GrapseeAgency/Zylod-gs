@@ -63,7 +63,7 @@ interface ComplaintCounts {
 
 const complaintStatusChip: Record<string, string> = {
   open: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  in_review: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  in_review: 'bg-primary/10 text-primary/70 border-primary/30',
   resolved: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
   rejected: 'bg-red-500/20 text-red-400 border-red-500/30',
   withdrawn: 'bg-slate-500/20 text-slate-400 border-slate-500/30',

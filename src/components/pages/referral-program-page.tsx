@@ -79,14 +79,14 @@ export function ReferralProgramPage() {
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-indigo-600" />
+            <Users className="w-5 h-5 text-primary" />
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Refer &amp; Earn</h1>
           </div>
         </div>
 
         <button
           onClick={() => navigate('referral-earnings')}
-          className="text-xs font-bold text-indigo-600 hover:underline"
+          className="text-xs font-bold text-primary hover:underline"
         >
           Earnings History →
         </button>
@@ -95,24 +95,24 @@ export function ReferralProgramPage() {
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24 md:px-6 md:py-8 md:max-w-3xl md:space-y-8 md:pb-10">
         <div className="hidden md:flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Users className="w-6 h-6 text-indigo-600" />
+            <Users className="w-6 h-6 text-primary" />
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Refer &amp; Earn</h1>
           </div>
           <button
             onClick={() => navigate('referral-earnings')}
-            className="text-xs font-bold text-indigo-600 hover:underline"
+            className="text-xs font-bold text-primary hover:underline"
           >
             Earnings History
           </button>
         </div>
         {/* Banner */}
-        <div className="bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-800 rounded-3xl p-6 text-white shadow-md text-center space-y-2">
-          <div className="flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-200">
+        <div className="bg-gradient-to-r from-primary via-primary to-primary/80 rounded-3xl p-6 text-white shadow-md text-center space-y-2">
+          <div className="flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary/70">
             <Sparkles className="w-4 h-4 text-amber-300" />
             Merchant Referral Network
           </div>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-black">Give ৳200, Get 500 Points</h2>
-          <p className="text-xs text-indigo-100 max-w-sm mx-auto">
+          <p className="text-xs text-primary/80 max-w-sm mx-auto">
             Invite fellow wholesale retailers and factory buyers. They get ৳200 voucher + 300 points, and you receive 500 points per registered business!
           </p>
         </div>
@@ -123,15 +123,15 @@ export function ReferralProgramPage() {
             Your Unique Invite Code
           </h3>
 
-          <div className="p-3.5 bg-slate-50 dark:bg-slate-950 border border-dashed border-indigo-200 rounded-2xl flex items-center justify-between gap-3">
-            <span className="font-mono font-black text-base sm:text-lg text-indigo-600 tracking-wider">
+          <div className="p-3.5 bg-slate-50 dark:bg-slate-950 border border-dashed border-primary/30 rounded-2xl flex items-center justify-between gap-3">
+            <span className="font-mono font-black text-base sm:text-lg text-primary tracking-wider">
               {refData?.code || 'LOADING...'}
             </span>
 
             <Button
               size="sm"
               onClick={copyInvite}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl gap-1"
+              className="bg-primary hover:bg-primary/90 text-white font-bold text-xs rounded-xl gap-1"
             >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? 'Copied Link' : 'Copy Link'}
@@ -146,7 +146,7 @@ export function ReferralProgramPage() {
             </div>
             <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
               <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase">Points Earned</p>
-              <p className="text-lg font-black text-indigo-600">+{refData?.totalPointsEarned ?? 0}</p>
+              <p className="text-lg font-black text-primary">+{refData?.totalPointsEarned ?? 0}</p>
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ export function ReferralProgramPage() {
             <Button
               onClick={handleClaimFriendCode}
               disabled={claiming || !friendCode.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-5 rounded-xl shadow-sm"
+              className="bg-primary hover:bg-primary/90 text-white text-xs font-bold px-5 rounded-xl shadow-sm"
             >
               {claiming ? 'Applying...' : 'Apply Code'}
             </Button>

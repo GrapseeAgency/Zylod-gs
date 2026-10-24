@@ -38,7 +38,7 @@ export function ReferralEarningsPage() {
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
-            <Coins className="w-5 h-5 text-indigo-600" />
+            <Coins className="w-5 h-5 text-primary" />
             <h1 className="font-bold text-gray-900 dark:text-gray-100 text-base">Referral Earnings Ledger</h1>
           </div>
         </div>
@@ -46,7 +46,7 @@ export function ReferralEarningsPage() {
         <Button
           size="sm"
           onClick={() => navigate('referral-program')}
-          className="h-8 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl"
+          className="h-8 text-xs font-bold bg-primary hover:bg-primary/90 text-white rounded-xl"
         >
           Share Code →
         </Button>
@@ -55,22 +55,22 @@ export function ReferralEarningsPage() {
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24 md:px-6 md:py-8 md:max-w-3xl md:space-y-8 md:pb-10">
         <div className="hidden md:flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Coins className="w-6 h-6 text-indigo-600" />
+            <Coins className="w-6 h-6 text-primary" />
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Referral Earnings Ledger</h1>
           </div>
           <Button
             size="sm"
             onClick={() => navigate('referral-program')}
-            className="h-9 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl"
+            className="h-9 text-xs font-bold bg-primary hover:bg-primary/90 text-white rounded-xl"
           >
             Share Code
           </Button>
         </div>
         {/* Earnings Stats */}
-        <div className="bg-gradient-to-r from-indigo-600 to-blue-600 rounded-3xl p-6 text-white shadow-md space-y-2">
-          <p className="text-xs font-bold text-indigo-200 uppercase tracking-wider">Total Referral Reward Points</p>
+        <div className="bg-gradient-to-r from-primary to-primary rounded-3xl p-6 text-white shadow-md space-y-2">
+          <p className="text-xs font-bold text-primary/50 uppercase tracking-wider">Total Referral Reward Points</p>
           <h2 className="text-3xl md:text-4xl font-black">+{refData?.totalPointsEarned ?? 0} Pts</h2>
-          <p className="text-xs text-indigo-100">
+          <p className="text-xs text-primary/20">
             Earned from {refData?.successfulReferrals ?? 0} verified business onboarding events.
           </p>
         </div>
@@ -92,7 +92,7 @@ export function ReferralEarningsPage() {
                 className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-primary/5 text-primary flex items-center justify-center">
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
@@ -105,7 +105,7 @@ export function ReferralEarningsPage() {
                   </div>
                 </div>
 
-                <span className="text-xs font-extrabold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">
+                <span className="text-xs font-extrabold text-primary bg-primary/5 px-2.5 py-1 rounded-full">
                   +500 Pts Credited
                 </span>
               </div>

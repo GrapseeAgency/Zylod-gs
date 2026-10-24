@@ -130,7 +130,7 @@ export function OfflineModePage() {
           className="cursor-pointer hover:border-primary transition-all p-5 rounded-2xl border shadow-sm group"
         >
           <div className="space-y-2">
-            <ShoppingBag className="h-6 w-6 text-blue-600" />
+            <ShoppingBag className="h-6 w-6 text-primary" />
             <div className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">Browse Offline Catalog</div>
             <p className="text-xs text-muted-foreground">Inspect cached fabric thread counts, MOQ, and factory pricing</p>
           </div>

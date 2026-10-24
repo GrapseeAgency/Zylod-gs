@@ -151,7 +151,7 @@ export function LiveChatPage() {
           <div>
             <h1 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
               Zylod Live Support
-              <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+              <ShieldCheck className="w-3.5 h-3.5 text-primary/80" />
             </h1>
             <p className="text-[10px] text-green-600 font-medium">Specialist Online • Dhaka HQ</p>
           </div>

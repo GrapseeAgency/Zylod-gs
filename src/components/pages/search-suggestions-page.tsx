@@ -289,7 +289,7 @@ export function SearchSuggestionsPage() {
                     onClick={() => navigate('seller-storefront', { supplierId: supplier.id })}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition border-b border-gray-50"
                   >
-                    <TrendingUp className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                    <TrendingUp className="w-4 h-4 text-primary/70 flex-shrink-0" />
                     <span className="flex-1 text-sm text-gray-700 dark:text-gray-300 text-left">{supplier.companyName}</span>
                     <span className="text-xs text-gray-400 dark:text-gray-500">⭐ {supplier.ratingAvg.toFixed(1)}</span>
                   </motion.button>

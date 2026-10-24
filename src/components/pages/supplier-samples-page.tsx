@@ -45,7 +45,7 @@ interface SampleStats {
 
 const STATUS_STYLES: Record<string, string> = {
   requested: 'bg-amber-100 text-amber-800 border-amber-200',
-  shipped: 'bg-blue-50 text-blue-700 border-blue-200',
+  shipped: 'bg-primary/5 text-primary border-primary/30',
   delivered: 'bg-green-100 text-green-800 border-green-200',
   cancelled: 'bg-neutral-100 text-neutral-600 border-neutral-200',
 }
@@ -242,7 +242,7 @@ export function SupplierSamplesPage() {
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Total</span><span className="font-semibold tabular-nums">{stats?.total ?? '…'}</span></span>
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Awaiting shipment</span><span className="font-semibold tabular-nums text-amber-700">{stats?.requested ?? '…'}</span></span>
-            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Shipped</span><span className="font-semibold tabular-nums text-blue-700">{stats?.shipped ?? '…'}</span></span>
+            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Shipped</span><span className="font-semibold tabular-nums text-primary">{stats?.shipped ?? '…'}</span></span>
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Delivered</span><span className="font-semibold tabular-nums text-green-700">{stats?.delivered ?? '…'}</span></span>
             <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"><span className="text-muted-foreground">Cancelled</span><span className="font-semibold tabular-nums">{stats?.cancelled ?? '…'}</span></span>
           </div>
@@ -311,7 +311,7 @@ export function SupplierSamplesPage() {
                         </>
                       )}
                       {s.status === 'shipped' && (
-                        <span className="inline-flex items-center text-[11px] text-blue-700"><Truck className="h-3.5 w-3.5 mr-1" />awaiting buyer confirmation</span>
+                        <span className="inline-flex items-center text-[11px] text-primary"><Truck className="h-3.5 w-3.5 mr-1" />awaiting buyer confirmation</span>
                       )}
                     </div>
                   </div>
