@@ -41,12 +41,12 @@ export function LiveShoppingDetailPage() {
   }, [streamId])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-white">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-800 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-300" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Radio className={`w-4 h-4 ${stream?.isLive ? 'text-red-500 animate-pulse' : 'text-slate-500'}`} />
@@ -97,7 +97,7 @@ export function LiveShoppingDetailPage() {
         </div>
 
         {/* Live Chat & Messages */}
-        <div className="bg-slate-900/90 rounded-3xl p-4 border border-slate-800 space-y-3 lg:col-span-1">
+        <div className="bg-white dark:bg-slate-900/90 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 lg:col-span-1">
           <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Live Factory Floor Q&amp;A</h3>
 
           <div className="space-y-2 max-h-48 lg:max-h-[420px] overflow-y-auto pr-1">
@@ -108,20 +108,20 @@ export function LiveShoppingDetailPage() {
             ) : (
               messages.map((m, i) => (
                 <div key={i} className="text-xs flex items-baseline gap-2">
-                  <span className="font-bold text-amber-400">{m.sender}:</span>
-                  <span className="text-slate-200">{m.text}</span>
+                  <span className="font-bold text-amber-600 dark:text-amber-400">{m.sender}:</span>
+                  <span className="text-slate-700 dark:text-slate-200">{m.text}</span>
                 </div>
               ))
             )}
           </div>
 
-          <div className="flex gap-2 pt-2 border-t border-slate-800">
+          <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <Input
               placeholder="Chat opens when the stream is live"
               value={inputMsg}
               onChange={e => setInputMsg(e.target.value)}
               disabled={!stream?.isLive}
-              className="bg-slate-950 border-slate-800 text-white text-xs disabled:opacity-50"
+              className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-gray-900 dark:text-white text-xs disabled:opacity-50"
             />
             <Button
               size="sm"

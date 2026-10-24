@@ -83,22 +83,22 @@ export function SpinWinPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-900 text-white">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="sticky top-0 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-800 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-300" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-400" />
+            <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
             <h1 className="font-bold text-base">Lucky Spin &amp; Win</h1>
           </div>
         </div>
 
         <button
           onClick={() => navigate('spin-history')}
-          className="flex items-center gap-1 text-xs font-bold text-amber-400 hover:underline"
+          className="flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline"
         >
           <History className="w-3.5 h-3.5" /> Past Wins
         </button>
@@ -107,7 +107,7 @@ export function SpinWinPage() {
       <div className="flex-1 px-4 py-6 max-w-md mx-auto w-full flex flex-col items-center justify-center space-y-6 pb-24 md:pb-10 text-center md:max-w-2xl">
         {/* Title */}
         <div className="space-y-1">
-          <h2 className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-amber-400 via-rose-400 to-amber-200 bg-clip-text text-transparent">
+          <h2 className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-amber-500 via-rose-500 to-amber-400 dark:from-amber-400 dark:via-rose-400 dark:to-amber-200 bg-clip-text text-transparent">
             Spin the Lucky Wheel
           </h2>
           <p className="text-xs text-slate-400 dark:text-slate-500">
@@ -151,13 +151,13 @@ export function SpinWinPage() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-slate-800/90 border border-amber-500/50 rounded-3xl p-5 w-full text-center space-y-2 shadow-xl"
+            className="bg-white dark:bg-slate-800/90 border border-amber-500/50 rounded-3xl p-5 w-full text-center space-y-2 shadow-xl"
           >
-            <div className="flex items-center justify-center gap-1 text-xs font-bold text-amber-400 uppercase tracking-wider">
+            <div className="flex items-center justify-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
               <Trophy className="w-4 h-4" /> Prize Unlocked
             </div>
-            <h3 className="text-lg font-bold text-white">{wonPrize.label}</h3>
-            <p className="text-xs text-slate-300">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">{wonPrize.label}</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-300">
               Reward has been deposited into your My Coupons / Points vault!
             </p>
           </motion.div>
@@ -174,7 +174,7 @@ export function SpinWinPage() {
           </Button>
 
           <p className="text-xs font-bold text-slate-400 dark:text-slate-500">
-            Daily Spins Left: <strong className="text-amber-400">{spinsRemaining} of 3</strong>
+            Daily Spins Left: <strong className="text-amber-600 dark:text-amber-400">{spinsRemaining} of 3</strong>
           </p>
         </div>
       </div>

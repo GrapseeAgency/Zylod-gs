@@ -67,19 +67,19 @@ export function PaymentPendingPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-3xl md:px-6 md:py-6 lg:max-w-4xl">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-900 to-amber-950 rounded-3xl p-5 md:p-6 text-white shadow-xl space-y-2 border border-amber-800/30">
+        <div className="bg-gradient-to-br from-slate-100 to-amber-100 dark:from-slate-900 dark:to-amber-950 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white shadow-xl space-y-2 border border-amber-200 dark:border-amber-800/30">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-              <Clock className="h-5 w-5 text-amber-300" />
+              <Clock className="h-5 w-5 text-amber-600 dark:text-amber-300" />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-amber-300">In Clearance Pipeline</span>
+              <span className="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-300">In Clearance Pipeline</span>
               <div className="text-2xl md:text-4xl font-black font-mono mt-0.5">
                 {formatPrice(totalPending)}
               </div>
             </div>
           </div>
-          <p className="text-xs text-slate-300 pt-1">
+          <p className="text-xs text-slate-600 dark:text-slate-300 pt-1">
             Payments reported but not yet verified. Orders stay UNPAID until Zylod verifies the payment.
           </p>
         </div>

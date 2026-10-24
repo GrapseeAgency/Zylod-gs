@@ -81,7 +81,7 @@ export function NotificationQuietHoursPage() {
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-xl mx-auto lg:max-w-3xl w-full space-y-6 md:space-y-8 pb-24 md:pb-8">
         {/* Banner */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-3xl p-6 shadow-md space-y-2">
+        <div className="bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-gray-900 dark:text-white rounded-3xl p-6 shadow-md space-y-2">
           <div className="flex items-center gap-2 text-xs font-bold text-primary/60 uppercase tracking-wide">
             <Moon className="w-4 h-4" />
             Distraction-Free Rest Window

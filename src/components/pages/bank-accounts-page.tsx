@@ -116,14 +116,14 @@ export function BankAccountsPage() {
         </div>
 
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
-              <Landmark className="h-5 w-5 text-rose-300" />
+            <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
+              <Landmark className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base font-black">Corporate Bank Payouts</h1>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-slate-300">
                 Verified commercial bank routing for high-volume wholesale settlements.
               </p>
             </div>
@@ -199,7 +199,7 @@ export function BankAccountsPage() {
             </div>
           ) : (
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-              <Landmark className="h-10 w-10 mx-auto text-slate-300 stroke-[1.5]" />
+              <Landmark className="h-10 w-10 mx-auto text-slate-400 dark:text-slate-300 stroke-[1.5]" />
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">No bank accounts linked</span>
               <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
                 Add a corporate bank account to enable direct wholesale withdrawals.

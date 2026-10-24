@@ -25,13 +25,13 @@ export function TaxComplianceGuidePage() {
 
       <div className="flex-1 px-4 py-6 space-y-6 max-w-3xl mx-auto w-full pb-24">
         {/* Banner */}
-        <div className="bg-slate-900 text-white rounded-3xl p-6 shadow-md space-y-2">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-red-400 uppercase tracking-wide">
+        <div className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-2">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wide">
             <Receipt className="w-4 h-4" />
             National Board of Revenue (NBR) Compliance
           </div>
           <h1 className="text-lg sm:text-xl font-bold">Mushak-6.3 VAT Invoices & TDS</h1>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
             Lawful commercial invoicing and tax deduction standards for B2B wholesale in Bangladesh.
           </p>
         </div>

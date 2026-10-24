@@ -123,14 +123,14 @@ export function LanguageSettingsPage() {
 
       <main className="max-w-lg mx-auto lg:max-w-3xl px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 md:p-6 text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
-              <Globe className="h-5 w-5 text-rose-300" />
+            <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
+              <Globe className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base md:text-xl font-black">Language &amp; Currency</h1>
-              <p className="text-xs md:text-sm text-slate-300">
+              <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300">
                 Your interface language is saved to your account the moment you tap it.
               </p>
             </div>

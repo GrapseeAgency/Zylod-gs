@@ -123,14 +123,14 @@ export function UpiPaymentSetupPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-2xl md:px-6 md:py-6">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
-              <Smartphone className="h-5 w-5 text-rose-300" />
+            <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
+              <Smartphone className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base font-black">MFS &amp; Instant Settlements</h1>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-slate-300">
                 Link bKash, Nagad, Upay, or Rocket accounts for automated 1-click settlements.
               </p>
             </div>
@@ -259,7 +259,7 @@ export function UpiPaymentSetupPage() {
             ))
           ) : (
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-              <Smartphone className="h-10 w-10 mx-auto text-slate-300 stroke-[1.5]" />
+              <Smartphone className="h-10 w-10 mx-auto text-slate-400 dark:text-slate-300 stroke-[1.5]" />
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">No MFS accounts linked</span>
               <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
                 Connect your bKash or Nagad wallet for 1-click order payments and refunds.

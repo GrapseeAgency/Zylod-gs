@@ -97,16 +97,16 @@ export function AccountVerificationBadgePage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6 lg:max-w-3xl">
         {/* Verification Badge Showcase */}
-        <div className="bg-gradient-to-br from-slate-900 via-rose-950 to-slate-900 rounded-3xl p-6 text-white text-center shadow-xl space-y-3 relative overflow-hidden">
-          <div className="w-16 h-16 rounded-3xl bg-white dark:bg-gray-900/10 border-2 border-white/20 mx-auto flex items-center justify-center shadow-inner">
-            <Award className="h-8 w-8 text-rose-300" />
+        <div className="bg-gradient-to-br from-slate-100 via-rose-100 to-slate-100 dark:from-slate-900 dark:via-rose-950 dark:to-slate-900 rounded-3xl p-6 text-gray-900 dark:text-white text-center shadow-xl space-y-3 relative overflow-hidden">
+          <div className="w-16 h-16 rounded-3xl bg-black/5 dark:bg-gray-900/10 border-2 border-black/10 dark:border-white/20 mx-auto flex items-center justify-center shadow-inner">
+            <Award className="h-8 w-8 text-rose-600 dark:text-rose-300" />
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-rose-300 bg-rose-500/20 px-3 py-1 rounded-full border border-rose-500/30">
+            <span className="text-[10px] font-black uppercase tracking-widest text-rose-600 dark:text-rose-300 bg-rose-500/20 px-3 py-1 rounded-full border border-rose-500/30">
               {levelName}
             </span>
-            <h1 className="text-xl md:text-2xl font-black text-white mt-2">Verified B2B Credential</h1>
-            <p className="text-xs text-slate-300 max-w-xs mx-auto mt-1 leading-relaxed">
+            <h1 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mt-2">Verified B2B Credential</h1>
+            <p className="text-xs text-slate-600 dark:text-slate-300 max-w-xs mx-auto mt-1 leading-relaxed">
               Displayed across all wholesale catalog listings to verify authentic manufacturing capability.
             </p>
           </div>

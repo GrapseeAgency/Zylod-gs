@@ -94,8 +94,8 @@ export function EarningsDashboardPage() {
         </div>
 
         {/* Main Earnings Card */}
-        <div className="bg-gradient-to-br from-slate-900 via-rose-950 to-slate-950 rounded-3xl p-6 text-white shadow-2xl space-y-4">
-          <div className="flex justify-between items-center text-rose-300">
+        <div className="bg-gradient-to-br from-slate-100 via-rose-100 to-slate-200 dark:from-slate-900 dark:via-rose-950 dark:to-slate-950 rounded-3xl p-6 text-gray-900 dark:text-white shadow-2xl space-y-4">
+          <div className="flex justify-between items-center text-rose-600 dark:text-rose-300">
             <span className="text-xs font-bold uppercase tracking-wider">Net Realized Revenue</span>
             <span className="text-xs font-black bg-rose-500/20 px-2 py-0.5 rounded-full border border-rose-500/30">
               {data.totalOrders} Orders
@@ -106,21 +106,21 @@ export function EarningsDashboardPage() {
             <div className="text-3xl md:text-4xl font-black font-mono">
               {formatPrice(data.netEarnings)}
             </div>
-            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 block">
+            <span className="text-xs text-slate-500 dark:text-slate-400 mt-1 block">
               After {data.commissionRate} Zylod platform wholesale commission
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/10">
-            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase font-bold block">Gross GMV</span>
-              <span className="text-sm font-bold text-slate-100 block font-mono mt-0.5">
+          <div className="grid grid-cols-2 gap-2 pt-3 border-t border-black/10 dark:border-white/10">
+            <div className="bg-black/5 dark:bg-gray-900/5 rounded-2xl p-3 border border-black/5 dark:border-white/5">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold block">Gross GMV</span>
+              <span className="text-sm font-bold text-slate-800 dark:text-slate-100 block font-mono mt-0.5">
                 {formatPrice(data.grossGMV)}
               </span>
             </div>
-            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase font-bold block">Total Orders</span>
-              <span className="text-sm font-bold text-amber-300 block font-mono mt-0.5">
+            <div className="bg-black/5 dark:bg-gray-900/5 rounded-2xl p-3 border border-black/5 dark:border-white/5">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold block">Total Orders</span>
+              <span className="text-sm font-bold text-amber-600 dark:text-amber-300 block font-mono mt-0.5">
                 {data.totalOrders}
               </span>
             </div>

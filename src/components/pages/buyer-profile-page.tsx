@@ -323,7 +323,7 @@ export function BuyerProfilePage() {
       <main className="max-w-lg mx-auto lg:max-w-5xl">
         {/* ─── BUYER HERO IDENTITY CARD ──────────────────────────────── */}
         <div className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-slate-800">
-          <div className="h-28 md:h-36 bg-gradient-to-br from-slate-900 via-slate-800 to-rose-950 relative overflow-hidden">
+          <div className="h-28 md:h-36 bg-gradient-to-br from-slate-200 via-slate-300 to-rose-200 dark:from-slate-900 dark:via-slate-800 dark:to-rose-950 relative overflow-hidden">
             <div className="absolute top-3 left-3">
               <span className="bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full border border-white/20 flex items-center gap-1.5">
                 <ShieldCheck className="h-3 w-3 text-emerald-400" />

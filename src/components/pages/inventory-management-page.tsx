@@ -595,7 +595,7 @@ export function InventoryManagementPage() {
                             type="button"
                             disabled={actingKey === key || (setValueInputs[key] ?? '').trim() === ''}
                             onClick={() => submitSetValue({ productId: product.id })}
-                            className="min-h-11 px-4 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+                            className="min-h-11 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-medium disabled:opacity-50"
                           >
                             Set
                           </button>
@@ -698,7 +698,7 @@ export function InventoryManagementPage() {
                                     type="button"
                                     disabled={actingKey === vKey || (setValueInputs[vKey] ?? '').trim() === ''}
                                     onClick={() => submitSetValue({ variantId: variant.id })}
-                                    className="min-h-11 px-4 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
+                                    className="min-h-11 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-medium disabled:opacity-50"
                                   >
                                     Set
                                   </button>

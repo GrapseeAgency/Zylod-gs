@@ -170,24 +170,24 @@ export function AddMoneyPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6 lg:max-w-4xl">
         {/* Banner + doctrine */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-3">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-3">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
-              <Plus className="h-5 w-5 text-rose-300" />
+            <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
+              <Plus className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base font-black">Add Funds to Wallet</h1>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-slate-300">
                 Send money to the Zylod company account, then submit the transaction reference here.
               </p>
             </div>
           </div>
-          <div className="flex items-start gap-2.5 bg-white dark:bg-gray-900/5 border border-white/10 rounded-2xl p-3">
-            <ShieldCheck className="h-4 w-4 text-emerald-300 shrink-0 mt-0.5" />
-            <p className="text-[11px] leading-relaxed text-slate-200">
-              <span className="font-black text-white">Verification doctrine:</span> your claim stays
-              <span className="font-black text-amber-300"> PENDING</span> and your balance does
-              <span className="font-black text-white"> NOT</span> change until a Zylod finance admin
+          <div className="flex items-start gap-2.5 bg-black/5 dark:bg-gray-900/5 border border-black/10 dark:border-white/10 rounded-2xl p-3">
+            <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-300 shrink-0 mt-0.5" />
+            <p className="text-[11px] leading-relaxed text-slate-700 dark:text-slate-200">
+              <span className="font-black text-gray-900 dark:text-white">Verification doctrine:</span> your claim stays
+              <span className="font-black text-amber-600 dark:text-amber-300"> PENDING</span> and your balance does
+              <span className="font-black text-gray-900 dark:text-white"> NOT</span> change until a Zylod finance admin
               confirms the money arrived — the same rule as order payments. Fake or duplicate
               references are rejected and audit-logged.
             </p>
@@ -388,7 +388,7 @@ export function AddMoneyPage() {
                       {c.provider} · {c.reference} · {new Date(c.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-slate-300 shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-300 shrink-0" />
                 </div>
               ))}
             </div>

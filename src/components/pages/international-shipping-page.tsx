@@ -40,12 +40,12 @@ export function InternationalShippingPage() {
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-4 pb-24 md:px-6 md:py-6 md:pb-8 md:space-y-6 lg:max-w-5xl">
-        <div className="bg-slate-900 rounded-3xl p-5 md:p-6 text-white space-y-2">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white space-y-2 shadow-sm">
           <div className="flex items-center gap-2">
             <Globe className="w-5 h-5 text-primary/70" />
             <h2 className="font-bold text-sm md:text-base">Global RMG & Wholesale Export</h2>
           </div>
-          <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+          <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
             Direct mill export solutions connecting international apparel buying houses directly to Bangladesh garment factories with FOB and CIF terms.
           </p>
         </div>
@@ -64,7 +64,7 @@ export function InternationalShippingPage() {
           ))}
         </div>
 
-        <Button onClick={() => navigate('shipping-policy')} className="w-full md:w-auto md:mx-auto md:block md:px-10 bg-slate-900 text-white rounded-xl text-xs md:text-sm font-bold py-3">
+        <Button onClick={() => navigate('shipping-policy')} className="w-full md:w-auto md:mx-auto md:block md:px-10 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs md:text-sm font-bold py-3">
           Back to Shipping Policy
         </Button>
       </div>

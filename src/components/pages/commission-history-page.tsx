@@ -79,19 +79,19 @@ export function CommissionHistoryPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:space-y-6 lg:max-w-4xl lg:py-8">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 md:p-8 text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 md:p-8 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
-              <Percent className="h-5 w-5 text-rose-300" />
+            <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
+              <Percent className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-rose-300">Total Deductions</span>
+              <span className="text-[10px] uppercase font-bold text-rose-600 dark:text-rose-300">Total Deductions</span>
               <div className="text-2xl md:text-4xl font-black font-mono mt-0.5">
                 {formatPrice(data.totalCommissions)}
               </div>
             </div>
           </div>
-          <p className="text-xs text-slate-300 pt-1">
+          <p className="text-xs text-slate-600 dark:text-slate-300 pt-1">
             Commission entries recorded on fulfilled wholesale orders — amounts and rates come from your real order records.
           </p>
         </div>
@@ -165,7 +165,7 @@ export function CommissionHistoryPage() {
             </>
           ) : (
             <div className="py-12 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 space-y-1">
-              <Percent className="h-8 w-8 mx-auto text-slate-300 stroke-[1.5]" />
+              <Percent className="h-8 w-8 mx-auto text-slate-400 dark:text-slate-300 stroke-[1.5]" />
               <span className="text-xs font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 block">No commission records</span>
             </div>
           )}

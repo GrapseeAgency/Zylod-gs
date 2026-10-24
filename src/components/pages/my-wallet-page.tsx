@@ -120,46 +120,46 @@ export function MyWalletPage() {
 
       <main className="max-w-lg mx-auto lg:max-w-5xl px-4 py-5 md:px-6 md:py-6 space-y-4 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:items-start">
         {/* Main Wallet Card */}
-        <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950 rounded-3xl p-6 text-white shadow-2xl space-y-5 relative overflow-hidden lg:col-span-3">
+        <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-slate-950 dark:via-slate-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white shadow-2xl space-y-5 relative overflow-hidden lg:col-span-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-white dark:bg-gray-900/10 flex items-center justify-center border border-white/10">
-                <Wallet className="h-4 w-4 text-rose-300" />
+              <div className="w-8 h-8 rounded-xl bg-black/5 dark:bg-gray-900/10 flex items-center justify-center border border-black/10 dark:border-white/10">
+                <Wallet className="h-4 w-4 text-rose-600 dark:text-rose-300" />
               </div>
-              <span className="text-xs font-bold text-slate-300">Zylod Enterprise Balance</span>
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Zylod Enterprise Balance</span>
             </div>
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-white p-1"
+              className="text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white p-1"
             >
               {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
             </button>
           </div>
 
           <div>
-            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block font-medium">Available Payout &amp; Sourcing Fund</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">Available Payout &amp; Sourcing Fund</span>
             <div className="text-3xl md:text-4xl font-black tracking-tight mt-1">
               {showBalance ? formatPrice(walletData.balance) : '••••••••'}
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
-            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">Total Outflow</span>
-              <span className="text-sm font-bold text-amber-300 block mt-0.5">
+          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-black/10 dark:border-white/10">
+            <div className="bg-black/5 dark:bg-gray-900/5 rounded-2xl p-3 border border-black/5 dark:border-white/5">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">Total Outflow</span>
+              <span className="text-sm font-bold text-amber-600 dark:text-amber-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.totalWithdrawals) : '••••••'}
               </span>
             </div>
-            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">Total Inflow</span>
-              <span className="text-sm font-bold text-emerald-300 block mt-0.5">
+            <div className="bg-black/5 dark:bg-gray-900/5 rounded-2xl p-3 border border-black/5 dark:border-white/5">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">Total Inflow</span>
+              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.totalDeposits) : '••••••'}
               </span>
             </div>
             {/* Task 71: the SafePay escrow ledger is REAL now — show it. */}
-            <div className="bg-white dark:bg-gray-900/5 rounded-2xl p-3 border border-white/5">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">In Escrow</span>
-              <span className="text-sm font-bold text-sky-300 block mt-0.5">
+            <div className="bg-black/5 dark:bg-gray-900/5 rounded-2xl p-3 border border-black/5 dark:border-white/5">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">In Escrow</span>
+              <span className="text-sm font-bold text-sky-600 dark:text-sky-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.escrowBalance ?? 0) : '••••••'}
               </span>
             </div>
@@ -252,7 +252,7 @@ export function MyWalletPage() {
                   {c.status === 'pending' ? (
                     <span className="text-[10px] text-amber-600 font-bold shrink-0">awaiting verification</span>
                   ) : (
-                    <ChevronRight className="h-4 w-4 text-slate-300 shrink-0" />
+                    <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-300 shrink-0" />
                   )}
                 </div>
               ))}

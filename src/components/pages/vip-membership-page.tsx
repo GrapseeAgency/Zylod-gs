@@ -36,15 +36,15 @@ export function VipMembershipPage() {
   }, [token])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-900 text-white">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-800 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-300" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
-            <Crown className="w-5 h-5 text-amber-400" />
+            <Crown className="w-5 h-5 text-amber-500 dark:text-amber-400" />
             <h1 className="font-bold text-base">VIP Wholesale Club</h1>
           </div>
         </div>
@@ -52,7 +52,7 @@ export function VipMembershipPage() {
         <Button
           size="sm"
           onClick={() => navigate('membership-tiers')}
-          className="h-8 text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-900 dark:text-slate-100 rounded-xl"
+          className="h-8 text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-950 rounded-xl"
         >
           All Tiers →
         </Button>
@@ -70,16 +70,16 @@ export function VipMembershipPage() {
           </div>
 
           <div className="space-y-1">
-            <p className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">Annual Wholesale Volume</p>
+            <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">Annual Wholesale Volume</p>
             <h2 className="text-3xl font-black">{formatPrice(vipData?.totalSpendBDT ?? 0)}</h2>
-            <p className="text-xs text-slate-900 dark:text-slate-100 font-medium">
+            <p className="text-xs text-slate-900 font-medium">
               Cumulative purchase turnover recorded on Zylod
             </p>
           </div>
         </div>
 
         {/* Exclusive VIP Privileges */}
-        <div className="bg-slate-800/80 rounded-3xl p-5 border border-slate-700/80 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-800/80 rounded-3xl p-5 border border-slate-200 dark:border-slate-700/80 shadow-sm space-y-4">
           <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
             Your VIP Enterprise Privileges
           </h3>
@@ -91,12 +91,12 @@ export function VipMembershipPage() {
               { icon: ShieldCheck, title: 'Documented Order Records', desc: 'Every order keeps its payment verification status and history on your account.' },
               { icon: PhoneCall, title: 'Key Account Director', desc: 'Direct WhatsApp and direct phone access to wholesale trading heads.' },
             ].map(item => (
-              <div key={item.title} className="flex items-start gap-3.5 p-3 rounded-2xl bg-slate-900/60 border border-slate-800">
-                <div className="w-9 h-9 rounded-xl bg-amber-400/10 text-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div key={item.title} className="flex items-start gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
+                <div className="w-9 h-9 rounded-xl bg-amber-400/10 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <item.icon className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="text-xs sm:text-sm font-bold text-white">{item.title}</h4>
+                  <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{item.title}</h4>
                   <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">{item.desc}</p>
                 </div>
               </div>

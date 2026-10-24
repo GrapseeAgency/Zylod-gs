@@ -29,12 +29,12 @@ export function CareerCulturePage() {
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6 pb-24 md:pb-8 lg:max-w-4xl">
-        <div className="bg-slate-900 rounded-3xl p-5 text-white space-y-2">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 text-gray-900 dark:text-white space-y-2 shadow-sm">
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-teal-400" />
+            <Users className="w-5 h-5 text-teal-600 dark:text-teal-400" />
             <h2 className="font-bold text-sm">High Autonomy, High Impact</h2>
           </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
             We are solving hard problems at the intersection of B2B fintech, bulk freight logistics, and manufacturing digitisation in Bangladesh.
           </p>
         </div>

@@ -92,7 +92,7 @@ export function BulkUploadTemplatePage() {
           <div className="flex items-center gap-2 text-xs font-bold text-gray-800 dark:text-gray-200">
             <FileSpreadsheet className="w-4 h-4 text-primary" /> Valid units: pcs · dozen · kg · carton · box · set
           </div>
-          <pre className="bg-slate-900 text-slate-100 text-[11px] font-mono rounded-xl p-3 overflow-x-auto leading-relaxed">{csv}</pre>
+          <pre className="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-[11px] font-mono rounded-xl p-3 overflow-x-auto leading-relaxed border border-slate-200 dark:border-slate-800">{csv}</pre>
           <div className="flex flex-col sm:flex-row gap-2">
             <Button onClick={download} className="flex-1 h-11 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2">
               <Download className="w-4 h-4" /> Download template CSV

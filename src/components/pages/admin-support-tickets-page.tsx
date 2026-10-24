@@ -249,7 +249,7 @@ export function AdminSupportTicketsPage() {
             <button
               key={m}
               onClick={() => { setMode(m); setOpenId(null); setStatusFilter('all') }}
-              className={`min-h-11 px-5 rounded-xl text-xs font-black uppercase tracking-wide transition ${mode === m ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
+              className={`min-h-11 px-5 rounded-xl text-xs font-black uppercase tracking-wide transition ${mode === m ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
             >
               {m === 'buyer' ? 'Buyer Threads' : 'Seller Threads'}
             </button>

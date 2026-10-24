@@ -231,14 +231,14 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Track Order</h1>
 
       {/* Neutral header band — no fake live map, no live-tracking claim */}
-      <div className="bg-slate-900 dark:bg-slate-800">
+      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-lg mx-auto px-4 py-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-900/10 flex items-center justify-center shrink-0">
-            <Truck className="h-5 w-5 text-white" />
+          <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-gray-900/10 flex items-center justify-center shrink-0">
+            <Truck className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-sm font-black text-white">Shipment Tracking</h2>
-            <p className="text-[11px] text-slate-300">Status updates from your suppliers</p>
+            <h2 className="text-sm font-black text-gray-900 dark:text-white">Shipment Tracking</h2>
+            <p className="text-[11px] text-slate-600 dark:text-slate-300">Status updates from your suppliers</p>
           </div>
         </div>
       </div>
@@ -246,7 +246,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
       <main className="px-4 -mt-8 relative z-20 space-y-4 max-w-lg mx-auto">
         {/* Sign-in required (401) */}
         {needsAuth && (
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
             <div className="w-14 h-14 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900 text-primary flex items-center justify-center mx-auto mb-3">
               <LogIn className="h-6 w-6" />
             </div>
@@ -272,7 +272,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
 
         {/* Not found (404) */}
         {!needsAuth && notFound && (
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
             <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-3">
               <PackageSearch className="h-6 w-6" />
             </div>
@@ -308,7 +308,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
         {/* Loading skeleton — pulse blocks only, never fake rows */}
         {loading && !error && (
           <>
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-5" aria-busy="true" aria-live="polite">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-5" aria-busy="true" aria-live="polite">
               <div className="flex items-start justify-between">
                 <div className="space-y-2">
                   <div className="h-3 w-20 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
@@ -320,7 +320,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               <div className="h-12 w-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded-2xl animate-pulse" />
               <div className="h-16 w-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded-2xl animate-pulse" />
             </div>
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4" aria-hidden="true">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4" aria-hidden="true">
               <div className="h-3.5 w-32 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
               {[0, 1].map((i) => (
                 <div key={i} className="flex items-start gap-3.5">
@@ -339,7 +339,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
         {!loading && !error && !needsAuth && !notFound && order && (
           <>
             {/* Status Card */}
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-5">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-5">
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div>
@@ -475,7 +475,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
             </div>
 
             {/* Tracking History — only real events from the API */}
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-xs font-black text-slate-900 dark:text-slate-100">
                   Tracking History{trackingEvents.length > 0 ? ` (${trackingEvents.length})` : ''}

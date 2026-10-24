@@ -58,13 +58,13 @@ export function SellerVerificationPage() {
   const progressPercent = Math.min(100, Math.round((verifiedCount / totalRequired) * 100))
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 pb-20 md:pb-8">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pb-20 md:pb-8">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-neutral-900/90 backdrop-blur border-b border-neutral-800 px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-30 bg-white/90 dark:bg-neutral-900/90 backdrop-blur border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('seller-dashboard')}
-            className="md:hidden p-2 -ml-2 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 transition-colors"
+            className="md:hidden p-2 -ml-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -73,7 +73,7 @@ export function SellerVerificationPage() {
               <ShieldCheck className="w-5 h-5 text-sky-400" />
               Seller Verification Hub
             </h1>
-            <p className="text-xs text-neutral-400">KYC & Merchant Trade Verification</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">KYC & Merchant Trade Verification</p>
           </div>
         </div>
 
@@ -81,9 +81,9 @@ export function SellerVerificationPage() {
           onClick={() => navigate('seller-badge-levels')}
           variant="outline"
           size="sm"
-          className="border-neutral-700 text-xs text-neutral-300 hover:bg-neutral-800"
+          className="border-neutral-300 dark:border-neutral-700 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"
         >
-          <Award className="w-4 h-4 mr-1 text-amber-400" />
+          <Award className="w-4 h-4 mr-1 text-amber-500 dark:text-amber-400" />
           Badge Perks
         </Button>
       </div>
@@ -94,21 +94,21 @@ export function SellerVerificationPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <span className="text-xs font-semibold text-sky-400 uppercase tracking-wider">KYC Compliance</span>
-              <h2 className="text-lg sm:text-xl font-bold text-neutral-100">
+              <h2 className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">
                 {progressPercent === 100 ? 'Fully Verified Merchant' : 'Verification in Progress'}
               </h2>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 {verifiedCount} of {totalRequired} mandatory credentials approved
               </p>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-full bg-neutral-950 border-2 border-sky-500/40 flex items-center justify-center font-bold text-sm text-sky-400 shadow-inner">
+              <div className="w-16 h-16 rounded-full bg-neutral-100 dark:bg-neutral-950 border-2 border-sky-500/40 flex items-center justify-center font-bold text-sm text-sky-400 shadow-inner">
                 {progressPercent}%
               </div>
               <Button
                 onClick={() => navigate('seller-verification-upload')}
-                className="bg-[#C8102E] hover:bg-[#A00D24] text-white text-xs font-semibold px-4 h-9"
+                className="bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-4 h-9"
               >
                 <UploadCloud className="w-4 h-4 mr-1.5" />
                 Upload Docs
@@ -119,7 +119,7 @@ export function SellerVerificationPage() {
 
         {/* Required Documents Checklist */}
         <div className="space-y-3">
-          <h3 className="font-bold text-sm text-neutral-300 uppercase tracking-wider">
+          <h3 className="font-bold text-sm text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
             Verification Documents Checklist
           </h3>
 
@@ -131,16 +131,16 @@ export function SellerVerificationPage() {
               return (
                 <Card
                   key={type.key}
-                  className="bg-neutral-900 border-neutral-800 hover:border-neutral-700 transition-colors"
+                  className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors"
                 >
                   <CardContent className="p-4 flex items-center justify-between gap-3">
                     <div className="flex items-start gap-3 min-w-0 flex-1">
-                      <div className="w-9 h-9 rounded-lg bg-neutral-950 border border-neutral-800 flex items-center justify-center shrink-0 mt-0.5">
-                        <FileText className="w-4 h-4 text-neutral-400" />
+                      <div className="w-9 h-9 rounded-lg bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center shrink-0 mt-0.5">
+                        <FileText className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 min-w-0">
-                          <p className="font-semibold text-xs sm:text-sm text-neutral-200 truncate">
+                          <p className="font-semibold text-xs sm:text-sm text-neutral-800 dark:text-neutral-200 truncate">
                             {type.label}
                           </p>
                           {type.required && (
@@ -148,7 +148,7 @@ export function SellerVerificationPage() {
                           )}
                         </div>
                         {uploadedDoc ? (
-                          <p className="text-[11px] text-neutral-400 mt-0.5 truncate">
+                          <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5 truncate">
                             {uploadedDoc.fileName} • Uploaded {new Date(uploadedDoc.uploadedAt).toLocaleDateString()}
                           </p>
                         ) : (
@@ -161,7 +161,7 @@ export function SellerVerificationPage() {
 
                     <div className="flex items-center gap-2 shrink-0">
                       {status === 'verified' ? (
-                        <Badge className="bg-emerald-950/40 text-emerald-400 border-emerald-800/60 text-xs py-0.5 flex items-center gap-1">
+                        <Badge className="bg-emerald-950/40 text-emerald-500 dark:text-emerald-400 border-emerald-800/60 text-xs py-0.5 flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           Verified
                         </Badge>
@@ -179,7 +179,7 @@ export function SellerVerificationPage() {
                         <Button
                           size="sm"
                           onClick={() => navigate('seller-verification-upload', { docType: type.key })}
-                          className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs h-7 px-2.5"
+                          className="bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 text-xs h-7 px-2.5"
                         >
                           Upload
                         </Button>
@@ -197,7 +197,7 @@ export function SellerVerificationPage() {
           <Button
             onClick={() => navigate('seller-verification-status')}
             variant="ghost"
-            className="w-full justify-between bg-neutral-900/60 border border-neutral-800 hover:bg-neutral-900 text-neutral-300 text-xs sm:text-sm py-5"
+            className="w-full justify-between bg-white/60 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 text-neutral-700 dark:text-neutral-300 text-xs sm:text-sm py-5"
           >
             <span className="flex items-center gap-2 min-w-0">
               <Clock className="w-4 h-4 text-sky-400 shrink-0" />

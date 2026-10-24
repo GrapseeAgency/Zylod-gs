@@ -120,14 +120,14 @@ export function InvoiceManagementPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-4xl md:px-6 md:py-6 md:space-y-6 lg:max-w-5xl">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 md:p-6 text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
-              <FileText className="h-5 w-5 text-rose-300" />
+            <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
+              <FileText className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base md:text-lg font-black">VAT &amp; Tax Commercial Invoices</h1>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-slate-300">
                 Mushak 6.3 compliant tax documents for corporate audit filing.
               </p>
             </div>
@@ -275,7 +275,7 @@ export function InvoiceManagementPage() {
             </>
           ) : (
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-              <FileText className="h-10 w-10 mx-auto text-slate-300 stroke-[1.5]" />
+              <FileText className="h-10 w-10 mx-auto text-slate-400 dark:text-slate-300 stroke-[1.5]" />
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">No commercial invoices found</span>
             </div>
           )}

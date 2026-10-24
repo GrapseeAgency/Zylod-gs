@@ -131,7 +131,7 @@ export function SharedWishlistDetailPage() {
             <div key={item.id} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border flex flex-col relative group">
               {!item.inStock && (
                 <div className="absolute inset-0 bg-white dark:bg-gray-900/60 z-10 flex items-center justify-center backdrop-blur-[1px]">
-                  <span className="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full">Out of Stock</span>
+                  <span className="bg-gray-800 dark:bg-gray-700 text-white text-xs font-bold px-3 py-1 rounded-full">Out of Stock</span>
                 </div>
               )}
               
@@ -221,7 +221,7 @@ export function SharedWishlistDetailPage() {
             <Share2 className="w-4 h-4 mr-1" /> Share
           </button>
         </div>
-        <Button onClick={() => navigate('home')} className="w-full bg-gray-900 text-white hover:bg-gray-800 rounded-xl h-12 text-base font-semibold">
+        <Button onClick={() => navigate('home')} className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl h-12 text-base font-semibold">
           Shop these products on Zylod <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </div>

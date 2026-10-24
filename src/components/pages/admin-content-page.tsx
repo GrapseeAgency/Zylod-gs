@@ -122,8 +122,8 @@ const STATUS_STYLES: Record<string, string> = {
   live: 'bg-green-100 text-green-800 border-green-200',
   scheduled: 'bg-amber-100 text-amber-800 border-amber-200',
   upcoming: 'bg-amber-100 text-amber-800 border-amber-200',
-  expired: 'bg-neutral-100 text-neutral-600 border-neutral-200',
-  inactive: 'bg-neutral-100 text-neutral-600 border-neutral-200',
+  expired: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700',
+  inactive: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700',
 }
 
 function fmtDateTime(iso: string | null): string {

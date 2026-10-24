@@ -300,7 +300,7 @@ export function CollectionDetailPage() {
                       </div>
                     )}
                     
-                    <div className={`relative ${viewMode === 'list' ? 'w-32 shrink-0' : 'w-full aspect-square'} bg-gray-100`}>
+                    <div className={`relative ${viewMode === 'list' ? 'w-32 shrink-0' : 'w-full aspect-square'} bg-gray-100 dark:bg-gray-800`}>
                       {prod.thumbnailUrl ? (
                         <img src={prod.thumbnailUrl} alt={prod.name} className="w-full h-full object-cover" />
                       ) : (

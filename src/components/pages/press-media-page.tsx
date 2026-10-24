@@ -81,27 +81,27 @@ export function PressMediaPage() {
           </button>
         </div>
         {/* Hero */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-slate-900 rounded-3xl p-6 text-white space-y-3">
+        <div className="bg-gradient-to-r from-slate-100 via-slate-100 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 rounded-3xl p-6 text-gray-900 dark:text-white space-y-3">
           <Badge className="bg-primary/10 text-primary/60 border-primary/30 text-xs">
             Corporate Newsroom
           </Badge>
           <h2 className="text-xl md:text-2xl font-black leading-tight">
             Latest Headlines & Industry Breakthroughs
           </h2>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
             Stay updated with corporate milestones, funding announcements, product innovations, and strategic logistics partnerships across Bangladesh.
           </p>
           <div className="flex gap-2 pt-1">
             <Button
               onClick={() => navigate('media-kit')}
-              className="bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-2"
+              className="bg-primary hover:bg-primary/90 text-gray-900 dark:text-white rounded-xl text-xs font-bold py-2"
             >
               <Download className="w-3.5 h-3.5 mr-1.5" /> Download Media Kit
             </Button>
             <Button
               onClick={() => navigate('investor-relations')}
               variant="outline"
-              className="bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 border-white/20 text-white rounded-xl text-xs font-bold py-2"
+              className="bg-black/5 dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 border-black/10 dark:border-white/20 text-gray-900 dark:text-white rounded-xl text-xs font-bold py-2"
             >
               Investor Relations →
             </Button>
@@ -114,7 +114,7 @@ export function PressMediaPage() {
             onClick={() => setSelectedCat('all')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
               selectedCat === 'all'
-                ? 'bg-slate-900 text-white shadow-sm'
+                ? 'bg-primary text-white shadow-sm'
                 : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}
           >
@@ -126,7 +126,7 @@ export function PressMediaPage() {
               onClick={() => setSelectedCat(cat)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap capitalize transition ${
                 selectedCat === cat
-                  ? 'bg-slate-900 text-white shadow-sm'
+                  ? 'bg-primary text-white shadow-sm'
                   : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
             >

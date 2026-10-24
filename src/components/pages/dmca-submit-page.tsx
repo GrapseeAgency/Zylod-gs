@@ -69,7 +69,7 @@ export function DmcaSubmitPage() {
             <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
               Your official report reference is <strong>{ticketRef}</strong>. Our Legal & Compliance Desk will examine the claim and take necessary enforcement action within 72 hours.
             </p>
-            <Button onClick={() => navigate('dmca-policy')} className="bg-slate-900 text-white rounded-xl text-xs font-bold">
+            <Button onClick={() => navigate('dmca-policy')} className="bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold">
               Back to DMCA Policy
             </Button>
           </div>

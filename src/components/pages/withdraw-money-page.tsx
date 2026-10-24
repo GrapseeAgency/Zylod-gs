@@ -147,16 +147,16 @@ export function WithdrawMoneyPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-2xl md:px-6 md:py-6">
         {/* Balance box — honest three-way split under the payout doctrine */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
-          <span className="text-xs text-slate-300">Available for withdrawal</span>
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
+          <span className="text-xs text-slate-600 dark:text-slate-300">Available for withdrawal</span>
           <div className="text-2xl font-black font-mono">
             {initialLoading ? '…' : formatPrice(availableBalance)}
           </div>
-          <div className="flex gap-4 pt-1 text-[11px] text-slate-300 font-mono">
+          <div className="flex gap-4 pt-1 text-[11px] text-slate-600 dark:text-slate-300 font-mono">
             <span>Wallet {formatPrice(data?.balance ?? 0)}</span>
             <span>· On hold {formatPrice(data?.onHold ?? 0)}</span>
           </div>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 pt-1 flex items-start gap-1.5">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 pt-1 flex items-start gap-1.5">
             <Lock className="h-3 w-3 shrink-0 mt-0.5" />
             <span>Every request is held until an admin verifies the settlement — the same rule that protects buyer payments. Rejected requests release the hold instantly.</span>
           </p>
@@ -326,7 +326,7 @@ export function WithdrawMoneyPage() {
                       {p.destination ?? p.method}
                       {p.reference ? ` · ref ${p.reference}` : ''}
                     </p>
-                    <p className="text-[10px] text-slate-300">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-300">
                       {new Date(p.createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                       {p.status === 'pending' || p.status === 'processing' ? ' · amount held until verified' : ''}
                     </p>

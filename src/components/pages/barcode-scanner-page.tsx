@@ -194,7 +194,7 @@ export function BarcodeScannerPage() {
   const isActiveScanning = scanState === 'scanning'
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-950">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-950">
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 pt-12 pb-3 md:pt-4 md:max-w-3xl md:mx-auto">
         <button
@@ -281,7 +281,7 @@ export function BarcodeScannerPage() {
       </div>
 
       {/* Bottom panel */}
-      <div className="bg-gray-900 px-4 pt-4 pb-8 space-y-4 md:w-full md:max-w-3xl md:mx-auto md:pb-6">
+      <div className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-4 pt-4 pb-8 space-y-4 md:w-full md:max-w-3xl md:mx-auto md:pb-6">
         {/* Mode tabs */}
         <div className="flex gap-2 justify-center">
           {(['barcode', 'qr'] as ScanMode[]).map(m => (
@@ -289,7 +289,7 @@ export function BarcodeScannerPage() {
               key={m}
               onClick={() => setMode(m)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${
-                mode === m ? 'bg-red-600 text-white' : 'bg-white/10 text-gray-400 dark:text-gray-500'
+                mode === m ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-400'
               }`}
             >
               {m === 'barcode' ? 'Barcode' : 'QR Code'}
@@ -310,7 +310,7 @@ export function BarcodeScannerPage() {
                     <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Package className="w-6 h-6 text-gray-300" />
+                      <Package className="w-6 h-6 text-gray-400 dark:text-gray-300" />
                     </div>
                   )}
                 </div>
@@ -329,7 +329,7 @@ export function BarcodeScannerPage() {
               >
                 View Product
               </Button>
-              <Button variant="outline" size="icon" onClick={reset} className="border-white/20 text-white">
+              <Button variant="outline" size="icon" onClick={reset} className="border-gray-300 dark:border-white/20 text-gray-900 dark:text-white">
                 <RefreshCw className="w-4 h-4" />
               </Button>
             </div>
@@ -338,10 +338,10 @@ export function BarcodeScannerPage() {
 
         {scanState === 'not-found' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-2">
-            <p className="text-gray-300 text-sm">
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
               {scannedCode ? `No product found for code: ${scannedCode}` : 'No matching product found'}
             </p>
-            <Button onClick={reset} variant="outline" size="sm" className="border-white/20 text-white">
+            <Button onClick={reset} variant="outline" size="sm" className="border-gray-300 dark:border-white/20 text-gray-900 dark:text-white">
               Scan Again
             </Button>
           </motion.div>
@@ -364,7 +364,7 @@ export function BarcodeScannerPage() {
                   value={manualCode}
                   onChange={e => setManualCode(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && lookupCode(manualCode)}
-                  className="flex-1 bg-white dark:bg-gray-900/10 border-white/20 text-white placeholder:text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm"
+                  className="flex-1 bg-white dark:bg-gray-900/10 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 text-sm"
                 />
                 <Button
                   onClick={() => lookupCode(manualCode)}

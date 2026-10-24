@@ -294,7 +294,7 @@ export function DailyDealsPage() {
         {!isLoading && deals.length > 0 && (
           <button
             onClick={() => navigate('flash-deals')}
-            className="w-full md:max-w-3xl md:mx-auto bg-[#1E1E1E] dark:bg-gray-900 rounded-2xl p-4 flex items-center gap-3 shadow-sm hover:border-[#FF4D6D]/40 border border-transparent transition-all text-left"
+            className="w-full md:max-w-3xl md:mx-auto bg-white dark:bg-gray-900 rounded-2xl p-4 flex items-center gap-3 shadow-sm hover:border-[#FF4D6D]/40 border border-gray-200 dark:border-gray-800 transition-all text-left"
           >
             <div className="w-10 h-10 rounded-lg bg-[#C8102E]/20 flex items-center justify-center shrink-0">
               <Zap className="h-5 w-5 text-[#FF4D6D]" />

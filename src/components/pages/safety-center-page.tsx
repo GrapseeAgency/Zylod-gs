@@ -63,15 +63,15 @@ export function SafetyCenterPage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Hero Header */}
-      <div className="bg-slate-900 text-white px-4 pt-4 pb-8 rounded-b-3xl shadow-lg md:px-6 md:pt-6 md:pb-10">
+      <div className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white px-4 pt-4 pb-8 rounded-b-3xl shadow-lg md:px-6 md:pt-6 md:pb-10 border-b border-gray-200 dark:border-slate-800">
         <div className="flex items-center justify-between gap-3 mb-6">
-          <button onClick={goBack} className="md:hidden p-2 rounded-full bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 transition">
-            <ArrowLeft className="w-5 h-5 text-white" />
+          <button onClick={goBack} className="md:hidden p-2 rounded-full bg-gray-100 dark:bg-gray-900/10 hover:bg-gray-200 dark:bg-gray-900/20 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-white" />
           </button>
           <span className="font-semibold text-sm sm:text-base">Zylod Trust & Safety Center</span>
           <button
             onClick={() => setLanguage(l => l === 'en' ? 'bn' : 'en')}
-            className="px-2.5 py-1 bg-white dark:bg-gray-900/10 text-xs font-semibold rounded-full hover:bg-white dark:bg-gray-900/20 transition"
+            className="px-2.5 py-1 bg-gray-100 dark:bg-gray-900/10 text-xs font-semibold rounded-full hover:bg-gray-200 dark:bg-gray-900/20 transition"
           >
             {language === 'en' ? 'বাংলা' : 'EN'}
           </button>
@@ -82,7 +82,7 @@ export function SafetyCenterPage() {
             <ShieldCheck className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Wholesale Security & Trust</h1>
-          <p className="text-xs text-slate-300">
+          <p className="text-xs text-slate-600 dark:text-slate-300">
             How we protect buyers, manufacturers, and transactions across Bangladesh
           </p>
         </div>

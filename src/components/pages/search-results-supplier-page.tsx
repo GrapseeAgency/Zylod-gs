@@ -62,7 +62,7 @@ export function SearchResultsSupplierPage() {
             { value: 'totalProducts', label: 'Most Products' },
           ].map(({ value, label }) => (
             <button key={value} onClick={() => setSortBy(value)}
-              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium transition ${sortBy === value ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'}`}>
+              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium transition ${sortBy === value ? 'bg-red-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
               {label}
             </button>
           ))}

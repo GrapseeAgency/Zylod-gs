@@ -530,7 +530,7 @@ export function SellerProfilePage() {
         {/* ─── 1. HERO BANNER & IDENTITY ─────────────────────────────────── */}
         <div className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-slate-800">
           {/* Factory Cover Banner */}
-          <div className="h-44 md:h-64 bg-gradient-to-br from-slate-900 via-rose-950 to-slate-900 relative overflow-hidden group">
+          <div className="h-44 md:h-64 bg-gradient-to-br from-slate-100 via-rose-100 to-slate-100 dark:from-slate-900 dark:via-rose-950 dark:to-slate-900 relative overflow-hidden group">
             {coverUrl ? (
               <img
                 src={coverUrl}
@@ -538,7 +538,7 @@ export function SellerProfilePage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-slate-800 opacity-60">
+              <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-slate-800 opacity-60">
                 <Building2 className="h-16 w-16 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
               </div>
             )}
@@ -986,7 +986,7 @@ export function SellerProfilePage() {
 
                             <Button
                               onClick={(e) => { e.stopPropagation(); handleAddToCart(item) }}
-                              className="w-full bg-slate-900 hover:bg-primary text-white font-bold h-8 rounded-xl text-[11px] transition-colors flex items-center justify-center gap-1.5"
+                              className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-8 rounded-xl text-[11px] transition-colors flex items-center justify-center gap-1.5"
                             >
                               <ShoppingCart className="h-3.5 w-3.5" />
                               Add to Cart

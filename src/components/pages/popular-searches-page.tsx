@@ -67,7 +67,7 @@ export function PopularSearchesPage() {
             { key: 'most-searched', label: 'Most Searched', Icon: BarChart2 },
           ] as const).map(({ key, label, Icon }) => (
             <button key={key} onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition ${activeTab === key ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'}`}>
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition ${activeTab === key ? 'bg-red-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
               <Icon className="w-3 h-3" />{label}
             </button>
           ))}
@@ -77,12 +77,12 @@ export function PopularSearchesPage() {
         {categories.length > 0 && (
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
             <button onClick={() => setSelectedCategory(null)}
-              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs transition ${!selectedCategory ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600'}`}>
+              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs transition ${!selectedCategory ? 'bg-gray-800 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
               All
             </button>
             {categories.map(cat => (
               <button key={cat} onClick={() => setSelectedCategory(cat === selectedCategory ? null : cat)}
-                className={`flex-shrink-0 px-3 py-1 rounded-full text-xs transition capitalize ${selectedCategory === cat ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                className={`flex-shrink-0 px-3 py-1 rounded-full text-xs transition capitalize ${selectedCategory === cat ? 'bg-gray-800 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
                 {cat}
               </button>
             ))}

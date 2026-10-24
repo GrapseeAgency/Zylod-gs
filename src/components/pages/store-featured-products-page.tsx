@@ -141,29 +141,29 @@ export function StoreFeaturedProductsPage() {
   )
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 pb-20 md:pb-8">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pb-20 md:pb-8">
       {/* Top Header */}
-      <div className="sticky top-0 z-30 bg-neutral-900/90 backdrop-blur border-b border-neutral-800 px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-30 bg-white/90 dark:bg-neutral-900/90 backdrop-blur border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('store-customization')}
-            className="md:hidden p-2 -ml-2 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 transition-colors"
+            className="md:hidden p-2 -ml-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <h1 className="font-bold text-base sm:text-lg flex items-center gap-2">
-              <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+              <Star className="w-5 h-5 text-amber-500 dark:text-amber-400 fill-amber-400" />
               Featured Products Showcase
             </h1>
-            <p className="text-xs text-neutral-400">Curate top-selling SKUs for your storefront banner</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">Curate top-selling SKUs for your storefront banner</p>
           </div>
         </div>
 
         <Button
           onClick={handleSave}
           disabled={saving}
-          className="bg-[#C8102E] hover:bg-[#A00D24] text-white text-xs sm:text-sm font-semibold h-9 px-4 flex items-center gap-1.5 shadow-lg shadow-red-950/40"
+          className="bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-semibold h-9 px-4 flex items-center gap-1.5 shadow-lg shadow-red-950/40"
         >
           {saving ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -183,24 +183,24 @@ export function StoreFeaturedProductsPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Info Banner */}
-        <div className="bg-neutral-900/80 border border-neutral-800 rounded-xl p-4 flex items-start gap-3">
-          <Sparkles className="w-5 h-5 text-[#C8102E] shrink-0 mt-0.5" />
-          <div className="text-xs sm:text-sm text-neutral-300 space-y-1">
-            <p className="font-semibold text-neutral-100">Boost Wholesale Inquiries</p>
-            <p className="text-neutral-400">
+        <div className="bg-white dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm flex items-start gap-3">
+          <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+          <div className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 space-y-1">
+            <p className="font-semibold text-neutral-900 dark:text-neutral-100">Boost Wholesale Inquiries</p>
+            <p className="text-neutral-500 dark:text-neutral-400">
               Featured products appear at the very top of your merchant storefront with an exclusive "Supplier Spotlight" badge. Select up to 8 high-demand wholesale SKUs.
             </p>
           </div>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex gap-2 border-b border-neutral-800 pb-2">
+        <div className="flex gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2">
           <button
             onClick={() => setActiveTab('featured')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
               activeTab === 'featured'
-                ? 'bg-[#C8102E]/20 text-[#C8102E] border border-[#C8102E]/40'
-                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+                ? 'bg-primary/20 text-primary border border-primary/40'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900'
             }`}
           >
             <Star className="w-4 h-4" />
@@ -210,8 +210,8 @@ export function StoreFeaturedProductsPage() {
             onClick={() => setActiveTab('catalog')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
               activeTab === 'catalog'
-                ? 'bg-[#C8102E]/20 text-[#C8102E] border border-[#C8102E]/40'
-                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900'
+                ? 'bg-primary/20 text-primary border border-primary/40'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900'
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -222,22 +222,22 @@ export function StoreFeaturedProductsPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map(n => (
-              <Skeleton key={n} className="h-20 w-full bg-neutral-900 rounded-xl" />
+              <Skeleton key={n} className="h-20 w-full bg-neutral-200 dark:bg-neutral-900 rounded-xl" />
             ))}
           </div>
         ) : activeTab === 'featured' ? (
           /* Featured List Re-order Mode */
           <div className="space-y-3">
             {featuredProductObjects.length === 0 ? (
-              <div className="text-center py-12 border border-dashed border-neutral-800 rounded-2xl p-6 bg-neutral-900/30">
+              <div className="text-center py-12 border border-dashed border-neutral-300 dark:border-neutral-800 rounded-2xl p-6 bg-neutral-50 dark:bg-neutral-900/30">
                 <AlertCircle className="w-10 h-10 text-neutral-500 mx-auto mb-3" />
-                <h3 className="font-semibold text-neutral-300">No Featured Products Selected</h3>
+                <h3 className="font-semibold text-neutral-700 dark:text-neutral-300">No Featured Products Selected</h3>
                 <p className="text-xs text-neutral-500 max-w-sm mx-auto mt-1 mb-4">
                   Pin your top high-margin items to increase buyer conversions and fast-track RFQ leads.
                 </p>
                 <Button
                   onClick={() => setActiveTab('catalog')}
-                  className="bg-[#C8102E] hover:bg-[#A00D24] text-white text-xs px-4"
+                  className="bg-primary hover:bg-primary/90 text-white text-xs px-4"
                 >
                   <Plus className="w-4 h-4 mr-1.5" />
                   Browse Catalog & Pin SKUs
@@ -248,21 +248,21 @@ export function StoreFeaturedProductsPage() {
                 <motion.div
                   layout
                   key={product.id}
-                  className="flex items-center gap-3 bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-xl p-3 shadow-md"
+                  className="flex items-center gap-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 rounded-xl p-3 shadow-sm"
                 >
-                  <div className="flex flex-col items-center gap-1 text-neutral-500">
+                  <div className="flex flex-col items-center gap-1 text-neutral-500 dark:text-neutral-400">
                     <button
                       onClick={() => moveUp(idx)}
                       disabled={idx === 0}
-                      className="p-1 hover:text-white disabled:opacity-30 text-xs"
+                      className="p-1 hover:text-neutral-900 dark:hover:text-white disabled:opacity-30 text-xs"
                     >
                       ▲
                     </button>
-                    <span className="text-[10px] font-mono font-bold text-neutral-400">#{idx + 1}</span>
+                    <span className="text-[10px] font-mono font-bold text-neutral-500 dark:text-neutral-400">#{idx + 1}</span>
                     <button
                       onClick={() => moveDown(idx)}
                       disabled={idx === featuredProductObjects.length - 1}
-                      className="p-1 hover:text-white disabled:opacity-30 text-xs"
+                      className="p-1 hover:text-neutral-900 dark:hover:text-white disabled:opacity-30 text-xs"
                     >
                       ▼
                     </button>
@@ -271,15 +271,15 @@ export function StoreFeaturedProductsPage() {
                   <img
                     src={product.thumbnailUrl || '/placeholder.png'}
                     alt={product.name}
-                    className="w-14 h-14 object-cover rounded-lg bg-neutral-800 border border-neutral-700 shrink-0"
+                    className="w-14 h-14 object-cover rounded-lg bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shrink-0"
                   />
 
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-neutral-200 truncate">{product.name}</p>
+                    <p className="font-semibold text-sm text-neutral-800 dark:text-neutral-200 truncate">{product.name}</p>
                     <div className="flex items-center gap-3 mt-1 text-xs">
-                      <span className="text-[#C8102E] font-bold">{formatPrice(product.basePrice)}</span>
-                      <span className="text-neutral-400">MOQ: {product.moq} {product.unit}</span>
-                      <Badge variant="outline" className="text-[10px] border-emerald-800/60 text-emerald-400 bg-emerald-950/20">
+                      <span className="text-primary font-bold">{formatPrice(product.basePrice)}</span>
+                      <span className="text-neutral-500 dark:text-neutral-400">MOQ: {product.moq} {product.unit}</span>
+                      <Badge variant="outline" className="text-[10px] border-emerald-800/60 text-emerald-500 dark:text-emerald-400 bg-emerald-950/20">
                         {product.stockQuantity} in stock
                       </Badge>
                     </div>
@@ -289,7 +289,7 @@ export function StoreFeaturedProductsPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleFeatured(product.id)}
-                    className="text-neutral-400 hover:text-red-400 hover:bg-red-950/30 p-2"
+                    className="text-neutral-500 dark:text-neutral-400 hover:text-red-400 hover:bg-red-950/30 p-2"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -306,7 +306,7 @@ export function StoreFeaturedProductsPage() {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search products by title, SKU, or category..."
-                className="bg-neutral-900 border-neutral-800 pl-10 text-sm focus-visible:ring-[#C8102E]"
+                className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-sm pl-10 text-sm focus-visible:ring-primary"
               />
             </div>
 
@@ -319,27 +319,27 @@ export function StoreFeaturedProductsPage() {
                     onClick={() => toggleFeatured(product.id)}
                     className={`cursor-pointer transition-all border ${
                       isSelected
-                        ? 'bg-[#C8102E]/10 border-[#C8102E] ring-1 ring-[#C8102E]/50'
-                        : 'bg-neutral-900 border-neutral-800 hover:border-neutral-700'
+                        ? 'bg-primary/10 border-primary ring-1 ring-primary/50'
+                        : 'bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 shadow-sm'
                     }`}
                   >
                     <CardContent className="p-3 flex items-center gap-3">
                       <img
                         src={product.thumbnailUrl || '/placeholder.png'}
                         alt={product.name}
-                        className="w-14 h-14 object-cover rounded-lg bg-neutral-800 border border-neutral-700 shrink-0"
+                        className="w-14 h-14 object-cover rounded-lg bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-xs sm:text-sm text-neutral-200 truncate">{product.name}</p>
+                        <p className="font-semibold text-xs sm:text-sm text-neutral-800 dark:text-neutral-200 truncate">{product.name}</p>
                         <div className="flex items-center gap-2 mt-1 text-xs">
-                          <span className="text-[#C8102E] font-bold">{formatPrice(product.basePrice)}</span>
-                          <span className="text-neutral-400">MOQ: {product.moq}</span>
+                          <span className="text-primary font-bold">{formatPrice(product.basePrice)}</span>
+                          <span className="text-neutral-500 dark:text-neutral-400">MOQ: {product.moq}</span>
                         </div>
                       </div>
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${
                         isSelected
-                          ? 'bg-[#C8102E] border-[#C8102E] text-white'
-                          : 'border-neutral-700 text-transparent'
+                          ? 'bg-primary border-primary text-white'
+                          : 'border-neutral-300 dark:border-neutral-700 text-transparent'
                       }`}>
                         <Check className="w-3.5 h-3.5" />
                       </div>

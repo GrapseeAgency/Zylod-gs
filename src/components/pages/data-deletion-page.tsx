@@ -50,7 +50,7 @@ export function DataDeletionPage() {
             <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
               Your deletion request has been submitted. In accordance with statutory financial audit obligations (NBR), non-financial records will be purged within 30 days.
             </p>
-            <Button onClick={() => navigate('home')} className="bg-slate-900 text-white rounded-xl text-xs font-bold">
+            <Button onClick={() => navigate('home')} className="bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold">
               Return to Homepage
             </Button>
           </div>

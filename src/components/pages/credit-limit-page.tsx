@@ -120,36 +120,36 @@ export function CreditLimitPage() {
       <main className="max-w-lg lg:max-w-4xl mx-auto px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-start">
         {/* Main Credit Card */}
-        <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950 rounded-3xl p-6 text-white shadow-2xl space-y-4 relative overflow-hidden">
-          <div className="flex justify-between items-center text-rose-300">
+        <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-slate-950 dark:via-slate-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white shadow-2xl space-y-4 relative overflow-hidden">
+          <div className="flex justify-between items-center text-rose-600 dark:text-rose-300">
             <span className="text-xs font-bold uppercase tracking-wider">Approved Revolving Line</span>
-            <span className="text-[10px] font-black text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+            <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
               ACTIVE
             </span>
           </div>
 
           <div>
-            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Available Sourcing Credit</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 block">Available Sourcing Credit</span>
             <div className="text-3xl font-black font-mono mt-0.5">
               {formatPrice(limitData.availableCredit)}
             </div>
           </div>
 
-          <div className="w-full bg-white dark:bg-gray-900/10 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10">
+          <div className="w-full bg-black/5 dark:bg-gray-900/10 h-2.5 rounded-full overflow-hidden p-0.5 border border-black/10 dark:border-white/10">
             <div
               className="bg-primary h-full rounded-full transition-all"
               style={{ width: `${Math.max(5, usedPct)}%` }}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10 text-xs">
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-black/10 dark:border-white/10 text-xs">
             <div>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold">Total Facility</span>
-              <span className="font-bold text-slate-100 font-mono mt-0.5 block">{formatPrice(limitData.creditLimit)}</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Total Facility</span>
+              <span className="font-bold text-slate-800 dark:text-slate-100 font-mono mt-0.5 block">{formatPrice(limitData.creditLimit)}</span>
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold">Drawn / Utilized</span>
-              <span className="font-bold text-rose-300 font-mono mt-0.5 block">{formatPrice(limitData.usedCredit)}</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Drawn / Utilized</span>
+              <span className="font-bold text-rose-600 dark:text-rose-300 font-mono mt-0.5 block">{formatPrice(limitData.usedCredit)}</span>
             </div>
           </div>
         </div>

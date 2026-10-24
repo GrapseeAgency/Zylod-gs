@@ -207,7 +207,7 @@ export function SharedWishlistPage() {
       <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 p-4 bg-white dark:bg-gray-900 border-t z-50 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <button
           onClick={() => navigate('home')}
-          className="w-full py-3 bg-gray-900 text-white font-medium rounded-lg active:bg-gray-800"
+          className="w-full py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg active:bg-primary/80"
           aria-label="Shop on Zylod homepage"
         >
           Shop on Zylod

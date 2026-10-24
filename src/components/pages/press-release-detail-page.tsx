@@ -102,7 +102,7 @@ export function PressReleaseDetailPage() {
               </div>
             )}
 
-            <Button onClick={() => navigate('press-media')} className="w-full md:w-auto md:px-10 bg-slate-900 text-white rounded-xl text-xs font-bold py-3">
+            <Button onClick={() => navigate('press-media')} className="w-full md:w-auto md:px-10 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-3">
               Back to Newsroom
             </Button>
           </>

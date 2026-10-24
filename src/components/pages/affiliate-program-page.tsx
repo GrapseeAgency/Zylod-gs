@@ -143,7 +143,7 @@ export function AffiliateProgramPage() {
 
             <Button
               onClick={() => navigate('affiliate-dashboard')}
-              className="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-2xl text-xs sm:text-sm gap-2"
+              className="w-full py-3.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-2xl text-xs sm:text-sm gap-2"
             >
               <BarChart3 className="w-4 h-4" /> Open Full Analytics &amp; Payouts Dashboard
             </Button>

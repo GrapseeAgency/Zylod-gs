@@ -1,0 +1,152 @@
+[
+  {
+    "pattern": "w-16 h-16 rounded-full bg-neutral-950 border-2 border-sky-500/40",
+    "replacement": "w-16 h-16 rounded-full bg-neutral-100 dark:bg-neutral-950 border-2 border-sky-500/40",
+    "note": "sky icon disc"
+  },
+  {
+    "pattern": "w-9 h-9 rounded-lg bg-neutral-950 border border-neutral-800",
+    "replacement": "w-9 h-9 rounded-lg bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800",
+    "note": "step icon chip"
+  },
+  {
+    "pattern": "min-h-screen bg-neutral-950 text-neutral-100",
+    "replacement": "min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100",
+    "note": "root"
+  },
+  {
+    "pattern": "bg-neutral-900/90 backdrop-blur border-b border-neutral-800",
+    "replacement": "bg-white/90 dark:bg-neutral-900/90 backdrop-blur border-b border-neutral-200 dark:border-neutral-800",
+    "note": "sticky header"
+  },
+  {
+    "pattern": "hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200",
+    "replacement": "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200",
+    "note": "back button"
+  },
+  {
+    "pattern": "bg-neutral-900 border-neutral-800 shadow-xl",
+    "replacement": "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-sm",
+    "note": "main card"
+  },
+  {
+    "pattern": "bg-neutral-900 border border-neutral-800 rounded-2xl p-6",
+    "replacement": "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm",
+    "note": "success card"
+  },
+  {
+    "pattern": "bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-[#C8102E]",
+    "replacement": "bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary",
+    "note": "inputs"
+  },
+  {
+    "pattern": "bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-primary",
+    "replacement": "bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary",
+    "note": "inputs2"
+  },
+  {
+    "pattern": "bg-neutral-950 rounded-xl p-4 space-y-2 text-xs border border-neutral-800",
+    "replacement": "bg-neutral-100 dark:bg-neutral-950 rounded-xl p-4 space-y-2 text-xs border border-neutral-200 dark:border-neutral-800",
+    "note": "review box"
+  },
+  {
+    "pattern": "border-neutral-700 bg-neutral-900 text-[#C8102E] focus:ring-[#C8102E]",
+    "replacement": "border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-primary focus:ring-primary",
+    "note": "checkbox"
+  },
+  {
+    "pattern": "border-neutral-700 text-neutral-300 hover:bg-neutral-800",
+    "replacement": "border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800",
+    "note": "outline button"
+  },
+  {
+    "pattern": "bg-neutral-900 border-neutral-800 hover:border-neutral-700",
+    "replacement": "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700",
+    "note": "input-like bordered"
+  },
+  {
+    "pattern": "bg-neutral-900 border-neutral-800",
+    "replacement": "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-sm",
+    "note": "generic 900 card"
+  },
+  {
+    "pattern": "bg-neutral-900/60 border border-neutral-800 hover:bg-neutral-900",
+    "replacement": "bg-white/60 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900",
+    "note": "hoverable 900/60"
+  },
+  {
+    "pattern": "border-b border-neutral-800",
+    "replacement": "border-b border-neutral-200 dark:border-neutral-800",
+    "note": "divider b"
+  },
+  {
+    "pattern": "border-t border-neutral-800",
+    "replacement": "border-t border-neutral-200 dark:border-neutral-800",
+    "note": "divider t"
+  },
+  {
+    "pattern": "bg-[#C8102E]",
+    "replacement": "bg-primary",
+    "note": "brand red bg"
+  },
+  {
+    "pattern": "hover:bg-[#A00D24]",
+    "replacement": "hover:bg-primary/90",
+    "note": "brand red hover"
+  },
+  {
+    "pattern": "text-[#C8102E]",
+    "replacement": "text-primary",
+    "note": "brand red text"
+  },
+  {
+    "pattern": "focus-visible:ring-[#C8102E]",
+    "replacement": "focus-visible:ring-primary",
+    "note": "brand ring"
+  },
+  {
+    "pattern": "text-emerald-400",
+    "replacement": "text-emerald-500 dark:text-emerald-400",
+    "note": "emerald icon"
+  },
+  {
+    "pattern": "text-amber-400",
+    "replacement": "text-amber-500 dark:text-amber-400",
+    "note": "amber icon"
+  },
+  {
+    "pattern": "text-purple-400",
+    "replacement": "text-purple-500 dark:text-purple-400",
+    "note": "purple icon"
+  },
+  {
+    "pattern": "(?<![a-z-]:)text-neutral-100(?=[\\s\"'`])",
+    "regex": true,
+    "replacement": "text-neutral-900 dark:text-neutral-100",
+    "note": "bare neutral-100"
+  },
+  {
+    "pattern": "(?<![a-z-]:)text-neutral-200(?=[\\s\"'`])",
+    "regex": true,
+    "replacement": "text-neutral-800 dark:text-neutral-200",
+    "note": "bare neutral-200"
+  },
+  {
+    "pattern": "(?<![a-z-]:)text-neutral-300(?=[\\s\"'`])",
+    "regex": true,
+    "replacement": "text-neutral-700 dark:text-neutral-300",
+    "note": "bare neutral-300"
+  },
+  {
+    "pattern": "(?<![a-z-]:)text-neutral-400(?=[\\s\"'`])",
+    "regex": true,
+    "replacement": "text-neutral-500 dark:text-neutral-400",
+    "note": "bare neutral-400"
+  },
+  {
+    "pattern": "(?<![a-z-]:)bg-neutral-800(?=[\\s\"'`])",
+    "regex": true,
+    "replacement": "bg-neutral-200 dark:bg-neutral-800",
+    "note": "bare neutral-800 bg"
+  }
+]

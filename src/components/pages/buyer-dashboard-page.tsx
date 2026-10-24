@@ -79,8 +79,8 @@ const getStatusColor = (status: string) => {
     case 'paid': return 'bg-green-100 text-green-700 border-green-200'
     case 'partial': return 'bg-amber-100 text-amber-700 border-amber-200'
     case 'unpaid': return 'bg-red-100 text-red-700 border-red-200'
-    case 'refunded': return 'bg-gray-100 text-gray-700 border-gray-200'
-    default: return 'bg-gray-100 text-gray-700 border-gray-200'
+    case 'refunded': return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+    default: return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
   }
 }
 

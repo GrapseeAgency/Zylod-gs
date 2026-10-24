@@ -80,30 +80,30 @@ export function CreditScorePage() {
       <main className="max-w-lg lg:max-w-4xl mx-auto px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-start">
         {/* Score Gauge Card */}
-        <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950 rounded-3xl p-6 text-white text-center shadow-2xl space-y-4">
-          <span className="text-[10px] font-black uppercase tracking-widest text-rose-300 bg-rose-500/20 px-3 py-1 rounded-full border border-rose-500/30">
+        <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-slate-950 dark:via-slate-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white text-center shadow-2xl space-y-4">
+          <span className="text-[10px] font-black uppercase tracking-widest text-rose-600 dark:text-rose-300 bg-rose-500/20 px-3 py-1 rounded-full border border-rose-500/30">
             {data.tier}
           </span>
 
           <div className="py-2">
-            <div className="text-5xl font-black font-mono tracking-tight text-white">
+            <div className="text-5xl font-black font-mono tracking-tight text-gray-900 dark:text-white">
               {data.score}
             </div>
-            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 block">
+            <span className="text-xs text-slate-500 dark:text-slate-400 mt-1 block">
               Out of {data.maxScore} Commercial Rating Index
             </span>
           </div>
 
-          <div className="w-full bg-white dark:bg-gray-900/10 h-3 rounded-full overflow-hidden p-0.5 border border-white/10">
+          <div className="w-full bg-black/5 dark:bg-gray-900/10 h-3 rounded-full overflow-hidden p-0.5 border border-black/10 dark:border-white/10">
             <div
               className="bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400 h-full rounded-full transition-all duration-1000"
               style={{ width: `${scorePct}%` }}
             />
           </div>
 
-          <div className="flex justify-between items-center text-xs text-slate-300 pt-2 border-t border-white/10">
+          <div className="flex justify-between items-center text-xs text-slate-600 dark:text-slate-300 pt-2 border-t border-black/10 dark:border-white/10">
             <span>Risk Rating: <strong className="text-emerald-400">{data.riskRating}</strong></span>
-            <span>Settlement SLA: <strong className="text-white">{data.repaymentTimeliness}</strong></span>
+            <span>Settlement SLA: <strong className="text-gray-900 dark:text-white">{data.repaymentTimeliness}</strong></span>
           </div>
         </div>
 

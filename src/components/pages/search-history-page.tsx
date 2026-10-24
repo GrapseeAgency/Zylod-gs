@@ -91,7 +91,7 @@ export function SearchHistoryPage() {
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {(['all', 'text', 'voice', 'image', 'barcode'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
-              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium capitalize transition ${filter === f ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'}`}>
+              className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium capitalize transition ${filter === f ? 'bg-red-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
               {f}
             </button>
           ))}

@@ -70,8 +70,8 @@ const getStatusColor = (status: string) => {
     case 'shipped': return 'bg-primary/10 text-primary border-primary/30'
     case 'confirmed': case 'packed': return 'bg-amber-100 text-amber-700 border-amber-200'
     case 'pending': return 'bg-red-100 text-red-700 border-red-200'
-    case 'cancelled': case 'returned': return 'bg-gray-100 text-gray-700 border-gray-200'
-    default: return 'bg-gray-100 text-gray-700 border-gray-200'
+    case 'cancelled': case 'returned': return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+    default: return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
   }
 }
 
@@ -79,7 +79,7 @@ const getSeverityColor = (severity: string) => {
   switch (severity) {
     case 'critical': return 'bg-red-100 text-red-700 border-red-200'
     case 'warning': return 'bg-amber-100 text-amber-700 border-amber-200'
-    default: return 'bg-gray-100 text-gray-700 border-gray-200'
+    default: return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
   }
 }
 

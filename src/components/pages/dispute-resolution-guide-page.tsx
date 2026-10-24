@@ -54,13 +54,13 @@ export function DisputeResolutionGuidePage() {
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 space-y-6 md:space-y-8 max-w-3xl mx-auto lg:max-w-4xl w-full pb-24 md:pb-8">
         {/* Banner */}
-        <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-3xl p-6 shadow-md space-y-2">
-          <div className="flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-wide">
+        <div className="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 text-gray-900 dark:text-white rounded-3xl p-6 shadow-md space-y-2">
+          <div className="flex items-center gap-2 text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wide">
             <Scale className="w-4 h-4" />
             Order Dispute Help
           </div>
           <h1 className="text-lg md:text-2xl font-bold">How Zylod Handles Order Disputes</h1>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
             Zylod has no escrow system and makes no automatic-protection guarantee. What we do promise: every dispute is reviewed by a real person on the Zylod team, and the outcome is documented on your ticket.
           </p>
         </div>

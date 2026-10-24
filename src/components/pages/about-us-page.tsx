@@ -72,31 +72,31 @@ export function AboutUsPage() {
         ) : (
           <>
             {/* Hero Card */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-900 rounded-3xl p-6 text-white space-y-3">
+            <div className="relative overflow-hidden bg-gradient-to-br from-slate-100 via-slate-100 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 rounded-3xl p-6 text-gray-900 dark:text-white space-y-3">
               <Badge className="bg-primary/10 text-primary/60 border-primary/30 text-xs font-semibold">
                 {data.companyInfo.hq} · B2B Wholesale Marketplace
               </Badge>
               <h2 className="text-xl md:text-2xl font-black leading-tight">
                 A Wholesale Marketplace Built for Real Businesses
               </h2>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 {data.companyInfo.mission}
               </p>
-              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10">
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-black/10 dark:border-white/10">
                 <div className="text-center">
                   <p className="text-lg md:text-2xl font-black text-primary/70">{data.stats.verifiedSuppliers.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Verified Suppliers</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Verified Suppliers</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg md:text-2xl font-black text-emerald-400">{data.stats.registeredBuyers.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Registered Buyers</p>
+                  <p className="text-lg md:text-2xl font-black text-emerald-600 dark:text-emerald-400">{data.stats.registeredBuyers.toLocaleString()}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Registered Buyers</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-lg md:text-2xl font-black text-amber-400">{data.stats.activeProducts.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Live Products</p>
+                  <p className="text-lg md:text-2xl font-black text-amber-600 dark:text-amber-400">{data.stats.activeProducts.toLocaleString()}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Live Products</p>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
                 These are live counts from our database. Zylod has just launched, so they start at zero — no demo or placeholder figures.
               </p>
             </div>

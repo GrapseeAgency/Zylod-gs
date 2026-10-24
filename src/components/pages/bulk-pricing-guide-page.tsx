@@ -40,7 +40,7 @@ export function BulkPricingGuidePage() {
       units: '1,000+ units',
       discount: '23–35%+',
       badge: 'Tier 4',
-      color: 'from-slate-900 to-slate-800',
+      color: 'from-slate-600 to-slate-700 dark:from-slate-900 dark:to-slate-800',
       desc: 'Ex-factory pricing at mill rate. Requires advance payment and 7–14 day production.',
     },
   ]

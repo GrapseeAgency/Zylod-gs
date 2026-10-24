@@ -109,21 +109,21 @@ export function GenericFinancePage({ pageId }: { pageId: string }) {
   return (
     <div className="min-h-screen bg-background pb-16">
       {/* Banner */}
-      <div className="relative overflow-hidden py-10 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-900 to-slate-900 text-white">
+      <div className="relative overflow-hidden py-10 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-100 to-slate-100 dark:from-slate-900 dark:to-slate-900 text-gray-900 dark:text-white">
         <div className="max-w-7xl mx-auto relative z-10">
           <button
             onClick={() => navigate('buyer-dashboard')}
-            className="flex items-center gap-1.5 text-white/80 hover:text-white mb-3 text-sm font-medium transition-colors"
+            className="flex items-center gap-1.5 text-gray-700 dark:text-white/80 hover:text-gray-900 dark:hover:text-white mb-3 text-sm font-medium transition-colors"
           >
             <ArrowLeft className="h-4 w-4" /> Back to Dashboard
           </button>
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2.5 rounded-xl bg-white dark:bg-gray-900/10 backdrop-blur-sm border border-white/20">
-              <Wallet className="h-8 w-8 text-white" />
+            <div className="p-2.5 rounded-xl bg-black/5 dark:bg-gray-900/10 backdrop-blur-sm border border-black/10 dark:border-white/20">
+              <Wallet className="h-8 w-8 text-gray-900 dark:text-white" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold">{title}</h1>
           </div>
-          <p className="text-white/80 text-sm sm:text-base">
+          <p className="text-gray-700 dark:text-white/80 text-sm sm:text-base">
             Pay and get paid with bKash, Nagad, Upay, Rocket, or your card.
           </p>
         </div>

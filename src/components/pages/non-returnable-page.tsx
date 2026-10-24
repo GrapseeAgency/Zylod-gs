@@ -63,7 +63,7 @@ export function NonReturnablePage() {
           ))}
         </div>
 
-        <Button onClick={() => navigate('return-policy')} className="w-full bg-slate-900 text-white rounded-xl text-xs font-bold py-3">
+        <Button onClick={() => navigate('return-policy')} className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-3">
           Back to Return Policy
         </Button>
       </div>

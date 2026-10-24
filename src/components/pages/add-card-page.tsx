@@ -84,27 +84,27 @@ export function AddCardPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6 lg:max-w-3xl">
         {/* Virtual Card Preview */}
-        <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-rose-950 rounded-3xl p-6 text-white shadow-2xl space-y-5 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-slate-950 dark:via-slate-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white shadow-2xl space-y-5 relative overflow-hidden">
           <div className="flex justify-between items-center">
-            <span className="text-xs font-black tracking-widest uppercase text-rose-300">ZYLOD ENTERPRISE</span>
+            <span className="text-xs font-black tracking-widest uppercase text-rose-600 dark:text-rose-300">ZYLOD ENTERPRISE</span>
             <span className="text-sm font-black italic">{brand}</span>
           </div>
 
           <div className="py-2">
-            <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 block font-mono">Card Number</span>
-            <span className="text-lg font-black font-mono tracking-widest text-slate-100 mt-0.5 block">
+            <span className="text-xs text-slate-500 dark:text-slate-400 block font-mono">Card Number</span>
+            <span className="text-lg font-black font-mono tracking-widest text-slate-800 dark:text-slate-100 mt-0.5 block">
               {cardNumber || '•••• •••• •••• ••••'}
             </span>
           </div>
 
           <div className="flex justify-between items-center text-xs">
             <div>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold">Cardholder</span>
-              <span className="font-bold text-slate-200 uppercase">{holderName || 'AUTHORIZED SIGNATORY'}</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Cardholder</span>
+              <span className="font-bold text-slate-700 dark:text-slate-200 uppercase">{holderName || 'AUTHORIZED SIGNATORY'}</span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase font-bold">Expires</span>
-              <span className="font-bold font-mono text-slate-200">{expiry || 'MM/YY'}</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Expires</span>
+              <span className="font-bold font-mono text-slate-700 dark:text-slate-200">{expiry || 'MM/YY'}</span>
             </div>
           </div>
         </div>

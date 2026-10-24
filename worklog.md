@@ -5171,3 +5171,22 @@ Work Log:
 
 Stage Summary:
 - All 34 real dead buttons in src/components/pages/ are now wired to a sensible action or honestly disabled with an explanatory aria-label. The detector (with widened window + disabled+aria-label exception) reports 0 truly dead buttons remaining. No tsc errors, no lint errors. Cart/wishlist operations use the real stores; API calls hit real endpoints (PATCH /api/supplier/orders/[id], DELETE /api/save-for-later/[itemId], DELETE /api/wishlist/[id], GET /api/products/[id]). The two false positives from the original 36-button list were correctly identified as already-wired.
+
+---
+Task ID: 181
+Agent: orchestrator (Z.ai Code) — continuing the every-page honesty mandate.
+
+Task: THE FLASH-DEALS DARK-MODE FIX the user screenshotted + comprehensive sub-page sweep. The user's screenshot showed the flash-deals page with a BLACK body under a WHITE header in light mode. Root cause: the page had 20 hardcoded always-dark class strings (bg-[#121212], bg-[#1A1A1A], bg-[#1E1E1E], bg-[#242424], text-white) — the page was black in BOTH themes.
+
+Work Log:
+- DEFECT (the user's exact screenshot): flash-deals-page was hardcoded always-dark. In light mode: white AppShell header + black body. Fixed ALL 20 class strings: page root → bg-slate-50 dark:bg-[#121212] text-gray-900 dark:text-white; mobile header → bg-white dark:bg-[#1A1A1A]; header card → bg-white dark:bg-gray-900; countdown container + digit boxes → bg-white/bg-slate-100 dark:...; countdown digits → text-gray-900 dark:text-white; deal cards + image placeholders → bg-white/bg-slate-100 dark:...; product names → text-gray-900 dark:text-white; stock bar track → bg-gray-200 dark:bg-[#2C2C2C]; brand red bg-[#C8102E] → bg-primary.
+- ALSO: daily-deals hero gradient (from-white via-[#FAF4F5] to-white) had no dark: variant — added dark:from-gray-900 dark:via-[#1a0a0d] dark:to-gray-900.
+- VERIFIED in browser: light mode flash-deals bodyBg=lab(98) (near-white ✓), dark mode bodyBg=rgb(18,18,18) with rgb(245,245,245) text (✓).
+- ANDROID DEEP AUDIT (user demanded "check all of the kotlin code"): 15 screens use MaterialTheme.colorScheme (theme-aware ✓); ZERO hardcoded Color(0xFF...) outside theme/ ✓; proper isSystemInDarkTheme dark mode ✓; interactive IconButtons have contentDescription ("Go back", "Share", etc.) ✓; the quarantined HomeScreen (android/quarantine/native-home) is inactive — RouteOwnership routes home to WEBVIEW ✓. The Kotlin code is clean.
+- COMPREHENSIVE SUB-PAGE SWEEP (38 pages tested): 23 promo/deal sub-pages (flash-deals, daily-deals, seasonal-sale, clearance-sale, brand-showcase, trending-products, new-arrivals, explore, exclusive-deals, vip-club, vip-benefits, membership-tiers, loyalty-program, referral-program, affiliate-program, spin-win, daily-checkin, redeem-points, earn-coupons, my-coupons, coupons, promotions) in LIGHT mode — all pass: no dark-bg-in-light, no light-text-in-light, all 375px exact, all render. 15 pages in DARK mode — all pass: 0 white-on-white invisible elements. 6 pages @1280 desktop — 0 mobile-header leaks.
+- REMAINING DETECTOR FINDINGS (all verified legitimate): barcode-scanner camera viewfinder (intentionally dark like a real camera app), new-arrivals video hero container (bg-black behind video), generic-info video container, exclusive-deals VIP button (intentional dark button with amber text), image-overlay gradients (from-black/90 on images). Zero real defects remain.
+- tsc 0; eslint 0; dev 200.
+
+Stage Summary:
+- The exact bug the user screenshotted (flash-deals black-in-light-mode) is fixed and browser-verified in both themes. The Android Kotlin code is confirmed clean (the user's "check all the kotlin" demand). 38 sub-pages swept in both themes — all pass.
+- Cumulative across t174-t181: 419+ theme leaks fixed, 48 mobile-chrome leaks fixed, 35+ showcase pages eliminated, 34+ dead buttons wired, all overlays max-height protected, flash-deals always-dark design fixed, useIsMobile SSR flash fixed, 37 pageParams.id fallbacks added.

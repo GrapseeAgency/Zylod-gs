@@ -77,18 +77,18 @@ export function BalanceOverviewPage() {
         </div>
 
         {/* Total Funds Highlight */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-6 md:p-8 text-white shadow-xl space-y-3">
-          <div className="flex items-center gap-2 text-rose-300">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-6 md:p-8 text-gray-900 dark:text-white shadow-xl space-y-3">
+          <div className="flex items-center gap-2 text-rose-600 dark:text-rose-300">
             <PieChart className="h-4 w-4" />
             <span className="text-xs font-bold uppercase tracking-wider">Net Position</span>
           </div>
           <div>
-            <span className="text-xs text-slate-300">Total Wallet Balance</span>
+            <span className="text-xs text-slate-600 dark:text-slate-300">Total Wallet Balance</span>
             <div className="text-3xl md:text-4xl font-black mt-0.5">
               {formatPrice(data.availableBalance)}
             </div>
           </div>
-          <div className="flex items-center gap-2 pt-2 border-t border-white/10 text-xs text-slate-300">
+          <div className="flex items-center gap-2 pt-2 border-t border-black/10 dark:border-white/10 text-xs text-slate-600 dark:text-slate-300">
             <ShieldCheck className="h-4 w-4 text-emerald-400" />
             <span>Figures come from your real wallet record and transaction history</span>
           </div>

@@ -437,27 +437,27 @@ export function NotificationPreferencesPage() {
 
       <main className="max-w-lg mx-auto lg:max-w-5xl px-4 py-5 md:px-6 md:py-6 space-y-5 md:space-y-8">
         {/* Hero Banner */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
-              <Bell className="h-6 w-6 text-rose-300" />
+            <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
+              <Bell className="h-6 w-6 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base md:text-2xl font-black">Notification Preferences</h1>
-              <p className="text-xs text-slate-300 mt-0.5">
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                 Control exactly how and when Zylod reaches you — across 14 event categories and 4 delivery channels.
               </p>
             </div>
           </div>
 
           {/* Master controls */}
-          <div className="flex items-center gap-2 pt-2 border-t border-white/10 mt-2 flex-wrap">
+          <div className="flex items-center gap-2 pt-2 border-t border-black/10 dark:border-white/10 mt-2 flex-wrap">
             <Button
               onClick={masterMute ? enableAll : muteAll}
               className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
                 masterMute
                   ? 'bg-white dark:bg-gray-900 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800'
-                  : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'
+                  : 'bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/20 text-gray-900 dark:text-white hover:bg-white/20'
               }`}
             >
               {masterMute ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
@@ -466,12 +466,12 @@ export function NotificationPreferencesPage() {
             <Button
               onClick={sendTestNotification}
               disabled={testing || testSent}
-              className="h-10 px-4 rounded-xl text-xs font-bold bg-white dark:bg-gray-900/10 border border-white/20 text-white hover:bg-white dark:bg-gray-900/20 flex items-center justify-center gap-1.5"
+              className="h-10 px-4 rounded-xl text-xs font-bold bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 text-gray-900 dark:text-white hover:bg-white dark:bg-gray-900/20 flex items-center justify-center gap-1.5"
             >
               {testing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : testSent ? (
-                <><Check className="h-4 w-4 text-emerald-300" /> Sent!</>
+                <><Check className="h-4 w-4 text-emerald-600 dark:text-emerald-300" /> Sent!</>
               ) : (
                 <>
                   <Bell className="h-4 w-4" />

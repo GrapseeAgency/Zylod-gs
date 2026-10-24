@@ -168,14 +168,14 @@ export function LinkedAccountsPage() {
 
       <main className="max-w-lg mx-auto lg:max-w-3xl px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-3xl p-5 md:p-6 text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-white dark:bg-gray-900/10 border border-white/20 flex items-center justify-center">
-              <LinkIcon className="h-5 w-5 text-rose-300" />
+            <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
+              <LinkIcon className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base md:text-xl font-black">Linked Contact Handles</h1>
-              <p className="text-xs md:text-sm text-slate-300">
+              <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300">
                 Save the WhatsApp number, Facebook page, or Instagram handle buyers can reach you on. Saved to your account instantly.
               </p>
             </div>
@@ -274,7 +274,7 @@ export function LinkedAccountsPage() {
                 </div>
               ) : accounts.length === 0 ? (
                 <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-2">
-                  <LinkIcon className="h-8 w-8 text-slate-300 mx-auto" />
+                  <LinkIcon className="h-8 w-8 text-slate-400 dark:text-slate-300 mx-auto" />
                   <h3 className="text-sm font-black">No contact handles linked yet</h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
                     Add a WhatsApp number or a social handle above so buyers know how to reach your business.

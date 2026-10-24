@@ -156,7 +156,7 @@ export function FavoriteProductsPage() {
                   </div>
                 )}
                 
-                <div className={`bg-gray-100 relative ${viewMode === 'list' ? 'w-28 h-28 rounded-lg flex-shrink-0' : 'w-full aspect-square'}`}>
+                <div className={`bg-gray-100 dark:bg-gray-800 relative ${viewMode === 'list' ? 'w-28 h-28 rounded-lg flex-shrink-0' : 'w-full aspect-square'}`}>
                   {product.imageUrl ? (
                     <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
                   ) : (

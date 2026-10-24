@@ -349,7 +349,7 @@ export function StaffProfilePage() {
       <main className="max-w-lg mx-auto md:max-w-3xl">
         {/* ─── STAFF IDENTITY CARD ─────────────────────────────────────── */}
         <div className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-slate-800">
-          <div className="h-20 bg-gradient-to-r from-slate-800 to-slate-900 relative overflow-hidden">
+          <div className="h-20 bg-gradient-to-r from-slate-300 to-slate-400 dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
             <div className="absolute top-3 left-3">
               <span className="bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full border border-white/20 flex items-center gap-1.5">
                 <Warehouse className="h-3 w-3 text-slate-300" />
@@ -445,7 +445,7 @@ export function StaffProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'dashboard' && (
                 <>
-                  <div className={`rounded-3xl p-5 shadow-lg space-y-3 ${clockedIn ? 'bg-gradient-to-br from-emerald-800 to-emerald-900' : 'bg-gradient-to-br from-slate-800 to-slate-900'}`}>
+                  <div className={`rounded-3xl p-5 shadow-lg space-y-3 ${clockedIn ? 'bg-gradient-to-br from-emerald-700 to-emerald-800 dark:from-emerald-800 dark:to-emerald-900' : 'bg-gradient-to-br from-slate-500 to-slate-600 dark:from-slate-800 dark:to-slate-900'}`}>
                     <div className="flex items-center justify-between text-white">
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-white/60 block">Shift Timer</span>

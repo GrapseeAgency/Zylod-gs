@@ -62,11 +62,11 @@ interface ComplaintCounts {
 }
 
 const complaintStatusChip: Record<string, string> = {
-  open: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  open: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30',
   in_review: 'bg-primary/10 text-primary/70 border-primary/30',
-  resolved: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-  rejected: 'bg-red-500/20 text-red-400 border-red-500/30',
-  withdrawn: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+  resolved: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+  rejected: 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30',
+  withdrawn: 'bg-slate-500/20 text-slate-600 dark:text-slate-400 border-slate-500/30',
 }
 
 // ─── STAT CARD ────────────────────────────────────────────────────────────────
@@ -84,16 +84,16 @@ function AdminStatCard({
   urgent?: boolean
 }) {
   return (
-    <div className={`rounded-3xl p-4 border shadow-2xs space-y-3 ${urgent ? 'bg-rose-950/80 border-rose-800' : 'bg-slate-800/60 border-slate-700'}`}>
-      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${urgent ? 'bg-rose-500/20 text-rose-300' : 'bg-white dark:bg-gray-900/10 text-slate-300'}`}>
+    <div className={`rounded-3xl p-4 border shadow-2xs space-y-3 ${urgent ? 'bg-rose-50 dark:bg-rose-950/80 border-rose-200 dark:border-rose-800' : 'bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 shadow-sm'}`}>
+      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${urgent ? 'bg-rose-500/20 text-rose-600 dark:text-rose-300' : 'bg-slate-100 dark:bg-gray-900/10 text-slate-600 dark:text-slate-300'}`}>
         <Icon className="h-5 w-5" />
       </div>
       <div>
-        <div className={`text-2xl font-black font-mono leading-none ${urgent ? 'text-rose-300' : 'text-white'}`}>
+        <div className={`text-2xl font-black font-mono leading-none ${urgent ? 'text-rose-600 dark:text-rose-300' : 'text-gray-900 dark:text-white'}`}>
           {value}
         </div>
-        <span className={`text-[11px] font-bold uppercase tracking-wider block mt-1 ${urgent ? 'text-rose-400' : 'text-slate-400'}`}>{label}</span>
-        {sub && <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 block">{sub}</span>}
+        <span className={`text-[11px] font-bold uppercase tracking-wider block mt-1 ${urgent ? 'text-rose-600 dark:text-rose-400' : 'text-slate-500 dark:text-slate-400'}`}>{label}</span>
+        {sub && <span className="text-[10px] text-slate-500 dark:text-slate-400 block">{sub}</span>}
       </div>
     </div>
   )
@@ -210,11 +210,11 @@ export function AdminProfilePage() {
 
   // ─── RENDER ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-slate-950 text-white pb-28 md:pb-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-white pb-28 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 px-4 py-3 shadow-xl flex items-center justify-between md:hidden">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 shadow-xl flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('home')} className="p-1 text-slate-400 dark:text-slate-500 hover:text-white" title="Home">
+          <button onClick={() => navigate('home')} className="p-1 text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white" title="Home">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
@@ -227,7 +227,7 @@ export function AdminProfilePage() {
         <div className="flex items-center gap-2">
           <button
             onClick={pingServer}
-            className="h-9 px-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1.5"
+            className="h-9 px-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white text-xs font-bold flex items-center gap-1.5"
           >
             {pingLoading ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -242,7 +242,7 @@ export function AdminProfilePage() {
           </button>
           <button
             onClick={() => navigate('account-settings')}
-            className="min-h-11 min-w-11 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-white"
+            className="min-h-11 min-w-11 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
             title="Settings"
           >
             <Settings className="h-4 w-4" />
@@ -262,7 +262,7 @@ export function AdminProfilePage() {
           <div className="flex items-center gap-2">
             <button
               onClick={pingServer}
-              className="h-9 px-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1.5"
+              className="h-9 px-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white text-xs font-bold flex items-center gap-1.5"
             >
               {pingLoading ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -277,7 +277,7 @@ export function AdminProfilePage() {
             </button>
             <button
               onClick={() => navigate('account-settings')}
-              className="min-h-11 min-w-11 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-white"
+              className="min-h-11 min-w-11 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
               title="Settings"
             >
               <Settings className="h-4 w-4" />
@@ -286,15 +286,15 @@ export function AdminProfilePage() {
         </div>
 
         {/* ─── ADMIN IDENTITY CARD ─────────────────────────────────────── */}
-        <div className="border-b border-slate-800 bg-slate-900">
+        <div className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <div className="px-4 py-5 md:px-6 space-y-4">
             <div className="flex items-center gap-4">
               {/* Avatar */}
               <div className="relative">
-                <div className="w-20 h-20 rounded-2xl bg-slate-800 border-2 border-slate-700 overflow-hidden ring-2 ring-rose-500/30 flex items-center justify-center">
+                <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 overflow-hidden ring-2 ring-rose-500/30 flex items-center justify-center">
                   <Shield className="h-10 w-10 text-rose-500" />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center border-2 border-slate-950">
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-rose-600 text-gray-900 dark:text-white flex items-center justify-center border-2 border-slate-50 dark:border-slate-950">
                   <ShieldCheck className="h-4 w-4" />
                 </div>
               </div>
@@ -302,23 +302,23 @@ export function AdminProfilePage() {
               {/* Identity */}
               <div className="flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-xl md:text-2xl font-black text-white tracking-tight">
+                  <h1 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
                     {user?.fullName || 'Platform Administrator'}
                   </h1>
-                  <span className="text-[10px] font-black text-rose-300 bg-rose-500/20 border border-rose-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="text-[10px] font-black text-rose-600 dark:text-rose-300 bg-rose-500/20 border border-rose-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <Shield className="h-3 w-3" />
                     Admin
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{user?.email || 'Not signed in'}</p>
-                <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">{user ? 'Admin Session Active' : 'Sign in to load live platform data'}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{user?.email || 'Not signed in'}</p>
+                <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">{user ? 'Admin Session Active' : 'Sign in to load live platform data'}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* ─── TAB NAVIGATION ──────────────────────────────────────────── */}
-        <div className="sticky top-[57px] md:top-[60px] z-30 bg-slate-950/95 backdrop-blur-md border-b border-slate-800">
+        <div className="sticky top-[57px] md:top-[60px] z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-1 overflow-x-auto no-scrollbar px-3 py-2">
             {[
               { key: 'overview', label: 'Overview', icon: BarChart3 },
@@ -335,8 +335,8 @@ export function AdminProfilePage() {
                   onClick={() => setActiveTab(tab.key as typeof activeTab)}
                   className={`px-3.5 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isActive
-                      ? 'bg-primary text-white shadow-xs font-black'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                      ? 'bg-primary text-gray-900 dark:text-white shadow-xs font-black'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -363,18 +363,18 @@ export function AdminProfilePage() {
               {activeTab === 'overview' && (
                 <>
                   {statsNeedsAuth ? (
-                    <div className="bg-slate-900 rounded-3xl p-10 border border-slate-800 text-center space-y-3">
-                      <Lock className="h-10 w-10 text-amber-400 mx-auto" />
-                      <h2 className="text-sm font-black text-white">Admin access required</h2>
-                      <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm mx-auto">Platform stats come from the admin dashboard API. Sign in with an admin account to load live numbers.</p>
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-3">
+                      <Lock className="h-10 w-10 text-amber-500 dark:text-amber-400 mx-auto" />
+                      <h2 className="text-sm font-black text-gray-900 dark:text-white">Admin access required</h2>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Platform stats come from the admin dashboard API. Sign in with an admin account to load live numbers.</p>
                       <Button onClick={() => navigate('login')} className="h-11 px-5 rounded-xl text-xs font-bold">Sign In</Button>
                     </div>
                   ) : statsError ? (
-                    <div className="bg-slate-900 rounded-3xl p-8 border border-red-900/60 text-center space-y-3">
-                      <AlertTriangle className="h-8 w-8 text-red-400 mx-auto" />
-                      <h2 className="text-sm font-black text-white">Could not load platform stats</h2>
-                      <p className="text-xs text-red-400 break-words">{statsError}</p>
-                      <Button onClick={fetchStats} variant="outline" className="h-10 px-5 rounded-xl text-xs font-bold gap-2 border-slate-700 bg-slate-800 text-slate-200">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-red-200 dark:border-red-900/60 shadow-sm text-center space-y-3">
+                      <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto" />
+                      <h2 className="text-sm font-black text-gray-900 dark:text-white">Could not load platform stats</h2>
+                      <p className="text-xs text-red-600 dark:text-red-400 break-words">{statsError}</p>
+                      <Button onClick={fetchStats} variant="outline" className="h-10 px-5 rounded-xl text-xs font-bold gap-2 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
                         <RefreshCw className="h-3.5 w-3.5" /> Retry
                       </Button>
                     </div>
@@ -418,9 +418,9 @@ export function AdminProfilePage() {
                       </div>
 
                       {/* Real quick links into the working admin surfaces */}
-                      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-3">
-                        <h2 className="text-sm font-black text-white flex items-center gap-2">
-                          <Activity className="h-4 w-4 text-emerald-400" />
+                      <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
+                          <Activity className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
                           Jump into the queues
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -435,27 +435,27 @@ export function AdminProfilePage() {
                             <button
                               key={item.page}
                               onClick={() => navigate(item.page)}
-                              className="min-h-11 flex items-center justify-between gap-2 rounded-xl bg-slate-800/60 border border-slate-700 px-4 py-2.5 text-left hover:bg-slate-800 transition"
+                              className="min-h-11 flex items-center justify-between gap-2 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-left hover:bg-slate-200 dark:hover:bg-slate-800 transition"
                             >
                               <span>
-                                <span className="text-xs font-black text-white block">{item.label}</span>
-                                <span className="text-[10px] text-slate-400 dark:text-slate-500">{item.desc}</span>
+                                <span className="text-xs font-black text-gray-900 dark:text-white block">{item.label}</span>
+                                <span className="text-[10px] text-slate-500 dark:text-slate-400">{item.desc}</span>
                               </span>
-                              <ChevronRight className="h-4 w-4 text-slate-500 dark:text-slate-400 dark:text-slate-500 shrink-0" />
+                              <ChevronRight className="h-4 w-4 text-slate-500 dark:text-slate-400 shrink-0" />
                             </button>
                           ))}
                         </div>
                       </div>
 
                       {/* Real health reading — no fabricated service rows */}
-                      <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-4">
+                      <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
                         <div className="flex items-center justify-between">
-                          <h2 className="text-sm font-black text-white flex items-center gap-2">
-                            <Activity className="h-4 w-4 text-emerald-400" />
+                          <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
                             Infrastructure Health
                           </h2>
                           {serverPing !== null && (
-                            <span className={`text-[10px] font-bold flex items-center gap-1 ${serverPing < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                            <span className={`text-[10px] font-bold flex items-center gap-1 ${serverPing < 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-500 dark:text-emerald-400'}`}>
                               <span className={`w-1.5 h-1.5 rounded-full ${serverPing < 0 ? 'bg-red-500' : 'bg-emerald-500 animate-pulse'}`} />
                               {serverPing < 0 ? 'API unreachable' : 'Operational'}
                             </span>
@@ -464,17 +464,17 @@ export function AdminProfilePage() {
                         <div className="space-y-3">
                           <div className="space-y-1">
                             <div className="flex justify-between text-xs">
-                              <span className="text-slate-300">API round-trip (GET /api)</span>
-                              <span className="text-slate-400 dark:text-slate-500 font-mono">{serverPing === null ? 'Press Ping to measure' : serverPing < 0 ? 'failed' : `${serverPing}ms`}</span>
+                              <span className="text-slate-600 dark:text-slate-300">API round-trip (GET /api)</span>
+                              <span className="text-slate-500 dark:text-slate-400 font-mono">{serverPing === null ? 'Press Ping to measure' : serverPing < 0 ? 'failed' : `${serverPing}ms`}</span>
                             </div>
-                            <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
+                            <div className="h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                               <div
-                                className={`h-full rounded-full ${serverPing === null ? 'bg-slate-600' : serverPing < 0 ? 'bg-red-500' : 'bg-emerald-500'}`}
+                                className={`h-full rounded-full ${serverPing === null ? 'bg-slate-300 dark:bg-slate-600' : serverPing < 0 ? 'bg-red-500' : 'bg-emerald-500'}`}
                                 style={{ width: serverPing === null ? '8%' : serverPing < 0 ? '100%' : '100%' }}
                               />
                             </div>
                           </div>
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400">
                             The only number shown here is one this page actually measured. No invented service latencies.
                           </p>
                         </div>
@@ -500,9 +500,9 @@ export function AdminProfilePage() {
                         ['withdrawn', complaintCounts.withdrawn],
                         ['total', complaintCounts.total],
                       ] as const).map(([key, value]) => (
-                        <div key={key} className="bg-slate-900 rounded-2xl border border-slate-800 p-3 text-center">
-                          <p className="text-lg font-black font-mono text-white">{value}</p>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{key.replace('_', ' ')}</p>
+                        <div key={key} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 text-center shadow-sm">
+                          <p className="text-lg font-black font-mono text-gray-900 dark:text-white">{value}</p>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{key.replace('_', ' ')}</p>
                         </div>
                       ))}
                     </div>
@@ -511,25 +511,25 @@ export function AdminProfilePage() {
                   {complaintsLoading ? (
                     <div className="space-y-2">
                       {[0, 1, 2].map((i) => (
-                        <div key={i} className="h-16 bg-slate-900 rounded-2xl border border-slate-800 animate-pulse" />
+                        <div key={i} className="h-16 bg-slate-200 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
                       ))}
                     </div>
                   ) : complaintsError ? (
-                    <div className="bg-slate-900 rounded-3xl p-8 border border-red-900/60 text-center space-y-3">
-                      <AlertTriangle className="h-8 w-8 text-red-400 mx-auto" />
-                      <h2 className="text-sm font-black text-white">Could not load complaints</h2>
-                      <p className="text-xs text-red-400 break-words">{complaintsError}</p>
-                      <Button onClick={fetchComplaints} variant="outline" className="h-10 px-5 rounded-xl text-xs font-bold gap-2 border-slate-700 bg-slate-800 text-slate-200">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-red-200 dark:border-red-900/60 shadow-sm text-center space-y-3">
+                      <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto" />
+                      <h2 className="text-sm font-black text-gray-900 dark:text-white">Could not load complaints</h2>
+                      <p className="text-xs text-red-600 dark:text-red-400 break-words">{complaintsError}</p>
+                      <Button onClick={fetchComplaints} variant="outline" className="h-10 px-5 rounded-xl text-xs font-bold gap-2 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
                         <RefreshCw className="h-3.5 w-3.5" /> Retry
                       </Button>
                     </div>
                   ) : complaints.length > 0 ? (
                     <div className="space-y-2">
                       {complaints.map((c) => (
-                        <div key={c.id} className="bg-slate-900 rounded-2xl p-4 border border-slate-800 flex items-start justify-between gap-3">
+                        <div key={c.id} className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <p className="text-xs font-black text-white truncate">{c.title}</p>
-                            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+                            <p className="text-xs font-black text-gray-900 dark:text-white truncate">{c.title}</p>
+                            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
                               {c.categoryLabel} · {c.buyerName || 'buyer name unavailable'} · {new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </p>
                           </div>
@@ -540,20 +540,20 @@ export function AdminProfilePage() {
                       ))}
                       <Button
                         onClick={() => navigate('admin-complaints')}
-                        className="w-full min-h-11 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2"
+                        className="w-full min-h-11 bg-primary hover:bg-primary/90 text-gray-900 dark:text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2"
                       >
                         <Megaphone className="h-4 w-4" /> Open the full complaints queue
                       </Button>
                     </div>
                   ) : (
-                    <div className="bg-slate-900 rounded-3xl p-12 border border-slate-800 text-center space-y-3">
-                      <Inbox className="h-12 w-12 text-slate-600 dark:text-slate-400 dark:text-slate-500 mx-auto" />
-                      <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500">No complaints filed yet</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Buyer complaints appear here the moment they are filed. The counts above are live from the complaints table.</p>
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-3">
+                      <Inbox className="h-12 w-12 text-slate-500 dark:text-slate-400 mx-auto" />
+                      <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400">No complaints filed yet</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Buyer complaints appear here the moment they are filed. The counts above are live from the complaints table.</p>
                       <Button
                         onClick={() => navigate('admin-complaints')}
                         variant="outline"
-                        className="min-h-11 px-5 rounded-xl text-xs font-bold border-slate-700 bg-slate-800 text-slate-200"
+                        className="min-h-11 px-5 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
                       >
                         Go to complaints queue
                       </Button>
@@ -566,27 +566,27 @@ export function AdminProfilePage() {
                   TAB 3: FINANCE — honest: real queue links, no invented rates
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'finance' && (
-                <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-4">
-                  <h2 className="text-sm font-black text-white flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                  <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-primary" />
                     Money on the platform
                   </h2>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between py-2 border-b border-slate-800">
-                      <span className="text-slate-300">Paid gross volume</span>
-                      <span className="font-bold text-white font-mono">{stats.totalRevenue !== undefined ? formatPrice(stats.totalRevenue) : '—'}</span>
+                    <div className="flex justify-between py-2 border-b border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-600 dark:text-slate-300">Paid gross volume</span>
+                      <span className="font-bold text-gray-900 dark:text-white font-mono">{stats.totalRevenue !== undefined ? formatPrice(stats.totalRevenue) : '—'}</span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-slate-800">
-                      <span className="text-slate-300">Orders awaiting payment verification</span>
-                      <span className="font-bold text-white font-mono">See unpaid queue</span>
+                    <div className="flex justify-between py-2 border-b border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-600 dark:text-slate-300">Orders awaiting payment verification</span>
+                      <span className="font-bold text-gray-900 dark:text-white font-mono">See unpaid queue</span>
                     </div>
                   </div>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">
                     Commission / settlement rates are not configured anywhere in the platform yet — no percentage is shown here because none exists to show.
                   </p>
                   <Button
                     onClick={() => navigate('admin-payments')}
-                    className="w-full min-h-11 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2"
+                    className="w-full min-h-11 bg-primary hover:bg-primary/90 text-gray-900 dark:text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2"
                   >
                     <CreditCard className="h-4 w-4" /> Open payment verification queue
                   </Button>
@@ -597,33 +597,33 @@ export function AdminProfilePage() {
                   TAB 4: SYSTEM HEALTH — real measured data only
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'platform' && (
-                <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-3">
-                  <h2 className="text-sm font-black text-white flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                  <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
                     <Server className="h-4 w-4 text-primary" />
                     System Health
                   </h2>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                      <span className="text-slate-300">API round-trip (GET /api)</span>
-                      <span className="font-bold text-white font-mono">
+                    <div className="flex justify-between items-center py-2 border-b border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-600 dark:text-slate-300">API round-trip (GET /api)</span>
+                      <span className="font-bold text-gray-900 dark:text-white font-mono">
                         {serverPing === null ? 'Press Ping to measure' : serverPing < 0 ? 'Failed' : `${serverPing}ms`}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                      <span className="text-slate-300">Realtime socket service</span>
-                      <span className="text-slate-400 dark:text-slate-500 font-mono">loopback :3006 — degrades to polling when down</span>
+                    <div className="flex justify-between items-center py-2 border-b border-slate-200 dark:border-slate-800">
+                      <span className="text-slate-600 dark:text-slate-300">Realtime socket service</span>
+                      <span className="text-slate-500 dark:text-slate-400 font-mono">loopback :3006 — degrades to polling when down</span>
                     </div>
                   </div>
                   <Button
                     onClick={pingServer}
                     disabled={pingLoading}
                     variant="outline"
-                    className="w-full min-h-11 rounded-xl text-xs font-bold border-slate-700 bg-slate-800 text-slate-200 gap-2"
+                    className="w-full min-h-11 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 gap-2"
                   >
                     {pingLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
                     {pingLoading ? 'Measuring…' : 'Measure API latency now'}
                   </Button>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">
                     Maintenance mode is not a platform capability yet — no switch is shown here because none is wired to a real endpoint.
                   </p>
                 </div>
@@ -634,8 +634,8 @@ export function AdminProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'settings' && (
                 <>
-                  <div className="bg-slate-900 rounded-3xl p-5 border border-slate-800 space-y-3">
-                    <h2 className="text-sm font-black text-white flex items-center gap-2">
+                  <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                    <h2 className="text-sm font-black text-gray-900 dark:text-white flex items-center gap-2">
                       <Lock className="h-4 w-4 text-primary" />
                       Administrator Security
                     </h2>
@@ -643,19 +643,19 @@ export function AdminProfilePage() {
                       <Button
                         onClick={() => navigate('reset-password')}
                         variant="outline"
-                        className="w-full min-h-11 justify-start border-slate-700 bg-slate-800 text-slate-200 text-xs rounded-xl"
+                        className="w-full min-h-11 justify-start border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs rounded-xl"
                       >
                         Change Admin Password
                       </Button>
                       <Button
                         onClick={() => { logout?.(); navigate('login') }}
-                        className="w-full min-h-11 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl"
+                        className="w-full min-h-11 bg-rose-600 hover:bg-rose-700 text-gray-900 dark:text-white text-xs font-bold rounded-xl"
                       >
                         Sign Out Admin Session
                       </Button>
                     </div>
                   </div>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                     <TrendingUp className="h-3 w-3" />
                     Every moderation write you perform elsewhere is audit-logged with your admin session id.
                   </p>

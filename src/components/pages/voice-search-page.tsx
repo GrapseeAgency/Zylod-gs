@@ -140,21 +140,21 @@ export function VoiceSearchPage() {
   const ringDelays = [0, 0.2, 0.4]
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-950 text-white">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-12 pb-4">
         <button
           onClick={() => { stopListening(); goBack() }}
-          className="p-2 rounded-full bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 transition"
+          className="p-2 rounded-full bg-gray-100 dark:bg-gray-900/10 hover:bg-gray-200 dark:hover:bg-gray-900/20 transition"
         >
-          <X className="w-5 h-5 text-white" />
+          <X className="w-5 h-5 text-gray-900 dark:text-white" />
         </button>
         <span className="text-base font-semibold">Voice Search</span>
         <button
           onClick={() => navigate('search-home')}
-          className="p-2 rounded-full bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 transition"
+          className="p-2 rounded-full bg-gray-100 dark:bg-gray-900/10 hover:bg-gray-200 dark:hover:bg-gray-900/20 transition"
         >
-          <Search className="w-4 h-4 text-white" />
+          <Search className="w-4 h-4 text-gray-900 dark:text-white" />
         </button>
       </div>
 
@@ -166,7 +166,7 @@ export function VoiceSearchPage() {
             <p className="text-gray-400 dark:text-gray-500 dark:text-gray-400 text-sm">Voice search is not supported in this browser.</p>
             <button
               onClick={() => navigate('search-home')}
-              className="px-4 py-2 bg-red-600 rounded-xl text-sm font-medium"
+              className="px-4 py-2 bg-primary hover:bg-primary/90 rounded-xl text-sm font-medium text-white"
             >
               Use Text Search
             </button>
@@ -231,14 +231,14 @@ export function VoiceSearchPage() {
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-sm text-gray-300 bg-white dark:bg-gray-900/10 px-4 py-2 rounded-xl max-w-xs text-center"
+                  className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-900/10 px-4 py-2 rounded-xl max-w-xs text-center"
                 >
                   &ldquo;{transcript}&rdquo;
                 </motion.p>
               )}
 
               {errorMsg && (
-                <p className="text-sm text-red-400 mt-2">{errorMsg}</p>
+                <p className="text-sm text-red-600 dark:text-red-400 mt-2">{errorMsg}</p>
               )}
             </div>
 
@@ -251,7 +251,7 @@ export function VoiceSearchPage() {
                     <button
                       key={phrase}
                       onClick={() => handleFinalResult(phrase)}
-                      className="text-xs px-3 py-1.5 bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 rounded-full transition text-gray-300"
+                      className="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-900/10 hover:bg-gray-200 dark:hover:bg-gray-900/20 rounded-full transition text-gray-700 dark:text-gray-300"
                     >
                       &ldquo;{phrase}&rdquo;
                     </button>
@@ -272,7 +272,7 @@ export function VoiceSearchPage() {
               <button
                 key={item.id}
                 onClick={() => navigate('search-results', { query: item.query, type: 'voice' })}
-                className="w-full text-left text-sm text-gray-300 px-3 py-2 bg-white dark:bg-gray-900/5 rounded-lg hover:bg-white dark:bg-gray-900/10 transition flex items-center gap-2"
+                className="w-full text-left text-sm text-gray-700 dark:text-gray-300 px-3 py-2 bg-gray-100 dark:bg-gray-900/5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-900/10 transition flex items-center gap-2"
               >
                 <Mic className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
                 {item.query}

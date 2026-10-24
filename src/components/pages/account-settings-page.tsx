@@ -552,7 +552,7 @@ export function AccountSettingsPage() {
 
                     <Button
                       onClick={() => { logout?.(); navigate('login') }}
-                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold h-11 rounded-xl text-xs flex items-center justify-center gap-2"
+                      className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-xl text-xs flex items-center justify-center gap-2"
                     >
                       <LogOut className="h-4 w-4" />
                       Sign Out of Zylod

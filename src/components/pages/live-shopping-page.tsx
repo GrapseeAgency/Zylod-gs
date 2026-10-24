@@ -27,12 +27,12 @@ export function LiveShoppingPage() {
   }, [])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-white">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-800 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-300" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <Radio className="w-5 h-5 text-red-500 animate-pulse" />
@@ -57,15 +57,15 @@ export function LiveShoppingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {loading ? (
             [1, 2].map(i => (
-              <div key={i} className="bg-slate-900 rounded-3xl p-4 border border-slate-800 animate-pulse space-y-3">
-                <Skeleton className="h-44 w-full rounded-2xl bg-slate-800" />
-                <Skeleton className="h-4 w-2/3 rounded bg-slate-800" />
+              <div key={i} className="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 animate-pulse space-y-3">
+                <Skeleton className="h-44 w-full rounded-2xl bg-slate-200 dark:bg-slate-800" />
+                <Skeleton className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-800" />
               </div>
             ))
           ) : streams.length === 0 ? (
             <div className="col-span-full text-center py-16">
               <Radio className="w-12 h-12 text-slate-700 dark:text-slate-300 mx-auto mb-3" />
-              <h3 className="text-sm font-bold text-slate-300">No live streams right now</h3>
+              <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300">No live streams right now</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                 No broadcast sessions have been scheduled yet. Check back once a supplier goes live.
               </p>
@@ -75,9 +75,9 @@ export function LiveShoppingPage() {
               <div
                 key={st.id}
                 onClick={() => navigate('live-shopping-detail', { id: st.id })}
-                className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-lg hover:border-red-500 transition cursor-pointer group flex flex-col justify-between"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:border-red-500 transition cursor-pointer group flex flex-col justify-between"
               >
-                <div className="relative aspect-[16/10] bg-slate-800 overflow-hidden">
+                <div className="relative aspect-[16/10] bg-slate-200 dark:bg-slate-800 overflow-hidden">
                   {st.thumbnailUrl ? (
                     <img
                       src={st.thumbnailUrl}
@@ -96,7 +96,7 @@ export function LiveShoppingPage() {
                         <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-gray-900 animate-ping" /> LIVE
                       </span>
                     ) : (
-                      <span className="bg-slate-900/80 text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
+                      <span className="bg-slate-900/80 text-slate-200 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
                         Scheduled
                       </span>
                     )}
@@ -116,18 +116,18 @@ export function LiveShoppingPage() {
                 </div>
 
                 <div className="p-4 space-y-2">
-                  <h3 className="text-xs sm:text-sm font-bold text-white line-clamp-2">{st.title}</h3>
+                  <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white line-clamp-2">{st.title}</h3>
                   <p className="text-[11px] text-slate-400 dark:text-slate-500 line-clamp-2">{st.description}</p>
 
-                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
                     {st.supplierName ? (
-                      <span className="text-xs font-bold text-slate-300 truncate pr-2">{st.supplierName}</span>
+                      <span className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate pr-2">{st.supplierName}</span>
                     ) : (
                       <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Supplier unnamed</span>
                     )}
                     {/* Rating row hidden unless a real aggregate rating exists */}
                     {st.supplierRating != null && (
-                      <span className="text-xs font-bold text-amber-400 flex items-center gap-1 shrink-0">
+                      <span className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 shrink-0">
                         <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> {Number(st.supplierRating).toFixed(1)}
                       </span>
                     )}

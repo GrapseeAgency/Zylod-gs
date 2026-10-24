@@ -179,29 +179,29 @@ export function StoreStoryAboutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 pb-20 md:pb-8">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pb-20 md:pb-8">
       {/* Top Bar */}
-      <div className="sticky top-0 z-30 bg-neutral-900/90 backdrop-blur border-b border-neutral-800 px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-30 bg-white/90 dark:bg-neutral-900/90 backdrop-blur border-b border-neutral-200 dark:border-neutral-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('store-customization')}
-            className="md:hidden p-2 -ml-2 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200 transition-colors"
+            className="md:hidden p-2 -ml-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <h1 className="font-bold text-base sm:text-lg flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-[#C8102E]" />
+              <Building2 className="w-5 h-5 text-primary" />
               Company Story & Factory Profile
             </h1>
-            <p className="text-xs text-neutral-400">Establish trust with verified overseas wholesale buyers</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">Establish trust with verified overseas wholesale buyers</p>
           </div>
         </div>
 
         <Button
           onClick={handleSave}
           disabled={saving}
-          className="bg-[#C8102E] hover:bg-[#A00D24] text-white text-xs sm:text-sm font-semibold h-9 px-4 flex items-center gap-1.5 shadow-lg shadow-red-950/40"
+          className="bg-primary hover:bg-primary/90 text-white text-xs sm:text-sm font-semibold h-9 px-4 flex items-center gap-1.5 shadow-lg shadow-red-950/40"
         >
           {saving ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -221,73 +221,73 @@ export function StoreStoryAboutPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Core Overview Card */}
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-5 space-y-4">
-            <h2 className="text-sm font-bold text-neutral-200 flex items-center gap-2">
-              <Factory className="w-4 h-4 text-[#C8102E]" />
+            <h2 className="text-sm font-bold text-neutral-800 dark:text-neutral-200 flex items-center gap-2">
+              <Factory className="w-4 h-4 text-primary" />
               Factory Specifications & Capacity
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-neutral-400 font-medium mb-1 block">Year Established</label>
+                <label className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mb-1 block">Year Established</label>
                 <Input
                   value={formData.foundedYear}
                   onChange={e => setFormData(prev => ({ ...prev, foundedYear: e.target.value }))}
                   placeholder="e.g. 2012"
-                  className="bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-[#C8102E]"
+                  className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary"
                 />
               </div>
 
               <div>
-                <label className="text-xs text-neutral-400 font-medium mb-1 block">Factory Area (Sq. Ft.)</label>
+                <label className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mb-1 block">Factory Area (Sq. Ft.)</label>
                 <Input
                   value={formData.factorySizeSqFt}
                   onChange={e => setFormData(prev => ({ ...prev, factorySizeSqFt: e.target.value }))}
                   placeholder="e.g. 50,000 Sq. Ft."
-                  className="bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-[#C8102E]"
+                  className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary"
                 />
               </div>
 
               <div>
-                <label className="text-xs text-neutral-400 font-medium mb-1 block">Total Workforce</label>
+                <label className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mb-1 block">Total Workforce</label>
                 <Input
                   value={formData.workforceCount}
                   onChange={e => setFormData(prev => ({ ...prev, workforceCount: e.target.value }))}
                   placeholder="e.g. 300+ employees"
-                  className="bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-[#C8102E]"
+                  className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary"
                 />
               </div>
 
               <div>
-                <label className="text-xs text-neutral-400 font-medium mb-1 block">Monthly Production Volume</label>
+                <label className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mb-1 block">Monthly Production Volume</label>
                 <Input
                   value={formData.productionCapacityMonthly}
                   onChange={e => setFormData(prev => ({ ...prev, productionCapacityMonthly: e.target.value }))}
                   placeholder="e.g. 100,000 units / month"
-                  className="bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-[#C8102E]"
+                  className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs text-neutral-400 font-medium mb-1 block">Company Introduction & Heritage</label>
+              <label className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mb-1 block">Company Introduction & Heritage</label>
               <Textarea
                 rows={4}
                 value={formData.aboutBio}
                 onChange={e => setFormData(prev => ({ ...prev, aboutBio: e.target.value }))}
                 placeholder="Describe your manufacturing heritage, specialized OEM/ODM capabilities, and quality assurance process..."
-                className="bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-[#C8102E]"
+                className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Global Export Markets */}
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-5 space-y-4">
-            <h2 className="text-sm font-bold text-neutral-200 flex items-center gap-2">
-              <Globe2 className="w-4 h-4 text-emerald-400" />
+            <h2 className="text-sm font-bold text-neutral-800 dark:text-neutral-200 flex items-center gap-2">
+              <Globe2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
               Primary Export Markets
             </h2>
 
@@ -297,9 +297,9 @@ export function StoreStoryAboutPage() {
                 onChange={e => setNewMarket(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addMarket())}
                 placeholder="Add export destination (e.g. Australia, Japan)..."
-                className="bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-[#C8102E]"
+                className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary"
               />
-              <Button onClick={addMarket} className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-4">
+              <Button onClick={addMarket} className="bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 px-4">
                 <Plus className="w-4 h-4 mr-1" /> Add
               </Button>
             </div>
@@ -308,10 +308,10 @@ export function StoreStoryAboutPage() {
               {formData.mainExportMarkets.map((market, idx) => (
                 <Badge
                   key={idx}
-                  className="bg-neutral-800 text-neutral-200 border border-neutral-700 pl-3 pr-1.5 py-1 flex items-center gap-1.5"
+                  className="bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700 pl-3 pr-1.5 py-1 flex items-center gap-1.5"
                 >
                   {market}
-                  <button onClick={() => removeMarket(idx)} className="hover:text-red-400 p-0.5">
+                  <button onClick={() => removeMarket(idx)} className="hover:text-red-500 dark:hover:text-red-400 p-0.5">
                     <Trash2 className="w-3 h-3" />
                   </button>
                 </Badge>
@@ -321,10 +321,10 @@ export function StoreStoryAboutPage() {
         </Card>
 
         {/* Certifications & Quality Accreditations */}
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-5 space-y-4">
-            <h2 className="text-sm font-bold text-neutral-200 flex items-center gap-2">
-              <Award className="w-4 h-4 text-amber-400" />
+            <h2 className="text-sm font-bold text-neutral-800 dark:text-neutral-200 flex items-center gap-2">
+              <Award className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               Industrial Certifications & Compliance
             </h2>
 
@@ -334,9 +334,9 @@ export function StoreStoryAboutPage() {
                 onChange={e => setNewCert(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCert())}
                 placeholder="Add accreditation (e.g. ISO 14001, FDA Registered)..."
-                className="bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-[#C8102E]"
+                className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary"
               />
-              <Button onClick={addCert} className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-4">
+              <Button onClick={addCert} className="bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 px-4">
                 <Plus className="w-4 h-4 mr-1" /> Add
               </Button>
             </div>
@@ -347,7 +347,7 @@ export function StoreStoryAboutPage() {
                   key={idx}
                   className="bg-amber-950/30 text-amber-300 border border-amber-800/50 pl-3 pr-1.5 py-1 flex items-center gap-1.5"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
                   {cert}
                   <button onClick={() => removeCert(idx)} className="hover:text-red-400 p-0.5">
                     <Trash2 className="w-3 h-3" />
@@ -360,9 +360,9 @@ export function StoreStoryAboutPage() {
                 NOT the free-text badges above — they are documents the
                 supplier filed per product through the guarded rail, exactly
                 as buyers see them on the public storefront. */}
-            <div className="pt-2 border-t border-neutral-800">
-              <p className="text-[11px] text-neutral-400 font-medium mb-3 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+            <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+              <p className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium mb-3 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
                 Verified product certifications — live on your public storefront
               </p>
               <StorefrontCertifications rollup={liveCertRollup} />
@@ -371,9 +371,9 @@ export function StoreStoryAboutPage() {
         </Card>
 
         {/* Key Machinery & Tech Equipment */}
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-5 space-y-4">
-            <h2 className="text-sm font-bold text-neutral-200 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-neutral-800 dark:text-neutral-200 flex items-center gap-2">
               <Factory className="w-4 h-4 text-sky-400" />
               Key Production Machinery & Equipment
             </h2>
@@ -384,9 +384,9 @@ export function StoreStoryAboutPage() {
                 onChange={e => setNewMachine(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addMachine())}
                 placeholder="e.g. 5-Axis Automated CNC Lathes (8 Units)..."
-                className="bg-neutral-950 border-neutral-800 text-sm focus-visible:ring-[#C8102E]"
+                className="bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm focus-visible:ring-primary"
               />
-              <Button onClick={addMachine} className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-4">
+              <Button onClick={addMachine} className="bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 px-4">
                 <Plus className="w-4 h-4 mr-1" /> Add
               </Button>
             </div>
@@ -395,7 +395,7 @@ export function StoreStoryAboutPage() {
               {formData.machineryList.map((machine, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-xs sm:text-sm text-neutral-300"
+                  className="flex items-center justify-between bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-xs sm:text-sm text-neutral-700 dark:text-neutral-300"
                 >
                   <span>{machine}</span>
                   <button onClick={() => removeMachine(idx)} className="text-neutral-500 hover:text-red-400">

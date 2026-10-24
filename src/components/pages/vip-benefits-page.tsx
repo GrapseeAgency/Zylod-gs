@@ -12,14 +12,14 @@ export function VipBenefitsPage() {
   const { navigate, goBack } = useNavigationStore()
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-900 text-white">
-      <div className="md:hidden sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-white">
+      <div className="md:hidden sticky top-0 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-800 transition">
-            <ArrowLeft className="w-5 h-5 text-gray-300" />
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
-            <Crown className="w-5 h-5 text-amber-400" />
+            <Crown className="w-5 h-5 text-amber-500 dark:text-amber-400" />
             <h1 className="font-bold text-base">VIP Wholesale Enterprise Club</h1>
           </div>
         </div>
@@ -28,7 +28,7 @@ export function VipBenefitsPage() {
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24">
         <div className="text-center space-y-1">
-          <h2 className="text-xl font-black text-amber-400">Enterprise Procurement Privileges</h2>
+          <h2 className="text-xl font-black text-amber-600 dark:text-amber-400">Enterprise Procurement Privileges</h2>
           <p className="text-xs text-slate-400 dark:text-slate-500">
             Engineered exclusively for volume buyers and industrial manufacturing plants in Bangladesh.
           </p>
@@ -57,12 +57,12 @@ export function VipBenefitsPage() {
               desc: 'Direct hotline with Zylod executive trading desks for urgent custom sourcing.',
             },
           ].map(b => (
-            <div key={b.title} className="bg-slate-800/90 border border-slate-700 rounded-3xl p-5 space-y-2">
+            <div key={b.title} className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-2 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-amber-400/10 text-amber-400 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-2xl bg-amber-400/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
                   <b.icon className="w-5 h-5" />
                 </div>
-                <h3 className="text-sm font-bold text-white">{b.title}</h3>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">{b.title}</h3>
               </div>
               <p className="text-xs text-slate-400 dark:text-slate-500 pl-13 leading-relaxed">{b.desc}</p>
             </div>

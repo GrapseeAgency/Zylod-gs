@@ -77,7 +77,7 @@ export function SearchResultsCategoryPage() {
               key={c.id}
               onClick={() => navigate('search-results-category', { category: c.slug })}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
-                categorySlug === c.slug ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                categorySlug === c.slug ? 'bg-red-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               {c.name} ({c._count?.products || 0})
