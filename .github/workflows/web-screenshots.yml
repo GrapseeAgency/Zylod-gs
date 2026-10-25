@@ -70,6 +70,7 @@ jobs:
 
       - name: Install Playwright chromium
         run: |
+          bun add -d playwright
           bunx playwright install chromium --with-deps || npx playwright install chromium --with-deps
 
       - name: Run full-page sweep (screenshot + mock-data scan)
