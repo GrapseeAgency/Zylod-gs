@@ -45,8 +45,14 @@ adb shell monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHE
 sleep 12
 cap screenshots/01-welcome.png
 
-log "Navigate to Login via deep link"
-adb shell am start -a android.intent.action.VIEW -d "zylod://login" com.zylod.wholesale.debug > /dev/null 2>&1 || true
+# Pass the onboarding gate (deep links are deferred until the gate is seen):
+# slide 1 -> "Next" -> slide 2 -> "Next" -> slide 3 (Get Started / Sign in).
+tap_text "Next"
+sleep 3
+tap_text "Next"
+sleep 3
+cap screenshots/01b-welcome-last-slide.png
+tap_text "Sign in"
 sleep 8
 cap screenshots/02-login.png
 
