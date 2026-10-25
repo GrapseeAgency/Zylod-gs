@@ -55,7 +55,7 @@ jobs:
           # .env is not committed — write the CI-relative SQLite URL for both
           # prisma db push and the next dev runtime that follows.
           echo 'DATABASE_URL="file:../db/custom.db"' > .env
-          bunx prisma db push --skip-generate
+          bunx prisma db push  # also runs prisma generate (--ignore-scripts skipped the postinstall)
 
       - name: Generate web bundle identity (provenance gate requirement)
         run: node scripts/generate-bundle-identity.mjs

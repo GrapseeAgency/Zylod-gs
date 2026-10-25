@@ -37,7 +37,7 @@ jobs:
           DATABASE_URL: file:../db/custom.db
         run: |
           echo 'DATABASE_URL="file:../db/custom.db"' > .env
-          bunx prisma db push --skip-generate
+          bunx prisma db push  # also runs prisma generate (--ignore-scripts skipped the postinstall)
           bunx prisma generate
 
       - name: Extract page registry
