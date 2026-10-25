@@ -40,7 +40,12 @@ const createDirectSchema = z.object({
     .positive('Quantity must be greater than 0')
     .max(10000, 'Quantity exceeds the per-line limit of 10000'),
   variantId: z.string().min(1).optional().nullable(),
-  shippingAddressId: z.string().min(1).optional().nullable(),
+  // t190 SECURITY HARDENING: a wholesale order ships physical goods — an
+  // order without a real shipping address can never be fulfilled, so the
+  // address is REQUIRED (the address must also belong to the buyer —
+  // validated below). The buy-now page always sends it; direct API callers
+  // no longer get address-less orders through.
+  shippingAddressId: z.string().min(1, 'shippingAddressId is required'),
   // Task 95: the shipping method the buyer picked for this shipment. The
   // client NEVER sends a price — the server re-quotes the shipment against
   // the live zones/methods/rates book.
@@ -99,19 +104,20 @@ export async function POST(request: NextRequest) {
     // Validate shipping address belongs to this buyer
     // Task 87: capture the address for the immutable order-time snapshot
     // (addresses are user-deletable; the FK alone would lose the history).
-    let shippingAddressSnapshot: string | null = null
-    let shippingDistrict: string | null = null
-    if (shippingAddressId) {
-      const address = await db.addresses.findFirst({
-        where: { id: shippingAddressId, userId: buyerId },
-      })
-      if (!address) {
-        return NextResponse.json({ error: 'Invalid shipping address' }, { status: 400 })
-      }
-      shippingAddressSnapshot = buildAddressSnapshot(address)
-      // Task 95: the quote rail's district input — where the shipment goes.
-      shippingDistrict = address.district
+    // t190: schema now REQUIRES shippingAddressId — the address must exist
+    // AND belong to this buyer, or the order is refused outright.
+    const address = await db.addresses.findFirst({
+      where: { id: shippingAddressId, userId: buyerId },
+    })
+    if (!address) {
+      return NextResponse.json(
+        { error: 'A valid shipping address belonging to you is required to place an order' },
+        { status: 400 },
+      )
     }
+    const shippingAddressSnapshot = buildAddressSnapshot(address)
+    // Task 95: the quote rail's district input — where the shipment goes.
+    const shippingDistrict = address.district
 
     const orderNumber = 'ORD-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
 
@@ -272,7 +278,7 @@ export async function POST(request: NextRequest) {
             promotionName: appliedPromotion?.name ?? null,
             promotionDiscount: appliedPromotion?.discount ?? 0,
             paymentStatus: 'unpaid',
-            shippingAddressId: shippingAddressId || null,
+            shippingAddressId,
             shippingAddressSnapshot,
           },
         })

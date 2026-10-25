@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PageLoader } from '@/components/ui/page-loader'
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel'
 import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCartStore, CartItemData } from '@/store/cart-store'
 import { useCurrencyStore } from '@/store/currency-store'
@@ -42,57 +41,9 @@ import {
 const RED = '#E53935'
 const GREEN = '#16A34A'
 
-/* ─── Tracking Types ─── */
-interface TrackingStage {
-  step: number
-  title: string
-  description: string
-  status: 'completed' | 'current' | 'upcoming'
-  timestamp: string | null
-  estimatedTime: string | null
-  details: Record<string, string> | null
-}
-
-interface TrackingVehicle {
-  type: string
-  plateNumber: string
-  driverName: string
-  driverPhone: string
-  transportCompany: string
-  currentLocation: string
-  gpsLat: number
-  gpsLng: number
-}
-
-interface TrackingPersonnel {
-  name: string
-  phone: string
-  photo: string
-  rating: number
-  totalDeliveries: number
-  vehicleType: string
-}
-
-interface TrackingData {
-  orderId: string
-  orderNumber: string
-  currentStage: number
-  totalStages: number
-  stages: TrackingStage[]
-  vehicle: TrackingVehicle | null
-  personnel: TrackingPersonnel | null
-  estimatedDelivery: string
-  lastUpdated: string
-  canAdvance: boolean
-}
-
-interface OrderConfirmationData {
-  orderId: string
-  orderNumber: string
-  totalAmount: number
-  paymentStatus: string
-  estimatedDelivery: string
-}
+/* Order-confirmation/tracking types removed with the inline one-click order
+   dialog — buying now routes through the buy-now page (auth gate + address
+   selection + server-priced order) and tracking lives on track-order. */
 
 /* ─── API types (camelCase, matching GET /api/products/[id]) ─── */
 
@@ -330,15 +281,8 @@ function DesktopProductDetailPage() {
     return () => { cancelled = true }
   }, [])
 
-  // Buy Now / Order tracking state
-  const [buyNowLoading, setBuyNowLoading] = useState(false)
   // Task 90: sample rail dialog
   const [sampleOpen, setSampleOpen] = useState(false)
-  const [showOrderDialog, setShowOrderDialog] = useState(false)
-  const [orderConfirmation, setOrderConfirmation] = useState<OrderConfirmationData | null>(null)
-  const [trackingData, setTrackingData] = useState<TrackingData | null>(null)
-  const [trackingLoading, setTrackingLoading] = useState(false)
-  const trackingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Sticky Buy Now bar visibility
   const [showStickyBar, setShowStickyBar] = useState(false)
@@ -670,80 +614,21 @@ function DesktopProductDetailPage() {
     }
   }, [product, navigate, toast])
 
-  // ─── Fetch Tracking Data ───
-  const fetchTracking = useCallback(async (orderId: string, orderNumber: string) => {
-    setTrackingLoading(true)
-    try {
-      const res = await fetch(`/api/orders/${orderId}/track?orderNumber=${orderNumber}`)
-      const data = await res.json()
-      if (data.success) {
-        setTrackingData(data.data)
-      }
-    } catch {
-      // Silently handle tracking errors
-    } finally {
-      setTrackingLoading(false)
-    }
-  }, [])
-
   // ─── Buy Now Handler ───
-  const handleBuyNow = useCallback(async () => {
+  // SECURITY/UX CONTRACT: buying NEVER happens inline on the PDP. The old
+  // one-click handler POSTed /api/orders/create-direct with a hardcoded
+  // 'cod' payment method — a real order with no login wall, no shipping
+  // address and no payment step. Buying now routes through the buy-now
+  // page, which enforces the buyer session (Sign in required state),
+  // collects a real shipping address, and lets the server price the order
+  // (client-sent prices are ignored by the API contract).
+  const handleBuyNow = useCallback(() => {
     if (!product || currentVariantStock === 0 || quantity < moq) return
-    setBuyNowLoading(true)
-
-    try {
-      // Create direct order via API
-      const res = await fetch('/api/orders/create-direct', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId: product.id,
-          quantity,
-          unitPrice: applicablePrice,
-          supplierId: product.supplier.id,
-          variantId: selectedVariantId || null,
-          paymentMethod: 'cod',
-        }),
-      })
-
-      const data = await res.json()
-      if (data.success) {
-        setOrderConfirmation(data.data)
-        setShowOrderDialog(true)
-        toast({ title: 'Order Placed!', description: `Order ${data.data.orderNumber} created successfully` })
-
-        // Start tracking
-        fetchTracking(data.data.orderId, data.data.orderNumber)
-      } else {
-        toast({ title: 'Order Failed', description: data.error || 'Could not place order', variant: 'destructive' })
-      }
-    } catch {
-      toast({ title: 'Order Failed', description: 'Could not place order. Please try again.', variant: 'destructive' })
-    } finally {
-      setBuyNowLoading(false)
-    }
-  }, [product, quantity, moq, applicablePrice, currentVariantStock, selectedVariantId, fetchTracking, toast])
-
-  // ─── Auto-advance tracking in dialog ───
-  useEffect(() => {
-    if (showOrderDialog && orderConfirmation) {
-      // Poll the real tracking API every 15 seconds while the dialog is open
-      trackingIntervalRef.current = setInterval(() => {
-        fetchTracking(orderConfirmation.orderId, orderConfirmation.orderNumber)
-      }, 15000)
-
-      return () => {
-        if (trackingIntervalRef.current) {
-          clearInterval(trackingIntervalRef.current)
-        }
-      }
-    }
-    return () => {
-      if (trackingIntervalRef.current) {
-        clearInterval(trackingIntervalRef.current)
-      }
-    }
-  }, [showOrderDialog, orderConfirmation, fetchTracking])
+    navigate('buy-now', {
+      productId: product.id,
+      quantity: String(quantity),
+    })
+  }, [product, quantity, moq, currentVariantStock, navigate])
 
   // ─── Loading State — the standard page loader ───
   if (loading) {
@@ -1149,15 +1034,11 @@ function DesktopProductDetailPage() {
                 className="flex-1 h-14 text-base font-semibold text-white"
                 size="lg"
                 onClick={handleBuyNow}
-                disabled={currentVariantStock === 0 || quantity < moq || buyNowLoading}
+                disabled={currentVariantStock === 0 || quantity < moq}
                 style={{ backgroundColor: GREEN }}
               >
-                {buyNowLoading ? (
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                ) : (
-                  <Zap className="h-5 w-5 mr-2" />
-                )}
-                {buyNowLoading ? 'Placing Order...' : 'Buy Now'}
+                <Zap className="h-5 w-5 mr-2" />
+                Buy Now
               </Button>
             </div>
             {/* Task 61: out-of-stock restock watch — renders only when the
@@ -1561,19 +1442,7 @@ function DesktopProductDetailPage() {
                     variant="outline"
                     size="sm"
                     className="h-7 text-xs hover:border-[primary] hover:text-[primary]"
-                    onClick={() => {
-                      if (orderConfirmation) {
-                        navigate('order-detail', {
-                          orderId: orderConfirmation.orderId,
-                          orderNumber: orderConfirmation.orderNumber,
-                          totalAmount: orderConfirmation.totalAmount.toString(),
-                          quantity: quantity.toString(),
-                          productName: productName,
-                        })
-                      } else {
-                        toast({ title: 'Place an order first', description: 'Click "Buy Now" to place an order and track it in real-time' })
-                      }
-                    }}
+                    onClick={() => navigate('track-order')}
                   >
                     <Navigation className="h-3 w-3 mr-1" /> Track Your Order
                   </Button>
@@ -1803,266 +1672,9 @@ function DesktopProductDetailPage() {
         </div>
       </div>
 
-      {/* ─── Order Confirmation & Tracking Dialog ─── */}
-      <Dialog open={showOrderDialog} onOpenChange={(open) => {
-        setShowOrderDialog(open)
-        if (!open) {
-          setTrackingData(null)
-          setOrderConfirmation(null)
-          if (trackingIntervalRef.current) {
-            clearInterval(trackingIntervalRef.current)
-          }
-        }
-      }}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-green-600" style={{ fontSize: 24, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>
-              Order Placed Successfully!
-            </DialogTitle>
-            <DialogDescription>
-              {orderConfirmation && (
-                <span>Order <strong>{orderConfirmation.orderNumber}</strong> has been confirmed</span>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-
-          {orderConfirmation && (
-            <div className="space-y-4">
-              {/* Order Summary */}
-              <Card className="border-0 shadow-sm bg-green-50">
-                <CardContent className="p-4">
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <p className="text-muted-foreground text-xs">Order Number</p>
-                      <p className="font-semibold">{orderConfirmation.orderNumber}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground text-xs">Total Amount</p>
-                      <p className="font-semibold text-green-700">{formatPrice(orderConfirmation.totalAmount)}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground text-xs">Payment</p>
-                      <p className="font-medium">{orderConfirmation.paymentStatus === 'unpaid' ? 'Cash on Delivery' : 'Paid'}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground text-xs">Est. Delivery</p>
-                      <p className="font-medium">{new Date(orderConfirmation.estimatedDelivery).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Live Tracking Timeline */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-semibold text-sm flex items-center gap-1.5">
-                    <Navigation className="h-4 w-4 text-[primary]" />
-                    Live Tracking
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[10px] text-muted-foreground">Live</span>
-                  </div>
-                </div>
-
-                {trackingData ? (
-                  <div className="relative">
-                    {/* Vertical line */}
-                    <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
-
-                    {trackingData.stages.map((stage) => {
-                      const stageIcon = (() => {
-                        switch (stage.title) {
-                          case 'Order Placed': return <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>
-                          case 'Processing': return <Clock className="h-4 w-4" />
-                          case 'Quality Check': return <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>verified</span>
-                          case 'Packed': return <Package className="h-4 w-4" />
-                          case 'Shipped': return <Truck className="h-4 w-4" />
-                          case 'Out for Delivery': return <Navigation className="h-4 w-4" />
-                          case 'Delivered': return <CircleCheck className="h-4 w-4" />
-                          default: return <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>
-                        }
-                      })()
-
-                      return (
-                        <div key={stage.step} className="relative flex items-start gap-4 pb-5 last:pb-0">
-                          <div
-                            className={`relative z-10 flex items-center justify-center h-8 w-8 rounded-full shrink-0 ${
-                              stage.status === 'completed'
-                                ? 'bg-green-100 text-green-600'
-                                : stage.status === 'current'
-                                  ? 'bg-[primary]/10 text-[primary] ring-2 ring-[primary]/30'
-                                  : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
-                            }`}
-                          >
-                            {stageIcon}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <p className={`font-medium text-sm ${
-                                stage.status === 'completed'
-                                  ? 'text-green-700'
-                                  : stage.status === 'current'
-                                    ? 'text-[primary]'
-                                    : 'text-muted-foreground'
-                              }`}>
-                                {stage.title}
-                              </p>
-                              {stage.timestamp && (
-                                <span className="text-[10px] text-muted-foreground">
-                                  {new Date(stage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                              )}
-                            </div>
-                            <p className={`text-xs mt-0.5 ${
-                              stage.status === 'upcoming' ? 'text-gray-400 dark:text-gray-500' : 'text-muted-foreground'
-                            }`}>
-                              {stage.description}
-                            </p>
-                            {stage.status === 'current' && (
-                              <div className="mt-1.5 flex items-center gap-1.5">
-                                <div className="h-1.5 w-1.5 rounded-full bg-[primary] animate-pulse" />
-                                <span className="text-[10px] text-[primary] font-medium">In Progress</span>
-                                {stage.estimatedTime && (
-                                  <span className="text-[10px] text-muted-foreground ml-1">· {stage.estimatedTime}</span>
-                                )}
-                              </div>
-                            )}
-                            {stage.status === 'completed' && stage.details && (
-                              <div className="mt-1 text-[10px] text-muted-foreground">
-                                {Object.entries(stage.details).map(([key, value]) => (
-                                  <span key={key} className="mr-2">{key}: {value}</span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center py-6">
-                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                    <span className="ml-2 text-sm text-muted-foreground">Loading tracking...</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Delivery Vehicle Info */}
-              {trackingData?.vehicle && (
-                <Card className="border-0 shadow-sm">
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold text-sm flex items-center gap-1.5 mb-3">
-                      <Truck className="h-4 w-4 text-[primary]" />
-                      Delivery Vehicle
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>
-                        <p className="text-muted-foreground text-xs">Type</p>
-                        <p className="font-medium">{trackingData.vehicle.type}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-xs">Plate</p>
-                        <p className="font-medium">{trackingData.vehicle.plateNumber}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-xs">Driver</p>
-                        <p className="font-medium">{trackingData.vehicle.driverName}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-xs">Transport Co.</p>
-                        <p className="font-medium">{trackingData.vehicle.transportCompany}</p>
-                      </div>
-                      <div className="col-span-2">
-                        <p className="text-muted-foreground text-xs">Current Location</p>
-                        <p className="font-medium flex items-center gap-1">
-                          <MapPin className="h-3 w-3 text-[primary]" />
-                          {trackingData.vehicle.currentLocation}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Delivery Personnel Info */}
-              {trackingData?.personnel && (
-                <Card className="border-0 shadow-sm">
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold text-sm flex items-center gap-1.5 mb-3">
-                      <User className="h-4 w-4 text-[primary]" />
-                      Delivery Person
-                    </h4>
-                    <div className="flex items-start gap-3">
-                      <div className="h-12 w-12 rounded-full bg-[primary]/10 flex items-center justify-center shrink-0">
-                        <User className="h-6 w-6 text-[primary]" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold">{trackingData.personnel.name}</p>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <div className="flex items-center gap-0.5">
-                            <Star className="h-3 w-3 fill-[primary] text-[primary]" />
-                            <span className="text-xs font-medium">{trackingData.personnel.rating}</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground">{trackingData.personnel.totalDeliveries} deliveries</span>
-                          <span className="text-xs text-muted-foreground">· {trackingData.personnel.vehicleType}</span>
-                        </div>
-                        <div className="flex items-center gap-1 mt-1">
-                          <Phone className="h-3 w-3 text-[primary]" />
-                          <span className="text-xs text-[primary]">{trackingData.personnel.phone}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          )}
-
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => {
-                setShowOrderDialog(false)
-                setTrackingData(null)
-                setOrderConfirmation(null)
-                if (trackingIntervalRef.current) {
-                  clearInterval(trackingIntervalRef.current)
-                }
-              }}
-            >
-              Continue Shopping
-            </Button>
-            <Button
-              className="flex-1"
-              style={{ backgroundColor: RED }}
-              onClick={() => {
-                setShowOrderDialog(false)
-                setTrackingData(null)
-                setOrderConfirmation(null)
-                if (trackingIntervalRef.current) {
-                  clearInterval(trackingIntervalRef.current)
-                }
-                navigate('order-detail', {
-                  orderId: orderConfirmation?.orderId || '',
-                  orderNumber: orderConfirmation?.orderNumber || '',
-                  totalAmount: orderConfirmation?.totalAmount?.toString() || '0',
-                  quantity: quantity.toString(),
-                  productName: productName,
-                })
-              }}
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              View Full Order
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* ─── Sticky Buy Now Bar (Mobile) ─── */}
-      {showStickyBar && !showOrderDialog && (
+      {showStickyBar && (
         <motion.div
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -2089,15 +1701,11 @@ function DesktopProductDetailPage() {
                 className="h-12 px-8 text-base font-bold text-white shrink-0"
                 size="lg"
                 onClick={handleBuyNow}
-                disabled={currentVariantStock === 0 || quantity < moq || buyNowLoading}
+                disabled={currentVariantStock === 0 || quantity < moq}
                 style={{ backgroundColor: GREEN }}
               >
-                {buyNowLoading ? (
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                ) : (
-                  <Zap className="h-5 w-5 mr-2" />
-                )}
-                {buyNowLoading ? 'Placing...' : 'Buy Now'}
+                <Zap className="h-5 w-5 mr-2" />
+                Buy Now
               </Button>
             </div>
           </div>
@@ -2105,7 +1713,7 @@ function DesktopProductDetailPage() {
       )}
 
       {/* ─── Bottom spacer for sticky bar on mobile ─── */}
-      {showStickyBar && !showOrderDialog && <div className="h-20 lg:hidden" />}
+      {showStickyBar && <div className="h-20 lg:hidden" />}
     </motion.div>
       </div>
     </div>
