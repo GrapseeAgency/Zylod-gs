@@ -59,8 +59,12 @@ tap_text "Get Started"
 sleep 18
 cap screenshots/02-home.png
 
-log "Login screen via deep link (onboarding now seen)"
-adb shell am start -a android.intent.action.VIEW -d "zylod://login" com.zylod.wholesale.debug > /dev/null 2>&1 || true
+log "Native Login screen via the UI path (guest policy: unauthenticated Profile tab -> native login)"
+# RouteOwnership guest policy: an UNAUTHENTICATED Profile request opens the
+# native login screen. The zylod://login deep link routes login to the native
+# auth suite only in some flows — tapping the Profile tab is the real user
+# path, so capture THAT.
+tap_text "Profile"
 sleep 8
 cap screenshots/03-login.png
 
