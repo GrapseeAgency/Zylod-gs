@@ -46,7 +46,7 @@ jobs:
           ./gradlew :app:assembleDebug "-PcommitSuffix=${GITHUB_SHA::7}" --stacktrace
 
       - name: Install web dependencies
-        run: bun install --frozen-lockfile
+        run: bun install --frozen-lockfile --ignore-scripts # onnxruntime postinstall flakes on CI IPv6; nothing needs postinstall here
 
       - name: Prepare database
         env:
