@@ -101,77 +101,90 @@ jobs:
             set -e
             mkdir -p screenshots
 
-            echo "── Installing APK ──"
-            adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+            # Resilient screencap: swiftshader occasionally throws transient
+            # "Failed to find ColorBuffer" — retry up to 4x, never fatal.
+            cap () {
+              local f="$1"
+              for try in 1 2 3 4; do
+                if adb exec-out screencap -p > "$f" 2>/dev/null && [ -s "$f" ]; then
+                  echo "captured $f (try $try)"
+                  return 0
+                fi
+                sleep 2
+              done
+              echo "::warning::screencap failed for $f after 4 tries"
+              return 0
+            }
 
-            echo "── Launching app (Welcome gate) ──"
-            adb shell monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1
-            sleep 12
-            adb exec-out screencap -p > screenshots/01-welcome.png
-
-            echo "── Navigate to Login via deep link ──"
-            adb shell am start -a android.intent.action.VIEW -d "zylod://login" com.zylod.wholesale.debug
-            sleep 8
-            adb exec-out screencap -p > screenshots/02-login.png
-
-            echo "── Open Continue-with-Email dialog (tap by UI text) ──"
-            # Find the "Continue with Email" button via uiautomator dump and tap its center.
+            # Resilient tap by visible text via uiautomator dump.
             tap_text () {
               local text="$1"
-              adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
-              adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1
-              # bounds="[l,t][r,b]"
-              local bounds=$(python3 - "$text" <<'PYEOF'
-              import re, sys
-              text = sys.argv[1]
-              xml = open('ui.xml', encoding='utf-8', errors='ignore').read()
-              # find node containing the text, then take its bounds
-              pattern = re.compile(r'text="[^"]*' + re.escape(text) + r'[^"]*"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"')
-              m = pattern.search(xml)
-              if not m:
-                  # try content-desc
-                  pattern2 = re.compile(r'content-desc="[^"]*' + re.escape(text) + r'[^"]*"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"')
-                  m = pattern2.search(xml)
-              if m:
-                  l, t, r, b = map(int, m.groups())
-                  print(f"{(l+r)//2} {(t+b)//2}")
-              PYEOF
-              )
+              adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
+              adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
+              local bounds
+              bounds=$(python3 - "$text" <<'PYEOF'
+import re, sys
+text = sys.argv[1]
+try:
+    xml = open('ui.xml', encoding='utf-8', errors='ignore').read()
+except Exception:
+    sys.exit(0)
+for attr in ('text', 'content-desc'):
+    m = re.search(attr + r'="[^"]*' + re.escape(text) + r'[^"]*"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml)
+    if m:
+        l, t, r, b = map(int, m.groups())
+        print(f"{(l+r)//2} {(t+b)//2}")
+        break
+PYEOF
+)
               if [ -n "$bounds" ]; then
-                adb shell input tap $bounds
-                echo "tapped '$text' at $bounds"
+                adb shell input tap $bounds && echo "tapped '$text' at $bounds"
               else
                 echo "::warning::text '$text' not found on screen"
               fi
             }
 
+            echo "── Installing APK ──"
+            adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+
+            echo "── Launching app (Welcome gate) ──"
+            adb shell monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 || true
+            sleep 12
+            cap screenshots/01-welcome.png
+
+            echo "── Navigate to Login via deep link ──"
+            adb shell am start -a android.intent.action.VIEW -d "zylod://login" com.zylod.wholesale.debug || true
+            sleep 8
+            cap screenshots/02-login.png
+
+            echo "── Open Continue-with-Email dialog (tap by UI text) ──"
             tap_text "Continue with Email"
             sleep 5
-            adb exec-out screencap -p > screenshots/03-email-signin-dialog.png
+            cap screenshots/03-email-signin-dialog.png
 
             echo "── Dismiss dialog, capture Register buyer ──"
-            adb shell input keyevent 4   # BACK closes the dialog
+            adb shell input keyevent 4 || true
             sleep 3
-            adb shell am start -a android.intent.action.VIEW -d "zylod://register-buyer" com.zylod.wholesale.debug
+            adb shell am start -a android.intent.action.VIEW -d "zylod://register-buyer" com.zylod.wholesale.debug || true
             sleep 8
-            adb exec-out screencap -p > screenshots/04-register-buyer.png
+            cap screenshots/04-register-buyer.png
 
             echo "── Native PDP with a REAL seeded product ──"
             if [ -n "$PRODUCT_ID" ]; then
-              adb shell am start -a android.intent.action.VIEW -d "zylod://product/$PRODUCT_ID" com.zylod.wholesale.debug
+              adb shell am start -a android.intent.action.VIEW -d "zylod://product/$PRODUCT_ID" com.zylod.wholesale.debug || true
               sleep 15
-              adb exec-out screencap -p > screenshots/05-product-detail.png
+              cap screenshots/05-product-detail.png
             else
               echo "::warning::No product id — PDP screenshot skipped"
             fi
 
             echo "── Native Cart ──"
-            adb shell am start -a android.intent.action.VIEW -d "zylod://cart" com.zylod.wholesale.debug
+            adb shell am start -a android.intent.action.VIEW -d "zylod://cart" com.zylod.wholesale.debug || true
             sleep 8
-            adb exec-out screencap -p > screenshots/06-cart.png
+            cap screenshots/06-cart.png
 
             echo "── Screen inventory ──"
-            ls -la screenshots/
+            ls -la screenshots/ || true
 
       - name: Upload screenshots artifact
         uses: actions/upload-artifact@v4
