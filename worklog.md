@@ -5713,3 +5713,27 @@ Stage Summary:
 - Browser-verified across the 8 required pages + 2 extras: computed canvas = rgb(18,18,18) everywhere, header overlays = neutral card token, no navy chroma in computed colors.
 - Known-acceptable leftovers (documented, out of scope): inner slate chips/table-rows/hover tints (~460 small-element hits), edit-address decorative map gradient, size-guide-dialog inner table head — none paint a canvas or content-covering overlay.
 - Next actions: if the user still sees navy anywhere, it can only be inner-card-level now (a follow-up "slate inner-card → bg-card" pass could sweep the remaining ~460 hits mechanically with the same codemod pattern); CI web-screenshots on f5def5a will confirm visually across all 756 pages.
+---
+Task ID: 190 (orchestrator)
+Agent: Z.ai Code — user-reported CRITICAL bugs, both sides
+Task: (1) "buy product without login / without paying a single penny" (2) navy-blue backgrounds breaking the black theme. Fix at the root, both platforms.
+
+Work Log:
+- ENV DEFECT AGAIN: DB found COMPLETELY EMPTY (0 products/users) — third occurrence (t188, t190). PERMANENT FIX: src/instrumentation.ts auto-seed guard — on every server boot, if products==0, runs seed-marketplace.mjs + seed-content.mjs automatically (node:sqlite count check, dependency-free, never blocks boot). Verified live: 20 products restored on boot.
+- PURCHASE HOLE — ROOT CAUSE (web): desktop PDP handleBuyNow() POSTed /api/orders/create-direct INLINE with hardcoded paymentMethod 'cod' — one click created a real order with NO login wall visible, NO shipping address, NO payment step. create-direct schema accepted shippingAddressId as OPTIONAL (null-snapshot orders possible).
+- WEB FIX (commit eb03829):
+  1. PDP handleBuyNow → navigate('buy-now', {productId, quantity}) — the real flow: auth gate (Sign in required state), address selection REQUIRED (CTA disabled without it), server-priced, visible payment method. ~300 lines of dead inline-order code removed (order dialog, fetchTracking + 15s polling, 4 tracking interfaces, buyNowLoading); Track Your Order button now goes to track-order page.
+  2. create-direct HARDENED: shippingAddressId REQUIRED + must belong to the buyer (400 otherwise).
+  3. VERIFIED END-TO-END: guest PDP Buy Now → buy-now page → Place Order blocked without address; guest API → 401; garbage token → Invalid session; buyer1 login + real address → 201 real order ORD-MVOCOV5RZTJU ৳38,000 (server-priced 10×৳3,800, honest 'unpaid' COD); order appears in /api/orders/my-orders (feeds the t189 native orders screen). Wallet-pay path re-audited: atomic conditional decrement, cannot go paid without real balance.
+  4. Remaining slate purge: ALL dark-mode navy backgrounds eliminated — 61 dark:bg-slate-800/900 card+chip hits across 201 files → bg-card/bg-background (the t190-a agent had fixed canvases+overlays; this pass killed the remaining navy feature-cards/chips). Verified in dark mode: vip-benefits tier cards now neutral #1E1E1E.
+- ANDROID FIX (commit 9857250): native PDP buyNow() had the SAME hole (authed user → one-click createDirect, no address, 'cod') AND would now 400 against the hardened contract. Fixed per RouteOwnership spec: buyNow() is validation-only (guest nudge/OOS/MOQ toasts kept), authed → buyNowRequested → openPage("buy-now", productId+quantity) → Destination.Web (buy-now is not Tier-1 native) → WebView buy-now with the EXISTING session bridge (NativeWebViewPool seeds b2b-auth-storage via addDocumentStartJavaScript — documented, reused, nothing new built). DELETED: OrdersApi.createDirect + CreateDirectRequest/CreateDirectEnvelope/CreateDirectData (zero remaining callers).
+- THEME FIX (commit f5def5a + 00c183f): 255 files page-canvas/overlay pass (min-h-screen bg-slate-50 dark:bg-slate-9xx → bg-background; sticky bars → bg-card/95; dead dark:bg-gray-900+slate doubles removed) + my 201-file card/chip pass. FINAL STATE: zero dark:(hover:)?bg-slate-[89] in src; canvases compute rgb(18,18,18); sticky headers neutral (no chroma); light mode = warm off-white token.
+- CI on FINAL 00c183f: android-build SUCCESS · android-screenshots SUCCESS · ios-build SUCCESS · web-screenshots SUCCESS — 756 pages / 0 nav errors / 0 stuck / 0 MOCK flags.
+- Pushes: 9857250 → f5def5a → eb03829 → 00c183f. lint 0 / tsc 0 on every commit.
+
+Stage Summary:
+- The free-order hole is CLOSED at three layers: client (no inline ordering anywhere; real flow with login+address+visible payment), API (401 guest / 400 no-address / server-priced only / paid only via wallet-or-webhook), Android (no native order path at all — WebView flow owns checkout per the ownership table).
+- Navy-blue is GONE from both platforms' surfaces (web: theme tokens everywhere dark; the only remaining slate is light-mode contrast chips + text/border grays that are intentional).
+- The empty-DB ghost town can never silently return (boot-time auto-seed).
+- Honest note: COD ('unpaid', settle-on-delivery) remains a legitimate labeled option for logged-in buyers with a real address — that is a business flow, not the bug; the bug was skipping login/address/payment-choice, which is now impossible.
+- Next round: order-payment hardening review (escrow flow), remaining inner slate text/border tokens if the user still sees tint, keep feature work per standing orders.
