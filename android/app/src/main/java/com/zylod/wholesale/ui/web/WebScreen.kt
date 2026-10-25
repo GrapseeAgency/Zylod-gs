@@ -511,6 +511,14 @@ private fun verifyDocument(
     shell.webView.evaluateJavascript(script) { result ->
         // F2: drop stale verification results from a superseded generation.
         if (shell.generation() != generation) return@evaluateJavascript
+        // t187 CI diagnosis: log the RAW probe result + the exact WebView
+        // instance — separates "wrong instance probed" from "script returned
+        // identity:null on the right instance".
+        Log.d(
+            WebProvenance.LOG_TAG,
+            "raw verify webview=${System.identityHashCode(shell.webView)} gen=$generation " +
+                "url=${shell.webView.url} raw=${result?.take(240) ?: "null"}",
+        )
         val state = parseVerifyResult(result)
         android.os.Handler(android.os.Looper.getMainLooper()).post {
             if (shell.generation() != generation) return@post
