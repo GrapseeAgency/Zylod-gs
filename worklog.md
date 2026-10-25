@@ -5498,3 +5498,32 @@ Stage Summary:
 - CI: android-build green (Kotlin compile-verified); android-screenshots + web-screenshots workflows deliver the user's "screenshot every page on both platforms" demand as repeatable CI runs with artifacts.
 - tsc 0 / lint 0 (run from the /home/z/work mirror).
 - Next round (via 15-min cron): read CI artifacts (web sweep summary: stuck-loader list + mock flags; android screenshot PNGs), fix whatever the sweeps surface, and restore the local dev server on port 3000 once the sandbox restarts.
+
+---
+Task ID: 187 (final)
+Agent: orchestrator (Z.ai Code) — CI verification loop + THE PROVENANCE GATE FIX.
+
+Task: Close out t187: every page screenshot via CI, Android screenshots via GitHub Actions, all verification green.
+
+Work Log:
+- CI DEBUGGING SAGA (android-screenshots): 4 consecutive failures each taught something real:
+  1. screencap transient swiftshader "Failed to find ColorBuffer" → resilient cap() with 4 retries.
+  2. THE ACTION RUNS THE SCRIPT LINE-BY-LINE under `sh -c` (proven: `[command]/usr/bin/sh -c cap () {` → syntax error). Multi-line functions/if-blocks/heredocs are IMPOSSIBLE inline → moved the whole capture sequence into scripts/qa/emu-capture.sh (real bash file).
+  3. Welcome gate blocked deep links → capture sequence taps Next ×2 → Get Started (completes onboarding, marks pref, lands in the real app).
+  4. THE BIG ONE — "Web bundle verification failed" gate on every WebView screen: 6 rounds of instrumentation (bundle-identity generation step, warm-up + served-HTML assert, production build instead of dev, ZylodProvenance logcat capture, app-side identity log, raw probe logging) isolated it to parseVerifyResult: **evaluateJavascript double-encodes string returns** — the callback receives `"{\"identity\":...}"` (a quoted JSON string), `org.json.JSONObject()` threw on EVERY parse, the catch swallowed it, and the gate read identity=null FOREVER while the raw probe output visibly contained the identity on the same log line. FIXED by decoding the outer string via JSONTokener before JSONObject.
+  IMPACT: **the provenance gate blocked the native WebView home on EVERY device/build since it shipped** — the app's main screen was a Retry gate for all Android users. This was exactly the class of "logically never completed" the user kept hitting. CI screenshot loop found it; nobody could have found it without real device captures.
+- AFTER THE FIX (run 40192735277, all green): 02-home = REAL WebView app (search bar, scan chips, category pills, Quick Access, Recommended with real images), 05-register-buyer = native register screen, 06-product-detail = native PDP with the real seeded product (Full Grain Leather Hides, ৳3,800/pcs, tiered pricing, warehouse photo), 07-cart, 01-welcome, 01b-last-slide. Remaining polish for next round: login/email-dialog captures land on the WebView home (login routes to WEBVIEW by RouteOwnership design — native login is in the auth-suite flow only; capture via UI path later).
+- PRODUCTION WEB SWEEP (run 40191108953, playwright + next start): **756 pages, 0 navigation errors, 0 stuck on loader (was 3 — mobile PDP no-id fix verified), 0 MOCK-DATA flags** (all 18 fake-data patterns scanned against every page's rendered DOM). Console errors = 401s from the logged-out crawl hitting authed endpoints (expected; a signed-in browser has a session) + 35 pages with resource 404s (doc/events images etc.) queued for the next round.
+- SWEEP-FOUND + FIXED this round: offline-catalogue-page used INVENTED field names (title/minOrderQuantity/priceBDT/stock vs API's name/moq/basePrice/stockQuantity) → p.title.toLowerCase() crashed the page (the sweep's 1 real TypeError); mapped real fields. Mobile PDP no-id never cleared loading → eternal PageLoader (product-quick-view + quick-view alias the same page) → setLoading(false) on empty id. All three "stuck on loader" flags now 0.
+- CI INFRA hardening (in the workflows now): bun install --ignore-scripts (onnxruntime postinstall ENETUNREACH flake), prisma db push WITH generate (--ignore-scripts had killed client generation), bundle-identity generation step, warm-up assert, production build + next start (dev-mode HMR churn eliminated; CI runners have RAM), resilient captures, provenance + full logcat artifacts.
+- All work pushed to GrapseeAgency/Zylod-gs main (commits 088728e → da66f89). android-build SUCCESS on the final state = Kotlin compile-verified. tsc 0 / lint 0 on the final web state (run from the /home/z/work mirror).
+
+Stage Summary:
+- USER'S DEMANDS, DELIVERED:
+  1. "Loop insanely through every single page and screenshot them" → CI web-screenshots: all 756 pages × screenshot + mock-data scan + loader detection, artifacts on every run.
+  2. "Android screenshots via GitHub Actions" → CI android-screenshots: emulator against a real locally-seeded backend, deep-link + UI-tap driven, 7 screens captured, artifacts on every run.
+  3. "Two loading animations, one per platform" → PageLoader (web, 82 unified replacements) + Material3 CircularProgressIndicator (Android, PDP shimmer removed). Zero other page-loaders.
+  4. "So many mock data" → 13 web findings + 6 Android findings fixed/deleted; production sweep scans 18 fake-data patterns across every page: 0 flags.
+  5. BONUS: the provenance-gate parse bug that blocked the native app's main screen on every device — found by the CI screenshot loop, fixed, verified (home renders the real app).
+- Local sandbox: still degraded (port 3000 zombie + FUSE wedge + OOM pressure). Mirror dev server at /home/z/work:3007 for spot checks; heavy verification permanently moved to CI. When the sandbox restarts, port 3000 frees and the standard watchdog takes over.
+- Next round (cron): native login/dialog captures via the auth-suite UI path, 35-page 404 resource cleanup, then continue feature work per the standing orders.
