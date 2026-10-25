@@ -92,3 +92,10 @@ cap screenshots/07-cart.png
 
 log "Screen inventory"
 ls -la screenshots/ || true
+
+# Provenance diagnostics — WebProvenance logs every gate decision under
+# ZylodProvenance; full logcat covers WebView console + network too.
+adb logcat -d -s ZylodProvenance > screenshots/provenance.log 2>/dev/null || true
+adb logcat -d > screenshots/logcat-full.txt 2>/dev/null || true
+echo "--- provenance log ---"
+cat screenshots/provenance.log 2>/dev/null | tail -30 || true
