@@ -86,18 +86,6 @@ data class UpdateCartRequest(val quantity: Int)
 @Serializable
 data class WishlistAddRequest(val productId: String, val note: String? = null)
 
-/** Body mirrors web product-detail-page.tsx:398-409 (no shippingAddressId, COD). */
-@Serializable
-data class CreateDirectRequest(
-    val productId: String,
-    val quantity: Int,
-    val variantId: String? = null,
-    val unitPrice: Double,
-    val supplierId: String,
-    val paymentMethod: String? = "cod",
-    val shippingAddressId: String? = null,
-)
-
 /* ─── Responses ─── */
 
 /**
@@ -199,17 +187,6 @@ data class KycUploadResponse(
     val kind: String? = null,
     val size: Long = 0,
     val error: String? = null,
-)
-
-/** POST /api/orders/create-direct success data (create-direct/route.ts:75-85). */
-@Serializable
-data class CreateDirectData(
-    val orderId: String? = null,
-    val orderNumber: String? = null,
-    val totalAmount: Double = 0.0,
-    val paymentStatus: String? = null,
-    val subOrderId: String? = null,
-    val estimatedDelivery: String? = null,
 )
 
 /* ─── Error parsing ─── */

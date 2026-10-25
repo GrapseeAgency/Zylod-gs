@@ -11,8 +11,13 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
- * Cart / wishlist / direct-order endpoints (Phase 1). Buyer-only server side —
+ * Cart / wishlist / order endpoints (Phase 1). Buyer-only server side —
  * unauthenticated calls return 401 which screens treat as "local cart only".
+ * Direct-order placement (POST /api/orders/create-direct) is NOT here: the
+ * t190 server contract made shippingAddressId a required buyer-owned field,
+ * so the native app no longer calls it — buying routes to the WebView
+ * buy-now flow (RouteOwnership: "buy-now" → WEBVIEW) and the endpoint + its
+ * DTOs were removed from this surface.
  */
 interface CartApi {
     @GET("api/cart")
@@ -40,10 +45,6 @@ interface WishlistApi {
 }
 
 interface OrdersApi {
-    /** Mirrors the web buy-now call — no shippingAddressId, paymentMethod 'cod'. */
-    @POST("api/orders/create-direct")
-    suspend fun createDirect(@Body body: CreateDirectRequest): Response<CreateDirectEnvelope>
-
     /**
      * GET /api/orders/my-orders — the authenticated buyer's order list
      * (orders/my-orders/route.ts, the exact endpoint orders-page.tsx:75

@@ -106,8 +106,10 @@ import java.util.Locale
  * desktop page's sticky buy bar (product-detail-page.tsx:1628-1668), the
  * Android system share sheet (documented native deviation from the web's
  * constructed social-URL dialog) and the QR dialog (qrcode.react → zxing).
- * Cart / wishlist / buy-now actions run through [ProductDetailViewModel];
- * MOQ + stock validation lives there and surfaces through toasts.
+ * Cart / wishlist actions run through [ProductDetailViewModel]; MOQ + stock
+ * validation lives there and surfaces through toasts. Buy Now places NO
+ * inline order — the VM validates and the screen routes to the WebView
+ * buy-now flow (auth + shipping address enforced, t190 server contract).
  */
 @Composable
 fun ProductDetailScreen(
@@ -135,6 +137,35 @@ fun ProductDetailScreen(
             snackbar.showSnackbar("Sign in to save items to your wishlist")
             vm.consumeWishlistNeedsLogin()
         }
+    }
+    // t190: Buy Now places NO inline order — the one-click createDirect COD
+    // order is gone (the server now REQUIRES a buyer-owned shippingAddressId
+    // on /api/orders/create-direct and 400s without it). [ProductDetailViewModel.buyNow]
+    // validates (guest nudge / stock / MOQ) and raises buyNowRequested; the
+    // request is consumed BEFORE navigating so Back into the PDP can never
+    // re-fire it. pageId "buy-now" is not in the native ownership set, so
+    // RouteOwnership.resolve sends it to Destination.Web → WebScreen renders
+    // the SPA buy-now page, which enforces the buyer session, a real shipping
+    // address and payment. Query contract = web handleBuyNow
+    // (product-detail-page.tsx:627): productId + quantity — values are passed
+    // RAW (SupplierCard convention); WebScreen.encodeQueryValues does the
+    // wire encoding.
+    //
+    // SESSION BRIDGE (verified, reused — nothing new built): the buy-now page
+    // inherits the native login through the existing seed path —
+    // NativeWebViewPool.checkOut() builds WebAuthSeeder.buildScript() (the
+    // b2b-auth-storage zustand-persist seed carrying the native token +
+    // profile) and installs it document-start before the SPA boots;
+    // WebScreen.navigateShell() re-seeds before full deep-link fallbacks and
+    // the pool destroys (never re-seeds in place) shells whose token rotated.
+    // If a session ever does lapse in the WebView, the buy-now page shows its
+    // own honest Sign In, whose openPage("login") resolves to the NATIVE
+    // login route via RouteOwnership.
+    LaunchedEffect(state.buyNowRequested) {
+        if (!state.buyNowRequested) return@LaunchedEffect
+        vm.consumeBuyNowRequested()
+        val current = state.product ?: return@LaunchedEffect
+        openPage("buy-now", "productId=${current.id}&quantity=${state.quantity}")
     }
     // Share → Android system share sheet.
     LaunchedEffect(shareRequested) {
@@ -184,7 +215,6 @@ fun ProductDetailScreen(
                         ActionRow(
                             product = product,
                             justAdded = state.justAdded,
-                            buyingNow = state.buyingNow,
                             onAddToCart = vm::addToCart,
                             onBuyNow = vm::buyNow,
                         )
@@ -198,7 +228,7 @@ fun ProductDetailScreen(
 
         // Sticky buy bar (desktop product-detail-page.tsx:1628-1668).
         AnimatedVisibility(
-            visible = showStickyBar && state.orderConfirmation == null && state.error == null && !state.loading,
+            visible = showStickyBar && state.error == null && !state.loading,
             enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
             exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
             modifier = Modifier.align(Alignment.BottomCenter),
@@ -219,65 +249,6 @@ fun ProductDetailScreen(
             productName = product.name,
             url = productUrl(product.id, state.serverUrl, context),
             onDismiss = { showQr = false },
-        )
-    }
-
-    // Buy-now result — order confirmation dialog (web orderDialog parity).
-    state.orderConfirmation?.let { order ->
-        val extra = LocalZylodExtra.current
-        AlertDialog(
-            onDismissRequest = { vm.dismissOrderConfirmation() },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Filled.CheckCircle,
-                        null,
-                        tint = extra.success,
-                        modifier = Modifier.size(20.dp),
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Order Placed!", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                }
-            },
-            text = {
-                Column {
-                    Text(
-                        "Your order has been placed successfully.",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(10.dp))
-                    ConfirmLine("Order number", order.orderNumber ?: "—")
-                    ConfirmLine("Total", formatBdt(order.totalAmount))
-                    ConfirmLine("Payment", order.paymentStatus?.replaceFirstChar { it.uppercase() } ?: "COD")
-                    order.estimatedDelivery?.let { ConfirmLine("Estimated delivery", it) }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { vm.dismissOrderConfirmation() }) {
-                    Text("Continue Shopping", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
-                }
-            },
-            shape = RoundedCornerShape(14.dp),
-        )
-    }
-}
-
-/** Label/value row inside the buy-now confirmation dialog. */
-@Composable
-private fun ConfirmLine(label: String, value: String) {
-    Row(modifier = Modifier.padding(top = 4.dp)) {
-        Text(
-            label,
-            fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.width(120.dp),
-        )
-        Text(
-            value,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -721,7 +692,6 @@ private fun QuantityStepper(quantity: Int, enabled: Boolean, onAdjust: (Int) -> 
 private fun ActionRow(
     product: ProductDetailDto,
     justAdded: Boolean,
-    buyingNow: Boolean,
     onAddToCart: () -> Unit,
     onBuyNow: () -> Unit,
 ) {
@@ -754,7 +724,7 @@ private fun ActionRow(
         }
         Button(
             onClick = onBuyNow,
-            enabled = !outOfStock && !buyingNow,
+            enabled = !outOfStock,
             shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -765,7 +735,7 @@ private fun ActionRow(
                 .height(44.dp),
         ) {
             Text(
-                if (buyingNow) "Placing…" else "Buy Now",
+                "Buy Now",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -1156,7 +1126,7 @@ private fun StickyBuyBar(state: PdpUiState, vm: ProductDetailViewModel) {
             }
             Button(
                 onClick = vm::buyNow,
-                enabled = product.stockQuantity > 0 && !state.buyingNow,
+                enabled = product.stockQuantity > 0,
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -1165,7 +1135,7 @@ private fun StickyBuyBar(state: PdpUiState, vm: ProductDetailViewModel) {
                 modifier = Modifier.height(44.dp),
             ) {
                 Text(
-                    if (state.buyingNow) "Placing…" else "Buy Now",
+                    "Buy Now",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                 )

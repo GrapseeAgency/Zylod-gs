@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zylod.wholesale.data.api.ApiClient
 import com.zylod.wholesale.data.api.AddCartRequest
-import com.zylod.wholesale.data.api.CreateDirectRequest
-import com.zylod.wholesale.data.api.CreateDirectData
 import com.zylod.wholesale.data.api.PriceTierDto
 import com.zylod.wholesale.data.api.ProductDetailApi
 import com.zylod.wholesale.data.api.ProductDetailDto
@@ -29,8 +27,11 @@ import kotlinx.serialization.decodeFromString
 /**
  * Product detail VM — GET /api/products/{id} (+ optional /specifications),
  * wishlist toggle via /api/wishlist, add-to-cart through CartStore + POST
- * /api/cart when authenticated, buy-now through /api/orders/create-direct
- * (web parity: COD, no shippingAddressId — product-detail-page.tsx:398-409).
+ * /api/cart when authenticated. Buy Now places NO inline order: the t190
+ * server contract makes /api/orders/create-direct REQUIRE a buyer-owned
+ * shippingAddressId (400 otherwise), so authed buyers are routed to the
+ * WebView buy-now flow (auth + shipping address + payment enforced there) —
+ * exactly the web PDP's handleBuyNow split (product-detail-page.tsx:621-631).
  */
 data class PdpUiState(
     val loading: Boolean = true,
@@ -43,11 +44,16 @@ data class PdpUiState(
     val wishlisted: Boolean = false,
     val addingToCart: Boolean = false,
     val justAdded: Boolean = false,
-    val buyingNow: Boolean = false,
-    val orderConfirmation: CreateDirectData? = null,
     val toast: String? = null,
     val authed: Boolean = false,
     val wishlistNeedsLogin: Boolean = false,
+    /**
+     * One-shot: [buyNow] validated and the screen should open the WebView
+     * buy-now page (openPage("buy-now", "productId=…&quantity=…")) — consumed
+     * by [consumeBuyNowRequested] BEFORE navigating so Back can never re-fire
+     * it. Guest taps never raise it (they get the sign-in nudge instead).
+     */
+    val buyNowRequested: Boolean = false,
 )
 
 class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
@@ -156,8 +162,9 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
         _state.update { it.copy(toast = null) }
     }
 
-    fun dismissOrderConfirmation() {
-        _state.update { it.copy(orderConfirmation = null) }
+    /** Consumes the buy-now navigation request (screen opens the buy-now page). */
+    fun consumeBuyNowRequested() {
+        _state.update { it.copy(buyNowRequested = false) }
     }
 
     fun selectedVariant(): ProductVariantDto? =
@@ -293,52 +300,35 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
         }
     }
 
-    /** Web buy-now handler (product-detail-page.tsx:392-427): COD direct order. */
+    /**
+     * Buy Now — validation only, NO order placement. The old one-click handler
+     * POSTed /api/orders/create-direct with paymentMethod 'cod' and no
+     * shippingAddressId — a real order with no login wall, no shipping address
+     * and no payment step; the t190 server contract now REQUIRES a
+     * buyer-owned shippingAddressId and rejects that body with 400.
+     *
+     * Guest → the established sign-in nudge (toast + login prompt). Authed →
+     * raises [PdpUiState.buyNowRequested]; the screen routes to the WebView
+     * buy-now page (openPage("buy-now", …) → RouteOwnership.resolve →
+     * Destination.Web, since "buy-now" is not in the native ownership set),
+     * which enforces the buyer session, a real shipping address and payment —
+     * web handleBuyNow parity (product-detail-page.tsx:621-631).
+     */
     fun buyNow() {
         val product = _state.value.product ?: return
         if (SessionManager.token() == null) {
             _state.update { it.copy(wishlistNeedsLogin = true, toast = "Sign in to place an order") }
             return
         }
-        val quantity = _state.value.quantity
         if (product.stockQuantity == 0) {
             _state.update { it.copy(toast = "This product is out of stock") }
             return
         }
+        val quantity = _state.value.quantity
         if (quantity < product.moq) {
             _state.update { it.copy(toast = "Minimum order quantity is ${product.moq}") }
             return
         }
-        _state.update { it.copy(buyingNow = true) }
-        viewModelScope.launch {
-            try {
-                val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
-                val response = ApiClient.ordersApi(base).createDirect(
-                    CreateDirectRequest(
-                        productId = product.id,
-                        quantity = quantity,
-                        variantId = _state.value.selectedVariantId,
-                        unitPrice = applicablePrice(),
-                        supplierId = product.supplier?.id.orEmpty(),
-                        paymentMethod = "cod",
-                    ),
-                )
-                if (!response.isSuccessful) {
-                    val err = com.zylod.wholesale.data.api.parseErrorBody(response.errorBody())
-                    _state.update { it.copy(buyingNow = false, toast = err.error ?: "Could not place order") }
-                    return@launch
-                }
-                val data = response.body()
-                if (data?.success == true && data.data != null) {
-                    _state.update { it.copy(buyingNow = false, orderConfirmation = data.data, toast = "Order ${data.data.orderNumber} placed successfully") }
-                } else {
-                    _state.update { it.copy(buyingNow = false, toast = data?.error ?: "Could not place order") }
-                }
-            } catch (ce: CancellationException) {
-                throw ce
-            } catch (e: Exception) {
-                _state.update { it.copy(buyingNow = false, toast = "Could not place order. Please try again.") }
-            }
-        }
+        _state.update { it.copy(buyNowRequested = true) }
     }
 }

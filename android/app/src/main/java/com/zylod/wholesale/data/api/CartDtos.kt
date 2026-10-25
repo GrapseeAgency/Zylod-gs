@@ -6,9 +6,12 @@ import kotlinx.serialization.SerialName
 
 /*
  * Cart/wishlist/order DTOs — verified against cart/route.ts, cart/[itemId]/route.ts,
- * wishlist/route.ts, orders/create-direct/route.ts and orders/my-orders/route.ts.
- * The local persisted item mirrors src/store/cart-store.ts CartItemData
- * field-for-field (merge key `productId::variantId`, tier-based calculatePrice).
+ * wishlist/route.ts and orders/my-orders/route.ts. The create-direct order DTOs
+ * were removed with the t190 server contract (shippingAddressId now required,
+ * buyer-owned): the native app routes Buy Now to the WebView buy-now flow and
+ * no longer calls POST /api/orders/create-direct. The local persisted item
+ * mirrors src/store/cart-store.ts CartItemData field-for-field (merge key
+ * `productId::variantId`, tier-based calculatePrice).
  */
 
 /** Local + server-mapped cart line item (cart-store.ts:4-23). */
@@ -154,14 +157,6 @@ data class WishlistItemDto(
     val id: String? = null,
     val productId: String? = null,
     val product: ProductDto? = null,
-)
-
-/** POST /api/orders/create-direct response is the standard envelope. */
-@Serializable
-data class CreateDirectEnvelope(
-    val success: Boolean = false,
-    val data: CreateDirectData? = null,
-    val error: String? = null,
 )
 
 /* ─── GET /api/orders/my-orders (orders/my-orders/route.ts:48-69) ───
