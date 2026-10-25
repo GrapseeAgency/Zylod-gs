@@ -724,7 +724,19 @@ private fun parseVerifyResult(json: String?): DocumentState {
         return DocumentState(identity = null, spaReady = false, page = null, params = emptyMap())
     }
     return try {
-        val obj = org.json.JSONObject(json)
+        // evaluateJavascript returns a JS STRING value double-encoded: the
+        // callback's `result` is `"{\"identity\":{...},...}"` — a JSON string
+        // literal WRAPPING the object our script stringified. JSONObject(json)
+        // on that throws (a quoted literal is not an object), the catch below
+        // swallowed it, and the gate read identity=null FOREVER while the raw
+        // probe output visibly contained the identity (t187 CI: raw verify
+        // showed commit=ea4466a with verdict=BLOCKED on the same line).
+        // Decode the outer string first when present.
+        var text = json.trim()
+        if (text.startsWith("\"")) {
+            text = org.json.JSONTokener(text).nextValue().toString()
+        }
+        val obj = org.json.JSONObject(text)
         val identity = WebProvenance.parseIdentity(obj.optJSONObject("identity"))
         val paramsObj = obj.optJSONObject("params")
         val params = mutableMapOf<String, String>()
