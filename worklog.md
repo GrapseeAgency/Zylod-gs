@@ -5649,3 +5649,25 @@ Stage Summary:
 - Tab highlight: native "orders" route highlights the profile tab via the same convention as "cart"→cart; TAB_ALIASES remains the single web-side alias source.
 - Risks for CI compile: (1) Icons.Outlined.Package/ErrorOutline and M3 TopAppBar are first uses in this codebase (both standard in the pinned BOM 2024.09.03 + material-icons-extended — high confidence); (2) everything else reuses symbols proven green in CI. If android-build flags anything, it will be an icon-resolve nuance, not logic.
 - Next actions: watch android-build on e4b020b; the 09-orders-guest capture lands in the next android-screenshots run; optional follow-up: DeepLinkParser still maps zylod://orders → "my-orders" (WebView) — could be re-pointed to buyer-orders in a later round if the owner wants that alias native too; profile/dashboards in the SPA now deep-link into the native orders surface via openPage automatically.
+---
+Task ID: 189 (orchestrator)
+Agent: Z.ai Code — BOTH SIDES round (web + Android in parallel)
+Task: "KEEP WORKING BOTH SIDE" — web QA/fix round + native Android feature, CI-verified end to end.
+
+Work Log:
+- STATE: sandbox healthy again (port 3000 live, DB seeded). CI all green on t188. gh CLI unauthed but remote-URL PAT works for API dispatch/artifacts.
+- PARALLEL DISPATCH: t189-a (web agent) + t189-b (Android agent) ran simultaneously, both read worklog first, both appended their own sections (see below).
+- t189-a RESULTS (commit f90d27f): 4 broken placeholder asset refs fixed (wishlist-detail, store-featured-products ×2, product-store, wishlist-page → real /placeholder-product.svg / /placeholder.svg); wishlist 401 → honest "Sign in to see your wishlist" + Sign In button (needsAuth state, matches favorite-pages pattern); PDP share enhanced to Web Share API-first with clipboard+toast fallback + controlled dialog (share feature already existed — enhanced, not duplicated); careers-page had a PAGE-LEVEL animate-pulse skeleton (loading-rule violation) → PageLoader + honest error states; events-page silent .catch masking → honest error + Try Again. lint 0 / tsc 0.
+- t189-b RESULTS (commit e4b020b): NATIVE buyer-orders screen — CommerceApis OrdersApi + GET api/orders/my-orders (contract mirrored exactly from web orders-page.tsx: {success,data[],total}, snake_case @SerialName); NEW OrdersViewModel (104L, CartViewModel conventions: StateFlow, expiredTick, parseErrorBody) + OrdersScreen (464L, M3 Scaffold/TopAppBar, CircularProgressIndicator-only loading, soft guest sign-in CTA per CartScreen precedent, honest empty/error states, Package-icon placeholder since contract has no images — no faked thumbnails); RouteOwnership Phase 2 row (buyer-orders → NATIVE, KDoc rationale); ZylodRoot composable + Destination.Orders + profile-tab highlight; emu-capture 09-orders-guest via zylod://buyer-orders.
+- CI FAILURE CAUGHT + FIXED: android-build failed on 10de434 — Icons.Outlined.Package unresolved in the material-icons artifact (agent guessed an icon that isn't in the version in use). Fix 2d7ce9a: swapped to Icons.Outlined.Inventory (PROVEN icon from prior green builds; only source changes allowed = symbols already compiling elsewhere). Re-pushed; KDoc accuracy commit 7a7fe7c.
+- FINAL CI (all on 7a7fe7c): android-build SUCCESS · android-screenshots SUCCESS (9 captures incl. new 09-orders-guest) · ios-build SUCCESS. Web sweep on 10de434: 756 pages / 0 nav errors / 0 stuck on loader / 0 MOCK-DATA flags (console = expected logged-out 401s).
+- ORCHESTRATOR BROWSER VERIFICATION: wishlist honest sign-in state renders; careers "3 Openings" real seed data; events real Dhaka trade fair; PDP share dialog opens with real product name/price → Copy Link → "Link copied" toast; 320px viewport home + PDP overflowX=no; favorite-categories honest sign-in state.
+- ARTIFACT VISUAL VERIFICATION: 09-orders-guest.png = native M3 "My Orders" screen, lock icon, honest guest copy, Sign In + Browse Products, Profile tab correctly highlighted; 02-home.png = WebView app unchanged (search/scan chips/category pills/real banner/Quick Access/Recommended).
+- Cron webDevReview recreated (job 474211, fixed_rate 900s) — it had been lost across the sandbox restart.
+- Pushes: 10de434 → 2d7ce9a → 7a7fe7c.
+
+Stage Summary:
+- BOTH SIDES advanced in one round: web got the last broken-asset cluster fixed + 2 loading-rule violations killed + honest auth/error states + share hardening; Android got its first Phase-2 native surface (My Orders) with zero mock data and the single M3 loading animation.
+- CI screenshot loops remain the permanent verification layer for both platforms; every claim in this round is backed by either a CI artifact screenshot or a local agent-browser capture.
+- Known-acceptable: logged-out 401 console noise (session-info fires on every page by design); 8 honest-404 pages (deliberate designs); iOS build unaffected by android/ changes but kept green.
+- Next round candidates: native order detail (tap an order → detail surface), CI sweep artifact trend tracking, section-level pulse-row thin standard (~100 allowed rows), continue feature work per standing orders.
