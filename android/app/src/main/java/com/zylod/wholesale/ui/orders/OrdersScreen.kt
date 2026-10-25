@@ -55,7 +55,7 @@ import com.zylod.wholesale.ui.theme.LocalZylodExtra
  * Buyer orders — native port of src/components/pages/orders-page.tsx (Phase 2
  * ownership row). Real data only, from GET /api/orders/my-orders: honest
  * loading / sign-in / empty / error / list states, no demo rows. The contract
- * returns NO images, so cards draw the same Package icon placeholder the web
+ * returns NO images, so cards draw the same package/box icon placeholder the web
  * card does — never a faked thumbnail. `onBack == null` renders as a TAB-like
  * destination (highlights the profile tab, no back bar), matching CartScreen.
  */
