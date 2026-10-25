@@ -279,6 +279,24 @@ Raising a return: open the order → "Request Return" → select items → attac
 Refunds: wallet instantly, bKash/Nagad 1–3 days, bank transfer 3–7 days after resolution is confirmed. See the full Return Policy for non-returnable cases.`,
   },
   {
+    slug: 'terms-and-conditions',
+    titleEn: 'Terms & Conditions (Summary)',
+    category: 'General',
+    contentEn: `The plain-language summary of Zylod's Terms of Service. The full document lives at the Terms of Service page.
+
+Accounts: one entity, one account; you are responsible for your credentials and for accurate business information. Sellers need a valid trade license.
+
+Marketplace role: Zylod connects buyers and suppliers. Suppliers own their quality and delivery commitments; SafePay escrow protects payment until delivery is confirmed.
+
+Orders: prices in BDT; orders are fulfilled after confirmed payment or agreed credit terms. Delivery timelines are supplier commitments tracked on each order.
+
+Returns: 7 days for defects or wrong items, 48 hours for transit damage with photos. See the Return Policy for resolution options and escalation.
+
+Prohibited: counterfeit goods, payment fraud, scraping, or interference with platform operations — violations lead to suspension.
+
+For the complete, binding text, read the Terms of Service document (version 1.0).`,
+  },
+  {
     slug: 'account-security',
     titleEn: 'Account Security & Two-Factor Auth',
     category: 'Account',

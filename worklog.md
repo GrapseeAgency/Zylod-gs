@@ -5554,3 +5554,36 @@ Stage Summary:
 - VERIFICATION: `bun run lint` = 0 errors. `npx tsc --noEmit` (cold tsbuildinfo, NODE_OPTIONS 3072MB) = exit 0, 0 errors — NOTE: had to SIGSTOP the sandbox's `while true; next dev` watchdog + kill the 2.5GB next-server to free RAM (tsc was OOM-killed 3× at 1GB/2GB/3GB heap with the dev server resident); watchdog SIGCONT'd after → dev server back up ("Ready in 1732ms"), preview restored.
 - animate-pulse audit (rg, bg-emerald/Live filtered out): every remaining hit in the 16 in-scope files is a section-level refinement or a status/urgency indicator — product-detail 927/1686/1864/1925, buy-now 482, order-summary 261/262/313/314, product-media-gallery 473-478, customer-rfq-inbox 603-605, mobile-product-detail 546 (+3 emerald dots excluded by the filter). The wider rg over all pages/* still lists ~120 hits in files OUTSIDE this task's 16-file scope (FAQ/info pages, admin tables, order-invoice, verification pages etc.) — untouched per "DO NOT touch any other files"; candidate list for a t188-c pass.
 - Zero dangling Skeleton imports, zero PageLoader imports inside comments, lint+typecheck green.
+---
+Task ID: 188 (orchestrator)
+Agent: Z.ai Code
+Task: User "not quite keep it up" — continue the audit/fix loop. Sandbox had restarted (port 3000 healthy again, FUSE mount alive), but the local DB was COMPLETELY EMPTY (0 products/users/suppliers) — homepage was a ghost town.
+
+Work Log:
+- DB RESEED: found scripts/qa/seed-marketplace.mjs (the CI seed) and ran it locally: 20 products, 7 suppliers, 4 flash deals, 3 daily deals, 3 banners, 10 accounts. Homepage verified with real categories/counts, banner carousel, product grid.
+- KILLED the duplicate dev-server watchdog (two `bun run dev` loops fought over 3000; one held it, the other spammed EADDRINUSE into dev.log).
+- CI ARTIFACT ANALYSIS: downloaded web-sweep artifact (run 40191108953) → 756 pages, 0 nav errors, 0 stuck, 0 mock flags; 38 pages with resource 404s + favorite-categories/favorite-products throwing "Failed to fetch".
+- 38-PAGE 404 ROOT CAUSES (all fixed):
+  1. legalDocuments table EMPTY → /api/legal/[docType] 404'd on EVERY page (cookie banner fetches it). Seeded 9 real legal docs (terms, privacy, returns, shipping, payment, wholesale, cookie, dmca, refund) with Bangladesh-appropriate content.
+  2. helpArticles EMPTY → /api/support/articles/how-it-works 404. Seeded 6 real articles (how-it-works, buyer-guide, seller-guide, safepay-escrow, returns-refunds, account-security).
+  3. /api/events route DID NOT EXIST (events page dead fetch) → new tradeEvents model (schema) + GET /api/events + 3 real trade events (Dhaka Int'l Trade Fair @ ICCB, Chattogram logistics workshop, Textiles Sourcing Week). events-page skeleton → PageLoader.
+  4. jobListings/pressReleases EMPTY → seeded 3 real job listings + 3 press releases (schema field names: titleEn/contentEn/employmentType 'full_time'/salaryMin/Max; press: contentEn/summary/category).
+  5. placeholder-product.svg MISSING (6 pages referenced it, only placeholder.svg existed) → added.
+  - All 6 previously-404 endpoints now 200; favorite pages show sign-in prompts; events page renders real fairs with dates/venues (browser-verified).
+- NEW scripts/qa/seed-content.mjs (idempotent upserts, schema-field-accurate) + wired into BOTH CI workflows after seed-marketplace.
+- favorite-products/favorite-categories: 401 now sets needsAuth → honest "Sign in to see your favorites/followed categories" prompt with Sign In button (was console.error + misleading generic empty).
+- LOADING UNIFICATION PASS 2 (188-b subagent + orchestrator): 13 + 5 more files with whole-page pulse-skeleton takeovers → single PageLoader:
+  - Early-returns: order-timeline, order-detail, order-confirmation, delivery-confirmation, collection-detail, product-detail, buy-now, order-invoice.
+  - Inline takeovers: track-order, delivery-proof, return-detail, exchange-request, cancel-order, customer-rfq-inbox, wishlist, notifications, admin-analytics; live-shopping in-grid → PageLoader col-span-full.
+  - LATENT CRASH FOUND: notifications-page used <Skeleton> WITHOUT importing it (ReferenceError at runtime when loading). Removed with the block.
+  - Kept (section-level, documented): emerald Live/urgency dots, in-card 2-line rows, mobile PDP badges, product-media-gallery/order-summary in-frame refinements.
+- ANDROID LOGIN CAPTURE: emu-capture.sh's zylod://login deep link lands on WebView home (RouteOwnership). Real UI path per guest policy: unauthenticated Profile tab → native LoginScreen. Script updated to tap "Profile" → capture → tap "Continue with Email" → dialog.
+- PUSHES: 3d631fd (404 batch + schema + seeds + favorites), 76a4c73 (login capture), 1f0746d (unification pass 2). android-build + ios-build SUCCESS on final; web-screenshots + android-screenshots running on 1f0746d.
+- lint 0 / tsc 0 on every commit (run from /home/z/my-project now that sandbox is healthy).
+
+Stage Summary:
+- The empty-marketplace defect is gone: local DB reseeded and every environment (CI runners included) now seeds content docs/jobs/press/events alongside marketplace data.
+- 38-page 404 cluster eliminated at the ROOT (empty tables + one missing route + one missing file), not by hiding the fetches. Events page is a real feature now.
+- Loading unification: PageLoader is now the ONLY page-level loading animation across all 432 web pages (+ pass-2 files the first sweep missed). Latent runtime crash on notifications-page fixed in the process.
+- Android screenshots will now include the native login screen + email dialog captured through the real user path.
+- Next round: read the fresh sweep artifacts (web + android), fix whatever surfaces; candidate: audit remaining ~100 section-level pulse rows for consistency (they're allowed, but a thin standard could be applied); keep building features per standing orders.
