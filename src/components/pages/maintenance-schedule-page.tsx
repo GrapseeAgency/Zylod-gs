@@ -14,8 +14,9 @@
  * so non-admin viewers see the active + upcoming windows plus an honest note
  * about where the full archive lives.
  */
+import { PageLoader } from '@/components/ui/page-loader'
 import React, { useEffect, useState } from 'react'
-import { Calendar, ArrowLeft, Clock, AlertCircle, Loader2, ServerCog } from 'lucide-react'
+import { Calendar, ArrowLeft, Clock, AlertCircle, ServerCog } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -86,9 +87,7 @@ export function MaintenanceSchedulePage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <PageLoader />
       ) : error ? (
         <Card className="rounded-2xl border shadow-sm">
           <CardContent className="p-5 flex items-start gap-3 text-sm text-muted-foreground">

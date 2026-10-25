@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigationStore } from '@/store/navigation-store';
-import { ArrowLeft, Loader2, TrendingUp, DollarSign, Activity, Users, ShoppingCart, MousePointerClick, BellRing } from 'lucide-react';
+import { ArrowLeft, TrendingUp, DollarSign, Activity, Users, ShoppingCart, MousePointerClick, BellRing } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface AnalyticsData {
   overview: {
@@ -96,9 +97,7 @@ export function SellerAnalyticsPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{error}</p>
             </div>
           ) : (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
+            <PageLoader />
           )
         ) : (
           <div className="space-y-6">

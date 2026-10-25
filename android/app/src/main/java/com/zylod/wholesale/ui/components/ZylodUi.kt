@@ -1,10 +1,6 @@
 package com.zylod.wholesale.ui.components
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -46,7 +42,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -260,23 +255,6 @@ fun ErrorBanner(message: String, modifier: Modifier = Modifier) {
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
         )
     }
-}
-
-/** Shimmer skeleton box (1:1 mirror of the SPA's skeleton language — alpha pulse). */
-@Composable
-fun SkeletonBox(modifier: Modifier = Modifier, corner: Int = 10) {
-    val transition = rememberInfiniteTransition(label = "skeleton")
-    val alpha by transition.animateFloat(
-        initialValue = 0.5f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(800), RepeatMode.Reverse),
-        label = "skeletonAlpha",
-    )
-    Box(
-        modifier
-            .graphicsLayer { this.alpha = alpha }
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(corner.dp)),
-    )
 }
 
 /**

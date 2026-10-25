@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Smartphone, Building2, Info, CreditCard, Wallet, Plus, Loader2, RefreshCw } from 'lucide-react'
+import { Smartphone, Building2, Info, CreditCard, Wallet, Plus, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 
@@ -119,7 +119,7 @@ export function PaymentMethodPage() {
         <div className="space-y-2">
           {loading ? (
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
-              <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
+              <PageLoader className="min-h-0" />
             </div>
           ) : needsAuth ? (
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 text-center space-y-3">
@@ -210,3 +210,4 @@ export function PaymentMethodPage() {
 }
 
 export default PaymentMethodPage
+import { PageLoader } from '@/components/ui/page-loader'

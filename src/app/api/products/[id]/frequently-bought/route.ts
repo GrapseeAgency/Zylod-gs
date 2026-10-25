@@ -97,6 +97,9 @@ export async function GET(
         stock: p.stockQuantity,
         image: p.images[0]?.imageUrl ?? p.thumbnailUrl ?? null,
         supplier: {
+          // t187-d: id included so bundle/cart flows can carry the REAL
+          // supplierId (additive — RelatedProductsRail only reads the other two).
+          id: p.supplier.id,
           companyName: p.supplier.companyName,
           verificationStatus: p.supplier.verificationStatus,
         },

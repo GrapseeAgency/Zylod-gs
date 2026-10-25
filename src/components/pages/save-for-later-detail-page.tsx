@@ -65,7 +65,7 @@ export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
   }, [itemId]);
 
   if (loading) {
-    return <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
+    return <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center"><PageLoader className="min-h-0" /></div>;
   }
 
   if (!item) {
@@ -243,3 +243,4 @@ export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
 }
 
 export default SaveForLaterDetailPage;
+import { PageLoader } from '@/components/ui/page-loader'

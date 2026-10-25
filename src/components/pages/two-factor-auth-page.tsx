@@ -496,7 +496,7 @@ export function TwoFactorAuthPage() {
               <QRCodeSVG value={otpauthUri} size={168} level="M" />
             ) : (
               <div className="w-[168px] h-[168px] flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                <Loader2 className="h-5 w-5 text-primary animate-spin" />
               </div>
             )}
           </div>

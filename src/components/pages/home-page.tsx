@@ -3,10 +3,10 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CategorySidebar } from '@/components/home/category-sidebar'
-import { HomeLoadingScreen } from '@/components/shared/loading-skeletons'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { MobileHomePage } from '@/components/mobile/mobile-home-page'
 import { useProductStore } from '@/store/product-store'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /* ─── Lazy-loaded heavy sub-components ─── */
 const CategoryTabsAndProducts = lazy(() =>
@@ -21,11 +21,7 @@ const BannerCarousel = lazy(() =>
 
 /* ─── Loading fallback ─── */
 function SectionFallback() {
-  return (
-    <div className="flex items-center justify-center py-12">
-      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
-    </div>
-  )
+  return <PageLoader className="min-h-0 py-12" />
 }
 
 /* ─── Stagger configuration ─── */
@@ -72,14 +68,14 @@ function DesktopHomePage() {
   return (
     <div className="w-full bg-background">
       {showSkeleton ? (
-        /* ─── NEW loading screen while products initialize ─── */
+        /* ─── Loading screen while products initialize ─── */
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
-          <HomeLoadingScreen />
+          <PageLoader />
         </motion.div>
       ) : (
         <div className="max-w-[1440px] mx-auto px-4 py-4">
@@ -149,11 +145,7 @@ export function HomePage() {
   // During SSR / initial hydration, isMobile is undefined
   // Show a loading state to avoid layout shift
   if (isMobile === undefined) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    )
+    return <PageLoader />
   }
 
   if (isMobile) {

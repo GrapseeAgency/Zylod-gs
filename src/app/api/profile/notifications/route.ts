@@ -61,6 +61,16 @@ async function handleUpdate(request: NextRequest) {
 
     const body = await request.json()
 
+    // t187-d: quiet-hours payload from the notification-preferences page —
+    // the columns exist on notificationPreferences, so persist them for real
+    // instead of silently dropping them while the UI reports "saved".
+    const quiet = body.quietHours && typeof body.quietHours === 'object'
+      ? (body.quietHours as { enabled?: unknown; start?: unknown; end?: unknown })
+      : null
+    const quietEnabled = quiet ? Boolean(quiet.enabled) : undefined
+    const quietStart = quiet && typeof quiet.start === 'string' ? quiet.start : undefined
+    const quietEnd = quiet && typeof quiet.end === 'string' ? quiet.end : undefined
+
     // Map both flat data items or direct category objects
     const prefsMap: Record<string, boolean> = {}
     if (body.data && Array.isArray(body.data)) {
@@ -90,6 +100,10 @@ async function handleUpdate(request: NextRequest) {
         if (cats.shipping_logistics) prefsMap['shipping-alerts'] = Boolean(cats.shipping_logistics.push || cats.shipping_logistics.email)
         if (cats.promotions) prefsMap['promotional-offers'] = Boolean(cats.promotions.push || cats.promotions.email)
         if (cats.payment_finance) prefsMap['payment-confirmations'] = Boolean(cats.payment_finance.push || cats.payment_finance.email)
+        // t187-d: the notification-preferences page also sends these two —
+        // both have real schema columns, so they must actually save.
+        if (cats.price_alerts) prefsMap['price-alerts'] = Boolean(cats.price_alerts.push || cats.price_alerts.email)
+        if (cats.security_alerts) prefsMap['security-alerts'] = Boolean(cats.security_alerts.push || cats.security_alerts.email)
       }
     }
 
@@ -99,20 +113,26 @@ async function handleUpdate(request: NextRequest) {
         userId,
         pushOrderUpdates: prefsMap['order-updates'] ?? true,
         pushPromotions: prefsMap['promotional-offers'] ?? false,
-        pushPriceDrops: prefsMap['bulk-discount-alerts'] ?? true,
+        pushPriceDrops: prefsMap['bulk-discount-alerts'] ?? prefsMap['price-alerts'] ?? true,
         pushBackInStock: prefsMap['new-arrivals'] ?? true,
         pushDelivery: prefsMap['shipping-alerts'] ?? true,
         pushChat: prefsMap['payment-confirmations'] ?? true,
-        pushSystem: prefsMap['push-notifications'] ?? true,
+        pushSystem: prefsMap['push-notifications'] ?? prefsMap['security-alerts'] ?? true,
+        quietHoursEnabled: quietEnabled ?? false,
+        quietHoursStart: quietStart ?? null,
+        quietHoursEnd: quietEnd ?? null,
       },
       update: {
         pushOrderUpdates: prefsMap['order-updates'] ?? undefined,
         pushPromotions: prefsMap['promotional-offers'] ?? undefined,
-        pushPriceDrops: prefsMap['bulk-discount-alerts'] ?? undefined,
+        pushPriceDrops: prefsMap['bulk-discount-alerts'] ?? prefsMap['price-alerts'] ?? undefined,
         pushBackInStock: prefsMap['new-arrivals'] ?? undefined,
         pushDelivery: prefsMap['shipping-alerts'] ?? undefined,
         pushChat: prefsMap['payment-confirmations'] ?? undefined,
-        pushSystem: prefsMap['push-notifications'] ?? undefined,
+        pushSystem: prefsMap['push-notifications'] ?? prefsMap['security-alerts'] ?? undefined,
+        quietHoursEnabled: quietEnabled,
+        quietHoursStart: quietStart,
+        quietHoursEnd: quietEnd,
       },
     })
 

@@ -6,8 +6,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Slider } from '@/components/ui/slider'
+import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
@@ -570,19 +570,8 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
           </div>
         )}
 
-        {/* Loading skeleton for featured */}
-        {loading && (
-          <div className="mb-4 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
-            <Skeleton className="h-44 w-full rounded-none" />
-            <div className="p-4 space-y-2">
-              <Skeleton className="h-3 w-24" />
-              <Skeleton className="h-5 w-full" />
-              <Skeleton className="h-3 w-3/4" />
-              <Skeleton className="h-7 w-28 mt-1" />
-              <Skeleton className="h-11 w-full rounded-xl mt-2" />
-            </div>
-          </div>
-        )}
+        {/* Loading state for featured */}
+        {loading && <PageLoader />}
 
         {/* Sort bar */}
         <div className="flex items-center justify-between mb-3">
@@ -609,21 +598,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
 
         {/* Product grid */}
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i} className="overflow-hidden border border-gray-100 dark:border-gray-800">
-                <CardContent className="p-0">
-                  <Skeleton className="aspect-square w-full rounded-none" />
-                  <div className="p-2.5 space-y-1.5">
-                    <Skeleton className="h-3 w-full" />
-                    <Skeleton className="h-3 w-2/3" />
-                    <Skeleton className="h-5 w-20 mt-1" />
-                    <Skeleton className="h-3 w-24" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <PageLoader />
         ) : categoryProducts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Package className="h-12 w-12 text-gray-300 mb-3" />

@@ -8,6 +8,7 @@ import {
   ArrowLeft, Eye, Shield, Lock, Globe, Building2,
   Mail, Phone, Loader2, AlertCircle, Check, Users, UserX
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 type ProfileVisibility = 'public' | 'buyers' | 'private'
 
@@ -220,10 +221,7 @@ export function PrivacySettingsPage() {
               </div>
 
               {loading ? (
-                <div className="flex items-center justify-center py-8 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  <span className="text-xs font-bold ml-2">Loading your privacy settings…</span>
-                </div>
+                <PageLoader label="Loading your privacy settings…" />
               ) : (
                 <div className="p-4 grid grid-cols-1 gap-2">
                   {visibilityOptions.map(({ key, label, desc, icon: Icon }) => {

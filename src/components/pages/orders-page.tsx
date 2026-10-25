@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
+import { PageLoader } from '@/components/ui/page-loader'
 import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   Menu, Search, QrCode, FileText, Truck, RotateCcw,
-  MessageSquare, Package, AlertCircle, Loader2
+  MessageSquare, Package, AlertCircle
 } from 'lucide-react'
 
 /**
@@ -242,19 +243,8 @@ export function OrdersPage() {
           ))}
         </div>
 
-        {/* Loading skeletons (mobile) */}
-        {loading && (
-          <div className="space-y-3.5 md:hidden" aria-busy="true" aria-live="polite">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-                <div className="h-4 w-1/3 bg-slate-200 rounded animate-pulse" />
-                <div className="h-3 w-1/2 bg-slate-100 dark:bg-slate-900 rounded animate-pulse" />
-                <div className="h-12 w-full bg-slate-100 dark:bg-slate-900 rounded-2xl animate-pulse" />
-                <div className="h-9 w-full bg-slate-100 dark:bg-slate-900 rounded-2xl animate-pulse" />
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Loading (mobile) */}
+        {loading && <PageLoader className="md:hidden" />}
 
         {/* Orders List (mobile cards) */}
         {!loading && !error && (
@@ -398,16 +388,13 @@ export function OrdersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {loading &&
-                [0, 1, 2, 3].map((i) => (
-                  <tr key={`skel-${i}`} aria-hidden="true">
-                    {[24, 16, 40, 12, 14, 28].map((w, j) => (
-                      <td key={j} className="px-4 py-3.5">
-                        <div className={`h-4 rounded bg-slate-100 dark:bg-slate-900 animate-pulse`} style={{ width: `${w * 4}px` }} />
-                      </td>
-                    ))}
-                  </tr>
-                ))}
+              {loading && (
+                <tr>
+                  <td colSpan={6} className="p-0">
+                    <PageLoader className="min-h-0 py-10" />
+                  </td>
+                </tr>
+              )}
 
               {!loading && showEmptyState && (
                 <tr>
@@ -507,14 +494,6 @@ export function OrdersPage() {
             </tbody>
           </table>
         </div>
-
-        {/* Screen-reader status while loading (desktop) */}
-        {loading && (
-          <p className="hidden md:flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400" aria-live="polite">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            Loading your orders…
-          </p>
-        )}
       </main>
     </div>
   )

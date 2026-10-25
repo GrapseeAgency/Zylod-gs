@@ -10,6 +10,7 @@ import {
   ArrowLeft, HelpCircle, Search, MessageSquarePlus, BadgeCheck,
   Loader2, Package, ThumbsUp, AlertCircle, LogIn,
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /**
  * REAL product Q&A — replaces the fabricated "IndustrialCorp asked about
@@ -195,9 +196,7 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
 
         {/* States */}
         {phase === 'loading' && (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
+          <PageLoader />
         )}
         {phase === 'error' && (
           <Card className="rounded-3xl border-red-200 shadow-sm">

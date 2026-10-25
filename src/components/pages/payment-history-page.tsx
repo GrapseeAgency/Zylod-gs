@@ -6,12 +6,8 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
-import {
-  ArrowLeft, CreditCard, CheckCircle2, Clock,
-  AlertCircle, ChevronRight, Loader2, Filter,
-  Receipt, DollarSign, Building2
-} from 'lucide-react'
-
+import { ArrowLeft, CreditCard, CheckCircle2, Clock, AlertCircle, ChevronRight, Filter, Receipt, DollarSign, Building2 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 export function PaymentHistoryPage() {
   const { goBack, navigate } = useNavigationStore()
   const { token } = useAuthStore()
@@ -109,10 +105,7 @@ export function PaymentHistoryPage() {
         {/* Payments List */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="text-xs font-bold">Loading Payment Records...</span>
-            </div>
+            <PageLoader label="Loading Payment Records…" />
           ) : payments.length > 0 ? (
             <>
             <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">

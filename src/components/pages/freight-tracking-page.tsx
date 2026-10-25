@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
-  ArrowLeft, MapPin, Package, Clock, Loader2, RefreshCw, AlertCircle, CheckCircle2, Boxes,
+  ArrowLeft, MapPin, Package, Clock, RefreshCw, AlertCircle, CheckCircle2, Boxes,
 } from 'lucide-react'
 
 /**
@@ -163,7 +163,7 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-900 dark:text-slate-100">
-        <Loader2 className="h-7 w-7 animate-spin text-primary" />
+        <PageLoader className="min-h-0" />
       </div>
     )
   }
@@ -304,3 +304,4 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
 }
 
 export default FreightTrackingPage
+import { PageLoader } from '@/components/ui/page-loader'

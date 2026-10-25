@@ -9,12 +9,12 @@ import { MobileSubsidySection } from './mobile-subsidy-section'
 import { MobileProductGrid } from './mobile-product-grid'
 import { MobileBottomNav } from './mobile-bottom-nav'
 import { BannerCarousel } from '@/components/home/banner-carousel'
-import { MobileHomeLoading } from '@/components/shared/loading-skeletons'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Bell, Menu } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useNotificationStore } from '@/store/notification-store'
 import { useProductStore } from '@/store/product-store'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /* ─── Sticky search bar that appears on scroll ─── */
 function StickySearchBar() {
@@ -91,7 +91,7 @@ export function MobileHomePage() {
   }, [])
 
   if (!isReady) {
-    return <MobileHomeLoading />
+    return <PageLoader />
   }
 
   return (

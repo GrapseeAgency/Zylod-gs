@@ -143,17 +143,18 @@ export function LiveChatPage() {
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="relative">
+            {/* t187-d: brand mark only — no fake "agent online" presence dot,
+                because no agent-status API exists. */}
             <div className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs">
-              ZS
+              Z
             </div>
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white" />
           </div>
           <div>
             <h1 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
               Zylod Live Support
               <ShieldCheck className="w-3.5 h-3.5 text-primary/80" />
             </h1>
-            <p className="text-[10px] text-green-600 font-medium">Specialist Online • Dhaka HQ</p>
+            <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Support team reviews messages and replies here</p>
           </div>
         </div>
 
@@ -209,7 +210,7 @@ export function LiveChatPage() {
               >
                 {!isUser && (
                   <div className="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-1">
-                    ZS
+                    Z
                   </div>
                 )}
                 <div

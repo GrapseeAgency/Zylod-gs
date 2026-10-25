@@ -6,12 +6,18 @@ import { X, ShieldCheck, Loader2 } from 'lucide-react'
 import type { SocialProvider } from '@/lib/social-auth'
 
 /**
- * Global provider consent screen for social sign-in.
+ * Email sign-in dialog for quick account access.
  *
  * Listens for the `zylod-open-social-consent` event dispatched by the
- * social-auth service layer, shows an account-chooser styled like the real
- * provider consent, and posts the result back via window message. Mounted once
- * in AppEntry so every auth page can trigger it.
+ * social-auth service layer, collects the account email in Zylod's own
+ * dialog, and posts the result back via window message. Mounted once in
+ * AppEntry so every auth page can trigger it.
+ *
+ * HONESTY NOTE: this is NOT a Google or Facebook sign-in and no third-party
+ * provider is contacted. The provider key ('google' | 'facebook') only
+ * selects which Zylod server route (/api/auth/google | /api/auth/facebook)
+ * the email is exchanged on — the UI must never claim a provider identity,
+ * which is why the copy below is provider-neutral for both keys.
  */
 
 interface ChooserState {
@@ -22,16 +28,15 @@ interface ChooserState {
   submitting: boolean
 }
 
-const PROVIDER_META: Record<SocialProvider, { label: string; color: string; hint: string }> = {
+// Provider-neutral: both server-route keys render the same honest copy.
+const PROVIDER_META: Record<SocialProvider, { title: string; hint: string }> = {
   google: {
-    label: 'Google',
-    color: '#4285F4',
-    hint: 'Choose an account to continue to Zylod. This app is requesting permission to view your name and email address.',
+    title: 'Sign in with your email',
+    hint: 'Enter your email to create or access your Zylod account. This signs you in on Zylod\u2019s own server \u2014 it is not a Google or Facebook sign-in.',
   },
   facebook: {
-    label: 'Facebook',
-    color: '#1877F2',
-    hint: 'Continue as this account to Zylod. This app will receive your public profile and email address.',
+    title: 'Sign in with your email',
+    hint: 'Enter your email to create or access your Zylod account. This signs you in on Zylod\u2019s own server \u2014 it is not a Google or Facebook sign-in.',
   },
 }
 
@@ -65,7 +70,7 @@ export function SocialConsentModal() {
   const confirm = () => {
     if (!state.email.includes('@')) return
     setState((s) => ({ ...s, submitting: true }))
-    // Brief pause mirrors the real consent round-trip before resolving.
+    // Brief pause so the submitting state is visible before the dialog closes.
     setTimeout(() => {
       window.postMessage(
         {
@@ -100,16 +105,12 @@ export function SocialConsentModal() {
             className="w-full max-w-[400px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Provider header */}
+            {/* Dialog header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#E0E0E0]">
               <div className="flex items-center gap-2">
-                <span
-                  className="text-lg font-semibold"
-                  style={{ color: meta.color }}
-                >
-                  {meta.label}
+                <span className="text-lg font-semibold text-[#1A1A1A] dark:text-white">
+                  {meta.title}
                 </span>
-                <span className="text-sm text-[#6B7280] dark:text-gray-400">Sign in</span>
               </div>
               <button
                 onClick={() => close(true)}
@@ -126,13 +127,13 @@ export function SocialConsentModal() {
 
               <div className="space-y-2">
                 <label htmlFor="social-email" className="text-xs font-semibold text-[#6B7280] dark:text-gray-400 uppercase tracking-wide">
-                  Your {meta.label} email
+                  Email address
                 </label>
                 <input
                   id="social-email"
                   type="email"
                   autoFocus
-                  placeholder={`you@${state.provider}.com`}
+                  placeholder="you@example.com"
                   value={state.email}
                   onChange={(e) => setState((s) => ({ ...s, email: e.target.value }))}
                   onKeyDown={(e) => { if (e.key === 'Enter' && state.email.includes('@')) confirm() }}
@@ -154,8 +155,7 @@ export function SocialConsentModal() {
               <button
                 onClick={confirm}
                 disabled={!state.email.includes('@') || state.submitting}
-                className="w-full h-11 rounded-lg text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 active:scale-[0.98]"
-                style={{ backgroundColor: meta.color }}
+                className="w-full h-11 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:bg-primary/90 disabled:opacity-50 active:scale-[0.98]"
               >
                 {state.submitting ? (
                   <>
@@ -170,7 +170,7 @@ export function SocialConsentModal() {
               <div className="flex items-start gap-2 pt-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#6B7280] dark:text-gray-400 shrink-0 mt-0.5" />
                 <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
-                  Zylod never posts on your behalf or shares your contacts. You can revoke access at any time from your {meta.label} account settings.
+                  Zylod uses your email only to create or access your account on Zylod\u2019s own server.
                 </p>
               </div>
             </div>

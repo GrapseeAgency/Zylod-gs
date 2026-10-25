@@ -3,11 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigationStore } from '@/store/navigation-store';
-import {
-  ArrowLeft, Loader2, Users, Repeat, ShoppingBag, Coins, Inbox,
-} from 'lucide-react';
+import { ArrowLeft, Users, Repeat, ShoppingBag, Coins, Inbox } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface CustomerRow {
   buyerId: string;
@@ -98,9 +97,7 @@ export function SellerCustomerInsightsPagePage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <PageLoader />
         ) : authRequired ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
             <CardContent className="p-8 text-center space-y-3">

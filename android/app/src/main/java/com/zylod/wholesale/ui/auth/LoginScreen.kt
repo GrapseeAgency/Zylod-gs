@@ -92,8 +92,10 @@ import kotlinx.serialization.encodeToString
  *  401 INVALID_CREDENTIALS (attemptsRemaining/accountLocked + client rate
  *  limit + math captcha after 2 failures) · 403 ACCOUNT_SUSPENDED →
  *  account-suspended · 429 RATE_LIMITED (lockedUntil countdown).
- * Social buttons reproduce the web's simulated consent flow (social-auth.ts)
- * through a native dialog, then POST /api/auth/google|facebook.
+ * "Continue with Email" opens a native dialog that collects the account
+ * email, then POSTs /api/auth/google (Zylod's own account create/link
+ * endpoint, social-auth.ts mirrored natively). No third-party provider is
+ * contacted — this is NOT a Google or Facebook sign-in.
  */
 data class LoginUiState(
     val loading: Boolean = false,
@@ -218,10 +220,16 @@ class LoginViewModel(private val appContext: Context) : ViewModel() {
         }
     }
 
-    /** Simulated consent exchange — social-auth.ts:86-124, mirrored natively. */
+    /**
+     * Quick email sign-in: creates/links a real account on Zylod's own server.
+     * The email is collected in our own dialog (no provider is contacted);
+     * [deriveProviderId] builds the deterministic account-linking key the
+     * backend expects, then the exchange POSTs /api/auth/google|facebook
+     * (social-auth.ts:86-124, mirrored natively).
+     */
     fun submitSocial(provider: String, email: String, name: String) {
         if (!email.contains("@")) {
-            _state.update { it.copy(socialLoading = null, error = "Enter the email of your $provider account") }
+            _state.update { it.copy(socialLoading = null, error = "Enter your email address to continue") }
             return
         }
         viewModelScope.launch {
@@ -252,14 +260,14 @@ class LoginViewModel(private val appContext: Context) : ViewModel() {
                 val token = data.token
                 if (user != null && token != null) {
                     AuthRateLimit.reset(appContext)
-                    completeLogin(token, user, "Signed in with ${if (provider == "google") "Google" else "Facebook"}.")
+                    completeLogin(token, user, "Signed in with your email.")
                 } else {
                     _state.update { it.copy(socialLoading = null, error = "Sign-in failed. Please try again.") }
                 }
             } catch (ce: CancellationException) {
                 throw ce
             } catch (e: Exception) {
-                _state.update { it.copy(socialLoading = null, error = "Social sign-in failed. Please try again.") }
+                _state.update { it.copy(socialLoading = null, error = "Sign-in failed. Please try again.") }
             }
         }
     }
@@ -335,7 +343,7 @@ fun LoginScreen(
     val vm: LoginViewModel = viewModel(factory = LoginVmFactory(context.applicationContext))
     val state by vm.state.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
-    var showSocialDialog by remember { mutableStateOf<String?>(null) }
+    var showEmailSignIn by remember { mutableStateOf(false) }
 
     var emailOrPhone by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -535,7 +543,7 @@ fun LoginScreen(
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 HorizontalDivider(Modifier.weight(1f), color = MaterialTheme.colorScheme.outline)
                 Text(
-                    "OR CONTINUE WITH",
+                    "OR",
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -545,26 +553,15 @@ fun LoginScreen(
             }
 
             Spacer(Modifier.height(16.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                ZylodButton(
-                    text = "Google",
-                    onClick = { showSocialDialog = "google" },
-                    variant = ZylodButtonVariant.OUTLINED,
-                    height = 46.dp,
-                    loading = state.socialLoading == "google",
-                    enabled = state.socialLoading == null,
-                    modifier = Modifier.weight(1f),
-                )
-                ZylodButton(
-                    text = "Facebook",
-                    onClick = { showSocialDialog = "facebook" },
-                    variant = ZylodButtonVariant.OUTLINED,
-                    height = 46.dp,
-                    loading = state.socialLoading == "facebook",
-                    enabled = state.socialLoading == null,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            ZylodButton(
+                text = "Continue with Email",
+                onClick = { showEmailSignIn = true },
+                variant = ZylodButtonVariant.OUTLINED,
+                height = 46.dp,
+                loading = state.socialLoading != null,
+                enabled = state.socialLoading == null,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
             Spacer(Modifier.height(24.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
@@ -599,14 +596,15 @@ fun LoginScreen(
         }
     }
 
-    if (showSocialDialog != null) {
+    if (showEmailSignIn) {
         SocialConsentDialog(
-            provider = showSocialDialog.orEmpty(),
-            onDismiss = { showSocialDialog = null },
+            onDismiss = { showEmailSignIn = false },
             onConfirm = { email, name ->
-                val provider = showSocialDialog ?: return@SocialConsentDialog
-                showSocialDialog = null
-                vm.submitSocial(provider, email, name)
+                showEmailSignIn = false
+                // "google" selects the /api/auth/google exchange path — the
+                // account create/link endpoint + "g-" linking key the backend
+                // expects. No Google service is involved.
+                vm.submitSocial("google", email, name)
             },
         )
     }
@@ -619,7 +617,6 @@ private fun formatCountdown(ms: Long): String {
 
 @Composable
 private fun SocialConsentDialog(
-    provider: String,
     onDismiss: () -> Unit,
     onConfirm: (email: String, name: String) -> Unit,
 ) {
@@ -629,7 +626,7 @@ private fun SocialConsentDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                if (provider == "google") "Continue with Google" else "Continue with Facebook",
+                "Sign in with your email",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
             )
@@ -637,13 +634,13 @@ private fun SocialConsentDialog(
         text = {
             Column {
                 Text(
-                    "Choose the ${if (provider == "google") "Google" else "Facebook"} account to continue with. " +
-                        "This mirrors the web's simulated consent step — the account is created or linked server-side.",
+                    "Enter your email to create or access your Zylod account. " +
+                        "This signs you in on Zylod's own server — it is not a Google or Facebook sign-in.",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(12.dp))
-                ZylodTextField(value = email, onValueChange = { email = it }, label = "Account email", keyboardType = KeyboardType.Email)
+                ZylodTextField(value = email, onValueChange = { email = it }, label = "Email address", keyboardType = KeyboardType.Email)
                 Spacer(Modifier.height(10.dp))
                 ZylodTextField(value = name, onValueChange = { name = it }, label = "Display name (optional)")
             }

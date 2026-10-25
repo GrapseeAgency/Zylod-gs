@@ -19,18 +19,9 @@
  * reports `updateAvailable: true` if any version is published — the page
  * is "show me the latest", not "compare against a stub local version".
  */
+import { PageLoader } from '@/components/ui/page-loader'
 import React, { useEffect, useState } from 'react'
-import {
-  Zap,
-  Download,
-  RefreshCw,
-  History,
-  ShieldCheck,
-  FileCode2,
-  ChevronRight,
-  Loader2,
-  AlertCircle,
-} from 'lucide-react'
+import { Zap, Download, RefreshCw, History, ShieldCheck, FileCode2, ChevronRight, AlertCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -120,9 +111,7 @@ export function AppUpdatePage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <PageLoader />
       ) : error ? (
         <Card className="rounded-2xl border shadow-sm">
           <CardContent className="p-5 flex items-start gap-3 text-sm text-muted-foreground">

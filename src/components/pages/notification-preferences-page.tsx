@@ -4,15 +4,17 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { toast } from 'sonner'
 import {
   ArrowLeft, Bell, ShoppingBag, Truck, Star, DollarSign, Shield,
   MessageSquare, Clock, Zap, RefreshCw, CheckCircle2, Loader2,
   Check, Smartphone, Mail, Phone, Globe, Volume2, VolumeX,
   Moon, Sun, Calendar, AlertTriangle, Package, BarChart3,
   Award, Settings, Megaphone, FileText, CreditCard, HardHat,
-  Layers, Radio, Activity, ChevronDown, ChevronUp, Plus, X
+  Layers, Radio, Activity, ChevronDown, ChevronUp, Plus, X, Info
 } from 'lucide-react'
 
 // ─── TYPE DEFINITIONS ─────────────────────────────────────────────────────────
@@ -29,6 +31,11 @@ interface NotifCategory {
   whatsapp: boolean
   hasSms?: boolean
   hasWhatsapp?: boolean
+  // t187-d honesty flag: TRUE only when the API actually persists this
+  // category (a real notificationPreferences column exists). Categories
+  // without a column say so in the UI — a toggle that silently resets is
+  // fake behavior, and we don't ship that.
+  persisted?: boolean
 }
 
 // ─── NOTIFICATION CATEGORY CARD ───────────────────────────────────────────────
@@ -58,6 +65,12 @@ function CategoryCard({
           <div className="flex-1 min-w-0">
             <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">{category.label}</h3>
             <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{category.description}</p>
+            {category.persisted === false && (
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-1 flex items-start gap-1">
+                <Info className="h-3 w-3 shrink-0 mt-px" />
+                <span>Not saved on your account yet — this toggle resets when you leave the page.</span>
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -185,6 +198,7 @@ export function NotificationPreferencesPage() {
       iconColor: 'text-primary',
       iconBg: 'bg-rose-50 border-rose-100',
       push: true, email: true, sms: false, whatsapp: true,
+      persisted: true,
     },
     {
       id: 'shipping_logistics',
@@ -194,6 +208,7 @@ export function NotificationPreferencesPage() {
       iconColor: 'text-sky-600',
       iconBg: 'bg-sky-50 border-sky-100',
       push: true, email: true, sms: true, whatsapp: true,
+      persisted: true,
     },
     {
       id: 'payment_finance',
@@ -203,6 +218,7 @@ export function NotificationPreferencesPage() {
       iconColor: 'text-emerald-600',
       iconBg: 'bg-emerald-50 border-emerald-100',
       push: true, email: true, sms: false, whatsapp: false,
+      persisted: true,
     },
     {
       id: 'price_alerts',
@@ -213,6 +229,7 @@ export function NotificationPreferencesPage() {
       iconBg: 'bg-amber-50 border-amber-100',
       push: true, email: false, sms: false, whatsapp: false,
       hasWhatsapp: false,
+      persisted: true,
     },
     {
       id: 'rfq_quotes',
@@ -233,6 +250,7 @@ export function NotificationPreferencesPage() {
       iconBg: 'bg-orange-50 border-orange-100',
       push: false, email: true, sms: false, whatsapp: false,
       hasSms: false, hasWhatsapp: false,
+      persisted: true,
     },
     {
       id: 'reviews_feedback',
@@ -292,6 +310,7 @@ export function NotificationPreferencesPage() {
       iconBg: 'bg-rose-50 border-rose-100',
       push: true, email: true, sms: true, whatsapp: false,
       hasWhatsapp: false,
+      persisted: true,
     },
     {
       id: 'analytics_reports',
@@ -329,6 +348,68 @@ export function NotificationPreferencesPage() {
   const [testing, setTesting] = useState(false)
   const [testSent, setTestSent] = useState(false)
 
+  // ─── LOAD SAVED PREFERENCES (t187-d) ──────────────────────────────────────
+  // The page used to render its hardcoded defaults as if they were the user's
+  // current settings and never read the saved row back. On mount we now GET
+  // /api/profile/notifications and initialize the toggles from the SAVED
+  // values; the hardcoded defaults apply only when no saved row exists.
+  const [loadingPrefs, setLoadingPrefs] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    const loadSaved = async () => {
+      if (!token) {
+        setLoadingPrefs(false)
+        return
+      }
+      try {
+        const res = await fetch('/api/profile/notifications', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (cancelled) return
+        if (!res.ok) {
+          toast.error('Could not load your saved notification settings — showing defaults.')
+          setLoadingPrefs(false)
+          return
+        }
+        const json = await res.json()
+        if (cancelled) return
+        const prefs = json?.prefs
+        if (prefs) {
+          // Real columns on notificationPreferences → the page categories
+          // they actually back. Categories the API doesn't persist keep the
+          // honest defaults (never fake "saved" values).
+          const savedPush: Record<string, boolean> = {
+            order_updates: prefs.pushOrderUpdates,
+            shipping_logistics: prefs.pushDelivery,
+            payment_finance: prefs.pushChat,
+            price_alerts: prefs.pushPriceDrops,
+            promotions: prefs.pushPromotions,
+            security_alerts: prefs.pushSystem,
+          }
+          setCategories((prev) =>
+            prev.map((cat) =>
+              typeof savedPush[cat.id] === 'boolean'
+                ? { ...cat, push: savedPush[cat.id] }
+                : cat
+            )
+          )
+          setQuietHoursEnabled(Boolean(prefs.quietHoursEnabled))
+          if (prefs.quietHoursStart) setQuietStart(prefs.quietHoursStart)
+          if (prefs.quietHoursEnd) setQuietEnd(prefs.quietHoursEnd)
+        }
+      } catch {
+        if (!cancelled) {
+          toast.error('Could not load your saved notification settings — showing defaults.')
+        }
+      } finally {
+        if (!cancelled) setLoadingPrefs(false)
+      }
+    }
+    loadSaved()
+    return () => { cancelled = true }
+  }, [token])
+
   // ─── UPDATE CATEGORY ───────────────────────────────────────────────────────
   const updateCategory = (
     id: string,
@@ -357,38 +438,50 @@ export function NotificationPreferencesPage() {
 
   // ─── SAVE ──────────────────────────────────────────────────────────────────
   const savePreferences = async () => {
+    // Honest guard: without a session nothing can persist — never fake a
+    // "saved" success for a signed-out visitor.
+    if (!token) {
+      toast.error('Sign in to save your notification preferences.')
+      return
+    }
     setSaving(true)
     try {
-      if (token) {
-        const payload = {
-          categories: categories.reduce<Record<string, object>>((acc, cat) => {
-            acc[cat.id] = {
-              push: cat.push,
-              email: cat.email,
-              sms: cat.sms,
-              whatsapp: cat.whatsapp,
-            }
-            return acc
-          }, {}),
-          quietHours: {
-            enabled: quietHoursEnabled,
-            start: quietStart,
-            end: quietEnd,
-          },
-        }
-        await fetch('/api/profile/notifications', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        })
+      const payload = {
+        categories: categories.reduce<Record<string, object>>((acc, cat) => {
+          acc[cat.id] = {
+            push: cat.push,
+            email: cat.email,
+            sms: cat.sms,
+            whatsapp: cat.whatsapp,
+          }
+          return acc
+        }, {}),
+        quietHours: {
+          enabled: quietHoursEnabled,
+          start: quietStart,
+          end: quietEnd,
+        },
+      }
+      // t187-d: honest success — only claim "saved" when the API actually
+      // accepted the payload.
+      const res = await fetch('/api/profile/notifications', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json?.success) {
+        toast.error(json?.error || 'Saving failed — your changes were NOT saved. Please try again.')
+        return
       }
       setSaved(true)
+      toast.success('Notification preferences saved.')
       setTimeout(() => setSaved(false), 3000)
     } catch {
-      // Graceful
+      toast.error('Network error — your changes were NOT saved. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -414,6 +507,16 @@ export function NotificationPreferencesPage() {
   }
 
   // ─── RENDER ────────────────────────────────────────────────────────────────
+  // t187-d: don't paint the hardcoded defaults as current settings while the
+  // saved row is still in flight.
+  if (loadingPrefs) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+        <PageLoader />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28 md:pb-8">
       {/* Header */}

@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import {
-  ArrowLeft, Phone, Mail, MapPin, Clock, Send,
-  MessageCircle, CheckCircle2, AlertCircle, Building2, ShieldCheck
+  ArrowLeft, Mail, Send,
+  MessageCircle, CheckCircle2, AlertCircle
 } from 'lucide-react'
 
 export function ContactUsPage() {
@@ -72,28 +72,17 @@ export function ContactUsPage() {
       </div>
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 space-y-6 md:space-y-8 max-w-2xl lg:max-w-4xl mx-auto w-full pb-24 md:pb-8">
-        {/* Contact Info Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
-            <Phone className="w-5 h-5 text-red-600 mb-2" />
-            <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">Support Hotline</p>
-            <p className="text-xs font-bold text-red-600">+880 9612-345678</p>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">9:00 AM – 10:00 PM Daily</p>
-          </div>
-
-          <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
-            <Mail className="w-5 h-5 text-red-600 mb-2" />
-            <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">Email Support</p>
-            <p className="text-xs font-bold text-gray-800 dark:text-gray-200">support@zylod.com.bd</p>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">24-hour response SLA</p>
-          </div>
-
-          <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
-            <MapPin className="w-5 h-5 text-red-600 mb-2" />
-            <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">Dhaka Headquarters</p>
-            <p className="text-xs text-gray-700 dark:text-gray-300">Gulshan-2, Dhaka 1212</p>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Bangladesh</p>
-          </div>
+        {/* Contact Info — t187-d: only REAL, verifiable contact channels.
+            The invented hotline number and the invented Gulshan HQ address
+            were removed; the email is the same support@zylod.com used
+            everywhere else on the site. */}
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-1 max-w-sm">
+          <Mail className="w-5 h-5 text-red-600 mb-2" />
+          <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">Email Support</p>
+          <a href="mailto:support@zylod.com" className="text-xs font-bold text-red-600 hover:underline">support@zylod.com</a>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
+            For anything urgent, use Live Chat — a support team member reviews every message.
+          </p>
         </div>
 
         {/* Contact Form */}

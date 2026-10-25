@@ -184,11 +184,7 @@ export function StoreCustomizationPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center" role="status" aria-label="Loading store settings">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (needsAuth) {
@@ -397,3 +393,4 @@ export function StoreCustomizationPage() {
 }
 
 export default StoreCustomizationPage;
+import { PageLoader } from '@/components/ui/page-loader'

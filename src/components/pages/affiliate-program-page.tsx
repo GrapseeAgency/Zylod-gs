@@ -119,7 +119,7 @@ export function AffiliateProgramPage() {
         {affiliate ? (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                 Your Unique Tracking Link
               </span>
               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
@@ -165,18 +165,26 @@ export function AffiliateProgramPage() {
           </div>
         )}
 
-        {/* Benefits Grid */}
+        {/* Benefits Grid — t187-d: no invented order-value or cookie-window
+            figures. Only claims backed by the real affiliate record
+            (commissionRate 0.05 in the schema, real tracked link). */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <DollarSign className="w-5 h-5 text-emerald-600" />
-            <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">High Average Order Value</h4>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Average wholesale order is ৳85,000+ generating ৳4,250 commission per transaction.</p>
+            <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">
+              {affiliate?.commissionPercent ? `${affiliate.commissionPercent} Commission` : '5% Commission'}
+            </h4>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+              Earn {(affiliate?.commissionPercent || '5%').replace('%', '')}% of every completed wholesale order placed through your link.
+            </p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
             <Share2 className="w-5 h-5 text-primary" />
-            <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">60-Day Cookie Window</h4>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Commissions attributed even if buyers return up to 2 months later.</p>
+            <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100">Tracked Referral Links</h4>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+              Every click and order made through your unique link is counted in your dashboard.
+            </p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">

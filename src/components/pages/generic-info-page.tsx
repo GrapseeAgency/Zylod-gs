@@ -1534,7 +1534,7 @@ function ChatDetailPage({ navigate }: { navigate: (page: string, params?: Record
         <div ref={scrollRef} className="h-full overflow-y-auto px-4 py-3 space-y-4 scroll-smooth">
           {creatingConv ? (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-2">
-              <RefreshCw className="h-6 w-6 text-primary animate-spin" />
+              <Loader2 className="h-5 w-5 text-primary animate-spin" />
               <p className="text-xs text-muted-foreground">Starting conversation...</p>
             </div>
           ) : error ? (

@@ -49,7 +49,7 @@ export function SharedWishlistPage() {
   if (loading) {
     return (
       <div className="flex-1 bg-gray-50 dark:bg-gray-950 flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <PageLoader className="min-h-0" />
       </div>
     )
   }
@@ -218,3 +218,4 @@ export function SharedWishlistPage() {
 }
 
 export default SharedWishlistPage
+import { PageLoader } from '@/components/ui/page-loader'

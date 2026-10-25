@@ -6,12 +6,8 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
-import {
-  ArrowLeft, AlertTriangle, RefreshCw,
-  CreditCard, ChevronRight, Loader2, HelpCircle,
-  Building2, ArrowRight
-} from 'lucide-react'
-
+import { ArrowLeft, AlertTriangle, RefreshCw, CreditCard, ChevronRight, HelpCircle, Building2, ArrowRight } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 export function PaymentFailedPage() {
   const { goBack, navigate } = useNavigationStore()
   const { token } = useAuthStore()
@@ -81,8 +77,7 @@ export function PaymentFailedPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
           {loading ? (
             <div className="py-12 md:col-span-2 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="text-xs font-bold">Checking Payment Gateway Records...</span>
+              <PageLoader className="min-h-0" />
             </div>
           ) : failedItems.length > 0 ? (
             failedItems.map((item) => (

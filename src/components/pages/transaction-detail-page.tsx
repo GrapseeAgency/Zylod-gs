@@ -9,8 +9,8 @@ import { useCurrencyStore } from '@/store/currency-store'
 import {
   ArrowLeft, Receipt, CheckCircle2, ShieldCheck,
   Download, Share2, ArrowDownLeft, ArrowUpRight,
-  Clock, Hash, Building2, CreditCard, Loader2
-} from 'lucide-react'
+  Clock, Hash, Building2, CreditCard } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 export function TransactionDetailPage() {
   const { goBack, pageParams, navigate } = useNavigationStore()
@@ -60,7 +60,7 @@ export function TransactionDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <PageLoader className="min-h-0" />
       </div>
     )
   }
@@ -118,10 +118,15 @@ export function TransactionDetailPage() {
                 {data?.createdAt ? new Date(data.createdAt).toLocaleString() : 'N/A'}
               </span>
             </div>
-            <div className="py-2.5 flex justify-between">
-              <span className="text-slate-400 dark:text-slate-500 font-medium">Transaction Fee</span>
-              <span className="font-bold text-emerald-600">৳0.00 (Free)</span>
-            </div>
+            {/* t187-d: the wallet ledger carries no real fee data — the API
+                returns fee: 0 for every transaction. Show the row only when a
+                non-zero fee actually exists instead of asserting "Free". */}
+            {(data?.fee ?? 0) > 0 && (
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-400 dark:text-slate-500 font-medium">Transaction Fee</span>
+                <span className="font-bold text-slate-900 dark:text-slate-100">{formatPrice(data?.fee ?? 0)}</span>
+              </div>
+            )}
             <div className="py-2.5 flex justify-between">
               <span className="text-slate-400 dark:text-slate-500 font-medium">Updated Wallet Balance</span>
               <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{formatPrice(data?.balanceAfter || 0)}</span>

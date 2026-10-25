@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { PageLoader } from '@/components/ui/page-loader'
 
 /**
  * Seller "Go Live" console (Task 165) — the host-side UI for the broadcast
@@ -244,9 +245,7 @@ export function SellerLiveConsolePage() {
         )}
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <PageLoader />
         ) : authRequired ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
             <CardContent className="p-8 text-center space-y-3">

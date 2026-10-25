@@ -12,6 +12,7 @@ import {
   CheckCircle2, Clock, ChevronRight, Loader2,
   Building2, Receipt, ShieldCheck, X
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface InvoiceItem {
   id: string
@@ -161,10 +162,7 @@ export function InvoiceManagementPage() {
         {/* Invoice List */}
         <div>
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="text-xs font-bold">Generating Invoice Documents...</span>
-            </div>
+            <PageLoader label="Generating Invoice Documents…" />
           ) : invoices.length > 0 ? (
             <>
               {/* Mobile card list */}

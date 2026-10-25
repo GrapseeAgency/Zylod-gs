@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
+import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
@@ -154,18 +154,8 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
           </div>
         )}
 
-        {/* Loading skeletons */}
-        {loading && (
-          <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 space-y-3">
-                <Skeleton className="h-36 w-full rounded-2xl" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Loading */}
+        {loading && <PageLoader />}
 
         {/* Empty — marketplace has no similar products yet */}
         {!loading && !error && products.length === 0 && (

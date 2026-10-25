@@ -6,12 +6,8 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
-import {
-  ArrowLeft, Clock, ShieldCheck, Lock,
-  ChevronRight, Loader2, AlertCircle, Building2,
-  CheckCircle2, RefreshCw
-} from 'lucide-react'
-
+import { ArrowLeft, Clock, ShieldCheck, Lock, ChevronRight, AlertCircle, Building2, CheckCircle2, RefreshCw } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 export function PaymentPendingPage() {
   const { goBack, navigate } = useNavigationStore()
   const { token } = useAuthStore()
@@ -87,10 +83,7 @@ export function PaymentPendingPage() {
         {/* List */}
         <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="text-xs font-bold">Scanning Pending Clearances...</span>
-            </div>
+            <PageLoader label="Scanning Pending Clearances…" />
           ) : pendingItems.length > 0 ? (
             pendingItems.map((item) => (
               <div

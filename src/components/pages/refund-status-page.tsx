@@ -185,7 +185,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
   if (phase === 'loading' || !data) {
     return (
       <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <PageLoader className="min-h-0" />
       </div>
     )
   }
@@ -407,3 +407,4 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
 }
 
 export default RefundStatusPage
+import { PageLoader } from '@/components/ui/page-loader'

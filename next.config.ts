@@ -4,6 +4,24 @@ const nextConfig: NextConfig = {
   // output: "standalone", // Disabled — causes OOM in 4GB container
   /* config options here */
   reactStrictMode: false,
+  // t187 CRITICAL FIX: the sandbox mounts a FUSE volume at ./upload (ossfs).
+  // When that mount wedges, ANY process doing a recursive directory scan of
+  // the project root hangs forever inside the kernel (fuse request_wait_answer)
+  // — next dev's file watcher was freezing silently on startup because of it
+  // (every "server starts then never responds, empty log" incident on 3000-3004).
+  // Excluding upload/** from BOTH bundler watchers makes dev immune to the mount.
+  turbopack: {
+    watchOptions: {
+      ignored: ['**/upload/**', '**/.git/**', '**/qa-screenshots/**'],
+    },
+  },
+  webpack: (config) => {
+    config.watchOptions = {
+      ...(config.watchOptions || {}),
+      ignored: ['**/upload/**', '**/.git/**', '**/qa-screenshots/**', '**/node_modules/**'],
+    }
+    return config
+  },
   allowedDevOrigins: [
     'localhost',
     'localhost:3000',

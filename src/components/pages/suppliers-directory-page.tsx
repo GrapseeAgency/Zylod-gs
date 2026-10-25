@@ -3,18 +3,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
-import {
-  ArrowLeft,
-  HelpCircle,
-  Search,
-  Star,
-  ShieldCheck,
-  Loader2,
-  AlertTriangle,
-  Building2,
-  ChevronRight,
-} from 'lucide-react'
-
+import { ArrowLeft, HelpCircle, Search, Star, ShieldCheck, AlertTriangle, Building2, ChevronRight } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 interface SupplierRow {
   id: string
   companyName: string
@@ -102,10 +92,7 @@ export function SuppliersDirectoryPage() {
 
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
-          <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-primary animate-spin" />
-            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading suppliers...</p>
-          </div>
+          <PageLoader label="Loading suppliers…" />
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">

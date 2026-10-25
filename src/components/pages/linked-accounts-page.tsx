@@ -8,6 +8,7 @@ import {
   ArrowLeft, Link as LinkIcon, Loader2, AlertCircle, Trash2, Plus,
   Globe, MessageCircle, Instagram, Facebook, Lock, RefreshCw
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /**
  * Real linked contact handles, persisted on the userSettings row via
@@ -269,8 +270,7 @@ export function LinkedAccountsPage() {
             <div ref={listRef}>
               {loading ? (
                 <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs p-8 flex items-center justify-center text-slate-400 dark:text-slate-500 dark:text-slate-400">
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  <span className="text-xs font-bold ml-2">Loading your linked accounts…</span>
+                  <PageLoader className="min-h-0" />
                 </div>
               ) : accounts.length === 0 ? (
                 <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-2">

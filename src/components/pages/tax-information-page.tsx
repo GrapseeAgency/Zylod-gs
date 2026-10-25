@@ -97,10 +97,7 @@ export function TaxInformationPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="text-xs font-bold">Loading Tax Information...</span>
-        </div>
+        <PageLoader label="Loading Tax Information…" className="min-h-0" />
       </div>
     )
   }
@@ -223,3 +220,4 @@ export function TaxInformationPage() {
 }
 
 export default TaxInformationPage
+import { PageLoader } from '@/components/ui/page-loader'

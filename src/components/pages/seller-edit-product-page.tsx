@@ -450,11 +450,7 @@ export function SellerEditProductPage() {
   };
 
   if (fetching) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center" role="status" aria-label="Loading product">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (notFound || needsAuth || fetchError) {
@@ -627,3 +623,4 @@ export function SellerEditProductPage() {
 }
 
 export default SellerEditProductPage;
+import { PageLoader } from '@/components/ui/page-loader'

@@ -9,6 +9,7 @@ import {
   ArrowLeft, Landmark, Plus, Trash2, CheckCircle2,
   ShieldCheck, Check, Loader2, Building2, MoreVertical
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface BankAccount {
   id: string
@@ -133,10 +134,7 @@ export function BankAccountsPage() {
         {/* Bank List */}
         <div className="space-y-3">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="text-xs font-bold">Loading Bank Accounts...</span>
-            </div>
+            <PageLoader label="Loading Bank Accounts…" />
           ) : accounts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {accounts.map((acc) => (

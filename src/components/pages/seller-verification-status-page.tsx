@@ -17,17 +17,14 @@
  * table. The overall progress percent is the server's honest fraction of
  * verified required types. Honest 401 gate for non-supplier viewers.
  */
+import { PageLoader } from '@/components/ui/page-loader'
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
-import {
-  ArrowLeft, CheckCircle2, Clock, ShieldCheck, AlertCircle,
-  FileCheck2, Building2, UploadCloud, MessageSquare, Loader2, Lock, LogIn,
-} from 'lucide-react'
-
+import { ArrowLeft, CheckCircle2, Clock, ShieldCheck, AlertCircle, FileCheck2, Building2, UploadCloud, MessageSquare, Lock, LogIn } from 'lucide-react'
 interface VerificationDoc {
   id: string
   documentType: string
@@ -177,7 +174,7 @@ export function SellerVerificationStatusPage() {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-12 max-w-2xl flex justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <PageLoader className="min-h-0" />
       </div>
     )
   }

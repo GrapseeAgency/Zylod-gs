@@ -5,17 +5,8 @@ import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useWishlistStore } from '@/store/wishlist-store'
-import {
-  ArrowLeft,
-  HelpCircle,
-  Bookmark,
-  CheckCircle2,
-  ArrowRight,
-  Loader2,
-  AlertTriangle,
-  Sparkles,
-} from 'lucide-react'
-
+import { ArrowLeft, HelpCircle, Bookmark, CheckCircle2, ArrowRight, AlertTriangle, Sparkles } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 interface ArrivalProduct {
   id: string
   name: string
@@ -192,10 +183,7 @@ export function NewArrivalsPage() {
 
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
-          <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-primary animate-spin" />
-            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading fresh listings...</p>
-          </div>
+          <PageLoader label="Loading fresh listings…" />
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">

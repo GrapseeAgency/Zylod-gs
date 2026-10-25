@@ -12,6 +12,7 @@ import {
   Trash2, ShieldCheck, Check, Loader2, CreditCard,
   AlertCircle
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface MFSAccount {
   id: string
@@ -223,10 +224,7 @@ export function UpiPaymentSetupPage() {
         {/* Existing MFS Accounts */}
         <div className="space-y-3">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="text-xs font-bold">Loading Mobile Banking Links...</span>
-            </div>
+            <PageLoader label="Loading Mobile Banking Links…" />
           ) : accounts.length > 0 ? (
             accounts.map((acc) => (
               <div

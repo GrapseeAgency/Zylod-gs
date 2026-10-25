@@ -5,11 +5,8 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
-import {
-  ArrowLeft, Search, Truck, Warehouse, Calculator, MapPin,
-  ShieldCheck, ChevronRight, Loader2, RefreshCw, AlertCircle,
-} from 'lucide-react'
-
+import { ArrowLeft, Search, Truck, Warehouse, Calculator, MapPin, ShieldCheck, ChevronRight, RefreshCw, AlertCircle } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 /**
  * REAL warehouse locator (audit unit 21). The old page rendered three
  * hard-coded fictional facilities — "Dhaka Central Mega-Hub, 3.2 km,
@@ -139,9 +136,7 @@ export function WarehouseLocatorPage() {
 
         {/* List */}
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-7 w-7 animate-spin text-primary" />
-          </div>
+          <PageLoader />
         ) : error ? (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
             <AlertCircle className="h-8 w-8 text-slate-300 mx-auto mb-2" />

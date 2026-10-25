@@ -7,8 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { useNavigationStore } from '@/store/navigation-store'
 import {
-  ArrowLeft, Info, CheckCircle2, Sun, Sunset, AlertCircle, Loader2,
-} from 'lucide-react'
+  ArrowLeft, Info, CheckCircle2, Sun, Sunset, AlertCircle } from 'lucide-react'
 
 /**
  * REAL delivery reschedule (audit unit 20). The old page faked everything:
@@ -198,7 +197,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-900 dark:text-slate-100">
-        <Loader2 className="h-7 w-7 animate-spin text-primary" />
+        <PageLoader className="min-h-0" />
       </div>
     )
   }
@@ -410,3 +409,4 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
 }
 
 export default RescheduleDeliveryPage
+import { PageLoader } from '@/components/ui/page-loader'

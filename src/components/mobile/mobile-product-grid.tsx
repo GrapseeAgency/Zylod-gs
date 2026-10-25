@@ -1,6 +1,7 @@
 'use client'
 
 import { ProductCardSkeletonCompact } from '@/components/shared/loading-skeletons'
+import { PageLoader } from '@/components/ui/page-loader'
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useProductStore, type Product } from '@/store/product-store'
@@ -188,19 +189,7 @@ export function MobileProductGrid() {
   }
 
   if (isInitialLoading) {
-    return (
-      <div className="mt-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="h-6 skeleton-shimmer rounded w-40" />
-          <div className="h-4 skeleton-shimmer rounded w-12" />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <ProductCardSkeletonCompact key={i} />
-          ))}
-        </div>
-      </div>
-    )
+    return <PageLoader />
   }
 
   return (

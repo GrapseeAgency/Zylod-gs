@@ -512,12 +512,12 @@ export function ProductMediaGalleryPage() {
                 />
                 {uploading ? (
                   <>
-                    <Loader2 className="w-8 h-8 text-primary mx-auto mb-2 animate-spin" />
+                    <Loader2 className="h-5 w-5 text-primary mx-auto mb-2 animate-spin" />
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Uploading…</p>
                   </>
                 ) : attaching ? (
                   <>
-                    <Loader2 className="w-8 h-8 text-primary mx-auto mb-2 animate-spin" />
+                    <Loader2 className="h-5 w-5 text-primary mx-auto mb-2 animate-spin" />
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Attaching to product…</p>
                   </>
                 ) : (

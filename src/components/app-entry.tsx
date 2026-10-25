@@ -8,6 +8,7 @@ import { loadPage, getChunkForPage } from '@/lib/page-loader'
 import type { GenericPageType } from '@/lib/page-loader'
 import { AppShell } from '@/components/layout/app-shell'
 import { SocialConsentModal } from '@/components/shared/social-consent-modal'
+import { PageLoader } from '@/components/ui/page-loader'
 
 // Lazy-loaded chunk loader — only loaded when a non-core page is requested
 let _chunkLoader: any = null
@@ -105,14 +106,7 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
   }, [pageId])
 
   if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-          <p className="text-sm text-gray-400 dark:text-gray-500">Loading...</p>
-        </div>
-      </div>
-    )
+    return <PageLoader />
   }
 
   if (error) {
@@ -171,11 +165,7 @@ function GenericPageRenderer({ genericType, pageId, pageParams }: { genericType:
   }, [genericType])
 
   if (loading || !Comp) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
+    return <PageLoader />
   }
 
   return <Comp key={pageId} pageId={pageId} pageParams={pageParams} />

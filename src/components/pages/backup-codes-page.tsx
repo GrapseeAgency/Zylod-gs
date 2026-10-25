@@ -8,17 +8,8 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { toast } from 'sonner'
-import {
-  ArrowLeft,
-  Bell,
-  ShieldCheck,
-  Download,
-  Copy,
-  AlertTriangle,
-  Check,
-  Loader2,
-} from 'lucide-react'
-
+import { ArrowLeft, Bell, ShieldCheck, Download, Copy, AlertTriangle, Check } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: (i: number) => ({
@@ -220,10 +211,7 @@ export function BackupCodesPage() {
       <Card className="rounded-xl shadow-md border-0 bg-white dark:bg-gray-900 py-0 gap-0">
         <CardContent className="p-5">
           {isLoading ? (
-            <div className="flex flex-col items-center gap-3 py-10">
-              <Loader2 className="w-7 h-7 text-primary animate-spin" />
-              <p className="text-sm text-[#6B7280] dark:text-gray-400">Generating secure codes...</p>
-            </div>
+            <PageLoader label="Generating secure codes…" />
           ) : loadError ? (
             <div className="flex flex-col items-center gap-3 py-8">
               <AlertTriangle className="w-7 h-7 text-primary" />

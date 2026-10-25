@@ -26,6 +26,7 @@ import {
   ShoppingBag,
   PackageCheck,
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /* ── Real API types (GET /api/rfq · GET /api/rfq/[id] · PATCH /api/rfq/[id]/quotes/[quoteId]) ── */
 
@@ -449,10 +450,7 @@ export function RfqListPage() {
 
         {/* ─── Loading / Error States ─── */}
         {isLoading && (
-          <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-primary animate-spin" />
-            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading requests...</p>
-          </div>
+          <PageLoader label="Loading requests…" />
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-8">

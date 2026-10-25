@@ -8,6 +8,7 @@ import {
   ArrowLeft, Globe, Check, Loader2, DollarSign, AlertCircle
 } from 'lucide-react'
 import type { CurrencyCode } from '@/store/currency-store'
+import { PageLoader } from '@/components/ui/page-loader'
 
 type LanguageId = 'bn' | 'en'
 
@@ -165,10 +166,7 @@ export function LanguageSettingsPage() {
                 )}
               </div>
               {loading ? (
-                <div className="flex items-center justify-center py-8 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  <span className="text-xs font-bold ml-2">Loading your saved language…</span>
-                </div>
+                <PageLoader label="Loading your saved language…" />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {languages.map((lang) => {

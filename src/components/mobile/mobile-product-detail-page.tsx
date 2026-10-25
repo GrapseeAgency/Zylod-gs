@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCartStore, type CartItemData } from '@/store/cart-store'
 import { useCurrencyStore } from '@/store/currency-store'
@@ -364,15 +364,7 @@ export function MobileProductDetailPage() {
   }, [product])
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 space-y-3">
-        <Skeleton className="h-80 w-full rounded-xl" />
-        <Skeleton className="h-8 w-3/4" />
-        <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-16 w-full" />
-      </div>
-    )
+    return <PageLoader />
   }
 
   if (!product) {

@@ -46,27 +46,6 @@ const itemVariants = {
   }),
 }
 
-/* ─── Google SVG icon ─── */
-function GoogleIcon() {
-  return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24">
-      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.28v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-    </svg>
-  )
-}
-
-/* ─── Facebook SVG icon ─── */
-function FacebookIcon() {
-  return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#1877F2">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-    </svg>
-  )
-}
-
 /* ─── Rate Limit Lockout Overlay ─── */
 function LockoutOverlay({ remainingMs }: { remainingMs: number }) {
   const seconds = Math.ceil(remainingMs / 1000)
@@ -281,13 +260,18 @@ export function LoginPage() {
     }
   }
 
-  /* ─── Social login handler ─── */
+  /* ─── Email quick sign-in handler ─── */
+  // Honest flow: our own dialog collects the email, then the exchange hits
+  // Zylod's own /api/auth/google account create/link endpoint (the
+  // "g-" providerId is the account-linking key the backend expects).
+  // No Google/Facebook service is contacted — the provider label is a
+  // server-route selector, not an identity claim.
   const handleSocialLogin = async (provider: SocialProvider) => {
     setError(null)
     setSocialLoading(provider)
 
     try {
-      // Step 1: provider consent — yields the verified account identity
+      // Step 1: our email dialog — yields the { email, name } identity
       const consent = await openProviderConsent(provider)
 
       if (!consent) {
@@ -347,7 +331,7 @@ export function LoginPage() {
         )
 
         toast.success('Welcome back!', {
-          description: `Signed in with ${provider === 'google' ? 'Google' : 'Facebook'}.`,
+          description: 'Signed in with your email.',
         })
 
         if (user.userType === 'supplier') {
@@ -359,7 +343,7 @@ export function LoginPage() {
         }
       }
     } catch {
-      setError('Social sign-in failed. Please try again.')
+      setError('Sign-in failed. Please try again.')
     } finally {
       setSocialLoading(null)
     }
@@ -596,40 +580,25 @@ export function LoginPage() {
         <motion.div variants={itemVariants} custom={3} className="flex items-center gap-3">
           <div className="flex-1 h-px bg-[#E0E0E0] dark:bg-gray-800" />
           <span className="text-xs font-medium text-[#6B7280] dark:text-gray-400 tracking-wider uppercase">
-            Or continue with
+            Or
           </span>
           <div className="flex-1 h-px bg-[#E0E0E0] dark:bg-gray-800" />
         </motion.div>
 
-        {/* ─── Social Login Buttons ─── */}
-        <motion.div variants={itemVariants} custom={4} className="flex gap-3">
+        {/* ─── Email quick sign-in button (Zylod's own server — NOT a
+            Google/Facebook sign-in; no third-party provider is contacted) ─── */}
+        <motion.div variants={itemVariants} custom={4}>
           <Button
             type="button"
             variant="outline"
             disabled={socialLoading !== null}
-            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 hover:bg-[#F8F9FA] dark:bg-gray-950 rounded-lg text-[#1A1A1A] dark:text-white font-medium text-sm shadow-sm disabled:opacity-60"
+            className="w-full h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 hover:bg-[#F8F9FA] dark:bg-gray-950 rounded-lg text-[#1A1A1A] dark:text-white font-medium text-sm shadow-sm disabled:opacity-60"
             onClick={() => handleSocialLogin('google')}
           >
-            {socialLoading === 'google' ? (
-              <span className="w-5 h-5 border-2 border-[#E0E0E0] dark:border-gray-800 border-t-[#4285F4] rounded-full animate-spin" />
-            ) : (
-              <GoogleIcon />
+            {socialLoading !== null && (
+              <span className="w-5 h-5 border-2 border-[#E0E0E0] dark:border-gray-800 border-t-primary rounded-full animate-spin" />
             )}
-            <span className="ml-2">Google</span>
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={socialLoading !== null}
-            className="flex-1 h-11 bg-white dark:bg-gray-900 border-[#E0E0E0] dark:border-gray-800 hover:bg-[#F8F9FA] dark:bg-gray-950 rounded-lg text-[#1A1A1A] dark:text-white font-medium text-sm shadow-sm disabled:opacity-60"
-            onClick={() => handleSocialLogin('facebook')}
-          >
-            {socialLoading === 'facebook' ? (
-              <span className="w-5 h-5 border-2 border-[#E0E0E0] dark:border-gray-800 border-t-[#1877F2] rounded-full animate-spin" />
-            ) : (
-              <FacebookIcon />
-            )}
-            <span className="ml-2">Facebook</span>
+            <span>Continue with Email</span>
           </Button>
         </motion.div>
 

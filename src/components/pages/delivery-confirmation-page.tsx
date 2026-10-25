@@ -307,7 +307,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
                   aria-label={`Rate ${star} star${star === 1 ? '' : 's'}`}
                 >
                   {ratingSubmitting && rating === star ? (
-                    <Loader2 className="h-7 w-7 text-slate-400 dark:text-slate-500 dark:text-slate-400 animate-spin" />
+                    <Loader2 className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400 animate-spin" />
                   ) : (
                     <Star
                       className={`h-7 w-7 ${

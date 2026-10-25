@@ -4,18 +4,8 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
-import {
-  ArrowLeft,
-  HelpCircle,
-  Award,
-  Star,
-  ChevronRight,
-  Building2,
-  Loader2,
-  AlertTriangle,
-  Package,
-} from 'lucide-react'
-
+import { ArrowLeft, HelpCircle, Award, Star, ChevronRight, Building2, AlertTriangle, Package } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 interface BrandEntry {
   name: string
   productCount: number
@@ -131,10 +121,7 @@ export function BrandShowcasePage() {
 
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
-          <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-primary animate-spin" />
-            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading brand directory...</p>
-          </div>
+          <PageLoader label="Loading brand directory…" />
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">

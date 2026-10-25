@@ -9,6 +9,7 @@ import {
   ArrowLeft, Search, MapPin, Star, BadgeCheck, Loader2, Warehouse,
   AlertCircle, Store, Package,
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /**
  * REAL pickup points — replaces the fabricated "Downtown Logistics Center
@@ -151,9 +152,7 @@ export function PickupPointPage() {
 
         {/* States */}
         {loading && (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
+          <PageLoader />
         )}
         {!loading && error && (
           <div className="rounded-3xl bg-white dark:bg-gray-900 border border-red-200 p-8 text-center space-y-3">

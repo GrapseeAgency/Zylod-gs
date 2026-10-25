@@ -8,7 +8,6 @@ import { SellerProfilePage } from './seller-profile-page'
 import { AdminProfilePage } from './admin-profile-page'
 import { StaffProfilePage } from './staff-profile-page'
 import { BuyerProfilePage } from './buyer-profile-page'
-import { Loader2 } from 'lucide-react'
 
 export function ProfilePage() {
   const { user, token } = useAuthStore()
@@ -49,10 +48,7 @@ export function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="text-xs font-bold">Loading Profile...</span>
-        </div>
+        <PageLoader label="Loading Profile…" className="min-h-0" />
       </div>
     )
   }
@@ -78,3 +74,4 @@ export function ProfilePage() {
 }
 
 export default ProfilePage
+import { PageLoader } from '@/components/ui/page-loader'

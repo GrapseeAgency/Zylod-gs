@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
+import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
@@ -210,21 +210,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
         )}
 
         {/* Loading */}
-        {loading && (
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3.5">
-              <Skeleton className="aspect-[16/9] w-full rounded-2xl" />
-              <Skeleton className="h-5 w-2/3" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-            {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 space-y-3">
-                <Skeleton className="h-4 w-1/3" />
-                <Skeleton className="h-4 w-2/3" />
-              </div>
-            ))}
-          </div>
-        )}
+        {loading && <PageLoader />}
 
         {/* Main Product Card */}
         {!loading && !error && product && (

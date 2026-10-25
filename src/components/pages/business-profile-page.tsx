@@ -106,10 +106,7 @@ export function BusinessProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="text-xs font-bold">Loading Business Profile...</span>
-        </div>
+        <PageLoader label="Loading Business Profile…" className="min-h-0" />
       </div>
     )
   }
@@ -305,3 +302,4 @@ export function BusinessProfilePage() {
 }
 
 export default BusinessProfilePage
+import { PageLoader } from '@/components/ui/page-loader'

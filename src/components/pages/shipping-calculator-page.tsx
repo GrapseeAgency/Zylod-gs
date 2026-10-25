@@ -243,8 +243,7 @@ export function ShippingCalculatorPage() {
         {/* Result — the zone book's real answer */}
         {loading && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
-            <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2">Asking the live zone book…</p>
+            <PageLoader label="Asking the live zone book…" className="min-h-0" />
           </div>
         )}
 
@@ -321,3 +320,4 @@ export function ShippingCalculatorPage() {
 }
 
 export default ShippingCalculatorPage
+import { PageLoader } from '@/components/ui/page-loader'

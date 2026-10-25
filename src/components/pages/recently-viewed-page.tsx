@@ -460,7 +460,7 @@ export function RecentlyViewedPage() {
           ))}
 
           <div ref={observerTarget} className="h-4 w-full flex justify-center py-4">
-            {loadingMore && <Loader2 className="w-6 h-6 animate-spin text-primary" />}
+            {loadingMore && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
           </div>
         </div>
       )}

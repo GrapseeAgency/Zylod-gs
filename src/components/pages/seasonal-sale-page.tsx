@@ -4,19 +4,8 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
-import {
-  ArrowLeft,
-  HelpCircle,
-  Sun,
-  Snowflake,
-  Leaf,
-  Flower2,
-  Sparkles,
-  ArrowRight,
-  Loader2,
-  AlertTriangle,
-} from 'lucide-react'
-
+import { ArrowLeft, HelpCircle, Sun, Snowflake, Leaf, Flower2, Sparkles, ArrowRight, AlertTriangle } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 interface SeasonalProduct {
   id: string
   name: string
@@ -154,10 +143,7 @@ export function SeasonalSalePage() {
         <h1 className="hidden md:block text-2xl font-black text-[#1A1A1A] dark:text-white tracking-tight">Seasonal Sale</h1>
         {/* ─── Loading / Error / Empty States ─── */}
         {isLoading && (
-          <div className="flex flex-col items-center gap-3 py-14">
-            <Loader2 className="w-7 h-7 text-primary animate-spin" />
-            <p className="text-sm text-[#6B7280] dark:text-gray-400">Gathering seasonal picks...</p>
-          </div>
+          <PageLoader label="Gathering seasonal picks…" />
         )}
         {!isLoading && loadError && (
           <div className="flex flex-col items-center gap-3 py-14">

@@ -6,16 +6,8 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
 import { toast } from 'sonner'
-import {
-  ArrowLeft,
-  HelpCircle,
-  Sun,
-  Zap,
-  Loader2,
-  AlertTriangle,
-  ShoppingCart,
-} from 'lucide-react'
-
+import { ArrowLeft, HelpCircle, Sun, Zap, AlertTriangle, ShoppingCart } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 interface DailyDeal {
   id: string
   productId: string
@@ -151,10 +143,7 @@ export function DailyDealsPage() {
 
         {/* ─── Loading State ─── */}
         {isLoading && (
-          <div className="flex flex-col items-center gap-3 py-16">
-            <Loader2 className="w-7 h-7 text-primary animate-spin" />
-            <p className="text-sm text-[#6B7280] dark:text-gray-400">Loading today&apos;s deals...</p>
-          </div>
+          <PageLoader label="Loading today's deals…" />
         )}
 
         {/* ─── Error / Empty States ─── */}

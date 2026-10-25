@@ -57,7 +57,8 @@ scope, not a permanent reduction.
 ### 1.2 Loading ownership (one owner per surface)
 
 - **Native screens** (Cart/PDP/auth): the Compose state machine owns
-  loading — skeleton → success / error + retry. Never a web spinner.
+  loading — one centered Material3 CircularProgressIndicator
+  (theme-colored) → success / error + retry. Never a web spinner.
 - **WebView surfaces** (`WebScreen`): the SPA's own loading UI is the ONLY
   loading owner once a shell is attached. The shell paints NO native
   spinner over it; the sole native loading surface is the pre-web bootstrap
@@ -98,14 +99,19 @@ scope, not a permanent reduction.
 
 ```
 com.zylod.wholesale/
-  MainActivity.kt              # legacy WebView shell (unchanged in Phase 0)
-  NativeMainActivity.kt        # Compose entry (launcher)
+  NativeMainActivity.kt        # Compose entry (launcher) — the ONE activity;
+                               # the legacy View-based WebView MainActivity.kt
+                               # is deleted (was never in the manifest)
   ui/theme/                    # Color.kt Type.kt Shape.kt Theme.kt  ← from design-tokens.md ONLY
   ui/nav/                      # ZylodRoot.kt: Scaffold + NavigationBar + NavHost
   ui/home/                     # REMOVED — native Home terminated by owner
-                               # directive; sources quarantined at
-                               # android/quarantine/native-home/. The home
-                               # tab root renders WebScreen(pageId="home").
+                               # directive. The former live sources are
+                               # quarantined at
+                               # android/quarantine/native-home-live/
+                               # (byte-identical to the original
+                               # android/quarantine/native-home/ pair, outside
+                               # every source set). The home tab root renders
+                               # WebScreen(pageId="home").
   ui/web/                      # WebScreen: Compose-hosted WebView (?page=<id>)
   data/api/                    # ApiClient (Retrofit + kotlinx.serialization), ZylodApi, DTOs
   data/session/                # SessionManager (token store + interceptor support)

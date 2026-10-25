@@ -9,6 +9,7 @@ import {
   ArrowLeft, CreditCard, Plus, Trash2, CheckCircle2,
   ShieldCheck, Check, Loader2, Lock, Building2
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface SavedCard {
   id: string
@@ -119,10 +120,7 @@ export function CreditDebitCardsPage() {
         {/* Cards List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
           {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              <span className="text-xs font-bold">Loading Saved Cards...</span>
-            </div>
+            <PageLoader label="Loading Saved Cards…" />
           ) : cards.length > 0 ? (
             cards.map((c) => (
               <div

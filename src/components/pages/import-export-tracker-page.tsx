@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
-  ArrowLeft, Factory, Ship, Satellite, Bell, FileText, Loader2,
-  RefreshCw, AlertCircle, Package, Boxes, CheckCircle2, Clock,
+  ArrowLeft, Factory, Ship, Satellite, Bell, FileText, RefreshCw, AlertCircle, Package, Boxes, CheckCircle2, Clock,
 } from 'lucide-react'
 
 /**
@@ -164,7 +163,7 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-900 dark:text-slate-100">
-        <Loader2 className="h-7 w-7 animate-spin text-primary" />
+        <PageLoader className="min-h-0" />
       </div>
     )
   }
@@ -335,3 +334,4 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
 }
 
 export default ImportExportTrackerPage
+import { PageLoader } from '@/components/ui/page-loader'

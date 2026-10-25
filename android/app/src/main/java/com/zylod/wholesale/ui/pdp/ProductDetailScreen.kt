@@ -50,6 +50,7 @@ import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -94,7 +95,6 @@ import com.zylod.wholesale.data.api.ProductDetailDto
 import com.zylod.wholesale.data.api.ReviewDto
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.ui.components.InfoTile
-import com.zylod.wholesale.ui.components.SkeletonBox
 import com.zylod.wholesale.ui.components.StarRow
 import com.zylod.wholesale.ui.theme.LocalZylodExtra
 import java.text.NumberFormat
@@ -172,7 +172,7 @@ fun ProductDetailScreen(
             )
 
             when {
-                state.loading -> PdpSkeleton()
+                state.loading -> PdpLoading()
                 state.error != null -> PdpError(state.error.orEmpty()) { vm.load(productId) }
                 product != null -> LazyColumn(
                     state = listState,
@@ -830,7 +830,7 @@ private fun TabsSection(product: ProductDetailDto, specifications: Map<String, S
                     PdpTab.DETAILS -> DetailsTab(product)
                     PdpTab.SPECS -> SpecsTab(specifications)
                     PdpTab.REVIEWS -> ReviewsTab(product)
-                    PdpTab.QA -> QaTab(product)
+                    PdpTab.QA -> QaTab()
                 }
             }
         }
@@ -1007,10 +1007,11 @@ private fun ReviewCard(review: ReviewDto) {
     }
 }
 
-/** Q&A — the /qa sub-fetch is optional and not wired in Phase 1 (spec §3.9);
- *  the supplier storefront remains the question channel. */
+/** Q&A — declared feature gap: the /qa sub-fetch is not wired in the native
+ *  app yet (the ViewModel never fetches Q&A, so no negative "no questions"
+ *  claim is made). The web PDP remains the question channel. */
 @Composable
-private fun QaTab(product: ProductDetailDto) {
+private fun QaTab() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -1024,13 +1025,13 @@ private fun QaTab(product: ProductDetailDto) {
             modifier = Modifier.size(30.dp),
         )
         Text(
-            "No published questions yet.",
+            "Q&A isn't available in the app yet",
             fontSize = 12.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp),
         )
         Text(
-            "Ask about ${product.name} from the supplier's storefront.",
+            "Browse this product on the Zylod website to read and post buyer questions.",
             fontSize = 11.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -1173,20 +1174,19 @@ private fun StickyBuyBar(state: PdpUiState, vm: ProductDetailViewModel) {
     }
 }
 
-/** PDP skeleton mirroring MobileProductDetailPage L175-185 (loading-skeletons):
- *  gallery block, title line, subtitle line, info card, action card. */
+/** PDP loading state — the ONE native loading animation: Material3
+ *  CircularProgressIndicator (theme-colored by default), same centered Box
+ *  pattern as the WebScreen bootstrap loader (WebScreen.kt). Replaces the
+ *  former shimmer skeleton (PdpSkeleton/SkeletonBox, removed). */
 @Composable
-private fun PdpSkeleton() {
-    Column(Modifier.fillMaxSize().padding(16.dp)) {
-        SkeletonBox(Modifier.fillMaxWidth().aspectRatio(1f), corner = 12)
-        Spacer(Modifier.height(14.dp))
-        SkeletonBox(Modifier.fillMaxWidth(0.75f).height(26.dp))
-        Spacer(Modifier.height(10.dp))
-        SkeletonBox(Modifier.fillMaxWidth(0.5f).height(14.dp))
-        Spacer(Modifier.height(16.dp))
-        SkeletonBox(Modifier.fillMaxWidth().height(96.dp), corner = 12)
-        Spacer(Modifier.height(12.dp))
-        SkeletonBox(Modifier.fillMaxWidth().height(64.dp), corner = 12)
+private fun PdpLoading() {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
     }
 }
 

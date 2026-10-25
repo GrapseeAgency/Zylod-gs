@@ -3,12 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigationStore } from '@/store/navigation-store';
-import {
-  ArrowLeft, Loader2, Filter, ShoppingCart, PackageCheck, PackageX,
-  Truck, Undo2, XCircle, Inbox, Percent,
-} from 'lucide-react';
+import { ArrowLeft, Filter, ShoppingCart, PackageCheck, PackageX, Truck, Undo2, XCircle, Inbox, Percent } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface PerformanceData {
   orders: {
@@ -103,9 +101,7 @@ export function SellerSalesFunnelPagePage() {
         <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Sales funnel</h1>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <PageLoader />
         ) : authRequired ? (
           <Card className="border-none shadow-sm dark:bg-gray-800">
             <CardContent className="p-8 text-center space-y-3">

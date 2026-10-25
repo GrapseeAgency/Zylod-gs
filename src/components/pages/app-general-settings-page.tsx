@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useToast } from '@/hooks/use-toast'
+import { PageLoader } from '@/components/ui/page-loader'
 
 type AuthState = 'loading' | 'anon' | 'forbidden' | 'admin'
 
@@ -91,7 +92,7 @@ export function AppGeneralSettingsPage() {
   if (authState === 'loading') {
     return (
       <div className="container mx-auto px-4 py-12 max-w-3xl flex justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <PageLoader className="min-h-0" />
       </div>
     )
   }

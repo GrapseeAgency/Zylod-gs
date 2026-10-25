@@ -14,8 +14,9 @@
  * supplier never self-nominates). If the read fails or returns nothing, the
  * empty state says exactly that. No fabricated form, no dead Submit button.
  */
+import { PageLoader } from '@/components/ui/page-loader'
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, Tag, Loader2, AlertCircle, Sparkles, ExternalLink } from 'lucide-react'
+import { ArrowLeft, Tag, AlertCircle, Sparkles, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -140,9 +141,7 @@ export function SellerFlashSaleNominationPage() {
           </h2>
 
           {loading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
+            <PageLoader />
           ) : error ? (
             <Card className="rounded-2xl border shadow-sm">
               <CardContent className="p-5 flex items-start gap-3 text-xs">

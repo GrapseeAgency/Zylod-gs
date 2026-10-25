@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
-import { ArrowLeft, LayoutGrid, List, ArrowDownUp, Filter, Star, ShoppingCart, Heart, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, LayoutGrid, List, ArrowDownUp, Filter, Star, ShoppingCart, Heart, ShieldCheck } from 'lucide-react'
 import { motion } from 'framer-motion';
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface Product {
   id: string;
@@ -152,7 +153,7 @@ export function FavoriteProductsPage() {
       {/* Content */}
       <main className="flex-1 p-4 md:p-6 md:max-w-6xl md:mx-auto w-full">
         {loading ? (
-          <div className="flex justify-center py-10"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+          <PageLoader />
         ) : products.length === 0 ? (
           <div className="text-center py-20 text-gray-500 dark:text-gray-400 dark:text-gray-500 flex flex-col items-center">
             <Heart className="w-16 h-16 mb-4 text-gray-300" />

@@ -4,17 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
-import {
-  ArrowLeft,
-  HelpCircle,
-  TrendingUp,
-  Users,
-  Package,
-  ArrowRight,
-  Loader2,
-  AlertTriangle,
-} from 'lucide-react'
-
+import { ArrowLeft, HelpCircle, TrendingUp, Users, Package, ArrowRight, AlertTriangle } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 interface TrendingProduct {
   id: string
   name: string
@@ -115,10 +106,7 @@ export function TrendingProductsPage() {
       <div className="max-w-md mx-auto px-4 mt-5 space-y-4 md:max-w-2xl md:px-6 md:py-6">
         {/* ─── Loading State ─── */}
         {isLoading && (
-          <div className="flex flex-col items-center gap-3 py-16">
-            <Loader2 className="w-7 h-7 text-primary animate-spin" />
-            <p className="text-sm text-[#6B7280] dark:text-gray-400">Ranking top movers...</p>
-          </div>
+          <PageLoader label="Ranking top movers…" />
         )}
 
         {/* ─── Error / Empty States ─── */}

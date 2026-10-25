@@ -5,18 +5,8 @@ import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useWishlistStore } from '@/store/wishlist-store'
-import {
-  ArrowLeft,
-  HelpCircle,
-  Search,
-  QrCode,
-  Heart,
-  Star,
-  Loader2,
-  AlertTriangle,
-  ShieldCheck,
-} from 'lucide-react'
-
+import { ArrowLeft, HelpCircle, Search, QrCode, Heart, Star, AlertTriangle, ShieldCheck } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 interface ExploreProduct {
   id: string
   name: string
@@ -233,10 +223,7 @@ export function ExplorePage() {
 
           {/* Loading / Error / Empty States */}
           {isLoading && (
-            <div className="flex flex-col items-center gap-3 py-14">
-              <Loader2 className="w-7 h-7 text-primary animate-spin" />
-              <p className="text-sm text-[#6B7280] dark:text-gray-400">Finding picks for you...</p>
-            </div>
+            <PageLoader label="Finding picks for you…" />
           )}
           {!isLoading && loadError && (
             <div className="flex flex-col items-center gap-3 py-14">

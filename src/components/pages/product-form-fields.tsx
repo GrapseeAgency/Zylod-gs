@@ -966,7 +966,7 @@ export function ProductFormFields(props: ProductFormFieldsProps) {
                 <div key={`${img.fileName}-${index}`} className="relative group">
                   <div className="aspect-square bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
                     {img.status === 'uploading' ? (
-                      <Loader2 className="w-6 h-6 text-gray-400 dark:text-gray-500 animate-spin" aria-label={`Uploading ${img.fileName}`} />
+                      <Loader2 className="h-5 w-5 text-gray-400 dark:text-gray-500 animate-spin" aria-label={`Uploading ${img.fileName}`} />
                     ) : img.status === 'error' ? (
                       <span className="text-[10px] text-red-600 text-center px-1" title={img.error}>Failed — remove &amp; retry</span>
                     ) : (

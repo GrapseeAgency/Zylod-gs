@@ -9,6 +9,7 @@ import {
   ArrowLeft, Sun, Moon, Laptop2, Eye, Activity,
   Check, Loader2, Layers, Sliders, AlertCircle
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -163,10 +164,7 @@ export function ThemeSettingsPage() {
                 )}
               </div>
               {loading ? (
-                <div className="flex items-center justify-center py-8 text-slate-400 dark:text-slate-500 dark:text-slate-400">
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  <span className="text-xs font-bold ml-2">Loading your saved theme…</span>
-                </div>
+                <PageLoader label="Loading your saved theme…" />
               ) : (
                 <div className="grid grid-cols-2 gap-2.5">
                   {options.map(({ key, label, desc, icon: Icon }) => {

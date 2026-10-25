@@ -9,8 +9,9 @@
  * and supplierCount as computed by the server), with an honest empty state
  * when the catalog is empty. No fabricated counts ever again.
  */
+import { PageLoader } from '@/components/ui/page-loader'
 import React, { useEffect, useState } from 'react'
-import { ArrowLeft, Sparkles, Loader2, Package, Building2, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Sparkles, Package, Building2, AlertCircle } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
@@ -77,9 +78,7 @@ export function PageSuggestionsPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <PageLoader />
       ) : error ? (
         <Card className="rounded-2xl border shadow-sm">
           <CardContent className="p-6 flex items-start gap-3 text-sm text-muted-foreground">

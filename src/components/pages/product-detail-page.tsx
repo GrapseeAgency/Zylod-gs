@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PageLoader } from '@/components/ui/page-loader'
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
@@ -231,6 +232,21 @@ interface ProductData {
     (nullable schema column); null falls back to this platform default. */
 const LOW_STOCK_THRESHOLD_DEFAULT = 5
 
+/* ─── t187-d: one row of GET /api/delivery-methods (admin-curated couriers).
+    The old block hardcoded four invented couriers on every PDP; now the rail
+    renders ONLY what the admin actually configured, and renders nothing at
+    all when the list is empty or the fetch fails. */
+interface DeliveryMethodRow {
+  id: string
+  name: string
+  description: string | null
+  estimated_delivery: string | null
+  price: number
+  badge: string | null
+  badge_variant: string
+  icon: string
+}
+
 function getStockStatus(stock: number, maxStock: number, threshold: number = LOW_STOCK_THRESHOLD_DEFAULT) {
   const ratio = maxStock > 0 ? stock / maxStock : 0
   if (stock === 0) return { label: 'Out of Stock', color: 'text-red-600', bg: 'bg-red-50', barColor: 'bg-red-500', urgency: false }
@@ -264,11 +280,7 @@ export function ProductDetailPage() {
   const isMobile = useIsMobile()
 
   if (isMobile === undefined) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    )
+    return <PageLoader />
   }
 
   if (isMobile) {
@@ -300,6 +312,24 @@ function DesktopProductDetailPage() {
   const [wishlist, setWishlist] = useState(false)
   const [wishlistLoading, setWishlistLoading] = useState(false)
   const [quantityError, setQuantityError] = useState(false)
+
+  // t187-d: real admin-curated delivery methods for the "Our Delivery
+  // Partners" block. Platform config, not product data — fetched once.
+  // Empty list or failed fetch ⇒ the block renders NOTHING (never invented
+  // courier names).
+  const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethodRow[]>([])
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/delivery-methods')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!cancelled && j?.success && Array.isArray(j.data)) {
+          setDeliveryMethods(j.data as DeliveryMethodRow[])
+        }
+      })
+      .catch(() => { /* honest no-op: block stays hidden without real data */ })
+    return () => { cancelled = true }
+  }, [])
 
   // Buy Now / Order tracking state
   const [buyNowLoading, setBuyNowLoading] = useState(false)
@@ -1693,26 +1723,35 @@ function DesktopProductDetailPage() {
                   ))}
                 </div>
 
-                {/* Delivery Partners Info */}
-                <div className="mt-6 p-4 rounded-lg bg-muted">
-                  <h4 className="font-semibold text-sm flex items-center gap-1.5 mb-3">
-                    <Truck className="h-4 w-4 text-[primary]" /> Our Delivery Partners
-                  </h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {[
-                      { name: 'Bengal Express', type: 'Truck', area: 'Nationwide' },
-                      { name: 'Pathao Logistics', type: 'Van & Bike', area: 'Dhaka & CTG' },
-                      { name: 'eCourier BD', type: 'Mini Truck', area: 'Major Cities' },
-                      { name: 'RedX Bangladesh', type: 'Cargo', area: 'All Divisions' },
-                    ].map((partner) => (
-                      <div key={partner.name} className="text-center p-2 rounded-md bg-background">
-                        <p className="font-medium text-xs">{partner.name}</p>
-                        <p className="text-[10px] text-muted-foreground">{partner.type}</p>
-                        <Badge variant="secondary" className="text-[9px] mt-1">{partner.area}</Badge>
-                      </div>
-                    ))}
+                {/* Delivery Partners Info — t187-d: ONLY the admin-curated
+                    delivery methods from /api/delivery-methods. When none are
+                    configured (or the fetch fails) this block renders nothing
+                    — never a hardcoded courier list. */}
+                {deliveryMethods.length > 0 && (
+                  <div className="mt-6 p-4 rounded-lg bg-muted">
+                    <h4 className="font-semibold text-sm flex items-center gap-1.5 mb-3">
+                      <Truck className="h-4 w-4 text-[primary]" /> Delivery Options
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {deliveryMethods.slice(0, 4).map((method) => (
+                        <div key={method.id} className="text-center p-2 rounded-md bg-background">
+                          <p className="font-medium text-xs">{method.name}</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            {method.description || method.estimated_delivery || '\u00A0'}
+                          </p>
+                          <div className="mt-1 flex items-center justify-center gap-1 flex-wrap">
+                            {method.price > 0 && (
+                              <span className="text-[10px] font-bold">{formatPrice(method.price)}</span>
+                            )}
+                            {method.badge && (
+                              <Badge variant="secondary" className="text-[9px]">{method.badge}</Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* What You Get After Purchase */}
                 <div className="mt-4 p-4 rounded-lg border border-dashed border-[primary]/30">
@@ -1921,7 +1960,7 @@ function DesktopProductDetailPage() {
                   </div>
                 ) : (
                   <div className="flex items-center justify-center py-6">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                     <span className="ml-2 text-sm text-muted-foreground">Loading tracking...</span>
                   </div>
                 )}

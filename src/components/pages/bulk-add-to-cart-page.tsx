@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, CheckSquare, Square, ShoppingCart, Info } from 'lucide-react'
+import { ArrowLeft, CheckSquare, Square, ShoppingCart, Info, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useNavigationStore } from '@/store/navigation-store'
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface BulkResult {
   productId?: string
@@ -205,9 +206,7 @@ export function BulkAddToCartPage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center p-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
+          <PageLoader />
         ) : (
           <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:grid-cols-3">
             {items.map((item) => (
@@ -279,7 +278,7 @@ export function BulkAddToCartPage() {
           className="w-full py-3 bg-primary text-white font-medium rounded-lg disabled:opacity-50 disabled:bg-gray-300 disabled:text-gray-500 dark:text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2"
         >
           {adding ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>
               <ShoppingCart className="w-5 h-5" />

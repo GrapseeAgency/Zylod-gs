@@ -8,22 +8,41 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  ArrowLeft, Gem, Sparkles, Clock, ShoppingBag,
-  TrendingDown, ShieldCheck, ChevronRight
+  ArrowLeft, Gem, Sparkles, Clock, ShoppingBag
 } from 'lucide-react'
+
+/* t187-d: the REAL deal row — everything comes from /api/deals/exclusive,
+   which serves only live promotion campaigns joined to live products. No
+   invented VIP tier, factory name, or countdown exists anymore. */
+interface ExclusiveDeal {
+  id: string
+  productId: string
+  name: string
+  slug: string
+  thumbnailUrl: string | null
+  supplierName: string | null
+  regularPriceBDT: number
+  dealPriceBDT: number | null
+  promotionName: string
+  promotionType: string
+  minOrderAmount: number | null
+  validUntil: string
+  moq: number
+  stockAvailable: number
+}
 
 export function ExclusiveDealsPage() {
   const { navigate, goBack } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
 
-  const [deals, setDeals] = useState<any[]>([])
+  const [deals, setDeals] = useState<ExclusiveDeal[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetch('/api/deals/exclusive')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.data) {
+        if (data.success && Array.isArray(data.data)) {
           setDeals(data.data)
         }
       })
@@ -59,11 +78,11 @@ export function ExclusiveDealsPage() {
         <div className="bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 rounded-3xl p-5 md:p-6 text-slate-950 shadow-xl space-y-1.5 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
           <div className="space-y-1.5">
             <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
-              <Sparkles className="w-4 h-4" /> Tier Member Special Allocations
+              <Sparkles className="w-4 h-4" /> Live Supplier Promotions
             </div>
-            <h2 className="text-base sm:text-lg md:text-2xl font-black">Direct-From-Mill Factory Clearances</h2>
+            <h2 className="text-base sm:text-lg md:text-2xl font-black">Active Wholesale Campaigns</h2>
             <p className="text-xs text-slate-900 dark:text-slate-100">
-              Exclusive wholesale export lots unlocked exclusively for Silver, Gold, and Platinum tier verified accounts.
+              Time-boxed promotions from real suppliers — pricing comes straight from each campaign&apos;s actual terms, applied again at checkout.
             </p>
           </div>
 
@@ -90,45 +109,67 @@ export function ExclusiveDealsPage() {
               No exclusive deals active at this moment.
             </div>
           ) : (
-            deals.map(deal => (
+            deals.map(deal => {
+              // Real countdown from the campaign's actual end time.
+              const msLeft = new Date(deal.validUntil).getTime() - Date.now()
+              const hoursLeft = Math.floor(msLeft / 3600000)
+              const realSaving = deal.dealPriceBDT != null
+                ? deal.regularPriceBDT - deal.dealPriceBDT
+                : 0
+              return (
               <div
                 key={deal.id}
                 onClick={() => navigate('product-detail', { id: deal.productId })}
                 className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-4 space-y-3 shadow-sm hover:border-amber-400 transition cursor-pointer flex flex-col justify-between"
               >
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Badge className="bg-amber-400/10 text-amber-600 dark:text-amber-400 border border-amber-400/30 text-[10px] uppercase font-bold">
-                      {deal.requiredTier} Tier
+                  <div className="flex items-center justify-between gap-2">
+                    <Badge className="bg-amber-400/10 text-amber-600 dark:text-amber-400 border border-amber-400/30 text-[10px] uppercase font-bold max-w-full whitespace-normal">
+                      {deal.promotionName}
                     </Badge>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> Ends in {deal.expiresInHours}h
-                    </span>
+                    {msLeft > 0 && (
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1 shrink-0">
+                        <Clock className="w-3 h-3" /> Ends in {Math.max(1, hoursLeft)}h
+                      </span>
+                    )}
                   </div>
 
-                  <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-200 dark:bg-slate-700">
-                    <img
-                      src={deal.thumbnailUrl || 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=400&q=80'}
-                      alt={deal.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+                    {/* t187-d: neutral icon placeholder — no invented stock photo */}
+                    {deal.thumbnailUrl ? (
+                      <img
+                        src={deal.thumbnailUrl}
+                        alt={deal.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <ShoppingBag className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+                    )}
                   </div>
 
                   <div>
                     <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white line-clamp-2">{deal.name}</h3>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500">MOQ: {deal.moq} Units</p>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">
+                      {deal.supplierName ? `${deal.supplierName} · ` : ''}MOQ: {deal.moq} Units
+                    </p>
                   </div>
                 </div>
 
                 <div className="pt-2 border-t border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
                   <div>
                     <div className="flex items-baseline gap-1.5">
-                      <span className="text-base font-black text-amber-600 dark:text-amber-400">{formatPrice(deal.vipPriceBDT)}</span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 line-through">{formatPrice(deal.regularPriceBDT)}</span>
+                      <span className="text-base font-black text-amber-600 dark:text-amber-400">
+                        {formatPrice(deal.dealPriceBDT ?? deal.regularPriceBDT)}
+                      </span>
+                      {realSaving > 0 && (
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 line-through">{formatPrice(deal.regularPriceBDT)}</span>
+                      )}
                     </div>
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                      Save {formatPrice(deal.savingsPerUnitBDT)}/unit
-                    </span>
+                    {realSaving > 0 && (
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                        Save {formatPrice(realSaving)}/unit
+                      </span>
+                    )}
                   </div>
 
                   <Button
@@ -139,7 +180,8 @@ export function ExclusiveDealsPage() {
                   </Button>
                 </div>
               </div>
-            ))
+              )
+            })
           )}
         </div>
       </div>

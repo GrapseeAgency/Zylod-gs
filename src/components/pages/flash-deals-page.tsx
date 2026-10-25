@@ -6,15 +6,8 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
 import { toast } from 'sonner'
-import {
-  ArrowLeft,
-  HelpCircle,
-  ShoppingCart,
-  Zap,
-  Loader2,
-  AlertTriangle,
-} from 'lucide-react'
-
+import { ArrowLeft, HelpCircle, ShoppingCart, Zap, AlertTriangle } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 interface FlashDeal {
   id: string
   productId: string
@@ -183,10 +176,7 @@ export function FlashDealsPage() {
 
         {/* ─── Loading State ─── */}
         {isLoading && (
-          <div className="flex flex-col items-center gap-3 py-16">
-            <Loader2 className="w-7 h-7 text-[#FF4D6D] animate-spin" />
-            <p className="text-sm text-gray-400 dark:text-gray-500">Loading live deals...</p>
-          </div>
+          <PageLoader label="Loading live deals…" />
         )}
 
         {/* ─── Error / Empty States ─── */}

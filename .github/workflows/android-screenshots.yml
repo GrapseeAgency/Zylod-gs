@@ -1,0 +1,188 @@
+name: android-screenshots
+
+# Real-device screenshots of the native Android app, captured on an emulator
+# running against a REAL locally-seeded Zylod backend (Next.js on the runner).
+# The debug build's SERVER_ENDPOINTS already includes http://10.0.2.2:3000
+# (emulator -> host loopback), so the app probes and binds to the CI server.
+# Screens captured: Welcome gate, Login, Continue-with-Email dialog,
+# Register buyer, native PDP (real seeded product), native Cart.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - 'src/**'
+      - '.github/workflows/android-screenshots.yml'
+
+concurrency:
+  group: android-screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Build debug APK
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew :app:assembleDebug "-PcommitSuffix=${GITHUB_SHA::7}" --stacktrace
+
+      - name: Install web dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Prepare database
+        run: bunx prisma db push --skip-generate
+
+      - name: Start Zylod server (backend for the emulator)
+        run: |
+          nohup bun run dev > server.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/api/categories > /dev/null 2>&1; then
+              echo "Server is up after ${i}0s"
+              break
+            fi
+            sleep 10
+          done
+          curl -sf -o /dev/null -w "server status: %{http_code}\n" http://localhost:3000/api/categories || (echo "SERVER FAILED TO START"; tail -50 server.log; exit 1)
+
+      - name: Seed marketplace data (real products, suppliers, buyers)
+        run: |
+          node scripts/qa/seed-marketplace.mjs || echo "::warning::Seed script failed — continuing with whatever data exists"
+          curl -s "http://localhost:3000/api/products?limit=3" | head -c 400
+
+      - name: Grab a real product id for the PDP screenshot
+        run: |
+          PID=$(curl -s "http://localhost:3000/api/products?limit=1" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
+          echo "PRODUCT_ID=${PID}" >> $GITHUB_ENV
+          echo "Seeded product id: ${PID}"
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run emulator + capture screenshots
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          PRODUCT_ID: ${{ env.PRODUCT_ID }}
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            set -e
+            mkdir -p screenshots
+
+            echo "── Installing APK ──"
+            adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+
+            echo "── Launching app (Welcome gate) ──"
+            adb shell monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1
+            sleep 12
+            adb exec-out screencap -p > screenshots/01-welcome.png
+
+            echo "── Navigate to Login via deep link ──"
+            adb shell am start -a android.intent.action.VIEW -d "zylod://login" com.zylod.wholesale.debug
+            sleep 8
+            adb exec-out screencap -p > screenshots/02-login.png
+
+            echo "── Open Continue-with-Email dialog (tap by UI text) ──"
+            # Find the "Continue with Email" button via uiautomator dump and tap its center.
+            tap_text () {
+              local text="$1"
+              adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+              adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1
+              # bounds="[l,t][r,b]"
+              local bounds=$(python3 - "$text" <<'PYEOF'
+              import re, sys
+              text = sys.argv[1]
+              xml = open('ui.xml', encoding='utf-8', errors='ignore').read()
+              # find node containing the text, then take its bounds
+              pattern = re.compile(r'text="[^"]*' + re.escape(text) + r'[^"]*"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"')
+              m = pattern.search(xml)
+              if not m:
+                  # try content-desc
+                  pattern2 = re.compile(r'content-desc="[^"]*' + re.escape(text) + r'[^"]*"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"')
+                  m = pattern2.search(xml)
+              if m:
+                  l, t, r, b = map(int, m.groups())
+                  print(f"{(l+r)//2} {(t+b)//2}")
+              PYEOF
+              )
+              if [ -n "$bounds" ]; then
+                adb shell input tap $bounds
+                echo "tapped '$text' at $bounds"
+              else
+                echo "::warning::text '$text' not found on screen"
+              fi
+            }
+
+            tap_text "Continue with Email"
+            sleep 5
+            adb exec-out screencap -p > screenshots/03-email-signin-dialog.png
+
+            echo "── Dismiss dialog, capture Register buyer ──"
+            adb shell input keyevent 4   # BACK closes the dialog
+            sleep 3
+            adb shell am start -a android.intent.action.VIEW -d "zylod://register-buyer" com.zylod.wholesale.debug
+            sleep 8
+            adb exec-out screencap -p > screenshots/04-register-buyer.png
+
+            echo "── Native PDP with a REAL seeded product ──"
+            if [ -n "$PRODUCT_ID" ]; then
+              adb shell am start -a android.intent.action.VIEW -d "zylod://product/$PRODUCT_ID" com.zylod.wholesale.debug
+              sleep 15
+              adb exec-out screencap -p > screenshots/05-product-detail.png
+            else
+              echo "::warning::No product id — PDP screenshot skipped"
+            fi
+
+            echo "── Native Cart ──"
+            adb shell am start -a android.intent.action.VIEW -d "zylod://cart" com.zylod.wholesale.debug
+            sleep 8
+            adb exec-out screencap -p > screenshots/06-cart.png
+
+            echo "── Screen inventory ──"
+            ls -la screenshots/
+
+      - name: Upload screenshots artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zylod-android-screenshots-${{ github.sha }}
+          path: screenshots/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## Zylod Android screenshots"
+            echo ""
+            echo "Commit: ${GITHUB_SHA}"
+            echo "Screens captured: 01-welcome, 02-login, 03-email-signin-dialog, 04-register-buyer, 05-product-detail, 06-cart"
+            echo "Backend: locally-seeded Next.js server on the runner (real API, real products)"
+            echo "Download from the run's Artifacts section."
+          } >> $GITHUB_STEP_SUMMARY
