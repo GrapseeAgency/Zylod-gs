@@ -57,6 +57,9 @@ jobs:
           echo 'DATABASE_URL="file:../db/custom.db"' > .env
           bunx prisma db push --skip-generate
 
+      - name: Generate web bundle identity (provenance gate requirement)
+        run: node scripts/generate-bundle-identity.mjs
+
       - name: Start Zylod server (backend for the emulator)
         run: |
           nohup bun run dev > server.log 2>&1 &

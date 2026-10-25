@@ -56,6 +56,9 @@ jobs:
           console.log('page ids:', ids.size);
           "
 
+      - name: Generate web bundle identity (provenance gate requirement)
+        run: node scripts/generate-bundle-identity.mjs
+
       - name: Start Zylod server
         run: |
           nohup bun run dev > server.log 2>&1 &
