@@ -125,7 +125,7 @@ export function WishlistDetailPage() {
       <div className="mt-14 md:mt-0 bg-white dark:bg-gray-900 border-b">
         <div className="aspect-square bg-gray-100 dark:bg-gray-900 relative">
           <img 
-            src={item.product.images[0]?.url || '/placeholder.png'} 
+            src={item.product.images[0]?.url || '/placeholder.svg'}
             alt={item.product.name}
             className="w-full h-full object-cover"
           />

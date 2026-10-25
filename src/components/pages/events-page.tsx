@@ -19,15 +19,21 @@ export function EventsPage() {
   const { navigate } = useNavigationStore()
   const [events, setEvents] = useState<TradeEvent[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const fetchEvents = () => {
     setLoading(true)
+    setError(null)
     fetch('/api/events')
       .then(res => res.json())
       .then(data => {
-        if (data.success && Array.isArray(data.data)) setEvents(data.data)
+        if (data.success && Array.isArray(data.data)) {
+          setEvents(data.data)
+        } else {
+          setError(data?.error || 'Could not load trade events')
+        }
       })
-      .catch(() => {})
+      .catch(() => setError('Could not load trade events. Check your connection and try again.'))
       .finally(() => setLoading(false))
   }
 
@@ -54,6 +60,20 @@ export function EventsPage() {
       <main className="px-4 py-6 md:px-6 md:py-8 max-w-3xl mx-auto md:max-w-5xl w-full">
         {loading ? (
           <PageLoader className="min-h-0 py-12" />
+        ) : error ? (
+          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <CalendarDays className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{error}</h3>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchEvents}
+              className="mt-4 text-xs font-semibold text-primary border-primary hover:bg-primary/5 gap-1.5"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              Try Again
+            </Button>
+          </div>
         ) : events.length === 0 ? (
           <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
             <CalendarDays className="h-12 w-12 mx-auto text-slate-300 mb-3" />

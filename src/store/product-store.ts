@@ -116,7 +116,7 @@ function mapApiProduct(api: ApiProduct): Product {
       ? api.images.map((img) => img.imageUrl ?? img.url ?? '').filter((u) => u !== '')
       : api.thumbnailUrl
         ? [api.thumbnailUrl]
-        : ['/images/placeholder.png'],
+        : ['/placeholder-product.svg'],
     rating: api.ratingAvg,
     soldCount: api.soldCount,
     isCustomizable: api.isCustomizable,

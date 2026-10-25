@@ -16,7 +16,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -134,6 +133,7 @@ export function ProductShareDialog({
   className,
 }: ProductShareDialogProps) {
   const [copied, setCopied] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
   const { formatPrice, currentCurrency } = useCurrencyStore()
 
   const productUrl = getShareUrl(productId)
@@ -163,18 +163,40 @@ export function ProductShareDialog({
     }
   }, [productUrl])
 
+  // Prefer the native Web Share API when available (e.g. mobile browsers / WebViews);
+  // fall back to clipboard + toast, and finally open the full dialog.
+  const handleTriggerClick = useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: productName, text: shareText, url: productUrl })
+        return
+      } catch (err) {
+        if (err && typeof err === 'object' && (err as DOMException).name === 'AbortError') return
+      }
+      try {
+        await navigator.clipboard.writeText(productUrl)
+        toast.success('Link copied to clipboard!', { description: productUrl, duration: 3000 })
+        return
+      } catch {
+        // clipboard unavailable — open the dialog which has an execCommand fallback
+      }
+    }
+    setOpen(true)
+  }, [productName, shareText, productUrl])
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn('h-8 w-8 rounded-md hover:bg-red-50', className)}
-          aria-label="Share this product"
-        >
-          <Share2 className="h-4 w-4 text-primary" />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Button
+        variant="ghost"
+        size="icon"
+        className={cn('h-8 w-8 rounded-md hover:bg-red-50', className)}
+        aria-label="Share this product"
+        onClick={handleTriggerClick}
+      >
+        <Share2 className="h-4 w-4 text-primary" />
+      </Button>
       <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

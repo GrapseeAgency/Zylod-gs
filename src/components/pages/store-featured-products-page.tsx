@@ -269,7 +269,7 @@ export function StoreFeaturedProductsPage() {
                   </div>
 
                   <img
-                    src={product.thumbnailUrl || '/placeholder.png'}
+                    src={product.thumbnailUrl || '/placeholder-product.svg'}
                     alt={product.name}
                     className="w-14 h-14 object-cover rounded-lg bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shrink-0"
                   />
@@ -325,7 +325,7 @@ export function StoreFeaturedProductsPage() {
                   >
                     <CardContent className="p-3 flex items-center gap-3">
                       <img
-                        src={product.thumbnailUrl || '/placeholder.png'}
+                        src={product.thumbnailUrl || '/placeholder-product.svg'}
                         alt={product.name}
                         className="w-14 h-14 object-cover rounded-lg bg-neutral-200 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shrink-0"
                       />

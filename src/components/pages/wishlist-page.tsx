@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { ArrowLeft, Share2, Heart, Search, MoreVertical, Trash2, ShoppingCart, Info, CheckSquare, Square } from 'lucide-react'
+import { ArrowLeft, Share2, Heart, Search, MoreVertical, Trash2, ShoppingCart, Info, CheckSquare, Square, LogIn } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCartStore } from '@/store/cart-store'
@@ -28,6 +28,7 @@ export function WishlistPage() {
   const [items, setItems] = useState<WishlistItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [needsAuth, setNeedsAuth] = useState(false)
   
   const [activeTab, setActiveTab] = useState<'ALL' | 'IN_STOCK' | 'PRICE_DROP'>('ALL')
   const [sortOption, setSortOption] = useState<'RECENT' | 'PRICE_ASC' | 'PRICE_DESC' | 'RATING'>('RECENT')
@@ -40,6 +41,11 @@ export function WishlistPage() {
       try {
         setLoading(true)
         const response = await fetch('/api/wishlist')
+        if (response.status === 401) {
+          setNeedsAuth(true)
+          setItems([])
+          return
+        }
         if (!response.ok) throw new Error('Failed to fetch wishlist')
         const data = await response.json()
         // API returns { success, data: [...raw Prisma rows with nested product], meta }
@@ -58,7 +64,7 @@ export function WishlistPage() {
             price: p.basePrice || 0,
             oldPrice: undefined,
             stockStatus,
-            imageUrl: p.thumbnailUrl || '/images/placeholder-product.png',
+            imageUrl: p.thumbnailUrl || '/placeholder-product.svg',
             rating: p.ratingAvg || 0,
             dateAdded: r.createdAt || new Date().toISOString(),
           }
@@ -177,6 +183,15 @@ export function WishlistPage() {
       <main className="flex-1 p-4 md:px-6 md:py-6 pb-24 md:pb-10 lg:max-w-6xl lg:mx-auto lg:w-full">
         {loading ? (
           <PageLoader className="min-h-0 py-10" />
+        ) : needsAuth ? (
+          <div className="text-center py-20 text-gray-500 dark:text-gray-400 flex flex-col items-center">
+            <LogIn className="w-16 h-16 mb-4 text-gray-300 dark:text-gray-600" />
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Sign in to see your wishlist</h2>
+            <p className="text-sm mt-1">Items you save will show up here once you are signed in.</p>
+            <button onClick={() => navigate('login')} className="mt-4 px-6 py-2 bg-primary text-white rounded-full font-medium">
+              Sign In
+            </button>
+          </div>
         ) : error ? (
           <div className="text-center text-red-500 py-10">{error}</div>
         ) : displayedItems.length === 0 ? (
