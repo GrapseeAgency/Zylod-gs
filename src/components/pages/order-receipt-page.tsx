@@ -64,7 +64,7 @@ const PAYMENT_BADGE: Record<string, string> = {
   success: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
   pending: 'bg-amber-50 text-amber-700 border border-amber-100',
   failed: 'bg-red-50 text-red-700 border border-red-100',
-  unpaid: 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800',
+  unpaid: 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800',
 }
 
 export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
@@ -101,9 +101,9 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
   // ── gates ──
   if (!orderId || phase === 'notfound') {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 text-center space-y-3">
-          <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+          <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
             <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
           </div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">No receipt selected</h2>
@@ -119,7 +119,7 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
   }
   if (phase === 'anon') {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 text-center space-y-3">
           <div className="mx-auto h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
             <LogIn className="h-6 w-6 text-amber-600" />
@@ -135,7 +135,7 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
   }
   if (phase === 'error') {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 text-center space-y-3">
           <div className="mx-auto h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
             <AlertCircle className="h-6 w-6 text-red-600" />
@@ -151,7 +151,7 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
   }
   if (phase === 'loading' || !receipt) {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <PageLoader className="min-h-0" />
       </div>
     )
@@ -218,7 +218,7 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
           </div>
 
           {/* Meta */}
-          <div className="p-4 bg-slate-50 dark:bg-slate-950/80 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2 md:space-y-0 md:grid md:grid-cols-3 md:gap-4 text-xs">
+          <div className="p-4 bg-slate-50 dark:bg-background/80 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2 md:space-y-0 md:grid md:grid-cols-3 md:gap-4 text-xs">
             <div>
               <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Order</span>
               <span className="font-bold text-slate-900 dark:text-slate-100 font-mono break-all">{receipt.orderNumber}</span>

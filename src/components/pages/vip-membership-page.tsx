@@ -40,7 +40,7 @@ export function VipMembershipPage() {
       {/* Header */}
       <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -79,7 +79,7 @@ export function VipMembershipPage() {
         </div>
 
         {/* Exclusive VIP Privileges */}
-        <div className="bg-white dark:bg-slate-800/80 rounded-3xl p-5 border border-slate-200 dark:border-slate-700/80 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-card/80 rounded-3xl p-5 border border-slate-200 dark:border-slate-700/80 shadow-sm space-y-4">
           <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
             Your VIP Enterprise Privileges
           </h3>
@@ -91,7 +91,7 @@ export function VipMembershipPage() {
               { icon: ShieldCheck, title: 'Documented Order Records', desc: 'Every order keeps its payment verification status and history on your account.' },
               { icon: PhoneCall, title: 'Key Account Director', desc: 'Direct WhatsApp and direct phone access to wholesale trading heads.' },
             ].map(item => (
-              <div key={item.title} className="flex items-start gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
+              <div key={item.title} className="flex items-start gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-card/60 border border-slate-200 dark:border-slate-800">
                 <div className="w-9 h-9 rounded-xl bg-amber-400/10 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <item.icon className="w-5 h-5" />
                 </div>

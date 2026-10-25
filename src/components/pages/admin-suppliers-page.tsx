@@ -60,7 +60,7 @@ const TAB_LABELS: Record<SupplierTab, string> = {
   rejected: 'Rejected',
 }
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 const KYC_FIELDS: { key: keyof ApiSupplier; label: string }[] = [
   { key: 'nidNumber', label: 'NID number' },
@@ -125,7 +125,7 @@ function VerificationDocuments({ documents }: { documents: ApiDocument[] | undef
         <div className="flex flex-wrap gap-2">
           {docs.map((doc) => {
             const label = DOC_TYPE_LABELS[doc.documentType] || doc.documentType
-            const statusStyle = DOC_STATUS_STYLES[doc.status] || 'text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800'
+            const statusStyle = DOC_STATUS_STYLES[doc.status] || 'text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800'
             const size = fmtBytes(doc.fileSize)
             return (
               <div key={doc.id} className="bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 rounded-xl p-2 w-[128px] space-y-1.5">
@@ -144,7 +144,7 @@ function VerificationDocuments({ documents }: { documents: ApiDocument[] | undef
                       href={doc.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="h-16 w-full rounded-lg border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
+                      className="h-16 w-full rounded-lg border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
                     >
                       <FileText className="h-5 w-5" />
                       <span className="text-[9px] font-bold">Open file</span>
@@ -530,7 +530,7 @@ export function AdminSuppliersPage() {
 
                 {/* KYC detail panel — real submitted data only; empty means the supplier never provided it */}
                 {isDetailsOpen && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">KYC submission</p>
                       {statusBadge(s.verificationStatus)}
@@ -576,7 +576,7 @@ export function AdminSuppliersPage() {
 
                 {/* Inline reject form */}
                 {isRejectOpen && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                       Rejecting sets this supplier to Rejected — they cannot list products until re-approved. The reason is REQUIRED and stored in the server audit log and on the supplier record.
                     </p>

@@ -330,7 +330,7 @@ export function AdminInventoryPage() {
                   <StockChip quantity={p.stockQuantity} unit={p.unit} alertLine={alertLineFor(p)} />
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span
-                      className="text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500"
+                      className="text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500"
                       title={p.stockAlertThreshold != null ? 'The seller tuned this product’s own low-stock alert line' : 'Falls back to the platform default alert line (≤20)'}
                     >
                       {p.stockAlertThreshold != null ? `Seller alert ≤${p.stockAlertThreshold}` : `Default alert ≤${LOW_STOCK_FALLBACK}`}
@@ -341,15 +341,15 @@ export function AdminInventoryPage() {
                       {p.isApproved ? 'Approved' : 'Pending review'}
                     </span>
                     {!p.isActive && (
-                      <span className="text-[10px] font-bold bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                      <span className="text-[10px] font-bold bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
                         Hidden
                       </span>
                     )}
-                    <span className="text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                    <span className="text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       MOQ {p.moq.toLocaleString()}
                     </span>
                     {variants.length > 0 && (
-                      <span className="text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                      <span className="text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
                         {variants.length} variant{variants.length === 1 ? '' : 's'}
                       </span>
                     )}
@@ -367,7 +367,7 @@ export function AdminInventoryPage() {
 
                 {/* Expandable variant rows (read-only stock truth) */}
                 {isOpen && variants.length > 0 && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-2">
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Variant stock (real productVariants rows)</p>
                     {variants.map((v) => (
                       <div key={v.id} className="flex flex-wrap items-center gap-3 bg-white dark:bg-gray-900 rounded-xl border border-slate-100 dark:border-slate-800 px-3 py-2">
@@ -376,7 +376,7 @@ export function AdminInventoryPage() {
                           {v.sku && <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">{v.sku}</p>}
                         </div>
                         {v.priceOverride !== null && (
-                          <span className="text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                          <span className="text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
                             price override set
                           </span>
                         )}

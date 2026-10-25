@@ -229,7 +229,7 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
 
         {/* Differences Only Toggle Pill */}
         {products.length > 0 && (
-          <div className="mt-3 flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+          <div className="mt-3 flex items-center justify-between p-2.5 bg-slate-50 dark:bg-background rounded-xl border border-slate-200 dark:border-slate-800">
             <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Differences Only</span>
             <Switch
               checked={diffOnly}
@@ -276,7 +276,7 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-800">
                     {/* Sticky Label Column Header */}
-                    <th className="p-3 w-32 min-w-[120px] md:min-w-[180px] bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 align-bottom">
+                    <th className="p-3 w-32 min-w-[120px] md:min-w-[180px] bg-slate-50 dark:bg-background border-r border-slate-200 dark:border-slate-800 align-bottom">
                       <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
                         Specifications
                       </span>
@@ -294,7 +294,7 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                             {products.length > 1 && (
                               <button
                                 onClick={() => handleRemoveProduct(product.id)}
-                                className="absolute -top-1 -right-1 p-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-rose-500 transition-colors z-10"
+                                className="absolute -top-1 -right-1 p-1 rounded-full bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-rose-500 transition-colors z-10"
                                 title="Remove"
                               >
                                 <X className="h-3.5 w-3.5" />
@@ -302,7 +302,7 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                             )}
 
                             {/* Image — neutral block when the product has none */}
-                            <div className="aspect-square w-full rounded-xl bg-slate-100 dark:bg-slate-900 overflow-hidden mb-2">
+                            <div className="aspect-square w-full rounded-xl bg-slate-100 dark:bg-card overflow-hidden mb-2">
                               {img ? (
                                 <img
                                   src={img}
@@ -330,7 +330,7 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                             {/* Add to Cart Button */}
                             <Button
                               onClick={() => handleAddToCart(product)}
-                              className="mt-3 w-full bg-slate-100 dark:bg-slate-900 hover:bg-primary text-slate-800 dark:text-slate-200 hover:text-white font-bold text-xs h-9 rounded-xl transition-colors shadow-none border border-slate-200 dark:border-slate-800"
+                              className="mt-3 w-full bg-slate-100 dark:bg-card hover:bg-primary text-slate-800 dark:text-slate-200 hover:text-white font-bold text-xs h-9 rounded-xl transition-colors shadow-none border border-slate-200 dark:border-slate-800"
                             >
                               <ShoppingCart className="h-3.5 w-3.5 mr-1" />
                               Add to Cart
@@ -357,7 +357,7 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                     return (
                       <React.Fragment key={section.title}>
                         {/* Section Header */}
-                        <tr className="bg-slate-100 dark:bg-slate-900/70 border-b border-t border-slate-200 dark:border-slate-800">
+                        <tr className="bg-slate-100 dark:bg-card/70 border-b border-t border-slate-200 dark:border-slate-800">
                           <td
                             colSpan={products.length + 1}
                             className="py-2 px-3 font-bold text-slate-800 dark:text-slate-200 text-[11px]"
@@ -375,7 +375,7 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                             key={row.label}
                             className="border-b border-slate-100 dark:border-slate-800 last:border-b-0"
                           >
-                            <td className="p-3 font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70 text-[11px]">
+                            <td className="p-3 font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background/70 text-[11px]">
                               {row.label}
                             </td>
                             {row.values.map((val, vIdx) => (

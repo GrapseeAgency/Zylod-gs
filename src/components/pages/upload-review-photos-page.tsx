@@ -191,7 +191,7 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
             {mediaList.map((item) => (
               <div
                 key={item.id}
-                className="relative aspect-square rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs group"
+                className="relative aspect-square rounded-2xl overflow-hidden bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 shadow-2xs group"
               >
                 {/* Media Image / Thumbnail */}
                 <img
@@ -246,7 +246,7 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
             {/* Add More Tile */}
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="aspect-square rounded-2xl border-2 border-dashed border-rose-200 bg-slate-50/50 dark:bg-slate-950/50 hover:bg-rose-50/20 flex flex-col items-center justify-center p-3 text-center cursor-pointer transition-colors"
+              className="aspect-square rounded-2xl border-2 border-dashed border-rose-200 bg-slate-50/50 dark:bg-background/50 hover:bg-rose-50/20 flex flex-col items-center justify-center p-3 text-center cursor-pointer transition-colors"
             >
               <Plus className="h-6 w-6 text-primary mb-1" />
               <span className="text-xs font-bold text-primary">Add More</span>
@@ -262,7 +262,7 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
             type="button"
             variant="outline"
             onClick={goBack}
-            className="h-12 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
+            className="h-12 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
           >
             Cancel
           </Button>

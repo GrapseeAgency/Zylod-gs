@@ -146,7 +146,7 @@ export function TaxInformationPage() {
                   value={taxId}
                   onChange={(e) => setTaxId(e.target.value)}
                   placeholder="e.g. 882910482910"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 />
               </div>
 
@@ -158,7 +158,7 @@ export function TaxInformationPage() {
                   value={vatNumber}
                   onChange={(e) => setVatNumber(e.target.value)}
                   placeholder="e.g. 002910384-0102"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 />
               </div>
 
@@ -169,7 +169,7 @@ export function TaxInformationPage() {
                 <Input
                   value={taxJurisdiction}
                   disabled
-                  className="h-11 rounded-2xl bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500"
+                  className="h-11 rounded-2xl bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500"
                 />
               </div>
             </div>

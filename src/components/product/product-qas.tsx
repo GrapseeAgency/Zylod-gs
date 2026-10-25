@@ -190,7 +190,7 @@ export function ProductQas({ productId }: { productId: string }) {
           </div>
         </form>
       ) : (
-        <div className="flex items-start gap-3 p-3.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl">
+        <div className="flex items-start gap-3 p-3.5 bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl">
           <HelpCircle className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
           <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
             <Link href="/?page=login" className="font-bold text-primary hover:underline">Sign in</Link>
@@ -225,7 +225,7 @@ export function ProductQas({ productId }: { productId: string }) {
                   </p>
                 </div>
               ) : canAnswer ? (
-                <div className="mx-3.5 mb-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-3 space-y-2">
+                <div className="mx-3.5 mb-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 p-3 space-y-2">
                   <Textarea
                     value={answerDraft[qa.id] || ''}
                     onChange={(e) => setAnswerDraft((d) => ({ ...d, [qa.id]: e.target.value }))}
@@ -247,7 +247,7 @@ export function ProductQas({ productId }: { productId: string }) {
                   </div>
                 </div>
               ) : (
-                <div className="mx-3.5 mb-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-3">
+                <div className="mx-3.5 mb-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 p-3">
                   <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">Awaiting the supplier&apos;s answer.</p>
                 </div>
               )}

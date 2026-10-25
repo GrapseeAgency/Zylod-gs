@@ -116,7 +116,7 @@ export function AboutUsPage() {
                   <button
                     key={link.id}
                     onClick={() => navigate(link.id)}
-                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-primary/5 hover:text-primary transition"
+                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-background rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-primary/5 hover:text-primary transition"
                   >
                     {link.label}
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -156,7 +156,7 @@ export function AboutUsPage() {
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
                 {data.companyInfo.values.map(val => (
-                  <div key={val.title} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl space-y-1">
+                  <div key={val.title} className="p-3 bg-slate-50 dark:bg-background rounded-2xl space-y-1">
                     <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{val.title}</p>
                     <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed">{val.desc}</p>
                   </div>

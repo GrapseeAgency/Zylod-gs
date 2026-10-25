@@ -140,7 +140,7 @@ export function OrdersPage() {
 
   const emptyState = (
     <div className="flex flex-col items-center justify-center text-center py-14 px-6">
-      <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
         <Package className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
       </div>
       <h2 className="text-base font-black text-slate-900 dark:text-slate-100">No orders yet</h2>
@@ -173,7 +173,7 @@ export function OrdersPage() {
             <Button
               onClick={() => navigate('login')}
               variant="outline"
-              className="h-9 px-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 text-xs font-bold rounded-xl"
+              className="h-9 px-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 text-xs font-bold rounded-xl"
             >
               Sign In
             </Button>
@@ -282,7 +282,7 @@ export function OrdersPage() {
 
                     <div className="text-right">
                       <div className="flex items-center gap-1.5 justify-end">
-                        <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+                        <span className="bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
                           {order.status.toUpperCase()}
                         </span>
                         <span className="text-sm font-black text-primary">
@@ -320,7 +320,7 @@ export function OrdersPage() {
                         <Button
                           variant="outline"
                           onClick={() => navigate('order-invoice', { orderId: order.id })}
-                          className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-10 rounded-2xl text-xs flex items-center justify-center gap-1.5"
+                          className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-10 rounded-2xl text-xs flex items-center justify-center gap-1.5"
                         >
                           <FileText className="h-3.5 w-3.5" />
                           Invoice
@@ -340,14 +340,14 @@ export function OrdersPage() {
                         <Button
                           variant="outline"
                           onClick={() => navigate('order-detail', { orderId: order.id })}
-                          className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-10 rounded-2xl text-xs"
+                          className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-10 rounded-2xl text-xs"
                         >
                           View Details
                         </Button>
                         <Button
                           variant="outline"
                           onClick={() => navigate('live-chat')}
-                          className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-10 rounded-2xl text-xs flex items-center justify-center gap-1.5"
+                          className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-10 rounded-2xl text-xs flex items-center justify-center gap-1.5"
                         >
                           <MessageSquare className="h-3.5 w-3.5" />
                           Contact Supplier
@@ -360,7 +360,7 @@ export function OrdersPage() {
                         <Button
                           variant="outline"
                           onClick={() => navigate('home')}
-                          className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-10 px-5 rounded-2xl text-xs flex items-center gap-1.5"
+                          className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-10 px-5 rounded-2xl text-xs flex items-center gap-1.5"
                         >
                           <RotateCcw className="h-3.5 w-3.5 text-primary" />
                           Browse Again
@@ -435,7 +435,7 @@ export function OrdersPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+                        <span className="bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
                           {order.status.toUpperCase()}
                         </span>
                       </td>
@@ -447,7 +447,7 @@ export function OrdersPage() {
                               <Button
                                 variant="outline"
                                 onClick={() => navigate('order-invoice', { orderId: order.id })}
-                                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-8 px-3 rounded-lg text-xs"
+                                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-8 px-3 rounded-lg text-xs"
                               >
                                 Invoice
                               </Button>
@@ -464,14 +464,14 @@ export function OrdersPage() {
                               <Button
                                 variant="outline"
                                 onClick={() => navigate('order-detail', { orderId: order.id })}
-                                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-8 px-3 rounded-lg text-xs"
+                                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-8 px-3 rounded-lg text-xs"
                               >
                                 View Details
                               </Button>
                               <Button
                                 variant="outline"
                                 onClick={() => navigate('live-chat')}
-                                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-8 px-3 rounded-lg text-xs"
+                                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-8 px-3 rounded-lg text-xs"
                               >
                                 Contact Supplier
                               </Button>
@@ -481,7 +481,7 @@ export function OrdersPage() {
                             <Button
                               variant="outline"
                               onClick={() => navigate('home')}
-                              className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-8 px-3 rounded-lg text-xs"
+                              className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-8 px-3 rounded-lg text-xs"
                             >
                               Browse Again
                             </Button>

@@ -530,7 +530,7 @@ export function BulkOrderFormPage() {
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search the wholesale catalog…"
               aria-label="Search catalog products"
-              className="pl-10 pr-4 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
+              className="pl-10 pr-4 h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
             />
           </form>
 
@@ -610,7 +610,7 @@ export function BulkOrderFormPage() {
                     const outOfStock = p.stockQuantity <= 0 && p.variants.every((v) => v.stockQuantity <= 0)
                     return (
                       <li key={p.id} className="py-3 flex items-center gap-3">
-                        <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-900 shrink-0 overflow-hidden flex items-center justify-center">
+                        <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-card shrink-0 overflow-hidden flex items-center justify-center">
                           {p.imageUrl ? (
                             <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
                           ) : (
@@ -705,7 +705,7 @@ export function BulkOrderFormPage() {
           {/* Per-item server outcomes — the REAL results[] of the last bulk
               submit, rendered honestly per line. */}
           {outcomes && outcomes.length > 0 && (
-            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3 space-y-2">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background p-3 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500 uppercase tracking-wide">
                   Server outcomes — last submit
@@ -782,7 +782,7 @@ export function BulkOrderFormPage() {
                 return (
                   <li key={row.key} className="py-3 space-y-2">
                     <div className="flex items-start gap-2">
-                      <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-900 shrink-0 overflow-hidden flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-card shrink-0 overflow-hidden flex items-center justify-center">
                         {row.product.imageUrl ? (
                           <img src={row.product.imageUrl} alt={row.product.name} className="w-full h-full object-cover" />
                         ) : (
@@ -812,7 +812,7 @@ export function BulkOrderFormPage() {
                         value={row.variantId ?? ''}
                         onChange={(e) => setRowVariant(row.key, e.target.value || null)}
                         aria-label={`Variant for ${row.product.name}`}
-                        className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background px-3 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
                       >
                         <option value="">Base product (no variant)</option>
                         {row.product.variants.map((v) => (
@@ -843,7 +843,7 @@ export function BulkOrderFormPage() {
                           onChange={(e) => setRowQtyText(row.key, e.target.value)}
                           onBlur={() => normalizeRowQty(row.key)}
                           aria-label={`Quantity in ${row.product.unit} for ${row.product.name}`}
-                          className="h-11 mt-0.5 text-sm font-bold rounded-xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+                          className="h-11 mt-0.5 text-sm font-bold rounded-xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800"
                         />
                       </div>
                       <div className="text-right pb-0.5">
@@ -867,7 +867,7 @@ export function BulkOrderFormPage() {
                             <span
                               key={`${row.key}-tier-${i}`}
                               className={`text-[9px] font-bold rounded-md px-1.5 py-0.5 ${
-                                active ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400'
+                                active ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-card text-slate-500 dark:text-slate-400'
                               }`}
                             >
                               {t.minQty.toLocaleString()}

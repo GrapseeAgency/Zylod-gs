@@ -292,7 +292,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
           Order <strong className="text-slate-800 dark:text-slate-200">{placedOrder.orderNumber}</strong> was created with{' '}
           {product?.supplier?.companyName || 'the supplier'}.
         </p>
-        <div className="mt-4 w-full max-w-xs bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-xs space-y-1.5">
+        <div className="mt-4 w-full max-w-xs bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-xs space-y-1.5">
           <div className="flex justify-between">
             <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Order total</span>
             <span className="font-black text-slate-900 dark:text-slate-100">{formatPrice(placedOrder.totalAmount)}</span>
@@ -321,7 +321,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
           >
             Back to Home
           </Button>
@@ -368,7 +368,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
               <Button
                 variant="outline"
                 onClick={fetchData}
-                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 Try Again
@@ -377,7 +377,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
             <Button
               variant="outline"
               onClick={goBack}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
             >
               Go Back
             </Button>
@@ -444,7 +444,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
             </div>
 
             {/* Quantity stepper — MOQ enforced from real product data */}
-            <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-950/70 border border-slate-100 dark:border-slate-800 rounded-2xl p-3">
+            <div className="flex items-center justify-between bg-slate-50 dark:bg-background/70 border border-slate-100 dark:border-slate-800 rounded-2xl p-3">
               <div>
                 <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase block">Quantity</span>
                 <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">MOQ: {moq}</span>
@@ -570,7 +570,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                     <label
                       key={opt.methodId}
                       className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 cursor-pointer transition-colors ${
-                        active ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                        active ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
                       }`}
                     >
                       <input
@@ -629,7 +629,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
               <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Payment Method</h2>
             </div>
 
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+            <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0">
                 <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
               </div>

@@ -34,7 +34,7 @@ export function DisputeDetailPage({ pageParams: _pageParams }: { pageParams?: Re
 
         <div className="mt-6 bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs p-5 text-left space-y-3 max-w-sm mx-auto">
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center shrink-0">
               <PackageSearch className="h-4 w-4 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <div>
@@ -47,7 +47,7 @@ export function DisputeDetailPage({ pageParams: _pageParams }: { pageParams?: Re
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center shrink-0">
               <PlugZap className="h-4 w-4 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <div>
@@ -71,14 +71,14 @@ export function DisputeDetailPage({ pageParams: _pageParams }: { pageParams?: Re
           <Button
             variant="outline"
             onClick={() => navigate('orders')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
           >
             View My Orders
           </Button>
           <Button
             variant="outline"
             onClick={goBack}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
           >
             Go Back
           </Button>

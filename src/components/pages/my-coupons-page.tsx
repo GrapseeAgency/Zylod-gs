@@ -157,7 +157,7 @@ export function MyCouponsPage() {
                     <span className="text-base font-extrabold text-red-600">
                       {coupon.discountLabel}
                     </span>
-                    <Badge className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border-gray-200 dark:border-gray-800 text-[10px]">
+                    <Badge className="bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-card border-gray-200 dark:border-gray-800 text-[10px]">
                       {coupon.categoryLabel || 'Wholesale'}
                     </Badge>
                   </div>
@@ -174,7 +174,7 @@ export function MyCouponsPage() {
               </div>
 
               {/* Action Bar */}
-              <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3">
+              <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 border border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3">
                 <span className="font-mono font-bold text-xs sm:text-sm text-gray-800 dark:text-gray-200">
                   {coupon.code}
                 </span>

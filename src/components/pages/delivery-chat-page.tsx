@@ -85,7 +85,7 @@ export function DeliveryChatPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('shipping-tracker')}
-            className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-colors"
+            className="w-9 h-9 rounded-full bg-slate-100 dark:bg-card hover:bg-slate-200 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-colors"
             title="Open shipment tracker"
           >
             <Info className="h-4 w-4" />
@@ -153,7 +153,7 @@ export function DeliveryChatPage() {
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="Type a message..."
-            className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium focus-visible:ring-primary"
+            className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium focus-visible:ring-primary"
           />
 
           <Button

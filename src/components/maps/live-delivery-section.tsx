@@ -19,7 +19,7 @@ import { useLiveDelivery } from '@/hooks/use-live-delivery'
 const LiveDeliveryMap = dynamic(() => import('@/components/maps/live-delivery-map'), {
   ssr: false,
   loading: () => (
-    <div className="h-[300px] md:h-[420px] w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 animate-pulse" />
+    <div className="h-[300px] md:h-[420px] w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-card animate-pulse" />
   ),
 })
 
@@ -51,7 +51,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
         <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
           <Satellite className="h-4 w-4 text-[var(--primary)]" /> Live Delivery Tracking
         </h3>
-        <div className="h-[300px] md:h-[420px] w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 animate-pulse" />
+        <div className="h-[300px] md:h-[420px] w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-card animate-pulse" />
       </section>
     )
   }
@@ -114,7 +114,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
             className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
               realtime
                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
-                : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                : 'bg-slate-100 text-slate-500 dark:bg-card dark:text-slate-400'
             }`}
             title={badgeTitle}
           >

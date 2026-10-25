@@ -118,7 +118,7 @@ export function AddToCartConfirmationPage() {
   }
 
   return (
-    <div className="min-h-[70vh] bg-slate-50 dark:bg-slate-950 flex items-end sm:items-center justify-center p-0 sm:p-4 text-slate-900 dark:text-slate-100">
+    <div className="min-h-[70vh] bg-slate-50 dark:bg-background flex items-end sm:items-center justify-center p-0 sm:p-4 text-slate-900 dark:text-slate-100">
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -139,7 +139,7 @@ export function AddToCartConfirmationPage() {
 
         {/* Main item — the REAL latest cart line */}
         {lastItem ? (
-          <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800 flex gap-3.5 items-center">
+          <div className="bg-slate-50 dark:bg-background rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800 flex gap-3.5 items-center">
             <div className="w-16 h-16 rounded-xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 overflow-hidden shrink-0">
               <img src={lastItem.productImage || '/placeholder.svg'} alt={lastItem.productName} className="w-full h-full object-cover" />
             </div>
@@ -161,7 +161,7 @@ export function AddToCartConfirmationPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-8 border border-slate-100 dark:border-slate-800 text-center space-y-2">
+          <div className="bg-slate-50 dark:bg-background rounded-2xl p-8 border border-slate-100 dark:border-slate-800 text-center space-y-2">
             <Package className="h-8 w-8 text-slate-300 mx-auto" />
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Nothing added yet</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Open a product and add it to your cart — your latest line shows up here.</p>
@@ -180,7 +180,7 @@ export function AddToCartConfirmationPage() {
             </div>
           )}
           {addonsState === 'error' && (
-            <div className="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 text-center space-y-2">
+            <div className="rounded-2xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 p-4 text-center space-y-2">
               <AlertCircle className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mx-auto" />
               <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Couldn't load suggestions right now.</p>
               <Button onClick={() => { setAddonsState('loading'); fetch('/api/products?limit=4', { credentials: 'include' }).then(r => r.json()).then(json => { setAddons((Array.isArray(json?.data) ? json.data : []).slice(0, 4)); setAddonsState('ready') }).catch(() => setAddonsState('error')) }} variant="outline" className="h-8 text-[11px] font-bold">
@@ -193,7 +193,7 @@ export function AddToCartConfirmationPage() {
           )}
           {addonsState === 'ready' && addons.map(p => (
             <div key={p.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 p-3 flex gap-3 items-center">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-900 overflow-hidden shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-card overflow-hidden shrink-0">
                 <img src={p.images?.[0]?.url ?? '/placeholder.svg'} alt={p.name} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 min-w-0">

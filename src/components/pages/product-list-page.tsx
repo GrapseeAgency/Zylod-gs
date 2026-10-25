@@ -214,7 +214,7 @@ export function ProductListPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search catalog..."
-            className="pl-10 pr-10 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder:text-slate-400 dark:text-slate-500 focus-visible:ring-primary"
+            className="pl-10 pr-10 h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm placeholder:text-slate-400 dark:text-slate-500 focus-visible:ring-primary"
           />
           <button
             onClick={() => navigate('barcode-scanner')}
@@ -234,7 +234,7 @@ export function ProductListPage() {
             className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
               activeCategory === 'all'
                 ? 'bg-primary text-white shadow-xs'
-                : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
             }`}
           >
             All
@@ -246,7 +246,7 @@ export function ProductListPage() {
               className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                 activeCategory === c.slug
                   ? 'bg-primary text-white shadow-xs'
-                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
               }`}
             >
               {c.name}
@@ -258,7 +258,7 @@ export function ProductListPage() {
           <button
             onClick={() => setViewMode('grid')}
             className={`p-1.5 rounded-md transition-colors ${
-              viewMode === 'grid' ? 'bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'
+              viewMode === 'grid' ? 'bg-slate-100 dark:bg-card text-slate-900 dark:text-slate-100 font-bold' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'
             }`}
             title="Grid view"
           >
@@ -267,7 +267,7 @@ export function ProductListPage() {
           <button
             onClick={() => setViewMode('list')}
             className={`p-1.5 rounded-md transition-colors ${
-              viewMode === 'list' ? 'bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-bold' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'
+              viewMode === 'list' ? 'bg-slate-100 dark:bg-card text-slate-900 dark:text-slate-100 font-bold' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'
             }`}
             title="List view"
           >
@@ -322,7 +322,7 @@ export function ProductListPage() {
                   onClick={() => navigate('product-detail', { productId: product.id })}
                   className="group bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-2xs hover:shadow-md transition-all flex flex-col justify-between cursor-pointer"
                 >
-                  <div className="relative aspect-square bg-slate-100 dark:bg-slate-900 overflow-hidden">
+                  <div className="relative aspect-square bg-slate-100 dark:bg-card overflow-hidden">
                     {product.images?.[0]?.url ? (
                       <img
                         src={product.images[0].url}
@@ -366,7 +366,7 @@ export function ProductListPage() {
                       </div>
                       <button
                         onClick={(e) => handleAddToCart(e, product)}
-                        className="p-2 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white transition-colors"
+                        className="p-2 rounded-full bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white transition-colors"
                         title="Add to cart"
                       >
                         <ShoppingCart className="h-3.5 w-3.5" />
@@ -385,7 +385,7 @@ export function ProductListPage() {
                 onClick={() => navigate('product-detail', { productId: product.id })}
                 className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3 shadow-2xs hover:shadow-md transition-all flex gap-3 cursor-pointer items-center"
               >
-                <div className="relative w-24 h-24 rounded-xl bg-slate-100 dark:bg-slate-900 shrink-0 overflow-hidden">
+                <div className="relative w-24 h-24 rounded-xl bg-slate-100 dark:bg-card shrink-0 overflow-hidden">
                   {product.images?.[0]?.url ? (
                     <img
                       src={product.images[0].url}
@@ -441,7 +441,7 @@ export function ProductListPage() {
             setTempFilters(filters)
             setFilterOpen(true)
           }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white dark:bg-gray-900 text-slate-800 dark:text-slate-200 font-bold text-xs shadow-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition-transform active:scale-95"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white dark:bg-gray-900 text-slate-800 dark:text-slate-200 font-bold text-xs shadow-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:bg-background dark:hover:bg-card transition-transform active:scale-95"
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
           Filters
@@ -544,7 +544,7 @@ export function ProductListPage() {
                           className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                             selected
                               ? 'bg-primary text-white shadow-xs'
-                              : 'bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
+                              : 'bg-slate-50 dark:bg-background text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-card'
                           }`}
                         >
                           {cert}
@@ -566,7 +566,7 @@ export function ProductListPage() {
                         return (
                           <label
                             key={b.name}
-                            className="flex items-center justify-between text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer p-1.5 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 rounded-lg"
+                            className="flex items-center justify-between text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer p-1.5 hover:bg-slate-50 dark:bg-background dark:hover:bg-card rounded-lg"
                           >
                             <div className="flex items-center gap-2">
                               <div

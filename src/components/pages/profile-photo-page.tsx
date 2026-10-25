@@ -94,7 +94,7 @@ export function ProfilePhotoPage() {
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
         <button
           onClick={() => navigate('account-settings')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Account Settings"
         >
           <User className="h-5 w-5" />
@@ -118,7 +118,7 @@ export function ProfilePhotoPage() {
           </h1>
 
           {/* Large Photo Preview */}
-          <div className="w-32 h-32 rounded-full bg-slate-100 dark:bg-slate-900 border-4 border-white shadow-lg mx-auto overflow-hidden flex items-center justify-center">
+          <div className="w-32 h-32 rounded-full bg-slate-100 dark:bg-card border-4 border-white shadow-lg mx-auto overflow-hidden flex items-center justify-center">
             {currentPhoto ? (
               <img
                 src={currentPhoto}

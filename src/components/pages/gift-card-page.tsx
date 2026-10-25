@@ -54,7 +54,7 @@ export function GiftCardPage() {
             </div>
           </div>
 
-          <div className="flex items-start gap-2.5 bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800">
+          <div className="flex items-start gap-2.5 bg-slate-50 dark:bg-background/50 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800">
             <Info className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0 mt-0.5" />
             <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
               When gift cards launch, redemption will happen here and the credited amount will appear in
@@ -66,7 +66,7 @@ export function GiftCardPage() {
             <Button onClick={() => navigate('wallet')} className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-2xl text-xs">
               Open Wallet
             </Button>
-            <Button onClick={goBack} variant="outline" className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs">
+            <Button onClick={goBack} variant="outline" className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs">
               Back
             </Button>
           </div>

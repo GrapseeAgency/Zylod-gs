@@ -30,7 +30,7 @@ interface ApiAdminSetting {
 
 const REFRESH_INTERVAL_MS = 30_000
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 function formatTimestamp(iso: string): string {
   return new Date(iso).toLocaleString('en-US', {
@@ -273,7 +273,7 @@ export function AdminSettingsPage() {
       {/* Header (slate, Settings-themed) */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 flex items-center justify-center">
             <Settings className="h-5 w-5 text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300" />
           </div>
           <div>
@@ -388,7 +388,7 @@ export function AdminSettingsPage() {
                                   {s.updatedAt && <span className={chipClass}>updated {formatTimestamp(s.updatedAt)}</span>}
                                 </>
                               ) : (
-                                <Badge variant="outline" className="text-[10px] font-black rounded-lg bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-950 dark:text-slate-400 dark:text-slate-500 dark:border-slate-800">
+                                <Badge variant="outline" className="text-[10px] font-black rounded-lg bg-slate-50 text-slate-500 border-slate-200 dark:bg-background dark:text-slate-400 dark:text-slate-500 dark:border-slate-800">
                                   Not set — built-in default ({String(s.defaultValue)}) in effect
                                 </Badge>
                               )}
@@ -449,7 +449,7 @@ export function AdminSettingsPage() {
 
           {/* Honest data notes straight from the API */}
           {dataNotes.length > 0 && (
-            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-1">
+            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-1">
               {dataNotes.map((noteLine, i) => (
                 <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">· {noteLine}</p>
               ))}

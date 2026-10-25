@@ -189,7 +189,7 @@ export function WithdrawMoneyPage() {
                   setErrorMsg('')
                 }}
                 placeholder="0"
-                className="h-14 pl-10 pr-4 text-2xl font-black rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 font-mono text-slate-900 dark:text-slate-100 focus:border-primary"
+                className="h-14 pl-10 pr-4 text-2xl font-black rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 font-mono text-slate-900 dark:text-slate-100 focus:border-primary"
               />
             </div>
           </div>
@@ -215,7 +215,7 @@ export function WithdrawMoneyPage() {
                     className={`p-3.5 rounded-2xl border text-left space-y-1 transition-all ${
                       isSelected
                         ? 'border-primary bg-rose-50/60 dark:bg-rose-950/40 ring-2 ring-primary/20 shadow-xs'
-                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                     }`}
                   >
                     <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>{label}</span>
@@ -233,7 +233,7 @@ export function WithdrawMoneyPage() {
                   <select
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
+                    className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
                   >
                     <option value="City Bank PLC">City Bank PLC</option>
                     <option value="BRAC Bank PLC">BRAC Bank PLC</option>
@@ -252,7 +252,7 @@ export function WithdrawMoneyPage() {
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   placeholder={method === 'bank' ? '13-16 digit account number' : '01XXXXXXXXX'}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 />
               </div>
 
@@ -264,7 +264,7 @@ export function WithdrawMoneyPage() {
                   value={holderName}
                   onChange={(e) => setHolderName(e.target.value)}
                   placeholder="Exact legal name on account"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                 />
               </div>
             </div>
@@ -303,7 +303,7 @@ export function WithdrawMoneyPage() {
           </div>
           {initialLoading ? (
             <div className="space-y-2 animate-pulse">
-              {[1, 2].map((i) => <div key={i} className="h-12 bg-slate-100 dark:bg-slate-900 rounded-2xl" />)}
+              {[1, 2].map((i) => <div key={i} className="h-12 bg-slate-100 dark:bg-card rounded-2xl" />)}
             </div>
           ) : !data || data.payouts.length === 0 ? (
             <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-3 text-center">

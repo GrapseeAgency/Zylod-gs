@@ -165,7 +165,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
   if (!orderId) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
-        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card dark:bg-card flex items-center justify-center mb-4">
           <PackageSearch className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
@@ -232,7 +232,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Track Order</h1>
 
       {/* Neutral header band — no fake live map, no live-tracking claim */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800">
+      <div className="bg-white dark:bg-card border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-lg mx-auto px-4 py-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-gray-900/10 flex items-center justify-center shrink-0">
             <Truck className="h-5 w-5 text-primary" />
@@ -247,7 +247,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
       <main className="px-4 -mt-8 relative z-20 space-y-4 max-w-lg mx-auto">
         {/* Sign-in required (401) */}
         {needsAuth && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
+          <div className="bg-white dark:bg-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
             <div className="w-14 h-14 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900 text-primary flex items-center justify-center mx-auto mb-3">
               <LogIn className="h-6 w-6" />
             </div>
@@ -263,7 +263,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               <Button
                 variant="outline"
                 onClick={loadOrder}
-                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold text-xs h-10 px-5 rounded-2xl"
+                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold text-xs h-10 px-5 rounded-2xl"
               >
                 Retry
               </Button>
@@ -273,8 +273,8 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
 
         {/* Not found (404) */}
         {!needsAuth && notFound && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-3">
+          <div className="bg-white dark:bg-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
+            <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-3">
               <PackageSearch className="h-6 w-6" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Order not found</h2>
@@ -315,7 +315,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
         {!loading && !error && !needsAuth && !notFound && order && (
           <>
             {/* Status Card */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-5">
+            <div className="bg-white dark:bg-card rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-5">
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div>
@@ -365,7 +365,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                               ? 'bg-primary text-white shadow-xs'
                               : active
                                 ? 'border-2 border-primary bg-white dark:bg-gray-900'
-                                : 'bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
+                                : 'bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-slate-500'
                           }`}
                         >
                           {completed ? (
@@ -406,7 +406,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                 {subOrders.map((so, idx) => (
                   <div
                     key={so.id}
-                    className="bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/60 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800 space-y-2.5"
+                    className="bg-slate-50 dark:bg-background dark:bg-card/60 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800 space-y-2.5"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-3 min-w-0">
@@ -451,7 +451,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
             </div>
 
             {/* Tracking History — only real events from the API */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+            <div className="bg-white dark:bg-card rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-xs font-black text-slate-900 dark:text-slate-100">
                   Tracking History{trackingEvents.length > 0 ? ` (${trackingEvents.length})` : ''}
@@ -466,7 +466,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
 
               {trackingEvents.length === 0 ? (
                 <div className="py-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3">
+                  <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-card dark:bg-card flex items-center justify-center mx-auto mb-3">
                     <Truck className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                   </div>
                   <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">No tracking updates yet</h3>
@@ -475,7 +475,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                   </p>
                 </div>
               ) : (
-                <div className="space-y-5 pl-2 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:bg-slate-900 dark:before:bg-slate-800">
+                <div className="space-y-5 pl-2 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:bg-card dark:before:bg-slate-800">
                   {trackingEvents.map((event, idx) => {
                     const isLatest = idx === 0
                     return (

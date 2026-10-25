@@ -127,7 +127,7 @@ export function DeliveryTrackingAlertsPage() {
                 <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">{del.message}</p>
 
                 {del.order?.trackingNumber && (
-                  <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-2 flex items-center justify-between text-xs border border-gray-100 dark:border-gray-800">
+                  <div className="bg-slate-50 dark:bg-background rounded-xl p-2 flex items-center justify-between text-xs border border-gray-100 dark:border-gray-800">
                     <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Waybill: <strong>{del.order.trackingNumber}</strong></span>
                     <button
                       onClick={() => copyTracking(del.order.trackingNumber, del.id)}

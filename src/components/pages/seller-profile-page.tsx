@@ -87,7 +87,7 @@ function StarRating({ value, size = 'sm' }: { value: number; size?: 'sm' | 'lg' 
 function ProgressBar({ value, max, color = 'primary' }: { value: number; max: number; color?: string }) {
   const pct = Math.min(100, Math.max(0, max > 0 ? (value / max) * 100 : 0))
   return (
-    <div className="h-1.5 rounded-full bg-slate-100 dark:bg-slate-900 overflow-hidden">
+    <div className="h-1.5 rounded-full bg-slate-100 dark:bg-card overflow-hidden">
       <div
         className={`h-full rounded-full transition-all duration-500 ${color === 'primary' ? 'bg-primary' : color === 'emerald' ? 'bg-emerald-500' : 'bg-amber-500'}`}
         style={{ width: `${pct}%` }}
@@ -523,7 +523,7 @@ export function SellerProfilePage() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleShare}
-            className="h-8 px-3 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-colors"
+            className="h-8 px-3 rounded-xl bg-slate-100 dark:bg-card hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-colors"
           >
             <Share2 className="h-3.5 w-3.5" />
             {copied ? 'Copied' : 'Share'}
@@ -531,7 +531,7 @@ export function SellerProfilePage() {
           {isOwner && (
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="h-8 px-3 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5"
+              className="h-8 px-3 rounded-xl bg-slate-100 dark:bg-card hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5"
             >
               <Edit3 className="h-3.5 w-3.5" />
               {isEditing ? 'Close' : 'Edit'}
@@ -539,7 +539,7 @@ export function SellerProfilePage() {
           )}
           <button
             onClick={() => navigate('account-settings')}
-            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
             title="Settings"
           >
             <Settings className="h-4 w-4" />
@@ -559,7 +559,7 @@ export function SellerProfilePage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-slate-800 opacity-60">
+              <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-card opacity-60">
                 <Building2 className="h-16 w-16 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
               </div>
             )}
@@ -590,7 +590,7 @@ export function SellerProfilePage() {
             {/* Avatar row */}
             <div className="flex items-end justify-between">
               <div className="relative group">
-                <div className="w-24 h-24 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-rose-100 flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+                <div className="w-24 h-24 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-rose-100 flex items-center justify-center bg-slate-100 dark:bg-card">
                   {avatarUrl ? (
                     <img
                       src={avatarUrl}
@@ -670,7 +670,7 @@ export function SellerProfilePage() {
                       disabled={followLoading}
                       className={`h-9 px-4 rounded-xl text-xs font-bold transition-all ${
                         following
-                          ? 'bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-200 border border-slate-200 dark:border-slate-800'
+                          ? 'bg-slate-100 dark:bg-card text-slate-800 dark:text-slate-200 hover:bg-slate-200 border border-slate-200 dark:border-slate-800'
                           : 'bg-primary hover:bg-primary/90 text-white shadow-md'
                       }`}
                     >
@@ -691,7 +691,7 @@ export function SellerProfilePage() {
 
             {/* Inline Profile Editor */}
             {isEditing && isOwner ? (
-              <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 space-y-3">
+              <div className="bg-slate-50 dark:bg-background rounded-2xl p-4 border border-slate-200 dark:border-slate-800 space-y-3">
                 <h3 className="text-xs font-black text-slate-900 dark:text-slate-100 uppercase tracking-wider">Quick Edit Profile</h3>
                 <div className="space-y-2">
                   <div>
@@ -794,7 +794,7 @@ export function SellerProfilePage() {
                 { label: 'Inquiries', value: String(totalQuotes), icon: MessageSquare },
                 { label: 'Status', value: isVerified ? 'Verified' : 'Active', icon: ShieldCheck },
               ].map((stat) => (
-                <div key={stat.label} className="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800">
+                <div key={stat.label} className="bg-slate-50 dark:bg-background p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800">
                   <div className="text-xs font-black text-slate-900 dark:text-slate-100 font-mono">{stat.value}</div>
                   <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block uppercase tracking-wider leading-tight mt-0.5">{stat.label}</span>
                 </div>
@@ -825,7 +825,7 @@ export function SellerProfilePage() {
                   className={`px-3.5 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-primary text-white shadow-xs font-black'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-card'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -942,7 +942,7 @@ export function SellerProfilePage() {
                           className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
                             selectedCategory === cat
                               ? 'bg-primary text-white shadow-xs'
-                              : 'bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                              : 'bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
                           }`}
                         >
                           {cat}
@@ -956,9 +956,9 @@ export function SellerProfilePage() {
                     <div className="grid grid-cols-2 gap-3">
                       {Array.from({ length: 6 }).map((_, i) => (
                         <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl p-3.5 border border-slate-200 dark:border-slate-800 animate-pulse space-y-2.5">
-                          <div className="aspect-square rounded-2xl bg-slate-100 dark:bg-slate-900" />
-                          <div className="h-3 bg-slate-100 dark:bg-slate-900 rounded-md w-3/4" />
-                          <div className="h-4 bg-slate-100 dark:bg-slate-900 rounded-md w-1/2" />
+                          <div className="aspect-square rounded-2xl bg-slate-100 dark:bg-card" />
+                          <div className="h-3 bg-slate-100 dark:bg-card rounded-md w-3/4" />
+                          <div className="h-4 bg-slate-100 dark:bg-card rounded-md w-1/2" />
                         </div>
                       ))}
                     </div>
@@ -971,7 +971,7 @@ export function SellerProfilePage() {
                           onClick={() => navigate('product-detail', { productId: item.id })}
                         >
                           {/* Product Image */}
-                          <div className="aspect-square rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden relative">
+                          <div className="aspect-square rounded-2xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 overflow-hidden relative">
                             {item.images?.[0]?.url ? (
                               <img
                                 src={item.images[0].url}
@@ -1007,10 +1007,10 @@ export function SellerProfilePage() {
                           {/* Quantity Selector + Add to Cart */}
                           <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                              <div className="flex items-center gap-1 bg-slate-50 dark:bg-background rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                                 <button
                                   onClick={(e) => { e.stopPropagation(); setProductQuantity(item.id, item.moq, -item.moq) }}
-                                  className="p-1.5 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-500 transition-colors"
+                                  className="p-1.5 hover:bg-slate-100 dark:bg-card dark:hover:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 transition-colors"
                                 >
                                   <Minus className="h-3 w-3" />
                                 </button>
@@ -1019,7 +1019,7 @@ export function SellerProfilePage() {
                                 </span>
                                 <button
                                   onClick={(e) => { e.stopPropagation(); setProductQuantity(item.id, item.moq, item.moq) }}
-                                  className="p-1.5 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-500 transition-colors"
+                                  className="p-1.5 hover:bg-slate-100 dark:bg-card dark:hover:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 transition-colors"
                                 >
                                   <Plus className="h-3 w-3" />
                                 </button>
@@ -1080,7 +1080,7 @@ export function SellerProfilePage() {
                         { label: 'Fulfillment', value: 'Standard & Express Freight', icon: Truck },
                         { label: 'Customization', value: 'OEM / Private Label Available', icon: Wrench },
                       ].map(({ label, value, icon: Icon }) => (
-                        <div key={label} className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 space-y-1">
+                        <div key={label} className="bg-slate-50 dark:bg-background rounded-2xl p-3 border border-slate-100 dark:border-slate-800 space-y-1">
                           <div className="flex items-center gap-1.5">
                             <Icon className="h-3.5 w-3.5 text-primary" />
                             <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400 tracking-wider">{label}</span>
@@ -1117,7 +1117,7 @@ export function SellerProfilePage() {
                     {dashboardData?.verificationDocs && dashboardData.verificationDocs.length > 0 ? (
                       <div className="space-y-2.5">
                         {dashboardData.verificationDocs.map((doc) => (
-                          <div key={doc.id} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                          <div key={doc.id} className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary">
                                 <FileText className="h-4 w-4" />
@@ -1157,13 +1157,13 @@ export function SellerProfilePage() {
                     {loadingReviews ? (
                       <div className="space-y-3">
                         {Array.from({ length: 3 }).map((_, i) => (
-                          <div key={i} className="h-16 bg-slate-100 dark:bg-slate-900 rounded-2xl animate-pulse" />
+                          <div key={i} className="h-16 bg-slate-100 dark:bg-card rounded-2xl animate-pulse" />
                         ))}
                       </div>
                     ) : reviews.length > 0 ? (
                       <div className="space-y-3">
                         {reviews.map((review) => (
-                          <div key={review.id} className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+                          <div key={review.id} className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                                 {review.buyer?.buyerProfile?.businessName || review.buyer?.buyerProfile?.fullName || 'Verified Buyer'}
@@ -1270,7 +1270,7 @@ export function SellerProfilePage() {
                           value={rfqNote}
                           onChange={(e) => setRfqNote(e.target.value)}
                           placeholder="Payment terms, special packaging, testing requirements..."
-                          className="w-full rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 text-xs resize-none focus:outline-none focus:border-primary mt-1"
+                          className="w-full rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 p-3 text-xs resize-none focus:outline-none focus:border-primary mt-1"
                         />
                       </div>
 

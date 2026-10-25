@@ -177,7 +177,7 @@ export function UpiPaymentSetupPage() {
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
                 placeholder="01XXXXXXXXX"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
               />
             </div>
 
@@ -186,7 +186,7 @@ export function UpiPaymentSetupPage() {
               <select
                 value={accountType}
                 onChange={(e) => setAccountType(e.target.value)}
-                className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
+                className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
               >
                 <option value="Merchant">Merchant Wholesale Account</option>
                 <option value="Personal">Personal Account</option>
@@ -238,7 +238,7 @@ export function UpiPaymentSetupPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{acc.provider}</h3>
-                      <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-full">
+                      <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-full">
                         {acc.accountType}
                       </span>
                     </div>

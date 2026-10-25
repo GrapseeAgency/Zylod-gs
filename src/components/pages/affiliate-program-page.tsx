@@ -127,7 +127,7 @@ export function AffiliateProgramPage() {
               </span>
             </div>
 
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-gray-800 rounded-2xl flex items-center justify-between gap-3">
+            <div className="p-3 bg-slate-50 dark:bg-background border border-gray-200 dark:border-gray-800 rounded-2xl flex items-center justify-between gap-3">
               <span className="font-mono text-xs text-gray-700 dark:text-gray-300 truncate">
                 {affiliate.trackingLink}
               </span>

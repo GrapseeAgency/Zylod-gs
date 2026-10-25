@@ -150,7 +150,7 @@ export function JobApplyPage() {
                     value={formData.coverLetter}
                     onChange={e => setFormData({ ...formData, coverLetter: e.target.value })}
                     placeholder="Why are you excited to join Zylod?"
-                    className="w-full mt-1 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full mt-1 p-3 bg-slate-50 dark:bg-background rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
               </div>

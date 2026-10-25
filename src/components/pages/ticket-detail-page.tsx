@@ -190,7 +190,7 @@ export function TicketDetailPage() {
 
               <div>
                 <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">{ticket.subject}</h2>
-                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 mt-1.5 leading-relaxed bg-slate-50 dark:bg-background p-3 rounded-xl border border-gray-100 dark:border-gray-800">
                   {ticket.description}
                 </p>
               </div>
@@ -227,7 +227,7 @@ export function TicketDetailPage() {
                         className={`p-3.5 rounded-2xl text-xs space-y-1.5 ${
                           isAdmin
                             ? 'bg-red-50/70 border border-red-100 text-gray-900 dark:text-gray-100 ml-4'
-                            : 'bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-gray-800 text-gray-900 dark:text-gray-100 mr-4'
+                            : 'bg-slate-50 dark:bg-background border border-gray-100 dark:border-gray-800 text-gray-900 dark:text-gray-100 mr-4'
                         }`}
                       >
                         <div className="flex items-center justify-between text-[10px]">

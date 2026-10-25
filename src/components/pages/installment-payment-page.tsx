@@ -66,7 +66,7 @@ export function InstallmentPaymentPage() {
           <Button
             variant="outline"
             onClick={goBack}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
           >
             Back
           </Button>

@@ -31,7 +31,7 @@ export function LiveShoppingPage() {
       {/* Header */}
       <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -72,9 +72,9 @@ export function LiveShoppingPage() {
               <div
                 key={st.id}
                 onClick={() => navigate('live-shopping-detail', { id: st.id })}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:border-red-500 transition cursor-pointer group flex flex-col justify-between"
+                className="bg-white dark:bg-card border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:border-red-500 transition cursor-pointer group flex flex-col justify-between"
               >
-                <div className="relative aspect-[16/10] bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                <div className="relative aspect-[16/10] bg-slate-200 dark:bg-card overflow-hidden">
                   {st.thumbnailUrl ? (
                     <img
                       src={st.thumbnailUrl}

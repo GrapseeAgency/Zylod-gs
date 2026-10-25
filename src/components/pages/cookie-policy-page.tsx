@@ -119,7 +119,7 @@ export function CookiePolicyPage() {
               { label: 'Privacy Policy', id: 'privacy-policy' },
               { label: 'Data Rights', id: 'data-rights' },
             ].map(link => (
-              <button key={link.id} onClick={() => navigate(link.id)} className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-amber-50 hover:text-amber-700 transition">
+              <button key={link.id} onClick={() => navigate(link.id)} className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-background rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-amber-50 hover:text-amber-700 transition">
                 {link.label}
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -141,7 +141,7 @@ export function CookiePolicyPage() {
             <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800"><h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Cookie FAQs</h3></div>
             {faqs.map(faq => (
               <div key={faq.id} className="border-b border-gray-50 last:border-b-0">
-                <button onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)} className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition">
+                <button onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)} className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card transition">
                   <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 pr-3">{faq.questionEn}</span>
                   <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0 transition-transform ${openFaq === faq.id ? 'rotate-180' : ''}`} />
                 </button>

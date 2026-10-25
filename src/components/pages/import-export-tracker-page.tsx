@@ -236,7 +236,7 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center border ${
                     current ? 'bg-white dark:bg-gray-900 border-2 border-primary text-primary' :
                     reached ? 'bg-primary text-white border-primary' :
-                    'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-800'
+                    'bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-800'
                   }`}>
                     {current ? <Satellite className="h-4 w-4 animate-pulse" /> : <Icon className="h-4 w-4" />}
                   </div>
@@ -261,7 +261,7 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
             <span>Journey — real tracking events ({journey.length})</span>
           </div>
           {journey.length === 0 ? (
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-start gap-2">
+            <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-start gap-2">
               <Package className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0 mt-0.5" />
               No tracking events yet — the factory dispatch row appears when the supplier marks the first transition. There is no fabricated vessel or route here.
             </div>
@@ -296,7 +296,7 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
           <div className="space-y-2">
             {order.subOrders.flatMap((s) =>
               s.items.map((it) => (
-                <div key={it.id} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <div key={it.id} className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{it.product?.name ?? 'Item'}</p>
                     <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold">
@@ -317,7 +317,7 @@ export function ImportExportTrackerPage({ pageParams: _pageParams }: { pageParam
           <Button
             variant="outline"
             onClick={() => navigate('freight-tracking', { orderId: order.id })}
-            className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
           >
             <Boxes className="h-4 w-4 mr-2" /> Per-shipment view
           </Button>

@@ -98,7 +98,7 @@ export function EvidenceThumbs({ photos, label = 'Evidence' }: EvidenceThumbsPro
                 <img
                   src={openPhoto.url}
                   alt={openPhoto.note ? `Evidence photo: ${openPhoto.note}` : 'Buyer evidence photo'}
-                  className="max-h-[65vh] w-full rounded-xl object-contain border border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-slate-50 dark:bg-slate-950"
+                  className="max-h-[65vh] w-full rounded-xl object-contain border border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-slate-50 dark:bg-background"
                 />
                 <p className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums break-all">
                   {openPhoto.mimeType} · {formatBytes(openPhoto.sizeBytes)} · served by /api/attachments (owner/admin only)

@@ -125,7 +125,7 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
                 <div className="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden">
                   <div className="max-h-64 overflow-auto">
                     <table className="w-full text-[11px]">
-                      <thead className="bg-slate-50 dark:bg-slate-950 sticky top-0">
+                      <thead className="bg-slate-50 dark:bg-background sticky top-0">
                         <tr className="text-left text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
                           {[firstLabel, ...columns].map((c) => (
                             <th key={c} className="px-3 py-2 whitespace-nowrap capitalize">{c}</th>
@@ -144,7 +144,7 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
                       </tbody>
                     </table>
                   </div>
-                  <p className="bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 px-3 py-1.5 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  <p className="bg-slate-50 dark:bg-background border-t border-slate-100 dark:border-slate-800 px-3 py-1.5 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                     All measurements in {data.guide.unit}
                   </p>
                 </div>
@@ -162,7 +162,7 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
               )}
 
               {data.guide.tips.length > 0 && (
-                <div className="space-y-1 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="space-y-1 rounded-2xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   {data.guide.tips.map((tip, i) => (
                     <p key={i} className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 font-bold flex items-start gap-1.5">
                       <CheckCircle2 className="h-3 w-3 text-emerald-500 shrink-0 mt-0.5" /> {tip}

@@ -186,7 +186,7 @@ export function CouponsPage() {
             <button
               type="button"
               onClick={() => setShowCreate((v) => !v)}
-              className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition"
+              className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card transition"
               aria-expanded={showCreate}
             >
               <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">
@@ -327,7 +327,7 @@ export function CouponsPage() {
                   </div>
 
                   {/* Coupon Code Strip */}
-                  <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-dashed border-gray-200 dark:border-gray-800 flex items-center justify-between gap-3">
+                  <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 border border-dashed border-gray-200 dark:border-gray-800 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 min-w-0">
                       <Tag className="w-4 h-4 text-red-500 flex-shrink-0" />
                       <span className="font-mono font-bold text-xs sm:text-sm text-gray-900 dark:text-gray-100 tracking-wider truncate">

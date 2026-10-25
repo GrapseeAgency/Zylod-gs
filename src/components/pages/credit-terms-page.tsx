@@ -69,7 +69,7 @@ export function CreditTermsPage() {
                 </Badge>
               </div>
               <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500"><strong>Tenor:</strong> {c.tenor}</p>
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-2xl">
+              <div className="p-2.5 bg-slate-50 dark:bg-background rounded-2xl">
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   <strong>Requirements:</strong> {c.criteria}
                 </p>

@@ -181,7 +181,7 @@ export function BalanceOverviewPage() {
           <Button
             onClick={() => navigate('withdraw-money')}
             variant="outline"
-            className="h-12 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
+            className="h-12 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
           >
             Request Payout
           </Button>

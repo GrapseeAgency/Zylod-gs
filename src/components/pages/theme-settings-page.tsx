@@ -178,7 +178,7 @@ export function ThemeSettingsPage() {
                         className={`p-3.5 rounded-2xl border text-left space-y-1.5 transition-all disabled:opacity-70 ${
                           isSelected
                             ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -209,7 +209,7 @@ export function ThemeSettingsPage() {
 
             {/* Accessibility & Density — honestly not implemented (no backend storage) */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-              <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                 <Sliders className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary">Catalog Ergonomics &amp; Motion</span>
               </div>

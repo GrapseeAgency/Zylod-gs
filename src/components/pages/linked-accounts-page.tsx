@@ -228,7 +228,7 @@ export function LinkedAccountsPage() {
                       className={`p-3 rounded-2xl border flex items-center gap-2 text-left transition-all ${
                         isSelected
                           ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                       }`}
                     >
                       <Icon className={`h-4 w-4 shrink-0 ${isSelected ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
@@ -330,7 +330,7 @@ export function LinkedAccountsPage() {
             )}
 
             {/* Honest scope note */}
-            <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 space-y-1">
+            <div className="bg-slate-100 dark:bg-card rounded-2xl p-4 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 space-y-1">
               <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                 <Lock className="h-3.5 w-3.5 text-primary" />
                 What these links are — and are not

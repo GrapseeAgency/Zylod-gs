@@ -73,7 +73,7 @@ const TAB_LABELS: Record<ComplaintTab, string> = {
 
 const REFRESH_INTERVAL_MS = 30_000
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 // Complaint status → shadcn Badge tone (real statuses only)
 const statusBadgeClass: Record<string, string> = {
@@ -81,7 +81,7 @@ const statusBadgeClass: Record<string, string> = {
   in_review: 'bg-primary/5 text-primary border-primary/30 dark:bg-primary/10 dark:text-primary/70 dark:border-primary/30',
   resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   rejected: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
-  withdrawn: 'bg-slate-50 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-950 dark:text-slate-300 dark:border-slate-800',
+  withdrawn: 'bg-slate-50 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-background dark:text-slate-300 dark:border-slate-800',
 }
 
 function formatTimestamp(iso: string): string {
@@ -411,7 +411,7 @@ export function AdminComplaintsPage() {
 
               {/* Buyer + order context */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   <User className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</p>
@@ -419,7 +419,7 @@ export function AdminComplaintsPage() {
                     <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 truncate">id {c.buyerId}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   <Package className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Order</p>
@@ -444,7 +444,7 @@ export function AdminComplaintsPage() {
 
               {/* Resolution (shown only when a real decision exists) */}
               {c.resolutionNote && (
-                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   <ScrollText className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 break-words">
                     <span className="font-black">Resolution note:</span> {c.resolutionNote}
@@ -496,7 +496,7 @@ export function AdminComplaintsPage() {
 
       {/* Honest data notes straight from the API */}
       {!loading && dataNotes.length > 0 && complaints.length > 0 && (
-        <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-1">
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-1">
           {dataNotes.map((noteLine, i) => (
             <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">· {noteLine}</p>
           ))}
@@ -524,7 +524,7 @@ export function AdminComplaintsPage() {
               </DialogHeader>
 
               <div className="space-y-3 py-1">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
+                <div className="rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
                   <span className="font-black">{dialog.complaint.title}</span> · {dialog.complaint.categoryLabel} · buyer {dialog.complaint.buyerName ?? dialog.complaint.buyerId}
                 </div>
 

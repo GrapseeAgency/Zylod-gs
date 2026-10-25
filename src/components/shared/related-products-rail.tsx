@@ -84,7 +84,7 @@ export function RelatedProductsRail({ productId }: { productId: string }) {
             className="group shrink-0 w-[168px] text-left rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 overflow-hidden hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all"
             data-testid="related-product-card"
           >
-            <div className="aspect-square bg-slate-50 dark:bg-slate-950 overflow-hidden">
+            <div className="aspect-square bg-slate-50 dark:bg-background overflow-hidden">
               <img
                 src={p.image || '/placeholder.svg'}
                 alt={p.name}
@@ -105,7 +105,7 @@ export function RelatedProductsRail({ productId }: { productId: string }) {
                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                   p.reason === 'From this supplier'
                     ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
-                    : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                    : 'bg-slate-100 text-slate-600 dark:bg-card dark:text-slate-400'
                 }`}>{p.reason}</span>
                 {(p.moq ?? 0) > 1 && <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold">MOQ {p.moq}</span>}
               </div>

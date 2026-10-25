@@ -67,13 +67,13 @@ const ORDER_STATUS_TABS: { key: string; label: string }[] = [
   { key: 'returned', label: 'Returned' },
 ]
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 const paymentStatusChip: Record<string, string> = {
   unpaid: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
   partial: 'bg-primary/5 text-primary border-primary/30 dark:bg-primary/10 dark:text-primary/70 dark:border-primary/30',
   paid: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
-  refunded: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+  refunded: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-card dark:text-slate-300 dark:border-slate-800',
 }
 
 const subOrderStatusChip: Record<string, string> = {
@@ -83,7 +83,7 @@ const subOrderStatusChip: Record<string, string> = {
   shipped: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-400 dark:border-violet-900',
   delivered: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   cancelled: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
-  returned: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+  returned: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-card dark:text-slate-300 dark:border-slate-800',
 }
 
 function PaymentChip({ status }: { status: string }) {
@@ -382,7 +382,7 @@ export function AdminOrdersPage() {
 
                 {/* Per-subOrder status summary */}
                 {isExpanded && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-2">
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Per-shipment status (real subOrders.status)</p>
                     {subOrders.length === 0 ? (
                       <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">This order has no shipments recorded — it may predate the split-order model.</p>
@@ -489,7 +489,7 @@ export function AdminOrdersPage() {
           </DialogHeader>
 
           <div className="space-y-3">
-            <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-3 flex items-center justify-between">
+            <div className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-3 flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">Order total (recorded amount must match exactly)</span>
               <span className="text-lg font-black text-primary">{formatPrice(verifyTarget?.totalAmount ?? 0)}</span>
             </div>

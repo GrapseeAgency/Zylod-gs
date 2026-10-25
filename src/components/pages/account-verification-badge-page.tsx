@@ -146,7 +146,7 @@ export function AccountVerificationBadgePage() {
     return (
       <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
-          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
+          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
             <ShieldCheck className="h-7 w-7 text-slate-400 dark:text-slate-500" />
           </div>
           <h1 className="text-base font-black">Sign in to view your verification status</h1>
@@ -223,7 +223,7 @@ export function AccountVerificationBadgePage() {
 
         {/* Milestone Verification Checkpoints */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-          <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+          <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-primary" />
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">KYC &amp; Verification Milestones</span>
           </div>
@@ -238,7 +238,7 @@ export function AccountVerificationBadgePage() {
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                       verified
                         ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                        : 'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500'
+                        : 'bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500'
                     }`}>
                       {verified ? <Check className="h-4 w-4 stroke-[3]" /> : <Clock className="h-4 w-4" />}
                     </div>
@@ -259,7 +259,7 @@ export function AccountVerificationBadgePage() {
                       ? 'text-emerald-700 bg-emerald-50 border border-emerald-100'
                       : pending
                         ? 'text-amber-700 bg-amber-50 border border-amber-100'
-                        : 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800'
+                        : 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800'
                   }`}>
                     {verified ? 'Verified' : pending ? 'Pending' : 'Not started'}
                   </span>

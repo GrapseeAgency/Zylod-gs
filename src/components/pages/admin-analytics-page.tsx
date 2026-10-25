@@ -44,18 +44,18 @@ interface ApiAnalytics {
   dataNotes: string[]
 }
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 // Real status → chip color (same palette language as the admin queues)
 const statusChip: Record<string, string> = {
-  processing: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800',
+  processing: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-background border-slate-100 dark:border-slate-800',
   shipped: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 border-amber-100 dark:border-amber-900',
   delivered: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 border-emerald-100 dark:border-emerald-900',
   cancelled: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 border-red-100 dark:border-red-900',
   pending: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 border-amber-100 dark:border-amber-900',
   success: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 border-emerald-100 dark:border-emerald-900',
   failed: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 border-red-100 dark:border-red-900',
-  refunded: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800',
+  refunded: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-background border-slate-100 dark:border-slate-800',
   active: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 border-emerald-100 dark:border-emerald-900',
   suspended: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 border-amber-100 dark:border-amber-900',
   banned: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 border-red-100 dark:border-red-900',
@@ -225,7 +225,7 @@ export function AdminAnalyticsPage() {
         <>
           {/* Honest empty-marketplace banner — zeros ARE the truth here */}
           {marketplaceEmpty && (
-            <div className="flex items-start gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+            <div className="flex items-start gap-2 bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
               <ShieldCheck className="h-4 w-4 shrink-0 mt-0.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
               <span>
                 This marketplace has no data yet — every number on this page is a live count from the database, and right now they are all zero. Figures appear the moment real users, products and orders exist.
@@ -399,7 +399,7 @@ export function AdminAnalyticsPage() {
 
           {/* Honest data notes straight from the API */}
           {data.dataNotes.length > 0 && (
-            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-1">
+            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-1">
               {data.dataNotes.map((note, i) => (
                 <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">· {note}</p>
               ))}

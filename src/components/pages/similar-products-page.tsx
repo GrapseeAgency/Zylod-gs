@@ -93,7 +93,7 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
             <Button
               variant="outline"
               onClick={goBack}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
             >
               Go Back
             </Button>
@@ -160,7 +160,7 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
         {/* Empty — marketplace has no similar products yet */}
         {!loading && !error && products.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
               <Package className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">No similar products found yet</h2>
@@ -189,7 +189,7 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
               >
                 <div className="flex flex-col md:flex-row">
                   {/* Image */}
-                  <div className="relative h-40 w-full md:h-44 md:w-52 shrink-0 bg-slate-100 dark:bg-slate-900 overflow-hidden">
+                  <div className="relative h-40 w-full md:h-44 md:w-52 shrink-0 bg-slate-100 dark:bg-card overflow-hidden">
                     {p.image ? (
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                     ) : (
@@ -247,7 +247,7 @@ export function SimilarProductsPage({ pageParams: _pageParams }: { pageParams?: 
         {/* Honest note */}
         {!loading && !error && products.length > 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-start gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 flex items-center justify-center shrink-0 mt-0.5">
+            <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 flex items-center justify-center shrink-0 mt-0.5">
               <Boxes className="h-5 w-5" />
             </div>
             <div>

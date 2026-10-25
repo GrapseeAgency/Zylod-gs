@@ -43,7 +43,7 @@ interface ApiProduct {
 
 type ProductsTab = 'pending' | 'approved'
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 export function AdminProductsPage() {
   const { navigate } = useNavigationStore()
@@ -362,7 +362,7 @@ export function AdminProductsPage() {
 
                 {/* Media review strip (Task 51-b) — approval is an INFORMED decision */}
                 {images.length > 0 || videos.length > 0 ? (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 px-4 py-3">
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-background/30 px-4 py-3">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <ImageIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                       <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
@@ -420,7 +420,7 @@ export function AdminProductsPage() {
 
                 {/* Inline reject form (pending tab) */}
                 {tab === 'pending' && isRejectOpen && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                       Rejecting sets this product to not approved — it will not appear in the public catalog. The optional reason is stored in the server audit log for this action.
                     </p>

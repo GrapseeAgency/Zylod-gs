@@ -73,7 +73,7 @@ function StaffStatCard({
     emerald: 'bg-emerald-50 border-emerald-100 text-emerald-600',
     amber: 'bg-amber-50 border-amber-100 text-amber-600',
     sky: 'bg-sky-50 border-sky-100 text-sky-600',
-    slate: 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400',
+    slate: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400',
     violet: 'bg-violet-50 border-violet-100 text-violet-600',
   }
 
@@ -338,7 +338,7 @@ export function StaffProfilePage() {
           )}
           <button
             onClick={() => navigate('account-settings')}
-            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300"
+            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300"
             title="Settings"
           >
             <Settings className="h-4 w-4" />
@@ -361,7 +361,7 @@ export function StaffProfilePage() {
           <div className="px-4 pb-4 -mt-8 space-y-3">
             <div className="flex items-end justify-between">
               <div className="relative">
-                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-slate-200 dark:ring-slate-800 flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-slate-200 dark:ring-slate-800 flex items-center justify-center bg-slate-100 dark:bg-card">
                   <HardHat className="h-8 w-8 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
                 </div>
               </div>
@@ -386,7 +386,7 @@ export function StaffProfilePage() {
                 <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 ${
                   clockedIn
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                    : 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
+                    : 'bg-slate-100 dark:bg-card text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${clockedIn ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
                   {clockedIn ? 'On Duty' : 'Off Duty'}
@@ -419,7 +419,7 @@ export function StaffProfilePage() {
                   className={`px-3.5 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-primary text-white shadow-xs font-black'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-card'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -548,7 +548,7 @@ export function StaffProfilePage() {
                     {vehicles.length > 0 ? (
                       <div className="space-y-2">
                         {vehicles.map((v) => (
-                          <div key={v.id} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl flex justify-between items-center text-xs">
+                          <div key={v.id} className="p-3 bg-slate-50 dark:bg-background rounded-xl flex justify-between items-center text-xs">
                             <div>
                               <span className="font-bold text-slate-900 dark:text-slate-100 block">{v.plateNumber}</span>
                               <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Driver: {v.driverName} • Route: {v.route}</span>
@@ -634,7 +634,7 @@ export function StaffProfilePage() {
                           value={incidentDesc}
                           onChange={(e) => setIncidentDesc(e.target.value)}
                           placeholder="Location, equipment involved, and actions taken..."
-                          className="w-full rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 text-xs resize-none focus:outline-none focus:border-primary mt-1"
+                          className="w-full rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 p-3 text-xs resize-none focus:outline-none focus:border-primary mt-1"
                         />
                       </div>
                       <Button
@@ -692,7 +692,7 @@ export function StaffProfilePage() {
                       value={handoverNotes}
                       onChange={(e) => setHandoverNotes(e.target.value)}
                       placeholder="Notes for next shift supervisor regarding pending dock arrivals or equipment..."
-                      className="w-full rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 text-xs resize-none focus:outline-none focus:border-primary"
+                      className="w-full rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 p-3 text-xs resize-none focus:outline-none focus:border-primary"
                     />
                     <Button
                       onClick={generateHandover}

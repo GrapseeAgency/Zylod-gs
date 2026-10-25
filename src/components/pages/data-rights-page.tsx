@@ -97,7 +97,7 @@ export function DataRightsPage() {
                 value={reason}
                 onChange={e => setReason(e.target.value)}
                 placeholder="Explain any specific records you would like us to review..."
-                className="w-full p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full p-3 bg-slate-50 dark:bg-background rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 

@@ -155,7 +155,7 @@ export function AdminUsersPage() {
     if (s === 'active') return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
     if (s === 'suspended') return 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400'
     if (s === 'banned') return 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400'
-    return 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+    return 'bg-slate-100 dark:bg-card text-slate-600 dark:bg-card dark:text-slate-400'
   }
 
   return (
@@ -297,7 +297,7 @@ export function AdminUsersPage() {
 
                 {/* Details / action panel */}
                 {(showDetails || isActionTarget) && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
                     {/* Real account details */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px]">
                       <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Contact</span><span className="font-bold break-all">{u.email || '--'}</span><span className="block text-slate-400 dark:text-slate-500 dark:text-slate-400">{u.phone || ''}</span></div>

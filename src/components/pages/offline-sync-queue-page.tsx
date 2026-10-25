@@ -80,7 +80,7 @@ export function OfflineSyncQueuePage() {
       {/* Honest queue state */}
       <Card className="rounded-2xl border shadow-sm">
         <CardContent className="p-6 text-center space-y-3">
-          <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+          <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
             <CheckCircle2 className="h-6 w-6 text-emerald-600" />
           </div>
           <h3 className="font-bold text-sm text-foreground">Nothing queued on this device</h3>

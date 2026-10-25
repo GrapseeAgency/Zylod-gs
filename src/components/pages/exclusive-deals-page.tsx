@@ -55,7 +55,7 @@ export function ExclusiveDealsPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition md:hidden">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export function ExclusiveDealsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           {loading ? (
             [1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-200 dark:border-slate-700 animate-pulse space-y-3">
+              <div key={i} className="bg-white dark:bg-card rounded-3xl p-4 border border-slate-200 dark:border-slate-700 animate-pulse space-y-3">
                 <Skeleton className="h-28 w-full rounded-2xl bg-slate-200 dark:bg-slate-700" />
                 <Skeleton className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
               </div>
@@ -120,7 +120,7 @@ export function ExclusiveDealsPage() {
               <div
                 key={deal.id}
                 onClick={() => navigate('product-detail', { id: deal.productId })}
-                className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-4 space-y-3 shadow-sm hover:border-amber-400 transition cursor-pointer flex flex-col justify-between"
+                className="bg-white dark:bg-card/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-4 space-y-3 shadow-sm hover:border-amber-400 transition cursor-pointer flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
@@ -134,7 +134,7 @@ export function ExclusiveDealsPage() {
                     )}
                   </div>
 
-                  <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+                  <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-card flex items-center justify-center">
                     {/* t187-d: neutral icon placeholder — no invented stock photo */}
                     {deal.thumbnailUrl ? (
                       <img

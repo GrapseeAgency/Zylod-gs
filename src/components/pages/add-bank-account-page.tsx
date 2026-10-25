@@ -104,7 +104,7 @@ export function AddBankAccountPage() {
               <select
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
+                className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
               >
                 <option value="City Bank PLC">City Bank PLC</option>
                 <option value="BRAC Bank PLC">BRAC Bank PLC</option>
@@ -125,7 +125,7 @@ export function AddBankAccountPage() {
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
                 placeholder="13-16 digit account number"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
               />
             </div>
 
@@ -137,7 +137,7 @@ export function AddBankAccountPage() {
                 value={accountHolderName}
                 onChange={(e) => setAccountHolderName(e.target.value)}
                 placeholder="Exact legal name matching bank statement"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
               />
             </div>
             </div>
@@ -149,7 +149,7 @@ export function AddBankAccountPage() {
                   value={branchName}
                   onChange={(e) => setBranchName(e.target.value)}
                   placeholder="Branch"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                 />
               </div>
               <div>
@@ -158,7 +158,7 @@ export function AddBankAccountPage() {
                   value={routingNumber}
                   onChange={(e) => setRoutingNumber(e.target.value)}
                   placeholder="9-digit routing"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-semibold"
                 />
               </div>
             </div>

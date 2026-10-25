@@ -207,7 +207,7 @@ export default function LiveDeliveryMap({ data, className }: Props) {
   const driverName = latestPing?.driver.name ?? null
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 ${className ?? ''}`}>
+    <div className={`relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-card ${className ?? ''}`}>
       {/* Map canvas — honest empty states render inside the same frame */}
       <div
         ref={containerRef}

@@ -258,7 +258,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
             )}
 
             {/* Stats Metric Strip — only metrics that exist in the database */}
-            <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-800 bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 text-center">
+            <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-800 bg-slate-50 dark:bg-background rounded-2xl p-3 text-center">
               <div className="flex flex-col items-center">
                 <div className="flex items-center gap-1 text-xs font-black text-slate-900 dark:text-slate-100">
                   <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
@@ -299,7 +299,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
               className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                 activeCategory === 'all'
                   ? 'bg-primary text-white shadow-xs'
-                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
               }`}
             >
               All Products
@@ -311,7 +311,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                   activeCategory === name
                     ? 'bg-primary text-white shadow-xs'
-                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
                 }`}
               >
                 {name}
@@ -360,7 +360,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
         {/* Empty — honest */}
         {!loading && !error && filteredProducts.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
               <Package className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
@@ -417,7 +417,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
               variant="outline"
               onClick={() => fetchProducts(page + 1, true)}
               disabled={loadingMore}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl shadow-xs disabled:opacity-60"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl shadow-xs disabled:opacity-60"
             >
               {loadingMore ? 'Loading…' : `Load More (${total - products.length} remaining)`}
             </Button>

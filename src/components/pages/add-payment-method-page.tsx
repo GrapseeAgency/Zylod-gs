@@ -169,7 +169,7 @@ export function AddPaymentMethodPage() {
 
       <main className="px-4 py-5 md:px-6 md:py-6 space-y-5 md:space-y-6 max-w-lg mx-auto lg:max-w-3xl">
         {/* Method Switcher Tabs */}
-        <div className="grid grid-cols-3 p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl gap-1">
+        <div className="grid grid-cols-3 p-1 bg-slate-100 dark:bg-card rounded-2xl gap-1">
           <button
             onClick={() => setActiveTab('card')}
             className={`py-2 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5 ${
@@ -210,7 +210,7 @@ export function AddPaymentMethodPage() {
           <form onSubmit={saveCard} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Debit / Credit / Corporate Card</h2>
 
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+            <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
               The platform tokenizes cards: it stores ONLY the last 4 digits, network, expiry, and holder — never a
               full card number or CVV. Actual charges run through the gateways at checkout.
             </div>
@@ -222,7 +222,7 @@ export function AddPaymentMethodPage() {
                   key={t}
                   onClick={() => setCardType(t)}
                   className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors ${
-                    cardType === t ? 'bg-rose-50 text-primary border-primary' : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
+                    cardType === t ? 'bg-rose-50 text-primary border-primary' : 'bg-slate-50 dark:bg-background text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                   }`}
                 >
                   {t === 'debit' ? 'Debit card' : 'Credit card'}
@@ -240,7 +240,7 @@ export function AddPaymentMethodPage() {
                   maxLength={4}
                   value={cardLast4}
                   onChange={(e) => setCardLast4(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
                   required
                 />
               </div>
@@ -252,7 +252,7 @@ export function AddPaymentMethodPage() {
                   placeholder="e.g. John Doe / Acme Corp"
                   value={cardHolder}
                   onChange={(e) => setCardHolder(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   required
                 />
               </div>
@@ -266,7 +266,7 @@ export function AddPaymentMethodPage() {
                   placeholder="09/28"
                   value={expiry}
                   onChange={(e) => setExpiry(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
                 />
               </div>
               <div className="space-y-1">
@@ -275,7 +275,7 @@ export function AddPaymentMethodPage() {
                   id="pm-network"
                   value={cardNetwork}
                   onChange={(e) => setCardNetwork(e.target.value as typeof cardNetwork)}
-                  className="h-11 w-full rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 text-xs font-semibold text-slate-800 dark:text-slate-200"
+                  className="h-11 w-full rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 px-3 text-xs font-semibold text-slate-800 dark:text-slate-200"
                 >
                   <option value="visa">Visa</option>
                   <option value="mastercard">Mastercard</option>
@@ -314,7 +314,7 @@ export function AddPaymentMethodPage() {
                   className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors ${
                     mfsProvider === prov.id
                       ? 'bg-rose-50 text-primary border-primary'
-                      : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
+                      : 'bg-slate-50 dark:bg-background text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                   }`}
                 >
                   {prov.label}
@@ -330,7 +330,7 @@ export function AddPaymentMethodPage() {
                 type="tel"
                 value={mfsNumber}
                 onChange={(e) => setMfsNumber(e.target.value)}
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                 required
               />
               <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1">
@@ -361,7 +361,7 @@ export function AddPaymentMethodPage() {
                   placeholder="e.g. Eastern Bank Ltd."
                   value={bankName}
                   onChange={(e) => setBankName(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   required
                 />
               </div>
@@ -373,7 +373,7 @@ export function AddPaymentMethodPage() {
                   placeholder="e.g. Acme Industrial Supplies Ltd."
                   value={accountHolder}
                   onChange={(e) => setAccountHolder(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   required
                 />
               </div>
@@ -387,7 +387,7 @@ export function AddPaymentMethodPage() {
                   placeholder="100XXXXXXXXX"
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
                   required
                 />
               </div>
@@ -398,7 +398,7 @@ export function AddPaymentMethodPage() {
                   placeholder="090270000"
                   value={routingNumber}
                   onChange={(e) => setRoutingNumber(e.target.value)}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
                 />
               </div>
             </div>
@@ -410,7 +410,7 @@ export function AddPaymentMethodPage() {
                 placeholder="e.g. Gulshan Corporate Branch"
                 value={branchName}
                 onChange={(e) => setBranchName(e.target.value)}
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
               />
             </div>
 

@@ -130,7 +130,7 @@ export function SellerReviewsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         {review.kind === 'store' && (
-                          <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded">Store</span>
+                          <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-card px-2 py-0.5 rounded">Store</span>
                         )}
                         <span className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, i) => (

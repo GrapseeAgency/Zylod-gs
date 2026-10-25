@@ -255,7 +255,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
 
           {/* BILLED TO (real buyer of record from the endpoint) / SHIPPED TO */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-slate-50/80 dark:bg-slate-950/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-1 text-xs">
+            <div className="bg-slate-50/80 dark:bg-background/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-1 text-xs">
               <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 block mb-1">
                 BILLED TO
               </span>
@@ -264,7 +264,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
               <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 pt-1">Buyer of record on this order.</p>
             </div>
 
-            <div className="bg-slate-50/80 dark:bg-slate-950/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-1 text-xs">
+            <div className="bg-slate-50/80 dark:bg-background/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-1 text-xs">
               <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 block mb-1">
                 SHIP TO
               </span>

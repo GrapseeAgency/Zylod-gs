@@ -99,14 +99,14 @@ export function DisputeResolutionGuidePage() {
             Evidence That Helps Your Case
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-700 dark:text-gray-300">
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
+            <div className="p-3 bg-slate-50 dark:bg-background rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-gray-900 dark:text-gray-100">
                 <Video className="w-3.5 h-3.5 text-red-600" />
                 Unboxing Video
               </div>
               <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500">Continuous video showing sealed shipping label and opening parcel.</p>
             </div>
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
+            <div className="p-3 bg-slate-50 dark:bg-background rounded-xl border border-gray-100 dark:border-gray-800 space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-gray-900 dark:text-gray-100">
                 <Camera className="w-3.5 h-3.5 text-red-600" />
                 Defect Photographs

@@ -227,7 +227,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
 
             <div>
               {product.sku && (
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-md inline-flex items-center gap-1">
                   <Package className="h-3 w-3 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
                   SKU: {product.sku}
                 </span>
@@ -254,7 +254,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
             <Button
               variant="outline"
               onClick={() => navigate('product-detail', { productId: product.id })}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
             >
               <Package className="h-4 w-4" />
               View Full Product Details
@@ -277,7 +277,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                   className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                     activeFilter === tab.key
                       ? 'bg-primary text-white shadow-xs'
-                      : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
                   }`}
                 >
                   {tab.label}
@@ -294,7 +294,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
         {/* Empty variants — honest */}
         {!loading && !error && product && variants.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
               <Layers className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">No variants configured</h2>
@@ -334,7 +334,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                       {v.stockQuantity.toLocaleString()} in stock
                     </Badge>
                   ) : (
-                    <Badge className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 border-none text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                    <Badge className="bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 border-none text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
                       <AlertCircle className="h-3 w-3" />
                       Out of stock
                     </Badge>
@@ -355,8 +355,8 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
                     disabled={!v.isAvailable}
                     className={`h-8 px-4 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-none transition-colors border ${
                       v.isAvailable
-                        ? 'bg-slate-100 dark:bg-slate-900 hover:bg-primary text-slate-800 dark:text-slate-200 hover:text-white border-slate-200 dark:border-slate-800'
-                        : 'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 border-slate-100 dark:border-slate-800 cursor-not-allowed'
+                        ? 'bg-slate-100 dark:bg-card hover:bg-primary text-slate-800 dark:text-slate-200 hover:text-white border-slate-200 dark:border-slate-800'
+                        : 'bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500 border-slate-100 dark:border-slate-800 cursor-not-allowed'
                     }`}
                   >
                     <ShoppingCart className="h-3 w-3" />

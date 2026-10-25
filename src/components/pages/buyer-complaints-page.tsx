@@ -33,7 +33,7 @@ interface ApiComplaint {
 
 const REFRESH_INTERVAL_MS = 30_000
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 // Real complaint status → chip color (honest palette language, same as admin queues)
 const statusChipClass: Record<string, string> = {
@@ -41,7 +41,7 @@ const statusChipClass: Record<string, string> = {
   in_review: 'text-primary dark:text-primary/70 bg-primary/5 dark:bg-primary/10 border-primary/20 dark:border-primary/30',
   resolved: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 border-emerald-100 dark:border-emerald-900',
   rejected: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 border-red-100 dark:border-red-900',
-  withdrawn: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800',
+  withdrawn: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-background border-slate-100 dark:border-slate-800',
 }
 
 function formatTimestamp(iso: string): string {
@@ -282,7 +282,7 @@ export function BuyerComplaintsPage() {
 
               {/* Order context (only when the complaint is order-related) */}
               {c.orderId && (
-                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   <Package className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 break-all font-mono">{c.orderId}</p>
                 </div>
@@ -293,7 +293,7 @@ export function BuyerComplaintsPage() {
 
               {/* Resolution (shown only when a real decision exists) */}
               {c.resolutionNote && (
-                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   <ScrollText className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 break-words">
                     <span className="font-black">Resolution note:</span> {c.resolutionNote}
@@ -313,7 +313,7 @@ export function BuyerComplaintsPage() {
                   type="button"
                   onClick={() => toggleEvidence(c.id)}
                   aria-expanded={!!expandedEvidence[c.id]}
-                  className="min-h-11 w-full flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 dark:border-slate-700 px-3 text-xs font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:bg-slate-950 transition-colors"
+                  className="min-h-11 w-full flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 dark:border-slate-700 px-3 text-xs font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 hover:bg-slate-50 dark:bg-background dark:hover:bg-card dark:hover:bg-background transition-colors"
                 >
                   <span className="flex items-center gap-1.5">
                     <ImageIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
@@ -373,7 +373,7 @@ export function BuyerComplaintsPage() {
               </DialogHeader>
 
               <div className="space-y-3 py-1">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
+                <div className="rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
                   <span className="font-black">{withdrawing.title}</span> · ref <span className="font-mono">{withdrawing.id}</span> · status {withdrawing.status}
                 </div>
 

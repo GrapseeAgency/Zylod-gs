@@ -34,7 +34,7 @@ export function SpinHistoryPage() {
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
       <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export function SpinHistoryPage() {
           spins.map(s => (
             <div
               key={s.id}
-              className="bg-white dark:bg-slate-800/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/80 shadow-sm flex items-center justify-between gap-3"
+              className="bg-white dark:bg-card/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/80 shadow-sm flex items-center justify-between gap-3"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">

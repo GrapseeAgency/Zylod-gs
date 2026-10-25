@@ -131,7 +131,7 @@ export function DailyCheckinPage() {
                       ? 'bg-green-50 border-green-200 text-green-700'
                       : isToday
                         ? 'bg-orange-50 border-orange-300 text-orange-700 shadow-sm scale-105'
-                        : 'bg-slate-50 dark:bg-slate-950 border-gray-100 dark:border-gray-800 text-gray-500 dark:text-gray-400'
+                        : 'bg-slate-50 dark:bg-background border-gray-100 dark:border-gray-800 text-gray-500 dark:text-gray-400'
                   }`}
                 >
                   <p className="text-[10px] font-bold uppercase">Day {dayNum}</p>

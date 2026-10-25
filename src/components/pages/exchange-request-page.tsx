@@ -195,7 +195,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
           >
             Back to Home
           </Button>
@@ -262,7 +262,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
         {/* Error / auth / not found states */}
         {(notFound || needsAuth || error) && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
               {needsAuth ? <LogIn className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <AlertCircle className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
@@ -287,7 +287,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
                 <Button
                   variant="outline"
                   onClick={fetchData}
-                  className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
+                  className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   Try Again
@@ -348,7 +348,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
         {/* Item not found in order — honest */}
         {!loading && !error && !needsAuth && !notFound && !originalItem && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
               <AlertCircle className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Item not found in this order</h2>
@@ -382,7 +382,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
                     onClick={() => setSelectedId(opt.id)}
                     className={`w-full text-left bg-white dark:bg-gray-900 rounded-3xl p-4 border transition-all shadow-2xs ${
                       !opt.isAvailable
-                        ? 'opacity-60 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 cursor-not-allowed'
+                        ? 'opacity-60 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 cursor-not-allowed'
                         : isSelected
                           ? 'border-primary ring-2 ring-primary/20'
                           : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
@@ -435,7 +435,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
         {/* No variants configured — honest */}
         {!loading && !error && !needsAuth && !notFound && originalItem && options.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
               <Package className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">No replacement variants available</h2>
@@ -446,7 +446,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
             <Button
               variant="outline"
               onClick={() => navigate('return-request', { orderId })}
-              className="mt-5 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 px-6 rounded-2xl"
+              className="mt-5 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 px-6 rounded-2xl"
             >
               Request a Return
             </Button>
@@ -522,7 +522,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
               <Button
                 variant="outline"
                 onClick={goBack}
-                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
               >
                 Cancel Exchange
               </Button>

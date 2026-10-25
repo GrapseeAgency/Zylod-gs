@@ -118,18 +118,18 @@ const TAB_LABELS: Record<ReturnTab, string> = {
 
 const REFRESH_INTERVAL_MS = 30_000
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 // Real status → chip color (same palette language as the other admin queues)
 const orderStatusChip: Record<string, string> = {
-  processing: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800',
+  processing: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-background border-slate-100 dark:border-slate-800',
   shipped: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 border-amber-100 dark:border-amber-900',
   delivered: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 border-emerald-100 dark:border-emerald-900',
   cancelled: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 border-red-100 dark:border-red-900',
   paid: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 border-emerald-100 dark:border-emerald-900',
-  unpaid: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800',
+  unpaid: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-background border-slate-100 dark:border-slate-800',
   partial: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 border-amber-100 dark:border-amber-900',
-  refunded: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800',
+  refunded: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-background border-slate-100 dark:border-slate-800',
 }
 
 // Return status → shadcn Badge tone (real statuses only)
@@ -137,7 +137,7 @@ const statusBadgeClass: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
   approved: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   rejected: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
-  refunded: 'bg-slate-50 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-950 dark:text-slate-300 dark:border-slate-800',
+  refunded: 'bg-slate-50 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-background dark:text-slate-300 dark:border-slate-800',
 }
 
 // Real refund method value → honest label
@@ -548,7 +548,7 @@ export function AdminReturnsPage() {
 
               {/* Buyer + refund + shipping */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   <User className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</p>
@@ -556,7 +556,7 @@ export function AdminReturnsPage() {
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 truncate">{r.buyer?.email ?? 'no email on file'}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   <Wallet className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Estimated refund</p>
@@ -568,7 +568,7 @@ export function AdminReturnsPage() {
                     )}
                   </div>
                 </div>
-                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   <Truck className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">Return method</p>
@@ -583,7 +583,7 @@ export function AdminReturnsPage() {
                   className={`flex items-start gap-2 rounded-xl border px-3 py-2 ${
                     r.receipts.length >= r.supplierCount
                       ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900'
-                      : 'bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800'
+                      : 'bg-slate-50 dark:bg-background border-slate-100 dark:border-slate-800'
                   }`}
                 >
                   <PackageCheck
@@ -661,7 +661,7 @@ export function AdminReturnsPage() {
 
               {/* Resolution (shown only when a real decision exists) */}
               {r.resolutionNote && (
-                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
                   <ScrollText className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                   <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 break-words">
                     <span className="font-black">Decision note:</span> {r.resolutionNote}
@@ -714,7 +714,7 @@ export function AdminReturnsPage() {
 
       {/* Honest data notes straight from the API */}
       {!loading && dataNotes.length > 0 && returns.length > 0 && (
-        <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-1">
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-1">
           {dataNotes.map((noteLine, i) => (
             <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">· {noteLine}</p>
           ))}
@@ -742,7 +742,7 @@ export function AdminReturnsPage() {
               </DialogHeader>
 
               <div className="space-y-3 py-1">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                <div className="rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Order {dialog.ret.order?.orderNumber ?? '—'} · {dialog.ret.items.length} item{dialog.ret.items.length === 1 ? '' : 's'} · estimated refund {formatPrice(dialog.ret.estimatedRefund)}
                 </div>
 
@@ -824,7 +824,7 @@ export function AdminReturnsPage() {
               </DialogHeader>
 
               <div className="space-y-3 py-1">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                <div className="rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Order {refundDialog.ret.order?.orderNumber ?? '—'} · estimate {formatPrice(refundDialog.ret.estimatedRefund)}
                   {' '}· remaining <span className="font-bold tabular-nums">{formatPrice(refundDialog.ret.refundRemaining)}</span>
                 </div>

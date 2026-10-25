@@ -188,7 +188,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
       <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
         {header}
         <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
-          <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
+          <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
             <Star className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
           </div>
           <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
@@ -248,10 +248,10 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
 
         {loading && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex gap-3.5 items-start" aria-busy="true" aria-live="polite">
-            <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-900 animate-pulse shrink-0" />
+            <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-card animate-pulse shrink-0" />
             <div className="flex-1 space-y-2 pt-1">
               <div className="h-3.5 w-3/4 bg-slate-200 rounded animate-pulse" />
-              <div className="h-3 w-1/2 bg-slate-100 dark:bg-slate-900 rounded animate-pulse" />
+              <div className="h-3 w-1/2 bg-slate-100 dark:bg-card rounded animate-pulse" />
             </div>
           </div>
         )}
@@ -327,7 +327,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                 {/* Criteria Grid */}
                 <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
                   {/* Criterion 1: Item Quality */}
-                  <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+                  <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Item Quality</span>
                       <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{getLabel(qualityRating)}</span>
@@ -336,7 +336,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                   </div>
 
                   {/* Criterion 2: Shipping Speed */}
-                  <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+                  <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Shipping Speed</span>
                       <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{getLabel(shippingRating)}</span>
@@ -345,7 +345,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                   </div>
 
                   {/* Criterion 3: Supplier Comm. */}
-                  <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+                  <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Supplier Comm.</span>
                       <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{getLabel(commRating)}</span>
@@ -362,7 +362,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                     onChange={(e) => setReviewText(e.target.value)}
                     placeholder="Share details about packaging quality, delivery punctuality, or vendor cooperation..."
                     rows={3}
-                    className="rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium resize-none"
+                    className="rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium resize-none"
                   />
                 </div>
 

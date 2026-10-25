@@ -160,7 +160,7 @@ export function WholesaleCatalogPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search catalog..."
-            className="pl-10 pr-10 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
+            className="pl-10 pr-10 h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
           />
           <button
             onClick={() => navigate('barcode-scanner')}
@@ -195,7 +195,7 @@ export function WholesaleCatalogPage() {
               className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                 activeCategory === 'all'
                   ? 'bg-primary text-white shadow-xs'
-                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
               }`}
             >
               All Products
@@ -207,7 +207,7 @@ export function WholesaleCatalogPage() {
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                   activeCategory === c.slug
                     ? 'bg-primary text-white shadow-xs'
-                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
                 }`}
               >
                 {c.name}
@@ -259,7 +259,7 @@ export function WholesaleCatalogPage() {
         {/* Empty — honest */}
         {!loading && !error && filteredProducts.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
               <Package className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">

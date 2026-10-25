@@ -160,7 +160,7 @@ export function ReportProblemPage() {
               </div>
 
               {/* Auto Diagnostics Box */}
-              <div className="bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-gray-800 rounded-2xl p-3.5 space-y-2">
+              <div className="bg-slate-50 dark:bg-background border border-gray-100 dark:border-gray-800 rounded-2xl p-3.5 space-y-2">
                 <p className="text-[11px] font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
                   <Laptop className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
                   Auto-Captured Diagnostics (Included automatically)

@@ -145,7 +145,7 @@ export function TermsOfServicePage() {
                   <button
                     key={link.id}
                     onClick={() => navigate(link.id)}
-                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-primary/5 hover:text-primary transition"
+                    className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-background rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-primary/5 hover:text-primary transition"
                   >
                     {link.label}
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -163,7 +163,7 @@ export function TermsOfServicePage() {
                 <div key={section.id} className="border-b border-gray-50 last:border-b-0">
                   <button
                     onClick={() => setOpenSection(openSection === String(idx) ? null : String(idx))}
-                    className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition"
+                    className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card transition"
                   >
                     <div className="flex items-center gap-3">
                       <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-black flex items-center justify-center">{idx + 1}</span>
@@ -194,7 +194,7 @@ export function TermsOfServicePage() {
                   <div key={faq.id} className="border-b border-gray-50 last:border-b-0">
                     <button
                       onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)}
-                      className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition"
+                      className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card transition"
                     >
                       <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 pr-3">{faq.questionEn}</span>
                       <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0 transition-transform ${openFaq === faq.id ? 'rotate-180' : ''}`} />

@@ -77,7 +77,7 @@ export function ApplyCreditsPage() {
 
         {loading ? (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
-            <div className="h-8 w-40 bg-slate-200 dark:bg-slate-800 rounded animate-pulse mx-auto" />
+            <div className="h-8 w-40 bg-slate-200 dark:bg-card rounded animate-pulse mx-auto" />
             <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-3">Loading your wallet balance…</p>
           </div>
         ) : needsAuth ? (
@@ -127,7 +127,7 @@ export function ApplyCreditsPage() {
                 <Button onClick={() => navigate('wallet')} className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-2xl text-xs gap-2">
                   <Wallet className="h-4 w-4" /> Open Wallet
                 </Button>
-                <Button onClick={goBack} variant="outline" className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs">
+                <Button onClick={goBack} variant="outline" className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs">
                   Back
                 </Button>
               </div>

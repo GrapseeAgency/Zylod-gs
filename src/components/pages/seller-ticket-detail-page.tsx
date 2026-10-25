@@ -108,7 +108,7 @@ export function SellerTicketDetailPage({ pageParams: _pageParams }: { pageParams
     open: 'bg-sky-50 text-sky-700 border-sky-200',
     in_progress: 'bg-amber-50 text-amber-700 border-amber-200',
     resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    closed: 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800',
+    closed: 'bg-slate-100 dark:bg-card text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800',
   };
 
   return (

@@ -139,7 +139,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
   if (!orderId) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
-        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card dark:bg-card flex items-center justify-center mb-4">
           <PackageSearch className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
@@ -198,7 +198,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
               <Button
                 variant="outline"
                 onClick={handleDownloadPdf}
-                className="h-9 px-3 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 flex items-center gap-1.5"
+                className="h-9 px-3 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card flex items-center gap-1.5"
               >
                 <Download className="h-3.5 w-3.5" />
                 PDF Report
@@ -225,7 +225,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
               <Button
                 variant="outline"
                 onClick={loadOrder}
-                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold text-xs h-10 px-5 rounded-2xl"
+                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold text-xs h-10 px-5 rounded-2xl"
               >
                 Retry
               </Button>
@@ -236,7 +236,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
         {/* Not found (404) */}
         {!needsAuth && notFound && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-3">
+            <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-3">
               <PackageSearch className="h-6 w-6" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Order not found</h2>
@@ -301,7 +301,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
                   <Camera className="h-4 w-4 text-primary" />
                   <span>Proof of Delivery Photo</span>
                 </div>
-                <div className="aspect-[4/3] rounded-2xl bg-slate-100 dark:bg-slate-900 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 dark:border-slate-700 flex flex-col items-center justify-center gap-2 text-center px-6">
+                <div className="aspect-[4/3] rounded-2xl bg-slate-100 dark:bg-card dark:bg-card/60 border border-slate-200 dark:border-slate-800 dark:border-slate-700 flex flex-col items-center justify-center gap-2 text-center px-6">
                   <Camera className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium leading-relaxed">
                     No proof-of-delivery photo available yet
@@ -315,7 +315,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
                   <PenTool className="h-4 w-4 text-primary" />
                   <span>Recipient Signature</span>
                 </div>
-                <div className="h-28 rounded-2xl bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/60 border border-dashed border-slate-200 dark:border-slate-800 dark:border-slate-700 flex flex-col items-center justify-center gap-2 text-center px-6">
+                <div className="h-28 rounded-2xl bg-slate-50 dark:bg-background dark:bg-card/60 border border-dashed border-slate-200 dark:border-slate-800 dark:border-slate-700 flex flex-col items-center justify-center gap-2 text-center px-6">
                   <PenTool className="h-6 w-6 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
                     Signature capture is not available yet
@@ -331,7 +331,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
                     <span>Delivery Confirmations</span>
                   </div>
                   {deliveredEvents.length > 0 && (
-                    <span className="bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+                    <span className="bg-slate-100 dark:bg-card dark:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
                       {deliveredEvents.length} recorded
                     </span>
                   )}
@@ -346,7 +346,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
                     {deliveredEvents.map((event) => (
                       <div
                         key={event.id}
-                        className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/60 p-3.5 space-y-1.5"
+                        className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-background dark:bg-card/60 p-3.5 space-y-1.5"
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wide flex items-center gap-1">
@@ -404,7 +404,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
                     return (
                       <div
                         key={so.id}
-                        className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 dark:bg-slate-800/60 p-3.5 space-y-2"
+                        className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-background dark:bg-card/60 p-3.5 space-y-2"
                       >
                         <div className="flex items-center justify-between gap-2">
                           <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">

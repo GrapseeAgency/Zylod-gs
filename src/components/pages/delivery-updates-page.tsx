@@ -216,7 +216,7 @@ export function DeliveryUpdatesPage() {
 
                 {/* Waybill / Tracking Action */}
                 {item.order?.trackingNumber && (
-                  <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-2.5 flex items-center justify-between text-xs border border-gray-100 dark:border-gray-800">
+                  <div className="bg-slate-50 dark:bg-background rounded-xl p-2.5 flex items-center justify-between text-xs border border-gray-100 dark:border-gray-800">
                     <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       Consignment: <strong className="text-gray-800 dark:text-gray-200">{item.order.trackingNumber}</strong>
                     </span>

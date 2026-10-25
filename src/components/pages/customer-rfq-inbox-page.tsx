@@ -113,7 +113,7 @@ const statusChipClass: Record<string, string> = {
   open: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   quoted: 'bg-primary/5 text-primary border-primary/30 dark:bg-primary/10 dark:text-primary/70 dark:border-primary/30',
   awarded: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-400 dark:border-violet-900',
-  closed: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+  closed: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-card dark:text-slate-300 dark:border-slate-800',
   expired: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
 }
 
@@ -493,7 +493,7 @@ export function CustomerRfqInboxPage() {
           {q && (
             <button
               onClick={clearSearch}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-slate-100 dark:bg-card dark:hover:bg-card"
               aria-label="Clear search"
             >
               <X className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
@@ -567,10 +567,10 @@ export function CustomerRfqInboxPage() {
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5 min-w-[150px]">
-                    <span className="text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                    <span className="text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       {shown.itemCount} item{shown.itemCount === 1 ? '' : 's'}
                     </span>
-                    <span className="text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                    <span className="text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       {qtyLabel || `${totalUnitsFromItems(items).toLocaleString()} ${shown.unit} in items`}
                     </span>
                     {typeof shown.targetPrice === 'number' && (
@@ -579,7 +579,7 @@ export function CustomerRfqInboxPage() {
                       </span>
                     )}
                     {deadline && (
-                      <span className={`text-[10px] font-bold border rounded-lg px-2 py-1 inline-flex items-center gap-1 ${overdue ? 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400' : 'bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400'}`}>
+                      <span className={`text-[10px] font-bold border rounded-lg px-2 py-1 inline-flex items-center gap-1 ${overdue ? 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400' : 'bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400'}`}>
                         <CalendarClock className="h-3 w-3" />
                         {overdue ? 'overdue' : 'due'} {fmtDate(deadline)}
                       </span>
@@ -597,12 +597,12 @@ export function CustomerRfqInboxPage() {
 
                 {/* Expanded detail — real GET /api/supplier/rfqs/[id] */}
                 {isExpanded && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
                     {detailLoadingId === rfq.id ? (
                       <div className="space-y-2" role="status" aria-label="Loading details">
-                        <div className="h-4 w-2/3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                        <div className="h-4 w-1/2 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                        <div className="h-4 w-1/3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+                        <div className="h-4 w-2/3 bg-slate-200 dark:bg-card rounded animate-pulse" />
+                        <div className="h-4 w-1/2 bg-slate-200 dark:bg-card rounded animate-pulse" />
+                        <div className="h-4 w-1/3 bg-slate-200 dark:bg-card rounded animate-pulse" />
                       </div>
                     ) : detailError && detailError.id === rfq.id ? (
                       <div className="text-xs text-red-600 dark:text-red-400 space-y-2">
@@ -635,7 +635,7 @@ export function CustomerRfqInboxPage() {
                                 <div key={it.id} className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2 flex flex-wrap items-center gap-2">
                                   <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex-1 min-w-[140px]">{it.productName}</span>
                                   {it.specifications && <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex-1 min-w-[140px] break-words">{it.specifications}</span>}
-                                  <span className="text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                                  <span className="text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
                                     {it.quantity.toLocaleString()} {it.unit}
                                   </span>
                                   {typeof it.targetPrice === 'number' && (
@@ -665,7 +665,7 @@ export function CustomerRfqInboxPage() {
                                   <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">{myQuote.deliveryDays} day{myQuote.deliveryDays === 1 ? '' : 's'} delivery</span>
                                 </>
                               )}
-                              <span className={`text-[10px] font-bold border rounded-lg px-2 py-0.5 uppercase ${myQuote.status === 'accepted' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900' : myQuote.status === 'rejected' ? 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900' : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-950 dark:text-slate-400 dark:border-slate-800'}`}>
+                              <span className={`text-[10px] font-bold border rounded-lg px-2 py-0.5 uppercase ${myQuote.status === 'accepted' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900' : myQuote.status === 'rejected' ? 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900' : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-background dark:text-slate-400 dark:border-slate-800'}`}>
                                 {myQuote.status}
                               </span>
                             </div>

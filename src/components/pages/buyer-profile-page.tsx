@@ -70,7 +70,7 @@ function StatMiniCard({
     amber: 'bg-amber-50 text-amber-600 border-amber-100',
     sky: 'bg-sky-50 text-sky-600 border-sky-100',
     violet: 'bg-violet-50 text-violet-600 border-violet-100',
-    slate: 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800',
+    slate: 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800',
   }
 
   return (
@@ -103,7 +103,7 @@ function OrderStatusBadge({ status }: { status: string }) {
     delivered: { label: 'Delivered', className: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
     shipped: { label: 'In Transit', className: 'bg-sky-50 text-sky-700 border-sky-100' },
     processing: { label: 'Processing', className: 'bg-amber-50 text-amber-700 border-amber-100' },
-    pending: { label: 'Pending', className: 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800' },
+    pending: { label: 'Pending', className: 'bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800' },
     cancelled: { label: 'Cancelled', className: 'bg-rose-50 text-rose-700 border-rose-100' },
     returned: { label: 'Returned', className: 'bg-violet-50 text-violet-700 border-violet-100' },
   }
@@ -305,14 +305,14 @@ export function BuyerProfilePage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('notification-preferences')}
-            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 relative"
+            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 relative"
             title="Notifications"
           >
             <Bell className="h-4 w-4" />
           </button>
           <button
             onClick={() => navigate('account-settings')}
-            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300"
+            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300"
             title="Settings"
           >
             <Settings className="h-4 w-4" />
@@ -336,7 +336,7 @@ export function BuyerProfilePage() {
             <div className="flex items-end justify-between">
               {/* Avatar */}
               <div className="relative group cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
-                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-rose-100 flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-rose-100 flex items-center justify-center bg-slate-100 dark:bg-card">
                   {avatarUrl ? (
                     <img
                       src={avatarUrl}
@@ -422,7 +422,7 @@ export function BuyerProfilePage() {
                   className={`px-3.5 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-primary text-white shadow-xs font-black'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-card'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -492,7 +492,7 @@ export function BuyerProfilePage() {
                           {completion.overallCompletionPct}%
                         </span>
                       </div>
-                      <div className="mt-3 h-2 rounded-full bg-slate-100 dark:bg-slate-900 overflow-hidden">
+                      <div className="mt-3 h-2 rounded-full bg-slate-100 dark:bg-card overflow-hidden">
                         <div
                           className="h-full rounded-full bg-primary transition-all"
                           style={{ width: `${Math.max(3, completion.overallCompletionPct)}%` }}
@@ -535,14 +535,14 @@ export function BuyerProfilePage() {
                           amber: 'text-amber-600 border-amber-100 bg-amber-50',
                           emerald: 'text-emerald-600 border-emerald-100 bg-emerald-50',
                           violet: 'text-violet-600 border-violet-100 bg-violet-50',
-                          slate: 'text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900',
+                          slate: 'text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-card',
                         }
 
                         return (
                           <button
                             key={label}
                             onClick={() => navigate(page)}
-                            className="p-3.5 bg-slate-50 dark:bg-slate-950 hover:bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-slate-200 text-left space-y-1 transition-all group hover:shadow-xs"
+                            className="p-3.5 bg-slate-50 dark:bg-background hover:bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-slate-200 text-left space-y-1 transition-all group hover:shadow-xs"
                           >
                             <div className={`w-8 h-8 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${colorMap[color]}`}>
                               <Icon className="h-4 w-4" />
@@ -581,7 +581,7 @@ export function BuyerProfilePage() {
                           className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap capitalize transition-colors ${
                             orderStatus === s
                               ? 'bg-primary text-white shadow-xs'
-                              : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                              : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
                           }`}
                         >
                           {s === 'all' ? 'All Orders' : s}
@@ -594,8 +594,8 @@ export function BuyerProfilePage() {
                     <div className="space-y-3">
                       {Array.from({ length: 3 }).map((_, i) => (
                         <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 animate-pulse space-y-3">
-                          <div className="h-4 bg-slate-100 dark:bg-slate-900 rounded w-2/3" />
-                          <div className="h-3 bg-slate-100 dark:bg-slate-900 rounded w-1/3" />
+                          <div className="h-4 bg-slate-100 dark:bg-card rounded w-2/3" />
+                          <div className="h-3 bg-slate-100 dark:bg-card rounded w-1/3" />
                         </div>
                       ))}
                     </div>
@@ -626,13 +626,13 @@ export function BuyerProfilePage() {
                           <div className="flex items-center gap-2 pt-2 border-t border-slate-50">
                             <Button
                               onClick={() => navigate('track-order', { orderId: order.id })}
-                              className="flex-1 bg-slate-100 dark:bg-slate-900 hover:bg-rose-50 text-slate-700 dark:text-slate-300 hover:text-primary font-bold h-8 rounded-xl text-[11px]"
+                              className="flex-1 bg-slate-100 dark:bg-card hover:bg-rose-50 text-slate-700 dark:text-slate-300 hover:text-primary font-bold h-8 rounded-xl text-[11px]"
                             >
                               Track
                             </Button>
                             <Button
                               onClick={() => navigate('order-invoice-download', { orderId: order.id })}
-                              className="flex-1 bg-slate-100 dark:bg-slate-900 hover:bg-rose-50 text-slate-700 dark:text-slate-300 hover:text-primary font-bold h-8 rounded-xl text-[11px]"
+                              className="flex-1 bg-slate-100 dark:bg-card hover:bg-rose-50 text-slate-700 dark:text-slate-300 hover:text-primary font-bold h-8 rounded-xl text-[11px]"
                             >
                               Invoice
                             </Button>
@@ -674,7 +674,7 @@ export function BuyerProfilePage() {
                         <button
                           key={label}
                           onClick={() => navigate('wholesale-catalog')}
-                          className="p-3.5 bg-slate-50 dark:bg-slate-950 hover:bg-rose-50 rounded-2xl border border-slate-100 dark:border-slate-800 text-left space-y-1.5 transition-all group"
+                          className="p-3.5 bg-slate-50 dark:bg-background hover:bg-rose-50 rounded-2xl border border-slate-100 dark:border-slate-800 text-left space-y-1.5 transition-all group"
                         >
                           <Icon className="h-5 w-5 text-primary" />
                           <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary leading-snug">{label}</h3>
@@ -695,7 +695,7 @@ export function BuyerProfilePage() {
                       {savedSuppliers.map((sup) => (
                         <div key={sup.id} className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 font-black text-sm shrink-0">
+                            <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 font-black text-sm shrink-0">
                               <Building2 className="h-5 w-5 text-primary" />
                             </div>
                             <div>
@@ -739,7 +739,7 @@ export function BuyerProfilePage() {
                     <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                       Zylod Trade Credit enables verified wholesale buyers to place bulk orders with flexible payment terms (Net-30 / Net-60) after credit verification.
                     </p>
-                    <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-2">
+                    <div className="bg-slate-50 dark:bg-background rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-2">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Credit Status</span>
                         <span className="font-bold text-emerald-600">Active Trade Account</span>
@@ -788,7 +788,7 @@ export function BuyerProfilePage() {
                         <button
                           key={title}
                           onClick={() => navigate(page)}
-                          className="w-full flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
+                          className="w-full flex items-center justify-between p-3.5 bg-slate-50 dark:bg-background hover:bg-slate-100 dark:bg-card dark:hover:bg-card rounded-2xl border border-slate-100 dark:border-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200"
                         >
                           <span>{title}</span>
                           <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
@@ -807,7 +807,7 @@ export function BuyerProfilePage() {
                   <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden">
                     <button
                       onClick={() => navigate('account-settings')}
-                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
+                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
                     >
                       <div className="flex items-center gap-3">
                         <Settings className="h-4 w-4 text-primary" />
@@ -817,7 +817,7 @@ export function BuyerProfilePage() {
                     </button>
                     <button
                       onClick={() => navigate('notification-preferences')}
-                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
+                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
                     >
                       <div className="flex items-center gap-3">
                         <Bell className="h-4 w-4 text-primary" />
@@ -827,7 +827,7 @@ export function BuyerProfilePage() {
                     </button>
                     <button
                       onClick={() => navigate('chat-list')}
-                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
+                      className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
                     >
                       <div className="flex items-center gap-3">
                         <MessageSquare className="h-4 w-4 text-primary" />

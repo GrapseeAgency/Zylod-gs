@@ -274,7 +274,7 @@ export function ProductCertifications({ productId, manage = false }: {
       </div>
 
       {manage && (
-        <form onSubmit={submit} className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-4 space-y-3">
+        <form onSubmit={submit} className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background/60 p-4 space-y-3">
           <div className="flex items-center gap-2">
             <Plus className="h-3.5 w-3.5 text-primary" />
             <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">Add certification</span>

@@ -182,7 +182,7 @@ export function ProductSpecificationsPage({ pageParams: _pageParams }: { pagePar
             </Button>
 
             {/* Hero Image */}
-            <div className="w-full h-52 rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
+            <div className="w-full h-52 rounded-3xl overflow-hidden bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 shadow-2xs">
               {product.images?.[0]?.url ? (
                 <img
                   src={product.images[0].url}
@@ -198,7 +198,7 @@ export function ProductSpecificationsPage({ pageParams: _pageParams }: { pagePar
 
             {/* Section 1: Real specifications, grouped */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xs">
-              <div className="bg-slate-100 dark:bg-slate-900/70 px-4 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2">
+              <div className="bg-slate-100 dark:bg-card/70 px-4 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2">
                 <Wrench className="h-4 w-4 text-primary" />
                 <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Specifications</h3>
                 {specRowCount > 0 && (
@@ -235,7 +235,7 @@ export function ProductSpecificationsPage({ pageParams: _pageParams }: { pagePar
 
             {/* Section 2: Dimensions-style raw rows are covered above; certifications are REAL */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xs">
-              <div className="bg-slate-100 dark:bg-slate-900/70 px-4 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2">
+              <div className="bg-slate-100 dark:bg-card/70 px-4 py-2.5 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2">
                 <Ruler className="h-4 w-4 text-primary" />
                 <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Certifications &amp; Compliance</h3>
               </div>
@@ -243,7 +243,7 @@ export function ProductSpecificationsPage({ pageParams: _pageParams }: { pagePar
             </div>
 
             {/* Download raw record again for the road */}
-            <div className="flex items-start gap-3 p-4 bg-slate-100 dark:bg-slate-900/60 rounded-3xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-start gap-3 p-4 bg-slate-100 dark:bg-card/60 rounded-3xl border border-slate-200 dark:border-slate-800">
               <FileText className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
               <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                 Everything on this page is served from the platform&apos;s live product record.

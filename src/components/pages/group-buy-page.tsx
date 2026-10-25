@@ -111,7 +111,7 @@ export function GroupBuyPage() {
                 </div>
 
                 {/* Progress Bar */}
-                <div className="space-y-1.5 bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
+                <div className="space-y-1.5 bg-slate-50 dark:bg-background rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
                   <div className="flex justify-between text-xs font-bold text-gray-700 dark:text-gray-300">
                     <span>Pool Progress: {camp.currentQty} / {camp.targetQty} Units</span>
                     <span className="text-red-600">{camp.progressPercent}% Full</span>

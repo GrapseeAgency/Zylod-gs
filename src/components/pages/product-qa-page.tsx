@@ -89,10 +89,10 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
   // ── no-product gate ──
   if (!productId) {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
-            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
               <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">No product selected</h2>
@@ -215,7 +215,7 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
         {phase === 'ready' && visible.length === 0 && (
           <Card className="rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
             <CardContent className="p-10 text-center space-y-3">
-              <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+              <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
                 <HelpCircle className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
               </div>
               <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
@@ -254,7 +254,7 @@ export function ProductQaPage({ pageParams: _pageParams }: { pageParams?: Record
               </div>
 
               {qa.answer ? (
-                <div className="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 space-y-2">
+                <div className="rounded-2xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 p-4 space-y-2">
                   <div className="flex items-center gap-1.5 text-[11px] font-bold text-primary">
                     <BadgeCheck className="h-3.5 w-3.5" /> Answered by the supplier
                     {qa.answeredAt && <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">· {fmt(qa.answeredAt)}</span>}

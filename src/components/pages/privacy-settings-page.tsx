@@ -154,7 +154,7 @@ export function PrivacySettingsPage() {
         <span className="text-base font-black tracking-tight text-primary">Privacy &amp; Data Controls</span>
         <button
           onClick={() => navigate('account-settings')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Settings"
         >
           <Shield className="h-4 w-4" />
@@ -208,7 +208,7 @@ export function PrivacySettingsPage() {
 
             {/* Profile Visibility */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-              <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+              <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-primary" />
                   <span className="text-[10px] font-black uppercase tracking-widest text-primary">Profile Visibility</span>
@@ -234,11 +234,11 @@ export function PrivacySettingsPage() {
                         className={`p-3.5 rounded-2xl border text-left transition-all disabled:opacity-70 ${
                           isSelected
                             ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isSelected ? 'bg-rose-50 border border-rose-100 text-primary' : 'bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500'}`}>
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isSelected ? 'bg-rose-50 border border-rose-100 text-primary' : 'bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500'}`}>
                             <Icon className="h-4 w-4" />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -258,7 +258,7 @@ export function PrivacySettingsPage() {
 
             {/* Contact visibility — real switches */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-              <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                 <Building2 className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary">Contact Details on Your Profile</span>
               </div>

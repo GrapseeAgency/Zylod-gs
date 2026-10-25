@@ -219,7 +219,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
-          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
+          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
             <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No product selected</h1>
@@ -238,7 +238,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
-          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
+          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
             <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">Product not found</h1>
@@ -314,11 +314,11 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
           </p>
 
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-md">
+            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-card px-2.5 py-1 rounded-md">
               In Stock: {Math.floor(product.stockQuantity).toLocaleString()}
             </span>
             {product.moq > 1 && (
-              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-2.5 py-1 rounded-md">
+              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-card px-2.5 py-1 rounded-md">
                 MOQ: {Math.floor(product.moq).toLocaleString()} {unitLabel}
               </span>
             )}
@@ -327,7 +327,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
 
         {/* Product Snippet */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-3 border border-slate-200 dark:border-slate-800 flex items-center gap-3 shadow-2xs">
-          <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-900 overflow-hidden shrink-0 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-card overflow-hidden shrink-0 flex items-center justify-center">
             {productImage ? (
               <img src={productImage} alt={product.name} className="w-full h-full object-cover" />
             ) : (
@@ -375,7 +375,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
 
           {/* Current Tier Result Box */}
           {activeTier && (
-            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 text-center space-y-1">
+            <div className="bg-slate-50 dark:bg-background rounded-2xl p-4 border border-slate-100 dark:border-slate-800 text-center space-y-1">
               <span className="text-[10px] font-black uppercase tracking-wider text-primary">
                 {activeTier.isBase ? 'BASE PRICE (NO TIER AT THIS QUANTITY)' : `CURRENT TIER: ${activeTier.label} ${unitLabel}`}
               </span>
@@ -404,7 +404,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
           </div>
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70 text-[10px] font-black uppercase text-slate-400 dark:text-slate-500">
+              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-background/70 text-[10px] font-black uppercase text-slate-400 dark:text-slate-500">
                 <th className="p-3">Quantity</th>
                 <th className="p-3">Unit Price</th>
                 <th className="p-3">Discount</th>
@@ -488,7 +488,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
             <Button
               variant="outline"
               onClick={() => navigate('product-detail', { productId: product.id })}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
             >
               <FileText className="h-4 w-4" />
               Request Formal Quote

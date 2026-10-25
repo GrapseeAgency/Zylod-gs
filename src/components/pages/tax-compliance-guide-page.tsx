@@ -25,7 +25,7 @@ export function TaxComplianceGuidePage() {
 
       <div className="flex-1 px-4 py-6 space-y-6 max-w-3xl mx-auto w-full pb-24">
         {/* Banner */}
-        <div className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-2">
+        <div className="bg-white dark:bg-card text-gray-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-2">
           <div className="flex items-center gap-1.5 text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wide">
             <Receipt className="w-4 h-4" />
             National Board of Revenue (NBR) Compliance
@@ -43,21 +43,21 @@ export function TaxComplianceGuidePage() {
           </h2>
 
           <div className="space-y-3 text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-            <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
+            <div className="p-3.5 bg-slate-50 dark:bg-background rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
               <p className="font-bold text-gray-900 dark:text-gray-100">1. Mushak-6.3 (মূসক-৬.৩) Challan / Tax Invoice</p>
               <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 Verified VAT-registered suppliers issue official Mushak-6.3 invoices on every completed wholesale consignment, showing product HS Code, Base Value, and applicable 5%, 7.5%, or 15% VAT rate.
               </p>
             </div>
 
-            <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
+            <div className="p-3.5 bg-slate-50 dark:bg-background rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
               <p className="font-bold text-gray-900 dark:text-gray-100">2. Tax Deducted at Source (TDS)</p>
               <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 Corporate buyers with a valid Withholding Tax Entity status can deduct applicable Source Tax (AIT/TDS) by providing a copy of the Mushak-6.6 Certificate during checkout.
               </p>
             </div>
 
-            <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
+            <div className="p-3.5 bg-slate-50 dark:bg-background rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
               <p className="font-bold text-gray-900 dark:text-gray-100">3. Instant PDF Invoice Download</p>
               <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 Every order generates an itemized digital commercial invoice accessible from the Order Invoices tab in your dashboard.

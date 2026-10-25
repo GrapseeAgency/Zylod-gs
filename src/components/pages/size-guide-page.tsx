@@ -141,7 +141,7 @@ export function SizeGuidePage({ pageParams: _pageParams }: { pageParams?: Record
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse min-w-[320px]">
               <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70 text-slate-500 dark:text-slate-400 dark:text-slate-500 font-bold text-[11px]">
+                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-background/70 text-slate-500 dark:text-slate-400 dark:text-slate-500 font-bold text-[11px]">
                   <th scope="col" className="p-3.5">Size</th>
                   <th scope="col" className="p-3.5">A. Chest</th>
                   <th scope="col" className="p-3.5">B. Length</th>
@@ -172,7 +172,7 @@ export function SizeGuidePage({ pageParams: _pageParams }: { pageParams?: Record
               { k: 'C', label: 'Sleeve', text: 'Measure from the center back of your neck, across the shoulder, and down to the wrist.' },
             ].map(m => (
               <div key={m.k} className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{m.k}</div>
+                <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{m.k}</div>
                 <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
                   <strong className="text-slate-800 dark:text-slate-200">{m.label}:</strong> {m.text}
                 </p>
@@ -182,7 +182,7 @@ export function SizeGuidePage({ pageParams: _pageParams }: { pageParams?: Record
         </div>
 
         {/* Honest disclaimer */}
-        <div className="bg-slate-100 dark:bg-slate-900/60 rounded-3xl p-4 border border-slate-200 dark:border-slate-800/80 flex gap-3 items-start">
+        <div className="bg-slate-100 dark:bg-card/60 rounded-3xl p-4 border border-slate-200 dark:border-slate-800/80 flex gap-3 items-start">
           <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
           <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
             These are reference body measurements, not garment dimensions. Suppliers may cut to

@@ -180,7 +180,7 @@ export function LanguageSettingsPage() {
                         className={`w-full p-3.5 rounded-2xl border flex items-center justify-between text-left transition-all disabled:opacity-70 ${
                           isSelected
                             ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                         }`}
                       >
                         <div>
@@ -232,7 +232,7 @@ export function LanguageSettingsPage() {
                       className={`p-3 rounded-2xl border text-left transition-all ${
                         isSelected
                           ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                       }`}
                     >
                       <span className="text-sm font-black font-mono text-primary block">{c.symbol}</span>

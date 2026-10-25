@@ -140,7 +140,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
   if (!orderId) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
-        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
           <Truck className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
@@ -182,7 +182,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
         <Button
           variant="outline"
           onClick={() => navigate('orders')}
-          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
         >
           Go to My Orders
         </Button>
@@ -264,7 +264,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
                         {item.product?.name || '--'}
                       </h3>
                     </div>
-                    <span className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-xs font-mono font-bold px-2.5 py-1 rounded-lg shrink-0 ml-3">
+                    <span className="bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 text-xs font-mono font-bold px-2.5 py-1 rounded-lg shrink-0 ml-3">
                       x{item.quantity}
                     </span>
                   </div>

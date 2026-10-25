@@ -87,12 +87,12 @@ export function EscrowProtectionGuidePage() {
             Supported Payment Channels
           </h2>
           <div className="grid grid-cols-2 gap-2.5 text-xs font-semibold text-gray-700 dark:text-gray-300">
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+            <div className="p-3 bg-slate-50 dark:bg-background rounded-xl border border-gray-100 dark:border-gray-800 text-center">
               <Building2 className="w-5 h-5 mx-auto mb-1 text-slate-700 dark:text-slate-300" />
               <span className="text-slate-800 dark:text-slate-200 font-bold block mb-0.5">Bank Transfer</span>
               <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Account details shown per order</span>
             </div>
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+            <div className="p-3 bg-slate-50 dark:bg-background rounded-xl border border-gray-100 dark:border-gray-800 text-center">
               <Smartphone className="w-5 h-5 mx-auto mb-1 text-pink-600" />
               <span className="text-pink-600 font-bold block mb-0.5">Mobile Banking</span>
               <span className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">bKash / Nagad merchant numbers</span>

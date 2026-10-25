@@ -168,7 +168,7 @@ export function PriceAlertCreatePage() {
                         setSelectedProduct(p)
                         setTargetPrice(Math.round(p.basePrice * 0.9).toString())
                       }}
-                      className="p-3 bg-slate-50 dark:bg-slate-950 hover:bg-red-50 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between cursor-pointer transition"
+                      className="p-3 bg-slate-50 dark:bg-background hover:bg-red-50 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between cursor-pointer transition"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
@@ -201,7 +201,7 @@ export function PriceAlertCreatePage() {
                   </button>
                 </div>
 
-                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-3">
+                <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
                     {selectedProduct.thumbnailUrl ? (
                       <img src={selectedProduct.thumbnailUrl} alt={selectedProduct.name} className="w-full h-full object-cover" />

@@ -106,7 +106,7 @@ export function WarehouseLocatorPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by warehouse, company, city, or district…"
-              className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+              className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
             />
           </div>
           {districts.length > 0 && (

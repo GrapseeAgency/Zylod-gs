@@ -194,7 +194,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
         {/* Auth / not found / error — honest states */}
         {(notFound || needsAuth || error) && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
               {needsAuth ? <LogIn className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <AlertCircle className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
@@ -219,7 +219,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                 <Button
                   variant="outline"
                   onClick={fetchReturns}
-                  className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
+                  className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   Try Again
@@ -237,7 +237,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
         {/* No return requests for this order — honest empty */}
         {!loading && !error && !needsAuth && !notFound && returns && returns.length === 0 && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
               <RotateCcw className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">No return found for this order</h2>
@@ -248,7 +248,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
             <Button
               variant="outline"
               onClick={() => navigate('return-request', { orderId })}
-              className="mt-5 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 px-6 rounded-2xl"
+              className="mt-5 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 px-6 rounded-2xl"
             >
               Start a Return Request
             </Button>
@@ -260,7 +260,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
           returns.map((ret) => {
             const meta = STATUS_META[ret.status] ?? {
               label: ret.status,
-              className: 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300',
+              className: 'bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300',
               icon: Clock,
               note: 'Status updates will appear here as the Zylod team reviews this request.',
             }
@@ -276,13 +276,13 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                     </span>
                   </div>
 
-                  <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+                  <div className="p-3 bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-300">
                     <MetaIcon className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <span className="text-[11px]">{meta.note}</span>
                   </div>
 
                   {ret.resolutionNote && (
-                    <div className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl">
+                    <div className="p-3 bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl">
                       <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-1">Review note</p>
                       <p className="text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed">{ret.resolutionNote}</p>
                     </div>
@@ -354,7 +354,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
 
                   <div className="space-y-3 pt-1">
                     {ret.items.map((item) => (
-                      <div key={item.id} className="p-3 bg-slate-50 dark:bg-slate-950/70 rounded-2xl border border-slate-100 dark:border-slate-800">
+                      <div key={item.id} className="p-3 bg-slate-50 dark:bg-background/70 rounded-2xl border border-slate-100 dark:border-slate-800">
                         <div className="flex justify-between items-start gap-2">
                           <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 break-all">
                             Item #{item.orderItemId.slice(-8).toUpperCase()}

@@ -139,7 +139,7 @@ export function DeleteAccountPage() {
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Help us understand how we can improve Zylod Wholesale..."
-            className="w-full rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3.5 text-xs font-semibold text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:text-slate-500 resize-none focus:outline-none focus:border-rose-500"
+            className="w-full rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 p-3.5 text-xs font-semibold text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:text-slate-500 resize-none focus:outline-none focus:border-rose-500"
           />
         </div>
 

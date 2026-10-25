@@ -163,7 +163,7 @@ export function QrDeeplinkPage() {
               )}
             </div>
 
-            <div className="flex flex-col items-center justify-center p-8 bg-slate-50 dark:bg-slate-950 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-2xl space-y-4">
+            <div className="flex flex-col items-center justify-center p-8 bg-slate-50 dark:bg-background border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-2xl space-y-4">
               <div className="p-4 bg-white dark:bg-gray-900 rounded-2xl shadow-md">
                 <svg width="180" height="180" viewBox="0 0 25 25" fill="none" shapeRendering="crispEdges">
                   <rect width="25" height="25" fill="white" />

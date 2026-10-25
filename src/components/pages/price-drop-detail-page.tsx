@@ -75,7 +75,7 @@ export function PriceDropDetailPage() {
               <p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 leading-relaxed">{notif.message}</p>
 
               {product && (
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-3">
+                <div className="p-3.5 bg-slate-50 dark:bg-background rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
                     {product.thumbnailUrl ? (
                       <img src={product.thumbnailUrl} alt={product.name} className="w-full h-full object-cover" />

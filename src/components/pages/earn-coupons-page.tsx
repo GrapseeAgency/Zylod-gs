@@ -187,7 +187,7 @@ export function EarnCouponsPage() {
                   }`}
                 >
                   <div className="flex items-start gap-3.5 min-w-0 flex-1">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-950 border border-gray-100 dark:border-gray-800 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-background border border-gray-100 dark:border-gray-800 flex items-center justify-center flex-shrink-0">
                       {getTaskIcon(task.type)}
                     </div>
                     <div className="min-w-0 flex-1">

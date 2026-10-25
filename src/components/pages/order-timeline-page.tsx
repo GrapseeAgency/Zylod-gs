@@ -390,7 +390,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
           <Button
             variant="outline"
             onClick={() => navigate('help-center')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-12 rounded-2xl text-xs flex items-center justify-center gap-2"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-12 rounded-2xl text-xs flex items-center justify-center gap-2"
           >
             <Headphones className="h-4 w-4" />
             Contact Support

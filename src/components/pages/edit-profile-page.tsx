@@ -209,7 +209,7 @@ export function EditProfilePage() {
                 className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   isActive
                     ? 'bg-primary text-white shadow-xs font-black'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-card'
                 }`}
               >
                 {tab.label}
@@ -236,7 +236,7 @@ export function EditProfilePage() {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="First Name"
-                      className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                      className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                   <div className="space-y-1">
@@ -245,7 +245,7 @@ export function EditProfilePage() {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Last Name"
-                      className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                      className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                 </div>
@@ -258,7 +258,7 @@ export function EditProfilePage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your.email@example.com"
-                      className="h-11 pl-10 pr-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                      className="h-11 pl-10 pr-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                 </div>
@@ -271,7 +271,7 @@ export function EditProfilePage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+880 1700-000000"
-                      className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
+                      className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
                     />
                   </div>
                 </div>
@@ -284,7 +284,7 @@ export function EditProfilePage() {
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
                       placeholder="e.g. Managing Director / Procurement Manager"
-                      className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                      className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                 </div>
@@ -305,7 +305,7 @@ export function EditProfilePage() {
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     placeholder="Company Legal Name"
-                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   />
                 </div>
 
@@ -315,7 +315,7 @@ export function EditProfilePage() {
                     value={tradeLicense}
                     onChange={(e) => setTradeLicense(e.target.value)}
                     placeholder="TRD-XXXXX-BD"
-                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
                   />
                 </div>
 
@@ -325,7 +325,7 @@ export function EditProfilePage() {
                     value={taxTin}
                     onChange={(e) => setTaxTin(e.target.value)}
                     placeholder="TIN-XXXXXXX"
-                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
                   />
                 </div>
 
@@ -334,7 +334,7 @@ export function EditProfilePage() {
                   <select
                     value={businessType}
                     onChange={(e) => setBusinessType(e.target.value)}
-                    className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-800 dark:text-slate-200 focus:outline-none"
+                    className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-800 dark:text-slate-200 focus:outline-none"
                   >
                     <option value="OEM / ODM Custom Manufacturer">OEM / ODM Custom Manufacturer</option>
                     <option value="Direct Factory Wholesaler">Direct Factory Wholesaler</option>
@@ -359,7 +359,7 @@ export function EditProfilePage() {
                     value={factoryAddress}
                     onChange={(e) => setFactoryAddress(e.target.value)}
                     placeholder="e.g. Gazipur / Tejgaon, Dhaka, Bangladesh"
-                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   />
                 </div>
 
@@ -370,7 +370,7 @@ export function EditProfilePage() {
                       value={plantSize}
                       onChange={(e) => setPlantSize(e.target.value)}
                       placeholder="e.g. 50,000 sq ft"
-                      className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                      className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                   <div className="space-y-1">
@@ -379,7 +379,7 @@ export function EditProfilePage() {
                       value={monthlyCapacity}
                       onChange={(e) => setMonthlyCapacity(e.target.value)}
                       placeholder="e.g. 10,000 units"
-                      className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                      className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                     />
                   </div>
                 </div>
@@ -390,7 +390,7 @@ export function EditProfilePage() {
                     value={originPort}
                     onChange={(e) => setOriginPort(e.target.value)}
                     placeholder="Chittagong Port (BDCGP)"
-                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   />
                 </div>
               </div>
@@ -404,7 +404,7 @@ export function EditProfilePage() {
                   <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">Audited standards for trade compliance.</p>
                 </div>
 
-                <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+                <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-3">
                     <Award className="h-5 w-5 text-primary" />
                     <div>
@@ -423,7 +423,7 @@ export function EditProfilePage() {
                 type="button"
                 variant="outline"
                 onClick={goBack}
-                className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-12 rounded-2xl text-xs"
+                className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-12 rounded-2xl text-xs"
               >
                 Cancel
               </Button>

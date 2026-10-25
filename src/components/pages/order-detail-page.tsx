@@ -140,7 +140,7 @@ function PlaceholderImage() {
  * the table, so both families get honest colors here.
  */
 const TIMELINE_STYLES: Record<string, { dot: string; chip: string }> = {
-  pending: { dot: 'bg-slate-400', chip: 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:bg-slate-800 dark:text-slate-300' },
+  pending: { dot: 'bg-slate-400', chip: 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 dark:bg-card dark:text-slate-300' },
   confirmed: { dot: 'bg-amber-500', chip: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400' },
   packed: { dot: 'bg-amber-500', chip: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400' },
   picked_up: { dot: 'bg-sky-500', chip: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-400' },
@@ -200,7 +200,7 @@ function ShipmentTimeline({ rows }: { rows: ApiTracking[] }) {
   )
   if (ordered.length === 0) return null
   return (
-    <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-3">
+    <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-3">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -658,7 +658,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+            <span className="bg-slate-100 dark:bg-card dark:bg-card text-slate-700 dark:text-slate-300 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
               {statusLabel}
             </span>
             <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${
@@ -695,27 +695,27 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
 
             {/* Step 2: Packed */}
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shadow-xs ${stepPacked ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shadow-xs ${stepPacked ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-slate-500'}`}>
                 <Package className="h-4 w-4" />
               </div>
               <span className={`text-[10px] font-bold mt-1 ${stepPacked ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`}>Packed</span>
             </div>
 
-            <div className={`flex-1 h-0.5 mx-1 ${stepPacked ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-800'}`} />
+            <div className={`flex-1 h-0.5 mx-1 ${stepPacked ? 'bg-primary' : 'bg-slate-200 dark:bg-card'}`} />
 
             {/* Step 3: Shipped */}
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shadow-xs ${stepShipped ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shadow-xs ${stepShipped ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-slate-500'}`}>
                 <Truck className="h-4 w-4" />
               </div>
               <span className={`text-[10px] font-bold mt-1 ${stepShipped ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`}>Shipped</span>
             </div>
 
-            <div className={`flex-1 h-0.5 mx-1 ${stepShipped ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-800'}`} />
+            <div className={`flex-1 h-0.5 mx-1 ${stepShipped ? 'bg-primary' : 'bg-slate-200 dark:bg-card'}`} />
 
             {/* Step 4: Delivered */}
             <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${stepDelivered ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${stepDelivered ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-slate-500'}`}>
                 <Home className="h-4 w-4" />
               </div>
               <span className={`text-[10px] font-bold mt-1 ${stepDelivered ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`}>Delivered</span>
@@ -761,7 +761,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
                     <div className="divide-y divide-slate-100 dark:divide-slate-800">
                       {(so.items || []).map((item) => (
                         <div key={item.id} className="flex gap-3 items-center py-2">
-                          <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 dark:border-slate-700 overflow-hidden shrink-0">
+                          <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-card dark:bg-card border border-slate-200 dark:border-slate-800 dark:border-slate-700 overflow-hidden shrink-0">
                             {item.product?.thumbnailUrl ? (
                               <img src={item.product.thumbnailUrl} alt={item.product?.name || 'Product'} className="w-full h-full object-cover" />
                             ) : (
@@ -783,7 +783,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
                                   ({formatPrice(item.unitPrice)}/unit)
                                 </span>
                               </span>
-                              <span className="bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                              <span className="bg-slate-100 dark:bg-card dark:bg-card text-slate-700 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-md">
                                 Qty: {item.quantity}
                               </span>
                             </div>
@@ -933,7 +933,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
             <Button
               variant="outline"
               onClick={() => navigate('order-invoice', { orderId })}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
             >
               <Download className="h-4 w-4" />
               View Invoice
@@ -946,7 +946,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               <Button
                 variant="outline"
                 onClick={() => navigate('reschedule-delivery', { orderId })}
-                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
               >
                 <CalendarClock className="h-4 w-4" />
                 Reschedule Delivery
@@ -959,7 +959,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               <Button
                 variant="outline"
                 onClick={openReceipt}
-                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
               >
                 <ReceiptText className="h-4 w-4" />
                 View Receipt
@@ -977,7 +977,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
 
               <button
                 onClick={() => navigate('report-user', { orderId })}
-                className="py-2 px-3 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
+                className="py-2 px-3 bg-slate-100 dark:bg-card hover:bg-slate-200 dark:bg-card dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
               >
                 <FileText className="h-3.5 w-3.5" />
                 Report Seller
@@ -1062,7 +1062,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
           </DialogHeader>
 
           <div className="space-y-3">
-            <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-3 flex items-center justify-between">
+            <div className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-3 flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 {order?.paymentStatus === 'partial' ? 'Remaining due' : 'Order total'}
               </span>
@@ -1199,14 +1199,14 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
           {!receiptLoading && !receiptError && receipt && (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                <div className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
                   <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</span>
                   <span className="font-bold text-slate-800 dark:text-slate-200">{receipt.buyer.name}</span>
                   {receipt.buyer.businessName && (
                     <span className="block text-slate-500 dark:text-slate-400 dark:text-slate-500">{receipt.buyer.businessName}</span>
                   )}
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                <div className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
                   <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Payment</span>
                   <span className="font-bold text-slate-800 dark:text-slate-200 capitalize">{receipt.paymentMethod.replace(/_/g, ' ')}</span>
                   <span className={`block font-black uppercase ${receipt.paymentStatus === 'paid' ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
@@ -1216,7 +1216,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               </div>
 
               {receipt.shippingAddress && (
-                <div className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                <div className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
                   <span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-0.5">Ship to</span>
                   <span className="font-bold">{receipt.shippingAddress.address}, {receipt.shippingAddress.city}, {receipt.shippingAddress.district}, {receipt.shippingAddress.country}</span>
                 </div>
@@ -1225,7 +1225,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               <div className="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden">
                 <div className="max-h-56 overflow-y-auto">
                   <table className="w-full text-[11px]">
-                    <thead className="bg-slate-50 dark:bg-slate-950 sticky top-0">
+                    <thead className="bg-slate-50 dark:bg-background sticky top-0">
                       <tr className="text-left text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
                         <th className="px-3 py-2">Item</th>
                         <th className="px-2 py-2 text-right">Qty</th>
@@ -1246,7 +1246,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
                     </tbody>
                   </table>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 px-3 py-2 space-y-1 text-[11px]">
+                <div className="bg-slate-50 dark:bg-background border-t border-slate-100 dark:border-slate-800 px-3 py-2 space-y-1 text-[11px]">
                   <div className="flex justify-between text-slate-500 dark:text-slate-400 dark:text-slate-500"><span>Subtotal</span><span className="font-bold">{formatPrice(receipt.subtotal)}</span></div>
                   <div className="flex justify-between text-slate-500 dark:text-slate-400 dark:text-slate-500"><span>Shipping</span><span className="font-bold">{formatPrice(receipt.shipping)}</span></div>
                   <div className="flex justify-between text-slate-500 dark:text-slate-400 dark:text-slate-500"><span>VAT (15%)</span><span className="font-bold">{formatPrice(receipt.tax)}</span></div>

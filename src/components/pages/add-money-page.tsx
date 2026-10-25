@@ -55,7 +55,7 @@ const claimChip: Record<string, string> = {
   credited: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   rejected: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
   failed: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
-  cancelled: 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800',
+  cancelled: 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-card dark:text-slate-400 dark:border-slate-800',
 }
 
 const TRXID_RE = /^[A-Za-z0-9\-_]{6,64}$/
@@ -236,7 +236,7 @@ export function AddMoneyPage() {
                   setAmount(e.target.value)
                   setErrorMsg('')
                 }}
-                className="h-14 pl-10 pr-4 text-2xl font-black rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 font-mono text-slate-900 dark:text-slate-100 focus:border-primary"
+                className="h-14 pl-10 pr-4 text-2xl font-black rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 font-mono text-slate-900 dark:text-slate-100 focus:border-primary"
                 placeholder="0"
               />
             </div>
@@ -251,7 +251,7 @@ export function AddMoneyPage() {
                   className={`py-2 px-1 text-xs font-bold font-mono rounded-xl border transition-all ${
                     amount === p
                       ? 'border-primary bg-rose-50 text-primary'
-                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-card'
                   }`}
                 >
                   +৳{parseInt(p).toLocaleString()}
@@ -276,7 +276,7 @@ export function AddMoneyPage() {
                     className={`p-3.5 rounded-2xl border text-left space-y-1 transition-all ${
                       isSelected
                         ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-slate-800'
+                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                     }`}
                   >
                     <span className={`flex items-center gap-1.5 text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>
@@ -296,7 +296,7 @@ export function AddMoneyPage() {
                 value={trxId}
                 onChange={(e) => { setTrxId(e.target.value); setErrorMsg('') }}
                 placeholder={selectedMethod === 'bank_transfer' ? 'e.g. BEFTN2451XXXXX' : 'e.g. 9GX7K2LM4P'}
-                className={`h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold ${trxId && !trxValid ? 'border-red-300 focus:border-red-400' : ''}`}
+                className={`h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold ${trxId && !trxValid ? 'border-red-300 focus:border-red-400' : ''}`}
                 maxLength={64}
                 required
               />
@@ -317,7 +317,7 @@ export function AddMoneyPage() {
                 value={senderNumber}
                 onChange={(e) => setSenderNumber(e.target.value)}
                 placeholder="01XXXXXXXXX or Bank Ref"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 maxLength={20}
               />
             </div>
@@ -328,7 +328,7 @@ export function AddMoneyPage() {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="e.g. paid at Uttara branch counter 2"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs"
                 maxLength={300}
               />
             </div>
@@ -364,7 +364,7 @@ export function AddMoneyPage() {
           </div>
           {claimsLoading ? (
             <div className="px-5 pb-5 space-y-2">
-              {[0, 1].map((i) => <div key={i} className="h-12 bg-slate-50 dark:bg-slate-950 rounded-xl animate-pulse" />)}
+              {[0, 1].map((i) => <div key={i} className="h-12 bg-slate-50 dark:bg-background rounded-xl animate-pulse" />)}
             </div>
           ) : claims.length === 0 ? (
             <div className="px-5 pb-6 py-4 text-center text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">

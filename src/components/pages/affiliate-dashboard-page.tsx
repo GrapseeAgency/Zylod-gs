@@ -135,7 +135,7 @@ export function AffiliateDashboardPage() {
             {(dashData?.recentConversions || []).map((conv: any) => (
               <div
                 key={conv.id}
-                className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl flex items-center justify-between border border-gray-100 dark:border-gray-800"
+                className="p-3.5 bg-slate-50 dark:bg-background rounded-2xl flex items-center justify-between border border-gray-100 dark:border-gray-800"
               >
                 <div>
                   <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{conv.orderNumber}</p>

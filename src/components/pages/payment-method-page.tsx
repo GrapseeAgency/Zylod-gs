@@ -147,14 +147,14 @@ export function PaymentMethodPage() {
               const Icon = typeIcon(m.type)
               return (
                 <div key={m.id} className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-card flex items-center justify-center shrink-0">
                     <Icon className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-slate-900 dark:text-slate-100 truncate">{m.label}</p>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono">{maskAccount(m.accountNumber)}</p>
                   </div>
-                  <span className="shrink-0 text-[9px] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-full">
+                  <span className="shrink-0 text-[9px] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-full">
                     {m.type}
                   </span>
                 </div>
@@ -165,7 +165,7 @@ export function PaymentMethodPage() {
             <Button
               onClick={() => navigate('add-payment-method')}
               variant="outline"
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-primary border-slate-300 font-bold h-11 rounded-2xl text-xs"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-primary border-slate-300 font-bold h-11 rounded-2xl text-xs"
             >
               <Plus className="h-4 w-4 mr-2" /> Add a payment method
             </Button>
@@ -180,7 +180,7 @@ export function PaymentMethodPage() {
               className="w-full text-left bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs"
             >
               <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-card flex items-center justify-center shrink-0 mt-0.5">
                   <opt.icon className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">

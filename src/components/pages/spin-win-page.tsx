@@ -87,7 +87,7 @@ export function SpinWinPage() {
       {/* Header */}
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export function SpinWinPage() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white dark:bg-slate-800/90 border border-amber-500/50 rounded-3xl p-5 w-full text-center space-y-2 shadow-xl"
+            className="bg-white dark:bg-card/90 border border-amber-500/50 rounded-3xl p-5 w-full text-center space-y-2 shadow-xl"
           >
             <div className="flex items-center justify-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
               <Trophy className="w-4 h-4" /> Prize Unlocked

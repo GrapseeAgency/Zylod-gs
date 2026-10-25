@@ -75,7 +75,7 @@ export function DataDeletionPage() {
                   value={reason}
                   onChange={e => setReason(e.target.value)}
                   placeholder="Help us understand why you are closing your wholesale account..."
-                  className="w-full p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full p-3 bg-slate-50 dark:bg-background rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-red-500"
                 />
               </div>
 

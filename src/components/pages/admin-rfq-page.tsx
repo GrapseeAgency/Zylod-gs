@@ -110,14 +110,14 @@ const RFQ_STATUS_TABS: { key: string; label: string }[] = [
 const REFRESH_INTERVAL_MS = 30_000
 const PAGE_SIZE = 20
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 // RFQ status → chip tone (real statuses only)
 const rfqStatusChip: Record<string, string> = {
   open: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
   quoted: 'bg-primary/5 text-primary border-primary/30 dark:bg-primary/10 dark:text-primary/70 dark:border-primary/30',
   awarded: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
-  closed: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+  closed: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-card dark:text-slate-300 dark:border-slate-800',
   expired: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
 }
 
@@ -526,7 +526,7 @@ export function AdminRfqPage() {
 
                 {/* Expanded detail — real items + quotes from GET /api/admin/rfqs/[id] */}
                 {isExpanded && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
+                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
                     {detailLoading ? (
                       <div className="space-y-2">
                         <div className="h-12 bg-white dark:bg-gray-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse" />
@@ -631,7 +631,7 @@ export function AdminRfqPage() {
               </DialogHeader>
 
               <div className="space-y-3 py-1">
-                <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
+                <div className="rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
                   <span className="font-black">{closeTarget.title}</span> · {closeTarget.quoteCount} quote{closeTarget.quoteCount === 1 ? '' : 's'} so far · buyer {closeTarget.buyer.displayName ?? 'name unavailable'}
                 </div>
 

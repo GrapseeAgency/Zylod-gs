@@ -123,7 +123,7 @@ export function ReferralProgramPage() {
             Your Unique Invite Code
           </h3>
 
-          <div className="p-3.5 bg-slate-50 dark:bg-slate-950 border border-dashed border-primary/30 rounded-2xl flex items-center justify-between gap-3">
+          <div className="p-3.5 bg-slate-50 dark:bg-background border border-dashed border-primary/30 rounded-2xl flex items-center justify-between gap-3">
             <span className="font-mono font-black text-base sm:text-lg text-primary tracking-wider">
               {refData?.code || 'LOADING...'}
             </span>
@@ -140,11 +140,11 @@ export function ReferralProgramPage() {
 
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
+            <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
               <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase">Invited Businesses</p>
               <p className="text-lg font-black text-gray-900 dark:text-gray-100">{refData?.totalInvited ?? 0}</p>
             </div>
-            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
+            <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
               <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase">Points Earned</p>
               <p className="text-lg font-black text-primary">+{refData?.totalPointsEarned ?? 0}</p>
             </div>

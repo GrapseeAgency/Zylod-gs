@@ -74,7 +74,7 @@ export function DomesticShippingPage() {
                 </Badge>
               </div>
               <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500"><strong>Partners:</strong> {t.couriers}</p>
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-2xl">
+              <div className="p-2.5 bg-slate-50 dark:bg-background rounded-2xl">
                 <p className="text-xs text-primary font-semibold">{t.rates}</p>
               </div>
             </div>

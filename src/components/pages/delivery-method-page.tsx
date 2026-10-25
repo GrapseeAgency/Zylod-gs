@@ -138,7 +138,7 @@ export function DeliveryMethodPage() {
                 >
                   <div className="flex items-start gap-4">
                     {/* Icon circle */}
-                    <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-card flex items-center justify-center shrink-0">
                       <Icon type={method.icon} />
                     </div>
 
@@ -169,7 +169,7 @@ export function DeliveryMethodPage() {
                             className={`text-[10px] font-bold px-2.5 py-1 rounded-md inline-block ${
                               method.badgeVariant === 'fastest'
                                 ? 'bg-primary text-white'
-                                : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'
+                                : 'bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'
                             }`}
                           >
                             {method.badge}

@@ -110,7 +110,7 @@ export function CreditLimitPage() {
         <span className="text-base font-black tracking-tight text-primary">Trade Credit Line</span>
         <button
           onClick={() => navigate('credit-score')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Score"
         >
           <TrendingUp className="h-4 w-4" />
@@ -202,7 +202,7 @@ export function CreditLimitPage() {
                 value={requestedLimit}
                 onChange={(e) => setRequestedLimit(e.target.value)}
                 placeholder="500000"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
               />
             </div>
 
@@ -214,7 +214,7 @@ export function CreditLimitPage() {
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Reason for line expansion"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
               />
             </div>
             </div>

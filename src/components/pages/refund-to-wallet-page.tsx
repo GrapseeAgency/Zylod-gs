@@ -97,7 +97,7 @@ export function RefundToWalletPage() {
         <span className="text-base font-black tracking-tight text-primary">Refunds</span>
         <button
           onClick={() => navigate('my-wallet')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 dark:text-slate-200 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 dark:text-slate-200 hover:bg-slate-200"
           title="Wallet"
           aria-label="Wallet"
         >
@@ -110,7 +110,7 @@ export function RefundToWalletPage() {
           <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">Refunds</h1>
           <button
             onClick={() => navigate('my-wallet')}
-            className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 dark:text-slate-200 hover:bg-slate-200"
+            className="w-9 h-9 rounded-full bg-slate-100 dark:bg-card dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 dark:text-slate-200 hover:bg-slate-200"
             title="Wallet"
             aria-label="Wallet"
           >
@@ -147,7 +147,7 @@ export function RefundToWalletPage() {
 
           {loading ? (
             <div className="space-y-2" aria-busy="true">
-              {[0, 1].map((i) => <div key={i} className="h-16 rounded-2xl bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 animate-pulse" />)}
+              {[0, 1].map((i) => <div key={i} className="h-16 rounded-2xl bg-slate-100 dark:bg-card dark:bg-card animate-pulse" />)}
             </div>
           ) : errorMsg ? (
             <div className="text-center py-8 space-y-3" role="alert">
@@ -158,7 +158,7 @@ export function RefundToWalletPage() {
             </div>
           ) : !rows || rows.length === 0 ? (
             <div className="text-center py-8 space-y-3" data-testid="refunds-empty">
-              <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 flex items-center justify-center mx-auto">
+              <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-card dark:bg-card flex items-center justify-center mx-auto">
                 <FileText className="h-6 w-6 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
               </div>
               <p className="text-sm font-bold text-slate-900 dark:text-slate-100">No refunds processed yet</p>
@@ -174,7 +174,7 @@ export function RefundToWalletPage() {
               {rows.map((r) => {
                 const Icon = METHOD_ICONS[r.method] ?? Landmark
                 return (
-                  <div key={r.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 space-y-2 bg-slate-50 dark:bg-slate-950/60 dark:bg-slate-800/40" data-testid="refund-row">
+                  <div key={r.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 space-y-2 bg-slate-50 dark:bg-background/60 dark:bg-card/40" data-testid="refund-row">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">
                         <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center shrink-0">

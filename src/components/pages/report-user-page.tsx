@@ -166,7 +166,7 @@ export function ReportUserPage() {
                 Your report has been saved for review by the Zylod team. If fraudulent activity or counterfeit merchandise is confirmed, the account may face restriction and, where required, referral to the relevant authorities. Zylod does not hold funds in escrow — report any payment made outside the official order instructions immediately.
               </p>
               {reportRef && (
-                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-sm mx-auto">
+                <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 max-w-sm mx-auto">
                   Report Reference: <span className="font-mono font-bold text-gray-900 dark:text-gray-100">{reportRef}</span>
                 </div>
               )}
@@ -318,7 +318,7 @@ export function ReportUserPage() {
               </div>
 
               {/* Confidentiality Notice */}
-              <div className="bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-3.5 flex items-start gap-2.5">
+              <div className="bg-slate-50 dark:bg-background border border-gray-200 dark:border-gray-800 rounded-2xl p-3.5 flex items-start gap-2.5">
                 <Lock className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
                 <p className="text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
                   <strong>Reporter Anonymity Protected:</strong> The reported supplier will never see your identity. All claims are independently evaluated by Zylod Trust & Safety Compliance.

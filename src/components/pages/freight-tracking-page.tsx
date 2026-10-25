@@ -50,7 +50,7 @@ interface OrderView {
 }
 
 const STATUS_TONE: Record<string, string> = {
-  pending: 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800',
+  pending: 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800',
   confirmed: 'text-sky-700 bg-sky-50 border-sky-200',
   packed: 'text-sky-700 bg-sky-50 border-sky-200',
   shipped: 'text-amber-700 bg-amber-50 border-amber-200',
@@ -231,7 +231,7 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
 
             {/* Real fields only */}
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
+              <div className="bg-slate-50 dark:bg-background p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
                 <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Estimated delivery</span>
                 <span className="text-xs font-black text-slate-900 dark:text-slate-100">
                   {slice.estimatedDelivery
@@ -239,7 +239,7 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
                     : 'Not scheduled yet'}
                 </span>
               </div>
-              <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
+              <div className="bg-slate-50 dark:bg-background p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
                 <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Freight (quoted live)</span>
                 <span className="text-xs font-black text-slate-900 dark:text-slate-100 font-mono">{formatPrice(slice.shippingCost)}</span>
               </div>
@@ -256,7 +256,7 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
                 Tracking events ({slice.tracking.length})
               </p>
               {slice.tracking.length === 0 ? (
-                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-start gap-2">
+                <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-start gap-2">
                   <Clock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0 mt-0.5" />
                   No tracking events yet — the supplier&apos;s first status transition will appear here the moment it happens.
                 </div>
@@ -290,7 +290,7 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
         <Button
           variant="outline"
           onClick={() => navigate('order-detail', { orderId: order.id })}
-          className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+          className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
         >
           <Package className="h-4 w-4 mr-2" /> Open the full order
         </Button>

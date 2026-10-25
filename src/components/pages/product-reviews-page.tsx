@@ -167,7 +167,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
             onClick={() => navigate('product-detail', { productId: product.id })}
             className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 flex items-center gap-3 shadow-2xs cursor-pointer hover:border-slate-200 transition-all"
           >
-            <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-900 overflow-hidden shrink-0 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-card overflow-hidden shrink-0 flex items-center justify-center">
               {product.images[0]?.url ? (
                 <img src={product.images[0].url} alt={product.name} className="w-full h-full object-cover" />
               ) : (
@@ -201,7 +201,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
               className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                 activeFilter === tab.key
                   ? 'bg-primary text-white shadow-xs'
-                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
               }`}
             >
               {tab.label}
@@ -310,7 +310,7 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
                 {rev.photos && rev.photos.length > 0 && (
                   <div className="flex gap-2 overflow-x-auto pt-1">
                     {rev.photos.map((photo, pIdx) => (
-                      <div key={pIdx} className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-900 shrink-0 border border-slate-100 dark:border-slate-800">
+                      <div key={pIdx} className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 dark:bg-card shrink-0 border border-slate-100 dark:border-slate-800">
                         <img src={photo} alt="Customer upload" className="w-full h-full object-cover" />
                       </div>
                     ))}

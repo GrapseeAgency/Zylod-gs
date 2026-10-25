@@ -97,10 +97,10 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
   // ── Honest no-order gate ──
   if (!orderId) {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
-            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
               <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">No shipment selected</h2>
@@ -120,7 +120,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
   // ── 401 gate ──
   if (status === 'anon') {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
@@ -142,10 +142,10 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
   // ── 404 / not-found ──
   if (status === 'notfound') {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
-            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
               <Package className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Order not found</h2>
@@ -164,7 +164,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
   // ── error ──
   if (status === 'error') {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
@@ -184,7 +184,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
   // ── loading ──
   if (status === 'loading' || !data) {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <PageLoader className="min-h-0" />
       </div>
     )
@@ -265,7 +265,7 @@ export function ShippingTrackerPage({ pageParams: _pageParams }: { pageParams?: 
 
                 {/* Timeline */}
                 {so.timeline.length === 0 ? (
-                  <div className="rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 text-center">
+                  <div className="rounded-2xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 p-4 text-center">
                     <Clock className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mx-auto mb-1" />
                     <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       No milestones yet. The seller hasn't dispatched this shipment.

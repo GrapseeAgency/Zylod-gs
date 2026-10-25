@@ -66,7 +66,7 @@ export function CommissionHistoryPage() {
         <span className="text-base font-black tracking-tight text-primary">Commission Statements</span>
         <button
           onClick={() => navigate('earnings-dashboard')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Earnings"
         >
           <DollarSign className="h-4 w-4" />
@@ -94,7 +94,7 @@ export function CommissionHistoryPage() {
 
         {/* Ledger */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-          <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500 md:hidden">
+          <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500 md:hidden">
             <span>Sub-Order / Date</span>
             <span>Fee (3%) / Net</span>
           </div>
@@ -130,7 +130,7 @@ export function CommissionHistoryPage() {
               <div className="hidden md:block">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-950 text-left text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                    <tr className="bg-slate-50 dark:bg-background text-left text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
                       <th className="py-3 px-5 font-bold">Sub-Order</th>
                       <th className="py-3 px-3 font-bold">Date</th>
                       <th className="py-3 px-3 font-bold text-right">Gross</th>
@@ -140,7 +140,7 @@ export function CommissionHistoryPage() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {data.items.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800">
+                      <tr key={item.id} className="hover:bg-slate-50 dark:bg-background dark:hover:bg-card">
                         <td className="py-3 px-5 font-bold text-slate-900 dark:text-slate-100">PO #{item.orderNumber}</td>
                         <td className="py-3 px-3 text-slate-500 dark:text-slate-400 dark:text-slate-500">{new Date(item.date).toLocaleDateString()}</td>
                         <td className="py-3 px-3 text-right text-slate-700 dark:text-slate-300">{formatPrice(item.grossAmount)}</td>

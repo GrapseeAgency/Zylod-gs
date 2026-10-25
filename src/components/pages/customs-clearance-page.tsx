@@ -100,7 +100,7 @@ export function CustomsClearancePage() {
           <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Document Checklist</h2>
           <div className="space-y-2">
             {DOC_CHECKLIST.map((doc) => (
-              <div key={doc.name} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+              <div key={doc.name} className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 flex items-start gap-3">
                 <div className="w-9 h-9 rounded-xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 shrink-0">
                   <FileText className="h-4 w-4" />
                 </div>

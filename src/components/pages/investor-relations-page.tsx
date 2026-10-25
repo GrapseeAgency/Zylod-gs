@@ -106,7 +106,7 @@ export function InvestorRelationsPage() {
               <button
                 key={link.id}
                 onClick={() => navigate(link.id)}
-                className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-emerald-50 hover:text-emerald-700 transition"
+                className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-background rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-emerald-50 hover:text-emerald-700 transition"
               >
                 {link.label}
                 <ChevronRight className="w-3.5 h-3.5" />

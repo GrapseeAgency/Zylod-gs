@@ -15,7 +15,7 @@ export function ExclusiveDealDetailPage() {
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <h1 className="font-bold text-base">VIP Mill Allocation Detail</h1>
@@ -23,7 +23,7 @@ export function ExclusiveDealDetailPage() {
       </div>
 
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 max-w-xl mx-auto md:max-w-2xl lg:max-w-4xl w-full pb-24 md:pb-8">
-        <div className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 md:p-8 space-y-4 text-center shadow-sm">
+        <div className="bg-white dark:bg-card/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 md:p-8 space-y-4 text-center shadow-sm">
           <div className="w-14 h-14 rounded-2xl bg-amber-400/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto">
             <Gem className="w-7 h-7" />
           </div>

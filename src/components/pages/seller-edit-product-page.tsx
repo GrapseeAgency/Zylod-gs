@@ -516,7 +516,7 @@ export function SellerEditProductPage() {
                   ? 'bg-amber-50 text-amber-700 border-amber-200'
                   : moderation.isApproved && moderation.isActive
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
+                    : 'bg-slate-50 dark:bg-background text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
               }`}
             >
               {!moderation.isApproved && moderation.isActive
@@ -607,7 +607,7 @@ export function SellerEditProductPage() {
             "Certifications" tab serves exactly these rows to buyers. */}
         {productId && !notFound && (
           <section className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60">
+            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-background/60">
               <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Certifications &amp; compliance</h2>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
                 Shown to every buyer on the product page. File real, verifiable

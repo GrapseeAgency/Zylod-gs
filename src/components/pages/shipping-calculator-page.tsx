@@ -136,7 +136,7 @@ export function ShippingCalculatorPage() {
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 placeholder="e.g. Dhaka, Chittagong, Khulna"
-                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
               />
             </div>
           </div>
@@ -153,9 +153,9 @@ export function ShippingCalculatorPage() {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="0.00"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
               />
-              <div className="h-11 px-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+              <div className="h-11 px-4 rounded-2xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
                 KG
               </div>
             </div>
@@ -174,7 +174,7 @@ export function ShippingCalculatorPage() {
                 value={dims.l}
                 onChange={(e) => setDims((d) => ({ ...d, l: e.target.value }))}
                 placeholder="L"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs text-center font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs text-center font-bold"
               />
               <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold">×</span>
               <Input
@@ -184,7 +184,7 @@ export function ShippingCalculatorPage() {
                 value={dims.w}
                 onChange={(e) => setDims((d) => ({ ...d, w: e.target.value }))}
                 placeholder="W"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs text-center font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs text-center font-bold"
               />
               <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold">×</span>
               <Input
@@ -194,7 +194,7 @@ export function ShippingCalculatorPage() {
                 value={dims.h}
                 onChange={(e) => setDims((d) => ({ ...d, h: e.target.value }))}
                 placeholder="H"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs text-center font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs text-center font-bold"
               />
               <Button
                 type="button"
@@ -222,7 +222,7 @@ export function ShippingCalculatorPage() {
                 value={subtotal}
                 onChange={(e) => setSubtotal(e.target.value)}
                 placeholder="e.g. 50000"
-                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
+                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
               />
             </div>
           </div>

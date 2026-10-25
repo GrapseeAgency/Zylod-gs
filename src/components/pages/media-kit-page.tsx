@@ -45,7 +45,7 @@ export function MediaKitPage() {
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto lg:max-w-5xl w-full px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 pb-24 md:pb-8">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white space-y-2 shadow-sm">
+        <div className="bg-white dark:bg-card border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white space-y-2 shadow-sm">
           <div className="flex items-center gap-2">
             <FolderDown className="w-5 h-5 text-primary/70" />
             <h2 className="font-bold text-sm md:text-base">Official Brand Package</h2>

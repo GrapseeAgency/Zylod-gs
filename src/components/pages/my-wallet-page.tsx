@@ -30,7 +30,7 @@ const claimChip: Record<string, string> = {
   credited: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   rejected: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
   failed: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
-  cancelled: 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800',
+  cancelled: 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-card dark:text-slate-400 dark:border-slate-800',
 }
 
 export function MyWalletPage() {
@@ -111,7 +111,7 @@ export function MyWalletPage() {
         <span className="text-base font-black tracking-tight text-primary">Wholesale Wallet</span>
         <button
           onClick={() => navigate('transaction-history')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="History"
         >
           <Clock className="h-4 w-4" />
@@ -171,9 +171,9 @@ export function MyWalletPage() {
         <div className="grid grid-cols-4 gap-2 lg:grid-cols-2">
           {[
             { label: 'Add Money', icon: Plus, page: 'add-money', bg: 'bg-rose-50 border-rose-200 text-primary' },
-            { label: 'Withdraw', icon: ArrowUpRight, page: 'withdraw-money', bg: 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200' },
-            { label: 'Statements', icon: Receipt, page: 'transaction-history', bg: 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200' },
-            { label: 'Overview', icon: TrendingUp, page: 'balance-overview', bg: 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200' },
+            { label: 'Withdraw', icon: ArrowUpRight, page: 'withdraw-money', bg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200' },
+            { label: 'Statements', icon: Receipt, page: 'transaction-history', bg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200' },
+            { label: 'Overview', icon: TrendingUp, page: 'balance-overview', bg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200' },
           ].map(({ label, icon: Icon, page, bg }) => (
             <button
               key={label}
@@ -198,7 +198,7 @@ export function MyWalletPage() {
             <button
               key={title}
               onClick={() => navigate(page as any)}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition-colors"
+              className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card transition-colors"
             >
               <div className="flex items-center gap-3.5">
                 <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary shrink-0">
@@ -291,7 +291,7 @@ export function MyWalletPage() {
                 <div
                   key={tx.id}
                   onClick={() => navigate('transaction-detail', { id: tx.id })}
-                  className="py-3 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 rounded-xl px-2 -mx-2 transition-colors"
+                  className="py-3 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:bg-background dark:hover:bg-card rounded-xl px-2 -mx-2 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${

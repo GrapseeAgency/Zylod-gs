@@ -150,7 +150,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
   if (!orderId) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
-        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
           <XCircle className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
@@ -370,7 +370,7 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
             <Button
               variant="outline"
               onClick={goBack}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
             >
               Keep Order
             </Button>

@@ -105,7 +105,7 @@ export function ReturnPolicyPage() {
               <button
                 key={link.id}
                 onClick={() => navigate(link.id)}
-                className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-orange-50 hover:text-orange-700 transition"
+                className="flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-background rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-orange-50 hover:text-orange-700 transition"
               >
                 {link.label}
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -160,7 +160,7 @@ export function ReturnPolicyPage() {
             </div>
             {faqs.map(faq => (
               <div key={faq.id} className="border-b border-gray-50 last:border-b-0">
-                <button onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)} className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition">
+                <button onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)} className="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card transition">
                   <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 pr-3">{faq.questionEn}</span>
                   <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0 transition-transform ${openFaq === faq.id ? 'rotate-180' : ''}`} />
                 </button>

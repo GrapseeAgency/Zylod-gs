@@ -109,7 +109,7 @@ export function InvestorContactPage() {
                   <select
                     value={formData.inquiryType}
                     onChange={e => setFormData({ ...formData, inquiryType: e.target.value })}
-                    className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full mt-1 p-2.5 bg-slate-50 dark:bg-background rounded-xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="general">General Investor Information</option>
                     <option value="annual_report">Audited Financial Queries</option>
@@ -127,7 +127,7 @@ export function InvestorContactPage() {
                     value={formData.message}
                     onChange={e => setFormData({ ...formData, message: e.target.value })}
                     placeholder="Please specify your request or scheduled meeting requirements..."
-                    className="w-full mt-1 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full mt-1 p-3 bg-slate-50 dark:bg-background rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>

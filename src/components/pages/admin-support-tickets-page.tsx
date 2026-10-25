@@ -64,7 +64,7 @@ const SELLER_STATUS_LABELS: Record<string, string> = {
 }
 
 const PRIORITY_STYLES: Record<string, string> = {
-  low: 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800',
+  low: 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800',
   medium: 'bg-sky-50 text-sky-700 border-sky-200',
   high: 'bg-amber-50 text-amber-700 border-amber-200',
   urgent: 'bg-red-50 text-red-700 border-red-200',
@@ -302,7 +302,7 @@ export function AdminSupportTicketsPage() {
                       <button
                         type="button"
                         onClick={() => toggleThread(t.id)}
-                        className="w-full text-left px-5 py-4 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800/50 transition"
+                        className="w-full text-left px-5 py-4 hover:bg-slate-50 dark:bg-background dark:hover:bg-card/50 transition"
                         aria-expanded={isOpen}
                       >
                         <div className="flex items-start justify-between gap-3">
@@ -322,7 +322,7 @@ export function AdminSupportTicketsPage() {
                             </p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[10px] font-black uppercase px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                            <span className="text-[10px] font-black uppercase px-2 py-1 rounded-full bg-slate-100 dark:bg-card dark:bg-card text-slate-500 dark:text-slate-400 dark:text-slate-500">
                               {(mode === 'buyer' ? STATUS_LABELS[t.status] : SELLER_STATUS_LABELS[t.status]) ?? t.status}
                             </span>
                             <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1">
@@ -335,7 +335,7 @@ export function AdminSupportTicketsPage() {
                       </button>
 
                       {isOpen && (
-                        <div className="border-t border-slate-100 dark:border-slate-800 px-5 py-4 space-y-3 bg-slate-50/50 dark:bg-slate-950/40">
+                        <div className="border-t border-slate-100 dark:border-slate-800 px-5 py-4 space-y-3 bg-slate-50/50 dark:bg-background/40">
                           {threadLoading ? (
                             <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold">Loading thread…</p>
                           ) : (

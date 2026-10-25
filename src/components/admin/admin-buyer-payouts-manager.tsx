@@ -80,7 +80,7 @@ const statusChip: Record<string, string> = {
 }
 
 function StatusChip({ status }: { status: string }) {
-  const cls = statusChip[status] ?? 'bg-slate-50 text-slate-500 border-slate-100 dark:bg-slate-950 dark:border-slate-800'
+  const cls = statusChip[status] ?? 'bg-slate-50 text-slate-500 border-slate-100 dark:bg-background dark:border-slate-800'
   return <span className={`text-[10px] font-black border rounded-lg px-2 py-1 uppercase tracking-wide ${cls}`}>{status}</span>
 }
 
@@ -315,7 +315,7 @@ export function AdminBuyerPayoutsManager() {
           <button
             key={t.key}
             onClick={() => switchTab(t.key)}
-            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'}`}
+            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-card border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'}`}
           >
             {t.label}
           </button>
@@ -362,7 +362,7 @@ export function AdminBuyerPayoutsManager() {
           <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-950 text-left">
+                <tr className="bg-slate-50 dark:bg-background text-left">
                   <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Buyer</th>
                   <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Method</th>
                   <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Destination</th>
@@ -376,7 +376,7 @@ export function AdminBuyerPayoutsManager() {
                 {rows.map((p) => {
                   const PIcon = methodIcon(p.method)
                   return (
-                    <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-950/60 dark:hover:bg-slate-950/40">
+                    <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-card dark:bg-background/60 dark:hover:bg-background/40">
                       <td className="px-3 py-2.5">
                         <span className="font-black block max-w-[160px] truncate">{p.claimant.displayName || '--'}</span>
                         <span className="text-[9px] text-slate-400 dark:text-slate-500 block truncate">{p.claimant.email || ''}</span>
@@ -421,8 +421,8 @@ export function AdminBuyerPayoutsManager() {
                     <StatusChip status={p.status} />
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
-                    <span className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 capitalize inline-flex items-center gap-1"><PIcon className="h-3 w-3" />{p.method}</span>
-                    {p.reference ? <span className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 font-mono">ref {p.reference}</span> : null}
+                    <span className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 capitalize inline-flex items-center gap-1"><PIcon className="h-3 w-3" />{p.method}</span>
+                    {p.reference ? <span className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 font-mono">ref {p.reference}</span> : null}
                   </div>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono break-all">{p.destination || '--'}</p>
                   <div className="flex items-center justify-between">
@@ -445,7 +445,7 @@ export function AdminBuyerPayoutsManager() {
             const p = rows.find((r) => r.id === expandedId)
             if (!p || (p.status !== 'pending' && p.status !== 'processing')) return null
             return (
-              <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3">
+              <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3">
                 <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Decide the withdrawal for <span className="font-bold text-slate-800 dark:text-slate-200">{p.claimant.displayName || p.claimant.email || 'this buyer'}</span> — settle only after the transfer really left the account ({p.method}, <span className="font-mono">{p.destination || 'destination on file'}</span>).
                 </p>

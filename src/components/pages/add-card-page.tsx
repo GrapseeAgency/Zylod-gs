@@ -138,7 +138,7 @@ export function AddCardPage() {
                 onChange={(e) => setCardNumber(e.target.value)}
                 placeholder="4000 1234 5678 9010"
                 maxLength={19}
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
               />
             </div>
 
@@ -150,7 +150,7 @@ export function AddCardPage() {
                 value={holderName}
                 onChange={(e) => setHolderName(e.target.value)}
                 placeholder="Name printed on card"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
               />
             </div>
             </div>
@@ -163,7 +163,7 @@ export function AddCardPage() {
                   onChange={(e) => setExpiry(e.target.value)}
                   placeholder="12/28"
                   maxLength={5}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 />
               </div>
               <div>
@@ -174,7 +174,7 @@ export function AddCardPage() {
                   onChange={(e) => setCvv(e.target.value)}
                   placeholder="•••"
                   maxLength={4}
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 />
               </div>
             </div>

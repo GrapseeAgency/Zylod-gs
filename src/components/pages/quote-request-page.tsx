@@ -406,7 +406,7 @@ export function QuoteRequestPage() {
           <button
             onClick={goBack}
             aria-label="Go back"
-            className="md:hidden h-11 w-11 flex items-center justify-center rounded-full hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800"
+            className="md:hidden h-11 w-11 flex items-center justify-center rounded-full hover:bg-slate-100 dark:bg-card dark:hover:bg-card"
           >
             <ArrowLeft className="h-5 w-5 text-primary" />
           </button>
@@ -430,7 +430,7 @@ export function QuoteRequestPage() {
             </div>
           ) : product ? (
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs p-4 flex gap-3">
-              <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-900 shrink-0 overflow-hidden flex items-center justify-center">
+              <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-card shrink-0 overflow-hidden flex items-center justify-center">
                 {product.imageUrl ? (
                   <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
                 ) : (
@@ -443,10 +443,10 @@ export function QuoteRequestPage() {
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 line-clamp-1">{product.supplierName}</p>
                 ) : null}
                 <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                  <span className="text-[10px] font-medium text-slate-600 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 rounded-md px-1.5 py-0.5">
+                  <span className="text-[10px] font-medium text-slate-600 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-card rounded-md px-1.5 py-0.5">
                     {formatPrice(product.basePrice)}/{product.unit}
                   </span>
-                  <span className="text-[10px] font-medium text-slate-600 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 rounded-md px-1.5 py-0.5">
+                  <span className="text-[10px] font-medium text-slate-600 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-card rounded-md px-1.5 py-0.5">
                     MOQ {product.moq.toLocaleString()} {product.unit}
                   </span>
                   {product.priceTiers.length > 0 && product.basePrice > 0
@@ -517,7 +517,7 @@ export function QuoteRequestPage() {
                     onChange={(e) => setPickerQuery(e.target.value)}
                     placeholder="Search products…"
                     aria-label="Search products to attach"
-                    className="pl-9 pr-4 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium"
+                    className="pl-9 pr-4 h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium"
                   />
                 </form>
                 {pickerLoading ? (
@@ -539,7 +539,7 @@ export function QuoteRequestPage() {
                   <ul className="divide-y divide-slate-100 dark:divide-slate-800 max-h-64 overflow-y-auto">
                     {pickerResults.map((p) => (
                       <li key={p.id} className="py-2 flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-900 shrink-0 overflow-hidden flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-card shrink-0 overflow-hidden flex items-center justify-center">
                           {p.imageUrl ? (
                             <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
                           ) : (
@@ -578,7 +578,7 @@ export function QuoteRequestPage() {
               value={form.title}
               onChange={(e) => setField({ title: e.target.value })}
               placeholder={product ? `Bulk quote: ${product.name}` : 'e.g. Weekly supply of packaging cartons'}
-              className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium"
+              className="h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium"
             />
             {fieldErrors.title ? <p className="text-[11px] font-bold text-primary">{fieldErrors.title}</p> : null}
           </div>
@@ -595,7 +595,7 @@ export function QuoteRequestPage() {
                   ? 'Specs, grade, packaging, delivery city, payment terms…'
                   : 'Product type, specs, packaging, delivery city, payment terms…'
               }
-              className="w-full min-h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2.5 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full min-h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background px-3 py-2.5 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary"
             />
             {fieldErrors.description ? <p className="text-[11px] font-bold text-primary">{fieldErrors.description}</p> : null}
           </div>
@@ -614,7 +614,7 @@ export function QuoteRequestPage() {
                 value={form.quantity}
                 onChange={(e) => setField({ quantity: e.target.value })}
                 placeholder={form.unit === 'kg' ? 'e.g., 12.5 kg' : 'How many units'}
-                className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold"
+                className="h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold"
               />
               {fieldErrors.quantity ? <p className="text-[11px] font-bold text-primary">{fieldErrors.quantity}</p> : null}
             </div>
@@ -625,7 +625,7 @@ export function QuoteRequestPage() {
                 id="rfq-unit"
                 value={form.unit}
                 onChange={(e) => setField({ unit: e.target.value as ProductUnit })}
-                className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background px-3 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 {RFQ_UNITS.map((u) => (
                   <option key={u} value={u}>{PRODUCT_UNIT_LABELS[u]}</option>
@@ -648,7 +648,7 @@ export function QuoteRequestPage() {
                 value={form.targetPrice}
                 onChange={(e) => setField({ targetPrice: e.target.value })}
                 placeholder="What you're aiming to pay"
-                className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold"
+                className="h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold"
               />
               {fieldErrors.targetPrice ? <p className="text-[11px] font-bold text-primary">{fieldErrors.targetPrice}</p> : null}
             </div>
@@ -661,7 +661,7 @@ export function QuoteRequestPage() {
                 min={today}
                 value={form.deadline}
                 onChange={(e) => setField({ deadline: e.target.value })}
-                className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium"
+                className="h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium"
               />
               {fieldErrors.deadline ? <p className="text-[11px] font-bold text-primary">{fieldErrors.deadline}</p> : null}
             </div>
@@ -675,7 +675,7 @@ export function QuoteRequestPage() {
                 value={form.deliveryCity}
                 onChange={(e) => setField({ deliveryCity: e.target.value })}
                 placeholder="e.g. Dhaka"
-                className="h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium"
+                className="h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium"
               />
             </div>
 
@@ -685,7 +685,7 @@ export function QuoteRequestPage() {
                 id="rfq-category"
                 value={form.categorySlug}
                 onChange={(e) => setField({ categorySlug: e.target.value })}
-                className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background px-3 text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">No category</option>
                 {categories.map((c) => (

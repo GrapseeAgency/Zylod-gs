@@ -82,11 +82,11 @@ const statusChip: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
   success: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   failed: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
-  refunded: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800',
+  refunded: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-card dark:text-slate-300 dark:border-slate-800',
 }
 
 function StatusChip({ status }: { status: string }) {
-  const cls = statusChip[status] ?? 'bg-slate-50 text-slate-500 dark:text-slate-400 border-slate-100 dark:bg-slate-950 dark:border-slate-800'
+  const cls = statusChip[status] ?? 'bg-slate-50 text-slate-500 dark:text-slate-400 border-slate-100 dark:bg-background dark:border-slate-800'
   return <span className={`text-[10px] font-black border rounded-lg px-2 py-1 uppercase tracking-wide ${cls}`}>{status}</span>
 }
 
@@ -391,7 +391,7 @@ export function AdminPaymentsPage() {
           <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-950 text-left">
+                <tr className="bg-slate-50 dark:bg-background text-left">
                   <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Order</th>
                   <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</th>
                   <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Supplier(s)</th>
@@ -405,7 +405,7 @@ export function AdminPaymentsPage() {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {rows.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-950/60 dark:hover:bg-slate-950/40">
+                  <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-card dark:bg-background/60 dark:hover:bg-background/40">
                     <td className="px-3 py-2.5 font-black whitespace-nowrap">#{p.orderNumber}</td>
                     <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 max-w-[140px] truncate">{p.buyer.displayName || '--'}</td>
                     <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 max-w-[140px] truncate">{p.suppliers.join(', ') || '--'}</td>
@@ -444,8 +444,8 @@ export function AdminPaymentsPage() {
                   <StatusChip status={p.status} />
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
-                  <span className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 capitalize">{p.method}{p.brand ? ` · ${p.brand}` : ''}</span>
-                  <span className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 font-mono">{p.transactionId || '--'}</span>
+                  <span className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 capitalize">{p.method}{p.brand ? ` · ${p.brand}` : ''}</span>
+                  <span className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 font-mono">{p.transactionId || '--'}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-black text-primary">{formatPrice(p.amount)} <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">of {formatPrice(p.orderTotal)} · {p.orderPaymentStatus}</span></span>
@@ -466,7 +466,7 @@ export function AdminPaymentsPage() {
             const p = rows.find((r) => r.id === expandedId)
             if (!p || p.status !== 'pending') return null
             return (
-              <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3">
+              <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3">
                 <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                   Decide the pending submission for <span className="font-bold text-slate-800 dark:text-slate-200">#{p.orderNumber}</span> — verify only after confirming {formatPrice(p.amount)} really arrived ({p.method}{p.brand ? ` · ${p.brand}` : ''}, ref {p.transactionId || '--'}).
                 </p>

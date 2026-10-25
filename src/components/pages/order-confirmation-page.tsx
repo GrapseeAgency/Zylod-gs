@@ -86,7 +86,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
   if (!orderId) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
-        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
           <ShoppingBag className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
         <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order to confirm</h1>
@@ -104,7 +104,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
           >
             Continue Sourcing
           </Button>
@@ -137,7 +137,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
         <Button
           variant="outline"
           onClick={() => navigate('orders')}
-          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
         >
           Go to My Orders
         </Button>
@@ -187,7 +187,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
         {/* Order Details Card */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
           {/* Header Strip */}
-          <div className="p-4 bg-slate-50 dark:bg-slate-950/70 flex justify-between items-center">
+          <div className="p-4 bg-slate-50 dark:bg-background/70 flex justify-between items-center">
             <div>
               <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Order Number</span>
               <span className="text-xs font-black text-slate-900 dark:text-slate-100">{order.orderNumber}</span>
@@ -286,7 +286,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="w-full md:w-auto md:px-8 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 md:h-12 rounded-2xl text-xs"
+            className="w-full md:w-auto md:px-8 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 md:h-12 rounded-2xl text-xs"
           >
             Continue Sourcing
           </Button>

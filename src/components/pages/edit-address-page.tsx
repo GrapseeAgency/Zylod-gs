@@ -139,7 +139,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
       </header>
 
       {/* Map Thumbnail (decorative / real map if Google Maps API present) */}
-      <div className="relative h-36 md:h-48 bg-slate-200 dark:bg-slate-800 overflow-hidden">
+      <div className="relative h-36 md:h-48 bg-slate-200 dark:bg-card overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-200 to-slate-300">
           {/* Grid lines to simulate map look */}
           <div className="absolute inset-0 grid grid-cols-6 grid-rows-4 opacity-30">
@@ -189,7 +189,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
             <Input
               value={form.contactName}
               onChange={(e) => setField('contactName', e.target.value)}
-              className={`h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.contactName ? 'border-red-400' : ''}`}
+              className={`h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.contactName ? 'border-red-400' : ''}`}
             />
             {errors.contactName && <p className="text-[10px] text-red-500 font-medium">{errors.contactName}</p>}
           </div>
@@ -200,7 +200,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
               type="tel"
               value={form.phone}
               onChange={(e) => setField('phone', e.target.value)}
-              className={`h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.phone ? 'border-red-400' : ''}`}
+              className={`h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.phone ? 'border-red-400' : ''}`}
             />
             {errors.phone && <p className="text-[10px] text-red-500 font-medium">{errors.phone}</p>}
           </div>
@@ -217,7 +217,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
             <select
               value={form.areaRegion}
               onChange={(e) => setField('areaRegion', e.target.value)}
-              className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-medium px-3.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-medium px-3.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="">Select area or region</option>
               {AREAS.map((a) => (
@@ -232,7 +232,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
               value={form.streetAddress}
               onChange={(e) => setField('streetAddress', e.target.value)}
               rows={3}
-              className={`rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium resize-none ${errors.streetAddress ? 'border-red-400' : ''}`}
+              className={`rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium resize-none ${errors.streetAddress ? 'border-red-400' : ''}`}
               placeholder="e.g. Warehouse 4B, 12/A Dilkusha Commercial Area"
             />
             {errors.streetAddress && <p className="text-[10px] text-red-500 font-medium">{errors.streetAddress}</p>}
@@ -243,7 +243,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
             <Input
               value={form.landmark}
               onChange={(e) => setField('landmark', e.target.value)}
-              className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium"
+              className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium"
               placeholder="e.g. Behind Janata Bank Main Branch"
             />
           </div>
@@ -255,7 +255,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
             Settings
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div className="bg-slate-50 dark:bg-background rounded-2xl p-4 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Set as Default Delivery Address</p>
               <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">Future wholesale orders will default here.</p>
@@ -285,7 +285,7 @@ export function EditAddressPage({ pageParams: _pageParams }: { pageParams?: Reco
                     className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold border transition-colors ${
                       form.label === lbl
                         ? 'bg-primary/10 text-primary border-primary/30'
-                        : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        : 'bg-slate-50 dark:bg-background text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-card'
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" />

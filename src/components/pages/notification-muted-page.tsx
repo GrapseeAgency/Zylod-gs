@@ -63,7 +63,7 @@ export function NotificationMutedPage() {
         {/* Pause Master Card */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 flex items-center justify-center flex-shrink-0">
               <VolumeX className="w-5 h-5" />
             </div>
             <div>
@@ -95,7 +95,7 @@ export function NotificationMutedPage() {
                 <button
                   key={opt.hours}
                   onClick={() => pauseFor(opt.hours)}
-                  className="p-2.5 bg-slate-50 dark:bg-slate-950 hover:bg-red-50 hover:text-red-700 rounded-xl border border-gray-100 dark:border-gray-800 text-xs font-bold text-gray-700 dark:text-gray-300 transition"
+                  className="p-2.5 bg-slate-50 dark:bg-background hover:bg-red-50 hover:text-red-700 rounded-xl border border-gray-100 dark:border-gray-800 text-xs font-bold text-gray-700 dark:text-gray-300 transition"
                 >
                   {opt.label}
                 </button>
@@ -112,19 +112,19 @@ export function NotificationMutedPage() {
 
           <div className="space-y-2">
             {!prefs.pushPromotions && (
-              <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-between text-xs">
+              <div className="p-3 bg-slate-50 dark:bg-background rounded-xl flex items-center justify-between text-xs">
                 <span className="font-bold text-gray-700 dark:text-gray-300">Promotions &amp; Flash Sales</span>
                 <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">Muted</span>
               </div>
             )}
             {!prefs.pushPriceDrops && (
-              <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-between text-xs">
+              <div className="p-3 bg-slate-50 dark:bg-background rounded-xl flex items-center justify-between text-xs">
                 <span className="font-bold text-gray-700 dark:text-gray-300">Price Drops</span>
                 <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">Muted</span>
               </div>
             )}
             {!prefs.pushBackInStock && (
-              <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-between text-xs">
+              <div className="p-3 bg-slate-50 dark:bg-background rounded-xl flex items-center justify-between text-xs">
                 <span className="font-bold text-gray-700 dark:text-gray-300">Back in Stock</span>
                 <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400">Muted</span>
               </div>

@@ -114,7 +114,7 @@ export function PaymentPendingPage() {
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-background p-3 rounded-2xl border border-slate-100 dark:border-slate-800 leading-relaxed">
                   {item.description}
                 </p>
               </div>

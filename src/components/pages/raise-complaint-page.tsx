@@ -121,7 +121,7 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
             <select
               value={complaintType}
               onChange={(e) => setComplaintType(e.target.value)}
-              className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
               <option value="damaged">Damaged or Broken Items on Arrival</option>
               <option value="missing">Missing Quantity / Incomplete Shipment</option>
@@ -149,7 +149,7 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
                   className={`py-2 rounded-xl text-xs font-bold border transition-colors ${
                     desiredOutcome === res.id
                       ? 'bg-rose-50 text-primary border-primary'
-                      : 'bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
+                      : 'bg-slate-50 dark:bg-background text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
                   }`}
                 >
                   {res.label}
@@ -164,7 +164,7 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
                   value={refundAmount}
                   onChange={(e) => setRefundAmount(e.target.value)}
                   placeholder="e.g. 12500"
-                  className="h-10 rounded-xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
+                  className="h-10 rounded-xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
                 />
               </div>
             )}
@@ -180,7 +180,7 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
               onChange={(e) => setStatement(e.target.value)}
               placeholder="Explain what went wrong, and email photos/video to support@zylod.com with your reference afterwards..."
               rows={4}
-              className="rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-medium resize-none"
+              className="rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium resize-none"
               required
             />
 
@@ -190,7 +190,7 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
           </div>
 
           {/* Honest Protection Info */}
-          <div className="p-4 bg-slate-100 dark:bg-slate-900/70 rounded-2xl border border-slate-200 dark:border-slate-800/80 flex gap-3 items-start text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
+          <div className="p-4 bg-slate-100 dark:bg-card/70 rounded-2xl border border-slate-200 dark:border-slate-800/80 flex gap-3 items-start text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
             <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p className="text-[11px] leading-relaxed">
               Zylod does not hold payments in escrow. Your complaint is reviewed by the Zylod team and the outcome is documented — nothing is decided automatically.

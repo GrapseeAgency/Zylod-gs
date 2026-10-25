@@ -108,7 +108,7 @@ export function GroupBuyDetailPage() {
             </div>
 
             {/* Price Card */}
-            <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
+            <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Group Pool Rate</p>
                 <p className="text-2xl md:text-3xl font-black text-red-600">{formatPrice(campaign.discountedPrice)}</p>
@@ -173,7 +173,7 @@ export function GroupBuyDetailPage() {
               </h3>
               <div className="space-y-1.5 max-h-40 overflow-y-auto">
                 {campaign.participants?.map((p: any) => (
-                  <div key={p.id} className="p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl flex items-center justify-between text-xs">
+                  <div key={p.id} className="p-2.5 bg-slate-50 dark:bg-background rounded-xl flex items-center justify-between text-xs">
                     <span className="font-medium text-gray-800 dark:text-gray-200">{p.userEmailMasked}</span>
                     <span className="font-bold text-red-600">Reserved {p.quantity} units</span>
                   </div>

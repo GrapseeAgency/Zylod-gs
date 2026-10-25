@@ -70,7 +70,7 @@ export function CreditScorePage() {
         <span className="text-base font-black tracking-tight text-primary">Trade Credit Score</span>
         <button
           onClick={() => navigate('credit-limit')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Limit"
         >
           <ShieldCheck className="h-4 w-4" />

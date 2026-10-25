@@ -113,7 +113,7 @@ export function CommunityGuidelinesPage() {
         </div>
 
         {/* Enforcement notice */}
-        <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl p-4 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center leading-relaxed">
+        <div className="bg-slate-100 dark:bg-card rounded-2xl p-4 text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 text-center leading-relaxed">
           Violations of these guidelines may result in listing removal, supplier badge revocation, and referral to the Ministry of Commerce & Directorate of National Consumer Rights Protection (DNCRP).
         </div>
       </div>

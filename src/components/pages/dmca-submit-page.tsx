@@ -133,7 +133,7 @@ export function DmcaSubmitPage() {
                     value={formData.copyrightWorkDesc}
                     onChange={e => setFormData({ ...formData, copyrightWorkDesc: e.target.value })}
                     placeholder="Describe how the listing violates your intellectual property rights..."
-                    className="w-full mt-1 p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="w-full mt-1 p-3 bg-slate-50 dark:bg-background rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                 </div>
               </div>

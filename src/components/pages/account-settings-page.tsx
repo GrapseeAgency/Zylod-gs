@@ -98,7 +98,7 @@ function SettingsRow({
 }) {
   const iconBgMap: Record<string, string> = {
     rose: 'bg-rose-50 border-rose-100 text-primary',
-    slate: 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400',
+    slate: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400',
     emerald: 'bg-emerald-50 border-emerald-100 text-emerald-600',
     amber: 'bg-amber-50 border-amber-100 text-amber-600',
     sky: 'bg-sky-50 border-sky-100 text-sky-600',
@@ -111,7 +111,7 @@ function SettingsRow({
       disabled={!onClick}
       className={`w-full flex items-center justify-between p-5 border-b border-slate-50 last:border-0 transition-colors text-left ${
         onClick
-          ? danger ? 'hover:bg-rose-50' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+          ? danger ? 'hover:bg-rose-50' : 'hover:bg-slate-50 dark:hover:bg-card'
           : 'cursor-default'
       }`}
     >
@@ -298,7 +298,7 @@ export function AccountSettingsPage() {
         </div>
         <button
           onClick={() => navigate('profile')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Profile"
         >
           <User className="h-4 w-4" />
@@ -335,7 +335,7 @@ export function AccountSettingsPage() {
                     ? s.key === 'danger'
                       ? 'bg-rose-600 text-white shadow-xs'
                       : 'bg-primary text-white shadow-xs font-black'
-                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -361,7 +361,7 @@ export function AccountSettingsPage() {
               {activeSection === 'security' && (
                 <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:items-start">
                   <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                       <Lock className="h-3.5 w-3.5 text-primary" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary">Password &amp; Authentication</span>
                     </div>
@@ -416,7 +416,7 @@ export function AccountSettingsPage() {
               {activeSection === 'notifications' && (
                 <>
                   <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                       <Bell className="h-3.5 w-3.5 text-primary" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary">Alert Preferences</span>
                     </div>
@@ -459,7 +459,7 @@ export function AccountSettingsPage() {
               {activeSection === 'privacy' && (
                 <>
                   <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                       <Eye className="h-3.5 w-3.5 text-primary" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary">Visibility Settings</span>
                     </div>
@@ -534,7 +534,7 @@ export function AccountSettingsPage() {
               {activeSection === 'billing' && (
                 <>
                   <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                    <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                       <CreditCard className="h-3.5 w-3.5 text-primary" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary">Payment Methods</span>
                     </div>

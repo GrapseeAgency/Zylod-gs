@@ -22,7 +22,7 @@ export function LinkAnalyticsPage() {
         <p className="text-xs text-muted-foreground mt-0.5">Click attribution will be published here once tracking data exists</p>
       </div>
 
-      <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 p-8 text-center space-y-2">
+      <div className="rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-background p-8 text-center space-y-2">
         <MousePointerClick className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500" />
         <h2 className="text-sm font-bold text-foreground">No link telemetry recorded yet</h2>
         <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">

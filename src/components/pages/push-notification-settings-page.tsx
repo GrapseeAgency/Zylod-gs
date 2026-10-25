@@ -158,7 +158,7 @@ export function PushNotificationSettingsPage() {
       title: 'Platform & Security Alerts',
       desc: 'Account security, policy updates, and payment verification status',
       icon: Shield,
-      iconBg: 'bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300',
+      iconBg: 'bg-slate-50 dark:bg-background text-slate-700 dark:text-slate-300',
       pushKey: 'pushSystem' as keyof Preferences,
       emailKey: null,
     },

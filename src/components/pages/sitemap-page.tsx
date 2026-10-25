@@ -120,7 +120,7 @@ export function SitemapPage() {
                       <button
                         key={page.id}
                         onClick={() => navigate(page.id)}
-                        className="w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 transition text-left group"
+                        className="w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 dark:bg-background dark:hover:bg-card transition text-left group"
                       >
                         <div>
                           <p className="text-xs font-bold text-gray-800 dark:text-gray-200 group-hover:text-primary transition">

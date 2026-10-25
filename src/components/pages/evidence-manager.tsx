@@ -340,7 +340,7 @@ export function EvidenceManager({ ownerType, ownerId, canEdit, lockedNote, onCou
 
       {/* Honest lock note — evidence cannot be changed after review starts */}
       {!canEdit && (
-        <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 px-3 py-2">
+        <div className="flex items-start gap-2 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
           <Lock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
           <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
             {lockedNote || 'Evidence is locked — photos can no longer be added or removed.'}

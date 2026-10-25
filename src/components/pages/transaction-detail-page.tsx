@@ -77,7 +77,7 @@ export function TransactionDetailPage() {
         <span className="text-base md:text-xl font-black tracking-tight text-primary">Transaction Receipt</span>
         <button
           onClick={() => window.print()}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Print"
         >
           <Download className="h-4 w-4" />
@@ -133,7 +133,7 @@ export function TransactionDetailPage() {
             </div>
           </div>
 
-          <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
+          <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
             <ShieldCheck className="h-4 w-4 text-emerald-600" />
             <span>Recorded in your Zylod transaction history</span>
           </div>

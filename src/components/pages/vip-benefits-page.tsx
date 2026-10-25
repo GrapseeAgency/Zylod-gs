@@ -74,7 +74,7 @@ export function VipBenefitsPage() {
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
       <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
@@ -101,7 +101,7 @@ export function VipBenefitsPage() {
         {loading ? (
           <PageLoader />
         ) : fetchFailed || !data ? (
-          <div className="bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 text-center space-y-3">
+          <div className="bg-white dark:bg-card/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 text-center space-y-3">
             <ShieldCheck className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
             <p className="text-xs text-slate-500 dark:text-slate-400">
               The VIP tier configuration couldn&apos;t be loaded, so we won&apos;t guess at the benefits. Please try again.
@@ -109,7 +109,7 @@ export function VipBenefitsPage() {
             <Button
               onClick={loadVip}
               variant="outline"
-              className="h-10 rounded-xl text-xs font-bold gap-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
+              className="h-10 rounded-xl text-xs font-bold gap-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-card text-slate-700 dark:text-slate-300"
             >
               <RefreshCw className="w-4 h-4" /> Retry
             </Button>
@@ -121,7 +121,7 @@ export function VipBenefitsPage() {
               return (
                 <div
                   key={tier.id}
-                  className={`bg-white dark:bg-slate-800/90 border rounded-3xl p-5 space-y-3 shadow-sm ${
+                  className={`bg-white dark:bg-card/90 border rounded-3xl p-5 space-y-3 shadow-sm ${
                     isCurrent ? 'border-amber-400 ring-1 ring-amber-400/40' : 'border-slate-200 dark:border-slate-700'
                   }`}
                 >
@@ -140,7 +140,7 @@ export function VipBenefitsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 px-2 py-0.5 rounded-full">
+                      <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-full">
                         {tier.badge}
                       </span>
                       {isCurrent && (

@@ -177,7 +177,7 @@ export function FAQPage() {
                 >
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : faq.id)}
-                    className="w-full p-4 flex items-center justify-between text-left gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-950/50 transition"
+                    className="w-full p-4 flex items-center justify-between text-left gap-3 hover:bg-slate-50 dark:hover:bg-card dark:bg-background/50 transition"
                   >
                     <span className="text-xs sm:text-sm md:text-base font-bold text-gray-900 dark:text-gray-100 leading-snug">
                       {question}

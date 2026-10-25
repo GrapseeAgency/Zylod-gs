@@ -89,7 +89,7 @@ export function ChatbotPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 max-w-2xl lg:max-w-4xl mx-auto w-full border-x border-gray-200 dark:border-gray-800">
+    <div className="flex flex-col h-screen bg-slate-50 dark:bg-background max-w-2xl lg:max-w-4xl mx-auto w-full border-x border-gray-200 dark:border-gray-800">
       {/* Header */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm z-10">
         <div className="flex items-center gap-3">

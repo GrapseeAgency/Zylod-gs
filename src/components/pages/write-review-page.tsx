@@ -162,7 +162,7 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g., Exceptional build quality and fast lead time"
-                className="h-11 rounded-xl text-xs font-medium bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+                className="h-11 rounded-xl text-xs font-medium bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800"
               />
             </div>
 
@@ -175,14 +175,14 @@ export function WriteReviewPage({ pageParams: _pageParams }: { pageParams?: Reco
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Share specific details regarding durability, packaging, shipment handling, or tolerances..."
                 rows={4}
-                className="rounded-xl text-xs font-medium bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 resize-none"
+                className="rounded-xl text-xs font-medium bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 resize-none"
               />
             </div>
 
             {/* Quick Upload Media Tile CTA */}
             <div
               onClick={() => navigate('upload-review-photos', { productId })}
-              className="border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-primary/50 bg-slate-50/50 dark:bg-slate-950/50 rounded-2xl p-4 text-center cursor-pointer transition-colors"
+              className="border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-primary/50 bg-slate-50/50 dark:bg-background/50 rounded-2xl p-4 text-center cursor-pointer transition-colors"
             >
               <Camera className="h-6 w-6 mx-auto text-primary mb-1.5" />
               <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Add Photos or Video</p>

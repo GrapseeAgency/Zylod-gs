@@ -121,7 +121,7 @@ export function BusinessProfilePage() {
         <span className="text-base font-black tracking-tight text-primary">Business Profile</span>
         <button
           onClick={() => navigate('profile')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Profile"
         >
           <Building2 className="h-4 w-4" />
@@ -160,7 +160,7 @@ export function BusinessProfilePage() {
                   value={legalEntityName}
                   onChange={(e) => setLegalEntityName(e.target.value)}
                   placeholder="Official registered company name"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold"
                 />
               </div>
 
@@ -172,7 +172,7 @@ export function BusinessProfilePage() {
                   value={tradeLicenseNumber}
                   onChange={(e) => setTradeLicenseNumber(e.target.value)}
                   placeholder="TRD-XXXXX-BD"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
                 />
               </div>
 
@@ -183,7 +183,7 @@ export function BusinessProfilePage() {
                 <select
                   value={industryCategory}
                   onChange={(e) => setIndustryCategory(e.target.value)}
-                  className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
+                  className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
                 >
                   <option value="Wholesale & Manufacturing">Wholesale &amp; Manufacturing</option>
                   <option value="OEM / ODM Custom Producer">OEM / ODM Custom Producer</option>
@@ -214,7 +214,7 @@ export function BusinessProfilePage() {
                   value={streetAddress}
                   onChange={(e) => setStreetAddress(e.target.value)}
                   placeholder="e.g. Tejgaon Industrial Area, Plot 42"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                 />
               </div>
 
@@ -225,7 +225,7 @@ export function BusinessProfilePage() {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="City"
-                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
                   />
                 </div>
                 <div>
@@ -234,7 +234,7 @@ export function BusinessProfilePage() {
                     value={postalCode}
                     onChange={(e) => setPostalCode(e.target.value)}
                     placeholder="Postal Code"
-                    className="h-11 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
                   />
                 </div>
               </div>
@@ -250,7 +250,7 @@ export function BusinessProfilePage() {
             {documents.length > 0 ? (
               <div className="space-y-2">
                 {documents.map((doc) => (
-                  <div key={doc.id} className="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                  <div key={doc.id} className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
                     <span className="font-bold text-slate-900 dark:text-slate-100">{doc.name}</span>
                     <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
                       {doc.status}

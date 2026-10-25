@@ -234,7 +234,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
-          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
+          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
             <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No product selected</h1>
@@ -253,7 +253,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
-          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
+          <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
             <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">Product not found</h1>
@@ -315,7 +315,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
             Frequently Bought Together
           </h1>
           <div className="mt-6 bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-            <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
+            <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
               <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
             </div>
             <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
@@ -375,7 +375,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
           {items.map((item, idx) => (
             <div key={item.id} className="space-y-3">
               {/* Product Preview Box — real photo, neutral icon when none */}
-              <div className="relative w-full aspect-square rounded-2xl bg-slate-100 dark:bg-slate-900 overflow-hidden border border-slate-100 dark:border-slate-800">
+              <div className="relative w-full aspect-square rounded-2xl bg-slate-100 dark:bg-card overflow-hidden border border-slate-100 dark:border-slate-800">
                 {item.image ? (
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                 ) : (
@@ -449,7 +449,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
                 <div className="text-xl font-black text-primary">
                   {formatPrice(totalBundlePrice)}
                 </div>
-                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 px-1.5 py-0.5 rounded">
+                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-card px-1.5 py-0.5 rounded">
                   At each item&apos;s MOQ
                 </span>
               </div>
@@ -468,7 +468,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
           </div>
 
           {/* Honest shipping note */}
-          <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-3 flex items-start gap-2.5 text-[10px] text-slate-600 dark:text-slate-400">
+          <div className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl p-3 flex items-start gap-2.5 text-[10px] text-slate-600 dark:text-slate-400">
             <Package className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               Each item is fulfilled by its own supplier at that supplier&apos;s standard processing time.

@@ -188,7 +188,7 @@ export function OrderSummaryPage() {
           </div>
         </header>
         <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
-          <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
+          <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
             <Package className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
           </div>
           <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Nothing to review</h1>
@@ -258,8 +258,8 @@ export function OrderSummaryPage() {
               <MapPin className="h-4 w-4 text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
               {addressesLoading ? (
                 <div className="flex-1 space-y-2" aria-busy="true">
-                  <div className="h-3.5 w-1/3 bg-slate-100 dark:bg-slate-900 rounded animate-pulse" />
-                  <div className="h-3 w-2/3 bg-slate-100 dark:bg-slate-900 rounded animate-pulse" />
+                  <div className="h-3.5 w-1/3 bg-slate-100 dark:bg-card rounded animate-pulse" />
+                  <div className="h-3 w-2/3 bg-slate-100 dark:bg-card rounded animate-pulse" />
                 </div>
               ) : selectedAddress ? (
                 <div className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 space-y-0.5">
@@ -310,8 +310,8 @@ export function OrderSummaryPage() {
               <Truck className="h-4 w-4 text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
               {methodsLoading ? (
                 <div className="flex-1 space-y-2" aria-busy="true">
-                  <div className="h-3.5 w-1/3 bg-slate-100 dark:bg-slate-900 rounded animate-pulse" />
-                  <div className="h-3 w-1/2 bg-slate-100 dark:bg-slate-900 rounded animate-pulse" />
+                  <div className="h-3.5 w-1/3 bg-slate-100 dark:bg-card rounded animate-pulse" />
+                  <div className="h-3 w-1/2 bg-slate-100 dark:bg-card rounded animate-pulse" />
                 </div>
               ) : selectedMethod ? (
                 <div className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 space-y-0.5">

@@ -63,7 +63,7 @@ export function SafetyCenterPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {/* Hero Header */}
-      <div className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white px-4 pt-4 pb-8 rounded-b-3xl shadow-lg md:px-6 md:pt-6 md:pb-10 border-b border-gray-200 dark:border-slate-800">
+      <div className="bg-white dark:bg-card text-gray-900 dark:text-white px-4 pt-4 pb-8 rounded-b-3xl shadow-lg md:px-6 md:pt-6 md:pb-10 border-b border-gray-200 dark:border-slate-800">
         <div className="flex items-center justify-between gap-3 mb-6">
           <button onClick={goBack} className="md:hidden p-2 rounded-full bg-gray-100 dark:bg-gray-900/10 hover:bg-gray-200 dark:bg-gray-900/20 transition">
             <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-white" />
@@ -129,7 +129,7 @@ export function SafetyCenterPage() {
           ) : (
             <div className="space-y-3">
               {tips.map((tip, idx) => (
-                <div key={tip.id} className="p-3.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
+                <div key={tip.id} className="p-3.5 bg-slate-50 dark:bg-background rounded-2xl border border-gray-100 dark:border-gray-800 space-y-1">
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-bold text-gray-900 dark:text-gray-100">
                       {language === 'bn' ? tip.titleBn : tip.titleEn}

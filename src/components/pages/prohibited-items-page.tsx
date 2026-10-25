@@ -75,7 +75,7 @@ export function ProhibitedItemsPage() {
               </h2>
               <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
                 {cat.items.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-gray-100 dark:border-gray-800">
+                  <li key={i} className="flex items-start gap-2 bg-slate-50 dark:bg-background p-2.5 rounded-xl border border-gray-100 dark:border-gray-800">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
                     <span>{item}</span>
                   </li>

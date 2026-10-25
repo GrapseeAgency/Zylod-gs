@@ -189,7 +189,7 @@ export function CouponPromoPage() {
                 value={promoInput}
                 onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
                 placeholder="E.G. BULK2024"
-                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-bold tracking-wider uppercase text-slate-800 dark:text-slate-200"
+                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold tracking-wider uppercase text-slate-800 dark:text-slate-200"
               />
             </div>
 
@@ -222,10 +222,10 @@ export function CouponPromoPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 animate-pulse space-y-2">
-                  <div className="h-3 bg-slate-100 dark:bg-slate-900 rounded w-20" />
-                  <div className="h-4 bg-slate-100 dark:bg-slate-900 rounded w-28" />
-                  <div className="h-3 bg-slate-100 dark:bg-slate-900 rounded w-full" />
-                  <div className="h-7 bg-slate-100 dark:bg-slate-900 rounded w-full" />
+                  <div className="h-3 bg-slate-100 dark:bg-card rounded w-20" />
+                  <div className="h-4 bg-slate-100 dark:bg-card rounded w-28" />
+                  <div className="h-3 bg-slate-100 dark:bg-card rounded w-full" />
+                  <div className="h-7 bg-slate-100 dark:bg-card rounded w-full" />
                 </div>
               ))}
             </div>
@@ -257,7 +257,7 @@ export function CouponPromoPage() {
                   >
                     {/* Header tags */}
                     <div className="flex items-center justify-between gap-2">
-                      <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+                      <span className="bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
                         {coupon.userId ? 'Personal voucher' : 'Platform offer'}
                       </span>
                       <span className="text-xs font-black text-primary whitespace-nowrap">

@@ -110,10 +110,10 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
   // ── gates ──
   if (!returnId) {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
-            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
               <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">No refund selected</h2>
@@ -130,7 +130,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
   }
   if (phase === 'anon') {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
@@ -148,10 +148,10 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
   }
   if (phase === 'notfound') {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
-            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+            <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
               <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Return request not found</h2>
@@ -166,7 +166,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
   }
   if (phase === 'error') {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
@@ -184,7 +184,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
   }
   if (phase === 'loading' || !data) {
     return (
-      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
         <PageLoader className="min-h-0" />
       </div>
     )
@@ -247,7 +247,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
     })
   }
 
-  const badge = STATUS_BADGE[data.status] ?? { label: data.status, className: 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300' }
+  const badge = STATUS_BADGE[data.status] ?? { label: data.status, className: 'bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300' }
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
@@ -289,7 +289,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
             </p>
             <span className="md:hidden inline-flex mt-2"><Badge className={badge.className}>{badge.label}</Badge></span>
           </div>
-          <div className="p-4 bg-slate-50 dark:bg-slate-950/80 rounded-2xl border border-slate-100 dark:border-slate-800">
+          <div className="p-4 bg-slate-50 dark:bg-background/80 rounded-2xl border border-slate-100 dark:border-slate-800">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
               {data.status === 'refunded' ? 'Total refunded' : 'Estimated refund'}
             </span>
@@ -311,7 +311,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
         {/* Card 2: honest timeline */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
           <h2 className="text-xs font-black text-slate-900 dark:text-slate-100">Status Timeline</h2>
-          <div className="space-y-6 pl-2 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:bg-slate-900">
+          <div className="space-y-6 pl-2 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:bg-card">
             {steps.map((step, i) => (
               <div key={i} className="relative flex items-start gap-4">
                 <div
@@ -321,7 +321,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
                       ? 'bg-slate-200 text-slate-700 dark:text-slate-300'
                       : step.state === 'active'
                         ? 'bg-primary text-white shadow-md shadow-primary/25'
-                        : 'bg-slate-100 dark:bg-slate-900 text-slate-300')
+                        : 'bg-slate-100 dark:bg-card text-slate-300')
                   }
                 >
                   {step.state === 'done'
@@ -336,7 +336,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">{step.subtitle}</p>
                   {step.tag && (
-                    <div className="mt-2 p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <div className="mt-2 p-2.5 bg-slate-50 dark:bg-background rounded-xl border border-slate-100 dark:border-slate-800 flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
                       <Landmark className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400 dark:text-slate-500 shrink-0" />
                       <span className="truncate">{step.tag}</span>
                     </div>
@@ -364,7 +364,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
                 <span
                   className={
                     'text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ' +
-                    (f.status === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400')
+                    (f.status === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400')
                   }
                 >
                   {f.status}
@@ -388,7 +388,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
         )}
 
         {/* Assistance */}
-        <div className="bg-slate-100 dark:bg-slate-900/60 rounded-3xl p-4 border border-slate-200 dark:border-slate-800/80 flex gap-3 items-start">
+        <div className="bg-slate-100 dark:bg-card/60 rounded-3xl p-4 border border-slate-200 dark:border-slate-800/80 flex gap-3 items-start">
           <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
           <div className="space-y-1 text-xs min-w-0">
             <h3 className="font-bold text-slate-900 dark:text-slate-100">Need assistance with this refund?</h3>

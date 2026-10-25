@@ -91,14 +91,14 @@ export function ShippingAddressPage() {
           </div>
           <div className="flex-1 h-0.5 bg-slate-200 mx-2" />
           <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs font-bold">
               2
             </div>
             <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wide">Delivery</span>
           </div>
           <div className="flex-1 h-0.5 bg-slate-200 mx-2" />
           <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs font-bold">
               3
             </div>
             <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wide">Payment</span>
@@ -170,7 +170,7 @@ export function ShippingAddressPage() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs font-black text-slate-900 dark:text-slate-100">{addr.label}</span>
                           {addr.isDefault && (
-                            <span className="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <span className="bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">
                               Default
                             </span>
                           )}

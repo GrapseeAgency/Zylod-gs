@@ -132,7 +132,7 @@ export function LoyaltyPointsPage() {
               <div
                 key={item.title}
                 onClick={() => navigate(item.nav as any)}
-                className="p-3 bg-slate-50 dark:bg-slate-950 hover:bg-amber-50 rounded-2xl flex items-center justify-between cursor-pointer transition border border-gray-100 dark:border-gray-800"
+                className="p-3 bg-slate-50 dark:bg-background hover:bg-amber-50 rounded-2xl flex items-center justify-between cursor-pointer transition border border-gray-100 dark:border-gray-800"
               >
                 <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{item.title}</span>
                 <span className="text-xs font-extrabold text-amber-600">{item.pts} →</span>

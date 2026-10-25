@@ -135,7 +135,7 @@ export function LiveChatPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen md:h-[calc(100vh-60px)] bg-slate-100 dark:bg-slate-900 max-w-2xl md:max-w-3xl mx-auto w-full border-x border-gray-200 dark:border-gray-800">
+    <div className="flex flex-col h-screen md:h-[calc(100vh-60px)] bg-slate-100 dark:bg-card max-w-2xl md:max-w-3xl mx-auto w-full border-x border-gray-200 dark:border-gray-800">
       {/* Top Bar */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between shadow-sm z-10">
         <div className="flex items-center gap-3">

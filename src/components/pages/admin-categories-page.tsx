@@ -44,7 +44,7 @@ interface CategoryStats {
 
 const REFRESH_INTERVAL_MS = 30_000
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
 
 interface TreeNode {
   cat: AdminCategory
@@ -421,7 +421,7 @@ export function AdminCategoriesPage() {
                 className={`text-[10px] font-black rounded-lg ${
                   cat.isActive
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900'
-                    : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-950 dark:text-slate-400 dark:border-slate-800'
+                    : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-background dark:text-slate-400 dark:border-slate-800'
                 }`}
               >
                 {cat.isActive ? 'ACTIVE' : 'INACTIVE'}
@@ -589,7 +589,7 @@ export function AdminCategoriesPage() {
           </div>
 
           {hiddenDeeperCount > 0 && (
-            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4">
+            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4">
               <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
                 · {hiddenDeeperCount} categor{hiddenDeeperCount === 1 ? 'y is' : 'ies are'} nested deeper than 3 levels and {hiddenDeeperCount === 1 ? 'is' : 'are'} not shown in this tree. They still exist in the database and remain reachable via Edit on their ancestors.
               </p>
@@ -598,7 +598,7 @@ export function AdminCategoriesPage() {
 
           {/* Honest data notes straight from the API */}
           {dataNotes.length > 0 && (
-            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-1">
+            <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-1">
               {dataNotes.map((noteLine, i) => (
                 <p key={i} className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">· {noteLine}</p>
               ))}
@@ -758,7 +758,7 @@ export function AdminCategoriesPage() {
                     className={`text-[10px] font-black rounded-lg ${
                       deleting.isActive
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900'
-                        : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-950 dark:text-slate-400 dark:border-slate-800'
+                        : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-background dark:text-slate-400 dark:border-slate-800'
                     }`}
                   >
                     {deleting.isActive ? 'ACTIVE' : 'INACTIVE'}

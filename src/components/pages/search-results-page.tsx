@@ -257,7 +257,7 @@ export function SearchResultsPage() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search products, categories..."
             aria-label="Search wholesale products"
-            className="pl-10 pr-4 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
+            className="pl-10 pr-4 h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
           />
         </form>
       </header>
@@ -377,7 +377,7 @@ export function SearchResultsPage() {
                   className="relative bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3 shadow-2xs hover:shadow-md transition-all flex gap-3.5 cursor-pointer items-start"
                 >
                   {/* Thumbnail */}
-                  <div className="relative w-24 h-24 rounded-xl bg-slate-100 dark:bg-slate-900 shrink-0 overflow-hidden">
+                  <div className="relative w-24 h-24 rounded-xl bg-slate-100 dark:bg-card shrink-0 overflow-hidden">
                     {product.imageUrls[0] || product.thumbnailUrl ? (
                       <img
                         src={product.imageUrls[0] || product.thumbnailUrl || ''}
@@ -418,7 +418,7 @@ export function SearchResultsPage() {
                         <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400"> /{product.unit}</span>
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium bg-slate-100 dark:bg-slate-900 rounded-md px-1.5 py-0.5">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium bg-slate-100 dark:bg-card rounded-md px-1.5 py-0.5">
                           MOQ {product.moq.toLocaleString()} {product.unit}
                         </span>
                         {bestTier && savingsPercent > 0 && (

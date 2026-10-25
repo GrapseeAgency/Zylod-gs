@@ -296,7 +296,7 @@ export function AdminShippingPage() {
               key={t}
               onClick={() => setTab(t)}
               className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-colors ${
-                tab === t ? 'bg-primary text-white' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                tab === t ? 'bg-primary text-white' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-card'
               }`}
             >
               {t === 'quote' ? 'Quote tester' : t === 'couriers' ? 'Checkout couriers' : t}
@@ -327,14 +327,14 @@ export function AdminShippingPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">{z.name}</h3>
-                        <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${z.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500'}`}>
+                        <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${z.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500'}`}>
                           {z.isActive ? 'active' : 'inactive'}
                         </span>
                         <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold uppercase">{z.rateCount} rate{z.rateCount === 1 ? '' : 's'}</span>
                       </div>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {z.districts.map((d) => (
-                          <span key={d} className="text-[10px] bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-full px-2 py-0.5 text-slate-600 dark:text-slate-400 dark:text-slate-500">{d}</span>
+                          <span key={d} className="text-[10px] bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-full px-2 py-0.5 text-slate-600 dark:text-slate-400 dark:text-slate-500">{d}</span>
                         ))}
                       </div>
                     </div>
@@ -366,7 +366,7 @@ export function AdminShippingPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">{m.name}</h3>
-                        <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${m.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500'}`}>
+                        <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${m.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500'}`}>
                           {m.isActive ? 'active' : 'inactive'}
                         </span>
                         <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold uppercase">{m.rateCount} rate{m.rateCount === 1 ? '' : 's'}</span>

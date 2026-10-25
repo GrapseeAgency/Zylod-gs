@@ -79,7 +79,7 @@ export function NotificationFilterPage() {
                   key={type.id}
                   onClick={() => toggleType(type.id)}
                   className={`p-3 rounded-2xl border text-xs font-bold text-left transition flex items-center justify-between ${
-                    active ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 text-gray-700 dark:text-gray-300'
+                    active ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 dark:border-gray-800 bg-slate-50 dark:bg-background text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   <span>{type.label}</span>
@@ -99,7 +99,7 @@ export function NotificationFilterPage() {
             <button
               onClick={() => setUnreadOnly(false)}
               className={`p-3 rounded-2xl border text-xs font-bold transition ${
-                !unreadOnly ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 text-gray-700 dark:text-gray-300'
+                !unreadOnly ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 dark:border-gray-800 bg-slate-50 dark:bg-background text-gray-700 dark:text-gray-300'
               }`}
             >
               All Notifications
@@ -107,7 +107,7 @@ export function NotificationFilterPage() {
             <button
               onClick={() => setUnreadOnly(true)}
               className={`p-3 rounded-2xl border text-xs font-bold transition ${
-                unreadOnly ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 dark:border-gray-800 bg-slate-50 dark:bg-slate-950 text-gray-700 dark:text-gray-300'
+                unreadOnly ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-100 dark:border-gray-800 bg-slate-50 dark:bg-background text-gray-700 dark:text-gray-300'
               }`}
             >
               Unread Only

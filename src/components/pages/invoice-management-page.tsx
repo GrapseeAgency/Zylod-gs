@@ -150,7 +150,7 @@ export function InvoiceManagementPage() {
                 className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   isSelected
                     ? 'bg-primary text-white shadow-xs'
-                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
                 }`}
               >
                 {label}
@@ -190,7 +190,7 @@ export function InvoiceManagementPage() {
                       </span>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 text-xs flex justify-between text-slate-600 dark:text-slate-400 dark:text-slate-500">
+                    <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 text-xs flex justify-between text-slate-600 dark:text-slate-400 dark:text-slate-500">
                       <span>Client: <strong className="text-slate-800 dark:text-slate-200">{inv.buyerName}</strong></span>
                       <span>Issued: <strong className="text-slate-800 dark:text-slate-200">{new Date(inv.date).toLocaleDateString()}</strong></span>
                     </div>
@@ -318,13 +318,13 @@ export function InvoiceManagementPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-3 space-y-0.5">
+                <div className="bg-slate-50 dark:bg-background rounded-xl p-3 space-y-0.5">
                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400">Seller</p>
                   <p className="font-bold">{mushakDoc.seller.name}</p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">{mushakDoc.seller.address}</p>
                   <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">TIN {mushakDoc.seller.tin} · BIN {mushakDoc.seller.bin}</p>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-3 space-y-0.5">
+                <div className="bg-slate-50 dark:bg-background rounded-xl p-3 space-y-0.5">
                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</p>
                   <p className="font-bold">{mushakDoc.buyer.name}</p>
                   <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">{mushakDoc.buyer.address}</p>

@@ -94,7 +94,7 @@ export function ShippingPoliciesPage() {
               >
                 <button
                   onClick={() => toggleSection(idx)}
-                  className="w-full p-4 flex items-center justify-between text-left font-bold text-xs text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
+                  className="w-full p-4 flex items-center justify-between text-left font-bold text-xs text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
                 >
                   <span>{sec.title}</span>
                   <ChevronDown
@@ -122,7 +122,7 @@ export function ShippingPoliciesPage() {
         </div>
 
         {/* Support Card */}
-        <div className="bg-slate-100 dark:bg-slate-900/70 rounded-3xl p-5 border border-slate-200 dark:border-slate-800/80 space-y-3">
+        <div className="bg-slate-100 dark:bg-card/70 rounded-3xl p-5 border border-slate-200 dark:border-slate-800/80 space-y-3">
           <div>
             <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Need further clarification?</h3>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 leading-relaxed">

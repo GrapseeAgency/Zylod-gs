@@ -239,7 +239,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           <Button
             variant="outline"
             onClick={() => { setConfirmed(null); load() }}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
           >
             Back to request details
           </Button>
@@ -273,7 +273,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           </div>
 
           {/* Real current schedule — one row per shipment slice */}
-          <div className="p-3.5 bg-slate-100 dark:bg-slate-900/70 rounded-2xl border border-slate-200 dark:border-slate-800/80 flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
+          <div className="p-3.5 bg-slate-100 dark:bg-card/70 rounded-2xl border border-slate-200 dark:border-slate-800/80 flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
             <Info className="h-4 w-4 text-slate-500 dark:text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
             <div className="text-[11px] leading-relaxed space-y-1">
               {order.subOrders.map((s) => (
@@ -298,7 +298,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           )}
 
           {allFinal && (
-            <div className="p-3.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+            <div className="p-3.5 bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 rounded-2xl text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
               Every shipment on this order is already delivered/closed — there is no delivery left to reschedule.
             </div>
           )}
@@ -313,7 +313,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               disabled={Boolean(pendingRequest) || allFinal || submitting}
-              className="w-full h-11 px-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200 disabled:opacity-50"
+              className="w-full h-11 px-3 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200 disabled:opacity-50"
             />
             <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Tomorrow onward — the delivery cannot move into the past.</p>
           </div>
@@ -355,7 +355,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
               placeholder="e.g. Deliver before Friday prayer; call the gate number at arrival."
               rows={3}
               disabled={Boolean(pendingRequest) || allFinal || submitting}
-              className="rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs"
+              className="rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs"
             />
             <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 text-right">{instructions.length}/500</p>
           </div>
@@ -366,7 +366,7 @@ export function RescheduleDeliveryPage({ pageParams: _pageParams }: { pageParams
           <Button
             variant="outline"
             onClick={goBack}
-            className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="flex-1 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
           >
             Cancel
           </Button>

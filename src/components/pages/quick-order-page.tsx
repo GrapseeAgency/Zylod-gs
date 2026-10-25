@@ -208,7 +208,7 @@ export function QuickOrderPage() {
               value={inputSku}
               onChange={(e) => setInputSku(e.target.value)}
               placeholder="Enter product SKU"
-              className="h-11 pl-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-xs font-semibold"
+              className="h-11 pl-4 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
             />
 
             <Button
@@ -249,7 +249,7 @@ export function QuickOrderPage() {
           <div className="space-y-3">
             {orderItems.length === 0 && (
               <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs p-8 text-center">
-                <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto mb-3">
+                <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mx-auto mb-3">
                   <Package className="h-7 w-7 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                 </div>
                 <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">No items on this order yet</h3>
@@ -295,7 +295,7 @@ export function QuickOrderPage() {
                 </div>
 
                 {/* Stepper */}
-                <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-950/80 p-1 shrink-0">
+                <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-background/80 p-1 shrink-0">
                   <button
                     onClick={() => handleQtyChange(item.productId, -1)}
                     className="w-6 h-6 rounded-lg bg-white dark:bg-gray-900 shadow-2xs flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100 active:scale-95"

@@ -272,10 +272,10 @@ export function SellerVerificationStatusPage() {
                         status === 'verified'
                           ? 'bg-emerald-500 border-emerald-500 text-white'
                           : status === 'under_review'
-                          ? 'bg-slate-50 dark:bg-slate-950 border-amber-500 text-amber-500 animate-pulse'
+                          ? 'bg-slate-50 dark:bg-background border-amber-500 text-amber-500 animate-pulse'
                           : status === 'rejected'
-                          ? 'bg-slate-50 dark:bg-slate-950 border-red-500 text-red-500'
-                          : 'bg-slate-50 dark:bg-slate-950 border-gray-300 dark:border-gray-700 text-gray-400'
+                          ? 'bg-slate-50 dark:bg-background border-red-500 text-red-500'
+                          : 'bg-slate-50 dark:bg-background border-gray-300 dark:border-gray-700 text-gray-400'
                       }`}
                     >
                       {status === 'verified' ? (
@@ -332,7 +332,7 @@ export function SellerVerificationStatusPage() {
         </Card>
 
         {/* Action Callout */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-100/60 dark:bg-slate-900/60 border border-gray-200 dark:border-gray-800 p-4 rounded-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-100/60 dark:bg-card/60 border border-gray-200 dark:border-gray-800 p-4 rounded-xl">
           <div className="text-xs text-gray-600 dark:text-gray-400">
             Need to update an uploaded document or add a missing certificate?
           </div>

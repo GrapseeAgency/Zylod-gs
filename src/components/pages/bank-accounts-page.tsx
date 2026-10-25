@@ -171,7 +171,7 @@ export function BankAccountsPage() {
                   </button>
                 </div>
 
-                <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-3 text-xs divide-y divide-slate-100 dark:divide-slate-800">
+                <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 text-xs divide-y divide-slate-100 dark:divide-slate-800">
                   <div className="pb-1.5 flex justify-between">
                     <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">Beneficiary</span>
                     <span className="font-bold text-slate-800 dark:text-slate-200">{acc.accountHolderName}</span>
@@ -187,7 +187,7 @@ export function BankAccountsPage() {
                     onClick={() => handleSetDefault(acc.id)}
                     disabled={actionLoading === acc.id}
                     variant="outline"
-                    className="w-full h-9 rounded-xl border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800"
+                    className="w-full h-9 rounded-xl border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
                   >
                     {actionLoading === acc.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Set as Primary Payout Account'}
                   </Button>

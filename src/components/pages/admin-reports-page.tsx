@@ -141,7 +141,7 @@ export function AdminReportsPage() {
             <p className="text-[11px] font-semibold text-green-700 dark:text-green-300 uppercase tracking-wider">Penalized / Actioned</p>
             <p className="text-xl font-black text-green-900">{metrics.actionTaken}</p>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-1">
+          <div className="bg-slate-50 dark:bg-background p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-1">
             <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Dismissed</p>
             <p className="text-xl font-black text-gray-700 dark:text-gray-300">{metrics.dismissed}</p>
           </div>
@@ -200,7 +200,7 @@ export function AdminReportsPage() {
                 return (
                   <div
                     key={rep.id}
-                    className="p-5 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-950/70 transition space-y-3"
+                    className="p-5 hover:bg-slate-50 dark:hover:bg-card dark:bg-background/70 transition space-y-3"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
@@ -216,7 +216,7 @@ export function AdminReportsPage() {
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 dark:bg-background p-3 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs">
                       <div>
                         <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500 dark:text-gray-400">Reported Entity</p>
                         <p className="font-bold text-gray-900 dark:text-gray-100 mt-0.5">{rep.reportedEntity.name}</p>
@@ -291,7 +291,7 @@ export function AdminReportsPage() {
               </div>
             ) : (
               <form onSubmit={handleExecuteAction} className="space-y-4">
-                <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs space-y-1">
+                <div className="bg-slate-50 dark:bg-background p-3 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs space-y-1">
                   <p><strong>Target:</strong> {selectedReport.reportedEntity.name} ({selectedReport.reportedUserId})</p>
                   <p><strong>Allegation:</strong> {selectedReport.reason.replace('_', ' ')}</p>
                 </div>

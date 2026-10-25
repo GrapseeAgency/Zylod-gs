@@ -72,7 +72,7 @@ export function EarningsDashboardPage() {
         <span className="text-base font-black tracking-tight text-primary">Earnings &amp; Revenue</span>
         <button
           onClick={() => navigate('commission-history')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
           title="Commissions"
         >
           <Percent className="h-4 w-4" />
@@ -86,7 +86,7 @@ export function EarningsDashboardPage() {
           <Button
             onClick={() => navigate('commission-history')}
             variant="outline"
-            className="h-10 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 flex items-center justify-center gap-2"
+            className="h-10 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:bg-background dark:hover:bg-card flex items-center justify-center gap-2"
           >
             <Percent className="h-4 w-4" />
             Commission Ledger
@@ -139,7 +139,7 @@ export function EarningsDashboardPage() {
           <Button
             onClick={() => navigate('commission-history')}
             variant="outline"
-            className="h-12 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 flex items-center justify-center gap-2"
+            className="h-12 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:bg-background dark:hover:bg-card flex items-center justify-center gap-2"
           >
             <Percent className="h-4 w-4" />
             Commission Ledger
@@ -153,15 +153,15 @@ export function EarningsDashboardPage() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-slate-950 md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-background md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
               <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Gross Merchandise Value (GMV)</span>
               <span className="font-bold text-slate-900 dark:text-slate-100 font-mono">{formatPrice(data.grossGMV)}</span>
             </div>
-            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-slate-950 md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-background md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
               <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Platform Sourcing Commission (3.0%)</span>
               <span className="font-bold text-rose-600 font-mono">-{formatPrice(data.platformCommission)}</span>
             </div>
-            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-slate-950 md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-background md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
               <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Available for Bank Payout</span>
               <span className="font-bold text-emerald-600 font-mono">{formatPrice(data.availablePayout)}</span>
             </div>
@@ -175,7 +175,7 @@ export function EarningsDashboardPage() {
               <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Escrow Released &amp; Paid to Wallet</span>
               <span className="font-bold text-emerald-700 font-mono">{formatPrice(data.totalPaidOut ?? 0)}</span>
             </div>
-            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-slate-950 md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
+            <div className="py-2.5 flex justify-between md:px-4 md:py-4 md:bg-slate-50 dark:bg-background md:rounded-xl md:border md:border-slate-100 dark:border-slate-800 md:flex-col md:items-start md:gap-1">
               <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Total Orders Recorded</span>
               <span className="font-bold text-amber-600 font-mono">{data.totalOrders}</span>
             </div>

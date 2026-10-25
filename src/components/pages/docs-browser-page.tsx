@@ -142,7 +142,7 @@ export function DocsBrowserPage() {
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar (Amazon / Stripe Style Docs Navigation) */}
         <aside
-          className={`fixed inset-y-0 left-0 top-[57px] z-20 w-72 bg-slate-50 dark:bg-slate-950 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-transform duration-200 md:static md:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 top-[57px] z-20 w-72 bg-slate-50 dark:bg-background border-r border-gray-200 dark:border-gray-800 flex flex-col transition-transform duration-200 md:static md:translate-x-0 ${
             mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
@@ -253,7 +253,7 @@ export function DocsBrowserPage() {
               />
 
               {/* App Cross-Navigation Callout Card */}
-              <div className="bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 not-prose mt-8">
+              <div className="bg-slate-50 dark:bg-background border border-gray-200 dark:border-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 not-prose mt-8">
                 <div className="flex items-center gap-3 text-left">
                   <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center flex-shrink-0">
                     <ShieldCheck className="w-5 h-5" />
