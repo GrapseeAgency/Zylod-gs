@@ -46,33 +46,41 @@ sleep 12
 cap screenshots/01-welcome.png
 
 # Pass the onboarding gate (deep links are deferred until the gate is seen):
-# slide 1 -> "Next" -> slide 2 -> "Next" -> slide 3 (Get Started / Sign in).
+# slide 1 -> "Next" -> slide 2 -> "Next" -> slide 3.
 tap_text "Next"
 sleep 3
 tap_text "Next"
 sleep 3
 cap screenshots/01b-welcome-last-slide.png
-tap_text "Sign in"
+
+# "Get Started" completes onboarding and lands in the main app (WebView home
+# loads the real SPA from the runner's server at 10.0.2.2:3000).
+tap_text "Get Started"
+sleep 18
+cap screenshots/02-home.png
+
+log "Login screen via deep link (onboarding now seen)"
+adb shell am start -a android.intent.action.VIEW -d "zylod://login" com.zylod.wholesale.debug > /dev/null 2>&1 || true
 sleep 8
-cap screenshots/02-login.png
+cap screenshots/03-login.png
 
 log "Open Continue-with-Email dialog (tap by UI text)"
 tap_text "Continue with Email"
 sleep 5
-cap screenshots/03-email-signin-dialog.png
+cap screenshots/04-email-signin-dialog.png
 
 log "Dismiss dialog, capture Register buyer"
 adb shell input keyevent 4 || true
 sleep 3
 adb shell am start -a android.intent.action.VIEW -d "zylod://register-buyer" com.zylod.wholesale.debug > /dev/null 2>&1 || true
 sleep 8
-cap screenshots/04-register-buyer.png
+cap screenshots/05-register-buyer.png
 
 log "Native PDP with a REAL seeded product"
 if [ -n "${PRODUCT_ID:-}" ]; then
   adb shell am start -a android.intent.action.VIEW -d "zylod://product/$PRODUCT_ID" com.zylod.wholesale.debug > /dev/null 2>&1 || true
   sleep 15
-  cap screenshots/05-product-detail.png
+  cap screenshots/06-product-detail.png
 else
   echo "::warning::No product id — PDP screenshot skipped"
 fi
@@ -80,7 +88,7 @@ fi
 log "Native Cart"
 adb shell am start -a android.intent.action.VIEW -d "zylod://cart" com.zylod.wholesale.debug > /dev/null 2>&1 || true
 sleep 8
-cap screenshots/06-cart.png
+cap screenshots/07-cart.png
 
 log "Screen inventory"
 ls -la screenshots/ || true
