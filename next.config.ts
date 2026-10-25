@@ -9,12 +9,9 @@ const nextConfig: NextConfig = {
   // the project root hangs forever inside the kernel (fuse request_wait_answer)
   // — next dev's file watcher was freezing silently on startup because of it
   // (every "server starts then never responds, empty log" incident on 3000-3004).
-  // Excluding upload/** from BOTH bundler watchers makes dev immune to the mount.
-  turbopack: {
-    watchOptions: {
-      ignored: ['**/upload/**', '**/.git/**', '**/qa-screenshots/**'],
-    },
-  },
+  // The webpack watcher honors watchOptions.ignored; Turbopack (Next 16.1.3)
+  // has no configurable ignore, so dev runs from the FUSE-free mirror copy
+  // at /home/z/work (synced from this dir) — see worklog t187.
   webpack: (config) => {
     config.watchOptions = {
       ...(config.watchOptions || {}),

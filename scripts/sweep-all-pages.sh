@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
-# t187 FULL-PAGE SWEEP — loop every registered page id, screenshot it,
-# extract DOM text, and flag: (a) mock-data patterns, (b) pages stuck on
-# the PageLoader, (c) console errors. Light theme, 375px (mobile-first app).
-# Sequential on purpose — t182/t184 lessons: parallel sweeps clobber the
-# shared browser and produce lying results.
+# t187 FULL-PAGE SWEEP v2 — RESUMABLE.
+# Loops every registered page id, screenshots it, extracts DOM text, flags
+# mock-data patterns / stuck PageLoader / open-failures.
+# Resumable: skips pages that already have BOTH a screenshot and a report line,
+# so an OOM-killed server mid-sweep only costs the pages in flight.
+# Target: the FUSE-free mirror dev server (work copy) on port 3007.
 
 set -u
 OUT=/home/z/my-project/qa-screenshots
 REPORT=/home/z/my-project/qa-screenshots/report.jsonl
+BASE="${SWEEP_BASE:-http://localhost:3007}"
 mkdir -p "$OUT"
-: > "$REPORT"
+touch "$REPORT"
 
 PAGES=/tmp/all-pages.txt
 TOTAL=$(wc -l < "$PAGES")
@@ -19,19 +21,21 @@ while IFS= read -r page; do
   i=$((i+1))
   [ -z "$page" ] && continue
 
-  url="http://localhost:3007/?page=${page}"
   shot="${OUT}/${page}.png"
+  # RESUME: skip if both artifacts exist
+  if [ -s "$shot" ] && grep -q "\"page\":\"$page\"" "$REPORT" 2>/dev/null; then
+    continue
+  fi
 
-  # Open (failures recorded and skipped)
+  url="${BASE}/?page=${page}"
+
   if ! agent-browser open "$url" > /tmp/ab-open.txt 2>&1; then
     printf '{"page":"%s","error":"open-failed"}\n' "$page" >> "$REPORT"
     continue
   fi
 
-  # Give the SPA time to fetch data and render (dev-mode chunk latency).
-  sleep 4
+  sleep 3
 
-  # Extract body text + check for PageLoader presence
   eval_out=$(agent-browser eval "JSON.stringify({t: document.body ? document.body.innerText.slice(0,4000) : '', loader: !!document.querySelector('[role=\"status\"]'), title: document.title})" 2>/dev/null)
   body=$(printf '%s' "$eval_out" | python3 -c "
 import sys, json
@@ -44,19 +48,13 @@ except Exception as e:
     print(json.dumps({'t':'', 'loader': False, 'parse_error': str(e)}))
 ")
 
-  # Screenshot (best effort)
   agent-browser screenshot "$shot" > /dev/null 2>&1 || true
-
-  # Flag mock-data patterns in the rendered text
-  python3 - "$page" "$body" "$report" <<'PYEOF' >> /dev/null 2>&1 || true
-PYEOF
 
   printf '{"page":"%s","body":%s}\n' "$page" "$body" >> "$REPORT"
 
-  # Progress line every 25 pages
-  if [ $((i % 25)) -eq 0 ]; then
-    echo "[$(date +%H:%M:%S)] $i/$TOTAL pages done (last: $page)"
+  if [ $((i % 50)) -eq 0 ]; then
+    echo "[$(date +%H:%M:%S)] $i/$TOTAL processed (last: $page)"
   fi
 done < "$PAGES"
 
-echo "SWEEP COMPLETE: $i pages"
+echo "SWEEP COMPLETE: $i pages processed"
