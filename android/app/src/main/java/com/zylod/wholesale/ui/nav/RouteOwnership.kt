@@ -12,8 +12,9 @@ package com.zylod.wholesale.ui.nav
  * Ownership decisions recorded here (Phase 1, NATIVE_PRODUCT_SPECIFICATION
  * §2.2 — Tier-1 surfaces native, Tier-3 long-tail WebView):
  *
- *  NATIVE   cart, product-detail, and the auth suite entry points
- *           (welcome/login/register-buyer/register-supplier/forgot-password).
+ *  NATIVE   cart, product-detail, buyer-orders (Phase 2), and the auth suite
+ *           entry points (welcome/login/register-buyer/register-supplier/
+ *           forgot-password).
  *  WEBVIEW  home, plus everything else — the ~400 Tier-3 pageIds of the SPA
  *           contract (src/lib/page-loader.ts is the web-side registry; the
  *           default for an unknown pageId is WEBVIEW, matching the SPA's own
@@ -49,6 +50,18 @@ package com.zylod.wholesale.ui.nav
  * Profile is a later phase — the spec is not silently reduced: this row is
  * the explicit Phase 1 ownership decision, revisitable in exactly one
  * place).
+ *
+ * Phase 2 guest policy — buyer-orders: an UNAUTHENTICATED buyer-orders
+ * request opens the NATIVE Orders screen showing its in-screen sign-in CTA
+ * (NOT the hard login redirect the profile row above uses). Precedent and
+ * consistency argument: Cart is the established native guest-reachable
+ * surface — a guest can always open the cart tab and sees a soft "sign in
+ * to sync" CTA, never a redirect. Orders are strictly a subset of that
+ * behavior (order history is meaningless to a guest, but the screen renders
+ * its honest needsAuth state), and a hard redirect would additionally
+ * strand the post-login return path (no back into orders after
+ * goHomeAfterAuth). The in-screen CTA routes through the SAME openAuth
+ * path CartScreen uses — no special-case routing outside this table.
  */
 object RouteOwnership {
 
@@ -73,6 +86,14 @@ object RouteOwnership {
         /** Native Compose Cart (Tier 1). */
         data object Cart : Destination()
 
+        /**
+         * Native Compose buyer orders (Phase 2 row — revisitable in exactly
+         * one place). Tab-like destination: TAB_ALIASES maps the
+         * "buyer-orders" pageId to "profile", so it highlights the profile
+         * tab exactly as web buyer-dashboard/buyer-orders do.
+         */
+        data object Orders : Destination()
+
         /** Native Compose product detail (back-bar push, no tab highlight). */
         data class Product(val productId: String) : Destination()
 
@@ -92,6 +113,7 @@ object RouteOwnership {
     private const val PAGE_HOME = "home"
     private const val PAGE_CART = "cart"
     private const val PAGE_PRODUCT_DETAIL = "product-detail"
+    private const val PAGE_BUYER_ORDERS = "buyer-orders"
 
     // NOTE: PAGE_HOME is deliberately NOT in the native set — home → WEBVIEW
     // (owner directive). It survives as a named constant because the tab
@@ -103,7 +125,7 @@ object RouteOwnership {
     )
 
     fun ownerOf(pageId: String): Owner = when (pageId) {
-        PAGE_CART, PAGE_PRODUCT_DETAIL -> Owner.NATIVE
+        PAGE_CART, PAGE_PRODUCT_DETAIL, PAGE_BUYER_ORDERS -> Owner.NATIVE
         in NATIVE_AUTH_PAGE_IDS -> Owner.NATIVE
         // PAGE_HOME lands here too: home → WEBVIEW (owner directive).
         else -> Owner.WEBVIEW
@@ -126,6 +148,10 @@ object RouteOwnership {
             // NOT a native surface. See Destination.Home.
             PAGE_HOME -> Destination.Home
             PAGE_CART -> Destination.Cart
+            // Phase 2 row: buyer-orders renders natively for guests TOO —
+            // the screen's own needsAuth state is the guest UX (soft CTA);
+            // see the Phase 2 guest-policy note in the object KDoc.
+            PAGE_BUYER_ORDERS -> Destination.Orders
             PAGE_PRODUCT_DETAIL -> {
                 // Links use either `productId=` (web PDP contract) or `id=`
                 // (legacy zylod:// deep links).

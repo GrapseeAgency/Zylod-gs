@@ -60,6 +60,7 @@ import com.zylod.wholesale.ui.auth.TwoFactorAuthScreen
 import com.zylod.wholesale.ui.cart.CartScreen
 import com.zylod.wholesale.ui.cart.CartStore
 import com.zylod.wholesale.ui.nav.RouteOwnership.Destination
+import com.zylod.wholesale.ui.orders.OrdersScreen
 import com.zylod.wholesale.ui.pdp.ProductDetailScreen
 import com.zylod.wholesale.ui.web.WebScreen
 import com.zylod.wholesale.ui.welcome.WelcomeScreen
@@ -154,11 +155,14 @@ fun ZylodRoot() {
     val startDestination = remember { if (isOnboardingSeen(context)) "home" else "welcome" }
 
     // Native fullscreen routes and the back-bar product page highlight no tab;
-    // the native cart route highlights the cart tab. Web-surface highlights
-    // come from RouteOwnership.activeTabFor (the single alias map).
+    // the native cart route highlights the cart tab and the native buyer-orders
+    // route highlights the profile tab (same alias TAB_ALIASES gives the
+    // "buyer-orders" pageId). Web-surface highlights come from
+    // RouteOwnership.activeTabFor (the single alias map).
     val activeTab = when (route) {
         null, "home" -> "home"
         "cart" -> "cart"
+        "orders" -> "profile"
         in FULLSCREEN_ROUTES, "product-detail/{productId}" -> ""
         else -> RouteOwnership.activeTabFor(webPageId)
     }
@@ -186,8 +190,9 @@ fun ZylodRoot() {
     // Tab state restoration is the POOLED SHELL's job: the warm WebView
     // re-attaches and soft-navigates client-side — no Compose state restore
     // needed. The home tab route is likewise a shell-rendered root (home →
-    // WEBVIEW, owner directive); Cart is the only fully native tab and keeps
-    // the standard saveState/restoreState pattern.
+    // WEBVIEW, owner directive); Cart and buyer-orders are the fully native
+    // tab-highlighted destinations and keep the standard
+    // saveState/restoreState pattern.
     val navigateResolved: (Destination) -> Unit = { destination ->
         when (destination) {
             is Destination.Home ->
@@ -198,6 +203,13 @@ fun ZylodRoot() {
                 }
             is Destination.Cart ->
                 navController.navigate("cart") {
+                    popUpTo(HOME_ROUTE) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            is Destination.Orders ->
+                // Same tab-destination semantics as Cart (Phase 2 row).
+                navController.navigate("orders") {
                     popUpTo(HOME_ROUTE) { saveState = true }
                     launchSingleTop = true
                     restoreState = true
@@ -315,6 +327,13 @@ fun ZylodRoot() {
             composable("cart") {
                 CartScreen(
                     onBack = null, // tab destination — no back bar
+                    openPage = { pageId, query -> openPage(pageId, query) },
+                    openAuth = { navController.navigate("login") { launchSingleTop = true } },
+                )
+            }
+            composable("orders") {
+                OrdersScreen(
+                    onBack = null, // tab-like destination (highlights profile) — no back bar
                     openPage = { pageId, query -> openPage(pageId, query) },
                     openAuth = { navController.navigate("login") { launchSingleTop = true } },
                 )

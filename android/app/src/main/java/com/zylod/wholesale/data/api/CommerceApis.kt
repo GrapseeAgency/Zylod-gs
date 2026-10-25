@@ -43,4 +43,14 @@ interface OrdersApi {
     /** Mirrors the web buy-now call — no shippingAddressId, paymentMethod 'cod'. */
     @POST("api/orders/create-direct")
     suspend fun createDirect(@Body body: CreateDirectRequest): Response<CreateDirectEnvelope>
+
+    /**
+     * GET /api/orders/my-orders — the authenticated buyer's order list
+     * (orders/my-orders/route.ts, the exact endpoint orders-page.tsx:75
+     * fetches). The server has NO pagination params: it returns the account's
+     * full list and the web page renders it whole — same here (Phase 2 scope:
+     * first round loads one full pull, no cursor).
+     */
+    @GET("api/orders/my-orders")
+    suspend fun myOrders(): Response<ApiEnvelope<List<OrderDto>>>
 }

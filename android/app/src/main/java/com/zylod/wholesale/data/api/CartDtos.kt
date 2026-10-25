@@ -1,12 +1,14 @@
 package com.zylod.wholesale.data.api
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
 /*
  * Cart/wishlist/order DTOs — verified against cart/route.ts, cart/[itemId]/route.ts,
- * wishlist/route.ts and orders/create-direct/route.ts. The local persisted item
- * mirrors src/store/cart-store.ts CartItemData field-for-field (merge key
- * `productId::variantId`, tier-based calculatePrice).
+ * wishlist/route.ts, orders/create-direct/route.ts and orders/my-orders/route.ts.
+ * The local persisted item mirrors src/store/cart-store.ts CartItemData
+ * field-for-field (merge key `productId::variantId`, tier-based calculatePrice).
  */
 
 /** Local + server-mapped cart line item (cart-store.ts:4-23). */
@@ -160,4 +162,50 @@ data class CreateDirectEnvelope(
     val success: Boolean = false,
     val data: CreateDirectData? = null,
     val error: String? = null,
+)
+
+/* ─── GET /api/orders/my-orders (orders/my-orders/route.ts:48-69) ───
+ * Wire names are snake_case on this route (unlike the camelCase cart route) —
+ * every field is @SerialName-mapped to the EXACT JSON name the server emits;
+ * the offline-catalogue lesson: invented field names are a crash class.
+ * No images in this contract — cards must use an icon placeholder, never a
+ * faked thumbnail (the web card draws the same Package icon). */
+
+@Immutable
+@Serializable
+data class OrderDto(
+    val id: String? = null,
+    @SerialName("order_number") val orderNumber: String? = null,
+    @SerialName("total_amount") val totalAmount: Double = 0.0,
+    @SerialName("payment_status") val paymentStatus: String? = null,
+    @SerialName("placed_at") val placedAt: String? = null,
+    @SerialName("updated_at") val updatedAt: String? = null,
+    @SerialName("shipping_address") val shippingAddress: OrderAddressDto? = null,
+    @SerialName("sub_orders") val subOrders: List<SubOrderDto> = emptyList(),
+) {
+    /** Distinct supplier company names in server order (orders-page.tsx:94-100). */
+    val supplierNames: List<String>
+        get() = subOrders.mapNotNull { it.supplier?.companyName?.takeIf(String::isNotBlank) }.distinct()
+}
+
+@Immutable
+@Serializable
+data class OrderAddressDto(
+    val label: String? = null,
+    @SerialName("address_line1") val addressLine1: String? = null,
+    val city: String? = null,
+)
+
+@Immutable
+@Serializable
+data class SubOrderDto(
+    val id: String? = null,
+    val status: String? = null,
+    val supplier: SubOrderSupplierDto? = null,
+)
+
+@Immutable
+@Serializable
+data class SubOrderSupplierDto(
+    @SerialName("company_name") val companyName: String? = null,
 )

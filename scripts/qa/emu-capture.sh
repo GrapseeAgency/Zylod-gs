@@ -94,6 +94,15 @@ adb shell am start -a android.intent.action.VIEW -d "zylod://cart" com.zylod.who
 sleep 8
 cap screenshots/07-cart.png
 
+log "Native Buyer Orders (guest state — Phase 2 ownership row)"
+# Host-form link (same pattern as zylod://cart above) parses to the
+# buyer-orders pageId → RouteOwnership Phase 2 row → native Orders screen;
+# unauthenticated it must show the in-screen sign-in CTA (guest policy),
+# never a redirect. Numbering follows the orchestrator's plan (08 reserved).
+adb shell am start -a android.intent.action.VIEW -d "zylod://buyer-orders" com.zylod.wholesale.debug > /dev/null 2>&1 || true
+sleep 8
+cap screenshots/09-orders-guest.png
+
 log "Screen inventory"
 ls -la screenshots/ || true
 
