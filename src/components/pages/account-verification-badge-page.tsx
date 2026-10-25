@@ -135,7 +135,7 @@ export function AccountVerificationBadgePage() {
   // ─── Loading ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-background">
         <PageLoader />
       </div>
     )
@@ -144,7 +144,7 @@ export function AccountVerificationBadgePage() {
   // ─── Not signed in — no fabrication of someone else's status ──────────────
   if (!token) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
             <ShieldCheck className="h-7 w-7 text-slate-400 dark:text-slate-500" />
@@ -165,7 +165,7 @@ export function AccountVerificationBadgePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
         <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">

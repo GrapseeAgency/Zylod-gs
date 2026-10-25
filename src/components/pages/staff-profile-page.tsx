@@ -315,7 +315,7 @@ export function StaffProfilePage() {
 
   // ─── RENDER ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28 md:pb-10">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-28 md:pb-10">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-3">

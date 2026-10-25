@@ -88,9 +88,9 @@ export function RefundToWalletPage() {
   }, [load])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16 md:pb-0">
+    <div className="min-h-screen bg-background pb-16 md:pb-0">
       {/* Mobile top bar */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 dark:bg-slate-900/95 px-4 py-3 shadow-xs flex items-center justify-between">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
         <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 dark:text-slate-200 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white" title="Back" aria-label="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -134,7 +134,7 @@ export function RefundToWalletPage() {
         </div>
 
         {/* Ledger */}
-        <section className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3.5">
+        <section className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3.5">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
               Processed refunds
@@ -189,7 +189,7 @@ export function RefundToWalletPage() {
                         {r.status}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between gap-2 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-xl px-3 py-2 border border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center justify-between gap-2 bg-white dark:bg-gray-900 rounded-xl px-3 py-2 border border-slate-100 dark:border-slate-800">
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono truncate">
                         Ref: {r.reference}
                       </p>
@@ -204,7 +204,7 @@ export function RefundToWalletPage() {
         </section>
 
         {/* Where refunds come from */}
-        <section className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2.5">
+        <section className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2.5">
           <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">The refund path</h2>
           <ol className="space-y-2 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 list-decimal list-inside">
             <li>Request a return from the order in your purchase history.</li>

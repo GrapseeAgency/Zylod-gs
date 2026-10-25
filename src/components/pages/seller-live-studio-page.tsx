@@ -175,7 +175,7 @@ export function SellerLiveStudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-white dark:bg-gray-900 dark:bg-gray-800 px-4 md:px-6 py-4 shadow-sm sticky top-0 z-10 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">

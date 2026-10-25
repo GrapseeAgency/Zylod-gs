@@ -41,9 +41,9 @@ export function LiveShoppingDetailPage() {
   }, [streamId])
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-white">
+    <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -97,7 +97,7 @@ export function LiveShoppingDetailPage() {
         </div>
 
         {/* Live Chat & Messages */}
-        <div className="bg-white dark:bg-slate-900/90 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 lg:col-span-1">
+        <div className="bg-card rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 lg:col-span-1">
           <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Live Factory Floor Q&amp;A</h3>
 
           <div className="space-y-2 max-h-48 lg:max-h-[420px] overflow-y-auto pr-1">

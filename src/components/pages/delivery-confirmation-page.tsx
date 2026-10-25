@@ -139,7 +139,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
   // ─── No order selected — honest state ───
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
           <Truck className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
@@ -166,7 +166,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
   // ─── Real error ───
   if (loadError || !order) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3 max-w-sm w-full text-left" role="alert">
           <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
           <div className="flex-1 min-w-0">
@@ -191,7 +191,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
       <main className="px-4 py-8 md:px-6 space-y-5 md:space-y-6 max-w-lg mx-auto lg:max-w-3xl">
         {/* Status heading — real state only */}
         <div className="text-center space-y-2">

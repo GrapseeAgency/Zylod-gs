@@ -42,7 +42,7 @@ export function EventsPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Page Header */}
       <div className="bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-6 md:px-6 md:py-10">
         <div className="max-w-3xl mx-auto md:max-w-5xl">

@@ -76,7 +76,7 @@ export function ProfilePhotoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 text-slate-900 dark:text-slate-100">
       {/* Hidden file input */}
       <input
         type="file"

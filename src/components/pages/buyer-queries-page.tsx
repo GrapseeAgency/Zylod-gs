@@ -62,7 +62,7 @@ export function BuyerQueriesPage() {
     );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <header className="bg-white dark:bg-gray-900 dark:bg-gray-800 px-4 md:px-6 py-4 shadow-sm sticky top-0 z-10 flex items-center gap-3">
         <button onClick={goBack} className="md:hidden p-2 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 dark:hover:bg-gray-700 transition" aria-label="Go back">
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300 dark:text-gray-200" />

@@ -185,7 +185,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
   // ─── No order selected — honest state ───
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
         {header}
         <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
           <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
@@ -208,7 +208,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
       {header}
 
       <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:px-6 md:py-6 md:max-w-3xl lg:max-w-4xl md:space-y-6">

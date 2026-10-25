@@ -81,7 +81,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
   // Real answer from the API: no live delivery on this order (yet)
   if (data && !data.live) {
     return (
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 dark:bg-slate-900 p-4 flex items-start gap-3">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 p-4 flex items-start gap-3">
         <Satellite className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
         <div className="min-w-0">
           <p className="text-xs font-bold text-slate-700 dark:text-slate-300 dark:text-slate-200">

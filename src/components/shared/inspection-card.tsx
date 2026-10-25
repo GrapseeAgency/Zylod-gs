@@ -107,7 +107,7 @@ export function InspectionCard({ orderId, orderNumber }: { orderId: string; orde
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs">
+    <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2 text-xs font-bold">
           <ClipboardCheck className="h-4 w-4 text-slate-600 dark:text-slate-400 dark:text-slate-500" />

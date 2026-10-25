@@ -228,7 +228,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
   // ── Honest empty / guard states ───────────────────────────────────────
   if (!loading && !orderId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <Package className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">No order selected</h1>
@@ -241,7 +241,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
 
   if (!loading && needsAuth) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
           <h1 className="text-base font-black">Sign in required</h1>
@@ -254,7 +254,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
 
   if (!loading && notFound) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <XCircle className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">Order not found</h1>
@@ -267,7 +267,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
 
   if (!loading && error) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <AlertTriangle className="h-10 w-10 text-red-500 mx-auto" />
           <h1 className="text-base font-black">Could not load order</h1>
@@ -306,9 +306,9 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
@@ -324,7 +324,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
 
       <main className="px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg mx-auto md:max-w-2xl">
         {/* Expected Delivery Card (real data only — no carrier invention) */}
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-900 dark:text-slate-100">Expected Delivery</span>
             <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${badgeClasses[badge]}`}>
@@ -365,7 +365,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
                 </div>
 
                 {/* Event Details Card */}
-                <div className="flex-1 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
+                <div className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">{event.title}</h3>
                     <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono shrink-0">
@@ -390,7 +390,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
           <Button
             variant="outline"
             onClick={() => navigate('help-center')}
-            className="w-full bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-12 rounded-2xl text-xs flex items-center justify-center gap-2"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-12 rounded-2xl text-xs flex items-center justify-center gap-2"
           >
             <Headphones className="h-4 w-4" />
             Contact Support

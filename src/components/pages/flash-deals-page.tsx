@@ -115,7 +115,7 @@ export function FlashDealsPage() {
   const formatDigit = (num: number) => num.toString().padStart(2, '0')
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#121212] text-gray-900 dark:text-white pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-gray-900 dark:text-white pb-24 md:pb-8">
       {/* ─── Top Nav Bar (mobile only — desktop uses the AppShell Header) ─── */}
       <header className="md:hidden sticky top-0 z-40 bg-white dark:bg-[#1A1A1A] border-b border-gray-100 dark:border-[#2C2C2C] h-14 flex items-center justify-between px-4">
         <button

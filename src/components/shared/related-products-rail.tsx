@@ -81,7 +81,7 @@ export function RelatedProductsRail({ productId }: { productId: string }) {
           <button
             key={p.id}
             onClick={() => navigate('product-detail', { productId: p.id })}
-            className="group shrink-0 w-[168px] text-left rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 dark:bg-slate-900 overflow-hidden hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all"
+            className="group shrink-0 w-[168px] text-left rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 overflow-hidden hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all"
             data-testid="related-product-card"
           >
             <div className="aspect-square bg-slate-50 dark:bg-slate-950 overflow-hidden">

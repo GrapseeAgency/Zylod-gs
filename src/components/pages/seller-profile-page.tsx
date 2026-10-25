@@ -489,7 +489,7 @@ export function SellerProfilePage() {
 
   // ─── RENDER ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
       {/* Hidden file inputs for avatar & cover uploads */}
       <input
         type="file"

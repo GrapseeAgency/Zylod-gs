@@ -139,7 +139,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
   /* ─── No product selected — honest state ─── */
   if (!productId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
         <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
           <span className="text-lg font-black tracking-tight text-primary">Zylod</span>
         </header>
@@ -163,7 +163,7 @@ export function ProductVariantsPage({ pageParams: _pageParams }: { pageParams?: 
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">

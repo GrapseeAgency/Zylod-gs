@@ -72,7 +72,7 @@ function formatTimestamp(iso: string): string {
 // ── Small breakdown card: title + label/value rows from real data ──────
 function BreakdownCard({ title, rows }: { title: string; rows: { label: string; value: number | null }[] }) {
   return (
-    <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
       <h3 className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-2">{title}</h3>
       <div className="divide-y divide-slate-100 dark:divide-slate-800">
         {rows.map((row) => (
@@ -94,7 +94,7 @@ function BreakdownCard({ title, rows }: { title: string; rows: { label: string; 
 // ── Small KPI card for the secondary count strip ───────────────────────
 function MiniStat({ label, value, sub }: { label: string; value: number | null; sub?: string }) {
   return (
-    <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
       <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">{label}</p>
       <p className={`text-xl font-black tabular-nums mt-1 ${value === null ? 'text-slate-300 dark:text-slate-600' : 'text-slate-800 dark:text-slate-200'}`}>
         {value === null ? '—' : value.toLocaleString('en-BD')}
@@ -213,7 +213,7 @@ export function AdminAnalyticsPage() {
       {loading ? (
         <PageLoader className="min-h-0 py-10" />
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load platform analytics</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -235,7 +235,7 @@ export function AdminAnalyticsPage() {
 
           {/* Top KPI strip — Users · Products · Orders · Revenue */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Users</p>
                 <Users className="h-4 w-4 text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500" />
@@ -245,7 +245,7 @@ export function AdminAnalyticsPage() {
                 {c.usersByType.buyer} buyers · {c.usersByType.supplier} suppliers · {c.usersByType.admin} admins
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Products</p>
                 <Package className="h-4 w-4 text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500" />
@@ -255,7 +255,7 @@ export function AdminAnalyticsPage() {
                 {c.productsByApproval.approved} approved · {c.productsByApproval.unapproved} pending
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Orders</p>
                 <ShoppingCart className="h-4 w-4 text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500" />
@@ -263,7 +263,7 @@ export function AdminAnalyticsPage() {
               <p className="text-2xl font-black tabular-nums text-slate-800 dark:text-slate-200 mt-1">{c.totalOrders.toLocaleString('en-BD')}</p>
               <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 truncate">GMV {formatPrice(c.gmvSum)}</p>
             </div>
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Revenue</p>
                 <Wallet className="h-4 w-4 text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500" />
@@ -332,7 +332,7 @@ export function AdminAnalyticsPage() {
 
           {/* Recent audit log + Recent orders */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center gap-2 mb-3">
                 <ScrollText className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                 <h3 className="text-xs font-black">Recent audit log</h3>
@@ -359,7 +359,7 @@ export function AdminAnalyticsPage() {
               )}
             </div>
 
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Clock className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
                 <h3 className="text-xs font-black">Recent orders</h3>

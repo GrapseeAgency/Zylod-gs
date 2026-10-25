@@ -475,7 +475,7 @@ export function CustomerRfqInboxPage() {
           <button
             key={t.key}
             onClick={() => switchTab(t.key)}
-            className={`min-h-11 px-4 rounded-xl text-xs font-bold transition ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+            className={`min-h-11 px-4 rounded-xl text-xs font-bold transition ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
           >
             {t.label}
           </button>
@@ -506,7 +506,7 @@ export function CustomerRfqInboxPage() {
       {loading ? (
         <PageLoader className="min-h-0 py-10" />
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load quote requests</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -515,7 +515,7 @@ export function CustomerRfqInboxPage() {
           </Button>
         </div>
       ) : rfqs.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           {appliedQ ? (
             <>
               <Search className="h-10 w-10 text-slate-300 mx-auto" />
@@ -552,7 +552,7 @@ export function CustomerRfqInboxPage() {
             const canQuote = !isAdmin && QUOTABLE_STATUSES.includes(shown.status) && !(deadline != null && deadline.getTime() < Date.now())
             const myQuote = shown.myQuote ?? null
             return (
-              <div key={rfq.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={rfq.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 {/* Row */}
                 <div className="p-4 flex flex-wrap items-center gap-3">
                   <div className="flex-1 min-w-[200px]">
@@ -632,7 +632,7 @@ export function CustomerRfqInboxPage() {
                           ) : (
                             <div className="space-y-1.5">
                               {items.map((it) => (
-                                <div key={it.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2 flex flex-wrap items-center gap-2">
+                                <div key={it.id} className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2 flex flex-wrap items-center gap-2">
                                   <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex-1 min-w-[140px]">{it.productName}</span>
                                   {it.specifications && <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex-1 min-w-[140px] break-words">{it.specifications}</span>}
                                   <span className="text-[10px] font-bold bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400 dark:text-slate-500">
@@ -651,7 +651,7 @@ export function CustomerRfqInboxPage() {
 
                         {/* Your quote — real myQuote from the detail API */}
                         {myQuote && (
-                          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 space-y-1.5">
+                          <div className="bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 space-y-1.5">
                             <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                               <Quote className="h-3 w-3" /> Your quote
                             </p>

@@ -228,7 +228,7 @@ export function AdminShippingPage() {
 
   if (authGate === 'checking') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6 space-y-4">
+      <div className="min-h-screen bg-background p-6 space-y-4">
         <Skeleton className="h-8 w-64" />
         <div className="grid grid-cols-3 gap-4">
           <Skeleton className="h-20 rounded-2xl" /><Skeleton className="h-20 rounded-2xl" /><Skeleton className="h-20 rounded-2xl" />
@@ -240,7 +240,7 @@ export function AdminShippingPage() {
 
   if (authGate === 'denied') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="text-center space-y-2">
           <Route className="h-10 w-10 mx-auto text-slate-300" />
           <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Admin access required</h1>
@@ -257,7 +257,7 @@ export function AdminShippingPage() {
   const activeDistricts = new Set((zones ?? []).filter((z) => z.isActive).flatMap((z) => z.districts)).size
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10">
+    <div className="min-h-screen bg-background pb-24 md:pb-10">
       <main className="px-4 py-5 md:px-8 md:py-8 max-w-6xl mx-auto space-y-5">
         <button onClick={() => navigate('admin-dashboard')} className="flex items-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100">
           <ArrowLeft className="h-3.5 w-3.5" /> Admin dashboard

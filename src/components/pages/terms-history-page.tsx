@@ -23,7 +23,7 @@ export function TermsHistoryPage() {
   const { navigate, goBack } = useNavigationStore()
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-background">
       {/* Mobile header (hidden on desktop where the AppShell Header is the chrome) */}
       <div className="md:hidden sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center gap-3 shadow-sm">
         <button

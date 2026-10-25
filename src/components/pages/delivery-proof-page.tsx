@@ -138,7 +138,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
   // ─── No order selected — honest state, no fake POD id ───
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 flex items-center justify-center mb-4">
           <PackageSearch className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
@@ -177,9 +177,9 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
     : []
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center gap-3 md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center gap-3 md:hidden">
         <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
@@ -198,7 +198,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
               <Button
                 variant="outline"
                 onClick={handleDownloadPdf}
-                className="h-9 px-3 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 flex items-center gap-1.5"
+                className="h-9 px-3 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 flex items-center gap-1.5"
               >
                 <Download className="h-3.5 w-3.5" />
                 PDF Report
@@ -209,7 +209,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
 
         {/* Sign-in required (401) */}
         {needsAuth && (
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
             <div className="w-14 h-14 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900 text-primary flex items-center justify-center mx-auto mb-3">
               <LogIn className="h-6 w-6" />
             </div>
@@ -225,7 +225,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
               <Button
                 variant="outline"
                 onClick={loadOrder}
-                className="bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold text-xs h-10 px-5 rounded-2xl"
+                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold text-xs h-10 px-5 rounded-2xl"
               >
                 Retry
               </Button>
@@ -235,7 +235,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
 
         {/* Not found (404) */}
         {!needsAuth && notFound && (
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
             <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-3">
               <PackageSearch className="h-6 w-6" />
             </div>
@@ -296,7 +296,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
               )}
 
               {/* Card 1: Proof-of-delivery photo — none exists yet, honest placeholder */}
-              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-100">
                   <Camera className="h-4 w-4 text-primary" />
                   <span>Proof of Delivery Photo</span>
@@ -310,7 +310,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
               </div>
 
               {/* Card 2: Recipient signature — none exists yet, honest placeholder */}
-              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-100">
                   <PenTool className="h-4 w-4 text-primary" />
                   <span>Recipient Signature</span>
@@ -324,7 +324,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
               </div>
 
               {/* Card 3: Real delivery confirmations from tracking history */}
-              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-100">
                     <MapPin className="h-4 w-4 text-primary" />
@@ -386,7 +386,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
 
             <div className="space-y-4 md:space-y-6">
               {/* Card 4: Real shipment summary per sub-order */}
-              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-100">
                   <Package className="h-4 w-4 text-primary" />
                   <span>Shipment Summary</span>
@@ -433,7 +433,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
               </div>
 
               {/* Card 5: Real ship-to address */}
-              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-100">
                   <MapPin className="h-4 w-4 text-primary" />
                   <span>Ship To</span>

@@ -171,7 +171,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
   /* ─── No order id — honest state ─── */
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
             <Box className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
@@ -195,7 +195,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
   /* ─── Auth / not found / load error — honest states ─── */
   if (notFound || needsAuth || error) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
         <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
           <div className="flex items-center gap-3">
             <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
@@ -250,7 +250,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-[calc(var(--bottom-nav-h)+140px)] md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">

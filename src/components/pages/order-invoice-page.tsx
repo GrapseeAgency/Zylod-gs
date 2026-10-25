@@ -104,7 +104,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
   // ── Honest guard states ───────────────────────────────────────────────
   if (!loading && !orderId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <FileText className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">No order selected</h1>
@@ -117,7 +117,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
 
   if (!loading && needsAuth) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
           <h1 className="text-base font-black">Sign in required</h1>
@@ -130,7 +130,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
 
   if (!loading && notFound) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <XCircle className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">Invoice not found</h1>
@@ -143,7 +143,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
 
   if (!loading && forbidden) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <XCircle className="h-10 w-10 text-red-400 mx-auto" />
           <h1 className="text-base font-black">Not authorized</h1>
@@ -155,7 +155,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
 
   if (!loading && error) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <AlertTriangle className="h-10 w-10 text-red-500 mx-auto" />
           <h1 className="text-base font-black">Could not load invoice</h1>
@@ -178,9 +178,9 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
   const issuedDate = new Date(invoice.invoiceDate)
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs print:hidden md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs print:hidden md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 active:scale-95 transition-transform" aria-label="Go back">
@@ -193,7 +193,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
 
       <main className="px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg mx-auto md:max-w-2xl">
         {/* Top Invoice Actions Card */}
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between gap-3 print:hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between gap-3 print:hidden">
           <div className="min-w-0">
             <h1 className="text-sm md:text-base font-black truncate">
               Invoice — Order #{invoice.orderNumber || '--'}
@@ -223,7 +223,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
         </div>
 
         {/* Main Invoice Sheet */}
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-6">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-6">
           {/* Document Header — company identity from the endpoint, not hardcoded */}
           <div className="flex items-start justify-between">
             <div>

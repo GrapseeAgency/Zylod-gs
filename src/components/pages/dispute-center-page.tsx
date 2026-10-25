@@ -260,7 +260,7 @@ export function DisputeCenterPage() {
       )}
 
       {/* File-a-complaint form */}
-      <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-5 space-y-3">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-5 space-y-3">
         <h2 className="text-sm font-black">File a complaint</h2>
 
         {filed && (
@@ -346,11 +346,11 @@ export function DisputeCenterPage() {
         {loading ? (
           <div className="space-y-3">
             {[0, 1].map((i) => (
-              <div key={i} className="h-24 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+              <div key={i} className="h-24 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
             ))}
           </div>
         ) : error ? (
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
             <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
             <h3 className="text-sm font-black">Could not load your complaints</h3>
             <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -360,7 +360,7 @@ export function DisputeCenterPage() {
           </div>
         ) : complaints.length === 0 ? (
           // Honest empty state — this account truly has zero complaints
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
             <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 dark:text-slate-300 mx-auto" />
             <h3 className="text-sm font-black">No complaints filed yet</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
@@ -372,7 +372,7 @@ export function DisputeCenterPage() {
             {complaints.map((c) => (
               <div
                 key={c.id}
-                className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
               >
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div className="min-w-0">

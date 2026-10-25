@@ -92,7 +92,7 @@ export function SellerFlashSaleNominationPage() {
   }, [token])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center gap-3 shadow-sm md:hidden">
         <button onClick={goBack} aria-label="Go back" className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />

@@ -78,7 +78,7 @@ export function HelpCenterPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       {/* Hero Header */}
       <div className="bg-gradient-to-b from-red-600 to-red-700 text-white px-4 pt-4 pb-8 rounded-b-3xl shadow-lg">
         <div className="flex items-center gap-3 mb-6 md:hidden">

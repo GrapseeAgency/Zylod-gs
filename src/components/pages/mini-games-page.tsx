@@ -246,7 +246,7 @@ export function MiniGamesPage() {
   const glyphFor = (id: string) => (id === 'wholesale_trivia' ? <Brain className="w-5 h-5" /> : id === 'memory_match' ? <Layers className="w-5 h-5" /> : <Package className="w-5 h-5" />)
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 transition" aria-label="Go back">

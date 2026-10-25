@@ -373,7 +373,7 @@ export function QuoteRequestPage() {
   /* ─── Success state — real id, real navigation ─── */
   if (created) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4 py-10">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-10">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -399,7 +399,7 @@ export function QuoteRequestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-16 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-16 text-slate-900 dark:text-slate-100">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:px-6">
         <div className="md:max-w-2xl md:mx-auto flex items-center gap-3">

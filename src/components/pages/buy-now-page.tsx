@@ -260,7 +260,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   /* ─── No product id — honest state ─── */
   if (!productId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
             <Package className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
@@ -333,7 +333,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   /* ─── Product not found / auth / error — honest states ─── */
   if (notFound || needsAuth || error) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
         <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
           <div className="flex items-center gap-3">
             <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
@@ -395,7 +395,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   const outOfStock = stock === 0
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-[calc(var(--bottom-nav-h)+150px)] lg:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+150px)] lg:pb-10 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">

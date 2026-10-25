@@ -85,7 +85,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
   // ─── No order reference — honest empty state, never demo content ───
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
           <ShoppingBag className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
         </div>
@@ -121,7 +121,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
   // ─── Real error — surfaced verbatim ───
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
         <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3 max-w-sm w-full text-left" role="alert">
           <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
           <div className="flex-1 min-w-0">
@@ -160,7 +160,7 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
     : null
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs text-center md:hidden">
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>

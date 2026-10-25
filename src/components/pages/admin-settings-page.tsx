@@ -299,7 +299,7 @@ export function AdminSettingsPage() {
       {/* Real stats chips (from the same GET that feeds the cards) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {statChips.map((chip) => (
-          <div key={chip.label} className="rounded-2xl bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
+          <div key={chip.label} className="rounded-2xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 p-3">
             <p className="text-[10px] uppercase tracking-wider font-black text-slate-400 dark:text-slate-500 dark:text-slate-400">{chip.label}</p>
             <p className="text-lg font-black text-slate-800 dark:text-slate-200 tabular-nums">
               {chip.value == null ? '—' : chip.value.toLocaleString('en-BD')}
@@ -321,11 +321,11 @@ export function AdminSettingsPage() {
       {loading ? (
         <div className="space-y-3">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-16 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-16 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load settings</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -335,7 +335,7 @@ export function AdminSettingsPage() {
         </div>
       ) : settings.length === 0 ? (
         // Honest empty state — the registry should never produce this, but it is stated, not faked
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 dark:text-slate-300 mx-auto" />
           <h2 className="text-sm font-black">No settings registered</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
@@ -350,7 +350,7 @@ export function AdminSettingsPage() {
               const cardError = cardErrors[group.category] ?? ''
               const busy = savingCategory === group.category
               return (
-                <div key={group.category} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div key={group.category} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800">
                   {/* Card head */}
                   <div className="px-4 pt-3 pb-2 flex items-center gap-2 flex-wrap border-b border-slate-100 dark:border-slate-800">
                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">{group.category}</p>
@@ -457,7 +457,7 @@ export function AdminSettingsPage() {
           )}
 
           {/* Task 109: platform status rail — releases, maintenance, service log */}
-          <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-gray-900 dark:bg-slate-950 p-4">
+          <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-gray-900 p-4">
             <AdminAppStatusManager />
           </div>
         </div>

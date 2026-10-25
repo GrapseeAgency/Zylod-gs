@@ -523,7 +523,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   // ── Honest empty / guard states ───────────────────────────────────────
   if (!loading && !orderId) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <FileText className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">No order selected</h1>
@@ -536,7 +536,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
 
   if (!loading && needsAuth) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
           <h1 className="text-base font-black">Sign in required</h1>
@@ -549,7 +549,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
 
   if (!loading && notFound) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <XCircle className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">Order not found</h1>
@@ -562,7 +562,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
 
   if (!loading && error) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <AlertTriangle className="h-10 w-10 text-red-500 mx-auto" />
           <h1 className="text-base font-black">Could not load order</h1>
@@ -621,9 +621,9 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
   const stepDelivered = statuses.length > 0 && statuses.every((s) => s === 'delivered')
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
@@ -639,7 +639,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
 
       <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:px-6 md:py-6 md:max-w-2xl lg:max-w-6xl lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0">
         {/* Status Card & 4-Step Progress */}
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5 lg:col-span-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5 lg:col-span-2">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 className="text-sm md:text-base font-black">
@@ -724,7 +724,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
         </div>
 
         {/* Items in Order Card — grouped by shipment (Task 58) */}
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 lg:col-span-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 lg:col-span-2">
           <h2 className="text-xs md:text-sm font-bold">
             Items in Order ({allItems.length})
           </h2>
@@ -801,7 +801,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
         </div>
 
         {/* Payment Summary Card */}
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 lg:col-start-3 lg:row-start-1 lg:row-span-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 lg:col-start-3 lg:row-start-1 lg:row-span-2">
           <h2 className="text-xs md:text-sm font-bold flex items-center gap-2">
             Payment Summary
             {orderRoomConnected && (
@@ -933,7 +933,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
             <Button
               variant="outline"
               onClick={() => navigate('order-invoice', { orderId })}
-              className="w-full bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
             >
               <Download className="h-4 w-4" />
               View Invoice
@@ -946,7 +946,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               <Button
                 variant="outline"
                 onClick={() => navigate('reschedule-delivery', { orderId })}
-                className="w-full bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
               >
                 <CalendarClock className="h-4 w-4" />
                 Reschedule Delivery
@@ -959,7 +959,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               <Button
                 variant="outline"
                 onClick={openReceipt}
-                className="w-full bg-white dark:bg-gray-900 dark:bg-slate-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
               >
                 <ReceiptText className="h-4 w-4" />
                 View Receipt
@@ -1002,7 +1002,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
         </div>
 
         {/* Shipping & Payment Info Card */}
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 lg:col-span-3 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 lg:col-span-3 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
           {/* Shipping */}
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs font-bold">
@@ -1074,7 +1074,7 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
               <select
                 value={payMethodIdx}
                 onChange={(e) => setPayMethodIdx(Number(e.target.value))}
-                className="h-10 w-full rounded-xl border border-input bg-white dark:bg-gray-900 dark:bg-slate-900 px-3 text-xs font-bold"
+                className="h-10 w-full rounded-xl border border-input bg-white dark:bg-gray-900 px-3 text-xs font-bold"
               >
                 {PAYMENT_METHOD_OPTIONS.map((m, idx) => (
                   <option key={`${m.value}-${m.brand ?? ''}`} value={idx}>{m.label}</option>

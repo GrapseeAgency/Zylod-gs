@@ -211,7 +211,7 @@ export function AdminSupportTicketsPage() {
     s === 'all' ? null : tickets.filter((t) => t.status === s).length
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       <div className="max-w-5xl mx-auto px-4 py-4 md:px-6 md:py-6 space-y-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -249,7 +249,7 @@ export function AdminSupportTicketsPage() {
             <button
               key={m}
               onClick={() => { setMode(m); setOpenId(null); setStatusFilter('all') }}
-              className={`min-h-11 px-5 rounded-xl text-xs font-black uppercase tracking-wide transition ${mode === m ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
+              className={`min-h-11 px-5 rounded-xl text-xs font-black uppercase tracking-wide transition ${mode === m ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300'}`}
             >
               {m === 'buyer' ? 'Buyer Threads' : 'Seller Threads'}
             </button>
@@ -257,7 +257,7 @@ export function AdminSupportTicketsPage() {
         </div>
 
         {needsAuth ? (
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center text-sm font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center text-sm font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
             Admin access required — sign in as an admin to respond to support threads.
           </div>
         ) : (
@@ -267,7 +267,7 @@ export function AdminSupportTicketsPage() {
                 <button
                   key={s}
                   onClick={() => setStatusFilter(s)}
-                  className={`min-h-9 px-3 rounded-xl text-xs font-bold transition ${statusFilter === s ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300 hover:border-slate-300'}`}
+                  className={`min-h-9 px-3 rounded-xl text-xs font-bold transition ${statusFilter === s ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300 hover:border-slate-300'}`}
                 >
                   {s === 'all' ? 'All' : STATUS_LABELS[s]}
                   <span className={`ml-1 tabular-nums ${statusFilter === s ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'}`}>
@@ -280,17 +280,17 @@ export function AdminSupportTicketsPage() {
             {loading ? (
               <div className="space-y-3">
                 {[0, 1, 2].map((i) => (
-                  <div key={i} className="h-24 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+                  <div key={i} className="h-24 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
                 ))}
               </div>
             ) : error ? (
-              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
                 <AlertTriangle className="h-6 w-6 text-amber-500 mx-auto" />
                 <p className="text-sm font-bold">{error}</p>
                 <Button onClick={() => loadTickets()} variant="outline" className="rounded-xl text-xs font-bold">Retry</Button>
               </div>
             ) : filtered.length === 0 ? (
-              <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">
                 No support threads{statusFilter !== 'all' ? ` in "${STATUS_LABELS[statusFilter]}"` : ''} right now — honest zero.
               </div>
             ) : (
@@ -298,7 +298,7 @@ export function AdminSupportTicketsPage() {
                 {filtered.map((t) => {
                   const isOpen = openId === t.id
                   return (
-                    <div key={t.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+                    <div key={t.id} className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
                       <button
                         type="button"
                         onClick={() => toggleThread(t.id)}
@@ -346,7 +346,7 @@ export function AdminSupportTicketsPage() {
                                 </p>
                               )}
                               <div className="space-y-2 max-h-80 overflow-y-auto">
-                                <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3">
+                                <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3">
                                   <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer · opened</span>
                                   <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-wrap">{t.description}</p>
                                 </div>
@@ -355,7 +355,7 @@ export function AdminSupportTicketsPage() {
                                   return (
                                     <div
                                       key={m.id}
-                                      className={`rounded-2xl border p-3 ${isAdminMsg ? 'bg-primary/5 border-primary/20' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border-slate-100 dark:border-slate-800'}`}
+                                      className={`rounded-2xl border p-3 ${isAdminMsg ? 'bg-primary/5 border-primary/20' : 'bg-white dark:bg-gray-900 border-slate-100 dark:border-slate-800'}`}
                                     >
                                       <span className={`text-[9px] font-black uppercase ${isAdminMsg ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`}>
                                         {isAdminMsg ? 'Zylod Support' : mode === 'buyer' ? 'Buyer' : 'Seller'} · {new Date(m.createdAt).toLocaleString('en-GB')}
@@ -373,7 +373,7 @@ export function AdminSupportTicketsPage() {
                                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void sendReply(t) } }}
                                   placeholder="Reply as Zylod Support…"
                                   aria-label="Reply to the buyer"
-                                  className="flex-1 h-11 rounded-2xl border border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-white dark:bg-gray-900 dark:bg-slate-900 px-4 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                  className="flex-1 h-11 rounded-2xl border border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-white dark:bg-gray-900 px-4 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                                 />
                                 <Button
                                   onClick={() => sendReply(t)}

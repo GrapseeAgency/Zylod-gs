@@ -209,7 +209,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
   // ─── Page-level states: loading / no product / not found / error ──────────
   if (loadState === 'loading') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-background">
         <PageLoader />
       </div>
     )
@@ -217,7 +217,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
 
   if (loadState === 'no-product') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
             <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
@@ -236,7 +236,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
 
   if (loadState === 'not-found') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
             <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
@@ -255,7 +255,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
 
   if (loadState === 'error' || !product) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-rose-50 dark:bg-rose-950/50 flex items-center justify-center mx-auto">
             <AlertTriangle className="h-7 w-7 text-primary" />
@@ -288,7 +288,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
   const sliderMax = Math.max(sliderMin + 10, 1200)
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between mb-2">

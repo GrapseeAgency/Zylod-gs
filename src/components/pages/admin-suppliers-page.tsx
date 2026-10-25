@@ -118,7 +118,7 @@ function VerificationDocuments({ documents }: { documents: ApiDocument[] | undef
     <div className="space-y-2">
       <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Verification documents</p>
       {docs.length === 0 ? (
-        <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+        <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
           No documents uploaded yet — this supplier has not submitted any verification files. Approving now means approving without document evidence.
         </p>
       ) : (
@@ -128,7 +128,7 @@ function VerificationDocuments({ documents }: { documents: ApiDocument[] | undef
             const statusStyle = DOC_STATUS_STYLES[doc.status] || 'text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800'
             const size = fmtBytes(doc.fileSize)
             return (
-              <div key={doc.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-2 w-[128px] space-y-1.5">
+              <div key={doc.id} className="bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 rounded-xl p-2 w-[128px] space-y-1.5">
                 {doc.fileUrl ? (
                   isImageUrl(doc.fileUrl) ? (
                     <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" title={`Open ${label} full size`}>
@@ -363,7 +363,7 @@ export function AdminSuppliersPage() {
           <button
             key={t}
             onClick={() => switchTab(t)}
-            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${tab === t ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${tab === t ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
           >
             {TAB_LABELS[t]}
           </button>
@@ -390,11 +390,11 @@ export function AdminSuppliersPage() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-20 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load the verification queue</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -403,7 +403,7 @@ export function AdminSuppliersPage() {
           </Button>
         </div>
       ) : suppliers.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           {tab === 'pending' ? (
             <>
               <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
@@ -446,7 +446,7 @@ export function AdminSuppliersPage() {
             const isRejectOpen = rejectId === s.id
             const displayName = s.companyName || '(company name not provided)'
             return (
-              <div key={s.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={s.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 {/* Row */}
                 <div className="p-4 flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2 min-w-[220px] flex-1">
@@ -539,7 +539,7 @@ export function AdminSuppliersPage() {
                       {KYC_FIELDS.map((f) => {
                         const val = (s[f.key] as string) || ''
                         return (
-                          <div key={String(f.key)} className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                          <div key={String(f.key)} className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
                             <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">{f.label}</p>
                             <p className={`text-xs font-bold truncate ${val ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 italic font-normal'}`}>
                               {val || 'Not provided'}
@@ -547,7 +547,7 @@ export function AdminSuppliersPage() {
                           </div>
                         )
                       })}
-                      <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                      <div className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
                         <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Contact</p>
                         <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{s.email || 'No email'}</p>
                         <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 truncate">{s.phone || 'No phone'}</p>

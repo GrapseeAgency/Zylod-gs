@@ -224,7 +224,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
   // ─── Page-level states: loading / no product / not found / error / empty ──
   if (loadState === 'loading') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-background">
         <PageLoader />
       </div>
     )
@@ -232,7 +232,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
 
   if (loadState === 'no-product') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
             <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
@@ -251,7 +251,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
 
   if (loadState === 'not-found') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto">
             <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
@@ -270,7 +270,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
 
   if (loadState === 'error') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-rose-50 dark:bg-rose-950/50 flex items-center justify-center mx-auto">
             <AlertTriangle className="h-7 w-7 text-primary" />
@@ -298,7 +298,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
   // this listing. Never render an invented bundle to fill the space.
   if (items.length <= 1) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
         <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
           <div className="flex items-center justify-between">
             <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
@@ -343,7 +343,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">

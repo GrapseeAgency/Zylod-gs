@@ -385,7 +385,7 @@ export function AdminRfqPage() {
             <button
               key={t.key}
               onClick={() => switchStatus(t.key)}
-              className={`rounded-2xl border px-4 py-3 text-left transition min-h-11 ${active ? 'border-primary bg-primary/5 shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600'}`}
+              className={`rounded-2xl border px-4 py-3 text-left transition min-h-11 ${active ? 'border-primary bg-primary/5 shadow-md' : 'bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600'}`}
             >
               <p className={`text-lg font-black tabular-nums ${active ? 'text-primary' : 'text-slate-800 dark:text-slate-200'}`}>{n == null ? '—' : n.toLocaleString('en-BD')}</p>
               <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">{t.label}</p>
@@ -402,7 +402,7 @@ export function AdminRfqPage() {
             <button
               key={t.key}
               onClick={() => switchStatus(t.key)}
-              className={`min-h-11 px-4 rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'}`}
+              className={`min-h-11 px-4 rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'}`}
             >
               {t.label}
               <span className={`tabular-nums ${statusTab === t.key ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'}`}>{n == null ? '' : n.toLocaleString('en-BD')}</span>
@@ -424,11 +424,11 @@ export function AdminRfqPage() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-24 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-24 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load RFQs</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -438,7 +438,7 @@ export function AdminRfqPage() {
         </div>
       ) : rows.length === 0 ? (
         // Honest empty state — the DB truly has zero (or zero matching) RFQs
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           {statusTab !== 'all' ? (
             <>
               <CheckCircle2 className="h-10 w-10 mx-auto text-slate-300 dark:text-slate-700 dark:text-slate-300" />
@@ -464,7 +464,7 @@ export function AdminRfqPage() {
             const canClose = r.status === 'open' || r.status === 'quoted'
             const best = r.bestQuote
             return (
-              <div key={r.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={r.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 {/* Row */}
                 <div className="p-4 flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2 min-w-[200px] max-w-[320px]">
@@ -529,8 +529,8 @@ export function AdminRfqPage() {
                   <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-3">
                     {detailLoading ? (
                       <div className="space-y-2">
-                        <div className="h-12 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse" />
-                        <div className="h-12 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+                        <div className="h-12 bg-white dark:bg-gray-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+                        <div className="h-12 bg-white dark:bg-gray-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse" />
                       </div>
                     ) : detailError ? (
                       <div className="flex items-start gap-2 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-xl px-3 py-2 text-xs text-red-600 dark:text-red-400 font-bold">
@@ -556,7 +556,7 @@ export function AdminRfqPage() {
                           ) : (
                             <div className="space-y-1.5">
                               {detail.items.map((it) => (
-                                <div key={it.id} className="flex flex-wrap items-center gap-2 bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
+                                <div key={it.id} className="flex flex-wrap items-center gap-2 bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2">
                                   <Package className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
                                   <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{it.productName}</p>
                                   <span className={chipClass}>{it.quantity.toLocaleString('en-BD')} {it.unit}</span>
@@ -576,7 +576,7 @@ export function AdminRfqPage() {
                           ) : (
                             <div className="space-y-1.5">
                               {detail.quotes.map((q) => (
-                                <div key={q.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2 space-y-1">
+                                <div key={q.id} className="bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 rounded-xl px-3 py-2 space-y-1">
                                   <div className="flex flex-wrap items-center gap-2">
                                     <Truck className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
                                     <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{q.supplier.displayName}</p>

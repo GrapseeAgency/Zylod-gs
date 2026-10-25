@@ -490,7 +490,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   // ─── Empty cart — honest state, no fake product ───
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
         <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
           <div className="flex items-center justify-between">
             <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
@@ -520,7 +520,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-28 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-28 md:pb-10 text-slate-900 dark:text-slate-100">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">

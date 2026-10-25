@@ -511,14 +511,14 @@ export function NotificationPreferencesPage() {
   // saved row is still in flight.
   if (loadingPrefs) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-background">
         <PageLoader />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-28 md:pb-8">
       {/* Header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
         <button

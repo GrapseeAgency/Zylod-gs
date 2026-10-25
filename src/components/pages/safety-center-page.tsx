@@ -61,7 +61,7 @@ export function SafetyCenterPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       {/* Hero Header */}
       <div className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white px-4 pt-4 pb-8 rounded-b-3xl shadow-lg md:px-6 md:pt-6 md:pb-10 border-b border-gray-200 dark:border-slate-800">
         <div className="flex items-center justify-between gap-3 mb-6">

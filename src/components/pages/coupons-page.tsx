@@ -132,7 +132,7 @@ export function CouponsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3.5 flex flex-wrap items-center justify-between gap-2 shadow-sm md:hidden">
         <div className="flex items-center gap-3">

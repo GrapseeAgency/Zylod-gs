@@ -250,7 +250,7 @@ export function RefundStatusPage({ pageParams: _pageParams }: { pageParams?: Rec
   const badge = STATUS_BADGE[data.status] ?? { label: data.status, className: 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300' }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
       {/* Mobile header */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">

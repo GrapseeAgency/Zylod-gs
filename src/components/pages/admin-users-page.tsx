@@ -182,7 +182,7 @@ export function AdminUsersPage() {
           <button
             key={r || 'all'}
             onClick={() => applyFilter({ role: r, page: 1 })}
-            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${role === r ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${role === r ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
           >
             {r || 'All roles'}
           </button>
@@ -190,7 +190,7 @@ export function AdminUsersPage() {
         <select
           value={status}
           onChange={(e) => applyFilter({ status: e.target.value, page: 1 })}
-          className="h-9 rounded-xl border border-input bg-white dark:bg-gray-900 dark:bg-slate-900 px-3 text-xs font-bold"
+          className="h-9 rounded-xl border border-input bg-white dark:bg-gray-900 px-3 text-xs font-bold"
         >
           <option value="">Any status</option>
           <option value="active">Active</option>
@@ -219,11 +219,11 @@ export function AdminUsersPage() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-20 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load users</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -232,7 +232,7 @@ export function AdminUsersPage() {
           </Button>
         </div>
       ) : users.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           <Users className="h-10 w-10 text-slate-300 mx-auto" />
           <h2 className="text-sm font-black">No users found</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
@@ -248,7 +248,7 @@ export function AdminUsersPage() {
             const isActionTarget = actionTarget === u.id
             const displayName = u.companyName || u.businessName || u.fullName || '--'
             return (
-              <div key={u.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={u.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 {/* Row */}
                 <div className="p-4 flex flex-wrap items-center gap-3">
                   <div className="min-w-[170px] flex-1">

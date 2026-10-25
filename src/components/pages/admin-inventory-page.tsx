@@ -214,7 +214,7 @@ export function AdminInventoryPage() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setSupplierFilter('all')}
-            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${supplierFilter === 'all' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${supplierFilter === 'all' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
           >
             All suppliers ({items.length})
           </button>
@@ -222,7 +222,7 @@ export function AdminInventoryPage() {
             <button
               key={s.id}
               onClick={() => setSupplierFilter(s.id)}
-              className={`h-9 px-4 rounded-xl text-xs font-bold transition ${supplierFilter === s.id ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+              className={`h-9 px-4 rounded-xl text-xs font-bold transition ${supplierFilter === s.id ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
             >
               {s.companyName} ({items.filter((p) => p.supplier?.id === s.id).length})
             </button>
@@ -233,23 +233,23 @@ export function AdminInventoryPage() {
       {/* Summary stat cards (from the REAL summary object) */}
       {summary && !loading && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3">
             <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1"><Package className="h-3 w-3" /> Product SKUs</p>
             <p className="text-xl font-black text-slate-800 dark:text-slate-200 mt-1">{summary.totalSkus.toLocaleString()}</p>
           </div>
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3">
             <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1"><Layers className="h-3 w-3" /> Variant SKUs</p>
             <p className="text-xl font-black text-slate-800 dark:text-slate-200 mt-1">{summary.totalVariantSkus.toLocaleString()}</p>
           </div>
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-amber-200 dark:border-amber-900 p-3">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-amber-200 dark:border-amber-900 p-3">
             <p className="text-[10px] font-black uppercase tracking-wider text-amber-500 flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Low stock</p>
             <p className="text-xl font-black text-amber-600 dark:text-amber-400 mt-1">{summary.lowStockCount.toLocaleString()}</p>
           </div>
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-red-200 dark:border-red-900 p-3">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-red-200 dark:border-red-900 p-3">
             <p className="text-[10px] font-black uppercase tracking-wider text-red-500 flex items-center gap-1"><PackageX className="h-3 w-3" /> Out of stock</p>
             <p className="text-xl font-black text-red-600 dark:text-red-400 mt-1">{summary.outOfStockCount.toLocaleString()}</p>
           </div>
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3">
             <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1"><Boxes className="h-3 w-3" /> Total units</p>
             <p className="text-xl font-black text-slate-800 dark:text-slate-200 mt-1">{summary.totalInventoryUnits.toLocaleString()}</p>
           </div>
@@ -262,7 +262,7 @@ export function AdminInventoryPage() {
           <button
             key={f.key}
             onClick={() => setStockFilter(f.key)}
-            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${stockFilter === f.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${stockFilter === f.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
           >
             {f.label}
           </button>
@@ -282,11 +282,11 @@ export function AdminInventoryPage() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-20 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load the inventory audit</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -295,13 +295,13 @@ export function AdminInventoryPage() {
           </Button>
         </div>
       ) : items.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           <Package className="h-10 w-10 text-slate-300 mx-auto" />
           <h2 className="text-sm font-black">No inventory to audit</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">No seller has created any products yet, so there is no stock anywhere on the platform. Rows appear here as soon as suppliers launch listings.</p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
           <Search className="h-10 w-10 text-slate-300 mx-auto" />
           <h2 className="text-sm font-black">Nothing matches the current filters</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
@@ -315,7 +315,7 @@ export function AdminInventoryPage() {
             const isOpen = !!expanded[p.id]
             const variants = Array.isArray(p.variants) ? p.variants : []
             return (
-              <div key={p.id} className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={p.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 {/* Row */}
                 <div className="p-4 flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2 min-w-[220px] flex-1">
@@ -370,7 +370,7 @@ export function AdminInventoryPage() {
                   <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40 p-4 space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Variant stock (real productVariants rows)</p>
                     {variants.map((v) => (
-                      <div key={v.id} className="flex flex-wrap items-center gap-3 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 px-3 py-2">
+                      <div key={v.id} className="flex flex-wrap items-center gap-3 bg-white dark:bg-gray-900 rounded-xl border border-slate-100 dark:border-slate-800 px-3 py-2">
                         <div className="min-w-[180px] flex-1">
                           <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{v.variantName}: {v.variantValue}</p>
                           {v.sku && <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">{v.sku}</p>}

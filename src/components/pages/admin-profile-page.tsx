@@ -210,9 +210,9 @@ export function AdminProfilePage() {
 
   // ─── RENDER ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-gray-900 dark:text-white pb-28 md:pb-8">
+    <div className="min-h-screen bg-background text-gray-900 dark:text-white pb-28 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 shadow-xl flex items-center justify-between md:hidden">
+      <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 shadow-xl flex items-center justify-between md:hidden">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('home')} className="p-1 text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white" title="Home">
             <ArrowLeft className="h-5 w-5" />
@@ -318,7 +318,7 @@ export function AdminProfilePage() {
         </div>
 
         {/* ─── TAB NAVIGATION ──────────────────────────────────────────── */}
-        <div className="sticky top-[57px] md:top-[60px] z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div className="sticky top-[57px] md:top-[60px] z-30 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-1 overflow-x-auto no-scrollbar px-3 py-2">
             {[
               { key: 'overview', label: 'Overview', icon: BarChart3 },
