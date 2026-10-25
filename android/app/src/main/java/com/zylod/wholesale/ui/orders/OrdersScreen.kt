@@ -20,8 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.Inventory
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Package
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -214,11 +214,11 @@ private fun OrderCard(order: OrderDto) {
                     modifier = Modifier.size(56.dp),
                 ) {
                     // Contract has no image field — honest icon placeholder
-                    // (web draws the identical Package icon; DATA RULE: no
+                    // (web draws the identical package/box icon; DATA RULE: no
                     // faked thumbnails).
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                         Icon(
-                            Icons.Outlined.Package,
+                            Icons.Outlined.Inventory,
                             null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(24.dp),
@@ -338,7 +338,7 @@ private fun OrdersEmpty(onBrowseProducts: () -> Unit) {
                 .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(50)),
         ) {
             Icon(
-                Icons.Outlined.Package,
+                Icons.Outlined.Inventory,
                 null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(36.dp),
