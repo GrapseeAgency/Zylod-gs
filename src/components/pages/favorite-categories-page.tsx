@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
-import { ArrowLeft, Bell, BellRing, LayoutGrid, PackageOpen } from 'lucide-react';
+import { ArrowLeft, Bell, BellRing, LayoutGrid, PackageOpen, LogIn } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { PageLoader } from '@/components/ui/page-loader';
 
 interface Category {
   id: string;
@@ -19,6 +20,7 @@ export function FavoriteCategoriesPage() {
   const { goBack, navigate } = useNavigationStore();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [needsAuth, setNeedsAuth] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -26,6 +28,11 @@ export function FavoriteCategoriesPage() {
         setLoading(true);
         // Real endpoint — returns only categories the buyer actually follows.
         const res = await fetch('/api/buyer/followed-categories');
+        if (res.status === 401) {
+          setNeedsAuth(true);
+          setCategories([]);
+          return;
+        }
         if (!res.ok) throw new Error('Failed to fetch followed categories');
         const data = await res.json();
         const raw: any[] = Array.isArray(data?.data) ? data.data : [];
@@ -117,10 +124,15 @@ export function FavoriteCategoriesPage() {
         </p>
 
         {loading ? (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {[1, 2, 3, 4].map(n => (
-              <div key={n} className="h-32 bg-gray-200 rounded-xl animate-pulse"></div>
-            ))}
+          <PageLoader className="min-h-0 py-12" />
+        ) : needsAuth ? (
+          <div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-gray-400">
+            <LogIn className="w-16 h-16 mb-4 text-gray-300 dark:text-gray-600" />
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Sign in to see your followed categories</h2>
+            <p className="text-sm mt-1">Follow categories to get notified about new arrivals.</p>
+            <button onClick={() => navigate('login')} className="mt-4 px-6 py-2 bg-primary text-white rounded-full font-medium">
+              Sign In
+            </button>
           </div>
         ) : categories.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-gray-400 dark:text-gray-500">

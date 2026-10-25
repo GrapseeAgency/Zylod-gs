@@ -82,6 +82,7 @@ jobs:
       - name: Seed marketplace data (real products, suppliers, buyers)
         run: |
           node scripts/qa/seed-marketplace.mjs || echo "::warning::Seed script failed — continuing with whatever data exists"
+          node scripts/qa/seed-content.mjs || echo "::warning::Content seed failed — continuing"
           curl -s "http://localhost:3000/api/products?limit=3" | head -c 400
 
       - name: Grab a real product id for the PDP screenshot

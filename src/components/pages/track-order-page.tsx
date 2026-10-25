@@ -8,12 +8,13 @@ import {
   ArrowLeft, Truck, Package, Check, Copy,
   CheckCircle2, PackageSearch, AlertCircle, LogIn, XCircle
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /**
  * REAL order tracking — no fake carriers, no invented tracking events,
  * no fake ETAs, no fake "live" route map.
  * Data comes exclusively from GET /api/orders/[id] (credentials: 'include').
- * - Loading  → skeleton pulse blocks (never fake rows).
+ * - Loading  → the standard PageLoader (never fake rows).
  * - 401      → sign-in required state.
  * - 404      → honest "Order not found" state.
  * - Errors   → the real backend error text with a retry action.
@@ -305,34 +306,9 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
           </div>
         )}
 
-        {/* Loading skeleton — pulse blocks only, never fake rows */}
+        {/* Loading — standard page loader while order data fetches */}
         {loading && !error && (
-          <>
-            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-5" aria-busy="true" aria-live="polite">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <div className="h-3 w-20 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
-                  <div className="h-4 w-28 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                </div>
-                <div className="h-6 w-24 bg-slate-200 dark:bg-slate-800 rounded-full animate-pulse" />
-              </div>
-              <div className="h-9 w-44 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded-xl animate-pulse mx-auto" />
-              <div className="h-12 w-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded-2xl animate-pulse" />
-              <div className="h-16 w-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded-2xl animate-pulse" />
-            </div>
-            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4" aria-hidden="true">
-              <div className="h-3.5 w-32 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-              {[0, 1].map((i) => (
-                <div key={i} className="flex items-start gap-3.5">
-                  <div className="w-3.5 h-3.5 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse shrink-0 mt-0.5" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-3 w-36 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                    <div className="h-3 w-24 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
+          <PageLoader className="min-h-0 py-10" />
         )}
 
         {/* Real data */}

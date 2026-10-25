@@ -9,6 +9,7 @@ import {
   ArrowLeft, HelpCircle, Check, CheckCircle2,
   Package, AlertCircle, RefreshCw, LogIn, RefreshCcw
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface OrderItem {
   id: string
@@ -296,18 +297,9 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
           </div>
         )}
 
-        {/* Loading */}
+        {/* Loading — standard page loader while exchange options fetch */}
         {loading && (
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
-              <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
-              <div className="h-16 w-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-2xl animate-pulse" />
-            </div>
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
-              <div className="h-4 w-1/4 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
-              <div className="h-20 w-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-2xl animate-pulse" />
-            </div>
-          </div>
+          <PageLoader className="min-h-0 py-10" />
         )}
 
         {/* Original Item — real order data */}

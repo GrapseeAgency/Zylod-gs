@@ -8,6 +8,7 @@ import {
   ArrowLeft, Truck, CreditCard, CheckCircle2,
   MapPin, Package, AlertCircle, RefreshCw, LogIn, Minus, Plus
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface ProductData {
   id: string
@@ -386,23 +387,9 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
     )
   }
 
-  /* ─── Loading skeletons ─── */
+  /* ─── Loading — the standard page loader while the quote loads ─── */
   if (loading || !product) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
-        <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:px-6 md:py-6">
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
-            <div className="h-16 w-16 rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 animate-pulse" />
-            <div className="h-4 w-3/4 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
-            <div className="h-4 w-1/2 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
-          </div>
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
-            <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
-            <div className="h-16 w-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-2xl animate-pulse" />
-          </div>
-        </main>
-      </div>
-    )
+    return <PageLoader />
   }
 
   const outOfStock = stock === 0

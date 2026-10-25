@@ -74,7 +74,9 @@ jobs:
           curl -sf -o /dev/null -w "server: %{http_code}\n" http://localhost:3000/api/categories || (tail -40 server.log; exit 1)
 
       - name: Seed marketplace (real data through real APIs)
-        run: node scripts/qa/seed-marketplace.mjs || echo "::warning::seed failed — continuing"
+        run: |
+          node scripts/qa/seed-marketplace.mjs || echo "::warning::seed failed — continuing"
+          node scripts/qa/seed-content.mjs || echo "::warning::content seed failed — continuing"
 
       - name: Install Playwright chromium
         run: |

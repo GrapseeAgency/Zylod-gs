@@ -7,6 +7,7 @@ import {
   Check, ShieldCheck, FileText, Package, Star,
   ArrowLeft, AlertCircle, Loader2, Truck
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /**
  * REAL delivery confirmation — renders the actual order state from
@@ -157,26 +158,9 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
     )
   }
 
-  // ─── Loading skeleton ───
+  // ─── Loading — the standard page loader ───
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100" aria-busy="true" aria-live="polite">
-        <main className="px-4 py-8 md:px-6 space-y-5 max-w-lg mx-auto lg:max-w-3xl">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-full bg-slate-200 animate-pulse" />
-            <div className="h-5 w-56 bg-slate-200 rounded animate-pulse" />
-          </div>
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-4">
-            <div className="aspect-[16/9] rounded-2xl bg-slate-100 dark:bg-slate-900 animate-pulse" />
-            <div className="h-3.5 w-1/2 bg-slate-200 rounded animate-pulse" />
-          </div>
-          <p className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            Loading delivery status…
-          </p>
-        </main>
-      </div>
-    )
+    return <PageLoader />
   }
 
   // ─── Real error ───

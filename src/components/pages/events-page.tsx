@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { CalendarDays, MapPin, ArrowUpRight, RefreshCw } from 'lucide-react'
 
@@ -53,9 +53,7 @@ export function EventsPage() {
 
       <main className="px-4 py-6 md:px-6 md:py-8 max-w-3xl mx-auto md:max-w-5xl w-full">
         {loading ? (
-          <div className="space-y-4 md:space-y-5">
-            {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}
-          </div>
+          <PageLoader className="min-h-0 py-12" />
         ) : events.length === 0 ? (
           <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
             <CalendarDays className="h-12 w-12 mx-auto text-slate-300 mb-3" />

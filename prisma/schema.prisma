@@ -1034,6 +1034,23 @@ model banners {
   @@index([sortOrder])
 }
 
+model tradeEvents {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  // venue / city of the trade fair (e.g. "ICCB, Dhaka")
+  location    String
+  startsAt    DateTime
+  endsAt      DateTime?
+  // external registration link if the fair has one
+  websiteUrl  String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([isActive])
+  @@index([startsAt])
+}
+
 model promotions {
   id             String   @id @default(cuid())
   name           String

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useCartStore } from '@/store/cart-store';
 import { toast } from 'sonner';
-import { ArrowLeft, LayoutGrid, List, ArrowDownUp, Filter, Star, ShoppingCart, Heart, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, LayoutGrid, List, ArrowDownUp, Filter, Star, ShoppingCart, Heart, ShieldCheck, LogIn } from 'lucide-react'
 import { motion } from 'framer-motion';
 import { PageLoader } from '@/components/ui/page-loader'
 
@@ -28,6 +28,7 @@ export function FavoriteProductsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [needsAuth, setNeedsAuth] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBatchMode, setIsBatchMode] = useState(false);
   const [sortBy, setSortBy] = useState<string>('Newest');
@@ -63,6 +64,11 @@ export function FavoriteProductsPage() {
       try {
         setLoading(true);
         const res = await fetch('/api/favorites');
+        if (res.status === 401) {
+          setNeedsAuth(true);
+          setProducts([]);
+          return;
+        }
         if (!res.ok) throw new Error('Failed to fetch favorite products');
         const data = await res.json();
         // API returns { success, data: [...raw Prisma rows with nested product], meta }
@@ -154,6 +160,15 @@ export function FavoriteProductsPage() {
       <main className="flex-1 p-4 md:p-6 md:max-w-6xl md:mx-auto w-full">
         {loading ? (
           <PageLoader />
+        ) : needsAuth ? (
+          <div className="text-center py-20 text-gray-500 dark:text-gray-400 flex flex-col items-center">
+            <LogIn className="w-16 h-16 mb-4 text-gray-300 dark:text-gray-600" />
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Sign in to see your favorites</h2>
+            <p className="text-sm mt-1">Products you heart will show up here once you are signed in.</p>
+            <button onClick={() => navigate('login')} className="mt-4 px-6 py-2 bg-primary text-white rounded-full font-medium">
+              Sign In
+            </button>
+          </div>
         ) : products.length === 0 ? (
           <div className="text-center py-20 text-gray-500 dark:text-gray-400 dark:text-gray-500 flex flex-col items-center">
             <Heart className="w-16 h-16 mb-4 text-gray-300" />

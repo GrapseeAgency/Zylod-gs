@@ -7,12 +7,13 @@ import {
   ArrowLeft, Download, Camera, PenTool, Package,
   MapPin, CheckCircle2, PackageSearch, AlertCircle, LogIn, Truck
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /**
  * REAL proof-of-delivery view — no fake POD photos, GPS overlays, signatures,
  * recipients, carriers, weights or "verified/authentic" badges.
  * All evidence comes exclusively from GET /api/orders/[id] (credentials: 'include').
- * - Loading  → skeleton pulse blocks (never fake evidence).
+ * - Loading  → the standard PageLoader (never fake evidence).
  * - 401      → sign-in required state.
  * - 404      → honest "Order not found" state.
  * - Errors   → the real backend error text with a retry action.
@@ -267,19 +268,9 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
           </div>
         )}
 
-        {/* Loading skeleton — pulse blocks only, never fake evidence */}
+        {/* Loading — standard page loader while delivery evidence fetches */}
         {loading && !error && (
-          <div className="space-y-4" aria-busy="true" aria-live="polite">
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-              <div className="h-3.5 w-40 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-              <div className="h-3 w-24 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
-              <div className="aspect-[4/3] w-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded-2xl animate-pulse" />
-            </div>
-            <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3" aria-hidden="true">
-              <div className="h-3.5 w-36 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-              <div className="h-20 w-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded-2xl animate-pulse" />
-            </div>
-          </div>
+          <PageLoader className="min-h-0 py-10" />
         )}
 
         {/* Real data */}

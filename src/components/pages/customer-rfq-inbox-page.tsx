@@ -51,6 +51,7 @@ import {
   FileText, Search, RefreshCw, AlertTriangle, ChevronDown, ChevronUp,
   Inbox, X, CalendarClock, Layers, Quote, Lock, LogIn, SendHorizonal,
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /* ─── Real API types (GET /api/supplier/rfqs + [id]) ───────────────────── */
 
@@ -503,11 +504,7 @@ export function CustomerRfqInboxPage() {
 
       {/* States */}
       {loading ? (
-        <div className="space-y-2" role="status" aria-label="Loading quote requests">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-24 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
-          ))}
-        </div>
+        <PageLoader className="min-h-0 py-10" />
       ) : error ? (
         <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />

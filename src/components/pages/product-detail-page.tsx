@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PageLoader } from '@/components/ui/page-loader'
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel'
@@ -746,25 +745,9 @@ function DesktopProductDetailPage() {
     }
   }, [showOrderDialog, orderConfirmation, fetchTracking])
 
-  // ─── Loading State ───
+  // ─── Loading State — the standard page loader ───
   if (loading) {
-    return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-        <Button variant="ghost" size="sm" onClick={() => navigate('category-products')}>
-          <ChevronLeft className="h-4 w-4 mr-1" /> Back to Products
-        </Button>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Skeleton className="aspect-square rounded-xl" />
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="h-32 w-full" />
-            <Skeleton className="h-8 w-1/3" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-        </div>
-      </motion.div>
-    )
+    return <PageLoader />
   }
 
   // ─── Product Not Found ───

@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { ArrowLeft, MoreVertical, Lock, Globe, Link as LinkIcon, Share2, Grid, List, CheckSquare, Plus, Package, Trash2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
+import { PageLoader } from '@/components/ui/page-loader'
 
 export function CollectionDetailPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
@@ -129,20 +130,7 @@ export function CollectionDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
-        <header className="bg-white dark:bg-gray-900 border-b px-4 py-4 flex items-center gap-3">
-          <div className="w-8 h-8 bg-muted rounded-full animate-pulse"></div>
-          <div className="h-6 w-1/3 bg-muted rounded animate-pulse"></div>
-        </header>
-        <div className="h-40 bg-muted animate-pulse"></div>
-        <div className="p-4 md:p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {[1,2,3,4].map(i => (
-            <div key={i} className="aspect-square bg-muted rounded-xl skeleton-shimmer"></div>
-          ))}
-        </div>
-      </div>
-    )
+    return <PageLoader />
   }
 
   if (!collection) {

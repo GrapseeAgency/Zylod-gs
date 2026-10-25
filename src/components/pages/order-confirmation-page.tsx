@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
-  Check, Truck, Package, AlertCircle, Loader2, ShoppingBag
+  Check, Truck, Package, AlertCircle, ShoppingBag
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /**
  * REAL order confirmation — renders the order that was actually created
@@ -112,33 +113,9 @@ export function OrderConfirmationPage({ pageParams: _pageParams }: { pageParams?
     )
   }
 
-  // ─── Loading skeleton ───
+  // ─── Loading — the standard page loader ───
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-10 text-slate-900 dark:text-slate-100" aria-busy="true" aria-live="polite">
-        <main className="px-4 md:px-6 py-6 md:py-10 space-y-5 max-w-lg mx-auto lg:max-w-2xl">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-20 h-20 rounded-full bg-slate-200 animate-pulse" />
-            <div className="h-6 w-48 bg-slate-200 rounded animate-pulse" />
-          </div>
-          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 space-y-4">
-            {[0, 1].map((i) => (
-              <div key={i} className="flex gap-3 items-center">
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-900 animate-pulse shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-3.5 w-3/4 bg-slate-200 rounded animate-pulse" />
-                  <div className="h-3 w-1/3 bg-slate-100 dark:bg-slate-900 rounded animate-pulse" />
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            Loading your order…
-          </p>
-        </main>
-      </div>
-    )
+    return <PageLoader />
   }
 
   // ─── Real error — surfaced verbatim ───

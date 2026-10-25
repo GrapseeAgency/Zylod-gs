@@ -9,6 +9,7 @@ import {
   ArrowLeft, Truck, Headphones,
   Package, AlertCircle, RefreshCw, LogIn, Box, RotateCcw, Clock, CheckCircle2, XCircle, Banknote, PackageCheck,
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 interface RefundRecord {
   id: string
@@ -228,18 +229,9 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
           </div>
         )}
 
-        {/* Loading skeleton */}
+        {/* Loading — standard page loader while return data fetches */}
         {loading && (
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
-              <div className="h-4 w-1/3 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
-              <div className="h-16 w-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-2xl animate-pulse" />
-            </div>
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
-              <div className="h-4 w-1/4 bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded animate-pulse" />
-              <div className="h-16 w-full bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 rounded-2xl animate-pulse" />
-            </div>
-          </div>
+          <PageLoader className="min-h-0 py-10" />
         )}
 
         {/* No return requests for this order — honest empty */}

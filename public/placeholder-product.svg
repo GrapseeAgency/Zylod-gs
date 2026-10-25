@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-label="Product image placeholder">
+  <rect width="600" height="600" fill="#f7f5f2"/>
+  <rect x="24" y="24" width="552" height="552" fill="none" stroke="#e5e0d8" stroke-width="2" stroke-dasharray="10 8" rx="18"/>
+  <g transform="translate(300 268)" fill="none" stroke="#c9c2b6" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-84 -60 L-84 60 L84 60 L84 -60 Z"/>
+    <path d="M-84 -60 L-52 -96 L52 -96 L84 -60"/>
+    <path d="M-30 60 L-30 20 L30 20 L30 60"/>
+  </g>
+  <text x="300" y="392" text-anchor="middle" font-family="system-ui, sans-serif" font-size="30" font-weight="600" fill="#a89f90">Zylod</text>
+  <text x="300" y="430" text-anchor="middle" font-family="system-ui, sans-serif" font-size="20" fill="#b8b0a2">Image coming soon</text>
+</svg>

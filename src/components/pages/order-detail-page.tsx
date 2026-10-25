@@ -17,6 +17,7 @@ import {
   Download, AlertTriangle, MapPin, CreditCard, FileText, RefreshCw, XCircle,
   Wallet, Hourglass, Loader2, ReceiptText, Landmark, Info, CalendarClock
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 // ── Real API types (GET /api/orders/[id]) ──────────────────────────────
 interface ApiProduct { id: string; name: string; thumbnailUrl: string | null; unit: string | null; slug: string }
@@ -574,29 +575,9 @@ export function OrderDetailPage({ pageParams: _pageParams }: { pageParams?: Reco
     )
   }
 
-  // ── Loading skeleton (never fake rows) ────────────────────────────────
+  // ── Loading — the standard page loader (never fake rows) ──────────────
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 md:hidden">
-          <div className="h-5 w-40 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-        </header>
-        <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:px-6 md:py-6 md:max-w-2xl lg:max-w-6xl lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0">
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-5 lg:col-span-2">
-            <div className="h-5 w-48 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-            <div className="h-16 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded-2xl animate-pulse" />
-          </div>
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3 lg:col-span-2">
-            <div className="h-4 w-32 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-            {[0, 1].map((i) => <div key={i} className="h-16 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded-2xl animate-pulse" />)}
-          </div>
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3 lg:col-start-3 lg:row-start-1 lg:row-span-2">
-            <div className="h-4 w-28 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-            {[0, 1, 2].map((i) => <div key={i} className="h-4 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />)}
-          </div>
-        </main>
-      </div>
-    )
+    return <PageLoader />
   }
 
   // order is non-null here (all other paths returned above)

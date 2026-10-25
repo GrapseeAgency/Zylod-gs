@@ -8,6 +8,7 @@ import {
   AlertTriangle, ArrowLeft, Clock, Headphones, HelpCircle, Home,
   Package, RefreshCw, ShieldCheck, ShoppingCart, Truck, XCircle
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 // ── Real API types (GET /api/orders/[id]) ──────────────────────────────
 interface ApiTracking {
@@ -279,33 +280,9 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
     )
   }
 
-  // ── Loading skeleton (never fake rows) ────────────────────────────────
+  // ── Loading — the standard page loader (never fake rows) ──────────────
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 md:hidden">
-          <div className="h-5 w-40 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-        </header>
-        <main className="px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg mx-auto md:max-w-2xl">
-          <div className="bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 space-y-3">
-            <div className="h-4 w-36 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-            <div className="h-6 w-48 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
-            <div className="h-3 w-52 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
-          </div>
-          <div className="space-y-6 pt-2 pl-2">
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse shrink-0" />
-                <div className="flex-1 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 space-y-2">
-                  <div className="h-3.5 w-32 bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
-                  <div className="h-3 w-full bg-slate-100 dark:bg-slate-900 dark:bg-slate-800 rounded animate-pulse" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </main>
-      </div>
-    )
+    return <PageLoader />
   }
 
   // order is non-null here (all other paths returned above)

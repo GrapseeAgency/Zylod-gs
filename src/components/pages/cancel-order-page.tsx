@@ -8,6 +8,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import {
   ArrowLeft, AlertTriangle, XCircle, Package
 } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 
 /**
  * REAL order cancellation — no demo items, no fake success.
@@ -224,19 +225,9 @@ export function CancelOrderPage({ pageParams: _pageParams }: { pageParams?: Reco
           </div>
         )}
 
+        {/* Loading — standard page loader while order fetches */}
         {loading && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3" aria-busy="true" aria-live="polite">
-            <div className="h-4 w-1/3 bg-slate-200 rounded animate-pulse" />
-            {[0, 1].map((i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-900 animate-pulse shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-3.5 w-3/4 bg-slate-200 rounded animate-pulse" />
-                  <div className="h-3 w-1/3 bg-slate-100 dark:bg-slate-900 rounded animate-pulse" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <PageLoader className="min-h-0 py-10" />
         )}
 
         {!loading && !loadError && order && items.length === 0 && (
