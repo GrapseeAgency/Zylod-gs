@@ -84,7 +84,12 @@ const orderItemSchema = z.object({
 })
 
 const createOrderSchema = z.object({
-  shippingAddressId: z.string().min(1).optional().nullable(),
+  // t191 SECURITY HARDENING (mirrors create-direct): a wholesale order
+  // ships physical goods — an order without a real shipping address can
+  // never be fulfilled, so the address is REQUIRED (and must belong to the
+  // buyer — validated below). The checkout page always sends it; direct
+  // API callers no longer get address-less orders through.
+  shippingAddressId: z.string().min(1, 'shippingAddressId is required'),
   couponCode: z.string().min(1).optional().nullable(),
   items: z.array(orderItemSchema).min(1, 'At least one item is required').max(50, 'Too many items per order'),
   // Task 70: pay the (server-priced) total straight from the buyer's real
@@ -179,19 +184,18 @@ export async function POST(request: NextRequest) {
     // the order's immutable snapshot (Task 87): addresses are user-deletable,
     // the FK is SetNull, so without this a deleted address would erase the
     // order's real shipping history.
-    let shippingAddressSnapshot: string | null = null
-    let shippingDistrict: string | null = null
-    if (shippingAddressId) {
-      const address = await db.addresses.findFirst({
-        where: { id: shippingAddressId, userId: buyerId },
-      })
-      if (!address) {
-        return NextResponse.json({ error: 'Invalid shipping address' }, { status: 400 })
-      }
-      shippingAddressSnapshot = buildAddressSnapshot(address)
-      // Task 95: the quote rail's district input — where the shipments go.
-      shippingDistrict = address.district
+    // t191: the schema now REQUIRES shippingAddressId — the address must
+    // exist AND belong to this buyer, or the order is refused outright
+    // (same contract as create-direct).
+    const address = await db.addresses.findFirst({
+      where: { id: shippingAddressId, userId: buyerId },
+    })
+    if (!address) {
+      return NextResponse.json({ error: 'A valid shipping address belonging to you is required to place an order' }, { status: 400 })
     }
+    const shippingAddressSnapshot = buildAddressSnapshot(address)
+    // Task 95: the quote rail's district input — where the shipments go.
+    const shippingDistrict = address.district
 
     // Generate order number
     const orderNumber = 'ORD-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
@@ -618,7 +622,7 @@ export async function POST(request: NextRequest) {
             // Task 70: a wallet-paid order is verified money the moment the
             // balance debits — it NEVER passes through 'unpaid'.
             paymentStatus: payWithWallet ? 'paid' : 'unpaid',
-            shippingAddressId: shippingAddressId || null,
+            shippingAddressId,
             shippingAddressSnapshot,
           },
         })

@@ -213,9 +213,9 @@ export function DocMarkdownRenderer({
                 }
 
                 return (
-                  <div className="my-4 p-4 bg-blue-50/70 border-l-4 border-blue-500 rounded-r-2xl text-blue-900 text-xs space-y-1 shadow-sm">
-                    <div className="flex items-center gap-1.5 font-bold text-blue-800 uppercase tracking-wide text-[11px]">
-                      <Info className="w-4 h-4 text-blue-600" />
+                  <div className="my-4 p-4 bg-slate-100 border-l-4 border-primary rounded-r-2xl text-slate-800 text-xs space-y-1 shadow-sm">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-700 uppercase tracking-wide text-[11px]">
+                      <Info className="w-4 h-4 text-primary" />
                       Notice & Context / তথ্য
                     </div>
                     <div className="leading-relaxed">{children}</div>

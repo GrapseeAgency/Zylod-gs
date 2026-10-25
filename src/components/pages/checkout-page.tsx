@@ -7,7 +7,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore, type CartItemData } from '@/store/cart-store'
 import {
   ArrowLeft, MapPin, CreditCard, Check, CheckCircle2, Package,
-  Lock, AlertCircle, Loader2, Plus, Wallet, Truck
+  Lock, AlertCircle, Loader2, Plus, Wallet, Truck, LogIn
 } from 'lucide-react'
 
 /**
@@ -481,6 +481,49 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
           >
             Continue Shopping
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── t191 GUEST WALL — before the empty-cart state ───
+  // A logged-out visitor can never load a cart: /api/cart 401s, items stays
+  // empty, and the empty-cart branch below would lie to them ("Your cart is
+  // empty — browse products") when the truth is "you need an account to check
+  // out at all". The addresses-401 already set needsAuth — surface it FIRST.
+  if (needsAuth) {
+    return (
+      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+          <div className="flex items-center justify-between">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
+            <div className="w-5" />
+          </div>
+        </header>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
+            <LogIn className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+          </div>
+          <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Sign in required</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs">
+            You need a buyer account to check out — your cart, addresses and payment methods live in your account.
+          </p>
+          <Button
+            onClick={() => navigate('login')}
+            className="mt-5 bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl"
+          >
+            Sign In
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate('home')}
+            className="mt-2 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
+          >
+            Browse Products
           </Button>
         </div>
       </div>

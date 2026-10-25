@@ -410,7 +410,7 @@ export function DeliveryProofPage({ pageParams: _pageParams }: { pageParams?: Re
                           <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
                             {so.supplier?.companyName || '--'}
                           </h3>
-                          <span className="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 dark:text-slate-200 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md shrink-0">
+                          <span className="bg-slate-200 dark:bg-gray-700 text-slate-700 dark:text-slate-300 dark:text-slate-200 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md shrink-0">
                             {(so.status || 'pending').toUpperCase()}
                           </span>
                         </div>

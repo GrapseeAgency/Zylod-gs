@@ -13,40 +13,79 @@
  */
 
 /**
- * AUTO-SEED GUARD: the sandbox DB (db/custom.db) has repeatedly been found
- * completely empty after environment restarts (t188, t190, t191) — a
- * ghost-town marketplace for every user until someone reseeded by hand.
- * This guard makes the environment self-healing: on boot, if the products
- * table is empty, the marketplace + content seeds run automatically.
+ * AUTO-SEED GUARD v2 — the sandbox DB (db/custom.db) has repeatedly been
+ * found completely empty after environment restarts (t188, t190, t191).
  *
- * Deliberately dependency-free (node:sqlite): it must work even when the
- * Prisma client is stale/regenerated mid-flight. Seed scripts are the same
- * idempotent ones CI uses, so a seed that races a healthy DB is a no-op.
+ * v1 lessons (why it never worked in production sandboxes):
+ *  1. node: imports in instrumentation.ts poisoned the edge bundle → the
+ *     hook failed to compile and NEVER ran. Fixed by this file split.
+ *  2. The seed scripts are HTTP-driven (they call the running API), but
+ *     register() fires BEFORE the HTTP listener accepts connections →
+ *     every fetch failed instantly. Fixed by polling /api/products until
+ *     the listener is up (up to 120s) BEFORE spawning the seeds.
+ *  3. next dev spawns TWO workers that both run register() → both seeded
+ *     simultaneously and raced. Fixed by an O_CREAT|O_EXCL lockfile with a
+ *     staleness steal (10 min).
+ *  4. A dirty DB (users present, products wiped) made seed-marketplace
+ *     abort on duplicate-email registration. Fixed by wiping first when
+ *     any users exist — a marketplace with users but zero products is
+ *     still a ghost town, so the honest rebuild is wipe → seed → seed.
+ *
+ * The healing chain runs DETACHED from register() (void promise) so it can
+ * never delay or deadlock server boot — the HTTP poll is only safe because
+ * it happens after register() returns.
  */
 export async function registerNode() {
   try {
     const { DatabaseSync } = await import('node:sqlite')
     const { execFile } = await import('node:child_process')
     const path = await import('node:path')
+    const fs = await import('node:fs')
 
-    const dbPath = path.join(process.cwd(), 'db', 'custom.db')
-    const db = new DatabaseSync(dbPath, { readOnly: true })
-    const row = db.prepare('SELECT COUNT(*) AS c FROM products').get() as {
-      c: number
+    const cwd = process.cwd()
+    const dbPath = path.join(cwd, 'db', 'custom.db')
+
+    const count = (table: string): number => {
+      const db = new DatabaseSync(dbPath, { readOnly: true })
+      try {
+        const row = db.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get() as { c: number }
+        return row.c
+      } catch {
+        return -1 // table missing — treat as unhealthy
+      } finally {
+        db.close()
+      }
     }
-    db.close()
 
-    if (row.c > 0) return // healthy — nothing to do
+    const products = count('products')
+    if (products > 0) return // healthy — nothing to do
 
+    // ── cross-worker lock (O_CREAT|O_EXCL is atomic on POSIX) ──
+    const lockPath = path.join(cwd, 'db', '.auto-seed.lock')
+    const now = Date.now()
+    try {
+      fs.writeFileSync(lockPath, String(now), { flag: 'wx' })
+    } catch {
+      try {
+        const stamp = Number(fs.readFileSync(lockPath, 'utf8'))
+        if (Number.isFinite(stamp) && now - stamp < 600_000) return // sibling worker is on it
+        fs.writeFileSync(lockPath, String(now)) // stale — steal it
+      } catch {
+        /* unreadable — proceed */
+      }
+    }
+
+    const dirty = count('users') > 0
     console.log(
-      '[instrumentation] products table EMPTY — running marketplace auto-seed…',
+      `[instrumentation] products table EMPTY${dirty ? ' (dirty DB — wipe first)' : ''} — auto-seed chain starting…`,
     )
+
     const run = (script: string) =>
       new Promise<void>((resolve) => {
         execFile(
           process.execPath,
-          [path.join(process.cwd(), 'scripts', 'qa', script)],
-          { cwd: process.cwd(), timeout: 120_000 },
+          [path.join(cwd, 'scripts', 'qa', script)],
+          { cwd, timeout: 180_000 },
           (err, stdout) => {
             if (err)
               console.error(`[instrumentation] ${script} failed:`, err.message)
@@ -60,9 +99,45 @@ export async function registerNode() {
         )
       })
 
-    await run('seed-marketplace.mjs')
-    await run('seed-content.mjs')
-    console.log('[instrumentation] auto-seed complete.')
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+    // DETACHED healing chain — never awaited by register().
+    void (async () => {
+      try {
+        // 1) Wait for the HTTP listener (the seeds are API-driven).
+        let up = false
+        for (let i = 0; i < 120; i++) {
+          try {
+            const res = await fetch('http://127.0.0.1:3000/api/products?limit=1')
+            if (res.ok || res.status === 401 || res.status === 429) {
+              up = true
+              break
+            }
+          } catch {
+            /* not listening yet */
+          }
+          await sleep(1000)
+        }
+        if (!up) {
+          console.error('[instrumentation] HTTP listener never came up — seed chain aborted')
+          return
+        }
+
+        // 2) Dirty DB → wipe before seeding (duplicate emails would abort it).
+        if (dirty) await run('wipe.mjs')
+
+        // 3) Rebuild the marketplace + content.
+        await run('seed-marketplace.mjs')
+        await run('seed-content.mjs')
+        console.log('[instrumentation] auto-seed complete.')
+      } finally {
+        try {
+          fs.rmSync(lockPath, { force: true })
+        } catch {
+          /* best effort */
+        }
+      }
+    })()
   } catch (err) {
     // Never block server boot because of the guard.
     console.error('[instrumentation] auto-seed guard error:', err)

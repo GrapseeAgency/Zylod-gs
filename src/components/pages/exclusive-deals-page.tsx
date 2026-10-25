@@ -100,8 +100,8 @@ export function ExclusiveDealsPage() {
           {loading ? (
             [1, 2, 3, 4].map(i => (
               <div key={i} className="bg-white dark:bg-card rounded-3xl p-4 border border-slate-200 dark:border-slate-700 animate-pulse space-y-3">
-                <Skeleton className="h-28 w-full rounded-2xl bg-slate-200 dark:bg-slate-700" />
-                <Skeleton className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
+                <Skeleton className="h-28 w-full rounded-2xl bg-slate-200 dark:bg-gray-800" />
+                <Skeleton className="h-4 w-3/4 rounded bg-slate-200 dark:bg-gray-800" />
               </div>
             ))
           ) : deals.length === 0 ? (

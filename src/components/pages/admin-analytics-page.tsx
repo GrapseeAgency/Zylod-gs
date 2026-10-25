@@ -78,7 +78,7 @@ function BreakdownCard({ title, rows }: { title: string; rows: { label: string; 
         {rows.map((row) => (
           <div key={row.label} className="flex items-center justify-between py-1.5">
             <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-              {row.value === null && <span className="inline-block h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700" title="No module in the database yet" />}
+              {row.value === null && <span className="inline-block h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-gray-600" title="No module in the database yet" />}
               {row.label}
             </span>
             <span className={`text-xs font-black tabular-nums ${row.value === null ? 'text-slate-300 dark:text-slate-600' : 'text-slate-800 dark:text-slate-200'}`}>

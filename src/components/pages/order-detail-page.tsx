@@ -169,7 +169,7 @@ function TimelineRow({ row, isLast }: { row: ApiTracking; isLast?: boolean }) {
       {!isLast && (
         <span
           aria-hidden
-          className="absolute left-[4.5px] top-4 bottom-0 w-px bg-slate-200 dark:bg-slate-700"
+          className="absolute left-[4.5px] top-4 bottom-0 w-px bg-slate-200 dark:bg-gray-700"
         />
       )}
       <span aria-hidden className={`relative z-10 mt-1 h-2.5 w-2.5 shrink-0 rounded-full ring-2 ring-white dark:ring-slate-900 ${st.dot}`} />

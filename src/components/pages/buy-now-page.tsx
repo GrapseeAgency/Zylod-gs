@@ -65,6 +65,11 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   const [product, setProduct] = useState<ProductData | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [needsAuth, setNeedsAuth] = useState(false)
+  // t191: GUEST WALL — the product API is public so `needsAuth` above never
+  // fired for logged-out visitors; they only saw a silently-disabled Place
+  // Order button. The /api/addresses 401 is the definitive server verdict
+  // (no hydration race) — a confirmed guest gets the explicit sign-in state.
+  const [guestConfirmed, setGuestConfirmed] = useState(false)
 
   const [quantity, setQuantity] = useState<number | null>(null)
   const [addresses, setAddresses] = useState<AddressData[]>([])
@@ -133,8 +138,12 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
           const list: AddressData[] = Array.isArray(data?.data) ? data.data : []
           setAddresses(list)
           setSelectedAddressId(list.find((a) => a.isDefault)?.id || list[0]?.id || '')
+        } else if (res.status === 401) {
+          // Server verdict: no valid session — show the explicit guest wall
+          // (t191) instead of a silently-disabled Place Order button.
+          setGuestConfirmed(true)
         }
-        // 401 while logged out is fine here — order placement will surface it too
+        // other address fetch failures are non-fatal; user sees "no saved address" state
       } catch {
         // address fetch failure is non-fatal; user sees "no saved address" state
       } finally {
@@ -331,7 +340,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   }
 
   /* ─── Product not found / auth / error — honest states ─── */
-  if (notFound || needsAuth || error) {
+  if (notFound || needsAuth || guestConfirmed || error) {
     return (
       <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
         <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
@@ -344,20 +353,20 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
         </header>
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
-            {needsAuth ? <LogIn className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <AlertCircle className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
+            {needsAuth || guestConfirmed ? <LogIn className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <AlertCircle className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
           </div>
           <h1 className="text-base font-black text-slate-900 dark:text-slate-100">
-            {notFound ? 'Product not found' : needsAuth ? 'Sign in required' : 'Couldn\u2019t load this product'}
+            {notFound ? 'Product not found' : needsAuth || guestConfirmed ? 'Sign in required' : 'Couldn\u2019t load this product'}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
             {notFound
               ? 'This product doesn\u2019t exist or is no longer available on the marketplace.'
-              : needsAuth
+              : needsAuth || guestConfirmed
                 ? 'You need a buyer account to place an order.'
                 : error}
           </p>
           <div className="mt-6 flex flex-col gap-2 max-w-xs mx-auto">
-            {needsAuth ? (
+            {needsAuth || guestConfirmed ? (
               <Button
                 onClick={() => navigate('login')}
                 className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl shadow-md"

@@ -356,7 +356,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                   return (
                     <React.Fragment key={step.label}>
                       {idx > 0 && (
-                        <div className={`flex-1 h-0.5 mx-1 ${allDelivered || position <= stage ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'}`} />
+                        <div className={`flex-1 h-0.5 mx-1 ${allDelivered || position <= stage ? 'bg-primary' : 'bg-slate-200 dark:bg-gray-700'}`} />
                       )}
                       <div className="flex flex-col items-center">
                         <div
@@ -422,7 +422,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                           </p>
                         </div>
                       </div>
-                      <span className="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 dark:text-slate-200 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md shrink-0">
+                      <span className="bg-slate-200 dark:bg-gray-700 text-slate-700 dark:text-slate-300 dark:text-slate-200 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md shrink-0">
                         {(so.status || 'pending').toUpperCase()}
                       </span>
                     </div>
