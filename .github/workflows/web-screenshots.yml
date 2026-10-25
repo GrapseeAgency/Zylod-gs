@@ -59,9 +59,14 @@ jobs:
       - name: Generate web bundle identity (provenance gate requirement)
         run: node scripts/generate-bundle-identity.mjs
 
+      - name: Build web app (production)
+        env:
+          DATABASE_URL: file:../db/custom.db
+        run: bun run build
+
       - name: Start Zylod server
         run: |
-          nohup bun run dev > server.log 2>&1 &
+          nohup bunx next start -p 3000 > server.log 2>&1 &
           for i in $(seq 1 40); do
             if curl -sf http://localhost:3000/api/categories > /dev/null 2>&1; then break; fi
             sleep 5

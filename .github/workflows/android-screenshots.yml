@@ -60,15 +60,22 @@ jobs:
       - name: Generate web bundle identity (provenance gate requirement)
         run: node scripts/generate-bundle-identity.mjs
 
+      - name: Build web app (production — stable document for the provenance gate)
+        env:
+          DATABASE_URL: file:../db/custom.db
+        run: bun run build
+
       - name: Start Zylod server (backend for the emulator)
         run: |
-          nohup bun run dev > server.log 2>&1 &
+          # Production server: no HMR/Fast-Refresh churn — the provenance
+          # probe reads a stable document with the bundle identity inline.
+          nohup bunx next start -p 3000 > server.log 2>&1 &
           for i in $(seq 1 60); do
             if curl -sf http://localhost:3000/api/categories > /dev/null 2>&1; then
               echo "Server is up after ${i}0s"
               break
             fi
-            sleep 10
+            sleep 5
           done
           curl -sf -o /dev/null -w "server status: %{http_code}\n" http://localhost:3000/api/categories || (echo "SERVER FAILED TO START"; tail -50 server.log; exit 1)
 

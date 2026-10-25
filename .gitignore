@@ -85,3 +85,4 @@ public/uploads/
 db/*.db
 db/*.db-shm
 db/*.db-wal
+qa-screenshots/
