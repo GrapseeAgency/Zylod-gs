@@ -1,0 +1,107 @@
+name: web-screenshots
+
+# Full-site page sweep on a real seeded server: every registered page id is
+# opened in a 375px browser, screenshotted, and its DOM text is scanned for
+# mock-data patterns / stuck loaders / console errors. Artifacts: per-page
+# PNG + report.jsonl. (Local sandbox lost the ability to run this after a
+# FUSE wedge OOM'd the box — CI runners have the headroom.)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'scripts/qa/web-sweep-ci.mjs'
+      - '.github/workflows/web-screenshots.yml'
+
+concurrency:
+  group: web-screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Prepare database
+        env:
+          DATABASE_URL: file:../db/custom.db
+        run: |
+          echo 'DATABASE_URL="file:../db/custom.db"' > .env
+          bunx prisma db push --skip-generate
+          bunx prisma generate
+
+      - name: Extract page registry
+        run: |
+          node -e "
+          const fs = require('fs');
+          const src = fs.readFileSync('src/lib/page-loader.ts', 'utf8');
+          const sets = [...src.matchAll(/new Set\(\[([\s\S]*?)\]\)/g)];
+          const ids = new Set();
+          for (const s of sets) {
+            const re = /['\"]([a-z][a-z0-9-]{2,})['\"]/g;
+            let m;
+            while ((m = re.exec(s[1])) !== null) ids.add(m[1]);
+          }
+          fs.writeFileSync('/tmp/all-pages.txt', [...ids].sort().join('\n'));
+          console.log('page ids:', ids.size);
+          "
+
+      - name: Start Zylod server
+        run: |
+          nohup bun run dev > server.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -sf http://localhost:3000/api/categories > /dev/null 2>&1; then break; fi
+            sleep 5
+          done
+          curl -sf -o /dev/null -w "server: %{http_code}\n" http://localhost:3000/api/categories || (tail -40 server.log; exit 1)
+
+      - name: Seed marketplace (real data through real APIs)
+        run: node scripts/qa/seed-marketplace.mjs || echo "::warning::seed failed — continuing"
+
+      - name: Install Playwright chromium
+        run: |
+          bunx playwright install chromium --with-deps || npx playwright install chromium --with-deps
+
+      - name: Run full-page sweep (screenshot + mock-data scan)
+        run: node scripts/qa/web-sweep-ci.mjs http://localhost:3000 web-screenshots
+
+      - name: Summarize findings
+        if: always()
+        run: |
+          node -e "
+          const fs = require('fs');
+          const lines = fs.readFileSync('web-screenshots/report.jsonl','utf8').trim().split('\n').map(l=>JSON.parse(l));
+          const errors = lines.filter(l=>l.error);
+          const stuck = lines.filter(l=>l.loaderStuck);
+          const mock = lines.filter(l=>(l.mockFlags||[]).length);
+          const consoleErr = lines.filter(l=>(l.consoleErrors||[]).length);
+          console.log('## Web sweep summary');
+          console.log('pages:', lines.length);
+          console.log('navigation errors:', errors.length);
+          console.log('stuck on loader:', stuck.length, stuck.slice(0,20).map(l=>l.page).join(', '));
+          console.log('MOCK-DATA flags:', mock.length);
+          for (const l of mock.slice(0,40)) console.log('  -', l.page, '->', (l.mockFlags||[]).join('; '));
+          console.log('pages with console errors:', consoleErr.length);
+          for (const l of consoleErr.slice(0,20)) console.log('  -', l.page, '->', (l.consoleErrors||[])[0]);
+          " | tee sweep-summary.txt
+
+      - name: Upload screenshots + report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-page-screenshots-${{ github.sha }}
+          path: |
+            web-screenshots/
+            sweep-summary.txt
+          if-no-files-found: warn
+          retention-days: 14
