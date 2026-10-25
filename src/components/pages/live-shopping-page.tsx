@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
-import { Skeleton } from '@/components/ui/skeleton'
+import { PageLoader } from '@/components/ui/page-loader'
 import {
   ArrowLeft, Radio, Play, Eye,
   Sparkles, Star
@@ -56,12 +56,9 @@ export function LiveShoppingPage() {
         {/* Streams List */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {loading ? (
-            [1, 2].map(i => (
-              <div key={i} className="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 animate-pulse space-y-3">
-                <Skeleton className="h-44 w-full rounded-2xl bg-slate-200 dark:bg-slate-800" />
-                <Skeleton className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-800" />
-              </div>
-            ))
+            <div className="col-span-full">
+              <PageLoader className="min-h-0 py-10" />
+            </div>
           ) : streams.length === 0 ? (
             <div className="col-span-full text-center py-16">
               <Radio className="w-12 h-12 text-slate-700 dark:text-slate-300 mx-auto mb-3" />

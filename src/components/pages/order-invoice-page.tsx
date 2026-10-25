@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
@@ -168,14 +169,7 @@ export function OrderInvoicePage({ pageParams: _pageParams }: { pageParams?: Rec
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
-        <main className="px-4 py-5 md:px-6 md:py-8 space-y-4 max-w-lg mx-auto md:max-w-2xl">
-          <div className="h-20 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 animate-pulse" />
-          <div className="h-64 bg-white dark:bg-gray-900 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 animate-pulse" />
-        </main>
-      </div>
-    )
+    return <PageLoader />
   }
 
   if (!invoice) return null

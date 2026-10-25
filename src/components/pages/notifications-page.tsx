@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/auth-store'
 import { useRealtimeRoom } from '@/hooks/use-realtime-room'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
+import { PageLoader } from '@/components/ui/page-loader'
 import {
   Bell, CheckCheck, Trash2, ArrowLeft, Filter, Search,
   Package, Truck, Tag, TrendingDown, Layers, Shield,
@@ -331,18 +331,7 @@ export function NotificationsPage() {
       {/* Notification List Content */}
       <div className="flex-1 px-4 py-4 md:px-6 md:py-6 max-w-3xl mx-auto lg:max-w-5xl w-full space-y-3 md:space-y-4 pb-24 md:pb-8">
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex gap-3 items-start animate-pulse">
-                <Skeleton className="w-10 h-10 rounded-xl flex-shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-3/4 rounded" />
-                  <Skeleton className="h-3 w-full rounded" />
-                  <Skeleton className="h-3 w-1/4 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <PageLoader className="min-h-0 py-10" />
         ) : notifications.length === 0 ? (
           <div className="text-center py-16 space-y-3">
             <div className="w-16 h-16 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">

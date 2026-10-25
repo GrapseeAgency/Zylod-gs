@@ -5,6 +5,7 @@ import { ArrowLeft, Share2, Heart, Search, MoreVertical, Trash2, ShoppingCart, I
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCartStore } from '@/store/cart-store'
+import { PageLoader } from '@/components/ui/page-loader'
 import { toast } from 'sonner'
 
 interface WishlistItem {
@@ -175,18 +176,7 @@ export function WishlistPage() {
       {/* Content */}
       <main className="flex-1 p-4 md:px-6 md:py-6 pb-24 md:pb-10 lg:max-w-6xl lg:mx-auto lg:w-full">
         {loading ? (
-          <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 lg:grid-cols-3">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="bg-white dark:bg-gray-900 rounded-xl p-3 flex gap-4 shadow-sm animate-pulse">
-                <div className="w-20 h-20 bg-gray-200 rounded-lg"></div>
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/4 mt-4"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <PageLoader className="min-h-0 py-10" />
         ) : error ? (
           <div className="text-center text-red-500 py-10">{error}</div>
         ) : displayedItems.length === 0 ? (
