@@ -10,6 +10,18 @@ import { AppShell } from '@/components/layout/app-shell'
 import { SocialConsentModal } from '@/components/shared/social-consent-modal'
 import { PageLoader } from '@/components/ui/page-loader'
 
+// t187 provenance diagnostics: the native shell's gate reads
+// window.__ZylodBundleIdentity (set inline in <head> by the root layout).
+// CI emulator runs kept reporting bundle=NONE while the served HTML clearly
+// contained the script — this log (forwarded to logcat under ZylodWeb)
+// states what the executing document ACTUALLY has.
+if (typeof window !== 'undefined') {
+  try {
+    const id = (window as any).__ZylodBundleIdentity
+    console.log('[Zylod] doc identity:', id ? `commit=${id.commit}` : 'MISSING')
+  } catch { /* diagnostics only */ }
+}
+
 // Lazy-loaded chunk loader — only loaded when a non-core page is requested
 let _chunkLoader: any = null
 let _chunkLoaderPromise: Promise<any> | null = null
