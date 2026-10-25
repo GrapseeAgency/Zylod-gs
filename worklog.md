@@ -5587,3 +5587,23 @@ Stage Summary:
 - Loading unification: PageLoader is now the ONLY page-level loading animation across all 432 web pages (+ pass-2 files the first sweep missed). Latent runtime crash on notifications-page fixed in the process.
 - Android screenshots will now include the native login screen + email dialog captured through the real user path.
 - Next round: read the fresh sweep artifacts (web + android), fix whatever surfaces; candidate: audit remaining ~100 section-level pulse rows for consistency (they're allowed, but a thin standard could be applied); keep building features per standing orders.
+---
+Task ID: 188 (final)
+Agent: Z.ai Code (orchestrator) — CI verification closed out.
+Task: Verify all t188 fixes via CI sweeps, close the 404 cluster to its floor, wrap the round.
+
+Work Log:
+- WEB SWEEP (run 40208866007, on 1f0746d): 756 pages, 0 navigation errors, 0 stuck loaders, 0 MOCK-DATA flags, 404-pages down from 38 → 8. The 8: 6 store-cluster pages (about-store, seller-storefront, store-page, store-story-about, store-banner-editor, store-featured-products) firing the DELIBERATE honest supplier-storefront 404 (no supplier session in the logged-out crawl; pages render their honest "pass ?supplierId=" states) + policy/policy-detail (default slug `terms-and-conditions` missing from helpArticles).
+- policy/policy-detail FIXED: seeded a real `terms-and-conditions` help article (plain-language ToS summary pointing at the binding terms_of_service doc) → endpoint 200, policy-detail page browser-verified rendering the real article (title, read time, updated date, body). Sweep artifact console noise on those two pages is gone for the next run.
+- NON-401/404 console errors: 4 pages, all parameter-expected (admin-dashboard/admin-profile 403 without admin session; email-verification 400 without token; seller-profile 400 without supplierId). Zero real bugs.
+- ANDROID SCREENSHOTS (run 40208865806, SUCCESS): 8 captures including — for the first time — 03-login (native LoginScreen via the REAL UI path: unauthenticated Profile tab per RouteOwnership guest policy) and 04-email-signin-dialog (the honest "it is not a Google or Facebook sign-in" dialog from t187-e). Verified visually from the artifact.
+- android-build + ios-build SUCCESS on abcca8d.
+- Local verification: authed API checks (buyer1@zylod.bd login 200; /api/favorites + /api/buyer/followed-categories return clean real empty data), careers page renders "3 Open Positions" from seeded jobs, events page renders real trade fairs, 320px mobile home renders clean, privacy-policy renders full content, placeholder-product.svg 200.
+- Seed content totals now: 9 legalDocuments, 7 helpArticles, 3 jobListings, 3 pressReleases, 3 tradeEvents. seed-content.mjs wired into both CI workflows.
+- Pushes: 3d631fd → 76a4c73 → 1f0746d → abcca8d. lint 0 / tsc 0 on every commit.
+
+Stage Summary:
+- USER DEMANDS STATE: (1) every-page screenshot loop = CI web-screenshots, all 756 pages, 0 mock flags, 0 stuck, honest console; (2) Android screenshots = CI emulator captures incl. native login flow; (3) two loading animations = PageLoader (web) + M3 CircularProgressIndicator (Android), with pass-1 (82) + pass-2 (18 more) page-level takeovers unified.
+- The marketplace is no longer empty or fake: full seed on every environment, real legal/help/jobs/press/events content, honest auth states everywhere audited.
+- Remaining known-acceptable: 6 store-cluster honest-404 fetches (by design), param-expected 400/403s in the logged-out crawl.
+- Next round (cron): monitor the next sweep for the policy fix confirmation; candidate polish: audit remaining ~100 section-level pulse rows; keep advancing features per standing orders.
