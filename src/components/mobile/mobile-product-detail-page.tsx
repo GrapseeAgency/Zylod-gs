@@ -115,7 +115,13 @@ export function MobileProductDetailPage() {
   const productId = pageParams?.productId || pageParams?.id || pageParams?.slug || ''
 
   useEffect(() => {
-    if (!productId) return
+    if (!productId) {
+      // No id in the URL → nothing to fetch. Clear the loader so the honest
+      // "Product not found" state renders instead of a PageLoader forever
+      // (t187 full-site sweep flagged this page as stuck-on-loader).
+      setLoading(false)
+      return
+    }
     setLoading(true)
     ;(async () => {
       try {

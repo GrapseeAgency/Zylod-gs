@@ -19,14 +19,26 @@ export function OfflineCataloguePage() {
       .then(res => res.json())
       .then(json => {
         if (json?.data?.catalogue?.products) {
-          setProducts(json.data.catalogue.products)
+          // Map the API's REAL field names (name/moq/basePrice/stockQuantity) —
+          // the previous code invented title/minOrderQuantity/priceBDT/stock,
+          // so p.title.toLowerCase() crashed the whole page (t187 sweep).
+          setProducts(json.data.catalogue.products.map((p: any) => ({
+            id: p.id,
+            name: p.name || 'Unnamed product',
+            slug: p.slug || '',
+            unit: p.unit || 'pcs',
+            moq: p.moq ?? 1,
+            basePrice: p.basePrice ?? 0,
+            stockQuantity: p.stockQuantity ?? 0,
+            thumbnailUrl: p.thumbnailUrl || null,
+          })))
         }
       })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])
 
-  const filtered = products.filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
+  const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl space-y-6">
@@ -54,16 +66,16 @@ export function OfflineCataloguePage() {
           <Card key={p.id} className="rounded-2xl border shadow-sm overflow-hidden flex flex-col justify-between">
             <CardContent className="p-4 space-y-2">
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <Badge variant="outline" className="text-[10px]">MOQ: {p.minOrderQuantity} {p.unit || 'pcs'}</Badge>
+                <Badge variant="outline" className="text-[10px]">MOQ: {p.moq} {p.unit}</Badge>
                 <span className="font-mono text-emerald-600 font-bold">In Local DB</span>
               </div>
-              <h3 className="font-bold text-sm text-foreground line-clamp-2">{p.title}</h3>
+              <h3 className="font-bold text-sm text-foreground line-clamp-2">{p.name}</h3>
               <div className="text-base font-black text-primary">
-                ৳{p.priceBDT?.toLocaleString()} <span className="text-xs text-muted-foreground font-normal">/ {p.unit || 'unit'}</span>
+                ৳{p.basePrice?.toLocaleString()} <span className="text-xs text-muted-foreground font-normal">/ {p.unit}</span>
               </div>
             </CardContent>
             <div className="p-3 border-t bg-muted/20 flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">Stock: {p.stock}</span>
+              <span className="text-[11px] text-muted-foreground">Stock: {p.stockQuantity}</span>
               <Button
                 size="sm"
                 variant="outline"
