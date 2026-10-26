@@ -1,0 +1,93 @@
+name: web-ci
+
+# Web quality gate — runs on every push to main and every PR.
+# Catches TypeScript errors, ESLint violations, and broken production
+# builds BEFORE they land on main. This is the counterpart to
+# android-build.yml (Kotlin compile) so both sides of the repo are gated.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'prisma/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'bun.lockb'
+      - 'bun.lock'
+      - 'tsconfig.json'
+      - 'next.config.ts'
+      - '.github/workflows/web-ci.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'prisma/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'bun.lockb'
+      - 'bun.lock'
+      - 'tsconfig.json'
+      - 'next.config.ts'
+      - '.github/workflows/web-ci.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: web-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-typecheck-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            .next/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb', 'bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: bunx prisma generate
+
+      - name: TypeScript type-check (tsc --noEmit)
+        run: bunx tsc --noEmit
+
+      - name: ESLint
+        run: bun run lint
+
+      - name: Production build (Next.js)
+        run: bun run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+
+      - name: Upload build artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build-${{ github.sha }}
+          path: .next/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Web CI Result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- TypeScript: ${{ job.status == 'success' && '✅ pass' || '❌ fail' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- ESLint: ${{ job.status == 'success' && '✅ pass' || '❌ fail' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Build: ${{ job.status == 'success' && '✅ pass' || '❌ fail' }}" >> $GITHUB_STEP_SUMMARY

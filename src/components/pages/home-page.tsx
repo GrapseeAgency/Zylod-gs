@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CategorySidebar } from '@/components/home/category-sidebar'
+import { HomeHero } from '@/components/home/home-hero'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { MobileHomePage } from '@/components/mobile/mobile-home-page'
 import { useProductStore } from '@/store/product-store'
@@ -106,6 +107,9 @@ function DesktopHomePage() {
                 variants={fadeInVariants}
                 className="flex-1 min-w-0"
               >
+                <Suspense fallback={<SectionFallback />}>
+                  <HomeHero />
+                </Suspense>
                 <Suspense fallback={<SectionFallback />}>
                   <BannerCarousel />
                 </Suspense>

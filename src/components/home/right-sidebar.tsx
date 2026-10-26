@@ -16,6 +16,7 @@ import {
   Shield,
   CreditCard,
   Banknote,
+  Truck,
   ArrowRight,
 } from 'lucide-react'
 
@@ -175,6 +176,141 @@ export function RightSidebar() {
           >
             Find Suppliers <ArrowRight className="h-3 w-3 ml-1" />
           </Button>
+        </div>
+      </Card>
+
+      {/* ═══════════ Widget 3 (t210 mockup): Buyer + Supplier registration CTAs
+          with flat-vector illustrations. GUEST-only — authenticated users
+          already see the dashboard card above, so duplicate CTAs are noise. ═══════════ */}
+      {!isAuthenticated && (
+        <>
+          <Card className="border border-red-100 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
+            <div className="relative p-4" style={{ background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)' }}>
+              {/* Illustration — t210 generated artwork */}
+              <div className="absolute -top-2 -right-2 h-20 w-20 opacity-90 pointer-events-none">
+                <img
+                  src="/artwork/buyer-illustration.png"
+                  alt=""
+                  className="w-full h-full object-contain"
+                  loading="lazy"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
+              </div>
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-1 max-w-[60%]">
+                Ready to start buying wholesale?
+              </p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-3 max-w-[70%]">
+                Create your account to access wholesale prices, track orders, and chat with suppliers.
+              </p>
+              <Button
+                className="w-full text-xs font-semibold"
+                style={{ background: RED, color: '#fff' }}
+                onClick={() => setCurrentPage('register-buyer')}
+              >
+                Register as Buyer <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
+              <button
+                onClick={() => setCurrentPage('login')}
+                className="w-full text-[11px] font-medium mt-2 hover:underline"
+                style={{ color: RED }}
+              >
+                Already have an account? Login
+              </button>
+            </div>
+          </Card>
+
+          <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
+            <div className="relative p-4" style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #FFF5F5 100%)' }}>
+              <div className="absolute -top-2 -right-2 h-20 w-20 opacity-90 pointer-events-none">
+                <img
+                  src="/artwork/supplier-illustration.png"
+                  alt=""
+                  className="w-full h-full object-contain"
+                  loading="lazy"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
+              </div>
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-1 max-w-[60%]">
+                Are you a supplier?
+              </p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-3 max-w-[70%]">
+                Showcase your products to thousands of verified buyers across Bangladesh.
+              </p>
+              <Button
+                className="w-full text-xs font-semibold"
+                style={{ background: RED, color: '#fff' }}
+                onClick={() => setCurrentPage('register-supplier')}
+              >
+                Register as Supplier <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
+            </div>
+          </Card>
+        </>
+      )}
+
+      {/* ═══════════ Widget 4 (t210 mockup): Why Choose Zylod? ═══════════ */}
+      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <div className="p-4">
+          <p className="text-sm font-bold mb-3" style={{ color: RED }}>Why Choose Zylod?</p>
+          <div className="space-y-3">
+            {[
+              { icon: Shield, title: 'Verified Suppliers', desc: 'KYC + trade-license checked', color: RED },
+              { icon: Banknote, title: 'Competitive Prices', desc: 'Direct from manufacturers', color: '#059669' },
+              { icon: CreditCard, title: 'Secure Transactions', desc: 'Escrow-protected payments', color: '#7B1FA2' },
+              { icon: Truck, title: 'Fast & Reliable Delivery', desc: 'Nationwide logistics', color: '#F57C00' },
+            ].map((feature) => {
+              const Icon = feature.icon
+              return (
+                <div key={feature.title} className="flex items-start gap-2.5">
+                  <div
+                    className="h-8 w-8 rounded-full flex items-center justify-center shrink-0"
+                    style={{ background: `${feature.color}14` }}
+                  >
+                    <Icon className="h-4 w-4" style={{ color: feature.color }} />
+                  </div>
+                  <div className="min-w-0 pt-0.5">
+                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-tight">{feature.title}</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">{feature.desc}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </Card>
+
+      {/* ═══════════ Widget 5 (t210 mockup): Sustainability banner ═══════════ */}
+      <Card className="border border-green-100 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <div className="relative p-4 flex items-center gap-3" style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%)' }}>
+          <div className="h-12 w-12 rounded-full flex items-center justify-center shrink-0" style={{ background: '#DCFCE7' }}>
+            <img
+              src="/artwork/sustainability-leaf.png"
+              alt=""
+              className="h-7 w-7 object-contain"
+              loading="lazy"
+              onError={(e) => {
+                // Honest fallback: leaf icon if artwork missing
+                const t = e.target as HTMLImageElement
+                t.style.display = 'none'
+                t.parentElement!.innerHTML = '<span style="font-size:24px">🌿</span>'
+              }}
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-tight">
+              Sustainable Products
+            </p>
+            <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight mb-2">
+              for a Better Tomorrow
+            </p>
+            <button
+              onClick={() => setCurrentPage('eco-friendly-products')}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold hover:underline"
+              style={{ color: '#059669' }}
+            >
+              Explore Now <ArrowRight className="h-3 w-3" />
+            </button>
+          </div>
         </div>
       </Card>
 

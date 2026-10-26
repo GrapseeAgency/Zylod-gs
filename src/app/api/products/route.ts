@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
           db.products.findMany({
             where,
             include: {
-              supplier: { select: { id: true, companyName: true, ratingAvg: true } },
+              supplier: { select: { id: true, companyName: true, ratingAvg: true, verificationStatus: true } },
               category: { select: { id: true, name: true, slug: true } },
               images: { orderBy: { sortOrder: 'asc' } },
               priceTiers: { orderBy: { minQty: 'asc' } },
