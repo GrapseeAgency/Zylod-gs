@@ -186,6 +186,65 @@ function GenericPageRenderer({ genericType, pageId, pageParams }: { genericType:
 export function AppEntry() {
   const { currentPage, pageParams } = useNavigationStore()
 
+  /* ─── t195 SESSION RECONCILIATION at boot ───
+     The persisted auth store and the httpOnly session cookie can disagree
+     (storage wipes, the clear-cache page, quota evictions). When the store
+     says "guest" but the cookie is still live, the app used to show "Login"
+     in the header while the session could still browse addresses and place
+     REAL orders — the reported "buying without an account" zombie state.
+     The SERVER session is the single source of truth: one cookie-authed
+     probe per boot, then the store is forced to match it in both directions.
+     Runs BEFORE cart hydration below so syncWithApi sees the reconciled
+     user. */
+  useEffect(() => {
+    const auth = useAuthStore.getState()
+    ;(async () => {
+      try {
+        const res = await fetch('/api/auth/session-info', { credentials: 'include' })
+        if (res.ok) {
+          if (!auth.isAuthenticated) {
+            // Cookie is live but the store lost the user → rehydrate from
+            // the server profile so header/UI match the real session.
+            try {
+              const me = await fetch('/api/profile/me', { credentials: 'include' })
+              if (me.ok) {
+                const data = await me.json().catch(() => null)
+                const u = data?.data
+                if (u?.id) {
+                  useAuthStore.getState().login(
+                    {
+                      id: u.id,
+                      userType: u.userType,
+                      email: u.email ?? null,
+                      phone: u.phone ?? null,
+                      fullName: u.fullName || u.buyerProfile?.fullName || u.supplierProfile?.contactPersonName || null,
+                      businessName: u.supplierProfile?.companyName || null,
+                      avatarUrl: u.avatarUrl || null,
+                      isProfileComplete: u.isProfileComplete ?? false,
+                      profileCompletionPct: u.profileCompletionPct ?? 0,
+                      verificationStatus: u.supplierProfile?.verificationStatus,
+                      rejectionReason: u.supplierProfile?.rejectionReason ?? null,
+                      companyName: u.supplierProfile?.companyName,
+                      supplierSlug: u.supplierProfile?.slug,
+                    },
+                    useAuthStore.getState().token ?? '', // token lives in the cookie; store value is display-only
+                  )
+                  void useCartStore.getState().syncWithApi(u.id)
+                }
+              }
+            } catch { /* profile fetch failed — stay as-is */ }
+          }
+        } else if (res.status === 401) {
+          // Server verdict: NO valid session. Any persisted "logged in"
+          // state is a lie — clear it so the UI can never order as a ghost.
+          if (auth.isAuthenticated) {
+            useAuthStore.setState({ isAuthenticated: false, user: null, token: null })
+          }
+        }
+      } catch { /* network error — keep existing state, APIs will 401 anyway */ }
+    })()
+  }, [])
+
   /* ─── Server-cart hydration at boot ───
      One read-side twin for the write-side sync: an authenticated buyer
      returning to the app gets their server cart pulled into the local

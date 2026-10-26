@@ -221,6 +221,16 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
     /** mobile-product-detail-page.tsx handleAddToCart (L116-148) + server sync. */
     fun addToCart() {
         val product = _state.value.product ?: return
+        // t195 ACCOUNT WALL (web parity — product-detail-page.tsx handleAddToCart):
+        // the cart is account-scoped (server sync, MOQ enforcement, checkout).
+        // The OLD flow stored the line in the local CartStore FIRST and only
+        // skipped the server sync for guests — a guest could build a whole
+        // cart, buy and never once sign in. The gate now runs FIRST: no
+        // token, no stored item — the established sign-in nudge instead.
+        if (SessionManager.token() == null) {
+            _state.update { it.copy(wishlistNeedsLogin = true, toast = "Sign in to add products to your cart") }
+            return
+        }
         val quantity = _state.value.quantity
         if (product.stockQuantity in 1 until quantity) {
             _state.update { it.copy(toast = "Quantity exceeds available stock (${product.stockQuantity})") }

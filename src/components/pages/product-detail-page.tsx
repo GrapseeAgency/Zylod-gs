@@ -12,6 +12,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { Label } from '@/components/ui/label'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCartStore, CartItemData } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useToast } from '@/hooks/use-toast'
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -543,6 +544,15 @@ function DesktopProductDetailPage() {
 
   const handleAddToCart = () => {
     if (!product) return
+    // t195 ACCOUNT WALL: the cart is account-scoped (server-synced, MOQ
+    // enforcement, order history). A guest tapping Add to Cart gets the
+    // sign-in nudge — the item is NOT stored, so no ghost cart survives a
+    // later login and nothing can silently ride into checkout.
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast({ title: 'Sign in required', description: 'Create a Zylod account or sign in to add products to your cart.' })
+      navigate('login')
+      return
+    }
     const selectedVariant = selectedVariantId && product.variants
       ? product.variants.find(v => v.id === selectedVariantId)
       : null

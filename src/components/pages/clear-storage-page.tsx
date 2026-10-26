@@ -47,13 +47,21 @@ export function ClearStoragePage() {
         await Promise.all(names.map(name => caches.delete(name)))
       }
       if (typeof window !== 'undefined' && window.localStorage) {
-        // Preserve the auth token so the user is not silently logged out
-        // by a "clear cache" button. Everything else is fair game.
+        // t195 zombie-session fix: preserve the ACTUAL auth persist key. The
+        // old code preserved 'zylod-auth-store' — a key that does not exist —
+        // so "clear cache" wiped the real auth store ('b2b-auth-storage',
+        // see src/store/auth-store.ts) while the session COOKIE stayed alive:
+        // the app then showed "Login" in the header while the session could
+        // still place real orders (the reported "buying without an account").
+        // Both keys are preserved defensively so any future rename is safe.
         const keep: Record<string, string | null> = {}
-        try {
-          const auth = window.localStorage.getItem('zylod-auth-store')
-          if (auth) keep['zylod-auth-store'] = auth
-        } catch { /* ignore */ }
+        const AUTH_KEYS = ['b2b-auth-storage', 'zylod-auth-store']
+        for (const k of AUTH_KEYS) {
+          try {
+            const v = window.localStorage.getItem(k)
+            if (v) keep[k] = v
+          } catch { /* ignore */ }
+        }
         window.localStorage.clear()
         for (const [k, v] of Object.entries(keep)) {
           if (v != null) {

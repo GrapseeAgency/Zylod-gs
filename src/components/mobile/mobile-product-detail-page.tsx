@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCartStore, type CartItemData } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useWishlistStore } from '@/store/wishlist-store'
 import { toast } from 'sonner'
@@ -279,6 +280,13 @@ export function MobileProductDetailPage() {
 
   const handleAddToCart = useCallback(() => {
     if (!product) return
+    // t195 ACCOUNT WALL: guests cannot build a cart. Sign-in nudge, no item
+    // stored — the cart is account-scoped (server sync, MOQ, checkout).
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in required', { description: 'Create a Zylod account or sign in to add products to your cart.' })
+      navigate('login')
+      return
+    }
     // Task 67-a: ordering a selected variant with zero stock stays impossible.
     if (currentVariantStock === 0) {
       toast.error(selectedVariantLabel ? `${selectedVariantLabel} is out of stock` : 'Out of stock', {
@@ -328,6 +336,13 @@ export function MobileProductDetailPage() {
 
   const handleBuyNow = useCallback(() => {
     if (currentVariantStock === 0 || quantity < (product?.moq || 1)) return
+    // t195 ACCOUNT WALL: mobile Buy Now rides the cart rail — the same
+    // account wall applies BEFORE anything is stored or navigated.
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in required', { description: 'Create a Zylod account or sign in to buy this product.' })
+      navigate('login')
+      return
+    }
     handleAddToCart()
     navigate('cart')
   }, [handleAddToCart, navigate, currentVariantStock, quantity, product])

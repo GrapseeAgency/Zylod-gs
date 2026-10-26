@@ -39,6 +39,14 @@ export function CartPage() {
     if (user?.id) void useCartStore.getState().syncWithApi(user.id)
   }, [])
 
+  /* ─── t195 GUEST WALL (hooks-safe: declared AFTER every hook below) ───
+     The cart is account-scoped (server sync, MOQ enforcement, checkout).
+     A guest who somehow reaches this page with local rows (stale storage,
+     deep link) sees the sign-in state FIRST — never a working cart with
+     checkout buttons, and the boot session-reconciliation already cleared
+     any ghost auth state that would have said otherwise. */
+  const isAuthed = useAuthStore((s) => s.isAuthenticated)
+
   /* ─── Selection state: everything selected by default ─── */
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
@@ -118,6 +126,44 @@ export function CartPage() {
       return `× ${formatLineQty(item.quantity)} bundle${item.quantity === 1 ? '' : 's'} (${formatLineQty(totalBase)} ${baseUnit})`
     }
     return `${item.quantity} ${item.unit || 'units'}`
+  }
+
+  /* ─── t195 GUEST WALL — after every hook, before any render branch ─── */
+  if (!isAuthed) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <header className="sticky top-0 z-30 bg-card border-b border-border px-4 py-3 flex items-center gap-3 md:hidden">
+          <button onClick={goBack} className="p-1 text-muted-foreground hover:text-foreground" title="Back">
+            <ArrowLeft className="h-6 w-6" />
+          </button>
+          <span className="text-lg font-black tracking-tight text-primary">Your Cart</span>
+        </header>
+        <main className="max-w-lg mx-auto px-4 py-16 md:py-24 text-center">
+          <div className="w-20 h-20 mx-auto rounded-full bg-muted flex items-center justify-center mb-4">
+            <ShoppingBag className="h-9 w-9 text-muted-foreground" />
+          </div>
+          <h2 className="text-base font-black">Sign in to use your cart</h2>
+          <p className="text-xs text-muted-foreground mt-1 mb-6 max-w-xs mx-auto">
+            Your cart, addresses and checkout live in your Zylod account — sign in or create one to continue.
+          </p>
+          <div className="flex flex-col gap-2 max-w-xs mx-auto">
+            <Button
+              onClick={() => navigate('login')}
+              className="w-full h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-sm"
+            >
+              Sign In
+            </Button>
+            <Button
+              onClick={() => navigate('register-buyer')}
+              variant="outline"
+              className="w-full h-11 rounded-2xl font-bold text-sm"
+            >
+              Create Account
+            </Button>
+          </div>
+        </main>
+      </div>
+    )
   }
 
   /* ─── Empty state ─── */

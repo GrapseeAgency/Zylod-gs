@@ -5791,3 +5791,27 @@ Stage Summary:
 - Guest wall re-verified end-to-end (API 401 + UI wall screenshot).
 - Android audited: auth gates + color tokens clean; WebView order path inherits all web hardening.
 - NOT DONE / RISKS: bank/mobile instructions page for the pending manual leg is still My-Orders-only (no dedicated instructions screen); checkout guest wall for /cart page itself (cart API 401 → empty state) not re-designed; Android APK not rebuilt in sandbox (no gradle run) — code audit only; auto-seed empty-DB self-heal path still not exercised live (FK wipe constraint).
+
+---
+Task ID: t195
+Agent: Z.ai Code (main)
+Task: User re-reported (3rd time): guest cart+buying, fake payment, zero-payment, navy blue STILL on pages/overlays, native Kotlin untouched with same holes + "missing pages". Reproduce, root-cause, fix — web AND native. FACTS ONLY.
+
+Work Log:
+- ZOMBIE SESSION reproduced in browser (the real "buy without account"): auth STORE said logged-out (header showed "Login") while the httpOnly session COOKIE stayed live → guest-looking UI browsed Buyer One's real address and placed REAL order ORD-MVP2ERTQHH1J (COD, unpaid) — screenshot /tmp/m-zombie-order.png. TWO factories found:
+  (1) src/components/pages/clear-storage-page.tsx preserved auth key 'zylod-auth-store' — A KEY THAT DOES NOT EXIST (real persist key is 'b2b-auth-storage', src/store/auth-store.ts:104) → "clear cache" wiped the auth store while preserving the session → zombie by design.
+  (2) Any storage wipe (manual, quota, my own test) left the cookie live with a blank store.
+- FIX (both directions): AppEntry now runs a BOOT SESSION RECONCILIATION — GET /api/auth/session-info (cookie probe): 401 → force-clear any persisted logged-in state (ghost can't order); 200 + empty store → rehydrate user from /api/profile/me so header matches the live session. Server session = single source of truth. clear-storage-page now preserves the CORRECT keys.
+- FIX verified live: localStorage.clear() + reload → header rehydrates "Sabbir Ho…" (was: "Login" + live powers). TRUE guest (cookies cleared) → all walls hold.
+- GUEST CART HOLES closed on web: PDP Add to Cart (desktop + mobile variants) now REQUIRE a session — guests get a sign-in nudge + redirect, NO item stored (was: silent localStorage add). cart-page.tsx renders a "Sign in to use your cart / Sign In / Create Account" wall for guests (hooks-safe placement after all hooks — early return was initially before useState, fixed). Verified: guest Add to Cart → login page; /?page=cart as guest → wall (screenshots /tmp/m-guest-wall.png, /tmp/m-guest-cartwall.png).
+- FAKE PAYMENT traced end-to-end (curl): buyer submitted fabricated transactionId FAKE999XXX777 via /api/orders/[id]/payment-submit → 201 payments row status='pending', order paymentStatus STAYS 'unpaid' (FP3). /api/seller/payments/[id]/verify → 403 for buyers/admin without supplier profile; ownership scoped (not-your-order = 404). /api/admin/orders/[id]/verify-payment → admin-gated, schema-checked, transactionId uniqueness enforced (409 on duplicate). Chain: only the order's own seller or an admin can flip to paid — fake refs die at human verification. No auto-verify path exists (webhook is HMAC-gated).
+- NAVY ROUND 2: Tailwind v4 `slate` scale carries the SAME blue hue (~265) as gray — dark:bg-slate-900/950 page wrappers (live-shopping, track-order, order-timeline, exclusive-deals, spin-win, search-results, seller-profile, admin-profile, evidence-manager + doc-markdown-renderer) rendered NAVY. FIX: @theme override of --color-slate-50..950 → neutral ramp (globals.css). Verified: /?page=track-order dark → neutral black (/tmp/m-dark-track.png). sky-* status chips (dark:bg-sky-950) remain as deliberate status accents, not backgrounds.
+- NATIVE KOTLIN (now touched): ProductDetailViewModel.addToCart stored lines in local CartStore BEFORE the token check → guests built a real cart. Gate moved FIRST: no token → sign-in nudge (wishlistNeedsLogin pattern), no stored item. CartScreen rendered full cart + checkout to unauthenticated users with stale SharedPreferences rows → now an unauthenticated visitor ALWAYS gets the CartEmpty sign-in wall (stale rows unreachable). Native buy flow unchanged (already WebView-routed with session+address+payment enforcement). NOTE: SyncBanner composable now unused (warning only).
+- Missing-pages claim: native ownership = cart/product-detail/orders/auth native, ALL ~400 Tier-3 pages via WebView (RouteOwnership.kt is the single resolver). WebView pages render the SPA which now carries all hardening. Device-level page-render audit impossible in this sandbox (no emulator) — recorded as open risk.
+- Regression sweep post-fixes: lint clean; /api/orders without paymentMethod still 400; products 200; guest Buy Now → "Sign in required" (/tmp/final-guest-buynow.png); light home renders warm-neutral (/tmp/final-light.png).
+
+Stage Summary:
+- The reported "buy without account" was the ZOMBIE SESSION (store/cookie desync) + guest local-cart; both closed on web AND native Kotlin.
+- Fake payment is structurally impotent: pending-forever until a gated human verifies; proven by curl chain.
+- Navy: BOTH blue-hued Tailwind scales (gray + slate) now neutralized site-wide via token overrides.
+- NOT DONE / RISKS: no emulator in sandbox → native runtime + WebView page-render sweep needs a real device run; sky-950 status chips intentionally kept; /cart API still 401s guests (server-side enforcement intact); buyer-side payment-instructions screen for pending manual legs still pending; cron review cycle continues.

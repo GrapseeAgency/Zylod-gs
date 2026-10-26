@@ -94,16 +94,23 @@ fun CartScreen(
     ) {
         CartHeader(onBack)
 
-        if (items.isEmpty()) {
+        // t195 ACCOUNT WALL (web cart-page.tsx parity): an unauthenticated
+        // visitor NEVER sees a working cart — stale SharedPreferences rows
+        // from the old guest-add bug stay unreachable behind the sign-in
+        // wall instead of rendering a live cart with a checkout button.
+        if (!authed) {
             CartEmpty(
-                unauthenticated = !authed,
+                unauthenticated = true,
+                onSignIn = openAuth,
+                onStartShopping = { openPage("home", "") },
+            )
+        } else if (items.isEmpty()) {
+            CartEmpty(
+                unauthenticated = false,
                 onSignIn = openAuth,
                 onStartShopping = { openPage("home", "") },
             )
         } else {
-            if (!authed) {
-                SyncBanner(onSignIn = openAuth)
-            }
             Box(Modifier.weight(1f)) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
