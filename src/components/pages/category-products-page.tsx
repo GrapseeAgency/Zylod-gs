@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Slider } from '@/components/ui/slider'
 import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useCategoryName } from '@/hooks/use-category-name'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
 import { useAuthStore } from '@/store/auth-store'
@@ -330,9 +331,11 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
 
   const pageParams = _pageParams || storeParams || {}
   const categorySlug = pageParams.category === 'all' ? '' : (pageParams.category || '')
-  const categoryName =
+  const categoryName = useCategoryName(
+    categorySlug,
     CATEGORY_NAME_MAP[categorySlug] ||
-    (pageParams.category && pageParams.category !== 'all' ? pageParams.category : 'All Products')
+      (pageParams.category && pageParams.category !== 'all' ? pageParams.category : 'All Products')
+  )
   const subcategories = SUBCATEGORY_MAP[categorySlug] || ['All Parts']
   const categoryDescription =
     CATEGORY_DESCRIPTIONS[categorySlug] ||

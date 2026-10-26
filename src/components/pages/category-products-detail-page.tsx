@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useCategoryName } from '@/hooks/use-category-name'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, Tag, Package, ChevronRight, LayoutGrid, List, Search } from 'lucide-react'
 import { useCurrencyStore } from '@/store/currency-store'
@@ -32,6 +33,7 @@ export function CategoryProductsDetailPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const categorySlug = pageParams.category || ''
+  const resolvedCategoryName = useCategoryName(categorySlug, 'Products')
   const [products, setProducts] = useState<Product[]>([])
   const [categoryInfo, setCategoryInfo] = useState<CategoryInfo | null>(null)
   const [loading, setLoading] = useState(true)
@@ -80,7 +82,7 @@ export function CategoryProductsDetailPage() {
         <div className="flex items-center gap-3 px-4 md:px-6 pt-4 pb-2 max-w-6xl mx-auto">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800 md:hidden"><ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" /></button>
           <div className="flex-1 min-w-0">
-            <h1 className="font-semibold text-gray-900 dark:text-gray-100 truncate md:text-lg">{categoryInfo?.name || categorySlug || 'Products'}</h1>
+            <h1 className="font-semibold text-gray-900 dark:text-gray-100 truncate md:text-lg">{categoryInfo?.name || resolvedCategoryName}</h1>
             {!loading && <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{total} products</p>}
           </div>
           <button onClick={() => navigate('search-home')} className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-900 dark:hover:bg-gray-800"><Search className="w-4 h-4 text-gray-600 dark:text-gray-400 dark:text-gray-500" /></button>

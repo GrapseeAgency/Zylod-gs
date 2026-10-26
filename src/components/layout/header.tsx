@@ -30,7 +30,6 @@ import {
   LayoutGrid,
   ShoppingCart,
   MoreHorizontal,
-  Globe,
   Bell,
   User,
   Clock,
@@ -86,11 +85,6 @@ const moreNavItems: NavItem[] = [
   { label: 'Terms of Service', page: 'terms-of-service', icon: null },
   { label: 'Privacy Policy', page: 'privacy-policy', icon: null },
   { label: 'Platform Sitemap', page: 'sitemap', icon: null },
-]
-
-const languages = [
-  { code: 'en', label: 'English' },
-  { code: 'bn', label: 'বাংলা' },
 ]
 
 /* ------------------------------------------------------------------ */
@@ -228,7 +222,6 @@ export function Header() {
   const { getItemCount } = useCartStore()
   const { theme, setTheme } = useTheme()
 
-  const [selectedLang, setSelectedLang] = useState('en')
   const [scrolled, setScrolled] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
   const [currencyOpen, setCurrencyOpen] = useState(false)
@@ -305,7 +298,7 @@ export function Header() {
               <img
                 src="/zylod-logo.svg"
                 alt="Zylod"
-                className="h-10 sm:h-11 w-auto transition-transform duration-200 group-hover:scale-[1.03]"
+                className="h-10 sm:h-11 w-auto transition-transform duration-200 group-hover:scale-[1.03] dark:brightness-[1.35] dark:contrast-[1.05]"
               />
             </button>
           </div>
@@ -411,29 +404,6 @@ export function Header() {
               </Button>
             )}
 
-            {/* Language / Globe */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 relative" aria-label="Switch language">
-                  <Globe className="h-5 w-5 text-foreground" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-36">
-                {languages.map((lang) => (
-                  <DropdownMenuItem
-                    key={lang.code}
-                    onClick={() => setSelectedLang(lang.code)}
-                    className={cn(
-                      'cursor-pointer',
-                      selectedLang === lang.code && 'font-semibold text-primary'
-                    )}
-                  >
-                    {lang.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
             {/* Notification Bell — triggers portal overlay */}
             <Button
               variant="ghost"
@@ -523,7 +493,6 @@ export function Header() {
               </Button>
             }>
               <MobileMenu
-                selectedLang={selectedLang}
               />
             </Suspense>
           </div>

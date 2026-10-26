@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useCategoryName } from '@/hooks/use-category-name'
 import { useCurrencyStore } from '@/store/currency-store'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, Tag, Layers, Search, ChevronRight } from 'lucide-react'
@@ -28,6 +29,7 @@ export function SearchResultsCategoryPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const categorySlug = pageParams.category || ''
+  const resolvedCategoryName = useCategoryName(categorySlug, '')
   const [categories, setCategories] = useState<CategoryItem[]>([])
   const [products, setProducts] = useState<ProductItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -63,8 +65,8 @@ export function SearchResultsCategoryPage() {
           <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="font-semibold text-gray-900 dark:text-gray-100 truncate capitalize">
-            {categorySlug ? `${categorySlug.replace('-', ' ')} Results` : 'Browse by Category'}
+          <h1 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+            {categorySlug ? `${resolvedCategoryName} Results` : 'Browse by Category'}
           </h1>
         </div>
       </div>
