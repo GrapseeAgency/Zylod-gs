@@ -96,6 +96,18 @@ const createOrderSchema = z.object({
   // wallet balance — the order lands PAID in the same transaction that
   // decrements stock. Omitted/false keeps the classic UNPAID manual leg.
   payWithWallet: z.boolean().optional(),
+  // t194 ZERO-PAYMENT HARDENING: an order can no longer be created with NO
+  // payment intent at all. The buyer must explicitly pick HOW they pay:
+  //   wallet        → debited now, order lands 'paid' (402 if balance short)
+  //   bank_transfer → pending payments row + instructions, verified later
+  //   mobile_banking→ pending payments row + instructions, verified later
+  //   cod           → explicit pay-on-delivery choice, stays 'unpaid'
+  // Legacy callers that only send payWithWallet=true still map to 'wallet'.
+  // A request with NEITHER payWithWallet=true NOR paymentMethod is rejected
+  // with 400 — the silent zero-payment order path is closed.
+  paymentMethod: z
+    .enum(['wallet', 'bank_transfer', 'mobile_banking', 'cod'])
+    .optional(),
   // Task 95: the shipping method the buyer picked PER SUPPLIER SHIPMENT.
   // The client NEVER sends a price — the server re-quotes every shipment
   // against the live zones/methods/rates book and lands the quoted fee.
@@ -174,7 +186,18 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    const { shippingAddressId, couponCode, items, payWithWallet, shippingChoices } = parsed.data
+    const { shippingAddressId, couponCode, items, payWithWallet, paymentMethod, shippingChoices } = parsed.data
+
+    // t194: a payment intent is MANDATORY. payWithWallet=true is the legacy
+    // spelling of method 'wallet'; anything else must name its method.
+    const wantsWallet = payWithWallet === true || paymentMethod === 'wallet'
+    const effectiveMethod = wantsWallet ? 'wallet' : paymentMethod
+    if (!effectiveMethod) {
+      return NextResponse.json(
+        { error: 'A payment method is required — choose wallet, bank transfer, mobile banking or cash on delivery.' },
+        { status: 400 },
+      )
+    }
     // Unit-bearing decimals: normalize to 2 dp so float drift never reaches DB rows.
     for (const item of items) {
       item.quantity = roundQty(item.quantity)
@@ -591,7 +614,7 @@ export async function POST(request: NextRequest) {
         // overspend race impossible (balance >= total is re-checked AT the
         // write, not at the read).
         let walletLeg: { walletId: string; balanceAfter: number } | null = null
-        if (payWithWallet) {
+        if (wantsWallet) {
           const wallet = await tx.wallets.findFirst({ where: { userId: buyerId } })
           if (!wallet || wallet.balance < orderTotal) {
             throw new WalletInsufficientError(wallet?.balance ?? 0)
@@ -621,7 +644,7 @@ export async function POST(request: NextRequest) {
             promotionDiscount: appliedPromotion?.discount ?? 0,
             // Task 70: a wallet-paid order is verified money the moment the
             // balance debits — it NEVER passes through 'unpaid'.
-            paymentStatus: payWithWallet ? 'paid' : 'unpaid',
+            paymentStatus: wantsWallet ? 'paid' : 'unpaid',
             shippingAddressId,
             shippingAddressSnapshot,
           },
@@ -662,6 +685,24 @@ export async function POST(request: NextRequest) {
           // Task 71 escrow hold happens AFTER the subOrders loop below — the
           // per-supplier rows must exist first.
           walletPaymentId = walletPayment.id
+        }
+
+        // t194: manual methods (bank_transfer / mobile_banking) get a REAL
+        // pending payments row in the SAME transaction — the order is born
+        // with a payment awaiting verification, never a silent free order.
+        // 'cod' intentionally leaves no row: the cash is collected on
+        // delivery, and the buyer explicitly chose that at checkout.
+        let manualPaymentId: string | null = null
+        if (effectiveMethod === 'bank_transfer' || effectiveMethod === 'mobile_banking') {
+          const manualPayment = await tx.payments.create({
+            data: {
+              orderId: newOrder.id,
+              method: effectiveMethod,
+              amount: orderTotal,
+              status: 'pending',
+            },
+          })
+          manualPaymentId = manualPayment.id
         }
 
         // Create sub-orders for each supplier
@@ -809,7 +850,7 @@ export async function POST(request: NextRequest) {
           await tx.cartItems.deleteMany({ where: { cartId: cart.id } })
         }
 
-        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, appliedCoupon, appliedPromotion, shippingLegs, shippingFee, poolSavingsTotal, shippingDiscount }
+        return { order: newOrder, sellerFeed, stockFeed, walletPaymentId, manualPaymentId, paymentMethod: effectiveMethod, appliedCoupon, appliedPromotion, shippingLegs, shippingFee, poolSavingsTotal, shippingDiscount }
       })
 
       // Real-time (Task 51-a): every seller with a slice of this order gets a
@@ -930,6 +971,10 @@ export async function POST(request: NextRequest) {
           paymentStatus: order.order.paymentStatus,
           subOrdersCount: order.sellerFeed.length,
           walletPaymentId: order.walletPaymentId,
+          // t194: the honest receipt — WHICH payment method the buyer chose,
+          // and the pending payment row awaiting verification (manual legs).
+          paymentMethod: order.paymentMethod,
+          manualPaymentId: order.manualPaymentId,
           // Task 74: the honest receipt — what the coupon actually took off.
           couponApplied: order.appliedCoupon,
           // Task 144: the honest receipt — what the free-delivery voucher

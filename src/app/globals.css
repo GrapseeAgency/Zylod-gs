@@ -46,6 +46,27 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+
+  /* t194 NAVY-BLUE FIX — Tailwind v4's DEFAULT `gray` scale is blue-tinted
+     (every gray-N carries hue 264.67 — the SAME hue as blue-500). On this
+     crimson/black theme every `dark:bg-gray-900/800` panel therefore rendered
+     as visible NAVY against the neutral #121212 background (user-reported
+     "some pages and overlays have navy blue background"). Overriding the gray
+     scale with Tailwind's NEUTRAL values (hue-less) makes every gray-* class
+     site-wide — panels, chips, borders, text — render as true neutral gray
+     that matches the theme's #121212 / #1E1E1E / #262626 surfaces. One
+     override fixes hundreds of class usages; no per-file churn. */
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #1a1a1a;
+  --color-gray-950: #0e0e0e;
 }
 
 :root {

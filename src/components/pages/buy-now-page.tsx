@@ -6,7 +6,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   ArrowLeft, Truck, CreditCard, CheckCircle2,
-  MapPin, Package, AlertCircle, RefreshCw, LogIn, Minus, Plus
+  MapPin, Package, AlertCircle, RefreshCw, LogIn, Minus, Plus, Wallet, Landmark, Smartphone, Banknote
 } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 
@@ -41,7 +41,18 @@ interface PlacedOrder {
   totalAmount: number
   shippingFee?: number
   paymentStatus: string
+  paymentMethod?: string
+  walletPaymentId?: string | null
+  manualPaymentId?: string | null
 }
+
+/** t194: the explicit payment methods the buyer must pick between. */
+const PAYMENT_OPTIONS = [
+  { value: 'wallet', label: 'Wallet Balance', hint: 'Debited now — order confirmed instantly', icon: Wallet },
+  { value: 'bank_transfer', label: 'Bank Transfer', hint: 'Pay by bank — verified by the seller before dispatch', icon: Landmark },
+  { value: 'mobile_banking', label: 'Mobile Banking', hint: 'bKash / Nagad — verified by the seller before dispatch', icon: Smartphone },
+  { value: 'cod', label: 'Cash on Delivery', hint: 'Pay the supplier in cash when the goods arrive', icon: Banknote },
+] as const
 
 /** One option from the real quote rail (GET /api/shipping/quote). */
 interface ShippingOption {
@@ -79,6 +90,11 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [placedOrder, setPlacedOrder] = useState<PlacedOrder | null>(null)
+
+  // t194: payment intent — the buyer MUST explicitly pick a method; there is
+  // no default, so a zero-decision order can never be placed by accident.
+  const [paymentMethod, setPaymentMethod] = useState<string>('')
+  const [walletBalance, setWalletBalance] = useState<number | null>(null)
 
   // Task 95: live shipping quote for THIS shipment + the buyer's pick.
   const [quote, setQuote] = useState<{ loading: boolean; options: ShippingOption[]; error: string } | null>(null)
@@ -151,6 +167,29 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
       }
     }
     loadAddresses()
+    return () => { mounted = false }
+  }, [])
+
+  // t194: fetch the REAL wallet balance so the wallet option can be shown
+  // with the actual spendable amount (and honestly disabled when short).
+  useEffect(() => {
+    let mounted = true
+    const loadWallet = async () => {
+      try {
+        const res = await fetch('/api/wallet')
+        if (!mounted) return
+        if (res.ok) {
+          const data = await res.json().catch(() => null)
+          const bal = data?.data?.balance
+          if (typeof bal === 'number') setWalletBalance(bal)
+        }
+        // 401 (guest) or other failures → wallet stays null; the wallet
+        // option renders its honest unavailable state.
+      } catch {
+        /* non-fatal */
+      }
+    }
+    loadWallet()
     return () => { mounted = false }
   }, [])
 
@@ -227,6 +266,11 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
       setSubmitError('Please select a delivery address first.')
       return
     }
+    // t194: no payment method, no order — the zero-decision path is closed.
+    if (!paymentMethod) {
+      setSubmitError('Select a payment method before placing the order.')
+      return
+    }
     setSubmitting(true)
     setSubmitError(null)
     try {
@@ -239,7 +283,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
           unitPrice: unitPrice, // from the server's product record — never a client-invented price
           supplierId: product.supplier.id,
           shippingAddressId: selectedAddressId,
-          paymentMethod: 'cod',
+          paymentMethod,
           // Task 95: the method id only — never a price. The server re-quotes
           // the shipment against the live rate book.
           ...(shippingMethodId ? { shippingMethodId } : {}),
@@ -250,6 +294,10 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
         if (res.status === 401) {
           setNeedsAuth(true)
           setSubmitError('Your session has expired. Please sign in to place this order.')
+        } else if (res.status === 402) {
+          // The server re-checked the REAL balance at write time — trust it.
+          setPaymentMethod('')
+          setSubmitError(data?.error || 'Insufficient wallet balance — pick another payment method.')
         } else if ((res.status === 409 || res.status === 400) && /shipping|method/i.test(data?.error ?? '')) {
           setQuoteTick((t) => t + 1)
           setSubmitError(data?.error || 'Shipping options changed — pick a method again.')
@@ -314,12 +362,32 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
           )}
           <div className="flex justify-between">
             <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Payment status</span>
-            <span className="font-bold text-slate-900 dark:text-slate-100 capitalize">{placedOrder.paymentStatus || 'unpaid'}</span>
+            <span className={`font-bold capitalize ${placedOrder.paymentStatus === 'paid' ? 'text-emerald-600' : 'text-amber-600'}`}>
+              {placedOrder.paymentStatus || 'unpaid'}
+            </span>
           </div>
+          {placedOrder.paymentMethod && (
+            <div className="flex justify-between">
+              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Payment method</span>
+              <span className="font-bold text-slate-900 dark:text-slate-100">
+                {PAYMENT_OPTIONS.find((o) => o.value === placedOrder.paymentMethod)?.label ?? placedOrder.paymentMethod}
+              </span>
+            </div>
+          )}
         </div>
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-3 max-w-xs leading-relaxed">
-          Cash on delivery — payment is settled with the supplier on receipt. Track progress from your orders.
-        </p>
+        {placedOrder.paymentStatus === 'paid' ? (
+          <p className="text-[10px] text-emerald-600 font-bold mt-3 max-w-xs leading-relaxed">
+            Paid from your wallet — the supplier can confirm and start packing right away.
+          </p>
+        ) : placedOrder.paymentMethod === 'cod' ? (
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-3 max-w-xs leading-relaxed">
+            Cash on delivery — payment is settled with the supplier on receipt. Track progress from your orders.
+          </p>
+        ) : (
+          <p className="text-[10px] text-amber-600 font-bold mt-3 max-w-xs leading-relaxed">
+            The order is NOT confirmed until your payment is verified — submit your payment reference from My Orders so the seller can dispatch.
+          </p>
+        )}
         <div className="mt-6 space-y-2 w-full max-w-xs">
           <Button
             onClick={() => navigate('orders')}
@@ -631,26 +699,73 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
             </p>
           </div>
 
-          {/* Payment Method Card — only what actually exists */}
+          {/* Payment Method Card — t194: explicit choice, no silent default.
+              The buyer MUST actively pick one of the real methods. */}
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-2">
               <CreditCard className="h-4 w-4 text-primary" />
               <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Payment Method</h2>
             </div>
 
-            <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0">
-                <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Cash on Delivery</p>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Pay the supplier when the goods arrive</p>
-              </div>
+            <div className="space-y-1.5" role="radiogroup" aria-label="Payment method">
+              {PAYMENT_OPTIONS.map((opt) => {
+                const active = paymentMethod === opt.value
+                const Icon = opt.icon
+                const isWallet = opt.value === 'wallet'
+                const walletShort = isWallet && walletBalance !== null && walletBalance < orderTotal
+                return (
+                  <label
+                    key={opt.value}
+                    className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 cursor-pointer transition-colors ${
+                      active ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="buy-now-pay"
+                      className="sr-only"
+                      checked={active}
+                      onChange={() => setPaymentMethod(opt.value)}
+                    />
+                    <span
+                      aria-hidden
+                      className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${
+                        active ? 'border-primary' : 'border-slate-300'
+                      }`}
+                    >
+                      {active && <span className="h-2 w-2 rounded-full bg-primary" />}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="flex h-8 w-8 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 items-center justify-center shrink-0"
+                    >
+                      <Icon className={`h-4 w-4 ${active ? 'text-primary' : 'text-slate-500 dark:text-slate-400'}`} />
+                    </span>
+                    <span className="flex-1 min-w-0">
+                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                        {opt.label}
+                        {isWallet && walletBalance !== null && (
+                          <span className={`text-[9px] font-black uppercase rounded-full px-1.5 py-0.5 border ${
+                            walletShort
+                              ? 'text-amber-600 bg-amber-50 border-amber-200'
+                              : 'text-emerald-600 bg-emerald-50 border-emerald-200'
+                          }`}>
+                            {formatPrice(walletBalance)}
+                          </span>
+                        )}
+                      </span>
+                      <span className="block text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{opt.hint}</span>
+                    </span>
+                  </label>
+                )
+              })}
             </div>
 
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
-              Online payment methods will appear here once a payment gateway is connected.
-            </p>
+            {!paymentMethod && (
+              <p className="text-[10px] font-bold text-amber-600" role="note">
+                Select a payment method to enable the order button.
+              </p>
+            )}
           </div>
         </div>
 

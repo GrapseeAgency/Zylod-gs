@@ -23,7 +23,9 @@ import type { MainProduct } from './main-product-card'
 
 /* ─── Color Constants ─── */
 const RED = '#E53935'
-const BG_CARD = '#FFFFFF'
+// t194 theme fix: BG_CARD was a hardcoded #FFFFFF inline style — it kept the
+// category-chip strip WHITE inside dark mode. bg-card responds to .dark.
+const BG_CARD_CLASS = 'bg-white dark:bg-gray-900'
 
 /* ─── Search Tab Data ─── */
 const SEARCH_TABS = [
@@ -606,7 +608,7 @@ export function CategoryTabsAndProducts() {
 
       {/* ═══════════ SECTION 2: CATEGORY TABS + PRODUCT GRID ═══════════ */}
       <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <div className="px-4 pt-3 pb-0" style={{ background: BG_CARD }}>
+        <div className={`px-4 pt-3 pb-0 ${BG_CARD_CLASS}`}>
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-thin pb-2">
             {CATEGORY_TABS.map((tab) => (
               <button

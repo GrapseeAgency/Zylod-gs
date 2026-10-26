@@ -102,9 +102,15 @@ export async function POST(request: NextRequest) {
 
 /**
  * GET /api/native/offline-sync — recent ingested events, oldest unprocessed
- * first. Intended for admin/back-office monitoring of the offline queue.
+ * first. t194 hardening: ADMIN-ONLY — this queue exposes internal action
+ * metadata (action types, user attribution, retry counts) that must never be
+ * readable by a random authenticated user, let alone a guest.
  */
 export async function GET(request: NextRequest) {
+  const auth = await authenticateRequest(request)
+  if (!auth.authenticated || !auth.user || auth.user.userType !== 'admin') {
+    return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+  }
   try {
     const limit = Math.min(
       Number(request.nextUrl.searchParams.get('limit')) || 50,

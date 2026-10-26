@@ -33,8 +33,11 @@ export function RightSidebar() {
     <aside className="hidden xl:block w-[280px] shrink-0 space-y-3">
 
       {/* ═══════════ Widget 1: User Welcome / Dashboard Card ═══════════ */}
+      {/* t194 theme fix: hardcoded inline #FAFAFA background + #212121 text
+          ignored dark mode — the card stayed WHITE on the black theme and
+          read as a theme bug. Theme-token classes respond to .dark. */}
       <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <div className="p-4" style={{ background: '#FAFAFA' }}>
+        <div className="p-4 bg-gray-50 dark:bg-card">
           {isAuthenticated && user ? (
             <>
               <div className="flex items-center gap-2.5 mb-3">
@@ -42,7 +45,7 @@ export function RightSidebar() {
                   {user.fullName?.charAt(0) || user.email?.charAt(0) || 'U'}
                 </div>
                 <div>
-                  <p className="text-sm font-bold" style={{ color: '#212121' }}>{getGreeting()},</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{getGreeting()},</p>
                   <p className="text-xs font-semibold" style={{ color: RED }}>{user.fullName || 'User'}!</p>
                 </div>
               </div>
@@ -107,7 +110,7 @@ export function RightSidebar() {
                 <div className="h-12 w-12 rounded-full mx-auto flex items-center justify-center mb-2" style={{ background: `${RED}12` }}>
                   <ShoppingCart className="h-6 w-6" style={{ color: RED }} />
                 </div>
-                <p className="text-sm font-bold" style={{ color: '#212121' }}>Sign in to Zylod</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Sign in to Zylod</p>
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Access wholesale prices, track orders & chat with suppliers</p>
               </div>
               <Button
@@ -140,7 +143,7 @@ export function RightSidebar() {
 
       {/* ═══════════ Widget 2: B2B Services ═══════════ */}
       <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <div className="p-4" style={{ background: '#FAFAFA' }}>
+        <div className="p-4 bg-gray-50 dark:bg-card">
           <p className="text-sm font-bold mb-3" style={{ color: RED }}>B2B Services</p>
           {[
             { icon: Store, label: 'Verified Suppliers', desc: 'Verified & trade assured', color: RED },
@@ -158,7 +161,7 @@ export function RightSidebar() {
                   <ServiceIcon className="h-4.5 w-4.5" style={{ color: service.color }} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold" style={{ color: '#212121' }}>{service.label}</p>
+                  <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">{service.label}</p>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500">{service.desc}</p>
                 </div>
               </div>

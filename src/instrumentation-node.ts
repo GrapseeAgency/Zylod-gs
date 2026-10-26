@@ -61,15 +61,34 @@ export async function registerNode() {
     if (products > 0) return // healthy — nothing to do
 
     // ── cross-worker lock (O_CREAT|O_EXCL is atomic on POSIX) ──
+    // Lock content = `${pid}:${now}`. A lock is ONLY respected while its PID
+    // is alive AND the stamp is within 10 min. t193 lesson: a boot that dies
+    // on EADDRINUSE left a fresh lock behind; the next healthy boot then saw
+    // a "fresh" lock and skipped seeding forever (ghost town again). A dead
+    // PID proves the lock is orphaned → steal it. Math.abs guards against
+    // clock jumps making the diff negative.
     const lockPath = path.join(cwd, 'db', '.auto-seed.lock')
     const now = Date.now()
+    const pidAlive = (pid: number): boolean => {
+      try {
+        process.kill(pid, 0) // signal 0 = existence probe
+        return true
+      } catch {
+        return false
+      }
+    }
+    const writeLock = () => fs.writeFileSync(lockPath, `${process.pid}:${now}`)
     try {
-      fs.writeFileSync(lockPath, String(now), { flag: 'wx' })
+      writeLock()
     } catch {
       try {
-        const stamp = Number(fs.readFileSync(lockPath, 'utf8'))
-        if (Number.isFinite(stamp) && now - stamp < 600_000) return // sibling worker is on it
-        fs.writeFileSync(lockPath, String(now)) // stale — steal it
+        const raw = fs.readFileSync(lockPath, 'utf8').trim()
+        const [lockPidStr, stampStr] = raw.split(':')
+        const lockPid = Number(lockPidStr)
+        const stamp = Number(stampStr)
+        const fresh = Number.isFinite(stamp) && Math.abs(now - stamp) < 600_000
+        if (Number.isFinite(lockPid) && pidAlive(lockPid) && fresh) return // sibling worker is on it
+        fs.writeFileSync(lockPath, `${process.pid}:${now}`) // orphaned/stale — steal it
       } catch {
         /* unreadable — proceed */
       }

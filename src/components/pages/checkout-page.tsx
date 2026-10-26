@@ -7,7 +7,8 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore, type CartItemData } from '@/store/cart-store'
 import {
   ArrowLeft, MapPin, CreditCard, Check, CheckCircle2, Package,
-  Lock, AlertCircle, Loader2, Plus, Wallet, Truck, LogIn
+  Lock, AlertCircle, Loader2, Plus, Wallet, Truck, LogIn,
+  Landmark, Smartphone, Banknote
 } from 'lucide-react'
 
 /**
@@ -75,7 +76,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
 
   const [submitting, setSubmitting] = useState(false)
   const [orderPlaced, setOrderPlaced] = useState(false)
-  const [placedOrder, setPlacedOrder] = useState<{ orderNumber: string; paymentStatus: string } | null>(null)
+  const [placedOrder, setPlacedOrder] = useState<{ orderNumber: string; paymentStatus: string; paymentMethod?: string } | null>(null)
   const [placedCoupon, setPlacedCoupon] = useState<{ code: string; discount: number } | null>(null)
   // Task 100: the platform campaign the server applied (automatic, before the coupon).
   const [placedPromotion, setPlacedPromotion] = useState<{ name: string; discount: number } | null>(null)
@@ -93,7 +94,11 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   // the same transaction that debits the balance); an unfunded one shows the
   // honest state instead of a dead toggle.
   const [walletBalance, setWalletBalance] = useState<number | null>(null)
-  const [payWithWallet, setPayWithWallet] = useState(false)
+  // t194: EXPLICIT payment intent — replaces the old boolean wallet toggle.
+  // No default: the buyer must actively pick wallet / bank / mobile / COD,
+  // so a zero-decision unpaid order can never be placed.
+  const [paymentMethod, setPaymentMethod] = useState<'' | 'wallet' | 'bank_transfer' | 'mobile_banking' | 'cod'>('')
+  const payWithWallet = paymentMethod === 'wallet'
 
   // Task 74: coupon application — the API honors couponCode and now refuses
   // invalid ones with the real reason; this input is the half that was
@@ -345,6 +350,12 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
       setError('Select a real shipping address before placing the order.')
       return
     }
+    // t194: a payment method is MANDATORY — the zero-decision unpaid order
+    // path is closed at the UI exactly as it is at the API.
+    if (!paymentMethod) {
+      setError('Select a payment method — wallet, bank transfer, mobile banking or cash on delivery.')
+      return
+    }
     setSubmitting(true)
     try {
       const res = await fetch('/api/orders', {
@@ -353,7 +364,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         credentials: 'include',
         body: JSON.stringify({
           shippingAddressId: selectedAddress.id,
-          payWithWallet: payWithWallet && walletCanCover ? true : undefined,
+          paymentMethod,
           couponCode: couponApplied?.code,
           // Task 95: (supplierId, methodId) pairs only — never a price. The
           // server re-quotes every shipment against the live rate book.
@@ -382,7 +393,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
       }
       if (res.status === 402) {
         // The server re-checked the REAL balance at write time — trust it.
-        setPayWithWallet(false)
+        setPaymentMethod('')
         setError(data?.error || 'Insufficient wallet balance.')
         return
       }
@@ -417,6 +428,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
       setPlacedOrder({
         orderNumber: data.data.orderNumber,
         paymentStatus: data.data.paymentStatus,
+        paymentMethod: data.data.paymentMethod ?? paymentMethod,
       })
       setPlacedCoupon(data.data.couponApplied ?? null)
       setPlacedPromotion(data.data.promotionApplied ?? null)
@@ -461,10 +473,15 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
               Status: <span className="font-bold text-emerald-600 uppercase">PAID</span> — settled from your wallet
               balance. The supplier can confirm and start packing right away.
             </>
+          ) : placedOrder.paymentMethod === 'cod' ? (
+            <>
+              Status: <span className="font-bold text-amber-600 uppercase">Cash on Delivery</span>.
+              The supplier collects the cash when the goods arrive.
+            </>
           ) : (
             <>
               Status: <span className="font-bold text-amber-600 uppercase">{placedOrder.paymentStatus}</span>.
-              The order is NOT confirmed until payment is verified. The supplier sees it now.
+              The order is NOT confirmed until payment is verified — submit your payment reference from My Orders.
             </>
           )}
         </p>
@@ -794,74 +811,142 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
           </p>
         </div>
 
-        {/* Card 3: Payment (honest state — wallet or the verified manual leg) */}
+        {/* Card 3: Payment — t194: explicit radio choice, NO silent default.
+            Wallet (real balance) · Bank transfer · Mobile banking · COD. */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
           <div className="flex items-center gap-2">
             <CreditCard className="h-4 w-4 text-primary" />
             <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Payment</h2>
           </div>
 
-          {/* Task 70: pay from the REAL wallet balance */}
-          {walletBalance !== null && (
-            <button
-              type="button"
-              role="checkbox"
-              aria-checked={payWithWallet && walletCanCover}
-              disabled={!walletCanCover}
-              onClick={() => walletCanCover && setPayWithWallet((v) => !v)}
-              className={`w-full flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
-                payWithWallet && walletCanCover
-                  ? 'border-primary bg-primary/5'
-                  : walletCanCover
-                    ? 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
-                    : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-background opacity-70 cursor-not-allowed'
+          <div className="space-y-1.5" role="radiogroup" aria-label="Payment method">
+            {/* Wallet option — only when the balance is known; honest states. */}
+            {walletBalance !== null && (
+              <label
+                className={`flex items-center gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-colors ${
+                  paymentMethod === 'wallet'
+                    ? 'border-primary bg-primary/5'
+                    : walletCanCover
+                      ? 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+                      : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-background opacity-70 cursor-not-allowed'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="checkout-pay"
+                  className="sr-only"
+                  checked={paymentMethod === 'wallet'}
+                  onChange={() => walletCanCover && setPaymentMethod('wallet')}
+                  disabled={!walletCanCover}
+                />
+                <span
+                  aria-hidden
+                  className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${
+                    paymentMethod === 'wallet' ? 'border-primary' : 'border-slate-300'
+                  }`}
+                >
+                  {paymentMethod === 'wallet' && <span className="h-2 w-2 rounded-full bg-primary" />}
+                </span>
+                <Wallet className={`h-4 w-4 shrink-0 ${paymentMethod === 'wallet' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
+                <span className="text-xs">
+                  {walletCanCover ? (
+                    <>
+                      {/* Task 131: the wallet label quotes the SAME payable the summary
+                          shows (orderTotal − validated coupon discount) — never a
+                          different number on one screen. */}
+                      <span className="font-bold text-slate-900 dark:text-slate-100">Pay {formatPrice(payableTotal)} from wallet balance</span>
+                      <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                        Balance {formatPrice(walletBalance)} — the order is marked PAID instantly, no verification wait.
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">Wallet balance {formatPrice(walletBalance)}</span>
+                      <span className="block text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                        Not enough for this order ({formatPrice(payableTotal)}) — top up from the wallet page.
+                      </span>
+                    </>
+                  )}
+                </span>
+              </label>
+            )}
+
+            {/* Bank transfer */}
+            <label
+              className={`flex items-center gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-colors ${
+                paymentMethod === 'bank_transfer' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
               }`}
             >
-              <span
-                className={`flex h-5 w-5 items-center justify-center rounded-md border ${
-                  payWithWallet && walletCanCover ? 'bg-primary border-primary text-white' : 'border-slate-300 bg-white dark:bg-gray-900'
-                }`}
-                aria-hidden
-              >
-                {payWithWallet && walletCanCover && <Check className="h-3.5 w-3.5" />}
+              <input type="radio" name="checkout-pay" className="sr-only" checked={paymentMethod === 'bank_transfer'} onChange={() => setPaymentMethod('bank_transfer')} />
+              <span aria-hidden className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${paymentMethod === 'bank_transfer' ? 'border-primary' : 'border-slate-300'}`}>
+                {paymentMethod === 'bank_transfer' && <span className="h-2 w-2 rounded-full bg-primary" />}
               </span>
-              <Wallet className={`h-4 w-4 shrink-0 ${payWithWallet && walletCanCover ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
+              <Landmark className={`h-4 w-4 shrink-0 ${paymentMethod === 'bank_transfer' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
               <span className="text-xs">
-                {walletCanCover ? (
-                  <>
-                    {/* Task 131: the wallet label quotes the SAME payable the summary
-                        shows (orderTotal − validated coupon discount) — never a
-                        different number on one screen. */}
-                    <span className="font-bold text-slate-900 dark:text-slate-100">Pay {formatPrice(payableTotal)} from wallet balance</span>
-                    <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
-                      Balance {formatPrice(walletBalance)} — the order is marked PAID instantly, no verification wait.
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <span className="font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">Wallet balance {formatPrice(walletBalance)}</span>
-                    <span className="block text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
-                      Not enough for this order ({formatPrice(payableTotal)}) — top up from the wallet page, or pay manually below.
-                    </span>
-                  </>
-                )}
+                <span className="font-bold text-slate-900 dark:text-slate-100">Bank Transfer</span>
+                <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Transfer the total, then submit the payment reference for verification.</span>
               </span>
-            </button>
+            </label>
+
+            {/* Mobile banking */}
+            <label
+              className={`flex items-center gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-colors ${
+                paymentMethod === 'mobile_banking' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+              }`}
+            >
+              <input type="radio" name="checkout-pay" className="sr-only" checked={paymentMethod === 'mobile_banking'} onChange={() => setPaymentMethod('mobile_banking')} />
+              <span aria-hidden className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${paymentMethod === 'mobile_banking' ? 'border-primary' : 'border-slate-300'}`}>
+                {paymentMethod === 'mobile_banking' && <span className="h-2 w-2 rounded-full bg-primary" />}
+              </span>
+              <Smartphone className={`h-4 w-4 shrink-0 ${paymentMethod === 'mobile_banking' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
+              <span className="text-xs">
+                <span className="font-bold text-slate-900 dark:text-slate-100">Mobile Banking</span>
+                <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">bKash / Nagad — submit the transaction ID after sending.</span>
+              </span>
+            </label>
+
+            {/* Cash on delivery — an EXPLICIT choice, never a silent default */}
+            <label
+              className={`flex items-center gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-colors ${
+                paymentMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+              }`}
+            >
+              <input type="radio" name="checkout-pay" className="sr-only" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
+              <span aria-hidden className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${paymentMethod === 'cod' ? 'border-primary' : 'border-slate-300'}`}>
+                {paymentMethod === 'cod' && <span className="h-2 w-2 rounded-full bg-primary" />}
+              </span>
+              <Banknote className={`h-4 w-4 shrink-0 ${paymentMethod === 'cod' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
+              <span className="text-xs">
+                <span className="font-bold text-slate-900 dark:text-slate-100">Cash on Delivery</span>
+                <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Pay the supplier in cash when the goods arrive.</span>
+              </span>
+            </label>
+          </div>
+
+          {!paymentMethod && (
+            <p className="text-[10px] font-bold text-amber-600" role="note">
+              Select a payment method to enable the order button.
+            </p>
           )}
 
           <div className="flex items-start gap-2 pt-1 pl-6 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
             <Lock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
             <p>
-              {payWithWallet && walletCanCover ? (
+              {paymentMethod === 'wallet' && walletCanCover ? (
                 <>
                   The total is re-verified server-side from live catalog prices and debited from your wallet in the
                   same transaction that reserves the stock.
                 </>
+              ) : paymentMethod === 'cod' ? (
+                <>
+                  The order is created as cash-on-delivery — the supplier collects the cash on arrival. The total is
+                  re-verified server-side from live catalog prices.
+                </>
               ) : (
                 <>
-                  The order is created with status <span className="font-bold">UNPAID</span>. Payment must be
-                  completed and verified before the supplier confirms — the total is re-verified server-side
-                  from live catalog prices, so amounts shown here are final only after the server confirms.
+                  The order is created with status <span className="font-bold">UNPAID</span> and a pending payment —
+                  submit your payment reference from My Orders; the supplier confirms only after the payment is
+                  verified. The total is re-verified server-side from live catalog prices.
                 </>
               )}
             </p>

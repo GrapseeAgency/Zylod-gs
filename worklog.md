@@ -5762,3 +5762,32 @@ Stage Summary:
 - The ghost-town root cause is FIXED at the mechanism level (edge-safe instrumentation split — the guard now demonstrably fires on both empty and dirty boots).
 - Honest open items: web-screenshots 756-page sweep was still running when this entry was written (android/ios already green on the same commit); buy-now guest nudge on ANDROID reuses the wishlist snackbar copy (pre-existing, flagged in t190-b); COD remains a labeled business option for authed buyers with a real address (settle-on-delivery — not the bug; the bug was skipping login/address/payment-choice, now impossible).
 - NO "complete" language: everything above is a verified-at-this-moment fact, not a promise about the future.
+
+---
+Task ID: t194
+Agent: Z.ai Code (main)
+Task: Reproduce + fix user-reported security holes (guest ordering, zero-payment ordering), navy-blue theme pollution (web + Android), instrumentation auto-seed guard failure. FACTS ONLY — no completion claims.
+
+Work Log:
+- BUG ROOT CAUSE (DB ghost town, again): previous boot died on EADDRINUSE and left db/.auto-seed.lock behind; the next healthy boot saw a "fresh" (<10 min) lock and SKIPPED the auto-seed chain → products=0. ALSO found TWO competing `bun run dev` processes + a while-true restart loop fighting over port 3000.
+- FIX (instrumentation-node.ts): lock format now `${pid}:${stamp}`; a lock is respected ONLY while its PID is alive AND stamp is fresh; dead-PID orphan locks are stolen. Math.abs guards clock jumps.
+- Data restored via `node scripts/qa/wipe.mjs` + seed-marketplace.mjs + seed-content.mjs → 20 products / 10 users / 0 orders / 3 banners. sqlite3 CLI is absent in sandbox (prior "no products table" readings were false negatives) — use node:sqlite.
+- GUEST ORDER REPRODUCTION (curl, no cookies): POST /api/orders → 401 "Authentication required"; POST /api/orders/create-direct → 401. Both closed at API level. UI: agent-browser as guest → PDP "Buy Now" renders "Sign in required" wall (screenshot /tmp/v-dark-buynow.png).
+- ZERO-PAYMENT HOLE REPRODUCED (the real one): POST /api/orders created an order with paymentStatus='unpaid' and NO payment method/intent at all (T9: 38,000 BDT order, zero money, silent). buy-now-page.tsx hard-coded paymentMethod:'cod'. Wallet-zero + payWithWallet=true correctly 402s (T8).
+- FIX (API): /api/orders + /api/orders/create-direct now REQUIRE explicit paymentMethod enum [wallet|bank_transfer|mobile_banking|cod]. wallet → guarded in-tx debit → 'paid' (402 w/ real balance if short). bank_transfer/mobile_banking → pending payments row created in SAME tx + manualPaymentId returned. cod → explicit unpaid choice. Missing method → 400.
+- FIX (UI): checkout-page.tsx wallet-toggle replaced by 4-option radio group (no default, submit blocked without pick, 402 resets pick); buy-now-page.tsx hard-coded COD card replaced by the same radio group + live /api/wallet balance chip; receipts now print payment method + honest unpaid/COD/paid copy.
+- LIVE MATRIX (curl + agent-browser): no-method /api/orders → 400; no-method create-direct → 400; cod → 201 paymentStatus=unpaid method=cod; bank_transfer → 201 + manualPaymentId + pending payments row verified in DB; wallet w/ 0 balance create-direct → 402 walletBalance:0; UI: buy-now "Place Order" w/o pick → "Select a payment method before placing the order."; COD pick → order placed with method printed on receipt.
+- ADDRESS GATES re-verified: create-direct w/o addressId → 400; /api/orders w/o shippingAddressId → 400 (Zod); fake addressId on both → 400 "belonging to you". Seeds create NO addresses (count=0) — created one via POST /api/addresses for the matrix.
+- NAVY BLUE ROOT CAUSE: Tailwind v4's DEFAULT gray scale is blue-tinted (hue 264.67 = same hue as blue-500) → every dark:bg-gray-900/800 panel rendered NAVY against neutral #121212. FIX: @theme override of --color-gray-50..950 with neutral hexes in globals.css → dark:bg-gray-900 now computes rgb(26,26,26) (verified via getComputedStyle). Also fixed right-sidebar.tsx + category-tabs-products.tsx hardcoded inline #FAFAFA/#FFFFFF backgrounds that ignored dark mode.
+- VISUAL PROOFS: /tmp/shot-home-dark.png (navy BEFORE) vs /tmp/v-dark-home3.png (fixed); /tmp/v-light-home.png (light regression OK); /tmp/v-dark-cart.png, /tmp/v-dark-buynow.png (overlays/walls black).
+- ANDROID (native side audit, no code changes needed): ProductDetailViewModel.buyNow() requires SessionManager token (guest → sign-in nudge) and routes authed buyers to WebView buy-now (web flow hardened today); no native create-direct call exists; Color.kt is token-faithful (crimson/black), blues present are QuickChipColors ICON tints spec-parity with web, zero blue backgrounds in ui/ (rg verified).
+- EXTRA HARDENING: /api/native/offline-sync GET was UNAUTHENTICATED (leaks sync queue metadata) → now admin-only 403 (verified live for guest + buyer).
+- DEV SERVER: single clean instance on :3000; lint clean; instrumentation guard healthy-path silent.
+
+Stage Summary:
+- Ghost-town root cause #2 (orphan lock) fixed with PID-liveness lock protocol.
+- Silent zero-payment order path CLOSED on both API routes + both UI pages; explicit payment intent is mandatory; wallet debit/pending rows are server-truth.
+- Navy-blue site-wide neutralization via one Tailwind token override (root cause: v4 gray hue-264 tint), plus 2 inline-style dark-mode fixes.
+- Guest wall re-verified end-to-end (API 401 + UI wall screenshot).
+- Android audited: auth gates + color tokens clean; WebView order path inherits all web hardening.
+- NOT DONE / RISKS: bank/mobile instructions page for the pending manual leg is still My-Orders-only (no dedicated instructions screen); checkout guest wall for /cart page itself (cart API 401 → empty state) not re-designed; Android APK not rebuilt in sandbox (no gradle run) — code audit only; auto-seed empty-DB self-heal path still not exercised live (FK wipe constraint).

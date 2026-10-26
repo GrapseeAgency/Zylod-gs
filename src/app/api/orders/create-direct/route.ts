@@ -46,6 +46,15 @@ const createDirectSchema = z.object({
   // validated below). The buy-now page always sends it; direct API callers
   // no longer get address-less orders through.
   shippingAddressId: z.string().min(1, 'shippingAddressId is required'),
+  // t194 ZERO-PAYMENT HARDENING: buy-now can no longer silently default to a
+  // zero-money COD order. The buyer must explicitly pick HOW they pay —
+  //   wallet         → debited now, order lands 'paid' (402 if balance short)
+  //   bank_transfer  → pending payments row, verified via the manual leg
+  //   mobile_banking → pending payments row, verified via the manual leg
+  //   cod            → explicit pay-on-delivery choice, stays 'unpaid'
+  paymentMethod: z.enum(['wallet', 'bank_transfer', 'mobile_banking', 'cod'], {
+    message: 'paymentMethod is required — choose wallet, bank transfer, mobile banking or cash on delivery',
+  }),
   // Task 95: the shipping method the buyer picked for this shipment. The
   // client NEVER sends a price — the server re-quotes the shipment against
   // the live zones/methods/rates book.
@@ -97,7 +106,17 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    const { productId, quantity: rawQty, variantId, shippingAddressId, shippingMethodId } = parsed.data
+    const { productId, quantity: rawQty, variantId, shippingAddressId, shippingMethodId, paymentMethod } = parsed.data
+
+    /** Thrown when the wallet cannot cover the server-priced total. */
+    class WalletInsufficientError extends Error {
+      balance: number
+      constructor(balance: number) {
+        super('Insufficient wallet balance for this order')
+        this.name = 'WalletInsufficientError'
+        this.balance = balance
+      }
+    }
     // Unit-bearing decimal (kg: 2.5 valid) — normalize to 2 dp.
     const qty = roundQty(rawQty)
 
@@ -268,6 +287,25 @@ export async function POST(request: NextRequest) {
         // ORDER total = goods after promotion + quoted shipping — payment math reads this.
         const orderTotal = totalPrice - (appliedPromotion?.discount ?? 0) + shippingFee
 
+        // t194: wallet leg — guarded debit inside the same tx (race-proof
+        // conditional updateMany, identical doctrine to the cart checkout).
+        let walletLeg: { walletId: string; balanceAfter: number } | null = null
+        if (paymentMethod === 'wallet') {
+          const wallet = await tx.wallets.findFirst({ where: { userId: buyerId } })
+          if (!wallet || wallet.balance < orderTotal) {
+            throw new WalletInsufficientError(wallet?.balance ?? 0)
+          }
+          const debited = await tx.wallets.updateMany({
+            where: { id: wallet.id, balance: { gte: orderTotal } },
+            data: { balance: { decrement: orderTotal } },
+          })
+          if (debited.count === 0) {
+            const current = await tx.wallets.findFirst({ where: { userId: buyerId } })
+            throw new WalletInsufficientError(current?.balance ?? 0)
+          }
+          walletLeg = { walletId: wallet.id, balanceAfter: wallet.balance - orderTotal }
+        }
+
         const newOrder = await tx.orders.create({
           data: {
             buyerId,
@@ -277,11 +315,58 @@ export async function POST(request: NextRequest) {
             promotionId: appliedPromotion?.id ?? null,
             promotionName: appliedPromotion?.name ?? null,
             promotionDiscount: appliedPromotion?.discount ?? 0,
-            paymentStatus: 'unpaid',
+            paymentStatus: walletLeg ? 'paid' : 'unpaid',
             shippingAddressId,
             shippingAddressSnapshot,
           },
         })
+
+        // t194: wallet ledger + verified payments row (money was real).
+        let walletPaymentId: string | null = null
+        if (walletLeg) {
+          const walletTx = await tx.walletTransactions.create({
+            data: {
+              walletId: walletLeg.walletId,
+              type: 'payment',
+              amount: -orderTotal,
+              balanceAfter: walletLeg.balanceAfter,
+              description: `Order ${orderNumber} paid from wallet balance`,
+              relatedEntityId: newOrder.id,
+            },
+          })
+          const walletPayment = await tx.payments.create({
+            data: {
+              orderId: newOrder.id,
+              method: 'wallet',
+              amount: orderTotal,
+              status: 'success',
+              transactionId: `WALLET-${orderNumber}`,
+              gatewayResponse: JSON.stringify({
+                walletTransactionId: walletTx.id,
+                paidFrom: 'wallet_balance',
+                balanceAfter: walletLeg.balanceAfter,
+              }),
+              paidAt: new Date(),
+            },
+          })
+          walletPaymentId = walletPayment.id
+        }
+
+        // t194: manual legs get a REAL pending payments row in the same tx —
+        // the order is born awaiting payment verification, never a silent
+        // free order. 'cod' leaves no row (cash collected on delivery).
+        let manualPaymentId: string | null = null
+        if (paymentMethod === 'bank_transfer' || paymentMethod === 'mobile_banking') {
+          const manualPayment = await tx.payments.create({
+            data: {
+              orderId: newOrder.id,
+              method: paymentMethod,
+              amount: orderTotal,
+              status: 'pending',
+            },
+          })
+          manualPaymentId = manualPayment.id
+        }
 
         // SELLER-FUNDED (Task 115): a seller campaign's discount comes off
         // THIS supplier's subOrder subtotal too (the seller gives it from
@@ -372,7 +457,7 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        return { order: newOrder, subOrder, supplierId, appliedPromotion }
+        return { order: newOrder, subOrder, supplierId, appliedPromotion, walletPaymentId, manualPaymentId }
       })
 
       await notifyOrderMilestone(buyerId, order.order.orderNumber, 'confirmed', order.order.id)
@@ -398,6 +483,11 @@ export async function POST(request: NextRequest) {
           totalAmount: order.order.totalAmount,
           shippingFee: order.order.shippingFee,
           paymentStatus: order.order.paymentStatus,
+          // t194: the honest receipt — the method chosen + pending payment
+          // row for the manual legs awaiting verification.
+          paymentMethod,
+          walletPaymentId: order.walletPaymentId,
+          manualPaymentId: order.manualPaymentId,
           // Task 100: the honest buy-now receipt — the campaign that applied.
           promotionApplied: order.appliedPromotion,
         },
@@ -407,6 +497,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: txError.message, available: txError.available },
           { status: 409 }
+        )
+      }
+      if (txError instanceof WalletInsufficientError) {
+        // 402 Payment Required — with the REAL balance so the buy-now page
+        // can state exactly how much is missing.
+        return NextResponse.json(
+          { error: 'Insufficient wallet balance for this order — top up or pick another payment method.', walletBalance: txError.balance },
+          { status: 402 }
         )
       }
       if (txError instanceof PromotionUsageError) {
