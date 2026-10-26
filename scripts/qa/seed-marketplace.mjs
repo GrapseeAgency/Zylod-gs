@@ -243,9 +243,9 @@ for (const p of dailyTargets) {
 
 // ─── 7. Home banners (admin rail, absolute URLs) ───────────────
 const BANNERS = [
-  { title: 'Source Textiles Direct From Mills', subtitle: 'Verified suppliers · MOQ from 100 meters · Tier discounts up to 15%', imageUrl: 'http://127.0.0.1:3000/images/banners/textile-warehouse.png', linkPageId: 'category-products', linkParams: 'category=textiles-fabrics', sortOrder: 0 },
-  { title: 'Bulk Agro & Jute Exports', subtitle: 'Basmati, jute bags & packaging — factory-direct BDT pricing', imageUrl: 'http://127.0.0.1:3000/images/banners/bulk-goods.png', linkPageId: 'category-products', linkParams: 'category=agriculture-food', sortOrder: 1 },
-  { title: 'Electronics Wholesale Lots', subtitle: 'Smartphones, power banks & LED panels with trade assurance', imageUrl: 'http://127.0.0.1:3000/images/banners/electronics-factory.png', linkPageId: 'category-products', linkParams: 'category=electronics', sortOrder: 2 },
+  { title: 'Source Textiles Direct From Mills', subtitle: 'Verified suppliers · MOQ from 100 meters · Tier discounts up to 15%', imageUrl: '/images/banners/textile-warehouse.png', linkPageId: 'category-products', linkParams: 'category=textiles-fabrics', sortOrder: 0 },
+  { title: 'Bulk Agro & Jute Exports', subtitle: 'Basmati, jute bags & packaging — factory-direct BDT pricing', imageUrl: '/images/banners/bulk-goods.png', linkPageId: 'category-products', linkParams: 'category=agriculture-food', sortOrder: 1 },
+  { title: 'Electronics Wholesale Lots', subtitle: 'Smartphones, power banks & LED panels with trade assurance', imageUrl: '/images/banners/electronics-factory.png', linkPageId: 'category-products', linkParams: 'category=electronics', sortOrder: 2 },
 ]
 for (const b of BANNERS) {
   const res = await admin('POST', '/api/admin/banners', { ...b, position: 'home_top', isActive: true })

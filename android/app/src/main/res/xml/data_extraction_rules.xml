@@ -3,15 +3,20 @@
     <!-- Back up preferences only. The Room cache/sync-queue DB is derived
          device-local state and is intentionally not included (anything not
          listed under <include> is excluded). -->
-    <!-- zylod_secure.xml is excluded from both transport: its Keystore-backed
+    <!-- zylod_secure.xml is excluded from both transports: its Keystore-backed
          key never travels with the backup, so restored ciphertext is
          undecryptable and crashes EncryptedSharedPreferences (D4 fix). -->
+    <!-- t206 B7: zylod_cart.xml (the account-scoped local cart) is excluded
+         from both transports too — a restored cart would POST the previous
+         account's lines into a new account's server cart. -->
     <cloud-backup>
         <include domain="sharedpref" path="."/>
         <exclude domain="sharedpref" path="zylod_secure.xml"/>
+        <exclude domain="sharedpref" path="zylod_cart.xml"/>
     </cloud-backup>
     <device-transfer>
         <include domain="sharedpref" path="."/>
         <exclude domain="sharedpref" path="zylod_secure.xml"/>
+        <exclude domain="sharedpref" path="zylod_cart.xml"/>
     </device-transfer>
 </data-extraction-rules>

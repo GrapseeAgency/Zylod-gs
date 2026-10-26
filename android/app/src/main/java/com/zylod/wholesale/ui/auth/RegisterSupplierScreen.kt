@@ -125,6 +125,12 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
         _state.update { it.copy(step = step.coerceIn(1, 4), error = null) }
     }
 
+    /** t206 B6: step validation messages ride the same error channel as the
+     *  network failures — the Next buttons were silent no-ops on blank fields. */
+    fun setValidationError(message: String) {
+        _state.update { it.copy(error = message) }
+    }
+
     fun consumeSuccess() {
         _state.update { it.copy(success = false) }
     }
@@ -583,6 +589,16 @@ fun RegisterSupplierScreen(
                     text = "Next: NID Upload",
                     onClick = {
                         if (fullName.isBlank() || companyName.isBlank() || email.isBlank() || phone.isBlank() || password.isBlank()) {
+                            // t206 B6: surface WHY the button did nothing.
+                            vm.setValidationError(
+                                when {
+                                    fullName.isBlank() -> "Enter your full name to continue"
+                                    companyName.isBlank() -> "Enter your business / company name to continue"
+                                    email.isBlank() -> "Enter your business email to continue"
+                                    phone.isBlank() -> "Enter your phone number to continue"
+                                    else -> "Choose a password to continue"
+                                },
+                            )
                             return@ZylodButton
                         }
                         vm.setStep(2)
@@ -607,7 +623,14 @@ fun RegisterSupplierScreen(
                     when (state.step) {
                         2 -> ZylodButton(
                             text = "Next: Trade License",
-                            onClick = { if (nidNumber.isBlank()) return@ZylodButton; vm.setStep(3) },
+                            onClick = {
+                                if (nidNumber.isBlank()) {
+                                    // t206 B6: silent no-op → visible reason.
+                                    vm.setValidationError("Enter your NID number to continue")
+                                    return@ZylodButton
+                                }
+                                vm.setStep(3)
+                            },
                             modifier = Modifier.weight(2f),
                             content = {
                                 Text("Next: Trade License", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
@@ -616,7 +639,17 @@ fun RegisterSupplierScreen(
                         )
                         3 -> ZylodButton(
                             text = "Next: Bank Details",
-                            onClick = { if (tradeLicenseNumber.isBlank() || tinNumber.isBlank()) return@ZylodButton; vm.setStep(4) },
+                            onClick = {
+                                if (tradeLicenseNumber.isBlank() || tinNumber.isBlank()) {
+                                    // t206 B6: silent no-op → visible reason.
+                                    vm.setValidationError(
+                                        if (tradeLicenseNumber.isBlank()) "Enter your trade license number to continue"
+                                        else "Enter your TIN number to continue",
+                                    )
+                                    return@ZylodButton
+                                }
+                                vm.setStep(4)
+                            },
                             modifier = Modifier.weight(2f),
                             content = {
                                 Text("Next: Bank Details", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)

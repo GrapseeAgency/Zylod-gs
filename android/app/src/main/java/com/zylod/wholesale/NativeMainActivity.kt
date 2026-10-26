@@ -190,8 +190,12 @@ class NativeMainActivity : FragmentActivity(), WebViewHost {
 
     override fun onDestroy() {
         speechRecognizer?.destroy()
-        super.onDestroy()
+        // t206: tear down pooled shells BEFORE the superclass destroy —
+        // pool.reset() clears WebViews that reference this activity's
+        // runOnUiThread; doing it after super.onDestroy() risked touching
+        // a destroyed activity scope.
         NativeWebViewPool.reset()
+        super.onDestroy()
     }
 
     // ----- WebViewHost: the embedded WebView's native capabilities -----

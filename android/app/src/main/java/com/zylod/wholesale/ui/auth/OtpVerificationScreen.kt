@@ -254,8 +254,20 @@ class OtpViewModel(private val appContext: Context) : ViewModel() {
             )
             SessionManager.setSession(token, ApiClient.json.encodeToString(UserProfileSeed.serializer(), seed))
             ProfileHydrator.refresh(baseUrl ?: ServerConfig.resolve(appContext))
+            _state.update { it.copy(loading = false, completedRegister = true, toast = "Account created successfully!") }
+        } else {
+            // t206 B4: a 2xx register response without a usable session shape
+            // used to land the user on Home with NO session — goHomeAfterAuth
+            // fired, every /api call 401'd. Treat it as a register failure so
+            // the screen surfaces the error instead of fake-success navigation.
+            _state.update {
+                it.copy(
+                    loading = false,
+                    registerFailed = true,
+                    toast = "Account created but the session could not be established — please log in",
+                )
+            }
         }
-        _state.update { it.copy(loading = false, completedRegister = true, toast = "Account created successfully!") }
     }
 }
 

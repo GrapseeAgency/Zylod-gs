@@ -55,6 +55,17 @@ export const useAuthStore = create<AuthState>()(
         } catch {
           // Ignore API errors on logout
         }
+        // t206 B1: when running inside the native Android shell, the mirrored
+        // native session (secure prefs auth_token + user_json + local cart)
+        // must die with the web session, or the next WebView pool checkout
+        // re-seeds b2b-auth-storage from a now-dead session — a ghost login
+        // that every /api call 401s against. Best-effort, web-only no-op.
+        try {
+          const { clearNativeAuthToken } = await import('@/lib/native-bridge')
+          clearNativeAuthToken()
+        } catch {
+          // Native bridge absent (plain web) — nothing to clear.
+        }
         set({ isAuthenticated: false, user: null, token: null })
       },
 

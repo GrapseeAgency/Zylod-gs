@@ -207,6 +207,12 @@ fun WebScreen(pageId: String, query: String) {
     LaunchedEffect(Unit) {
         if (baseUrl == null) {
             baseUrl = runCatching { ServerConfig.resolve(context) }.getOrNull()
+            // t206 B10: endpoint discovery FAILED (every candidate unreachable).
+            // Previously resolving flipped false with baseUrl still null — no
+            // spinner (spinner requires resolving), no error state → a silent
+            // permanent blank screen. Now the render falls through to the
+            // error branch with a retry affordance.
+            if (baseUrl == null) pageError = true
         }
         resolving = false
     }

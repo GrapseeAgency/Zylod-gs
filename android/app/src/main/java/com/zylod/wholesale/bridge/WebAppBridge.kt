@@ -143,6 +143,18 @@ class WebAppBridge(
                 val trimmed = token.trim()
                 if (trimmed.isEmpty()) {
                     editor.remove("auth_token")
+                    // t206 B1: a web logout that empties the mirrored token is a
+                    // FULL session end — the cached profile JSON must die with
+                    // it, or WebAuthSeeder would re-seed b2b-auth-storage from
+                    // the stale profile on the next pool checkout (ghost shell).
+                    editor.remove("user_json")
+                    // t206 B2: also drop the profile↔token pairing stamp.
+                    editor.remove("user_json_token")
+                    editor.apply()
+                    // t206 B1: route through the canonical session-end path so
+                    // native screens observing expiredTick surface the signed-out
+                    // state (clear() is idempotent with the removals above).
+                    com.zylod.wholesale.data.session.SessionManager.onSessionExpired()
                     // t202: a web logout that empties the mirrored token also
                     // ends the native cart's account scope — local cart lines
                     // must not leak into the next session.

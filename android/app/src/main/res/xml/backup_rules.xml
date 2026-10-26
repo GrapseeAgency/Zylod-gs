@@ -6,4 +6,9 @@
          ciphertext that made EncryptedSharedPreferences throw (AEADBadTag)
          on every access after a device transfer/cloud restore (D4 fix). -->
     <exclude domain="sharedpref" path="zylod_secure.xml"/>
+    <!-- t206 B7: the local cart is ACCOUNT-SCOPED device state. Restoring it
+         onto another device/user makes pullServerCart POST the previous
+         account's rows into the new account's server cart on first login —
+         a cross-account data leak. It never travels with a backup. -->
+    <exclude domain="sharedpref" path="zylod_cart.xml"/>
 </full-backup-content>

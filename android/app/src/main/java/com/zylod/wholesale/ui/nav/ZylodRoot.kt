@@ -223,7 +223,16 @@ fun ZylodRoot() {
                 navController.navigate(
                     "web/${Uri.encode(destination.pageId)}?params=${Uri.encode(destination.query)}",
                 ) {
-                    popUpTo(HOME_ROUTE) { saveState = false }
+                    // t206 B3: flatten only web→web hops. When the current top
+                    // is a NATIVE screen (product-detail, cart, orders), pushing
+                    // the web route WITHOUT popUpTo keeps that screen on the
+                    // back stack — hardware Back from buy-now returns to the
+                    // PDP, and Back from checkout returns to the cart, instead
+                    // of both landing on Home. When the top is already a web
+                    // route, flatten (web depth stays 1, no web-on-web pileup).
+                    if (route.startsWith("web/")) {
+                        popUpTo(HOME_ROUTE) { saveState = false }
+                    }
                     launchSingleTop = true
                 }
         }

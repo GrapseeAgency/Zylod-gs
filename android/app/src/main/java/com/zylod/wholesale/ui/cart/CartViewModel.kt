@@ -64,7 +64,10 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
         viewModelScope.launch {
             SessionManager.expiredTick.collect {
                 val tokenNow = SessionManager.token() != null
-                if (!tokenNow) _notice.value = "Your session ended — showing your local cart"
+                // t206 B8: the guest state renders the sign-in WALL — the local
+                // cart is deliberately unreachable there, so the old copy
+                // ("showing your local cart") contradicted the screen.
+                if (!tokenNow) _notice.value = "Your session ended — sign in to view your cart"
                 _authed.value = tokenNow
             }
         }

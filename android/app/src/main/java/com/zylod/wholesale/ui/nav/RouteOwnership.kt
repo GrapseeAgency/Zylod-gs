@@ -124,13 +124,6 @@ object RouteOwnership {
         "welcome", "login", "register-buyer", "register-supplier", "forgot-password",
     )
 
-    fun ownerOf(pageId: String): Owner = when (pageId) {
-        PAGE_CART, PAGE_PRODUCT_DETAIL, PAGE_BUYER_ORDERS -> Owner.NATIVE
-        in NATIVE_AUTH_PAGE_IDS -> Owner.NATIVE
-        // PAGE_HOME lands here too: home → WEBVIEW (owner directive).
-        else -> Owner.WEBVIEW
-    }
-
     /**
      * THE resolver. Every navigation entry point funnels through here:
      * native bottom bar, web-initiated `openPage` bridge, Home quick-access
@@ -199,6 +192,11 @@ object RouteOwnership {
                 "buyer-profile", "supplier-dashboard", "supplier-profile", "admin-dashboard",
                 "notification-preferences", "privacy-settings", "language-settings",
                 "theme-settings", "linked-accounts", "business-profile",
+                // t206 cosmetics: money + order + alert surfaces opened from
+                // the profile tab used to highlight "home" in the bottom bar.
+                "order-detail", "my-orders", "wallet", "my-wallet", "addresses",
+                "shipping-address", "add-address", "edit-address", "notifications",
+                "notification-archive", "transaction-history", "payment-method",
             ).associateWith { "profile" },
         )
     }

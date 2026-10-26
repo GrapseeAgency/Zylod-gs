@@ -31,7 +31,10 @@ object DeepLinkParser {
                 // t203: native ORDERS screen owns pageId "buyer-orders"
                 // (RouteOwnership NATIVE set) — "my-orders" sent the link to a
                 // WebView list while the polished native Orders screen existed.
-                "orders" -> ParsedDeepLink("buyer-orders")
+                // t206 B5: zylod://orders/ORD-X targets ONE order — ride the
+                // WebView order-detail page (accepts orderId param) instead of
+                // dropping the id and landing on the bare list.
+                "orders" -> if (id != null) ParsedDeepLink("order-detail", mapOf("orderId" to id)) else ParsedDeepLink("buyer-orders")
                 "live" -> ParsedDeepLink("live-shopping-detail", id?.let { mapOf("id" to it) } ?: emptyMap())
                 else -> ParsedDeepLink(page)
             }
@@ -51,7 +54,9 @@ object DeepLinkParser {
                 "deals" -> ParsedDeepLink("daily-deals")
                 "cart" -> ParsedDeepLink("cart")
                 // t203: native ORDERS screen owns "buyer-orders" (see above).
-                "orders" -> ParsedDeepLink("buyer-orders")
+                // t206 B5: /orders/ORD-X → order-detail with the id (parity
+                // with the custom-scheme branch above).
+                "orders" -> if (secondSegment != null) ParsedDeepLink("order-detail", mapOf("orderId" to secondSegment)) else ParsedDeepLink("buyer-orders")
                 "terms" -> ParsedDeepLink("terms-of-service")
                 "privacy" -> ParsedDeepLink("privacy-policy")
                 "about" -> ParsedDeepLink("about-us")
