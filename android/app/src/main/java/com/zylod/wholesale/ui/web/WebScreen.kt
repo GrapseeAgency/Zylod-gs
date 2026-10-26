@@ -360,7 +360,18 @@ fun WebScreen(pageId: String, query: String) {
                         scope.launch {
                             val fresh = runCatching { ServerConfig.resolve(context) }.getOrNull()
                             resolving = false
-                            if (fresh != null && fresh != baseUrl) {
+                            if (fresh == null) {
+                                // t208: STILL unreachable — re-arm the error
+                                // state. The previous code forced a reload for
+                                // every non-new-winner outcome, but with
+                                // baseUrl still null the drive effect returns
+                                // BEFORE any load runs, leaving pageError=false
+                                // with no shell and no spinner → a permanent
+                                // blank screen after a failed retry (a dead
+                                // end, the exact class t206 B10 fixed for the
+                                // first attempt).
+                                pageError = true
+                            } else if (fresh != baseUrl) {
                                 // New winner: the effect re-runs on baseUrl,
                                 // drops the incompatible shell, and hard-loads
                                 // the target on a fresh checkout.

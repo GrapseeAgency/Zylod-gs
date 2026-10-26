@@ -86,7 +86,7 @@ interface RfqDetail extends RfqListItem {
 /** Real rfqRequests.status values (prisma/schema.prisma: open | quoted | awarded | closed | expired). */
 const STATUS_META: Record<string, { color: string; bg: string; border: string; icon: typeof Clock }> = {
   open: { color: '#C8102E', bg: '#FFF1F2', border: '#FECDD3', icon: Clock },
-  quoted: { color: '#1565C0', bg: '#E3F2FD', border: '#BBDEFB', icon: FileText },
+  quoted: { color: '#00897B', bg: '#E0F2F1', border: '#B2DFDB', icon: FileText },
   awarded: { color: '#7C3AED', bg: '#F3E8FD', border: '#DDD6FE', icon: CheckCircle2 },
   closed: { color: '#059669', bg: '#ECFDF5', border: '#A7F3D0', icon: CheckCircle2 },
   expired: { color: '#6B7280', bg: '#F3F4F6', border: '#E5E7EB', icon: XCircle },

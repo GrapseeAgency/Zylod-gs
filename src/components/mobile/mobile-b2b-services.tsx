@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 
 const B2B_SERVICES = [
   { icon: Store, label: 'Verified Suppliers', desc: 'Verified & trade assured', color: '#E53935' },
-  { icon: Shield, label: 'Secure Transactions', desc: 'Trade assurance protection', color: '#1976D2' },
+  { icon: Shield, label: 'Secure Transactions', desc: 'Trade assurance protection', color: '#37474F' },
   { icon: CreditCard, label: 'Flexible Payments', desc: 'bKash, Nagad, Bank', color: '#388E3C' },
   { icon: Banknote, label: 'Credit Lines', desc: 'Net-30/60 payment terms', color: '#F57C00' },
 ]

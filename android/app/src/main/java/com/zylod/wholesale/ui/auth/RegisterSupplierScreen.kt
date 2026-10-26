@@ -291,9 +291,22 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
                     )
                     SessionManager.setSession(token, ApiClient.json.encodeToString(UserProfileSeed.serializer(), seed))
                     ProfileHydrator.refresh(base)
-                }
-                _state.update {
-                    it.copy(submitting = false, success = true, toast = "Account created! Your profile is pending verification.")
+                    _state.update {
+                        it.copy(submitting = false, success = true, toast = "Account created! Your profile is pending verification.")
+                    }
+                } else {
+                    // t208 (t206 B4 parity for the SUPPLIER flow): a 2xx register
+                    // response without a usable {user, token} shape used to set
+                    // success UNCONDITIONALLY below — the screen navigated Home
+                    // with NO token (goHomeAfterAuth) and every /api call 401'd:
+                    // a fake logged-in Home. Surface the failure instead; the
+                    // user completes via the login screen.
+                    _state.update {
+                        it.copy(
+                            submitting = false,
+                            error = "Account created but the session could not be established — please log in",
+                        )
+                    }
                 }
             } catch (ce: CancellationException) {
                 throw ce

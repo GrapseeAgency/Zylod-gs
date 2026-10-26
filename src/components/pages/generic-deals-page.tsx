@@ -25,7 +25,7 @@ interface DealProduct {
 const DEAL_META: Record<string, { name: string; subtitle: string; icon: React.ReactNode; colorFrom: string; colorTo: string }> = {
   'mega-sale': { name: 'Mega Sale Events', subtitle: 'Huge seasonal markdowns across top wholesale categories', icon: <Flame className="h-8 w-8 text-white" />, colorFrom: '#D84315', colorTo: '#FF7043' },
   'seasonal-offers': { name: 'Seasonal Offers', subtitle: 'Limited-time deals tailored for peak purchasing seasons', icon: <Tag className="h-8 w-8 text-white" />, colorFrom: '#2E7D32', colorTo: '#66BB6A' },
-  'bulk-discounts': { name: 'Bulk Volume Discounts', subtitle: 'Tiered pricing: order more, save up to 40% more', icon: <Package className="h-8 w-8 text-white" />, colorFrom: '#1565C0', colorTo: '#42A5F5' },
+  'bulk-discounts': { name: 'Bulk Volume Discounts', subtitle: 'Tiered pricing: order more, save up to 40% more', icon: <Package className="h-8 w-8 text-white" />, colorFrom: '#B71C1C', colorTo: '#EF9A9A' },
   'clearance': { name: 'Clearance & Liquidation', subtitle: 'Final inventory stockouts at rock-bottom factory rates', icon: <Sparkles className="h-8 w-8 text-white" />, colorFrom: '#C62828', colorTo: '#EF5350' },
   'new-arrivals': { name: 'New Product Launches', subtitle: 'Be the first to source newly listed factory releases', icon: <Clock className="h-8 w-8 text-white" />, colorFrom: '#6A1B9A', colorTo: '#AB47BC' },
 }

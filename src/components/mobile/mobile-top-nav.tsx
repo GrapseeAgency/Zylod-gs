@@ -13,14 +13,14 @@ import { Separator } from '@/components/ui/separator'
 /* ─── Menu items organized in sections ─── */
 const DEAL_SERVICES = [
   { icon: Scissors, label: 'Daily Deals', desc: 'Bulk discounts', color: '#E53935', page: 'daily-deals' as const },
-  { icon: Globe, label: 'Cross-border', desc: 'International sourcing', color: '#1976D2', page: 'cross-border' as const },
+  { icon: Globe, label: 'Cross-border', desc: 'International sourcing', color: '#37474F', page: 'cross-border' as const },
   { icon: Clock, label: 'Flash Sale', desc: 'Limited time offers', color: '#F57C00', page: 'flash-sale' as const },
   { icon: Zap, label: 'Factory Direct', desc: 'Direct from manufacturers', color: '#E53935', page: 'factory-direct' as const },
 ]
 
 const B2B_SERVICES = [
   { icon: Store, label: 'Verified Suppliers', desc: 'Verified & trade assured', color: '#388E3C', page: 'suppliers' as const },
-  { icon: Shield, label: 'Trade Assurance', desc: 'Secure transactions', color: '#1976D2', page: 'suppliers' as const },
+  { icon: Shield, label: 'Trade Assurance', desc: 'Secure transactions', color: '#37474F', page: 'suppliers' as const },
   { icon: CreditCard, label: 'Flexible Payments', desc: 'bKash, Nagad, Bank', color: '#388E3C', page: 'payment-method' as const },
   { icon: Banknote, label: 'Credit Lines', desc: 'Net-30/60 terms', color: '#F57C00', page: 'buyer-dashboard' as const },
   { icon: Truck, label: 'Shipping & Logistics', desc: 'Door-to-door delivery', color: '#6A1B9A', page: 'shipping-calculator' as const },
@@ -30,7 +30,7 @@ const B2B_SERVICES = [
 const QUICK_ACCESS = [
   { icon: ClipboardList, label: 'My Orders', page: 'orders' as const, color: '#E53935' },
   { icon: Heart, label: 'Wishlist', page: 'wishlist' as const, color: '#AD1457' },
-  { icon: Package, label: 'My Cart', page: 'cart' as const, color: '#1976D2' },
+  { icon: Package, label: 'My Cart', page: 'cart' as const, color: '#37474F' },
   { icon: Headphones, label: 'Help Center', page: 'help-center' as const, color: '#388E3C' },
 ]
 

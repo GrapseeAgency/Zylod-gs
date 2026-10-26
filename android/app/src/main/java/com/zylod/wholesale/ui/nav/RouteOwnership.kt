@@ -185,7 +185,17 @@ object RouteOwnership {
         )
         putAll(listOf("chat-list", "chat-detail", "messages").associateWith { "profile" })
         putAll(listOf("flash-sale", "flash-deals", "daily-deals").associateWith { "deals" })
-        putAll(listOf("cart", "checkout").associateWith { "cart" })
+        // t208: the rest of the CHECKOUT FLOW highlighted "home" — buy-now is
+        // opened from the NATIVE PDP, order-summary/order-confirmation from
+        // the checkout flow itself, while "checkout" already highlighted the
+        // cart tab. The cart tab must stay highlighted for the whole flow
+        // (same defect class as the t206 profile additions).
+        putAll(
+            listOf(
+                "cart", "checkout", "buy-now", "order-summary", "order-confirmation",
+                "checkout-success", "add-to-cart-confirm", "add-to-cart-confirmation",
+            ).associateWith { "cart" },
+        )
         putAll(
             listOf(
                 "profile", "buyer-dashboard", "buyer-orders", "buyer-wishlist", "buyer-settings",

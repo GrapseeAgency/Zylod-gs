@@ -11,7 +11,7 @@ import {
 
 /* ─── Color Constants ─── */
 
-const BLUE = '#1976D2'
+const BLUE = '#37474F'
 
 const PROMO_FEATURES = [
   { icon: Scissors, title: 'Daily Deals', color: 'primary', desc: 'Bulk discounts on selected items' },

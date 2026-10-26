@@ -85,6 +85,13 @@ fun CartScreen(
         notice?.let { snackbar.showSnackbar(it); vm.consumeNotice() }
     }
 
+    // t208: pull the authoritative server cart on EVERY entry to the screen.
+    // The VM survives on the saved back stack, so cart mutations that happened
+    // elsewhere (WebView add-to-cart, a completed checkout that emptied the
+    // server cart, another device) never refreshed the list — ghost rows and
+    // missing web-added lines until the process restarted.
+    LaunchedEffect(Unit) { vm.refresh() }
+
     val items = state.items
 
     Column(

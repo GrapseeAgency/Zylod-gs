@@ -14,12 +14,12 @@ import {
 
 const PRIZES = [
   { label: '৳100 Voucher', color: '#EF4444' },
-  { label: '50 Points', color: '#3B82F6' },
+  { label: '50 Points', color: '#00897B' },
   { label: '৳250 Off', color: '#10B981' },
   { label: 'Free Cargo', color: '#F59E0B' },
   { label: '200 Points', color: '#8B5CF6' },
   { label: '৳500 VIP', color: '#EC4899' },
-  { label: '500 Points', color: '#6366F1' },
+  { label: '500 Points', color: '#C62828' },
 ]
 
 export function SpinWinPage() {
@@ -128,12 +128,12 @@ export function SpinWinPage() {
             style={{
               background: `conic-gradient(
                 #EF4444 0deg 51.4deg,
-                #3B82F6 51.4deg 102.8deg,
+                #00897B 51.4deg 102.8deg,
                 #10B981 102.8deg 154.2deg,
                 #F59E0B 154.2deg 205.6deg,
                 #8B5CF6 205.6deg 257.0deg,
                 #EC4899 257.0deg 308.4deg,
-                #6366F1 308.4deg 360deg
+                #C62828 308.4deg 360deg
               )`,
             }}
           >

@@ -37,6 +37,17 @@ import org.json.JSONObject
  *    served bundle identity must be visible) — a dev server legitimately
  *    serves an arbitrary working-tree commit, so there it is surfaced, not
  *    silently accepted and not made unusable.
+ *
+ *  t208 UPDATE — NAVIGATION FAIL-OPEN: every verdict above is still computed
+ *  and logged (F5 audit trail), but NO verdict may block the page from
+ *  rendering any more ([blocking] is log-only). A metadata divergence — a
+ *  stale pre-provenance cache entry, a dev/working-tree server, a redeployed
+ *  bundle, a CI-stamped commit-suffix mismatch, a missing /api/app/version
+ *  payload — used to replace the ENTIRE page with the ProvenanceGate dead
+ *  end on real devices (the "blanket-block" recorded in worklog t206). The
+ *  app must never show the user a dead end because of a metadata mismatch;
+ *  the divergence stays fully visible under `adb logcat -s ZylodProvenance`
+ *  and in the DEBUG diagnostics banner.
  */
 object WebProvenance {
 
@@ -112,11 +123,15 @@ object WebProvenance {
         }
     }
 
-    fun blocking(verdict: Verdict, debugBuild: Boolean): Boolean = when (verdict) {
-        is Verdict.Ok -> false
-        is Verdict.Mismatch -> !debugBuild
-        Verdict.Missing -> true
-    }
+    /**
+     * t208 — LOG-ONLY (fail-open) gate. Previously: Ok→false, Mismatch→
+     * !debugBuild, Missing→true — i.e. every WebView page became the
+     * ProvenanceGate dead end whenever the served bundle carried no identity
+     * on ANY build (or a mismatched commit in release). Kept as a function
+     * (WebScreen calls it) but it can no longer block: the verdict is
+     * recorded by [logServed] and shown in the DEBUG banner instead.
+     */
+    fun blocking(verdict: Verdict, debugBuild: Boolean): Boolean = false
 
     fun logServed(endpoint: String, verdict: Verdict, debugBuild: Boolean) {
         when (verdict) {
@@ -125,13 +140,16 @@ object WebProvenance {
                     "version=${verdict.identity.version} builtAt=${verdict.identity.builtAt} verdict=OK")
             is Verdict.Mismatch -> {
                 val level = if (debugBuild) Log.WARN else Log.ERROR
-                val action = if (debugBuild) "VISIBLE-IN-DIAGNOSTICS(non-blocking)" else "BLOCKED"
+                // t208: fail-open — nothing is blocked any more; the action
+                // string must not claim BLOCKED for an owner audit.
+                val action = "LOG-ONLY-FAIL-OPEN(t208: rendered, not blocked)"
                 Log.println(level, LOG_TAG, "served endpoint=$endpoint bundle=${verdict.identity.shortCommit} " +
                     "expected=${verdict.expectedCommit} verdict=MISMATCH action=$action")
             }
             Verdict.Missing ->
-                Log.e(LOG_TAG, "served endpoint=$endpoint bundle=NONE verdict=UNKNOWN action=BLOCKED " +
-                    "(a wrong/stale/unknown bundle is never silently accepted)")
+                Log.e(LOG_TAG, "served endpoint=$endpoint bundle=NONE verdict=UNKNOWN " +
+                    "action=LOG-ONLY-FAIL-OPEN(t208: rendered, not blocked) " +
+                    "(identity divergence recorded for the owner audit; navigation never dead-ends)")
         }
     }
 }

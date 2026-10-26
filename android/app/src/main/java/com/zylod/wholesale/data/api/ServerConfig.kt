@@ -30,7 +30,8 @@ import org.json.JSONObject
  *    captive portal, 404) is skipped and logged — it can no longer beat a
  *    genuine server further down the list. Only when NO candidate is genuine
  *    does discovery fall back (first-alive → cache → first), with the reason
- *    logged and the provenance gate expected to refuse the non-Zylod responder;
+ *    logged and the divergence recorded by the provenance gate (t208: the
+ *    gate is LOG-ONLY for navigation — the page still renders, no dead end);
  *  - an endpoint change between resolves is logged prominently — endpoint
  *    switching is never silent (owner hard rule);
  *  - the full probe matrix (endpoint → status → served bundle) is logged so
@@ -94,7 +95,7 @@ object ServerConfig {
             val chosen = genuine ?: firstAlive ?: previous ?: candidates.first()
             val reason = when {
                 genuine != null -> "first-genuine-zylod-in-order"
-                firstAlive != null -> "no-genuine-endpoint-first-alive(gate-will-refuse)"
+                firstAlive != null -> "no-genuine-endpoint-first-alive(t208-fail-open-render-anyway)"
                 previous != null -> "all-dead-cache-fallback"
                 else -> "all-dead-default-first"
             }

@@ -59,7 +59,13 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
     private var baseUrl: String? = null
 
     init {
-        refresh()
+        // t208: NO init-time pull. The screen's LaunchedEffect(Unit) re-pulls
+        // on EVERY composition — this VM survives on the saved back stack
+        // (tab destination with saveState/restoreState), so an init-only pull
+        // went stale the moment the cart changed elsewhere (a WebView
+        // add-to-cart POSTing /api/cart, a completed checkout emptying the
+        // server cart, another device): the native cart screen showed ghost
+        // rows and missed web-added lines until the process restarted.
         // 401→refresh→logout chain: drop the authenticated UI state live.
         viewModelScope.launch {
             SessionManager.expiredTick.collect {

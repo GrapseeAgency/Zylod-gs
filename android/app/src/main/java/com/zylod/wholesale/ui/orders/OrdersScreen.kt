@@ -37,6 +37,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -71,6 +72,11 @@ fun OrdersScreen(
     val vm: OrdersViewModel = viewModel { OrdersViewModel(context.applicationContext) }
     val state by vm.state.collectAsStateWithLifecycle()
     val error = state.error
+
+    // t208: re-pull on every entry — the VM survives on the saved back stack
+    // (tab-like destination), so orders placed through the WebView checkout
+    // never appeared here until the process restarted.
+    LaunchedEffect(Unit) { vm.refresh() }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

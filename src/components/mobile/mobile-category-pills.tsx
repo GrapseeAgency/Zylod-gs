@@ -24,7 +24,7 @@ interface Subcategory {
 }
 
 /* Visual palette — counts are live from /api/categories */
-const COLORS = ['#E53935', '#388E3C', '#1976D2', '#F57C00', '#7B1FA2', '#00897B', '#C62828', '#AD1457', '#EF6C00', '#455A64', '#004D40', '#1565C0', '#FF8F00', '#6A1B9A', '#D81B60', '#2E7D32', '#5D4037', '#E65100', '#37474F', '#283593']
+const COLORS = ['#E53935', '#388E3C', '#8D6E63', '#F57C00', '#7B1FA2', '#00897B', '#C62828', '#AD1457', '#EF6C00', '#455A64', '#004D40', '#F06292', '#FF8F00', '#6A1B9A', '#D81B60', '#2E7D32', '#5D4037', '#E65100', '#37474F', '#616161']
 const ICONS: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
   'textiles-fabrics': LayoutGrid,
   'agriculture-food': LayoutGrid,

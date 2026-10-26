@@ -52,7 +52,7 @@ const VIP_TIERS = [
     name: 'Platinum Conglomerate',
     minSpendBDT: 2000000,
     badge: 'Platinum',
-    color: '#6366F1',
+    color: '#C62828',
     benefits: [
       '8% Unconditional Mill Rate Subsidy',
       'Personal Key Account Director & WhatsApp Hotline',

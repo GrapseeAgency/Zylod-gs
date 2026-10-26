@@ -22,7 +22,7 @@ import {
 /* ─── Color Constants ─── */
 
 const RED = '#E53935'
-const BLUE = '#1976D2'
+const BLUE = '#37474F'
 const GREEN = '#388E3C'
 
 export function RightSidebar() {

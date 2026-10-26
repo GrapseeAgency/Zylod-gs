@@ -32,7 +32,7 @@ const CATEGORY_PAGE_MAP: Record<string, string> = {
 }
 
 /* ─── Category icon palette (visual only — counts are live) ─── */
-const CATEGORY_COLORS = ['#E53935', '#388E3C', '#1976D2', '#F57C00', '#7B1FA2', '#00897B', '#C62828', '#AD1457', '#EF6C00', '#455A64', '#004D40', '#1565C0', '#FF8F00', '#6A1B9A']
+const CATEGORY_COLORS = ['#E53935', '#388E3C', '#8D6E63', '#F57C00', '#7B1FA2', '#00897B', '#C62828', '#AD1457', '#EF6C00', '#455A64', '#004D40', '#F06292', '#FF8F00', '#6A1B9A']
 
 interface SidebarCategory {
   id: string

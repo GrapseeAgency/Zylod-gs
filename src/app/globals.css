@@ -92,6 +92,62 @@
      no dark surface reads as navy. */
   --color-sky-900: #1f1f1f;
   --color-sky-950: #111111;
+
+  /* t208 NAVY-BLUE FIX (round 4): the remaining LIGHT sky steps are Tailwind's
+     blue-hued defaults and are used on 100+ info chips, banners, borders and
+     icon tiles (bg-sky-50/100, border-sky-100/200, text-sky-*, from/to-sky-*).
+     The owner's standing directive is a crimson/BLACK theme with NO blue —
+     so the whole sky ramp goes hue-less (same neutral ramp as gray/slate).
+     Accent text becomes graphite; info surfaces match the theme surfaces. */
+  --color-sky-50: #fafafa;
+  --color-sky-100: #f5f5f5;
+  --color-sky-200: #e5e5e5;
+  --color-sky-300: #d4d4d4;
+  --color-sky-400: #a3a3a3;
+  --color-sky-500: #737373;
+  --color-sky-600: #525252;
+  --color-sky-700: #404040;
+  --color-sky-800: #262626;
+  --color-sky-900: #1f1f1f;
+  --color-sky-950: #111111;
+
+  /* t208: same treatment for the other blue-family scales. No component uses
+     raw blue or indigo classes today, but remapping them here makes it
+     impossible for a future class to silently reintroduce navy. Cyan-* is
+     used on notification/back-in-stock accents — hue-less like the rest. */
+  --color-blue-50: #fafafa;
+  --color-blue-100: #f5f5f5;
+  --color-blue-200: #e5e5e5;
+  --color-blue-300: #d4d4d4;
+  --color-blue-400: #a3a3a3;
+  --color-blue-500: #737373;
+  --color-blue-600: #525252;
+  --color-blue-700: #404040;
+  --color-blue-800: #262626;
+  --color-blue-900: #1a1a1a;
+  --color-blue-950: #0e0e0e;
+  --color-indigo-50: #fafafa;
+  --color-indigo-100: #f5f5f5;
+  --color-indigo-200: #e5e5e5;
+  --color-indigo-300: #d4d4d4;
+  --color-indigo-400: #a3a3a3;
+  --color-indigo-500: #737373;
+  --color-indigo-600: #525252;
+  --color-indigo-700: #404040;
+  --color-indigo-800: #262626;
+  --color-indigo-900: #1a1a1a;
+  --color-indigo-950: #0e0e0e;
+  --color-cyan-50: #fafafa;
+  --color-cyan-100: #f5f5f5;
+  --color-cyan-200: #e5e5e5;
+  --color-cyan-300: #d4d4d4;
+  --color-cyan-400: #a3a3a3;
+  --color-cyan-500: #737373;
+  --color-cyan-600: #525252;
+  --color-cyan-700: #404040;
+  --color-cyan-800: #262626;
+  --color-cyan-900: #1a1a1a;
+  --color-cyan-950: #0e0e0e;
 }
 
 :root {

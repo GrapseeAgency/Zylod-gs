@@ -20,7 +20,7 @@ interface Suggestion {
 /* ─── Search tools ─── */
 const SEARCH_TOOLS = [
   { icon: Camera, label: 'Photo Search', desc: 'Find products by image', color: '#E53935' },
-  { icon: QrCode, label: 'QR Scan', desc: 'Scan product QR code', color: '#1976D2' },
+  { icon: QrCode, label: 'QR Scan', desc: 'Scan product QR code', color: '#37474F' },
   { icon: ScanLine, label: 'Barcode Scan', desc: 'Scan product barcode', color: '#388E3C' },
   { icon: Sparkles, label: 'Advanced Search', desc: 'Filter by category, price, MOQ', color: '#6A1B9A' },
   { icon: FileText, label: 'RFQ', desc: 'Request for quotation', color: '#F57C00' },

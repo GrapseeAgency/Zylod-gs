@@ -314,7 +314,24 @@ fun OtpVerificationScreen(
     LaunchedEffect(state.completedRegister) { if (state.completedRegister) onCompletedRegister() }
     LaunchedEffect(state.completedLogin) { if (state.completedLogin) onCompletedLogin() }
     LaunchedEffect(state.resetToken) { state.resetToken?.let { vm.consumeResetToken(); onResetToken(it) } }
-    LaunchedEffect(state.registerFailed) { if (state.registerFailed) { vm.consumeRegisterFailed(); onRegisterFailed() } }
+    LaunchedEffect(state.registerFailed) {
+        if (state.registerFailed) {
+            vm.consumeRegisterFailed()
+            // t208: this branch ALWAYS pops back to the register form, which
+            // disposes this screen's snackbar host before
+            // LaunchedEffect(state.toast) can render anything — the failure
+            // message (register rejected / session not established / missing
+            // pending payload) was silently swallowed and the user landed on
+            // the register form with no explanation. A system Toast survives
+            // the navigation.
+            android.widget.Toast.makeText(
+                context,
+                state.toast ?: "Registration could not be completed — please check the form and try again",
+                android.widget.Toast.LENGTH_LONG,
+            ).show()
+            onRegisterFailed()
+        }
+    }
     LaunchedEffect(state.toast) {
         state.toast?.let { snackbar.showSnackbar(it); vm.consumeToast() }
     }

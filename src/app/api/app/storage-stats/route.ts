@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
         maxQuotaMB: 500,
         usagePercentage: ((totalBytes / (500 * 1024 * 1024)) * 100).toFixed(1),
         breakdown: [
-          { category: 'Product Media & Swatches', sizeMB: (estimates.imageThumbnailsBytes / (1024 * 1024)).toFixed(1), color: '#3B82F6' },
+          { category: 'Product Media & Swatches', sizeMB: (estimates.imageThumbnailsBytes / (1024 * 1024)).toFixed(1), color: '#37474F' },
           { category: 'Offline Wholesale Catalogue', sizeMB: (estimates.offlineCatalogueBytes / (1024 * 1024)).toFixed(1), color: '#10B981' },
           { category: 'Order Invoices & PDF Cache', sizeMB: (estimates.userCacheBytes / (1024 * 1024)).toFixed(1), color: '#F59E0B' },
           { category: 'System Web Fonts & Bundles', sizeMB: (estimates.fontAssetsBytes / (1024 * 1024)).toFixed(1), color: '#8B5CF6' },

@@ -271,13 +271,10 @@ export function AppEntry() {
       // Replace (not push) for the initial deep link so the back button
       // isn't wasted on a throwaway history entry.
       useNavigationStore.getState().setCurrentPage(deepLinkPage, params)
-      search.delete('page')
-      const qs = search.toString()
-      window.history.replaceState(
-        { page: deepLinkPage, params },
-        '',
-        qs ? `${window.location.pathname}?${qs}` : window.location.pathname,
-      )
+      // t208: the URL is NOT stripped anymore. setCurrentPage's replaceState
+      // writes `?page=<id>&<params>` back into the address bar, so a manual
+      // refresh (or a copied URL) re-lands on the same page instead of Home.
+      // The old code deleted ?page= here, which is what broke refresh.
       return
     }
 

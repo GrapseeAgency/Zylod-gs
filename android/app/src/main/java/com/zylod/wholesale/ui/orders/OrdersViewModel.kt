@@ -46,7 +46,10 @@ class OrdersViewModel(private val appContext: Context) : ViewModel() {
     private var baseUrl: String? = null
 
     init {
-        refresh()
+        // t208: NO init-time pull — OrdersScreen's LaunchedEffect(Unit) pulls
+        // on EVERY composition (same saved-back-stack staleness as
+        // CartViewModel: an order placed through the WebView checkout never
+        // appeared in this list until the process restarted).
         // 401→refresh→logout chain: a dropped session moves the screen to the
         // sign-in state (CartViewModel convention) instead of a stale list.
         viewModelScope.launch {

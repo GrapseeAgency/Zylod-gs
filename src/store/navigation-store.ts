@@ -16,10 +16,14 @@ interface NavigationState {
   goBack: () => void
 }
 
-/** Build a URL search string from params (used for History API entries). */
-function paramsToSearch(params: Record<string, string>): string {
-  const qs = new URLSearchParams(params).toString()
-  return qs ? `?${qs}` : ''
+/** t208: History API URLs ALWAYS carry ?page=<id>. The previous code wrote
+ * pathname + bare params, so ANY in-app navigation stripped the deep-link
+ * param — a manual refresh (or a shared URL copy) re-landed on Home instead
+ * of the page the user was on. AppEntry's boot logic already consumes
+ * ?page= on mount, so refreshing now reproduces the exact page. */
+function pageToSearch(page: string, params: Record<string, string>): string {
+  const qs = new URLSearchParams({ page, ...params }).toString()
+  return `?${qs}`
 }
 
 /** Parse pageId + params from a History API state object. */
@@ -62,7 +66,7 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     window.history.pushState(
       { page: targetPage, params: combinedParams },
       '',
-      window.location.pathname + paramsToSearch(combinedParams),
+      window.location.pathname + pageToSearch(targetPage, combinedParams),
     )
 
     set({
@@ -84,7 +88,7 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     window.history.replaceState(
       { page: targetPage, params: combinedParams },
       '',
-      window.location.pathname + paramsToSearch(combinedParams),
+      window.location.pathname + pageToSearch(targetPage, combinedParams),
     )
 
     set({
@@ -197,7 +201,7 @@ if (typeof window !== 'undefined') {
       window.history.replaceState(
         { page: s.currentPage, params: s.pageParams },
         '',
-        window.location.pathname + paramsToSearch(s.pageParams),
+        window.location.pathname + pageToSearch(s.currentPage, s.pageParams),
       )
     }
   }, 0)

@@ -3708,7 +3708,7 @@ function CategoryBrowserPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const palette = ['#E2136E', '#F6921E', '#7B2FBE', '#1976D2', '#0E9F6E', '#C81E1E', '#4F46E5', '#0891B2']
+  const palette = ['#E2136E', '#F6921E', '#7B2FBE', '#C62828', '#0E9F6E', '#C81E1E', '#AD1457', '#00897B']
 
   return (
     <div className="space-y-4">
