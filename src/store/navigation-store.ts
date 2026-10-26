@@ -75,6 +75,14 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
       currentPage: targetPage,
       pageParams: combinedParams,
     })
+
+    // Fresh navigation ALWAYS lands at the top of the new page. Without this
+    // the viewport keeps the previous page's scroll depth: clicking a footer
+    // link swaps the content but the (identical) footer still fills the
+    // screen, so navigation looks like "nothing happened" — and every other
+    // navigate() call lands mid-page on the new content.
+    // setCurrentPage already did this; navigate() was the missing half.
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
   },
 
   // Alias for navigate — used by sidebar, promo features, product cards.
@@ -121,6 +129,7 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
         currentPage: 'home',
         pageParams: {},
       })
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
     }
     // Already on home — let the host (Android) handle minimising the app.
   },
