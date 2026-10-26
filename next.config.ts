@@ -30,9 +30,16 @@ const nextConfig: NextConfig = {
     '192.168.43.79:3000',
     '10.0.2.2',
     '10.0.2.2:3000',
+    // Sandbox eth0 IPs rotate between sessions — Next 16 BLOCKS /_next/*
+    // assets from any origin not listed here, which renders unstyled/broken
+    // pages for the preview browser (root cause of "nasty pages" reports).
+    '21.0.12.219',
+    '21.0.12.219:3000',
+    '21.0.2.200',
+    '21.0.2.200:3000',
     '*.local',
     '.space-z.ai',
-    'preview-chat,chat-e3a890ad-d3c9-4afc-8e85-a407adad8d58.space-z.ai',
+    'preview-chat.chat-e3a890ad-d3c9-4afc-8e85-a407adad8d58.space-z.ai',
   ],
   images: {
     remotePatterns: [

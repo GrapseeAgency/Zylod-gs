@@ -28,6 +28,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -52,6 +53,9 @@ class BarcodeScannerActivity : AppCompatActivity() {
     private var torchOn = false
     private var delivered = false
     private val analysisExecutor by lazy { Executors.newSingleThreadExecutor() }
+
+    /** t207-c: held so onDestroy can release the detector (one per scan). */
+    private var mlKitScanner: BarcodeScanner? = null
     private val dp: Int get() = (resources.displayMetrics.density).toInt()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -179,11 +183,12 @@ class BarcodeScannerActivity : AppCompatActivity() {
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
 
-                val mlKitScanner = BarcodeScanning.getClient(
+                val scanner = BarcodeScanning.getClient(
                     BarcodeScannerOptions.Builder()
                         .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
                         .build()
                 )
+                mlKitScanner = scanner
 
                 val analysis = ImageAnalysis.Builder()
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -198,7 +203,7 @@ class BarcodeScannerActivity : AppCompatActivity() {
                         mediaImage,
                         imageProxy.imageInfo.rotationDegrees
                     )
-                    mlKitScanner.process(input)
+                    scanner.process(input)
                         .addOnSuccessListener { barcodes ->
                             barcodes.firstOrNull()?.rawValue?.let(::deliverResult)
                         }
@@ -239,6 +244,10 @@ class BarcodeScannerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         analysisExecutor.shutdown()
+        // t207-c: the MLKit detector was never released — every scan session
+        // leaked one native client. close() is the documented release path.
+        runCatching { mlKitScanner?.close() }
+        mlKitScanner = null
         super.onDestroy()
     }
 }

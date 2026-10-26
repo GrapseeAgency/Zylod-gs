@@ -42,6 +42,25 @@ object DeepLinkParser {
 
         // Handle HTTPS scheme: https://zylod.com/product/123
         if (scheme == "https" && (host == "zylod.com" || host == "www.zylod.com")) {
+            // t207-c: SPA query-param deep links — the payload BOTH PDP QR
+            // codes encode (web ProductQRCodeDialog product-qr-code.tsx and
+            // native QrDialog ProductDetailScreen.kt:267):
+            // https://zylod.com/?page=product-detail&productId=X. That URL
+            // has NO path segments, so the blanket "home" return below
+            // dropped the product and an in-app scan landed on the home tab.
+            // Map ?page=<pageId> (+ every other query param) onto the same
+            // openPage contract every other entry point uses; unknown pageIds
+            // stay safe (RouteOwnership defaults to WEBVIEW, mirroring the
+            // SPA's own ?page= boot reader).
+            val queryPage = uri.getQueryParameter("page")
+            if (!queryPage.isNullOrBlank()) {
+                val params = mutableMapOf<String, String>()
+                for (name in uri.queryParameterNames) {
+                    if (name == "page") continue
+                    uri.getQueryParameter(name)?.let { params[name] = it }
+                }
+                return ParsedDeepLink(queryPage, params)
+            }
             if (pathSegments.isEmpty()) return ParsedDeepLink("home")
 
             val firstSegment = pathSegments[0]

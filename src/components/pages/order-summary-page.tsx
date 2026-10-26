@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import {
   ArrowLeft, MapPin, Truck, Lock,
   Package, AlertCircle, Loader2
@@ -59,6 +60,16 @@ export function OrderSummaryPage() {
   const [methodsLoading, setMethodsLoading] = useState(true)
   const [methodsError, setMethodsError] = useState('')
   const [selectedMethodId, setSelectedMethodId] = useState('')
+
+  // Payment intent + real wallet balance (t198/t207: mandatory, never faked).
+  const [paymentMethod, setPaymentMethod] = useState('')
+  const [walletBalance, setWalletBalance] = useState<number | null>(null)
+
+  // t207: COD is verification-gated — same rule as the checkout page and the
+  // server's 403 COD_VERIFICATION_REQUIRED. The radio stays honest instead of
+  // letting an unverified buyer select-then-fail.
+  const { user } = useAuthStore()
+  const codLocked = user?.userType === 'buyer' && !user.isEmailVerified && !user.isPhoneVerified
 
   const loadAddresses = useCallback(async () => {
     setAddressesLoading(true)
@@ -150,6 +161,11 @@ export function OrderSummaryPage() {
     // t198: a payment intent is mandatory — same contract as checkout.
     if (!paymentMethod) {
       setError('Choose a payment method — wallet, cash on delivery, bank transfer or mobile banking.')
+      return
+    }
+    // t207: mirror the server's COD verification gate before submission.
+    if (paymentMethod === 'cod' && codLocked) {
+      setError('Cash on Delivery requires a verified account — verify your email or phone in your profile first.')
       return
     }
     if (paymentMethod === 'wallet' && walletBalance != null && walletBalance < total) {
@@ -387,8 +403,10 @@ export function OrderSummaryPage() {
               {
                 id: 'cod' as const,
                 title: 'Cash on Delivery',
-                sub: 'Verified accounts only — pay the courier on arrival',
-                disabled: false,
+                sub: codLocked
+                  ? 'Locked — verify your email or phone in your profile first'
+                  : 'Verified accounts only — pay the courier on arrival',
+                disabled: codLocked,
               },
               {
                 id: 'bank_transfer' as const,

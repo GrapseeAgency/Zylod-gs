@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { isNativeAndroidApp, scanBarcodeWithNativeCamera } from '@/lib/native-bridge'
+import { BrowserMultiFormatReader } from '@zxing/browser'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,6 +35,7 @@ export function BarcodeScannerPage() {
   const [manualEntry, setManualEntry] = useState(false)
   const [manualCode, setManualCode] = useState('')
   const [scannedCode, setScannedCode] = useState('')
+  const [resultMessage, setResultMessage] = useState('')
   const [product, setProduct] = useState<ScannedProduct | null>(null)
   const [torchOn, setTorchOn] = useState(false)
   const [cameraError, setCameraError] = useState('')
@@ -142,6 +144,7 @@ export function BarcodeScannerPage() {
     if (!code.trim()) return
     const trimmed = code.trim()
     setScannedCode(trimmed)
+    setResultMessage('')
     setScanState('processing')
     stopCamera()
 
@@ -153,15 +156,44 @@ export function BarcodeScannerPage() {
         setProduct(json.data)
         setScanState('found')
       } else {
+        setResultMessage(json.message || '')
         setScanState('not-found')
       }
     } catch {
+      setResultMessage('')
       setScanState('not-found')
     }
   }
 
+  /**
+   * Photo scan, both stages REAL:
+   * 1) On-device decode of the uploaded photo with zxing (deterministic).
+   * 2) If no decode, the server reads the printed digits with the vision
+   *    model and matches them against the catalog. No photo → arbitrary
+   *    product substitutions; a miss stays a miss.
+   */
   async function handleFileUpload(file: File) {
     setScanState('processing')
+    stopCamera()
+
+    // Stage 1 — local zxing decode of the picked photo.
+    const objectUrl = URL.createObjectURL(file)
+    try {
+      const reader = new BrowserMultiFormatReader()
+      const result = await reader.decodeFromImageUrl(objectUrl)
+      const text = result.getText?.() || ''
+      if (text.trim()) {
+        URL.revokeObjectURL(objectUrl)
+        lookupCode(text)
+        return
+      }
+    } catch {
+      // No decodable symbol in the photo — fall through to the server stage.
+    } finally {
+      URL.revokeObjectURL(objectUrl)
+    }
+
+    // Stage 2 — server-side vision read of the printed code.
     const formData = new FormData()
     formData.append('image', file)
     try {
@@ -170,11 +202,18 @@ export function BarcodeScannerPage() {
       if (json.data?.product) {
         setProduct(json.data.product)
         setScannedCode(json.data.code || '')
+        setResultMessage('')
         setScanState('found')
+      } else if (json.error) {
+        setResultMessage(json.error)
+        setScanState('not-found')
       } else {
+        setScannedCode(json.code || '')
+        setResultMessage(json.message || '')
         setScanState('not-found')
       }
     } catch {
+      setResultMessage('Could not process the image — try again or scan with the camera')
       setScanState('not-found')
     }
   }
@@ -339,7 +378,7 @@ export function BarcodeScannerPage() {
         {scanState === 'not-found' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center space-y-2">
             <p className="text-gray-600 dark:text-gray-300 text-sm">
-              {scannedCode ? `No product found for code: ${scannedCode}` : 'No matching product found'}
+              {scannedCode ? `No product found for code: ${scannedCode}` : (resultMessage || 'No legible barcode or QR code found in the photo')}
             </p>
             <Button onClick={reset} variant="outline" size="sm" className="border-gray-300 dark:border-white/20 text-gray-900 dark:text-white">
               Scan Again
