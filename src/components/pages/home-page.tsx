@@ -1,33 +1,31 @@
 'use client'
 
-import React, { useState, useEffect, Suspense, lazy } from 'react'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { MobileHomePage } from '@/components/mobile/mobile-home-page'
+import React, { useState, useEffect } from 'react'
 import { useProductStore } from '@/store/product-store'
 import { PageLoader } from '@/components/ui/page-loader'
-import { CategorySidebar } from '@/components/home/category-sidebar'
-import { HomeHero } from '@/components/home/home-hero'
-import { FeaturedProducts } from '@/components/home/featured-products'
+import { Hero } from '@/components/home/hero'
+import { LeftRail } from '@/components/home/left-rail'
+import { FeaturedSection } from '@/components/home/featured-section'
+import { RightRail } from '@/components/home/right-rail'
 
-/* ─── Lazy-loaded secondary sections (below the fold, function preserved) ─── */
-const BannerCarousel = lazy(() =>
-  import('@/components/home/banner-carousel').then((m) => ({ default: m.BannerCarousel }))
-)
-const CategoryTabsAndProducts = lazy(() =>
-  import('@/components/home/category-tabs-products').then((m) => ({ default: m.CategoryTabsAndProducts }))
-)
-const RightSidebar = lazy(() =>
-  import('@/components/home/right-sidebar').then((m) => ({ default: m.RightSidebar }))
-)
+/* ════════════════════════════════════════════════════════════════════
+   HomePage — t211 full rebuild against the owner's mockup.
 
-function SectionFallback() {
-  return <PageLoader className="min-h-0 py-12" />
-}
+   One responsive layout (no separate "old" mobile home, no legacy
+   sections below the fold — the t210 "old design at the bottom" bug):
 
-/* ─── t210-r2: Desktop home rebuilt 1:1 against the user's mockup ───
-   [240px categories rail] [hero + featured grid] [300px CTA rail],
-   crimson #E31C3D, off-white page bg. The banner carousel and the
-   search-tabs section are preserved BELOW the fold (function, not noise). */
+   ┌──────────┬──────────────────────────────┬───────────────┐
+   │ 240px    │  Hero (pale-pink card)       │ 300px right   │
+   │ left     │  Featured Products grid      │ rail (xl+)    │
+   │ rail     │                              │               │
+   └──────────┴──────────────────────────────┴───────────────┘
+
+   • lg (1024+): left rail joins.  xl (1280+): right rail joins.
+   • <xl the right-rail cards flow under the grid (nothing dropped).
+   • Every element is real: real products, real categories, real
+     navigation, real wishlist, real registration/contact targets.
+   ════════════════════════════════════════════════════════════════════ */
+
 function DesktopHomePage() {
   const { isInitialized, isLoading, initialize } = useProductStore()
   const [showSkeleton, setShowSkeleton] = useState(true)
@@ -48,34 +46,22 @@ function DesktopHomePage() {
   }
 
   return (
-    <div className="w-full bg-[#F7F8FA] dark:bg-background min-h-screen">
-      <div className="max-w-[1440px] mx-auto px-4 lg:px-5 py-5">
-        <div className="flex gap-5 items-start">
+    <div className="w-full bg-white dark:bg-background">
+      <div className="mx-auto w-full max-w-[1536px] px-3 sm:px-4 lg:px-6 py-4 lg:py-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_300px] gap-4 xl:gap-5 items-start">
 
-          {/* ═══════════ LEFT: categories rail ═══════════ */}
-          <CategorySidebar />
+          {/* LEFT — categories + supplier onboarding (240px, mockup) */}
+          <LeftRail />
 
-          {/* ═══════════ CENTER: hero + featured grid ═══════════ */}
-          <main className="flex-1 min-w-0 space-y-8">
-            <HomeHero />
+          {/* CENTER — hero + featured grid (+ inline CTAs below xl) */}
+          <div className="min-w-0 space-y-6 lg:space-y-7">
+            <Hero />
+            <FeaturedSection />
+            <RightRail variant="inline" />
+          </div>
 
-            <Suspense fallback={<SectionFallback />}>
-              <FeaturedProducts />
-            </Suspense>
-
-            {/* Below the fold — real marketplace function */}
-            <Suspense fallback={<SectionFallback />}>
-              <BannerCarousel />
-            </Suspense>
-            <Suspense fallback={<SectionFallback />}>
-              <CategoryTabsAndProducts />
-            </Suspense>
-          </main>
-
-          {/* ═══════════ RIGHT: CTA rail ═══════════ */}
-          <Suspense fallback={<SectionFallback />}>
-            <RightSidebar />
-          </Suspense>
+          {/* RIGHT — CTA rail (300px, mockup) */}
+          <RightRail variant="rail" />
 
         </div>
       </div>
@@ -83,18 +69,7 @@ function DesktopHomePage() {
   )
 }
 
-/* ─── Main HomePage — switches between mobile and desktop ─── */
 export function HomePage() {
-  const isMobile = useIsMobile()
-
-  if (isMobile === undefined) {
-    return <PageLoader />
-  }
-
-  if (isMobile) {
-    return <MobileHomePage />
-  }
-
   return <DesktopHomePage />
 }
 

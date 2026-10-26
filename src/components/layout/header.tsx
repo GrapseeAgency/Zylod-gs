@@ -313,7 +313,7 @@ export function Header() {
           {/* -------------------------------------------------------- */}
           {/*  CENTER: Navigation Links (Desktop) — text-only per mockup  */}
           {/* -------------------------------------------------------- */}
-          <nav className="hidden lg:flex items-center gap-0.5 ml-auto mr-auto">
+          <nav className="hidden lg:flex items-center gap-0 xl:gap-0.5 ml-auto mr-auto">
             {mainNavItems.map((item) => {
               const active = isPageActive(item.page)
               return (
@@ -321,7 +321,7 @@ export function Header() {
                   key={item.page}
                   onClick={() => handleNavClick(item.page)}
                   className={cn(
-                    'relative px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    'relative px-2 xl:px-3 py-2 text-[13px] xl:text-sm font-medium rounded-md transition-colors whitespace-nowrap',
                     active
                       ? 'text-primary font-semibold'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -341,7 +341,7 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <button
                   className={cn(
-                    'flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    'flex items-center gap-1 px-2 xl:px-3 py-2 text-[13px] xl:text-sm font-medium rounded-md transition-colors whitespace-nowrap',
                     moreNavItems.some((i) => isPageActive(i.page))
                       ? 'text-primary'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'

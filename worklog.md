@@ -6134,3 +6134,31 @@ Stage Summary:
 - Photo Scan + Scan Code + Voice remain on the hero (owner mandate) as light chips after Trending — routed to the real CLIP image-search, zxing+VLM barcode-scanner, voice-search pages.
 - Real data everywhere: products/ratings/verified from the API, real wishlist toggle, real category slugs, real navigation targets.
 - Open facts (not status claims): guest header shows Login (mockup shows a logged-in state — matches when signed in); product photos are the real DB photos so they differ from the mockup's placeholder photography; the "Choose good products" search-tabs section still exists below the fold (function preserved, mockup's bottom section); mobile home untouched (mockup is desktop).
+
+---
+Task ID: t211
+Agent: Z.ai Code (main)
+Task: User rejected t210's design implementation with 3 complaints: (1) implementation looked like copy-paste, not hand-written native HTML; (2) layout cramped — left/right sidebars have more room in the mockup, product cards gross to watch; (3) OLD design still rendering at the bottom of the new design. User ordered: "revert everything and start from the beginning to design" + "use higher level html code". 4 reference mockups provided.
+
+Work Log:
+- Audited t210 code: found old sections (BannerCarousel + CategoryTabsAndProducts) still lazy-rendered BELOW the new design in home-page.tsx (lines 67-72) — confirmed via live screenshot (page 3743px deep, "hot selling" tabs visible). Confirmed hero collapsed to 50/50 flex (headline wrapped 4 lines, photo crushed) and 6-col grid forced at 1280px (100px cards).
+- Extracted full spec from 4 mockups: 1536px design, 240px left rail / ~945px center / 300px right rail, hero 56/44 split, 6-col product grid at design width, card anatomy (photo, heart, 2-line title, red price + /unit, MOQ, supplier, star rating, green Verified Supplier).
+- REBUILT from zero with new files (clean semantic HTML: section/aside/nav/ul/li/article, aria labels): src/components/home/hero.tsx, left-rail.tsx, featured-section.tsx, product-card.tsx, right-rail.tsx (variant rail/inline) + rewrote src/components/pages/home-page.tsx.
+- home-page.tsx: single responsive layout — no MobileHomePage switch, no lazy old sections, no legacy below-the-fold. Grid: lg:[240px_1fr] 2xl:[240px_1fr_300px]. <2xl the right-rail cards flow inline under the grid (nothing lost on smaller screens).
+- DELETED orphaned old-design files: home-hero.tsx, category-sidebar.tsx, featured-products.tsx, main-product-card.tsx, right-sidebar.tsx, category-tabs-products.tsx (6 files). banner-carousel.tsx kept only because mobile-home-page.tsx (unused, compile-valid) imports it.
+- Featured grid width-aware: grid-cols-2 sm:3 lg:4 2xl:6 (6 cols only ≥1536px where mockup puts 6 — fixes "gross/tight" at 1280).
+- Header nav fix: whitespace-nowrap + compact px at lg — stops "Find Suppliers" wrap + "Login" clip at 1280.
+- REAL BUGS found by click-through testing and fixed:
+  a) left rail category rows passed {categoryId: slug} but category-products-page reads pageParams.category → filter ignored, always showed "All Products". Fixed to {category: slug}; verified h1 "Agriculture & Food" + real subcategory chips + /api/products?category= fetch.
+  b) "View All" targeted pageId 'all-products' which maps to supplier-products-page → "No supplier selected". Fixed to category-products {category:'all'}; verified real listing.
+- Regenerated hero artwork at 1152x864 (old 1344x768 landscape cropped badly in ~square region) — centered still-life matching mockup composition.
+- Dark mode: found site-wide remap shim (.dark .text-gray-900 → #F5F5F5, .dark .bg-white → #1E1E1E) turned hero text/surfaces unreadable on the always-pink hero. Added [data-theme-lock="light"] exception block in globals.css (specificity 0,3,0 beats 0,2,0) + data-theme-lock on hero section. Verified: h1 rgb(26,26,26) on pink, white trust card, white pills. No navy anywhere.
+- Verification (agent-browser, fresh sessions): old sections absent (innerText check), 12/12 cards with Verified badge, 8 category rows; click-through: category row → filtered listing ✓, View All → All Products ✓, Photo Scan → camera/upload page ✓, Scan Code → barcode/QR scanner ✓, Voice Search → voice page ✓, trending chip → search results ("Products (1)") ✓, hero search submit → results ✓, card → PDP ✓, wishlist heart as GUEST → login wall ✓ (money path intact), Register as Buyer → OTP registration ✓, Register as Supplier → 4-step wizard ✓, Login link → login ✓, Explore Now → real Explore Categories page ✓, Contact Support → real support page ✓.
+- Known dev-env artifact (NOT shipped-code bug): first-ever SPA navigation to a lazily-compiled page races Turbopack cold compile (dev.log: register-supplier 28.6s first compile) → one-time ChunkLoadError; subsequent navigations fine. Production prebuilds chunks.
+- Footnotes: agent-browser find-text can match hidden duplicates (e.g. "View All Notifications" in header portal) — use visible-filtered eval clicks; VLM fidelity check vs full mockup: layout 95/100, hero 80/100 (artwork is a different real photo — accepted), card anatomy verified manually below the fold.
+
+Stage Summary:
+- Homepage fully rebuilt from zero with hand-written semantic HTML per mockup: 240px categories rail | hero (badge, two-tone 2-line headline, search, trending, Photo Scan + Scan Code + Voice Search chips, artwork, trust badges) | 6-col featured grid (12 real products) | 300px CTA rail (buyer/supplier CTAs with illustrations, Why Choose, Sustainability). Old design 100% removed from all viewports.
+- 2 real navigation bugs fixed (category param, View All target); header 1280 overflow fixed; dark-mode hero readability fixed via theme-lock.
+- Evidence: /tmp/t211-final-1536b.png (1536 3-col), /tmp/t211-v3-top.png (1280 hero), /tmp/t211-v3-products.png (cards with ratings+badges), /tmp/t211-v4-mobile.png (375), /tmp/t211-v8-dark.png (dark). lint OK, tsc clean, dev.log clean.
+- Open: Kotlin compile still needs real CI push/device run; MobileHomePage file still on disk (unused) for future mobile redesign; old banner-carousel kept only for that file's compile.

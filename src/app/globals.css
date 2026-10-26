@@ -334,6 +334,21 @@
   .dark .text-slate-400, .dark .text-gray-400 { color: #7A7A7A; }
   .dark .text-slate-300 { color: #666666; }
 
+  /* ── Theme-lock: surfaces that stay LIGHT in both themes (the pink home hero).
+     The remaps above would flip their dark text to near-white (unreadable on
+     the pink card), so restore the true gray scale inside [data-theme-lock="light"].
+     Specificity (0,3,0) beats the (0,2,0) remaps above. ── */
+  .dark [data-theme-lock="light"] .text-slate-900, .dark [data-theme-lock="light"] .text-gray-900,
+  .dark [data-theme-lock="light"] .text-slate-800, .dark [data-theme-lock="light"] .text-gray-800 { color: #1A1A1A; }
+  .dark [data-theme-lock="light"] .text-slate-700, .dark [data-theme-lock="light"] .text-gray-700 { color: #404040; }
+  .dark [data-theme-lock="light"] .text-slate-600, .dark [data-theme-lock="light"] .text-gray-600 { color: #525252; }
+  .dark [data-theme-lock="light"] .text-slate-500, .dark [data-theme-lock="light"] .text-gray-500 { color: #737373; }
+  .dark [data-theme-lock="light"] .text-slate-400, .dark [data-theme-lock="light"] .text-gray-400 { color: #A3A3A3; }
+  /* White surfaces inside the locked hero stay white (badges card, pills, search field). */
+  .dark [data-theme-lock="light"] .bg-white { background-color: #FFFFFF; }
+  .dark [data-theme-lock="light"] .bg-white\/70 { background-color: rgba(255, 255, 255, 0.7); }
+  .dark [data-theme-lock="light"] .bg-white\/90 { background-color: rgba(255, 255, 255, 0.9); }
+
   /* ── Borders & dividers ── */
   .dark .border-slate-100, .dark .border-gray-100, .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) { border-color: #262626; }
   .dark .border-slate-200, .dark .border-gray-200, .dark .border-slate-300, .dark .border-gray-300,
