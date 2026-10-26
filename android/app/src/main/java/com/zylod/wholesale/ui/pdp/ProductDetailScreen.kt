@@ -138,6 +138,13 @@ fun ProductDetailScreen(
             vm.consumeWishlistNeedsLogin()
         }
     }
+    // t201: dedicated cart sign-in nudge — correct message for cart/buy taps.
+    LaunchedEffect(state.cartNeedsLogin) {
+        if (state.cartNeedsLogin) {
+            snackbar.showSnackbar("Create a Zylod account or sign in to continue")
+            vm.consumeCartNeedsLogin()
+        }
+    }
     // t190: Buy Now places NO inline order — the one-click createDirect COD
     // order is gone (the server now REQUIRES a buyer-owned shippingAddressId
     // on /api/orders/create-direct and 400s without it). [ProductDetailViewModel.buyNow]

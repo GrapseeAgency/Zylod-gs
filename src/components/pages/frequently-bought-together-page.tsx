@@ -18,6 +18,7 @@ import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import { toast } from 'sonner'
 import {
   ArrowLeft, Bell, ShoppingCart, Package, PackageSearch, AlertTriangle, RefreshCw
@@ -183,6 +184,12 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
 
   const handleAddBundleToCart = useCallback(() => {
     if (!currentProduct) return
+    // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in to add products to your cart')
+      navigate('login')
+      return
+    }
     selectedItems.forEach((item) => {
       addItem({
         id: `cart-${item.id}-${Date.now()}`,

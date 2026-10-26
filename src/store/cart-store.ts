@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useAuthStore } from '@/store/auth-store'
 
 export interface CartItemData {
   id: string
@@ -136,6 +137,13 @@ export const useCartStore = create<CartState>()(
       isSynced: false,
 
       addItem: (item) => {
+        // t197 LAST-RESORT ACCOUNT WALL: the cart is account-scoped. Every
+        // UI surface gates on authentication before calling addItem, but any
+        // future call site that forgets the gate can no longer silently grow
+        // a guest cart — the write is refused outright for logged-out users.
+        if (!useAuthStore.getState().isAuthenticated) {
+          return
+        }
         const { items } = get()
         // Normalize the merge key — a stored null variantId vs an incoming
         // undefined one previously failed the === check, so the SAME product

@@ -10,6 +10,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore, resolveClientUnitPrice, type ClientPriceTier } from '@/store/cart-store'
 import { useWishlistStore } from '@/store/wishlist-store'
+import { useAuthStore } from '@/store/auth-store'
 import {
   Search, ShoppingCart, Heart,
   Package, AlertTriangle, LogIn, RotateCcw, Tag,
@@ -178,6 +179,12 @@ export function SearchResultsPage() {
 
   const handleAddToCart = useCallback(async (e: React.MouseEvent, product: Product) => {
     e.stopPropagation()
+    // t197 ACCOUNT WALL — parity with the PDP: a guest never grows a cart.
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in to add products to your cart')
+      navigate('login')
+      return
+    }
     if (addingId) return
     setAddingId(product.id)
     try {

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCartStore } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import { toast } from 'sonner'
 import { ArrowLeft, MoreVertical, Lock, Globe, Link as LinkIcon, Share2, Grid, List, CheckSquare, Plus, Package, Trash2 } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -78,6 +79,12 @@ export function CollectionDetailPage() {
   // pricing rule as the PDP — the collection page invents no prices).
   const addLineToCart = (prod: any) => {
     const qty = prod.moq || 1
+    // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in to add products to your cart')
+      navigate('login')
+      return
+    }
     addItem({
       id: `cart-${prod.id}-default-${Date.now()}`,
       productId: prod.id,

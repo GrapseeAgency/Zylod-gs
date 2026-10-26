@@ -5,6 +5,7 @@ import { ArrowLeft, Share2, Heart, Search, MoreVertical, Trash2, ShoppingCart, I
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCartStore } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import { PageLoader } from '@/components/ui/page-loader'
 import { toast } from 'sonner'
 
@@ -267,6 +268,12 @@ export function WishlistPage() {
                           <button
                             onClick={async () => {
                               try {
+                                // t197 ACCOUNT WALL — a guest never grows a cart.
+                                if (!useAuthStore.getState().isAuthenticated) {
+                                  toast.error('Sign in to add products to your cart')
+                                  navigate('login')
+                                  return
+                                }
                                 const res = await fetch(`/api/products/${item.productId}`)
                                 if (!res.ok) throw new Error('Failed to load product')
                                 const json = await res.json()
@@ -351,6 +358,12 @@ export function WishlistPage() {
           </button>
           <button
             onClick={async () => {
+              // t197 ACCOUNT WALL — a guest never grows a cart.
+              if (!useAuthStore.getState().isAuthenticated) {
+                toast.error('Sign in to add products to your cart')
+                navigate('login')
+                return
+              }
               const targets = items.filter((i) => selectedItems.has(i.id))
               let added = 0
               for (const it of targets) {

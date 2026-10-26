@@ -6,7 +6,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
 import {
-  ArrowLeft, MapPin, Truck, CreditCard, Lock,
+  ArrowLeft, MapPin, Truck, Lock,
   Package, AlertCircle, Loader2
 } from 'lucide-react'
 
@@ -113,6 +113,20 @@ export function OrderSummaryPage() {
     loadMethods()
   }, [loadAddresses, loadMethods])
 
+  // t198: real wallet balance decides whether the wallet option is honest.
+  useEffect(() => {
+    let mounted = true
+    fetch('/api/wallet', { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (mounted && j?.success && j.data) {
+          setWalletBalance(typeof j.data.balance === 'number' ? j.data.balance : null)
+        }
+      })
+      .catch(() => { /* guest or offline — wallet option stays disabled */ })
+    return () => { mounted = false }
+  }, [])
+
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || null
   const selectedMethod = methods.find((m) => m.id === selectedMethodId) || null
 
@@ -133,6 +147,15 @@ export function OrderSummaryPage() {
       setError('Select a real shipping address before placing the order.')
       return
     }
+    // t198: a payment intent is mandatory — same contract as checkout.
+    if (!paymentMethod) {
+      setError('Choose a payment method — wallet, cash on delivery, bank transfer or mobile banking.')
+      return
+    }
+    if (paymentMethod === 'wallet' && walletBalance != null && walletBalance < total) {
+      setError(`Wallet balance (৳${walletBalance.toFixed(2)}) is below the order total — add money to your wallet or pick another method.`)
+      return
+    }
     setSubmitting(true)
     try {
       const res = await fetch('/api/orders', {
@@ -141,6 +164,7 @@ export function OrderSummaryPage() {
         credentials: 'include',
         body: JSON.stringify({
           shippingAddressId: selectedAddress.id,
+          paymentMethod,
           items: items.map((i) => ({
             productId: i.productId,
             variantId: i.variantId || null,
@@ -338,8 +362,9 @@ export function OrderSummaryPage() {
             </div>
           </div>
 
-          {/* Payment Card — honest: orders start UNPAID */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-rose-100 shadow-2xs space-y-2">
+          {/* Payment Card — t198: a REAL method must be picked; orders start
+              UNPAID and no method pretends otherwise. */}
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-rose-100 shadow-2xs space-y-3" role="radiogroup" aria-label="Payment method">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Payment Method</h2>
               <button
@@ -350,15 +375,65 @@ export function OrderSummaryPage() {
               </button>
             </div>
 
+            {([
+              {
+                id: 'wallet' as const,
+                title: 'Zylod Wallet',
+                sub: walletBalance != null
+                  ? `Balance ৳${walletBalance.toFixed(2)}${walletBalance < total ? ' — insufficient for this order' : ''}`
+                  : 'Sign in and open your wallet to use this method',
+                disabled: walletBalance == null || walletBalance < total,
+              },
+              {
+                id: 'cod' as const,
+                title: 'Cash on Delivery',
+                sub: 'Verified accounts only — pay the courier on arrival',
+                disabled: false,
+              },
+              {
+                id: 'bank_transfer' as const,
+                title: 'Bank Transfer',
+                sub: 'Order stays UNPAID until the transfer is verified',
+                disabled: false,
+              },
+              {
+                id: 'mobile_banking' as const,
+                title: 'bKash / Nagad',
+                sub: 'Order stays UNPAID until the transfer is verified',
+                disabled: false,
+              },
+            ]).map((opt) => (
+              <label
+                key={opt.id}
+                className={`flex items-start gap-3 rounded-2xl border p-3 transition-colors ${
+                  paymentMethod === opt.id
+                    ? 'border-primary bg-primary/5'
+                    : 'border-slate-200 dark:border-slate-800'
+                } ${opt.disabled ? 'opacity-50' : 'cursor-pointer hover:border-primary/40'}`}
+              >
+                <input
+                  type="radio"
+                  name="order-summary-payment"
+                  className="mt-0.5 accent-[var(--primary)]"
+                  value={opt.id}
+                  checked={paymentMethod === opt.id}
+                  disabled={opt.disabled}
+                  onChange={() => setPaymentMethod(opt.id)}
+                  aria-label={opt.title}
+                />
+                <span className="min-w-0">
+                  <span className="block text-xs font-bold text-slate-900 dark:text-slate-100">{opt.title}</span>
+                  <span className="block text-[11px] text-slate-500 dark:text-slate-400">{opt.sub}</span>
+                </span>
+              </label>
+            ))}
+
             <div className="flex items-start gap-3 pt-1">
-              <CreditCard className="h-4 w-4 text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
-              <div className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 space-y-0.5">
-                <p className="font-bold text-slate-900 dark:text-slate-100">Pay after the order is placed</p>
-                <p className="text-slate-500 dark:text-slate-400 dark:text-slate-500 text-[11px]">
-                  Orders start as UNPAID. Payment instructions are provided on the
-                  order once placed, and the supplier confirms only after payment is verified.
-                </p>
-              </div>
+              <Lock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Every order is created UNPAID. The supplier ships only after the
+                payment is verified by the gateway or the site admin.
+              </p>
             </div>
           </div>
 

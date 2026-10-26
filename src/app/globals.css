@@ -84,6 +84,14 @@
   --color-slate-800: #262626;
   --color-slate-900: #1a1a1a;
   --color-slate-950: #0e0e0e;
+
+  /* t199 NAVY-BLUE FIX (round 3): only the DEEP sky steps — sky-950 renders
+     as #0c2340-tier NAVY on dark chips/badges (order-detail status chips,
+     admin-suppliers, seller-live-console, seller-notifications). The 300–600
+     accents stay untouched; the near-black backgrounds go FULLY hue-less so
+     no dark surface reads as navy. */
+  --color-sky-900: #1f1f1f;
+  --color-sky-950: #111111;
 }
 
 :root {

@@ -1,6 +1,7 @@
 package com.zylod.wholesale.data.session
 
 import com.zylod.wholesale.ZylodApp
+import com.zylod.wholesale.ui.cart.CartStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -64,7 +65,10 @@ object SessionManager {
     }
 
     /** Clears token + cached profile. Never clears web-originated sessions silently —
-     *  WebAuthSeeder handles the WebView localStorage side. */
+     *  WebAuthSeeder handles the WebView localStorage side.
+     *  t202: ALSO clears the local cart — cart lines are account-scoped and
+     *  must never survive a logout / session expiry / account switch into the
+     *  next user's cart (CartStore.clear() previously had zero callers). */
     fun clear() {
         runCatching {
             ZylodApp.instance.securePrefs.edit()
@@ -72,6 +76,7 @@ object SessionManager {
                 .remove("user_json")
                 .apply()
         }
+        runCatching { CartStore.clear() }
     }
 
     /** Called by the ApiClient authenticator when refresh fails. */

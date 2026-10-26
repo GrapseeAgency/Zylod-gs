@@ -7,6 +7,8 @@ import { Switch } from '@/components/ui/switch'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
+import { toast } from 'sonner'
 import {
   QrCode, Bell, ShoppingCart, X, Package,
   Zap, Building2, Scale
@@ -121,6 +123,12 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
   }
 
   const handleAddToCart = useCallback((product: CompareProduct) => {
+    // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in to add products to your cart')
+      navigate('login')
+      return
+    }
     addItem({
       id: `cart-${product.id}-${Date.now()}`,
       productId: product.id,

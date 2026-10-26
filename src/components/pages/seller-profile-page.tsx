@@ -424,6 +424,12 @@ export function SellerProfilePage() {
   }
 
   const handleAddToCart = (item: Product) => {
+    // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in to add products to your cart')
+      navigate('login')
+      return
+    }
     const qty = getProductQuantity(item.id, item.moq)
     addItem({
       id: item.id,

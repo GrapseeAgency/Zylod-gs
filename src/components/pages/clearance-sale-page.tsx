@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import { toast } from 'sonner'
 import { ArrowLeft, HelpCircle, ShoppingCart, AlertTriangle, Percent } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
@@ -78,6 +79,12 @@ export function ClearanceSalePage() {
 
   const handleQuickAdd = (e: React.MouseEvent, item: ClearanceProduct) => {
     e.stopPropagation()
+    // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in to add products to your cart')
+      navigate('login')
+      return
+    }
     addItem({
       id: item.id,
       productId: item.id,

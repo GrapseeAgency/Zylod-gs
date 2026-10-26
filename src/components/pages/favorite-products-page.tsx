@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
-import { useCartStore } from '@/store/cart-store';
+import { useCartStore } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store';
 import { toast } from 'sonner';
 import { ArrowLeft, LayoutGrid, List, ArrowDownUp, Filter, Star, ShoppingCart, Heart, ShieldCheck, LogIn } from 'lucide-react'
 import { motion } from 'framer-motion';
@@ -218,7 +219,7 @@ export function FavoriteProductsPage() {
                   <div className="mt-auto pt-2 flex items-center justify-between">
                     <span className="font-bold text-gray-900 dark:text-gray-100">${product.price.toFixed(2)}</span>
                     {viewMode === 'list' && (
-                      <button onClick={(e) => { e.stopPropagation(); addItem({ id: product.id, productId: product.id, productName: product.name, productSlug: product.id, productImage: product.imageUrl, variantId: null, variantName: null, variantValue: null, quantity: 1, unitPrice: product.price, totalPrice: product.price, moq: 1, maxOrderQty: null, supplierId: '', supplierName: product.supplier?.name || '', supplierSlug: '', unit: 'pcs', priceTiers: [] }); toast.success('Added to cart'); }} className="p-2 bg-primary text-white rounded-full" aria-label="Add to cart">
+                      <button onClick={(e) => { e.stopPropagation(); if (!useAuthStore.getState().isAuthenticated) { toast.error('Sign in to add products to your cart'); navigate('login'); return; } addItem({ id: product.id, productId: product.id, productName: product.name, productSlug: product.id, productImage: product.imageUrl, variantId: null, variantName: null, variantValue: null, quantity: 1, unitPrice: product.price, totalPrice: product.price, moq: 1, maxOrderQty: null, supplierId: '', supplierName: product.supplier?.name || '', supplierSlug: '', unit: 'pcs', priceTiers: [] }); toast.success('Added to cart'); }} className="p-2 bg-primary text-white rounded-full" aria-label="Add to cart">
                         <ShoppingCart className="w-4 h-4" />
                       </button>
                     )}

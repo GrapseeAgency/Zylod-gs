@@ -1,6 +1,7 @@
 package com.zylod.wholesale.ui.orders
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -116,14 +117,20 @@ fun OrdersScreen(
                 state.orders.isEmpty() -> OrdersEmpty(
                     onBrowseProducts = { openPage("home", "") },
                 )
-                else -> OrdersList(orders = state.orders)
+                else -> OrdersList(
+                    orders = state.orders,
+                    // t204: order cards open the real order-detail page
+                    // (WebView pageId "order-detail") instead of being a
+                    // dead-end list.
+                    onOpenOrder = { orderId -> openPage("order-detail", "orderId=$orderId") },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun OrdersList(orders: List<OrderDto>) {
+private fun OrdersList(orders: List<OrderDto>, onOpenOrder: (String) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
@@ -137,7 +144,7 @@ private fun OrdersList(orders: List<OrderDto>) {
             )
         }
         items(orders) { order ->
-            OrderCard(order)
+            OrderCard(order, onOpenOrder)
         }
         item { Spacer(Modifier.height(4.dp)) }
     }
@@ -149,14 +156,19 @@ private fun OrdersList(orders: List<OrderDto>) {
  * supplier summary row with the icon placeholder.
  */
 @Composable
-private fun OrderCard(order: OrderDto) {
+private fun OrderCard(order: OrderDto, onOpenOrder: (String) -> Unit) {
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(Modifier.padding(12.dp)) {
+        Column(
+            // t204: the whole card is the tap target — only orders with a
+            // real id navigate (a missing id has nowhere honest to go).
+            (if (order.id.isNullOrBlank()) Modifier else Modifier.clickable { onOpenOrder(order.id!!) })
+                .padding(12.dp),
+        ) {
             Row(verticalAlignment = Alignment.Top) {
                 Column(Modifier.weight(1f)) {
                     Text(

@@ -28,7 +28,10 @@ object DeepLinkParser {
                 "supplier" -> ParsedDeepLink("seller-storefront", id?.let { mapOf("id" to it) } ?: emptyMap())
                 "deal" -> ParsedDeepLink("exclusive-deal-detail", id?.let { mapOf("id" to it) } ?: emptyMap())
                 "cart" -> ParsedDeepLink("cart")
-                "orders" -> ParsedDeepLink("my-orders")
+                // t203: native ORDERS screen owns pageId "buyer-orders"
+                // (RouteOwnership NATIVE set) — "my-orders" sent the link to a
+                // WebView list while the polished native Orders screen existed.
+                "orders" -> ParsedDeepLink("buyer-orders")
                 "live" -> ParsedDeepLink("live-shopping-detail", id?.let { mapOf("id" to it) } ?: emptyMap())
                 else -> ParsedDeepLink(page)
             }
@@ -47,7 +50,8 @@ object DeepLinkParser {
                 "supplier" -> ParsedDeepLink("seller-storefront", secondSegment?.let { mapOf("id" to it) } ?: emptyMap())
                 "deals" -> ParsedDeepLink("daily-deals")
                 "cart" -> ParsedDeepLink("cart")
-                "orders" -> ParsedDeepLink("my-orders")
+                // t203: native ORDERS screen owns "buyer-orders" (see above).
+                "orders" -> ParsedDeepLink("buyer-orders")
                 "terms" -> ParsedDeepLink("terms-of-service")
                 "privacy" -> ParsedDeepLink("privacy-policy")
                 "about" -> ParsedDeepLink("about-us")

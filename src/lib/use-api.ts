@@ -25,8 +25,21 @@ export class OfflineQueuedError extends Error {
   }
 }
 
-/** Mutations replayed hours later make no sense for these paths. */
-const OFFLINE_QUEUE_EXCLUDED = [/^\/api\/auth\//, /^\/api\/uploads\//, /^\/api\/chat\//, /^\/api\/search\//]
+/** Mutations replayed hours later make no sense for these paths. t198:
+ * MONEY PATHS are additionally excluded — an order/payment/wallet/cart
+ * mutation must never be replayed silently, and the offline sink only
+ * STORES events (it never executes them), so queueing one would over-promise. */
+const OFFLINE_QUEUE_EXCLUDED = [
+  /^\/api\/auth\//,
+  /^\/api\/uploads\//,
+  /^\/api\/chat\//,
+  /^\/api\/search\//,
+  /^\/api\/orders/,
+  /^\/api\/payments/,
+  /^\/api\/wallet/,
+  /^\/api\/cart/,
+  /^\/api\/escrow/,
+]
 
 function shouldQueueOffline(url: string): boolean {
   return isNativeOfflineCapable() && !OFFLINE_QUEUE_EXCLUDED.some((pattern) => pattern.test(url))

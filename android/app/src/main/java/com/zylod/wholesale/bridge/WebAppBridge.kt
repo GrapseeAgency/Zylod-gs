@@ -141,7 +141,13 @@ class WebAppBridge(
             runCatching {
                 val editor = ZylodApp.instance.securePrefs.edit()
                 val trimmed = token.trim()
-                if (trimmed.isEmpty()) editor.remove("auth_token") else editor.putString("auth_token", trimmed)
+                if (trimmed.isEmpty()) {
+                    editor.remove("auth_token")
+                    // t202: a web logout that empties the mirrored token also
+                    // ends the native cart's account scope — local cart lines
+                    // must not leak into the next session.
+                    com.zylod.wholesale.ui.cart.CartStore.clear()
+                } else editor.putString("auth_token", trimmed)
                 editor.apply()
             }.onFailure { e ->
                 android.util.Log.w("ZylodBridge", "auth token mirror failed", e)

@@ -63,8 +63,15 @@ object WebAuthSeeder {
         val seedJson: String? = if (token != null && !profileJson.isNullOrBlank()) {
             val profile = runCatching {
                 ApiClient.json.decodeFromString(UserProfileSeed.serializer(), profileJson)
-            }.getOrNull() ?: UserProfileSeed(id = "")
-            ApiClient.json.encodeToString(
+            }.getOrNull()
+            // t205: a CORRUPT/unparseable profile (or one without a real id)
+            // must never seed an authenticated web session with a hollow user
+            // (the old fallback `UserProfileSeed(id = "")` produced a
+            // signed-in web shell that every /api call 401s against — a
+            // fake-login state). Fall through to the no-op branch instead:
+            // the WebView keeps its own honest session state.
+            if (profile == null || profile.id.isBlank()) null
+            else ApiClient.json.encodeToString(
                 SeedState.serializer(),
                 SeedState(state = SeedUserData(isAuthenticated = true, user = profile, token = token)),
             )

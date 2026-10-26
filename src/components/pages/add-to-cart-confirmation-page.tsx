@@ -84,6 +84,11 @@ export function AddToCartConfirmationPage() {
 
   /** The PDP's canonical add shape — real fields only, real ids only. */
   const addAddon = (p: ApiProduct) => {
+    // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+    if (!useAuthStore.getState().isAuthenticated) {
+      navigate('login')
+      return
+    }
     const tiers: ClientPriceTier[] = (p.priceTiers ?? []).map(t => ({
       minQty: t.minQty, maxQty: t.maxQty ?? null, pricePerUnit: t.pricePerUnit,
     }))

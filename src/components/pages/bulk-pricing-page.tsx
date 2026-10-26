@@ -20,6 +20,7 @@ import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import { toast } from 'sonner'
 import {
   QrCode, Bell, ShoppingCart, FileText,
@@ -172,6 +173,12 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
 
   const handleAddToCart = useCallback(() => {
     if (!product || !activeTier) return
+    // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in to add products to your cart')
+      navigate('login')
+      return
+    }
     addItem({
       id: `cart-${product.id}-${Date.now()}`,
       productId: product.id,

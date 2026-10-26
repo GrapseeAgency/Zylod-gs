@@ -108,9 +108,14 @@ class CartViewModel(private val appContext: Context) : ViewModel() {
             // Merge (web syncWithApi L187-195): server rows win their merge key —
             // the surviving row carries the real server id for PUT/DELETE — and
             // local rows with no server counterpart are preserved.
+            // t200 FIX (was an inverted predicate): LOCAL ("local-" id) rows are
+            // what must survive the merge — the previous filter kept SERVER-id
+            // rows the server no longer returns (resurrecting rows deleted
+            // elsewhere) and silently dropped every offline-added local row
+            // before the push loop, so pending could never be non-empty.
             val serverKeys = serverItems.mapTo(HashSet()) { it.mergeKey }
             val keptLocal = CartStore.state.value.items.filter {
-                CartStore.isServerItem(it) && it.mergeKey !in serverKeys
+                !CartStore.isServerItem(it) && it.mergeKey !in serverKeys
             }
             CartStore.replaceItems(serverItems + keptLocal)
 

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useCartStore } from '@/store/cart-store';
+import { useAuthStore } from '@/store/auth-store';
 import { useWishlistStore } from '@/store/wishlist-store';
 import { toast } from 'sonner';
 import { ArrowLeft, ShieldCheck, TrendingDown, TrendingUp, AlertCircle, ShoppingCart, Heart, Trash2 } from 'lucide-react';
@@ -167,6 +168,12 @@ export function SaveForLaterDetailPage({ pageParams }: { pageParams?: any }) {
         <button
           onClick={() => {
             if (!item) return
+            // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+            if (!useAuthStore.getState().isAuthenticated) {
+              toast.error('Sign in to add products to your cart')
+              navigate('login')
+              return
+            }
             addItem({
               id: `${item.productId}-${Date.now()}`,
               productId: item.productId,

@@ -5869,3 +5869,42 @@ Stage Summary:
 - Navy: the site-wide logo was the rendered navy on every page — recolored on web + Android; broken dark-remap CSS layer repaired; last two hardcoded navy hexes removed; programmatic blue-hue scans return empty on the pages tested.
 - UNRESOLVED / RISKS (facts, not excuses): (1) No Android SDK in sandbox — Kotlin changes are compile-unverified and no APK can be produced here; the user's installed APK predates ALL native fixes until someone builds it. (2) Web bundle staleness: if the user's browser cached an old bundle, they must hard-refresh; the live walls were verified on the current dev server. (3) RFQ convert-order creates 'unpaid' orders by design (negotiated quote; payment verified via manual leg before dispatch) — no COD choice exists there; flagged for a product decision if the user wants it changed. (4) QuickChip semantic icon accents still include blues on BOTH platforms (web mobile-promo-icon-grid.tsx + Android QuickChipColors) — kept as semantic accent colors, not backgrounds; say the word and they get re-ramped too.
 - Evidence files: tool-results/dark-*.png (6 screenshots), tool-results/read_*.txt (checkout/buy-now full reads), /tmp/login1.json /tmp/login2.json /tmp/otp2.json /tmp/verify2.json (curl artifacts).
+
+---
+Task ID: t197-t205 (round: user 4th vulnerability report — guest cart / fake payment / navy / native)
+Agent: Z.ai Code (main)
+Task: User re-reported (4th time): guest can add to cart + buy without account, fake payment / zero-payment purchase, navy blue backgrounds on pages/overlays, native app screens logically broken + pages missing. Permanent rules: never claim completion; work web + Android both sides.
+
+Work Log:
+- Server state verified: products API returns seeded catalog; DB inspected via Prisma — promotions=[], coupons=[], wallets=[], orders=0 at round start. Whatever "purchase" the user performed created NO server order row.
+- agent-browser guest reproduction: PDP "Add to Cart" bounces to login (correct). ROOT CAUSE FOUND: 20 list/detail surfaces called cart-store addItem() with NO auth gate (search-results, product-list, flash-deals, daily-deals, clearance-sale, category-products, seller-profile, product-comparison, favorite-products, recently-viewed, quick-order, bulk-pricing, product-variants, frequently-bought, collection-detail, save-for-later-detail, wishlist×2, add-to-cart-confirmation) — guests grew a persisted localStorage cart with "Added to cart!" toasts. This is the "add product in the cart without an account" the user saw.
+- FIX (web): t197 — auth gate added inside cart-store addItem (last-resort refusal: unauthenticated writes are dropped) + explicit gate (toast "Sign in to add products to your cart" + navigate('login')) added at all 20 call sites, PDP-parity. ESLint clean.
+- FIX (web): t198 — order-summary-page.tsx had corrupted useState declarations (`const ethods, setMethods]` — missing `[m`; page could not compile) AND posted POST /api/orders without paymentMethod which the server 400s since t194. Repaired the corruption, added real wallet-balance fetch, mandatory payment-method radio group (wallet disabled when balance < total; COD/bank/mobile with honest "stays UNPAID" copy), paymentMethod now sent in the POST body. Browser-verified: page renders "Nothing to review" empty state as guest, no compile errors.
+- FIX (web): t199 — navy round 3: Tailwind v4 deep sky steps remapped hue-less (sky-900 → #1f1f1f, sky-950 → #111111) killing the last navy-tinted dark chip backgrounds (order-detail status chips, admin-suppliers, seller-live-console, seller-notifications). Verified by screenshot in dark mode: home, cart wall, notifications overlay all neutral #121212/#1a1a1a, zero blue cast. Dialog/sheet/alert-dialog overlays confirmed bg-black/50 (neutral). No navy hex literals anywhere in src (rg sweep: 0f172a/1e293b/etc = zero hits). Android Theme.kt palette already neutral (#121212).
+- FIX (web): t198b — use-api.ts OFFLINE_QUEUE_EXCLUDED extended with orders/payments/wallet/cart/escrow so money mutations can never be queued with the over-promising "saved and will sync automatically" message (the native sink stores events only, never executes).
+- Android audit (Explore agent, very thorough, 64 Kotlin files): purchase path walls CONFIRMED present (PDP add/buy gates at ProductDetailViewModel.kt:230/329, cart wall CartScreen.kt:97-106, orders needsAuth, no native order-create endpoint — CommerceApis orders = GET my-orders only). Defect list B1-B10 produced with exact lines.
+- FIX (Kotlin): t200 — CartViewModel.pullServerCart inverted predicate: `isServerItem && key !in serverKeys` was resurrecting server rows deleted elsewhere and DELETING every offline-added local row before the push loop (pending always empty). Corrected to `!isServerItem && key !in serverKeys` (web syncWithApi parity).
+- FIX (Kotlin): t201 — dedicated PdpUiState.cartNeedsLogin flag + consumeCartNeedsLogin + screen LaunchedEffect with correct message; cart/buy taps no longer show the wishlist snackbar. Removed unreachable second token check in addToCart (B9).
+- FIX (Kotlin): t202 — SessionManager.clear() now also CartStore.clear() (previously ZERO callers — local cart survived logout/account switch); WebAppBridge.setAuthToken("") web-logout path also clears CartStore.
+- FIX (Kotlin): t203 — DeepLinkParser zylod://orders and https://zylod.com/orders now map to native-owned "buyer-orders" instead of WebView "my-orders".
+- FIX (Kotlin): t204 — OrdersScreen order cards are clickable → openPage("order-detail", "orderId=<id>") (web order-detail-page accepts orderId param, verified) — dead-end list no more.
+- FIX (Kotlin): t205 — WebAuthSeeder no longer seeds isAuthenticated=true with UserProfileSeed(id="") when the cached profile JSON is corrupt (was a fake-login web shell that every /api call 401s against).
+- Kotlin cleanup (B10): dead SyncBanner removed from CartScreen.kt; duplicate DisposableEffect import deduped in ZylodRoot.kt.
+- Server money-rail curl matrix (buyer1@zylod.bd, token auth):
+  * guest POST /api/orders → 401; guest create-direct → 401
+  * missing paymentMethod → 400 ("A payment method is required")
+  * nonexistent/foreign shippingAddressId → 400 both /api/orders and create-direct ("A valid shipping address belonging to you is required")
+  * COD unverified buyer1 → 403 COD_VERIFICATION_REQUIRED
+  * wallet with zero balance → 402 "Insufficient wallet balance" (walletBalance:0)
+  * legit bank_transfer order with buyer-owned address → 201, paymentStatus="unpaid", server-priced 38000 (10×৳3,800), ORD-MVP6VHS5V3GO
+  * DB orders count went 0 → 1 (only the legitimate test order)
+- Payment rails audited: wallet callbacks (SSLCommerz/bKash) validate server-side via gateway API before crediting; payments/initiate creates pending rows + 503 when no receiving account configured — never marks paid by itself.
+- Android missing-pages inventory (audit): native owns 13 surfaces (welcome, login, register×2, otp, forgot/reset, 2fa, suspended, cart, PDP, buyer-orders + WebView home); checkout/order-detail/addresses/wallet/wishlist/RFQ/notifications/profile/search/categories/deals/coupons/supplier/chat are WebView pageIds by design (RouteOwnership default → Destination.Web) — they are REACHABLE, not absent; promoting them to native is a separate phase decision.
+- Known non-fixed items: debug APK cleartext backends + JS-reachable setAuthToken/loadCustomUrl bridge hardening (B6/B7, trust-boundary notes); Kotlin changes not compiled in this environment (no Android SDK run — syntax reviewed only).
+
+Stage Summary:
+- Guest cart growth on web: root cause fixed at all 20 surfaces + store-level refusal; browser-verified flash-deals quick-add now bounces to login with empty cart (localStorage items=0).
+- Zero-payment/fake-payment: no server path found that creates a paid order without money — wallet 402, COD 403, bank/mobile unpaid-pending-verification, gateway callbacks validate server-side; DB had 0 orders before the round.
+- Navy: neutral remap extended to sky-900/950; dark screenshots neutral.
+- Native: 8 Kotlin defect fixes applied from the audit (cart data-loss inversion, mixed login nudge, cross-account cart leak, deep-link ownership, dead-end orders list, hollow-profile web seed, dead code).
+- NOT claimed complete. Open: bridge hardening (B6), cleartext debug backends (B7), full Android SDK compile of the Kotlin edits, native promotion of Tier-3 pages if wanted, T3/T4 second-buyer cross-ownership test with real foreign address id.

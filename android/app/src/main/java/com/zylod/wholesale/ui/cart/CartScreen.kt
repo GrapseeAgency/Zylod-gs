@@ -184,36 +184,6 @@ private fun CartHeader(onBack: (() -> Unit)?) {
     }
 }
 
-@Composable
-private fun SyncBanner(onSignIn: () -> Unit) {
-    Surface(
-        color = MaterialTheme.colorScheme.secondary,
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)),
-        shape = MaterialTheme.shapes.small,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-            Text(
-                "Sign in to sync your cart across devices",
-                fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onSecondary,
-                modifier = Modifier.weight(1f),
-            )
-            Text(
-                "Sign In",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .clickable(onClick = onSignIn),
-            )
-        }
-    }
-}
-
 /** Supplier-grouped sections (cart/route.ts groups by supplier; §3.10 layout). */
 private fun List<CartItemData>.groupedBySupplier(): List<Pair<String, List<CartItemData>>> {
     val grouped = LinkedHashMap<String, MutableList<CartItemData>>()

@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
-import { useCartStore, type CartItemData } from '@/store/cart-store';
+import { useCartStore, type CartItemData } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Trash2, Heart, ShoppingCart, EyeOff, Loader2, LogIn, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -220,6 +221,12 @@ export function RecentlyViewedPage() {
 
   const addToCart = (item: RecentlyViewedItem) => {
     const p = item.product;
+    // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast({ title: 'Sign in required', description: 'Create a Zylod account or sign in to add products to your cart.' });
+      navigate('login');
+      return;
+    }
     // MOQ quantity, tier-resolved unit price — the same pricing rule the PDP
     // applies, so the cart line here can never disagree with the PDP line.
     const quantity = p.moq || 1;

@@ -47,6 +47,9 @@ data class PdpUiState(
     val toast: String? = null,
     val authed: Boolean = false,
     val wishlistNeedsLogin: Boolean = false,
+    /** t201: dedicated CART sign-in nudge — reusing wishlistNeedsLogin showed
+     * cart users the wrong message ("Sign in to save items to your wishlist"). */
+    val cartNeedsLogin: Boolean = false,
     /**
      * One-shot: [buyNow] validated and the screen should open the WebView
      * buy-now page (openPage("buy-now", "productId=…&quantity=…")) — consumed
@@ -218,6 +221,10 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
         _state.update { it.copy(wishlistNeedsLogin = false) }
     }
 
+    fun consumeCartNeedsLogin() {
+        _state.update { it.copy(cartNeedsLogin = false) }
+    }
+
     /** mobile-product-detail-page.tsx handleAddToCart (L116-148) + server sync. */
     fun addToCart() {
         val product = _state.value.product ?: return
@@ -228,7 +235,7 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
         // cart, buy and never once sign in. The gate now runs FIRST: no
         // token, no stored item — the established sign-in nudge instead.
         if (SessionManager.token() == null) {
-            _state.update { it.copy(wishlistNeedsLogin = true, toast = "Sign in to add products to your cart") }
+            _state.update { it.copy(cartNeedsLogin = true, toast = "Sign in to add products to your cart") }
             return
         }
         val quantity = _state.value.quantity
@@ -269,7 +276,6 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             kotlinx.coroutines.delay(2000)
             _state.update { it.copy(justAdded = false) }
         }
-        if (SessionManager.token() == null) return
         viewModelScope.launch {
             try {
                 val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
@@ -327,7 +333,7 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
     fun buyNow() {
         val product = _state.value.product ?: return
         if (SessionManager.token() == null) {
-            _state.update { it.copy(wishlistNeedsLogin = true, toast = "Sign in to place an order") }
+            _state.update { it.copy(cartNeedsLogin = true, toast = "Sign in to place an order") }
             return
         }
         if (product.stockQuantity == 0) {

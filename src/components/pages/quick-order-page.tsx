@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
+import { toast } from 'sonner'
 import {
   ArrowLeft, Minus, Plus, ShoppingCart,
   Package, AlertCircle, Loader2
@@ -154,6 +156,12 @@ export function QuickOrderPage() {
 
   const handleAddToCart = useCallback(() => {
     if (orderItems.length === 0) return
+    // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
+    if (!useAuthStore.getState().isAuthenticated) {
+      toast.error('Sign in to add products to your cart')
+      navigate('login')
+      return
+    }
     orderItems.forEach((item) => {
       addItem({
         id: `cart-${item.productId}-${Date.now()}`,
