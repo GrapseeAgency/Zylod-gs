@@ -63,6 +63,11 @@ jobs:
       - name: Generate Prisma client
         run: bunx prisma generate
 
+      # src/generated/bundle-identity.ts is gitignored and created by the
+      # predev/prebuild hooks locally — CI must create it before tsc/build.
+      - name: Generate bundle identity (provenance gate requirement)
+        run: node scripts/generate-bundle-identity.mjs
+
       - name: TypeScript type-check (tsc --noEmit)
         run: bunx tsc --noEmit
 

@@ -41,15 +41,17 @@ object SessionManager {
     /** t206 B2: the cached profile is only readable while it belongs to the
      *  CURRENT token. A token rotation without a matching profile re-hydration
      *  (web user switch inside the WebView) hides the foreign profile. */
-    fun userJson(): String? = try {
-        val raw = ZylodApp.instance.securePrefs.getString("user_json", null)?.takeIf { it.isNotBlank() } ?: return null
-        val stamp = ZylodApp.instance.securePrefs.getString("user_json_token", null)
-        val token = ZylodApp.instance.securePrefs.getString("auth_token", null)
-        // Legacy rows written before the pairing stamp existed stay readable —
-        // stamp==null means "hydrated by an older build", not "foreign".
-        if (stamp == null || stamp == token) raw else null
-    } catch (_: Exception) {
-        null
+    fun userJson(): String? {
+        return try {
+            val raw = ZylodApp.instance.securePrefs.getString("user_json", null)?.takeIf { it.isNotBlank() } ?: return null
+            val stamp = ZylodApp.instance.securePrefs.getString("user_json_token", null)
+            val token = ZylodApp.instance.securePrefs.getString("auth_token", null)
+            // Legacy rows written before the pairing stamp existed stay readable —
+            // stamp==null means "hydrated by an older build", not "foreign".
+            if (stamp == null || stamp == token) raw else null
+        } catch (_: Exception) {
+            null
+        }
     }
 
     /** Token-only update (used by the refresh rotation). t206 B2: re-stamps the

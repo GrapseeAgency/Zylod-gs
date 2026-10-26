@@ -231,7 +231,7 @@ fun ZylodRoot() {
                     // PDP, and Back from checkout returns to the cart, instead
                     // of both landing on Home. When the top is already a web
                     // route, flatten (web depth stays 1, no web-on-web pileup).
-                    if (route.startsWith("web/")) {
+                    if (route?.startsWith("web/") == true) {
                         popUpTo(HOME_ROUTE) { saveState = false }
                     }
                     launchSingleTop = true
