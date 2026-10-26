@@ -235,6 +235,9 @@ export function LoginPage() {
           avatarUrl: null,
           isProfileComplete: false,
           profileCompletionPct: 0,
+          // t196: session-truth verification flags — checkout gates COD on them.
+          isEmailVerified: user.isEmailVerified ?? false,
+          isPhoneVerified: user.isPhoneVerified ?? false,
         }
 
         login(userProfile, data.token)
@@ -326,6 +329,9 @@ export function LoginPage() {
             avatarUrl: null,
             isProfileComplete: false,
             profileCompletionPct: 0,
+            // t196: session-truth verification flags — checkout gates COD on them.
+            isEmailVerified: user.isEmailVerified ?? false,
+            isPhoneVerified: user.isPhoneVerified ?? false,
           },
           result.token
         )

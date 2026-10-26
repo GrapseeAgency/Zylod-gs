@@ -169,7 +169,7 @@ export function QrDeeplinkPage() {
                   <rect width="25" height="25" fill="white" />
                   {grid.map((row, y) =>
                     row.map((on, x) =>
-                      on ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="#0F172A" /> : null
+                      on ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="#000000" /> : null
                     )
                   )}
                 </svg>

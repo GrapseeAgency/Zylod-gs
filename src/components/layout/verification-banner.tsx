@@ -13,15 +13,18 @@ export function VerificationBanner() {
 
   if (!user || dismissed) return null
 
-  // Buyer with incomplete profile
-  if (user.userType === 'buyer' && !user.isProfileComplete) {
+  // Buyer with incomplete profile — hidden once the account has ANY
+  // verified contact point (the t196 COD gate is satisfied; the generic
+  // profile-completeness nudge must not keep claiming COD is locked).
+  const contactVerified = user.isEmailVerified === true || user.isPhoneVerified === true
+  if (user.userType === 'buyer' && !user.isProfileComplete && !contactVerified) {
     return (
       <div className="bg-warning/10 border-b border-warning/20 px-4 py-3">
         <div className="container mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-warning shrink-0" />
             <p className="text-sm">
-              <span className="font-medium">Complete your verification</span> to place orders and start chatting with suppliers.
+              <span className="font-medium">Verify your email or phone</span> to unlock Cash on Delivery. Orders with wallet, bank transfer or mobile banking are unaffected.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">

@@ -5815,3 +5815,57 @@ Stage Summary:
 - Fake payment is structurally impotent: pending-forever until a gated human verifies; proven by curl chain.
 - Navy: BOTH blue-hued Tailwind scales (gray + slate) now neutralized site-wide via token overrides.
 - NOT DONE / RISKS: no emulator in sandbox → native runtime + WebView page-render sweep needs a real device run; sky-950 status chips intentionally kept; /cart API still 401s guests (server-side enforcement intact); buyer-side payment-instructions screen for pending manual legs still pending; cron review cycle continues.
+
+---
+Task ID: t196
+Agent: Z.ai Code (main)
+Task: User re-reported (4th time, angrier): guest cart+purchase, fake payment, zero-penny purchase, navy blue still visible, native Kotlin "never touched" + same holes + missing pages. Reproduce live, root-cause, fix BOTH web and native. FACTS ONLY — no "complete" claims.
+
+Work Log:
+- [Web guest paths — LIVE BROWSER EVIDENCE, walls hold in current bundle]
+  - Guest PDP "Add to Cart" → bounced to sign-in (URL left PDP, no item stored). Matches product-detail-page.tsx handleAddToCart guest nudge.
+  - Guest PDP "Buy Now" → "Sign in required" wall rendered (agent-browser snapshot: heading "Sign in required" + Sign In button).
+  - Guest Cart tab → "Sign in to use your cart" wall (snapshot: heading + Sign In button).
+  - Guest create-direct API → 401 {"error":"Authentication required"} (curl).
+- [ZERO-PAYMENT HOLE — REPRODUCED, ROOT-CAUSED, GATED]
+  - REPRO: logged in buyer1@zylod.bd → PDP → Buy Now → selected "Cash on Delivery" → Place Order → success screen "Order Placed — Payment status: Unpaid — Cash on Delivery". buyer1 is UNVERIFIED (users.isEmailVerified=0, isPhoneVerified=0, node:sqlite check). The UI banner literally said "Complete your verification to place orders" — yet the order was created. THIS is the user's "buy without paying a single penny".
+  - SERVER FIX 1/2 — src/app/api/orders/create-direct/route.ts: after paymentMethod parse, `paymentMethod==='cod' && !isEmailVerified && !isPhoneVerified` → 403 {code:'COD_VERIFICATION_REQUIRED'} (flags come from the session row via validateSession select — body edits cannot bypass).
+  - SERVER FIX 2/2 — src/app/api/orders/route.ts: identical gate on effectiveMethod==='cod' right after the mandatory paymentMethod check.
+  - UI FIX — buy-now-page.tsx + checkout-page.tsx: COD radio DISABLED with copy "Locked — verify your email or phone in your profile first" (codLocked from auth-store flags) + ShieldAlert icon; handlePlaceOrder mirrors the 403 with the same message; verification-banner.tsx copy now states exactly what is enforced ("Verify your email or phone to unlock Cash on Delivery…").
+  - auth-store.ts UserProfile extended with isEmailVerified/isPhoneVerified; refreshProfile maps them from /api/profile/me (route already returned them); login-page.tsx passes session flags at login (both email + social paths).
+- [CURL EVIDENCE — the gate chain]
+  - buyer1 (unverified) create-direct COD → 403 COD_VERIFICATION_REQUIRED.
+  - buyer1 (unverified) cart checkout COD → 403 COD_VERIFICATION_REQUIRED.
+  - guest create-direct → 401.
+  - buyer2: OTP send (purpose verify_email) → 200 + devCode; OTP verify → 200 verified:true; DB users.isEmailVerified=1 (node:sqlite).
+  - buyer2 (verified) COD create-direct with no address → 400 "A valid shipping address belonging to you is required to place an order" (address gate ALSO holds).
+  - buyer2 created address via /api/addresses → COD create-direct → 201 ORD-MVP4EDZG9YEZ, paymentStatus unpaid, method cod (legit verified-buyer COD flow).
+- [IN-APP VERIFICATION PATH — NEW (the gate was blocking with no remediation UI)]
+  - /api/auth/otp/send: added purposes verify_email|verify_phone; REQUIRE session + contact point must belong to the session user (403 otherwise). otp/verify already flips users.isEmailVerified/isPhoneVerified by '@' heuristic — no change needed.
+  - NEW src/components/pages/account-verification-card.tsx: email/phone rows with per-row Verify → 6-digit code input → /api/auth/otp/verify → refreshProfile(); devCode surfaced as a dev hint; verified state renders green "Account verified".
+  - Wired into buyer-profile-page.tsx between identity hero and tab nav.
+  - LIVE UI E2E: buyer1 profile → Verify (email) → OTP input rendered → code 726884 (recovered from otpCodes.codeHash sha256 brute) → Confirm → heading flipped to "Account verified"; buy-now COD radio for buyer1 now ENABLED ("Pay the supplier in cash when the goods arrive", no [disabled]).
+  - verification-banner now hides once any contact point is verified (was keyed on isProfileComplete and kept claiming COD locked).
+- [NAVY BLUE — EVIDENCE + FIXES]
+  - globals.css STRUCTURAL CORRUPTION found: the t194/t195 edits had spliced the skeleton-shimmer layer + the whole SITE-WIDE DARK REMAP layer INSIDE an unterminated `.scrollbar-thin::-webkit-scrollbar-track {` block (comment swallowed the missing brace; displaced closers sat at EOF). Entire dark remap nested inside a selector block = invalid CSS nesting; brace-balance check passed only by accident of the stray closers. REPAIRED: scrollbar rules closed properly, skeleton + dark remap are now top-level @layer utilities (node brace scan: final depth 0, no negatives).
+  - public/zylod-logo.svg — THE rendered-navy element on every page: Z lettermark used #042562/#043cb1/#045ed9/#0480f8 (blue/navy ramp). Recolored to crimson ramp #4A0812/#7A0C1E/#C8102E/#FF4D6D (both fill= and gradient stop-color=). Android copy android/app/src/main/assets/zylod-logo.svg recolored identically.
+  - brand-showcase-page.tsx hero card bg-[#1E293B] (slate-800 navy) → bg-[#1E1E1E]; qr-deeplink-page.tsx QR modules #0F172A → #000000.
+  - RENDER SCAN (agent-browser eval over all elements, blue-dominance heuristic on computed backgroundColor AND color): home/orders/flash-sale/deals/scanner-overlay → "[]" (no blue-dominant surfaces). Dark-mode screenshots saved: tool-results/dark-home.png, dark-overlay-1.png (cart), dark-overlay-2.png (scanner), dark-orders.png, dark-deals.png, dark-profile-verification.png. Header logo now renders crimson (dark-footer-logo.png).
+- [NATIVE / ANDROID]
+  - Sandbox has NO Android SDK (checked ~/Android/Sdk, /opt/android-sdk, /usr/lib/android-sdk; java 21 present, no kotlinc) → an APK cannot be built or verified here. Stated plainly: Kotlin source hardening from t190/t195 (PDP guest nudge, cart account wall, buy-now validation-only, native-home quarantine) exists in source but any installed APK predating those commits still exhibits the old behavior — the user's device symptoms are consistent with a stale APK.
+  - THIS ROUND Kotlin changes (source-level, compile-unverified in sandbox):
+    - data/api/AuthDtos.kt: UserProfileSeed += isEmailVerified/isPhoneVerified (defaults false); ProfileMeDto.toUserProfileSeed() and AuthUserDto.toUserProfileSeed() map them. Rationale: WebAuthSeeder seeds b2b-auth-storage from this shape — without the flags the WebView checkout (which is where native checkout/buy-now run) could not render the COD lock from session truth.
+    - ApiClient.json has ignoreUnknownKeys=true (verified) so older cached userJson parses safely with the new fields.
+  - Native logic re-audit (read, no defects found this round): CartScreen guest wall renders CartEmpty(unauthenticated) BEFORE any cart UI; CartViewModel syncs only when token present; ProductDetailViewModel.addToCart/buyNow refuse guests with sign-in nudge; OrdersViewModel shows needsAuth state, never fake rows; WebAuthSeeder never clobbers web-originated sessions, removal script on native logout.
+  - Ownership map re-checked: cart/product-detail/buyer-orders/auth native; checkout/buy-now/home intentionally WEBVIEW (single renderer rule). "Missing pages" per user = the ~400 Tier-3 SPA pages are WebView-rendered by design, not absent; native additions require a build machine (SDK) to be verifiable — flagged as next-phase work, not claimed as done.
+- [REGRESSION SWEEP]
+  - bun run lint: clean (two runs, after web edits and after all edits).
+  - /api/products → 200 with data; dev.log: no compile errors, no runtime errors from the touched routes; instrumentation guard healthy from earlier restart (products served).
+
+Stage Summary:
+- The zero-penny purchase the user kept hitting is REAL and was REPRODUCED live: COD allowed unverified accounts to create orders with zero money and zero friction. Now server-gated (403 on both order APIs) + UI-locked (disabled radio, honest copy) on web, with the same gate carried into the native-seeded WebView session via UserProfileSeed flags.
+- A remediation path now exists: in-app email/phone OTP verification (API hardened to session-owned targets) → verified buyers can use COD again; verified end-to-end by curl AND live browser (buyer1 verified through the UI card).
+- Guest walls hold live in the current web bundle (browser evidence); API 401/400/403 chain re-proven by curl.
+- Navy: the site-wide logo was the rendered navy on every page — recolored on web + Android; broken dark-remap CSS layer repaired; last two hardcoded navy hexes removed; programmatic blue-hue scans return empty on the pages tested.
+- UNRESOLVED / RISKS (facts, not excuses): (1) No Android SDK in sandbox — Kotlin changes are compile-unverified and no APK can be produced here; the user's installed APK predates ALL native fixes until someone builds it. (2) Web bundle staleness: if the user's browser cached an old bundle, they must hard-refresh; the live walls were verified on the current dev server. (3) RFQ convert-order creates 'unpaid' orders by design (negotiated quote; payment verified via manual leg before dispatch) — no COD choice exists there; flagged for a product decision if the user wants it changed. (4) QuickChip semantic icon accents still include blues on BOTH platforms (web mobile-promo-icon-grid.tsx + Android QuickChipColors) — kept as semantic accent colors, not backgrounds; say the word and they get re-ramped too.
+- Evidence files: tool-results/dark-*.png (6 screenshots), tool-results/read_*.txt (checkout/buy-now full reads), /tmp/login1.json /tmp/login2.json /tmp/otp2.json /tmp/verify2.json (curl artifacts).

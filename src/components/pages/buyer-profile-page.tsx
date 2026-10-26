@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { AccountVerificationCard } from './account-verification-card'
 import {
   User, ShoppingBag, DollarSign, Wallet, Truck,
   Star, ShieldCheck, Scale, FileText, Bookmark, Clock,
@@ -399,6 +400,11 @@ export function BuyerProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* t196 ACCOUNT VERIFICATION — the in-app remediation path for the
+            COD gate. Sits between the identity hero and the tab nav so the
+            buyer sees the verification state immediately. */}
+        <AccountVerificationCard />
 
         {/* ─── TAB NAVIGATION (CLEAN ICONS, NO EMOJIS) ───────────────── */}
         <div className="sticky top-[57px] z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 shadow-xs">

@@ -156,7 +156,7 @@ export function BrandShowcasePage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => openBrand(hero.name)}
-              className="relative rounded-2xl overflow-hidden border border-[#E0E0E0] dark:border-gray-800 shadow-sm bg-[#1E293B] text-white cursor-pointer group"
+              className="relative rounded-2xl overflow-hidden border border-[#E0E0E0] dark:border-gray-800 shadow-sm bg-[#1E1E1E] text-white cursor-pointer group"
             >
               <div className="relative aspect-[16/9] w-full">
                 { }

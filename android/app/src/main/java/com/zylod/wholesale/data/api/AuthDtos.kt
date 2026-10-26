@@ -277,6 +277,10 @@ data class UserProfileSeed(
     val avatarUrl: String? = null,
     val isProfileComplete: Boolean = false,
     val profileCompletionPct: Int = 0,
+    // t196: verification flags ride the seed so the WebView checkout gates
+    // Cash on Delivery on the SAME session truth the server enforces.
+    val isEmailVerified: Boolean = false,
+    val isPhoneVerified: Boolean = false,
     val verificationStatus: String? = null,
     val rejectionReason: String? = null,
     val companyName: String? = null,
@@ -294,6 +298,8 @@ fun ProfileMeDto.toUserProfileSeed(): UserProfileSeed = UserProfileSeed(
     avatarUrl = avatarUrl,
     isProfileComplete = isProfileComplete,
     profileCompletionPct = profileCompletionPct,
+    isEmailVerified = isEmailVerified,
+    isPhoneVerified = isPhoneVerified,
     verificationStatus = supplierProfile?.verificationStatus,
     rejectionReason = supplierProfile?.rejectionReason,
     companyName = supplierProfile?.companyName,
@@ -311,4 +317,6 @@ fun AuthUserDto.toUserProfileSeed(): UserProfileSeed = UserProfileSeed(
     avatarUrl = null,
     isProfileComplete = false,
     profileCompletionPct = 0,
+    isEmailVerified = isEmailVerified,
+    isPhoneVerified = isPhoneVerified,
 )

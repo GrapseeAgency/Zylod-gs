@@ -13,6 +13,10 @@ interface UserProfile {
   avatarUrl: string | null
   isProfileComplete: boolean
   profileCompletionPct: number
+  // t196: real verification flags (session truth) — the checkout surfaces
+  // use these to gate Cash on Delivery; server enforces the same rule.
+  isEmailVerified?: boolean
+  isPhoneVerified?: boolean
   // Supplier-specific
   verificationStatus?: string
   rejectionReason?: string
@@ -87,6 +91,8 @@ export const useAuthStore = create<AuthState>()(
                   avatarUrl: u.avatarUrl || null,
                   isProfileComplete: u.isProfileComplete ?? false,
                   profileCompletionPct: u.profileCompletionPct ?? 0,
+                  isEmailVerified: u.isEmailVerified ?? false,
+                  isPhoneVerified: u.isPhoneVerified ?? false,
                   verificationStatus: u.supplierProfile?.verificationStatus,
                   rejectionReason: u.supplierProfile?.rejectionReason ?? null,
                   companyName: u.supplierProfile?.companyName,

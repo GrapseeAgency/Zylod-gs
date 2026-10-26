@@ -198,6 +198,23 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
     }
+    // t196 ZERO-PAYMENT GATE: cash on delivery ships goods before any money
+    // arrives, so an UNVERIFIED account must never be able to place one.
+    // The verification flags come from the session row (validateSession
+    // select) — editing the request body cannot bypass this.
+    if (
+      effectiveMethod === 'cod' &&
+      !authResult.user.isEmailVerified &&
+      !authResult.user.isPhoneVerified
+    ) {
+      return NextResponse.json(
+        {
+          error: 'Cash on Delivery requires a verified account — verify your email or phone in your profile first.',
+          code: 'COD_VERIFICATION_REQUIRED',
+        },
+        { status: 403 },
+      )
+    }
     // Unit-bearing decimals: normalize to 2 dp so float drift never reaches DB rows.
     for (const item of items) {
       item.quantity = roundQty(item.quantity)

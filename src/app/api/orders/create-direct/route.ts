@@ -108,6 +108,24 @@ export async function POST(request: NextRequest) {
     }
     const { productId, quantity: rawQty, variantId, shippingAddressId, shippingMethodId, paymentMethod } = parsed.data
 
+    // t196 ZERO-PAYMENT GATE: cash on delivery ships goods before any money
+    // arrives, so an UNVERIFIED account must never be able to place one.
+    // The verification flags come from the session row (validateSession
+    // select) — editing the request body cannot bypass this.
+    if (
+      paymentMethod === 'cod' &&
+      !authResult.user.isEmailVerified &&
+      !authResult.user.isPhoneVerified
+    ) {
+      return NextResponse.json(
+        {
+          error: 'Cash on Delivery requires a verified account — verify your email or phone in your profile first.',
+          code: 'COD_VERIFICATION_REQUIRED',
+        },
+        { status: 403 },
+      )
+    }
+
     /** Thrown when the wallet cannot cover the server-priced total. */
     class WalletInsufficientError extends Error {
       balance: number

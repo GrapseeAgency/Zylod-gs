@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useCartStore, type CartItemData } from '@/store/cart-store'
+import { useAuthStore } from '@/store/auth-store'
 import {
   ArrowLeft, MapPin, CreditCard, Check, CheckCircle2, Package,
   Lock, AlertCircle, Loader2, Plus, Wallet, Truck, LogIn,
-  Landmark, Smartphone, Banknote
+  Landmark, Smartphone, Banknote, ShieldAlert
 } from 'lucide-react'
 
 /**
@@ -99,6 +100,13 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   // so a zero-decision unpaid order can never be placed.
   const [paymentMethod, setPaymentMethod] = useState<'' | 'wallet' | 'bank_transfer' | 'mobile_banking' | 'cod'>('')
   const payWithWallet = paymentMethod === 'wallet'
+
+  // t196 ZERO-PAYMENT GATE (UI half): Cash on Delivery ships goods before any
+  // money arrives, so it is locked until the account is verified (email or
+  // phone). The server enforces the identical rule (403) — this only keeps
+  // the UI honest instead of letting the buyer hit a wall after submitting.
+  const { user } = useAuthStore()
+  const codLocked = user?.userType === 'buyer' && !user.isEmailVerified && !user.isPhoneVerified
 
   // Task 74: coupon application — the API honors couponCode and now refuses
   // invalid ones with the real reason; this input is the half that was
@@ -354,6 +362,11 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
     // path is closed at the UI exactly as it is at the API.
     if (!paymentMethod) {
       setError('Select a payment method — wallet, bank transfer, mobile banking or cash on delivery.')
+      return
+    }
+    // t196: COD is verification-gated — the UI mirrors the server's 403.
+    if (paymentMethod === 'cod' && codLocked) {
+      setError('Cash on Delivery requires a verified account — verify your email or phone in your profile first.')
       return
     }
     setSubmitting(true)
@@ -905,21 +918,36 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
               </span>
             </label>
 
-            {/* Cash on delivery — an EXPLICIT choice, never a silent default */}
+            {/* Cash on delivery — an EXPLICIT choice, never a silent default.
+                t196: locked until the account is verified (server 403 parity). */}
             <label
-              className={`flex items-center gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-colors ${
-                paymentMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+              className={`flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors ${
+                codLocked
+                  ? 'border-slate-100 dark:border-slate-800 opacity-60 cursor-not-allowed'
+                  : paymentMethod === 'cod'
+                    ? 'border-primary bg-primary/5 cursor-pointer'
+                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card cursor-pointer'
               }`}
             >
-              <input type="radio" name="checkout-pay" className="sr-only" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
+              <input
+                type="radio"
+                name="checkout-pay"
+                className="sr-only"
+                checked={paymentMethod === 'cod'}
+                disabled={codLocked}
+                onChange={() => setPaymentMethod('cod')}
+              />
               <span aria-hidden className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${paymentMethod === 'cod' ? 'border-primary' : 'border-slate-300'}`}>
                 {paymentMethod === 'cod' && <span className="h-2 w-2 rounded-full bg-primary" />}
               </span>
               <Banknote className={`h-4 w-4 shrink-0 ${paymentMethod === 'cod' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
-              <span className="text-xs">
+              <span className="text-xs flex-1 min-w-0">
                 <span className="font-bold text-slate-900 dark:text-slate-100">Cash on Delivery</span>
-                <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Pay the supplier in cash when the goods arrive.</span>
+                <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                  {codLocked ? 'Locked — verify your email or phone in your profile first' : 'Pay the supplier in cash when the goods arrive.'}
+                </span>
               </span>
+              {codLocked && <ShieldAlert aria-hidden className="h-4 w-4 shrink-0 text-amber-500" />}
             </label>
           </div>
 

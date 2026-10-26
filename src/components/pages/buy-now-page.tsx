@@ -4,9 +4,10 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { useAuthStore } from '@/store/auth-store'
 import {
   ArrowLeft, Truck, CreditCard, CheckCircle2,
-  MapPin, Package, AlertCircle, RefreshCw, LogIn, Minus, Plus, Wallet, Landmark, Smartphone, Banknote
+  MapPin, Package, AlertCircle, RefreshCw, LogIn, Minus, Plus, Wallet, Landmark, Smartphone, Banknote, ShieldAlert
 } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 
@@ -68,6 +69,7 @@ interface ShippingOption {
 export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
+  const { user } = useAuthStore()
   const pageParams = _pageParams || storeParams || {}
   const productId = pageParams.productId || pageParams.id || ''
 
@@ -95,6 +97,12 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
   // no default, so a zero-decision order can never be placed by accident.
   const [paymentMethod, setPaymentMethod] = useState<string>('')
   const [walletBalance, setWalletBalance] = useState<number | null>(null)
+
+  // t196 ZERO-PAYMENT GATE (UI half): Cash on Delivery ships goods before any
+  // money arrives, so it is locked until the account is verified (email or
+  // phone). The server enforces the identical rule (403) — this only keeps
+  // the UI honest instead of letting the buyer hit a wall after submitting.
+  const codLocked = user?.userType === 'buyer' && !user.isEmailVerified && !user.isPhoneVerified
 
   // Task 95: live shipping quote for THIS shipment + the buyer's pick.
   const [quote, setQuote] = useState<{ loading: boolean; options: ShippingOption[]; error: string } | null>(null)
@@ -269,6 +277,11 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
     // t194: no payment method, no order — the zero-decision path is closed.
     if (!paymentMethod) {
       setSubmitError('Select a payment method before placing the order.')
+      return
+    }
+    // t196: COD is verification-gated — the UI mirrors the server's 403.
+    if (paymentMethod === 'cod' && codLocked) {
+      setSubmitError('Cash on Delivery requires a verified account — verify your email or phone in your profile first.')
       return
     }
     setSubmitting(true)
@@ -712,12 +725,18 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                 const active = paymentMethod === opt.value
                 const Icon = opt.icon
                 const isWallet = opt.value === 'wallet'
+                const isCod = opt.value === 'cod'
+                const locked = isCod && codLocked
                 const walletShort = isWallet && walletBalance !== null && walletBalance < orderTotal
                 return (
                   <label
                     key={opt.value}
-                    className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 cursor-pointer transition-colors ${
-                      active ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+                    className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 transition-colors ${
+                      locked
+                        ? 'border-slate-100 dark:border-slate-800 opacity-60 cursor-not-allowed'
+                        : active
+                          ? 'border-primary bg-primary/5 cursor-pointer'
+                          : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card cursor-pointer'
                     }`}
                   >
                     <input
@@ -725,6 +744,7 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                       name="buy-now-pay"
                       className="sr-only"
                       checked={active}
+                      disabled={locked}
                       onChange={() => setPaymentMethod(opt.value)}
                     />
                     <span
@@ -754,8 +774,11 @@ export function BuyNowPage({ pageParams: _pageParams }: { pageParams?: Record<st
                           </span>
                         )}
                       </span>
-                      <span className="block text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{opt.hint}</span>
+                      <span className="block text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                        {locked ? 'Locked — verify your email or phone in your profile first' : opt.hint}
+                      </span>
                     </span>
+                    {locked && <ShieldAlert aria-hidden className="h-4 w-4 shrink-0 text-amber-500" />}
                   </label>
                 )
               })}

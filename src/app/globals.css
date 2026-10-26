@@ -210,7 +210,13 @@
   }
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
-/* ════════════════════════════════════════════════════════════════
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--muted);
+    border-radius: 3px;
+  }
+}
+
 /* ─── New skeleton loading system — shimmer sweep ─── */
 @layer utilities {
   .skeleton-shimmer {
@@ -282,10 +288,4 @@
 
   /* ── Skeleton loading follows theme ── */
   .dark [data-slot="skeleton"] { background-color: #2A2A2A; }
-}
-  }
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: var(--muted);
-    border-radius: 3px;
-  }
 }
