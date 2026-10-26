@@ -8,6 +8,8 @@ import com.zylod.wholesale.data.api.AddCartRequest
 import com.zylod.wholesale.data.api.PriceTierDto
 import com.zylod.wholesale.data.api.ProductDetailApi
 import com.zylod.wholesale.data.api.ProductDetailDto
+import com.zylod.wholesale.data.api.ProductQaAskRequest
+import com.zylod.wholesale.data.api.ProductQaItemDto
 import com.zylod.wholesale.data.api.ProductVariantDto
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.api.SpecificationsDto
@@ -57,6 +59,13 @@ data class PdpUiState(
      * it. Guest taps never raise it (they get the sign-in nudge instead).
      */
     val buyNowRequested: Boolean = false,
+    /** t209: the REAL product Q&A rail (public GET /api/products/{id}/qa). */
+    val qa: List<ProductQaItemDto> = emptyList(),
+    val qaLoading: Boolean = false,
+    /** t209: in-flight ask POST (dialog button disabled while true). */
+    val askingQuestion: Boolean = false,
+    /** t209: guest tried to ask a question — one-shot sign-in nudge. */
+    val qaNeedsLogin: Boolean = false,
 )
 
 class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
@@ -77,7 +86,15 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             _state.update { it.copy(loading = false, error = "Product not found") }
             return
         }
-        _state.update { it.copy(loading = true, error = null, authed = SessionManager.token() != null) }
+        _state.update {
+            it.copy(
+                loading = true,
+                error = null,
+                authed = SessionManager.token() != null,
+                qa = emptyList(),
+                qaLoading = true,
+            )
+        }
         viewModelScope.launch {
             try {
                 val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
@@ -113,6 +130,17 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                     }
                 } catch (_: Exception) {
                     // specs optional
+                }
+                // t209: the REAL Q&A rail (was a declared native gap —
+                // "Q&A isn't available in the app yet" — while the public
+                // GET existed server-side all along). Failure degrades to the
+                // honest empty state, same policy as the specs sub-fetch.
+                try {
+                    val qaResponse = client.qa(productId)
+                    val qa = qaResponse.body()?.takeIf { it.success }?.data
+                    _state.update { s -> s.copy(qa = qa.orEmpty(), qaLoading = false) }
+                } catch (_: Exception) {
+                    _state.update { s -> s.copy(qaLoading = false) }
                 }
                 if (SessionManager.token() != null) checkWishlist(client, productId)
             } catch (ce: CancellationException) {
@@ -219,6 +247,66 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
 
     fun consumeWishlistNeedsLogin() {
         _state.update { it.copy(wishlistNeedsLogin = false) }
+    }
+
+    fun consumeQaNeedsLogin() {
+        _state.update { it.copy(qaNeedsLogin = false) }
+    }
+
+    /**
+     * t209: ask — POST /api/products/{id}/qa {question} (5..500). Guest → the
+     * established one-shot sign-in nudge (qaNeedsLogin; the screen shows
+     * "Sign in to ask the supplier a question"). Success re-pulls the
+     * authoritative list (the POST echo carries no asker display name).
+     */
+    fun askQuestion(rawQuestion: String) {
+        val product = _state.value.product ?: return
+        val question = rawQuestion.trim()
+        if (question.length < 5) {
+            _state.update { it.copy(toast = "Your question must be at least 5 characters") }
+            return
+        }
+        if (SessionManager.token() == null) {
+            _state.update { it.copy(qaNeedsLogin = true) }
+            return
+        }
+        viewModelScope.launch {
+            _state.update { it.copy(askingQuestion = true) }
+            try {
+                val response = client().askQuestion(product.id, ProductQaAskRequest(question = question))
+                if (!response.isSuccessful) {
+                    val err = com.zylod.wholesale.data.api.parseErrorBody(response.errorBody())
+                    _state.update {
+                        it.copy(askingQuestion = false, toast = err.error ?: "Could not post your question")
+                    }
+                    return@launch
+                }
+                if (response.body()?.takeIf { it.success } == null) {
+                    _state.update { it.copy(askingQuestion = false, toast = "Could not post your question") }
+                    return@launch
+                }
+                try {
+                    val refreshed = client().qa(product.id).body()?.takeIf { it.success }?.data
+                    _state.update {
+                        it.copy(
+                            askingQuestion = false,
+                            qa = refreshed.orEmpty(),
+                            toast = "Question posted — the supplier has been notified",
+                        )
+                    }
+                } catch (_: Exception) {
+                    _state.update {
+                        it.copy(askingQuestion = false, toast = "Question posted — the supplier has been notified")
+                    }
+                }
+            } catch (ce: CancellationException) {
+                throw ce
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(askingQuestion = false, toast = "Network error — your question was not posted")
+                }
+            }
+        }
     }
 
     fun consumeCartNeedsLogin() {

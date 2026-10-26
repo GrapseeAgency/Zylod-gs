@@ -42,7 +42,6 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.Policy
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -55,6 +54,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -92,6 +92,7 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 import com.zylod.wholesale.data.api.PriceTierDto
 import com.zylod.wholesale.data.api.ProductDetailDto
+import com.zylod.wholesale.data.api.ProductQaItemDto
 import com.zylod.wholesale.data.api.ReviewDto
 import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.ui.components.InfoTile
@@ -143,6 +144,13 @@ fun ProductDetailScreen(
         if (state.cartNeedsLogin) {
             snackbar.showSnackbar("Create a Zylod account or sign in to continue")
             vm.consumeCartNeedsLogin()
+        }
+    }
+    // t209: Q&A ask nudge for guests (same one-shot channel as cart/wishlist).
+    LaunchedEffect(state.qaNeedsLogin) {
+        if (state.qaNeedsLogin) {
+            snackbar.showSnackbar("Sign in to ask the supplier a question")
+            vm.consumeQaNeedsLogin()
         }
     }
     // t190: Buy Now places NO inline order — the one-click createDirect COD
@@ -226,7 +234,7 @@ fun ProductDetailScreen(
                             onBuyNow = vm::buyNow,
                         )
                     }
-                    item(key = "tabs") { TabsSection(product, state.specifications) }
+                    item(key = "tabs") { TabsSection(product, state, vm) }
                     item(key = "supplier") { SupplierCard(product, openPage) }
                     item { Spacer(Modifier.height(20.dp)) }
                 }
@@ -758,7 +766,7 @@ private enum class PdpTab(val label: String) {
 }
 
 @Composable
-private fun TabsSection(product: ProductDetailDto, specifications: Map<String, String>) {
+private fun TabsSection(product: ProductDetailDto, state: PdpUiState, vm: ProductDetailViewModel) {
     var selected by remember { mutableIntStateOf(0) }
     val tabs = PdpTab.entries
     Surface(
@@ -805,9 +813,9 @@ private fun TabsSection(product: ProductDetailDto, specifications: Map<String, S
             Column(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
                 when (tabs[selected]) {
                     PdpTab.DETAILS -> DetailsTab(product)
-                    PdpTab.SPECS -> SpecsTab(specifications)
+                    PdpTab.SPECS -> SpecsTab(state.specifications)
                     PdpTab.REVIEWS -> ReviewsTab(product)
-                    PdpTab.QA -> QaTab()
+                    PdpTab.QA -> QaTab(state, vm)
                 }
             }
         }
@@ -984,36 +992,156 @@ private fun ReviewCard(review: ReviewDto) {
     }
 }
 
-/** Q&A — declared feature gap: the /qa sub-fetch is not wired in the native
- *  app yet (the ViewModel never fetches Q&A, so no negative "no questions"
- *  claim is made). The web PDP remains the question channel. */
+/**
+ * Q&A — t209: the REAL rail. The previous tab was a declared dead-end
+ * ("Q&A isn't available in the app yet") while GET/POST /api/products/{id}/qa
+ * exist server-side: the GET is PUBLIC (qa/route.ts) and the POST
+ * authenticates via the Bearer header the shared OkHttp client already
+ * attaches (extractToken, src/lib/auth.ts:115). Questions + answers render
+ * from the live fetch; asking requires a session (guest → the established
+ * sign-in nudge). Posting questions stays rate-limited server-side
+ * (product-qa-ask 5/min) — no client bypass.
+ */
 @Composable
-private fun QaTab() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
+private fun QaTab(state: PdpUiState, vm: ProductDetailViewModel) {
+    var askOpen by remember { mutableStateOf(false) }
+    var draft by remember { mutableStateOf("") }
+
+    Column {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "Buyer questions",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = { askOpen = true }, enabled = !state.askingQuestion) {
+                Text("Ask a question", fontSize = 12.sp)
+            }
+        }
+        if (state.qa.isEmpty()) {
+            EmptyTabText(
+                if (state.qaLoading) {
+                    "Loading questions…"
+                } else {
+                    "No questions yet — ask the supplier about MOQ, bulk pricing or shipping."
+                },
+            )
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                state.qa.take(20).forEach { qa -> QaCard(qa) }
+            }
+        }
+    }
+
+    if (askOpen) {
+        AlertDialog(
+            onDismissRequest = { if (!state.askingQuestion) askOpen = false },
+            title = { Text("Ask the supplier", fontSize = 16.sp, fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+                    Text(
+                        "Ask about MOQ, bulk pricing, lead time or shipping. The product's " +
+                            "supplier is notified and answers publicly on this product page.",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    OutlinedTextField(
+                        value = draft,
+                        onValueChange = { draft = it.take(500) },
+                        placeholder = { Text("Your question (5–500 characters)", fontSize = 12.sp) },
+                        shape = MaterialTheme.shapes.small,
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val question = draft
+                        askOpen = false
+                        draft = ""
+                        vm.askQuestion(question)
+                    },
+                    enabled = draft.trim().length in 5..500 && !state.askingQuestion,
+                ) {
+                    Text("Post question", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                }
+            },
+            dismissButton = { TextButton(onClick = { askOpen = false }) { Text("Cancel") } },
+            shape = RoundedCornerShape(14.dp),
+        )
+    }
+}
+
+/** One question row — asked line + the supplier's answer block when present. */
+@Composable
+private fun QaCard(qa: ProductQaItemDto) {
+    val extra = LocalZylodExtra.current
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        Icon(
-            Icons.Outlined.Policy,
-            null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(30.dp),
-        )
-        Text(
-            "Q&A isn't available in the app yet",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp),
-        )
-        Text(
-            "Browse this product on the Zylod website to read and post buyer questions.",
-            fontSize = 11.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 4.dp),
-        )
+        Column(Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Text(
+                    "Q",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape)
+                        .padding(horizontal = 7.dp, vertical = 2.dp),
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    qa.question,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            Text(
+                buildString {
+                    append(qa.askedBy?.takeIf(String::isNotBlank) ?: "Buyer")
+                    qa.askedAt?.takeIf(String::isNotBlank)?.let { append(" · ").append(it.take(10)) }
+                },
+                fontSize = 10.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+            val answer = qa.answer?.takeIf(String::isNotBlank)
+            if (answer != null) {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier
+                        .padding(top = 8.dp, start = 24.dp)
+                        .fillMaxWidth(),
+                ) {
+                    Column(Modifier.padding(8.dp)) {
+                        Text("Supplier answered:", fontSize = 10.sp, fontWeight = FontWeight.Medium)
+                        Text(
+                            answer,
+                            fontSize = 10.sp,
+                            lineHeight = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 2.dp),
+                        )
+                    }
+                }
+            } else {
+                Text(
+                    "Awaiting the supplier's answer",
+                    fontSize = 10.sp,
+                    color = extra.warning,
+                    modifier = Modifier.padding(top = 8.dp, start = 24.dp),
+                )
+            }
+        }
     }
 }
 

@@ -468,13 +468,17 @@ export function Footer() {
               RESOURCES
             </h3>
             <div className="flex flex-col gap-1">
-              <FooterLink onClick={() => navigate('about')} size="xs">
+              {/* t209: every link lands on a real implementation — the
+                  previous ids ('about', 'press', 'partner-program') were not
+                  registered pages and fell through to the generic-info
+                  placeholder. */}
+              <FooterLink onClick={() => navigate('about-us')} size="xs">
                 About Zylod
               </FooterLink>
-              <FooterLink onClick={() => navigate('careers')} size="xs">
+              <FooterLink onClick={() => navigate('careers-page')} size="xs">
                 Careers
               </FooterLink>
-              <FooterLink onClick={() => navigate('press')} size="xs">
+              <FooterLink onClick={() => navigate('press-media')} size="xs">
                 Press & Media
               </FooterLink>
               <FooterLink onClick={() => navigate('blog')} size="xs">
@@ -483,7 +487,7 @@ export function Footer() {
               <FooterLink onClick={() => navigate('events')} size="xs">
                 Events
               </FooterLink>
-              <FooterLink onClick={() => navigate('partner-program')} size="xs">
+              <FooterLink onClick={() => navigate('affiliate-program')} size="xs">
                 Partner Program
               </FooterLink>
               <FooterLink onClick={() => navigate('welcome')} size="xs">

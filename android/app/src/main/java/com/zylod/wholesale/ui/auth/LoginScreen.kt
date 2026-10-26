@@ -389,27 +389,38 @@ fun LoginScreen(
             }
             Spacer(Modifier.height(28.dp))
 
-            // Buyer / Supplier tabs — visual parity with login-page.tsx:390-429
-            // (the web tabs don't change the login endpoint either).
+            // Buyer / Supplier tabs — t209: the web renders these as REAL
+            // buttons that toggle activeTab (login-page.tsx:388-429 — visual
+            // only, neither tab changes the login endpoint); the native port
+            // shipped them as STATIC labels, so tapping "Supplier" did
+            // nothing. Now the tap toggles the highlight (same visual-only
+            // contract as the web).
+            var activeLoginTab by rememberSaveable { mutableStateOf(0) }
             Row(
                 Modifier
                     .fillMaxWidth(0.7f)
                     .align(Alignment.CenterHorizontally),
             ) {
                 listOf("Buyer", "Supplier").forEachIndexed { index, label ->
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+                    val selected = index == activeLoginTab
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { activeLoginTab = index },
+                    ) {
                         Text(
                             label,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (index == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(Modifier.height(6.dp))
                         Box(
                             Modifier
                                 .fillMaxWidth()
                                 .height(2.dp)
-                                .background(if (index == 0) MaterialTheme.colorScheme.primary else Color.Transparent),
+                                .background(if (selected) MaterialTheme.colorScheme.primary else Color.Transparent),
                         )
                     }
                 }

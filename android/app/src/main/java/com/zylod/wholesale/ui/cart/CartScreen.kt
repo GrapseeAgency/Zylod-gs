@@ -31,7 +31,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -432,23 +431,18 @@ private fun CartSummaryCard(items: List<CartItemData>, onCheckout: () -> Unit) {
             SummaryLine("Subtotal (${items.size} products, $totalUnits units)", formatBdt(subtotal))
             SummaryLine("Shipping", "Calculated at checkout")
 
-            // Visual-only coupon entry (web parity — checkout owns coupons server-side).
-            OutlinedTextField(
-                value = "",
-                onValueChange = {},
-                enabled = false,
-                singleLine = true,
-                placeholder = { Text("Coupon code", fontSize = 12.sp) },
-                shape = MaterialTheme.shapes.small,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-            )
+            // t209: NO fake coupon entry — the previous card rendered a dead
+            // OutlinedTextField (value=""; onValueChange={}; enabled=false)
+            // that looked editable but could never accept text, and the web
+            // cart page has no coupon UI at all (cart-page.tsx: zero coupon
+            // hits — coupons live in checkout, checkout-page.tsx POSTs
+            // /api/coupons/validate). An honest caption replaces the dead
+            // control.
             Text(
-                "Coupons are applied at checkout",
+                "Coupons can be applied at checkout",
                 fontSize = 10.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp, start = 4.dp),
+                modifier = Modifier.padding(top = 8.dp, start = 4.dp),
             )
 
             Row(

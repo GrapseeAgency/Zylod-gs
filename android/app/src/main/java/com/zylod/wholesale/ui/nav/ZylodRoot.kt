@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -545,6 +546,11 @@ private fun ZylodBottomBar(activeTab: String, cartBadge: Int, onTab: (TabItem) -
                         fontSize = 10.sp,
                         fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
                         color = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        // t209: the 64dp frozen bar clips wrapped text on narrow
+                        // phones / large font scales — one line, ellipsized,
+                        // keeps the row height contract on 360dp screens.
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }

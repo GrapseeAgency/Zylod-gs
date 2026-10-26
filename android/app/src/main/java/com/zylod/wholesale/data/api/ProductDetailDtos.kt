@@ -106,3 +106,46 @@ data class SpecificationsDto(
 
 @Serializable
 data class SpecItemDto(val specName: String? = null, val specValue: String? = null)
+
+/*
+ * t209 — THE product Q&A rail wire shapes, verified against
+ * src/app/api/products/[id]/qa/route.ts (GET mapping at the bottom of the
+ * file: { success, canAnswer, count, data: [...] }; ask POST returns 201
+ * { success, data: { id, question, askedAt } }).
+ */
+
+@Serializable
+data class ProductQaResponse(
+    val success: Boolean = false,
+    val canAnswer: Boolean = false,
+    val count: Int = 0,
+    val data: List<ProductQaItemDto> = emptyList(),
+)
+
+@Serializable
+data class ProductQaItemDto(
+    val id: String,
+    val question: String,
+    val askedBy: String? = null,
+    val askedAt: String? = null,
+    val answer: String? = null,
+    val answeredAt: String? = null,
+    val helpful: Int = 0,
+)
+
+/** ask body — z QaAskSchema { question: 5..500 } (strict server-side). */
+@Serializable
+data class ProductQaAskRequest(val question: String)
+
+@Serializable
+data class ProductQaAskResponse(
+    val success: Boolean = false,
+    val data: ProductQaAskData? = null,
+)
+
+@Serializable
+data class ProductQaAskData(
+    val id: String? = null,
+    val question: String? = null,
+    val askedAt: String? = null,
+)

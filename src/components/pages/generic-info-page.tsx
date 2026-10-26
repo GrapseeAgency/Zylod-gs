@@ -73,7 +73,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Our Mission', content: 'To make B2B wholesale commerce in Bangladesh simple and trustworthy by connecting suppliers with wholesale buyers.', icon: <Heart className="h-4 w-4" /> },
     { title: 'Our Platform', content: 'Zylod is a B2B wholesale marketplace where suppliers list products and buyers order direct. Suppliers and products join the marketplace as it grows.', icon: <Star className="h-4 w-4" /> },
     { title: 'Our Team', content: 'Zylod is built and operated from Dhaka, Bangladesh.', icon: <Users className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Careers', pageId: 'careers' }, { label: 'Press', pageId: 'press' }, { label: 'Contact', pageId: 'contact-us' }] },
+  ], quickLinks: [{ label: 'Careers', pageId: 'careers-page' }, { label: 'Press', pageId: 'press-media' }, { label: 'Contact', pageId: 'contact-us' }] },
   'contact-us': { name: 'Contact Us', description: 'Get in touch with our support team', icon: <Mail className="h-8 w-8 text-white" />, sections: [
     { title: 'Email', content: 'support@zylod.com — for general inquiries and order support', icon: <Mail className="h-4 w-4" /> },
     { title: 'Phone', content: 'Contact details will be published by the site owner.', icon: <Phone className="h-4 w-4" /> },
@@ -560,7 +560,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   'about-us': { name: 'About Us', description: 'About Zylod', icon: <Building2 className="h-8 w-8 text-white" />, sections: [
     { title: 'Our Story', content: 'A B2B wholesale marketplace connecting retailers with suppliers in Bangladesh.', icon: <Building2 className="h-4 w-4" /> },
     { title: 'Our Mission', content: "Powering the supply chain that drives the nation's commerce forward.", icon: <Target className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Careers', pageId: 'careers' }, { label: 'Contact Us', pageId: 'contact-us' }] },
+  ], quickLinks: [{ label: 'Careers', pageId: 'careers-page' }, { label: 'Contact Us', pageId: 'contact-us' }] },
   'careers': { name: 'Careers', description: 'Join the Zylod team', icon: <Users className="h-8 w-8 text-white" />, sections: [
     { title: 'Work With Us', content: 'Roles across engineering, operations, and growth will be posted here as they open.', icon: <Users className="h-4 w-4" /> },
   ] },
@@ -603,27 +603,27 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Product Details', content: 'Enter product name, category, images, descriptions, and unique SKU for your listing.', icon: <FileText className="h-4 w-4" /> },
     { title: 'Pricing & MOQ', content: 'Set wholesale price, minimum order quantity, and optional volume-based discount tiers.', icon: <Percent className="h-4 w-4" /> },
     { title: 'Review & Publish', content: 'Preview your listing, then submit for review before it goes live to buyers.', icon: <BadgeCheck className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'My Products', pageId: 'supplier-products' }, { label: 'Catalog', pageId: 'supplier-catalog' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
+  ], quickLinks: [{ label: 'My Products', pageId: 'supplier-products' }, { label: 'Catalog', pageId: 'product-listings-manager' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
   'supplier-orders': { name: 'Order Management', description: 'Track and fulfill incoming buyer orders', icon: <Truck className="h-8 w-8 text-white" />, sections: [
     { title: 'Incoming Orders', content: 'Review new wholesale orders, confirm quantities and pricing, and communicate with buyers.', icon: <Inbox className="h-4 w-4" /> },
     { title: 'Fulfillment', content: 'Pack orders, generate shipping labels, and update tracking information for buyers.', icon: <Box className="h-4 w-4" /> },
     { title: 'Payments', content: 'Track order payments and payouts once orders are confirmed as delivered.', icon: <Wallet className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Products', pageId: 'supplier-products' }, { label: 'Finance', pageId: 'supplier-finance' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
+  ], quickLinks: [{ label: 'Products', pageId: 'supplier-products' }, { label: 'Finance', pageId: 'earnings-dashboard' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
   'supplier-finance': { name: 'Supplier Finance', description: 'Earnings, payouts, and financial reports', icon: <Wallet className="h-8 w-8 text-white" />, sections: [
     { title: 'Earnings', content: 'View your total earnings, pending balances, and payout history from confirmed orders.', icon: <DollarSign className="h-4 w-4" /> },
     { title: 'Commission & Fees', content: 'Understand marketplace commission rates, listing fees, and payment processing charges.', icon: <TrendingDown className="h-4 w-4" /> },
     { title: 'Withdrawals', content: 'Withdraw your balance via bank transfer, bKash, or Nagad.', icon: <ArrowUpRight className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Earnings', pageId: 'supplier-earnings' }, { label: 'Orders', pageId: 'supplier-orders' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
+  ], quickLinks: [{ label: 'Earnings', pageId: 'earnings-dashboard' }, { label: 'Orders', pageId: 'supplier-orders' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
   'supplier-earnings': { name: 'Earnings', description: 'Track your revenue and payouts', icon: <DollarSign className="h-8 w-8 text-white" />, sections: [
     { title: 'Earnings Overview', content: 'See total revenue, monthly earnings, and balance available for withdrawal.', icon: <TrendingUp className="h-4 w-4" /> },
     { title: 'Transactions', content: 'Review individual order payouts, refunds, and marketplace fee adjustments.', icon: <Activity className="h-4 w-4" /> },
     { title: 'Payouts', content: 'Track payout schedule, methods, and delivery status of your withdrawals.', icon: <CalendarDays className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Finance', pageId: 'supplier-finance' }, { label: 'Orders', pageId: 'supplier-orders' }] },
+  ], quickLinks: [{ label: 'Finance', pageId: 'earnings-dashboard' }, { label: 'Orders', pageId: 'supplier-orders' }] },
   'supplier-catalog': { name: 'Product Catalog', description: 'Organize and manage your product collection', icon: <Store className="h-8 w-8 text-white" />, sections: [
     { title: 'Catalog Overview', content: 'Browse all your listings with live status — active, draft, and out of stock.', icon: <LayoutGrid className="h-4 w-4" /> },
     { title: 'Edit Products', content: 'Update prices, descriptions, and images for existing listings at any time.', icon: <Edit className="h-4 w-4" /> },
     { title: 'Organize', content: 'Group products by collections and categories so buyers can find them faster.', icon: <List className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Add Product', pageId: 'supplier-add-product' }, { label: 'Products', pageId: 'supplier-products' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
+  ], quickLinks: [{ label: 'Add Product', pageId: 'supplier-add-product' }, { label: 'Catalog', pageId: 'product-listings-manager' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
   'supplier-agreement': { name: 'Supplier Agreement', description: 'Terms and obligations for selling on Zylod', icon: <Scale className="h-8 w-8 text-white" />, sections: [
     { title: 'Agreement Terms', content: 'Review the full supplier agreement covering listings, pricing, and marketplace obligations.', icon: <FileText className="h-4 w-4" /> },
     { title: 'Your Responsibilities', content: 'Maintain accurate product information, fulfill orders on time, and comply with marketplace policies.', icon: <Shield className="h-4 w-4" /> },
@@ -740,7 +740,7 @@ function getInfoConfig(pageId: string): InfoConfig {
     ],
     quickLinks: [
       { label: 'Home', pageId: 'home' }, { label: 'Help Center', pageId: 'help-center' },
-      { label: 'Contact Us', pageId: 'contact-us' }, { label: 'About Us', pageId: 'about' },
+      { label: 'Contact Us', pageId: 'contact-us' }, { label: 'About Us', pageId: 'about-us' },
       { label: 'Terms', pageId: 'terms' }, { label: 'Privacy', pageId: 'privacy' },
       { label: 'All Products', pageId: 'category-products' }, { label: 'FAQs', pageId: 'faq' },
     ],
