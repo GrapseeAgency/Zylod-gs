@@ -364,7 +364,7 @@ export function Header() {
           {/* -------------------------------------------------------- */}
           {/*  RIGHT: Search pill + utilities (mockup order)           */}
           {/* -------------------------------------------------------- */}
-          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 ml-auto lg:ml-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink min-w-0 ml-auto lg:ml-0">
             {/* Header search pill (mockup) — xl+ only, center column owns its own search */}
             <form
               className="hidden xl:flex items-center mr-1"
@@ -382,7 +382,7 @@ export function Header() {
                   type="text"
                   placeholder="Search for products, suppliers, or categories..."
                   aria-label="Search"
-                  className="w-[300px] h-9 pl-9 pr-3 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-[13px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900 focus:bg-white dark:focus:bg-gray-900 transition-all"
+                  className="w-[240px] 2xl:w-[300px] h-9 pl-9 pr-3 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-[13px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900 focus:bg-white dark:focus:bg-gray-900 transition-all"
                 />
               </div>
             </form>
