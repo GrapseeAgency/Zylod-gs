@@ -1,318 +1,236 @@
 'use client'
 
 import React from 'react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
+import { ShieldCheck, CircleDollarSign, CreditCard, Truck, ArrowRight } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { getGreeting } from '@/lib/greeting'
+import { Button } from '@/components/ui/button'
 import {
-  ClipboardList,
-  Heart,
-  ShoppingCart,
-  MessageSquare,
-  Store,
-  Shield,
-  CreditCard,
-  Banknote,
-  Truck,
-  ArrowRight,
+  ClipboardList, Heart, ShoppingCart, MessageSquare,
 } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
 
-/* ─── Color Constants ─── */
+/* ─── t210-r2: right rail 1:1 with the mockup ───
+   Buyer CTA (illustration top-right) → Supplier CTA (illustration left) →
+   "Why Choose Zylod?" (4 rows, pink circles) → Sustainability banner. */
 
-const RED = '#E53935'
-const BLUE = '#37474F'
-const GREEN = '#388E3C'
+const RED = '#E31C3D'
+const WHY_FEATURES = [
+  { icon: ShieldCheck, title: 'Verified Suppliers', desc: 'Buy with confidence from trusted sellers' },
+  { icon: CircleDollarSign, title: 'Competitive Prices', desc: 'Get the best wholesale rates' },
+  { icon: CreditCard, title: 'Secure Transactions', desc: 'Multiple secure payment options' },
+  { icon: Truck, title: 'Fast & Reliable Delivery', desc: 'Across Bangladesh' },
+]
 
 export function RightSidebar() {
   const { setCurrentPage } = useNavigationStore()
   const { isAuthenticated, user } = useAuthStore()
 
   return (
-    <aside className="hidden xl:block w-[280px] shrink-0 space-y-3">
+    <aside className="hidden xl:block w-[300px] shrink-0 space-y-4">
 
-      {/* ═══════════ Widget 1: User Welcome / Dashboard Card ═══════════ */}
-      {/* t194 theme fix: hardcoded inline #FAFAFA background + #212121 text
-          ignored dark mode — the card stayed WHITE on the black theme and
-          read as a theme bug. Theme-token classes respond to .dark. */}
-      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <div className="p-4 bg-gray-50 dark:bg-card">
-          {isAuthenticated && user ? (
-            <>
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="h-10 w-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm" style={{ background: RED }}>
-                  {user.fullName?.charAt(0) || user.email?.charAt(0) || 'U'}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{getGreeting()},</p>
-                  <p className="text-xs font-semibold" style={{ color: RED }}>{user.fullName || 'User'}!</p>
-                </div>
+      {/* ═══════════ Logged-in: keep the real dashboard card ═══════════ */}
+      {isAuthenticated && user ? (
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
+          <div className="p-4">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="h-10 w-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm" style={{ background: RED }}>
+                {user.fullName?.charAt(0) || user.email?.charAt(0) || 'U'}
               </div>
-              {/* Action Icons */}
-              <div className="grid grid-cols-4 gap-2 mb-3">
-                {[
-                  { icon: ClipboardList, label: 'Orders', page: 'orders' as const, color: RED },
-                  { icon: Heart, label: 'Wishlist', page: 'wishlist' as const, color: '#AD1457' },
-                  { icon: ShoppingCart, label: 'Cart', page: 'cart' as const, color: BLUE },
-                  { icon: MessageSquare, label: 'Chat', page: 'chat-list' as const, color: GREEN },
-                ].map((action, i) => {
-                  const IconComp = action.icon
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentPage(action.page)}
-                      className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-900 transition-colors group"
-                    >
-                      <div
-                        className="h-8 w-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
-                        style={{ background: `${action.color}12` }}
-                      >
-                        <IconComp className="h-4 w-4" style={{ color: action.color }} />
-                      </div>
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400 dark:text-gray-500 font-medium">{action.label}</span>
-                    </button>
-                  )
-                })}
+              <div>
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{getGreeting()},</p>
+                <p className="text-xs font-semibold" style={{ color: RED }}>{user.fullName || 'User'}!</p>
               </div>
-              <Separator className="mb-3" />
-              {/* Dashboard Features */}
-              <div className="space-y-1.5 mb-3">
-                {[
-                  { label: 'Order Management', color: GREEN },
-                  { label: 'Price Negotiations', color: BLUE },
-                  { label: 'Supplier Verification', color: RED },
-                  { label: 'Bulk Order Tracking', color: '#F57C00' },
-                  { label: 'Secure Payments', color: '#388E3C' },
-                ].map((feature) => (
-                  <div key={feature.label} className="flex items-center gap-2">
-                    <span className="material-symbols-outlined shrink-0" style={{ fontSize: 14, color: feature.color, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span>
-                    <span className="text-[11px] text-gray-600 dark:text-gray-400 dark:text-gray-500 font-medium">{feature.label}</span>
-                  </div>
-                ))}
-              </div>
-              <Button
-                className="w-full text-xs font-semibold"
-                style={{ background: RED, color: '#fff' }}
-                onClick={() => {
-                  const role = user?.userType
-                  if (role === 'admin') setCurrentPage('admin-dashboard')
-                  else if (role === 'supplier') setCurrentPage('supplier-dashboard')
-                  else setCurrentPage('buyer-dashboard')
-                }}
-              >
-                Go to Dashboard
-              </Button>
-            </>
-          ) : (
-            <>
-              <div className="text-center mb-4">
-                <div className="h-12 w-12 rounded-full mx-auto flex items-center justify-center mb-2" style={{ background: `${RED}12` }}>
-                  <ShoppingCart className="h-6 w-6" style={{ color: RED }} />
-                </div>
-                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Sign in to Zylod</p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Access wholesale prices, track orders & chat with suppliers</p>
-              </div>
-              <Button
-                className="w-full text-xs font-semibold mb-2"
-                style={{ background: RED, color: '#fff' }}
-                onClick={() => setCurrentPage('login')}
-              >
-                Login / Register
-              </Button>
-              <div className="grid grid-cols-2 gap-2 text-center">
-                <button
-                  className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                  onClick={() => setCurrentPage('register-buyer')}
-                >
-                  <ClipboardList className="h-4 w-4" style={{ color: RED }} />
-                  <span className="text-[10px] font-medium" style={{ color: RED }}>Buyer</span>
-                </button>
-                <button
-                  className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-green-50 transition-colors"
-                  onClick={() => setCurrentPage('register-supplier')}
-                >
-                  <Store className="h-4 w-4" style={{ color: GREEN }} />
-                  <span className="text-[10px] font-medium" style={{ color: GREEN }}>Supplier</span>
-                </button>
-              </div>
-            </>
-          )}
+            </div>
+            <div className="grid grid-cols-4 gap-2 mb-3">
+              {[
+                { icon: ClipboardList, label: 'Orders', page: 'orders' as const },
+                { icon: Heart, label: 'Wishlist', page: 'wishlist' as const },
+                { icon: ShoppingCart, label: 'Cart', page: 'cart' as const },
+                { icon: MessageSquare, label: 'Chat', page: 'chat-list' as const },
+              ].map((action) => {
+                const Icon = action.icon
+                return (
+                  <button
+                    key={action.label}
+                    onClick={() => setCurrentPage(action.page)}
+                    className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                  >
+                    <div className="h-8 w-8 rounded-lg flex items-center justify-center" style={{ background: `${RED}12` }}>
+                      <Icon className="h-4 w-4" style={{ color: RED }} />
+                    </div>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">{action.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <Separator className="mb-3" />
+            <Button
+              className="w-full text-xs font-semibold"
+              style={{ background: RED, color: '#fff' }}
+              onClick={() => {
+                const role = user?.userType
+                if (role === 'admin') setCurrentPage('admin-dashboard')
+                else if (role === 'supplier') setCurrentPage('supplier-dashboard')
+                else setCurrentPage('buyer-dashboard')
+              }}
+            >
+              Go to Dashboard
+            </Button>
+          </div>
         </div>
-      </Card>
+      ) : (
+        <>
+          {/* ═══════════ Card 1: Buyer CTA — illustration TOP-RIGHT (mockup) ═══════════ */}
+          <div
+            className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden"
+          >
+            <div className="p-4 pr-24">
+              <p className="text-[15px] font-bold text-gray-900 dark:text-gray-100 leading-snug mb-1.5">
+                Ready to start buying wholesale?
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-3.5">
+                Create your account and get access to thousands of suppliers and competitive prices.
+              </p>
+              <button
+                onClick={() => setCurrentPage('register-buyer')}
+                className="w-full h-9 rounded-lg text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:opacity-90 active:scale-[0.98] transition-all"
+                style={{ background: RED }}
+              >
+                Register as Buyer <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2.5">
+                Already have an account?{' '}
+                <button onClick={() => setCurrentPage('login')} className="font-semibold hover:underline" style={{ color: RED }}>
+                  Login
+                </button>
+              </p>
+            </div>
+            {/* Illustration top-right, blending */}
+            <div className="absolute top-0 right-0 h-24 w-24 pointer-events-none">
+              <img
+                src="/artwork/buyer-illustration.png"
+                alt=""
+                className="h-full w-full object-contain object-top"
+                loading="lazy"
+                onError={(e) => {
+                  const t = e.target as HTMLImageElement
+                  t.style.display = 'none'
+                  t.insertAdjacentHTML('afterend', '')
+                }}
+              />
+            </div>
+          </div>
 
-      {/* ═══════════ Widget 2: B2B Services ═══════════ */}
-      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <div className="p-4 bg-gray-50 dark:bg-card">
-          <p className="text-sm font-bold mb-3" style={{ color: RED }}>B2B Services</p>
-          {[
-            { icon: Store, label: 'Verified Suppliers', desc: 'Verified & trade assured', color: RED },
-            { icon: Shield, label: 'Secure Transactions', desc: 'Trade assurance protection', color: BLUE },
-            { icon: CreditCard, label: 'Flexible Payments', desc: 'bKash, Nagad, Bank', color: GREEN },
-            { icon: Banknote, label: 'Credit Lines', desc: 'Net-30/60 payment terms', color: '#F57C00' },
-          ].map((service) => {
-            const ServiceIcon = service.icon
-            return (
-              <div key={service.label} className="flex items-center gap-3 mb-2.5">
-                <div
-                  className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0"
-                  style={{ background: `${service.color}10` }}
-                >
-                  <ServiceIcon className="h-4.5 w-4.5" style={{ color: service.color }} />
+          {/* ═══════════ Card 2: Supplier CTA — illustration LEFT (mockup) ═══════════ */}
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div className="p-4">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="h-20 w-20 shrink-0 flex items-center justify-center">
+                  <img
+                    src="/artwork/supplier-illustration.png"
+                    alt=""
+                    className="h-full w-full object-contain"
+                    loading="lazy"
+                    onError={(e) => {
+                      const t = e.target as HTMLImageElement
+                      t.style.display = 'none'
+                      t.parentElement!.innerHTML = '<span style="font-size:32px">🏪</span>'
+                    }}
+                  />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">{service.label}</p>
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500">{service.desc}</p>
+                  <p className="text-[15px] font-bold text-gray-900 dark:text-gray-100 leading-snug mb-1">
+                    Are you a supplier?
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                    Showcase your products to thousands of buyers and grow your business with Zylod.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setCurrentPage('register-supplier')}
+                className="w-full h-9 rounded-lg text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:opacity-90 active:scale-[0.98] transition-all"
+                style={{ background: RED }}
+              >
+                Register as Supplier <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ═══════════ Card 3: Why Choose Zylod? ═══════════ */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-4">
+        <p className="text-[15px] font-bold mb-3" style={{ color: RED }}>Why Choose Zylod?</p>
+        <div className="space-y-3">
+          {WHY_FEATURES.map((f) => {
+            const Icon = f.icon
+            return (
+              <div key={f.title} className="flex items-start gap-2.5">
+                <span className="h-10 w-10 rounded-full flex items-center justify-center shrink-0" style={{ background: '#FEE2E2' }}>
+                  <Icon className="h-[18px] w-[18px]" style={{ color: RED }} />
+                </span>
+                <div className="min-w-0 pt-0.5">
+                  <p className="text-[13px] font-bold text-gray-900 dark:text-gray-100 leading-tight">{f.title}</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">{f.desc}</p>
                 </div>
               </div>
             )
           })}
-          <Button
-            variant="outline"
-            className="w-full text-xs font-semibold mt-1"
-            style={{ borderColor: RED, color: RED }}
-            onClick={() => setCurrentPage('suppliers')}
-          >
-            Find Suppliers <ArrowRight className="h-3 w-3 ml-1" />
-          </Button>
         </div>
-      </Card>
+      </div>
 
-      {/* ═══════════ Widget 3 (t210 mockup): Buyer + Supplier registration CTAs
-          with flat-vector illustrations. GUEST-only — authenticated users
-          already see the dashboard card above, so duplicate CTAs are noise. ═══════════ */}
-      {!isAuthenticated && (
-        <>
-          <Card className="border border-red-100 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
-            <div className="relative p-4" style={{ background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)' }}>
-              {/* Illustration — t210 generated artwork */}
-              <div className="absolute -top-2 -right-2 h-20 w-20 opacity-90 pointer-events-none">
-                <img
-                  src="/artwork/buyer-illustration.png"
-                  alt=""
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                />
-              </div>
-              <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-1 max-w-[60%]">
-                Ready to start buying wholesale?
-              </p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-3 max-w-[70%]">
-                Create your account to access wholesale prices, track orders, and chat with suppliers.
-              </p>
-              <Button
-                className="w-full text-xs font-semibold"
-                style={{ background: RED, color: '#fff' }}
-                onClick={() => setCurrentPage('register-buyer')}
-              >
-                Register as Buyer <ArrowRight className="h-3 w-3 ml-1" />
-              </Button>
-              <button
-                onClick={() => setCurrentPage('login')}
-                className="w-full text-[11px] font-medium mt-2 hover:underline"
-                style={{ color: RED }}
-              >
-                Already have an account? Login
-              </button>
-            </div>
-          </Card>
-
-          <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
-            <div className="relative p-4" style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #FFF5F5 100%)' }}>
-              <div className="absolute -top-2 -right-2 h-20 w-20 opacity-90 pointer-events-none">
-                <img
-                  src="/artwork/supplier-illustration.png"
-                  alt=""
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                />
-              </div>
-              <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-1 max-w-[60%]">
-                Are you a supplier?
-              </p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-3 max-w-[70%]">
-                Showcase your products to thousands of verified buyers across Bangladesh.
-              </p>
-              <Button
-                className="w-full text-xs font-semibold"
-                style={{ background: RED, color: '#fff' }}
-                onClick={() => setCurrentPage('register-supplier')}
-              >
-                Register as Supplier <ArrowRight className="h-3 w-3 ml-1" />
-              </Button>
-            </div>
-          </Card>
-        </>
-      )}
-
-      {/* ═══════════ Widget 4 (t210 mockup): Why Choose Zylod? ═══════════ */}
-      <Card className="border border-gray-200 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <div className="p-4">
-          <p className="text-sm font-bold mb-3" style={{ color: RED }}>Why Choose Zylod?</p>
-          <div className="space-y-3">
-            {[
-              { icon: Shield, title: 'Verified Suppliers', desc: 'KYC + trade-license checked', color: RED },
-              { icon: Banknote, title: 'Competitive Prices', desc: 'Direct from manufacturers', color: '#059669' },
-              { icon: CreditCard, title: 'Secure Transactions', desc: 'Escrow-protected payments', color: '#7B1FA2' },
-              { icon: Truck, title: 'Fast & Reliable Delivery', desc: 'Nationwide logistics', color: '#F57C00' },
-            ].map((feature) => {
-              const Icon = feature.icon
-              return (
-                <div key={feature.title} className="flex items-start gap-2.5">
-                  <div
-                    className="h-8 w-8 rounded-full flex items-center justify-center shrink-0"
-                    style={{ background: `${feature.color}14` }}
-                  >
-                    <Icon className="h-4 w-4" style={{ color: feature.color }} />
-                  </div>
-                  <div className="min-w-0 pt-0.5">
-                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-tight">{feature.title}</p>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">{feature.desc}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </Card>
-
-      {/* ═══════════ Widget 5 (t210 mockup): Sustainability banner ═══════════ */}
-      <Card className="border border-green-100 dark:border-gray-800 shadow-sm rounded-lg overflow-hidden">
-        <div className="relative p-4 flex items-center gap-3" style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%)' }}>
-          <div className="h-12 w-12 rounded-full flex items-center justify-center shrink-0" style={{ background: '#DCFCE7' }}>
-            <img
-              src="/artwork/sustainability-leaf.png"
-              alt=""
-              className="h-7 w-7 object-contain"
-              loading="lazy"
-              onError={(e) => {
-                // Honest fallback: leaf icon if artwork missing
-                const t = e.target as HTMLImageElement
-                t.style.display = 'none'
-                t.parentElement!.innerHTML = '<span style="font-size:24px">🌿</span>'
-              }}
+      {/* ═══════════ Card 4: Sustainability banner — crisp inline leaf + watermark ═══════════ */}
+      <div
+        className="rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-4 relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #FDF2F3 0%, #FFFFFF 75%)' }}
+      >
+        {/* Decorative leaf watermark (mockup) */}
+        <svg
+          viewBox="0 0 100 100"
+          className="absolute -right-4 -bottom-6 h-28 w-28 opacity-[0.08] pointer-events-none"
+          aria-hidden
+        >
+          <path
+            d="M50 88 C20 70 12 40 28 16 C52 24 76 44 66 78 C62 86 56 88 50 88 Z M50 88 C46 64 52 44 62 30"
+            fill="none" stroke="#E31C3D" strokeWidth="3" strokeLinecap="round"
+          />
+        </svg>
+        <div className="flex items-center gap-3 relative">
+          {/* Inline leaf artwork — always crisp, no load failure */}
+          <svg viewBox="0 0 48 48" className="h-14 w-14 shrink-0" aria-hidden>
+            <defs>
+              <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#F87171" />
+                <stop offset="100%" stopColor="#E31C3D" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M38 8 C20 10 9 20 9 33 c0 4 2 7 5 7 c13 0 24 -11 24 -27 c0 -2 0 -4 0 -5 Z"
+              fill="url(#leafGrad)"
             />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-tight">
-              Sustainable Products
-            </p>
-            <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight mb-2">
-              for a Better Tomorrow
-            </p>
-            <button
-              onClick={() => setCurrentPage('eco-friendly-products')}
-              className="inline-flex items-center gap-1 text-[11px] font-semibold hover:underline"
-              style={{ color: '#059669' }}
-            >
-              Explore Now <ArrowRight className="h-3 w-3" />
-            </button>
+            <path
+              d="M14 38 C20 28 28 20 36 14"
+              fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" opacity="0.85"
+            />
+          </svg>
+          <div className="min-w-0">
+            <p className="text-[13px] font-bold text-gray-900 dark:text-gray-100 leading-tight">Sustainable Products</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">for a Better Tomorrow</p>
           </div>
         </div>
-      </Card>
+        <div className="flex justify-end mt-2 relative">
+          <button
+            onClick={() => setCurrentPage('eco-friendly-products')}
+            className="h-8 px-4 rounded-lg text-white text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 active:scale-[0.98] transition-all"
+            style={{ background: RED }}
+          >
+            Explore Now <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
 
     </aside>
   )

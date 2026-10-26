@@ -1,143 +1,84 @@
 'use client'
 
 import React, { useState, useEffect, Suspense, lazy } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { CategorySidebar } from '@/components/home/category-sidebar'
-import { HomeHero } from '@/components/home/home-hero'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { MobileHomePage } from '@/components/mobile/mobile-home-page'
 import { useProductStore } from '@/store/product-store'
 import { PageLoader } from '@/components/ui/page-loader'
+import { CategorySidebar } from '@/components/home/category-sidebar'
+import { HomeHero } from '@/components/home/home-hero'
+import { FeaturedProducts } from '@/components/home/featured-products'
 
-/* ─── Lazy-loaded heavy sub-components ─── */
+/* ─── Lazy-loaded secondary sections (below the fold, function preserved) ─── */
+const BannerCarousel = lazy(() =>
+  import('@/components/home/banner-carousel').then((m) => ({ default: m.BannerCarousel }))
+)
 const CategoryTabsAndProducts = lazy(() =>
   import('@/components/home/category-tabs-products').then((m) => ({ default: m.CategoryTabsAndProducts }))
 )
 const RightSidebar = lazy(() =>
   import('@/components/home/right-sidebar').then((m) => ({ default: m.RightSidebar }))
 )
-const BannerCarousel = lazy(() =>
-  import('@/components/home/banner-carousel').then((m) => ({ default: m.BannerCarousel }))
-)
 
-/* ─── Loading fallback ─── */
 function SectionFallback() {
   return <PageLoader className="min-h-0 py-12" />
 }
 
-/* ─── Stagger configuration ─── */
-// Each column reveals with a staggered delay
-const STAGGER_CONFIG = {
-  left: { delay: 0, duration: 0.5 },
-  center: { delay: 0.2, duration: 0.5 },
-  right: { delay: 0.4, duration: 0.5 },
-}
-
-// Fade-in + subtle slide-up animation variants
-const fadeInVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (custom: { delay: number; duration: number }) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      opacity: { duration: custom.duration, delay: custom.delay, ease: 'easeOut' as const },
-      y: { duration: custom.duration, delay: custom.delay, ease: 'easeOut' as const },
-    },
-  }),
-  exit: { opacity: 0, y: -8, transition: { duration: 0.2 } },
-}
-
-/* ─── Desktop Home Page (3-column layout) ─── */
+/* ─── t210-r2: Desktop home rebuilt 1:1 against the user's mockup ───
+   [240px categories rail] [hero + featured grid] [300px CTA rail],
+   crimson #E31C3D, off-white page bg. The banner carousel and the
+   search-tabs section are preserved BELOW the fold (function, not noise). */
 function DesktopHomePage() {
   const { isInitialized, isLoading, initialize } = useProductStore()
   const [showSkeleton, setShowSkeleton] = useState(true)
 
-  /* ─── Initialize product store from API on mount ─── */
   useEffect(() => {
     initialize()
   }, [initialize])
 
-  /* ─── Hide skeleton once initialized ─── */
   useEffect(() => {
     if (isInitialized && !isLoading) {
-      // Small delay for smooth transition
       const timer = setTimeout(() => setShowSkeleton(false), 300)
       return () => clearTimeout(timer)
     }
   }, [isInitialized, isLoading])
 
+  if (showSkeleton) {
+    return <PageLoader />
+  }
+
   return (
-    <div className="w-full bg-background">
-      {showSkeleton ? (
-        /* ─── Loading screen while products initialize ─── */
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
-        >
-          <PageLoader />
-        </motion.div>
-      ) : (
-        <div className="max-w-[1440px] mx-auto px-4 py-4">
-          <div className="flex gap-4">
+    <div className="w-full bg-[#F7F8FA] dark:bg-background min-h-screen">
+      <div className="max-w-[1440px] mx-auto px-4 lg:px-5 py-5">
+        <div className="flex gap-5 items-start">
 
-            {/* ═══════════ COLUMN A: LEFT SIDEBAR ═══════════ */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="left-content"
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                custom={STAGGER_CONFIG.left}
-                variants={fadeInVariants}
-              >
-                <CategorySidebar />
-              </motion.div>
-            </AnimatePresence>
+          {/* ═══════════ LEFT: categories rail ═══════════ */}
+          <CategorySidebar />
 
-            {/* ═══════════ COLUMN B: CENTER CONTENT ═══════════ */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="center-content"
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                custom={STAGGER_CONFIG.center}
-                variants={fadeInVariants}
-                className="flex-1 min-w-0"
-              >
-                <Suspense fallback={<SectionFallback />}>
-                  <HomeHero />
-                </Suspense>
-                <Suspense fallback={<SectionFallback />}>
-                  <BannerCarousel />
-                </Suspense>
-                <Suspense fallback={<SectionFallback />}>
-                  <CategoryTabsAndProducts />
-                </Suspense>
-              </motion.div>
-            </AnimatePresence>
+          {/* ═══════════ CENTER: hero + featured grid ═══════════ */}
+          <main className="flex-1 min-w-0 space-y-8">
+            <HomeHero />
 
-            {/* ═══════════ COLUMN C: RIGHT SIDEBAR ═══════════ */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="right-content"
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                custom={STAGGER_CONFIG.right}
-                variants={fadeInVariants}
-              >
-                <Suspense fallback={<SectionFallback />}>
-                  <RightSidebar />
-                </Suspense>
-              </motion.div>
-            </AnimatePresence>
+            <Suspense fallback={<SectionFallback />}>
+              <FeaturedProducts />
+            </Suspense>
 
-          </div>
+            {/* Below the fold — real marketplace function */}
+            <Suspense fallback={<SectionFallback />}>
+              <BannerCarousel />
+            </Suspense>
+            <Suspense fallback={<SectionFallback />}>
+              <CategoryTabsAndProducts />
+            </Suspense>
+          </main>
+
+          {/* ═══════════ RIGHT: CTA rail ═══════════ */}
+          <Suspense fallback={<SectionFallback />}>
+            <RightSidebar />
+          </Suspense>
+
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -146,8 +87,6 @@ function DesktopHomePage() {
 export function HomePage() {
   const isMobile = useIsMobile()
 
-  // During SSR / initial hydration, isMobile is undefined
-  // Show a loading state to avoid layout shift
   if (isMobile === undefined) {
     return <PageLoader />
   }

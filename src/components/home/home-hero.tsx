@@ -1,33 +1,32 @@
 'use client'
 
 import React, { useState, useCallback } from 'react'
-import { motion } from 'framer-motion'
-import { Search, MapPin, Camera, QrCode, Mic, ShieldCheck, CreditCard, Truck, TrendingUp, ArrowRight } from 'lucide-react'
+import { Search, MapPin, Camera, QrCode, Mic, ShieldCheck, CreditCard, Truck, ArrowRight } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useToast } from '@/hooks/use-toast'
 
-/* ─── Crimson brand red (t210 mockup spec) ─── */
-const RED = '#E31C3D'
+/* ─── t210-r2: rebuilt 1:1 against the user's mockup ───
+   Crimson #E31C3D, pale-pink hero, headline two-tone, pill badge,
+   white input + attached red Search button, Trending pills,
+   trust-badge WHITE CARD overlapping the photo bottom-right,
+   photo blending into the pink background (no frame). */
 
-/* ─── Trending search pills — real popular queries on the marketplace ─── */
-const TRENDING_TAGS = [
-  'Cotton Fabric', 'Jute Bag', 'Basmati Rice', 'Terry Towel', 'LED Panel', 'Packaging Box',
-]
+export const Z_RED = '#E31C3D'
 
-/* ─── Trust badges (hero bottom row) ─── */
+const TRENDING_TAGS = ['Cotton Fabric', 'Jute Bag', 'Rice', 'Towel', 'Smartphone', 'Packaging']
+
 const TRUST_BADGES = [
   { icon: ShieldCheck, title: 'Verified Suppliers', subtitle: 'Trade with confidence' },
-  { icon: CreditCard, title: 'Secure Payments', subtitle: 'Escrow · bKash · Nagad · Bank' },
-  { icon: Truck, title: 'Nationwide Delivery', subtitle: 'Across all 64 districts' },
+  { icon: CreditCard, title: 'Secure Payments', subtitle: 'Multiple methods' },
+  { icon: Truck, title: 'Nationwide Delivery', subtitle: 'Across Bangladesh' },
 ]
 
-/* ─── Scan shortcuts — t210: photo scan + QR/barcode scan must be prominent.
-   These route to the REAL scan pages (image-search is CLIP visual search,
-   barcode-scanner is the zxing+VLM two-stage decoder from t207). */
+/* Scan tools mandated by the owner — placed under the search bar,
+   routed to the REAL scan pages (CLIP image search / zxing+VLM decoder / voice). */
 const SCAN_TOOLS = [
-  { icon: Camera, label: 'Photo Scan', page: 'image-search' as const, hint: 'Search by photo' },
-  { icon: QrCode, label: 'Scan Code', page: 'barcode-scanner' as const, hint: 'QR / barcode' },
-  { icon: Mic, label: 'Voice', page: 'voice-search' as const, hint: 'Speak your query' },
+  { icon: Camera, label: 'Photo Scan', page: 'image-search' as const },
+  { icon: QrCode, label: 'Scan Code', page: 'barcode-scanner' as const },
+  { icon: Mic, label: 'Voice Search', page: 'voice-search' as const },
 ]
 
 export function HomeHero() {
@@ -45,159 +44,150 @@ export function HomeHero() {
     navigate('search-results', { query: q })
   }, [query, navigate, toast])
 
-  const handleTrendingClick = useCallback((tag: string) => {
-    navigate('search-results', { query: tag })
-  }, [navigate])
-
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="relative overflow-hidden rounded-2xl border border-red-100 dark:border-gray-800"
-      style={{ background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 60%, #FFF5F5 100%)' }}
+    <section
+      className="relative overflow-hidden rounded-2xl"
+      style={{ background: 'linear-gradient(100deg, #FFF7F7 0%, #FDF0F1 55%, #FBEAEC 100%)' }}
     >
-      {/* Decorative crimson blobs */}
-      <div
-        className="absolute -top-16 -right-16 h-48 w-48 rounded-full opacity-20 blur-3xl pointer-events-none"
-        style={{ background: RED }}
-        aria-hidden
-      />
-      <div
-        className="absolute -bottom-20 -left-10 h-40 w-40 rounded-full opacity-10 blur-3xl pointer-events-none"
-        style={{ background: RED }}
-        aria-hidden
-      />
-
-      <div className="relative grid lg:grid-cols-[1.4fr_1fr] gap-6 p-5 md:p-7">
-        {/* ─── Left: copy + search + trending + trust ─── */}
-        <div className="flex flex-col">
-          {/* Location breadcrumb */}
-          <div className="flex items-center gap-1.5 mb-3">
-            <MapPin className="h-3.5 w-3.5" style={{ color: RED }} />
-            <span className="text-xs font-semibold tracking-wide uppercase" style={{ color: RED }}>
+      <div className="relative flex min-h-[380px]">
+        {/* ═══════════ LEFT: copy + search + trending ═══════════ */}
+        <div className="relative z-10 flex flex-col justify-center flex-1 px-6 md:px-9 py-8 max-w-[640px]">
+          {/* Pill badge */}
+          <div className="inline-flex items-center gap-1.5 self-start bg-white rounded-full px-3 py-1.5 shadow-sm mb-4">
+            <MapPin className="h-3.5 w-3.5" style={{ color: Z_RED }} />
+            <span className="text-xs font-semibold" style={{ color: Z_RED }}>
               Bangladesh Wholesale Marketplace
             </span>
           </div>
 
-          {/* Headline — two-line, charcoal + crimson per mockup */}
-          <h1 className="text-3xl md:text-4xl lg:text-[42px] font-extrabold leading-tight tracking-tight text-gray-900 dark:text-gray-100 mb-2">
-            Quality Products.
+          {/* Two-tone headline */}
+          <h1 className="text-[32px] md:text-[40px] font-black leading-[1.15] tracking-tight mb-3">
+            <span className="text-gray-900 dark:text-gray-100">Quality Products.</span>
             <br />
-            <span style={{ color: RED }}>Trusted Suppliers.</span>
+            <span style={{ color: Z_RED }}>Trusted Suppliers.</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mb-5 max-w-xl">
-            Find the best wholesale products from verified suppliers across Bangladesh.
-            Easy, secure, and reliable B2B trade.
+          <p className="text-sm md:text-[15px] text-gray-600 dark:text-gray-400 leading-relaxed mb-5 max-w-[440px]">
+            Find the best wholesale products from verified suppliers across
+            Bangladesh. Easy, secure and reliable.
           </p>
 
-          {/* Search form — pill input + crimson button */}
-          <form onSubmit={handleSearch} className="flex items-stretch gap-0 mb-3 max-w-xl">
+          {/* Search: white input + attached red button */}
+          <form onSubmit={handleSearch} className="flex items-stretch max-w-[520px] mb-2.5">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search for products, suppliers, or categories..."
                 aria-label="Search the wholesale marketplace"
-                className="w-full h-12 pl-10 pr-3 rounded-l-lg border border-r-0 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900"
+                className="w-full h-11 pl-10 pr-3 rounded-l-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-[13px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 shadow-[0_1px_3px_rgba(0,0,0,0.06)] focus:outline-none focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900"
               />
             </div>
             <button
               type="submit"
-              className="h-12 px-6 rounded-r-lg text-white text-sm font-semibold flex items-center gap-1.5 hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
-              style={{ background: RED }}
+              className="h-11 px-7 rounded-r-lg text-white text-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all shadow-[0_1px_3px_rgba(227,28,61,0.35)]"
+              style={{ background: Z_RED }}
             >
               Search
-              <ArrowRight className="h-4 w-4" />
             </button>
           </form>
 
-          {/* Scan shortcuts — Photo Scan + QR/Barcode Scan + Voice (t210 mandate) */}
-          <div className="flex items-center gap-2 mb-4 max-w-xl">
-            <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium mr-1">Or try:</span>
-            {SCAN_TOOLS.map((tool) => {
-              const Icon = tool.icon
-              return (
-                <button
-                  key={tool.label}
-                  onClick={() => navigate(tool.page)}
-                  title={tool.hint}
-                  className="group inline-flex items-center gap-1.5 px-3 h-9 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-red-300 dark:hover:border-red-800 hover:shadow-sm transition-all"
-                >
-                  <Icon className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400 group-hover:text-red-600 transition-colors" />
-                  <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
-                    {tool.label}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
 
-          {/* Trending tags */}
-          <div className="flex items-center gap-2 flex-wrap mb-5">
-            <span className="inline-flex items-center gap-1 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
-              <TrendingUp className="h-3 w-3" />
-              Trending:
-            </span>
+          {/* Trending pills */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium shrink-0">Trending:</span>
             {TRENDING_TAGS.map((tag) => (
               <button
                 key={tag}
-                onClick={() => handleTrendingClick(tag)}
-                className="px-3 py-1 rounded-full text-[11px] font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                onClick={() => navigate('search-results', { query: tag })}
+                className="px-3 py-1 rounded-full text-xs font-medium text-gray-600 dark:text-gray-400 bg-white/90 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:bg-white hover:shadow-sm hover:text-gray-900 dark:hover:text-gray-200 transition-all whitespace-nowrap"
               >
                 {tag}
               </button>
             ))}
           </div>
 
-          {/* Trust badges — 3-up row */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-auto">
-            {TRUST_BADGES.map((badge) => {
-              const Icon = badge.icon
+          {/* Scan tools — owner mandate: Photo Scan + QR/Barcode Scan on the design.
+              Kept visually light so the hero still reads like the mockup. */}
+          <div className="flex items-center gap-1.5 mb-4">
+            {SCAN_TOOLS.map((tool) => {
+              const Icon = tool.icon
               return (
-                <div key={badge.title} className="flex items-start gap-2.5">
-                  <div
-                    className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: `${RED}12` }}
-                  >
-                    <Icon className="h-4.5 w-4.5" style={{ color: RED }} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-gray-900 dark:text-gray-100 leading-tight">{badge.title}</p>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">{badge.subtitle}</p>
-                  </div>
-                </div>
+                <button
+                  key={tool.label}
+                  onClick={() => navigate(tool.page)}
+                  className="group inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-transparent border border-gray-200/80 dark:border-gray-700 hover:bg-white hover:border-red-200 dark:hover:border-red-800 hover:shadow-sm transition-all"
+                >
+                  <Icon className="h-3 w-3" style={{ color: Z_RED }} />
+                  <span className="text-[10.5px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200">{tool.label}</span>
+                </button>
               )
             })}
           </div>
         </div>
 
-        {/* ─── Right: hero product photo (t210 generated artwork) ─── */}
-        <div className="hidden lg:flex items-center justify-center relative">
-          <div className="relative w-full max-w-md aspect-[4/3] rounded-xl overflow-hidden shadow-lg ring-1 ring-red-100 dark:ring-gray-800">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/artwork/hero-products.png"
-              alt="Wholesale products: folded cotton fabrics, jute tote bag, and a potted plant"
-              className="w-full h-full object-cover"
-              loading="eager"
-              onError={(e) => {
-                // Honest fallback: hide the image and show a soft gradient block
-                (e.target as HTMLImageElement).style.display = 'none'
-              }}
-            />
-            {/* Floating "Verified" pill on the photo */}
-            <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 dark:bg-gray-900/90 backdrop-blur-sm shadow-sm">
-              <ShieldCheck className="h-3.5 w-3.5" style={{ color: '#059669' }} />
-              <span className="text-[11px] font-bold text-gray-800 dark:text-gray-200">100% Verified Suppliers</span>
+        {/* ═══════════ RIGHT: product photo blending into the pale bg ═══════════ */}
+        <div className="relative hidden md:block flex-1">
+          <img
+            src="/artwork/hero-products.png"
+            alt="Wholesale products: folded cotton fabrics, jute tote bag, and a potted plant"
+            className="absolute inset-y-0 right-0 h-full w-full object-contain object-center mix-blend-multiply"
+            loading="eager"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+          />
+          {/* Soft blend edge so the photo melts into the pink card */}
+          <div
+            className="absolute inset-y-0 left-0 w-24 pointer-events-none"
+            style={{ background: 'linear-gradient(90deg, #FDF1F2 0%, rgba(253,241,242,0) 100%)' }}
+            aria-hidden
+          />
+
+          {/* ═══════════ Trust badge WHITE CARD overlapping photo bottom-right ═══════════ */}
+          <div className="absolute bottom-4 right-4 z-10">
+            <div className="flex items-stretch bg-white dark:bg-gray-900 rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.10)] border border-gray-100 dark:border-gray-800 overflow-hidden">
+              {TRUST_BADGES.map((badge, i) => {
+                const Icon = badge.icon
+                return (
+                  <div
+                    key={badge.title}
+                    className={`flex items-center gap-1.5 px-3 py-2.5 ${i > 0 ? 'border-l border-gray-100 dark:border-gray-800' : ''}`}
+                  >
+                    <Icon className="h-[18px] w-[18px] shrink-0" style={{ color: Z_RED }} />
+                    <div className="min-w-0">
+                      <p className="text-[10.5px] font-bold text-gray-900 dark:text-gray-100 leading-tight whitespace-nowrap">{badge.title}</p>
+                      <p className="text-[9px] text-gray-400 dark:text-gray-500 leading-tight whitespace-nowrap">{badge.subtitle}</p>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
       </div>
-    </motion.section>
+
+      {/* Trust card fallback on <md (photo hidden): show in-flow */}
+      <div className="md:hidden px-6 pb-6 -mt-1">
+        <div className="flex items-stretch bg-white dark:bg-gray-900 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.08)] border border-gray-100 dark:border-gray-800 overflow-hidden">
+          {TRUST_BADGES.map((badge, i) => {
+            const Icon = badge.icon
+            return (
+              <div
+                key={badge.title}
+                className={`flex-1 flex items-start gap-1.5 px-2.5 py-2.5 ${i > 0 ? 'border-l border-gray-100 dark:border-gray-800' : ''}`}
+              >
+                <Icon className="h-4 w-4 shrink-0 mt-0.5" style={{ color: Z_RED }} />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold text-gray-900 dark:text-gray-100 leading-tight">{badge.title}</p>
+                  <p className="text-[9px] text-gray-400 dark:text-gray-500 leading-tight">{badge.subtitle}</p>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
   )
 }

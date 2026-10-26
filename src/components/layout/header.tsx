@@ -21,10 +21,14 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Home,
-  ShoppingCart,
-  Tag,
-  BadgePercent,
+  ShoppingBag,
   Building2,
+  Tag,
+  Truck,
+  BadgePercent,
+  Search,
+  LayoutGrid,
+  ShoppingCart,
   MoreHorizontal,
   Globe,
   Bell,
@@ -41,7 +45,6 @@ import {
   TrendingDown,
   Shield,
   Star,
-  Truck,
   Info,
   Gift,
   X,
@@ -65,12 +68,11 @@ interface NavItem {
 
 const mainNavItems: NavItem[] = [
   { label: 'Home', page: 'home', icon: <Home className="h-4 w-4" /> },
-  { label: 'Cart', page: 'cart', icon: <ShoppingCart className="h-4 w-4" /> },
+  { label: 'Products', page: 'all-products', icon: <ShoppingBag className="h-4 w-4" /> },
+  { label: 'Find Suppliers', page: 'suppliers', icon: <Building2 className="h-4 w-4" /> },
   { label: 'Deals', page: 'daily-deals', icon: <Tag className="h-4 w-4" /> },
+  { label: 'Logistics', page: 'track-order', icon: <Truck className="h-4 w-4" /> },
   { label: 'Promotions', page: 'promotions-page', icon: <BadgePercent className="h-4 w-4" /> },
-  { label: 'Suppliers', page: 'suppliers', icon: <Building2 className="h-4 w-4" /> },
-  { label: 'Flash Sale', page: 'flash-sale', icon: <Zap className="h-4 w-4" /> },
-  { label: 'Coupons', page: 'coupons', icon: null },
 ]
 
 const moreNavItems: NavItem[] = [
@@ -290,7 +292,7 @@ export function Header() {
           scrolled ? 'shadow-md' : 'shadow-sm'
         )}
       >
-        <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-3 px-4 lg:px-6">
+        <div className="mx-auto flex h-[64px] max-w-[1440px] items-center gap-3 px-4 lg:px-6">
           {/* -------------------------------------------------------- */}
           {/*  LEFT: Logo                                              */}
           {/* -------------------------------------------------------- */}
@@ -303,15 +305,15 @@ export function Header() {
               <img
                 src="/zylod-logo.svg"
                 alt="Zylod"
-                className="h-8 sm:h-9 w-auto transition-transform duration-200 group-hover:scale-[1.03]"
+                className="h-10 sm:h-11 w-auto transition-transform duration-200 group-hover:scale-[1.03]"
               />
             </button>
           </div>
 
           {/* -------------------------------------------------------- */}
-          {/*  CENTER: Navigation Links (Desktop)                      */}
+          {/*  CENTER: Navigation Links (Desktop) — text-only per mockup  */}
           {/* -------------------------------------------------------- */}
-          <nav className="hidden lg:flex items-center gap-1 ml-auto mr-auto">
+          <nav className="hidden lg:flex items-center gap-0.5 ml-auto mr-auto">
             {mainNavItems.map((item) => {
               const active = isPageActive(item.page)
               return (
@@ -319,17 +321,16 @@ export function Header() {
                   key={item.page}
                   onClick={() => handleNavClick(item.page)}
                   className={cn(
-                    'relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-all hover:-translate-y-0.5 active:scale-[0.97]',
+                    'relative px-3 py-2 text-sm font-medium rounded-md transition-colors',
                     active
-                      ? 'text-primary'
+                      ? 'text-primary font-semibold'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                   )}
                 >
-                  {item.icon}
                   <span>{item.label}</span>
-                  {/* Active indicator */}
+                  {/* Active indicator — red underline per mockup */}
                   {active && (
-                    <div className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-primary" />
+                    <div className="absolute bottom-0 left-3 right-3 h-[2.5px] rounded-full bg-primary" />
                   )}
                 </button>
               )
@@ -340,13 +341,12 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <button
                   className={cn(
-                    'flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    'flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-colors',
                     moreNavItems.some((i) => isPageActive(i.page))
                       ? 'text-primary'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                   )}
                 >
-                  <MoreHorizontal className="h-4 w-4" />
                   <span>More</span>
                   <ChevronDown className="h-3 w-3" />
                 </button>
@@ -369,9 +369,31 @@ export function Header() {
           </nav>
 
           {/* -------------------------------------------------------- */}
-          {/*  RIGHT: Utility Icons + Login                            */}
+          {/*  RIGHT: Search pill + utilities (mockup order)           */}
           {/* -------------------------------------------------------- */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-auto lg:ml-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 ml-auto lg:ml-0">
+            {/* Header search pill (mockup) — xl+ only, center column owns its own search */}
+            <form
+              className="hidden xl:flex items-center mr-1"
+              onSubmit={(e) => {
+                e.preventDefault()
+                const input = (e.currentTarget.elements.namedItem('q') as HTMLInputElement | null)
+                const q = input?.value.trim()
+                if (q) navigate('search-results', { query: q })
+              }}
+            >
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  name="q"
+                  type="text"
+                  placeholder="Search for products, suppliers, or categories..."
+                  aria-label="Search"
+                  className="w-[300px] h-9 pl-9 pr-3 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-[13px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900 focus:bg-white dark:focus:bg-gray-900 transition-all"
+                />
+              </div>
+            </form>
+
             {/* Theme Toggle */}
             {mounted && (
               <Button
@@ -443,18 +465,21 @@ export function Header() {
             {isAuthenticated && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="h-9 gap-2 px-2"
+                  <button
+                    className="flex items-center gap-2 h-10 pl-1.5 pr-2 rounded-full hover:bg-muted transition-colors"
+                    aria-label="Account menu"
                   >
-                    <div className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground bg-primary">
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground bg-primary">
                       {user.fullName?.charAt(0) || user.email?.charAt(0) || 'U'}
                     </div>
-                    <span className="hidden sm:inline text-sm max-w-[80px] truncate text-foreground">
-                      {user.fullName || 'User'}
+                    <span className="hidden md:flex flex-col items-start leading-tight">
+                      <span className="text-[13px] font-semibold max-w-[110px] truncate text-foreground">
+                        {user.fullName || 'User'}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground capitalize">{user.userType}</span>
                     </span>
-                    <ChevronDown className="h-3 w-3 hidden sm:inline text-muted-foreground" />
-                  </Button>
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5">

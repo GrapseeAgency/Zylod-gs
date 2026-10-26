@@ -47,12 +47,8 @@ interface ApiProduct {
   slug: string
   thumbnailUrl?: string | null
   currency?: string
-  unit?: string | null
-  ratingAvg?: number | null
-  reviewCount?: number | null
-  isFavorite?: boolean | null
   category?: { slug: string; name: string }
-  supplier?: { companyName: string; verificationStatus?: string; userId?: string }
+  supplier?: { companyName: string }
 }
 
 function mapApiProduct(p: ApiProduct): MainProduct {
@@ -67,13 +63,6 @@ function mapApiProduct(p: ApiProduct): MainProduct {
     location: p.supplier?.companyName ?? 'Bangladesh',
     category: p.category?.slug ?? 'other',
     thumbnailUrl: p.thumbnailUrl ?? null,
-    // t210: fields the mockup card displays — pulled from the real API response
-    unit: p.unit ?? null,
-    ratingAvg: p.ratingAvg ?? null,
-    reviewCount: p.reviewCount ?? null,
-    supplierName: p.supplier?.companyName ?? null,
-    supplierVerified: p.supplier?.verificationStatus === 'approved',
-    isFavorited: p.isFavorite ?? null,
   }
 }
 
