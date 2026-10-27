@@ -41,7 +41,7 @@ export function MobileBottomNav() {
   const getActiveId = (): string => {
     if (currentPage === 'home') return 'home'
     if (['category-products', 'category-browser', 'textiles-fabrics', 'agriculture-food', 'electronics', 'construction', 'packaging', 'home-garden', 'gifts-crafts', 'beauty-personal-care', 'promotional-items', 'garments', 'spices', 'mobile-accessories', 'led-lighting', 'automotive', 'sports-fitness', 'books-stationery', 'toys', 'jewelry', 'medical-supplies', 'furniture'].includes(currentPage)) return 'categories'
-    if (currentPage === 'search-results') return 'search'
+    if (currentPage === 'search-results' || currentPage === 'search' || currentPage === 'search-home') return 'search'
     if (['chat-list', 'chat-detail', 'messages'].includes(currentPage)) return 'profile'
     if (['flash-sale', 'flash-deals', 'daily-deals'].includes(currentPage)) return 'deals'
     if (['cart', 'checkout'].includes(currentPage)) return 'cart'

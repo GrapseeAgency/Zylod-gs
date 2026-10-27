@@ -216,6 +216,16 @@ export async function loadPage(pageId: string): Promise<PageLoadResult> {
   return { component: null, needsPageId: true, genericType: undefined as any }
 }
 
+/**
+ * t219: true only for ids the registry itself owns (core or REAL_PAGES).
+ * app-entry uses this to distinguish a registry page whose chunk load raced
+ * a recompile/server restart (retryable) from a genuinely unknown long-tail
+ * id (honest "Page not found" fallback, no retry).
+ */
+export function isRegisteredPage(pageId: string): boolean {
+  return CHUNK_CORE.has(pageId) || REAL_PAGES.has(pageId)
+}
+
 export function isKnownPage(pageId: string): boolean {
   if (CHUNK_CORE.has(pageId)) return true
   if (REAL_PAGES.has(pageId)) return true

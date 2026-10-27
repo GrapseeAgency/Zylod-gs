@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.FlashOn
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -72,14 +73,19 @@ import com.zylod.wholesale.ui.welcome.markOnboardingSeen
 import com.zylod.wholesale.util.DeepLinkParser
 import com.zylod.wholesale.util.ParsedDeepLink
 
-// Same 5 tabs as mobile-bottom-nav.tsx (frozen in ARCHITECTURE.md §3).
-// Tab HIGHLIGHT for a given pageId comes from RouteOwnership.activeTabFor —
-// the single alias map (was duplicated here as TAB_ALIASES).
+// Same 6 tabs as mobile-bottom-nav.tsx (order and pageIds mirror
+// NAV_ITEMS there; the search tab was added t219 for parity — it targets
+// the "search-results" pageId, a WEBVIEW surface). Tab HIGHLIGHT for a
+// given pageId comes from RouteOwnership.activeTabFor — the single alias
+// map (was duplicated here as TAB_ALIASES).
 private data class TabItem(val id: String, val label: String, val icon: ImageVector, val pageId: String)
 
 private val TABS = listOf(
     TabItem("home", "Home", Icons.Outlined.Home, "home"),
     TabItem("categories", "Categories", Icons.Outlined.GridView, "category-browser"),
+    // t219: search tab — web bar parity (mobile-bottom-nav.tsx NAV_ITEMS),
+    // resolves through RouteOwnership to Destination.Web("search-results").
+    TabItem("search", "Search", Icons.Outlined.Search, "search-results"),
     TabItem("deals", "Hot Deals", Icons.Outlined.FlashOn, "flash-deals"),
     TabItem("cart", "Cart", Icons.Outlined.ShoppingCart, "cart"),
     TabItem("profile", "Profile", Icons.Outlined.Person, "profile"),

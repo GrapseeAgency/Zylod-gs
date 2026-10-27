@@ -1206,6 +1206,12 @@ private fun SupplierCard(product: ProductDetailDto, openPage: (String, String) -
                             fontWeight = FontWeight.SemiBold,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
+                            // t219 audit: unconstrained here, a long company name
+                            // consumed the whole row and squeezed the UNVERIFIED
+                            // chip to zero width. fill=false keeps short names
+                            // left-aligned next to the chip; long names ellipsize
+                            // into the remaining space instead of starving it.
+                            modifier = Modifier.weight(1f, fill = false),
                         )
                         if (!verified) {
                             Spacer(Modifier.width(6.dp))

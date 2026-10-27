@@ -170,8 +170,8 @@ object RouteOwnership {
     /**
      * The SINGLE tab-alias map (ported from mobile-bottom-nav.tsx
      * getActiveId, which remains the visual reference for the web bar in
-     * browsers only). Returns the tab id ("home"|"categories"|"deals"|
-     * "cart"|"profile") whose highlight reflects [pageId].
+     * browsers only). Returns the tab id ("home"|"categories"|"search"|
+     * "deals"|"cart"|"profile") whose highlight reflects [pageId].
      */
     private val TAB_ALIASES: Map<String, String> = buildMap {
         putAll(
@@ -183,6 +183,10 @@ object RouteOwnership {
                 "books-stationery", "toys", "jewelry", "medical-supplies", "furniture",
             ).associateWith { "categories" },
         )
+        // t219: search tab (parity with the web bar — its getActiveId maps
+        // "search-results" to the search tab; "search" is the search-home
+        // pageId in src/lib/page-loader.ts, so both highlight "search").
+        putAll(listOf("search-results", "search").associateWith { "search" })
         putAll(listOf("chat-list", "chat-detail", "messages").associateWith { "profile" })
         putAll(listOf("flash-sale", "flash-deals", "daily-deals").associateWith { "deals" })
         // t208: the rest of the CHECKOUT FLOW highlighted "home" — buy-now is

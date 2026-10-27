@@ -4,11 +4,12 @@ import React, { useState, useEffect, Suspense } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
-import { loadPage, getChunkForPage } from '@/lib/page-loader'
+import { loadPage, getChunkForPage, isRegisteredPage } from '@/lib/page-loader'
 import type { GenericPageType } from '@/lib/page-loader'
 import { AppShell } from '@/components/layout/app-shell'
 import { SocialConsentModal } from '@/components/shared/social-consent-modal'
 import { PageLoader } from '@/components/ui/page-loader'
+import { Button } from '@/components/ui/button'
 
 // t187 provenance diagnostics: the native shell's gate reads
 // window.__ZylodBundleIdentity (set inline in <head> by the root layout).
@@ -46,15 +47,33 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
   const [genericType, setGenericType] = useState<GenericPageType | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // t219: bump to re-run the resolve effect from the honest failure surface.
+  const [resolveTick, setResolveTick] = useState(0)
 
   useEffect(() => {
     let cancelled = false
+    let retryTimer: ReturnType<typeof setTimeout> | null = null
     setLoading(true)
     setPageComponent(null)
     setGenericType(null)
     setError(null)
 
-    async function resolvePage() {
+    /* Bounded self-heal (t219): the OOM-restart watchdog can bounce the dev
+       server under a browsing user, and a dynamic chunk import can then throw
+       — or resolve mid-recompile without the page's export — which used to
+       dead-end in an eternal spinner or a gray "Page not found" for a page
+       that IS registered. The resolve now retries once after a beat (the
+       transient class self-heals invisibly) and only then renders the honest
+       failure surface with manual Retry / Reload. Unregistered ids keep the
+       original gray fallback with no retry (still the honest unknown-page
+       state the audits assert). */
+    const retryOnce = (attempt: number, next: () => void) => {
+      if (attempt >= 1) return false
+      retryTimer = setTimeout(() => { if (!cancelled) next() }, 800)
+      return true
+    }
+
+    async function resolvePage(attempt: number) {
       try {
         const result = await loadPage(pageId)
         if (cancelled) return
@@ -91,8 +110,14 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
                 setLoading(false)
                 return
               }
+
+              // Chunk module loaded but no export for this id. For a
+              // registry-owned page that is the transient race — retry once;
+              // an unregistered id falls through to the honest gray fallback.
+              if (isRegisteredPage(pageId) && retryOnce(attempt, () => void resolvePage(attempt + 1))) return
             } catch (e) {
               console.error('Failed to load chunk for page:', pageId, e)
+              if (retryOnce(attempt, () => void resolvePage(attempt + 1))) return
               if (!cancelled) {
                 setError(`Failed to load: ${pageId}`)
                 setLoading(false)
@@ -105,6 +130,7 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
         setPageComponent(null)
         setLoading(false)
       } catch (e) {
+        if (retryOnce(attempt, () => void resolvePage(attempt + 1))) return
         if (!cancelled) {
           console.error('Error resolving page:', pageId, e)
           setError(`Error: ${pageId}`)
@@ -113,22 +139,19 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
       }
     }
 
-    resolvePage()
-    return () => { cancelled = true }
-  }, [pageId])
+    void resolvePage(0)
+    return () => {
+      cancelled = true
+      if (retryTimer) clearTimeout(retryTimer)
+    }
+  }, [pageId, resolveTick])
 
   if (loading) {
     return <PageLoader />
   }
 
   if (error) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg text-red-500">{error}</p>
-        </div>
-      </div>
-    )
+    return <PageLoadError message={error} onRetry={() => setResolveTick((t) => t + 1)} />
   }
 
   if (genericType) {
@@ -148,13 +171,40 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
   )
 }
 
+/** t219: honest, actionable failure surface for a page whose chunk could not
+ *  be resolved after the bounded retry — replaces the dead-end red text and
+ *  the eternal-spinner class. Retry re-runs the in-place resolve; Reload is
+ *  the full-app escape hatch (session and cart survive both). */
+function PageLoadError({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center px-4">
+      <div className="text-center space-y-4 max-w-sm">
+        <p className="text-lg text-red-500">{message}</p>
+        <p className="text-sm text-muted-foreground">
+          The connection may have dropped or the app was updating. Your session and cart are safe.
+        </p>
+        <div className="flex items-center justify-center gap-3">
+          <Button variant="outline" onClick={onRetry}>Try again</Button>
+          <Button onClick={() => window.location.reload()}>Reload app</Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function GenericPageRenderer({ genericType, pageId, pageParams }: { genericType: GenericPageType; pageId: string; pageParams: Record<string, string> }) {
   const [Comp, setComp] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  // t219: a failed generic-chunk load used to setComp(null) + setLoading(false)
+  // and then hit `if (loading || !Comp) return <PageLoader />` FOREVER — the
+  // eternal-spinner class on long-tail pages. Real failure state now.
+  const [failed, setFailed] = useState(false)
+  const [resolveTick, setResolveTick] = useState(0)
 
   useEffect(() => {
     let cancelled = false
     setLoading(true)
+    setFailed(false)
 
     async function load() {
       try {
@@ -167,6 +217,7 @@ function GenericPageRenderer({ genericType, pageId, pageParams }: { genericType:
       } catch {
         if (!cancelled) {
           setComp(null)
+          setFailed(true)
           setLoading(false)
         }
       }
@@ -174,7 +225,16 @@ function GenericPageRenderer({ genericType, pageId, pageParams }: { genericType:
 
     load()
     return () => { cancelled = true }
-  }, [genericType])
+  }, [genericType, resolveTick])
+
+  if (failed) {
+    return (
+      <PageLoadError
+        message={`Failed to load: ${pageId}`}
+        onRetry={() => setResolveTick((t) => t + 1)}
+      />
+    )
+  }
 
   if (loading || !Comp) {
     return <PageLoader />

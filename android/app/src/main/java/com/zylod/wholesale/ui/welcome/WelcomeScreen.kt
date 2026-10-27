@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zylod.wholesale.ui.components.ZylodEntrance
@@ -238,7 +239,16 @@ fun WelcomeScreen(
                             .weight(1f)
                             .height(48.dp),
                     ) {
-                        Text("Create buyer account", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                        Text(
+                            "Create buyer account",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            // t219 audit: maxLines=1 with default Clip cut the
+                            // label mid-letter on 360dp phones (button content
+                            // ~102dp < ~130dp label) — ellipsize instead.
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
                     Button(
                         onClick = { complete(onSignIn) },
