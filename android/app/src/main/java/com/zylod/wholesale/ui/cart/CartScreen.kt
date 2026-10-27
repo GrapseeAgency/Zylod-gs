@@ -92,6 +92,10 @@ fun CartScreen(
     LaunchedEffect(Unit) { vm.refresh() }
 
     val items = state.items
+    // t216: the supplier grouping ran on EVERY recomposition of the screen
+    // (sync flag toggles, item errors, quantity updates) — recomputed once
+    // per items change instead.
+    val grouped = remember(items) { items.groupedBySupplier() }
 
     Column(
         Modifier
@@ -123,7 +127,7 @@ fun CartScreen(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    item {
+                    item(contentType = "meta") {
                         Text(
                             "${items.size} product${if (items.size != 1) "s" else ""}" +
                                 if (syncing) " · syncing…" else "",
@@ -131,11 +135,11 @@ fun CartScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    items.groupedBySupplier().forEach { (supplierKey, supplierItems) ->
-                        item(key = "supplier-$supplierKey") {
+                    grouped.forEach { (supplierKey, supplierItems) ->
+                        item(key = "supplier-$supplierKey", contentType = "supplier-header") {
                             SupplierSectionHeader(supplierKey, supplierItems)
                         }
-                        items(supplierItems, key = { it.id }) { item ->
+                        items(supplierItems, key = { it.id }, contentType = { "cart-item" }) { item ->
                             CartItemCard(
                                 item = item,
                                 error = itemErrors[item.id],
@@ -148,7 +152,7 @@ fun CartScreen(
                             )
                         }
                     }
-                    item { Spacer(Modifier.height(4.dp)) }
+                    item(contentType = "spacer") { Spacer(Modifier.height(4.dp)) }
                 }
 
                 SnackbarHost(
@@ -418,8 +422,9 @@ private fun RemoveButton(onRemove: () -> Unit) {
 
 @Composable
 private fun CartSummaryCard(items: List<CartItemData>, onCheckout: () -> Unit) {
-    val subtotal = items.sumOf { it.totalPrice }
-    val totalUnits = items.sumOf { it.quantity }
+    // t216: sum once per items change (was recomputed on every recomposition).
+    val subtotal = remember(items) { items.sumOf { it.totalPrice } }
+    val totalUnits = remember(items) { items.sumOf { it.quantity } }
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
         modifier = Modifier.fillMaxWidth(),

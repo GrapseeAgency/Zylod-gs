@@ -68,7 +68,13 @@ class OrdersViewModel(private val appContext: Context) : ViewModel() {
             return
         }
         viewModelScope.launch {
-            _state.value = _state.value.copy(loading = true, error = null, needsAuth = false)
+            // t216: SILENT refresh when the saved-back-stack VM already holds
+            // data — the unconditional loading=true blanked the whole list
+            // behind a full-screen spinner on EVERY tab visit even when
+            // nothing changed. First load (no cache) keeps the honest spinner;
+            // failures with cached data keep the list visible (cart parity).
+            val hasCached = _state.value.orders.isNotEmpty()
+            _state.value = _state.value.copy(loading = !hasCached, error = null, needsAuth = false)
             try {
                 val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
                 val response = ApiClient.ordersApi(base).myOrders()
@@ -80,14 +86,18 @@ class OrdersViewModel(private val appContext: Context) : ViewModel() {
                     val err = parseErrorBody(response.errorBody())
                     _state.value = _state.value.copy(
                         loading = false,
-                        orders = emptyList(),
-                        error = err.error ?: "Could not load orders (HTTP ${response.code()})",
+                        orders = if (hasCached) _state.value.orders else emptyList(),
+                        error = if (hasCached) null else (err.error ?: "Could not load orders (HTTP ${response.code()})"),
                     )
                     return@launch
                 }
                 val list = response.body()?.takeIf { it.success }?.data
                 if (list == null) {
-                    _state.value = _state.value.copy(loading = false, orders = emptyList(), error = "Could not load orders")
+                    _state.value = _state.value.copy(
+                        loading = false,
+                        orders = if (hasCached) _state.value.orders else emptyList(),
+                        error = if (hasCached) null else "Could not load orders",
+                    )
                     return@launch
                 }
                 _state.value = OrdersUiState(loading = false, orders = list)
@@ -96,8 +106,8 @@ class OrdersViewModel(private val appContext: Context) : ViewModel() {
             } catch (_: Exception) {
                 _state.value = _state.value.copy(
                     loading = false,
-                    orders = emptyList(),
-                    error = "Network error while loading your orders. Check your connection and retry.",
+                    orders = if (hasCached) _state.value.orders else emptyList(),
+                    error = if (hasCached) null else "Network error while loading your orders. Check your connection and retry.",
                 )
             }
         }

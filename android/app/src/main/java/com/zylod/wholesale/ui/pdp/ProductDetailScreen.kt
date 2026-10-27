@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -512,8 +513,9 @@ private fun ProductInfo(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(top = 8.dp),
                 ) {
-                    items(product.variants.size) { index ->
-                        val variant = product.variants[index]
+                    // t216: stable keys (was a positional count overload) —
+                    // selecting a variant only recomposes the affected chips.
+                    items(product.variants, key = { it.id }, contentType = { "variant" }) { variant ->
                         val selected = state.selectedVariantId == variant.id
                         val outOfStock = variant.stockQuantity == 0
                         Surface(
@@ -1381,7 +1383,10 @@ private fun QrDialog(productName: String, url: String, onDismiss: () -> Unit) {
 private const val QR_SIZE = 420
 
 /** qrcode.react port — zxing QRCodeWriter → ARGB bitmap. Pure black-on-white
- *  modules are required for scannability (not a theme choice). */
+ *  modules are required for scannability (not a theme choice). t216: the
+ *  module matrix is written through ONE setPixels call — the former per-pixel
+ *  setPixel loop (420² ≈ 176k JNI calls) ran on the main thread while the
+ *  dialog composed. */
 private fun generateQrBitmap(content: String, size: Int): Bitmap? = try {
     val matrix = QRCodeWriter().encode(
         content,
@@ -1390,16 +1395,14 @@ private fun generateQrBitmap(content: String, size: Int): Bitmap? = try {
         size,
         mapOf(EncodeHintType.MARGIN to 0),
     )
-    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val pixels = IntArray(size * size)
     for (x in 0 until size) {
         for (y in 0 until size) {
-            bitmap.setPixel(
-                x,
-                y,
-                if (matrix.get(x, y)) BitmapColor.BLACK else BitmapColor.WHITE,
-            )
+            pixels[y * size + x] = if (matrix.get(x, y)) BitmapColor.BLACK else BitmapColor.WHITE
         }
     }
+    val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    bitmap.setPixels(pixels, 0, size, 0, 0, size, size)
     bitmap
 } catch (_: Exception) {
     null

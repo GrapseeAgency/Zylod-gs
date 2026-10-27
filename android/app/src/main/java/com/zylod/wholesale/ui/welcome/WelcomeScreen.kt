@@ -30,8 +30,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -152,29 +152,34 @@ fun WelcomeScreen(
             }
 
             Spacer(Modifier.height(32.dp))
-            // Slide copy (keyed re-animation per slide — web SlideContent)
-            LaunchedEffect(slide) { /* re-entrance per slide via ZylodEntrance below */ }
-            ZylodEntrance(Modifier.fillMaxWidth()) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        SLIDES[slide].title,
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        SLIDES[slide].description,
-                        fontSize = 15.sp,
-                        lineHeight = 22.sp,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                    )
+            // Slide copy (keyed re-animation per slide — web SlideContent).
+            // t216: the re-animation was CLAIMED but never wired — the inner
+            // ZylodEntrance stayed composed across slide changes so its
+            // Animatable ran only once, and the dead LaunchedEffect(slide) was
+            // a no-op. key(slide) actually re-runs the entrance per slide.
+            key(slide) {
+                ZylodEntrance(Modifier.fillMaxWidth()) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            SLIDES[slide].title,
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            SLIDES[slide].description,
+                            fontSize = 15.sp,
+                            lineHeight = 22.sp,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                        )
+                    }
                 }
             }
 

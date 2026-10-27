@@ -89,6 +89,15 @@ class ZylodApp : Application(), coil.ImageLoaderFactory {
 
         // Setup notification channels
         createNotificationChannels()
+
+        // t216: warm the encrypted store OFF the main thread. The first
+        // SessionManager.token() / WebAuthSeeder.buildScript() access
+        // otherwise ran EncryptedSharedPreferences.create() (AndroidKeyStore
+        // + AES-GCM setup + file IO) on the MAIN thread mid-interaction — a
+        // one-off multi-hundred-ms stall on the first tab tap / first WebView
+        // shell checkout. The lazy val is synchronized, so a concurrent UI
+        // read simply joins the warm-up; nothing downstream changes.
+        appScope.launch(Dispatchers.IO) { securePrefs }
     }
 
     /**

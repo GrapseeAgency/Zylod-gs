@@ -38,6 +38,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -142,17 +143,24 @@ private fun OrdersList(orders: List<OrderDto>, onOpenOrder: (String) -> Unit) {
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        item {
+        item(contentType = "meta") {
             Text(
                 "${orders.size} order${if (orders.size != 1) "s" else ""}",
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        items(orders) { order ->
+        // t216: stable keys (was positional) — a background re-pull that
+        // reorders/updates rows keeps scroll and item identity instead of
+        // re-composing every visible card.
+        items(
+            orders,
+            key = { order -> order.id?.takeIf(String::isNotBlank) ?: "order-${order.hashCode()}" },
+            contentType = { "order" },
+        ) { order ->
             OrderCard(order, onOpenOrder)
         }
-        item { Spacer(Modifier.height(4.dp)) }
+        item(contentType = "spacer") { Spacer(Modifier.height(4.dp)) }
     }
 }
 
@@ -183,7 +191,10 @@ private fun OrderCard(order: OrderDto, onOpenOrder: (String) -> Unit) {
                         fontWeight = FontWeight.Black,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
-                    dateLine(order)?.let {
+                    // t216: the date line built TWO SimpleDateFormats per card
+                    // per recomposition — computed once per order now.
+                    val date = remember(order) { dateLine(order) }
+                    date?.let {
                         Text(
                             it,
                             fontSize = 11.sp,

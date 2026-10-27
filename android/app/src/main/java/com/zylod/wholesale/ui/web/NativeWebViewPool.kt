@@ -280,6 +280,11 @@ internal object NativeWebViewPool {
                 databaseEnabled = true
                 cacheMode = WebSettings.LOAD_DEFAULT
                 mediaPlaybackRequiresUserGesture = true
+                // t216: let the renderer autosize text on its own layout pass
+                // (faster text layout on text-heavy Tier-3 pages). The SPA is
+                // responsive (viewport meta), so the font-boosting path never
+                // triggers and the frozen textZoom=100 contract is untouched.
+                layoutAlgorithm = WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
                 if (BuildConfig.DEBUG) {
                     allowFileAccess = true
                     allowContentAccess = true

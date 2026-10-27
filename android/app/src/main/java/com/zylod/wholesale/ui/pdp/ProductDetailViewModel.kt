@@ -88,9 +88,16 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             _state.update { it.copy(loading = false, error = "Product not found") }
             return
         }
+        // t216: re-entering the PDP for the product ALREADY in the VM (Back
+        // from the login wall / buy-now WebView — the VM survives on the saved
+        // back stack) re-ran the full load with loading=true and blanked the
+        // screen behind a spinner on every return. A same-product reload now
+        // refreshes silently and keeps the user's quantity/variant; a
+        // DIFFERENT product (or the first load) keeps the honest spinner.
+        val alreadyLoaded = _state.value.product?.id == productId
         _state.update {
             it.copy(
-                loading = true,
+                loading = !alreadyLoaded,
                 error = null,
                 authed = SessionManager.token() != null,
                 qa = emptyList(),
@@ -104,14 +111,21 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                 val productResponse = client.product(productId)
                 if (!productResponse.isSuccessful) {
                     _state.update {
-                        it.copy(loading = false, error = if (productResponse.code() == 404) "Product not found" else "The server isn't responding. Check your connection and try again.")
+                        // t216: a same-product SILENT refresh failure keeps the
+                        // cached product on screen (error only when nothing is
+                        // cached — otherwise one network blip on Back blanked
+                        // the whole PDP behind PdpError despite product!=null).
+                        it.copy(
+                            loading = false,
+                            error = if (alreadyLoaded) null else (if (productResponse.code() == 404) "Product not found" else "The server isn't responding. Check your connection and try again."),
+                        )
                     }
                     return@launch
                 }
                 val body = productResponse.body()
                 val product: ProductDetailDto? = body?.takeIf { it.success }?.data
                 if (product == null) {
-                    _state.update { it.copy(loading = false, error = "Product not found") }
+                    _state.update { it.copy(loading = false, error = if (alreadyLoaded) null else "Product not found") }
                     return@launch
                 }
                 _state.update {
@@ -119,8 +133,11 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
                         loading = false,
                         serverUrl = base,
                         product = product,
-                        quantity = product.moq.coerceAtLeast(1),
-                        selectedVariantId = null,
+                        // t216: a same-product silent refresh must not reset
+                        // the stepper/variant the user already chose (Back
+                        // from login/buy-now used to snap both back to MOQ).
+                        quantity = if (alreadyLoaded) it.quantity else product.moq.coerceAtLeast(1),
+                        selectedVariantId = if (alreadyLoaded) it.selectedVariantId else null,
                     )
                 }
                 // Optional sub-fetch: specifications (mobile PDP L83-95).
@@ -148,7 +165,7 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
             } catch (ce: CancellationException) {
                 throw ce
             } catch (e: Exception) {
-                _state.update { it.copy(loading = false, error = "Can't reach Zylod servers") }
+                _state.update { it.copy(loading = false, error = if (alreadyLoaded) null else "Can't reach Zylod servers") }
             }
         }
     }

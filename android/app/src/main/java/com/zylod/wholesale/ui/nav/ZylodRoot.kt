@@ -1,6 +1,9 @@
 package com.zylod.wholesale.ui.nav
 
 import android.net.Uri
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.DisposableEffect
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -215,7 +218,12 @@ fun ZylodRoot() {
                     restoreState = true
                 }
             is Destination.Product ->
-                navController.navigate("product-detail/${Uri.encode(destination.productId)}")
+                navController.navigate("product-detail/${Uri.encode(destination.productId)}") {
+                    // t216: dedup rapid double-taps (e.g. the cart item card)
+                    // — the same product must not push twice; a DIFFERENT
+                    // product id still stacks (launchSingleTop compares args).
+                    launchSingleTop = true
+                }
             is Destination.Auth ->
                 navController.navigate(destination.route) { launchSingleTop = true }
             is Destination.Web ->
@@ -309,6 +317,14 @@ fun ZylodRoot() {
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier.padding(padding),
+            // t216: explicit quick transitions. The defaults were the platform
+            // fallback (unspecified, opaque crossfade) — a deterministic
+            // 200 ms fade reads snappier on tab taps and PDP pushes; no slide
+            // so the WebView shell re-attach doesn't double-animate.
+            enterTransition = { fadeIn(tween(200)) },
+            exitTransition = { fadeOut(tween(200)) },
+            popEnterTransition = { fadeIn(tween(200)) },
+            popExitTransition = { fadeOut(tween(200)) },
         ) {
             composable(HOME_ROUTE) {
                 // OWNER DIRECTIVE — home → WEBVIEW (native Home terminated).
