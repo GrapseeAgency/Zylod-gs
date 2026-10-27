@@ -6282,3 +6282,31 @@ Stage Summary:
 - "Clean everything" executed: ~30 dead/fake files removed (incl. a navy-styled parallel app shell and 10 dead API routes), honest wallet/card UX landed.
 - Scroll-to-top verified on every navigation path (header/footer/dropdown/mobile tabs/cards/back): 0 regressions.
 - Open facts: device-side native verification still needs real hardware; release signing debug-only; the mobile bottom-nav bar could later gain a search entry (currently search lives on the hero + header at md+).
+
+---
+Task ID: t215
+Agent: Z.ai Code (main)
+Task: User re-sent the identical complaint ("same i gotta send this again") — navigation scroll, logically-wrong buttons, fake footer, responsiveness, guest purchase/fake-payment holes, navy remnants, native abnormality, "clean everything", final audit website + native. This round: fresh-eyes re-verification of every loudest complaint against the live site after the t214 fixes, plus closing the one open UX gap.
+
+Work Log:
+- [SYNC] Confirmed local == origin/main before starting (dfb83df pushed previous turn after the user's sync question; `git status -sb` shows in-sync). CI on dfb83df at round start: ios-build SUCCESS, android-build in progress.
+- [SCROLL RE-PROOF — every nav path, fresh session, 21.0.3.29]
+  - Footer "Privacy Policy & GDPR" clicked at scroll depth 2523 → scrollY=0, ?page=privacy-policy, h1 "Privacy Policy".
+  - Header ×5 via real clicks: Products → all-products ("All Products", the t214 fix holds), Find Suppliers → suppliers ("Verified Suppliers"), Deals → daily-deals ("Curated Daily Deals"), Logistics → track-order (honest page), Promotions → promotions-page ("Platform Promotions") — ALL scrollY=0.
+  - More dropdown → Investor Relations → scrollY=0, h1 "Investor Relations"; browser back() → home at scrollY=0 (back also re-tops).
+  - Mobile bottom nav (375px): Categories → category-browser ("Explore Categories") scrollY=0; Cart → cart page scrollY=0; Search (new, this round) → search-results scrollY=0, tab highlights active.
+  - NOTE: two initial "click did nothing" readings were locator ambiguity (agent-browser `find text` matched the category-rail heading "Categories" and a product-card cart element, not the bottom-nav buttons) — disproven by scoped clicks on the fixed nav element; zero real nav defects found this round.
+- [GUEST MONEY WALL — UI + API, fresh proof]
+  - Guest PDP "Add to Cart" → forced ?page=login (real form). Guest PDP "Buy Now" → forced ?page=login.
+  - Guest deep-links: /?page=checkout → "Sign in required — You need a buyer account to check out…"; /?page=buy-now → "No product selected" (honest); /?page=order-confirmation + /?page=checkout-success → "No order to confirm — Place an order first" (honest empties, zero fake order data).
+  - API as guest: POST /api/orders → 401; POST /api/orders/create-direct → 401 "Authentication required"; POST /api/cart → 401 "Authentication required"; POST /api/cart/bulk → 401. No server path lets a guest move value.
+- [NAVY] Corrected computed-style blue-dominance scan (previous eval had a regex bug defaulting blue=255 — false positives; fixed parser) on home/suppliers/all-products/daily-deals/cart/privacy-policy/flash-deals: **0 blue-dominant surfaces on all 7**.
+- [RESPONSIVE] 24 pages × 375/768/1280 = 72 page-loads: ALL scrollWidth−clientWidth = 0. (Cumulative with t213/t214: 140+ verified page-views, zero overflow.)
+- [NEW FEATURE — mobile Search tab] Open item closed: away from home the hero search box is gone and header search renders only at md+ — mobile users had NO search entry anywhere. MobileBottomNav now ships 6 tabs (Home/Categories/Search/Hot Deals/Cart/Profile); Search → search-results (real input, verified focusable), active-state aware, 0 overflow at 375 with 6 tabs. Verified live: tap → scrollY=0, activeTab="Search".
+- [GATES] bunx tsc --noEmit exit 0; bun run lint clean. Commit c227a2f pushed (dfb83df..c227a2f).
+
+Stage Summary:
+- Every loudest complaint re-verified against the live site this round with fresh-session evidence: scroll-to-top holds on footer/header/dropdown/mobile-tabs/back; guest cannot add-to-cart, buy, or reach checkout/confirmation by UI or API (401 everywhere; honest walls + honest empties); navy scan 0/7 pages with a CORRECTED scanner; 72/72 responsive loads at 0 overflow.
+- One real gap closed this round: mobile search entry added to the bottom nav (6-tab bar) — verified live.
+- No new real defect found in this pass; the only "failures" observed were audit-tool locator ambiguity, disproven and documented.
+- Open facts (unchanged): device/emulator-side native verification requires real hardware (no SDK in sandbox); release signing still debug-only; android-build on dfb83df was in progress at round start (CI poll for c227a2f follows this entry).
