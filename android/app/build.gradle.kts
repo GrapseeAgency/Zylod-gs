@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.devtools.ksp")
 }
@@ -101,9 +102,12 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
+    // t217: Kotlin 2.0.20 — the Compose compiler now ships as the
+    // org.jetbrains.kotlin.plugin.compose plugin; the legacy
+    // composeOptions.kotlinCompilerExtensionVersion block is obsolete
+    // (removed). Strong skipping is ON by default from 2.0.20 — unstable
+    // params/comparison-lambda classes no longer force whole-screen
+    // recomposition (the remaining recomposition-lag lever from t216).
 }
 
 dependencies {
@@ -153,7 +157,7 @@ dependencies {
     // API layer (Retrofit + kotlinx.serialization)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // WebView document-start JS injection — Phase 1 auth handoff seeds
     // b2b-auth-storage before the SPA boots (spec §3.0 / §6.3). Frozen-stack
