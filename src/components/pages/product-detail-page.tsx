@@ -700,8 +700,14 @@ function DesktopProductDetailPage() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
+              {/* Arrows sit INSIDE the image (native pattern). shadcn's
+                  default -left-12/-right-12 pokes 48px outside the carousel
+                  root: at <lg the single-column layout has only ~16px of
+                  container padding → a real 32px horizontal document
+                  overflow at 768px. left-3/right-3 keep them inside bounds
+                  on every breakpoint; tailwind-merge resolves the conflict. */}
+              <CarouselPrevious className="left-3 bg-background/90 shadow-sm" />
+              <CarouselNext className="right-3 bg-background/90 shadow-sm" />
             </Carousel>
           ) : (
             <div className="aspect-square bg-muted rounded-xl flex items-center justify-center overflow-hidden">
