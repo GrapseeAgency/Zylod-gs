@@ -6369,3 +6369,21 @@ Stage Summary:
 - The Kotlin toolchain is now 2.0.20/K2 with strong skipping ON — compile-gated green and emulator-boot-proven via CI. This was the final flagged recomposition-lag lever; combined with t216's 10 fixes the native perf work has no further known levers short of on-device profiling.
 - Web re-proven responsive at 320px and both landscape orientations (45/45 zero-overflow).
 - Open facts (unchanged): frame-timing measurement needs real hardware (JankProfiler/adb); release signing still debug-only; QuickChip dead code in Color.kt still a maintainer call.
+
+---
+Task ID: t218
+Agent: Z.ai Code (main)
+Task: User re-sent the identical complaint. This round: the authenticated buyer golden path proven END-TO-END in a real browser (previously only API-level), the two pages the user called out by name (Photo Scan / Scan Code) audited for fakeness, and fresh full-site audits re-run.
+
+Work Log:
+- [STATE] main == origin/main (885d4c9). Dev server 200.
+- [GOLDEN PATH — real browser E2E, authenticated buyer] Login buyer1@zylod.bd via the real form → home with account chip + verification banner. PDP "Full Grain Leather Hides" Add to Cart → cart shows the real item (MOQ 10 pcs, ৳3,800/pcs, ৳38,000). Proceed to Checkout → honest gates: "No shipping address on file. Add a real delivery address to continue"; "Quoting couriers for your district… re-computed server-side from the live rate book"; Wallet "৳0 — Not enough for this order (৳38,000)"; COD "Locked — verify your email or phone"; footer: "The order is created with status UNPAID and a pending payment — the total is re-verified server-side". Added a real address via the form (Dhaka) → saved as DEFAULT. Selected Bank Transfer ("Transfer the total, then submit the payment reference for verification") → Place Order → **Order ORD-MVR08LYW6H77 Created — Status: UNPAID — "The order is NOT confirmed until payment is verified"**. My Orders lists it (PROCESSING · ৳38,000 · View Details) → order-detail shows PROCESSING + UNPAID + PAYMENT VERIFICATION PENDING + Placed→Delivered timeline, scrollY=0. NO path produced a paid/confirmed order without a real wallet debit — the browser now proves what the t214 API probes proved (401/402/403/pending).
+- [PHOTO SCAN + SCAN CODE — user called these out by name; both audited REAL] image-search page: "Take Photo" → hidden <input type=file accept=image/* capture=environment> (real mobile camera capture); "Upload Image" → real file input; results render real product cards navigating to product-detail; Try-Again/error states honest. barcode-scanner page: @zxing/browser BrowserMultiFormatReader live decode + real navigator.mediaDevices.getUserMedia + platform BarcodeDetector + torch toggle + Barcode/QR/modes + manual entry + launchNativeScan bridge (native BarcodeScannerActivity) + results → real PDPs; in the headless browser it correctly showed the honest "Camera access denied or unavailable → Upload Image Instead" fallback. Zero fake buttons on either page.
+- [FRESH FULL-SITE AUDITS] audit-footer.ts (bun): 59/59 footer links REAL/GENERIC, 0 FAKE/dead/empty. audit-all-pages.ts (targets regenerated from the live REAL_PAGES registry = 726 unique page ids): **0 dead navigate targets, 0 generic placeholder pages** — every registered page id resolves to a real component.
+- [NO SOURCE CHANGES THIS ROUND] Working tree clean at 885d4c9 after the audits — nothing needed fixing; this round's product is end-to-end evidence depth.
+
+Stage Summary:
+- The authenticated buyer money path is now browser-proven end-to-end: login → cart → checkout → real order born UNPAID with payment-verification-pending, order visible in My Orders and order-detail. Combined with guest walls (t215) and API gates (t214), the money story is consistent at every layer: nobody buys without an account, nobody pays with fake money, no order is confirmed without real verification.
+- The two user-named scan features are real implementations, not decorations.
+- Fresh audits: 59/59 footer real; 726/726 page ids resolve to real components; 0 fake/0 dead/0 placeholder.
+- Open facts (unchanged): device/emulator frame-timing beyond CI's emulator screenshots; release signing debug-only; webDevReview cron jobs keep being auto-disabled by the platform's exec-limit quota (3 recreations all hit the same wall — platform-side).
