@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, Grid3X3, Zap, ShoppingCart, User } from 'lucide-react'
+import { Home, Grid3X3, Search, Zap, ShoppingCart, User } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
@@ -16,6 +16,9 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Home', icon: Home, pageId: 'home' },
   { id: 'categories', label: 'Categories', icon: Grid3X3, pageId: 'category-browser' },
+  // Search lives in the bar: away from home the hero search box is gone and
+  // the header search only renders at md+ — mobile users had no search entry.
+  { id: 'search', label: 'Search', icon: Search, pageId: 'search-results' },
   { id: 'deals', label: 'Hot Deals', icon: Zap, pageId: 'flash-deals' },
   { id: 'cart', label: 'Cart', icon: ShoppingCart, pageId: 'cart' },
   { id: 'profile', label: 'Profile', icon: User, pageId: 'profile' },
@@ -38,6 +41,7 @@ export function MobileBottomNav() {
   const getActiveId = (): string => {
     if (currentPage === 'home') return 'home'
     if (['category-products', 'category-browser', 'textiles-fabrics', 'agriculture-food', 'electronics', 'construction', 'packaging', 'home-garden', 'gifts-crafts', 'beauty-personal-care', 'promotional-items', 'garments', 'spices', 'mobile-accessories', 'led-lighting', 'automotive', 'sports-fitness', 'books-stationery', 'toys', 'jewelry', 'medical-supplies', 'furniture'].includes(currentPage)) return 'categories'
+    if (currentPage === 'search-results') return 'search'
     if (['chat-list', 'chat-detail', 'messages'].includes(currentPage)) return 'profile'
     if (['flash-sale', 'flash-deals', 'daily-deals'].includes(currentPage)) return 'deals'
     if (['cart', 'checkout'].includes(currentPage)) return 'cart'
