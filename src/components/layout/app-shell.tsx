@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { VerificationBanner } from '@/components/layout/verification-banner'
 import { MobileBottomNav } from '@/components/mobile/mobile-bottom-nav'
+import { MobileSiteLinks } from '@/components/layout/mobile-site-links'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
@@ -73,10 +74,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     // Categories / Hot Deals / Cart / Profile), hero-first design kept.
     if (currentPage === 'home') {
       return (
-        <div data-zylod-nav-padding="" className={`min-h-screen bg-background ${isNative ? 'pb-4' : 'pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}`}>
+        <div data-zylod-nav-padding="" className={`min-h-screen flex flex-col bg-background ${isNative ? 'pb-4' : 'pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}`}>
           <main className="flex-1">
             {children}
           </main>
+          {/* t220: legal/company links were desktop-only (77 footer links) —
+              mobile exposed ZERO of them. Real pages, same SPA navigate(). */}
+          <MobileSiteLinks />
           <MobileBottomNav />
         </div>
       )
@@ -96,10 +100,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       return (
         // data-zylod-nav-padding: native shells flatten this to 16px via
         // document-start CSS (the app's own bottom bar provides the inset).
-        <div data-zylod-nav-padding="" className={isNative ? 'min-h-screen pb-4' : 'min-h-screen pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}>
+        <div data-zylod-nav-padding="" className={`${isNative ? 'min-h-screen pb-4' : 'min-h-screen pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'} flex flex-col`}>
           <main className="flex-1">
             {children}
           </main>
+          <MobileSiteLinks />
           <MobileBottomNav />
         </div>
       )
@@ -108,7 +113,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     // Detail/sub pages - show back button + bottom nav
     if (DETAIL_PAGES.has(currentPage)) {
       return (
-        <div data-zylod-nav-padding="" className={`min-h-screen bg-background ${isNative ? 'pb-4' : 'pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}`}>
+        <div data-zylod-nav-padding="" className={`min-h-screen flex flex-col bg-background ${isNative ? 'pb-4' : 'pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}`}>
           {/* Mobile top bar with back button — web-only chrome: the native
               shells provide their own deterministic back (Android BackHandler
               with WebView history, iOS NavigationStack back button), so the
@@ -130,6 +135,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <main className="flex-1">
             {children}
           </main>
+          <MobileSiteLinks />
           <MobileBottomNav />
         </div>
       )
@@ -137,10 +143,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
     // Default mobile layout - show bottom nav
     return (
-      <div data-zylod-nav-padding="" className={`min-h-screen bg-background ${isNative ? 'pb-4' : 'pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}`}>
+      <div data-zylod-nav-padding="" className={`min-h-screen flex flex-col bg-background ${isNative ? 'pb-4' : 'pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}`}>
         <main className="flex-1">
           {children}
         </main>
+        <MobileSiteLinks />
         <MobileBottomNav />
       </div>
     )
