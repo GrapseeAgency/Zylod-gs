@@ -6351,3 +6351,21 @@ Stage Summary:
 - The lag round landed: 10 concrete perf/abnormality fixes across the native app, reviewed line-by-line by main (1 additional blank-screen fix layered on top), compile-gated green on CI.
 - Facts, not claims: frame-timing improvements are static-analysis conclusions — measuring them (JankProfiler, adb) needs a real device/emulator which this sandbox does not have; strong skipping stays off pending a Kotlin 2.0.20+ upgrade decision.
 - Web re-proven intact this round; money wall, scroll, responsive, navy states unchanged from t215 evidence.
+
+---
+Task ID: t217
+Agent: Z.ai Code (main)
+Task: User re-sent the identical complaint (native laggy/abnormal + all prior items). This round delivers the last flagged native-lag lever — the Kotlin 2.0.20 migration that turns Compose strong skipping ON — plus a new-dimension web responsive sweep.
+
+Work Log:
+- [STATE] main == origin/main at round start (25dbfdc). Dev server 200.
+- [KOTLIN 2.0.20 MIGRATION (the "owner call" from t216 — this user's repeated "so laggy, not smooth" is the owner directive)] android/build.gradle.kts: org.jetbrains.kotlin.android/.plugin.serialization 1.9.24 → 2.0.20; NEW org.jetbrains.kotlin.plugin.compose 2.0.20 (Compose compiler now ships with Kotlin); KSP 1.9.24-1.0.20 → 2.0.20-1.0.25 (KSP1 stays the default engine — Room 2.6.1 compatible). app/build.gradle.kts: compose plugin added, legacy composeOptions.kotlinCompilerExtensionVersion block removed (obsolete under K2), kotlinx-serialization-json 1.6.3 → 1.7.3 (Kotlin-2.0-built runtime). NO source changes required — zero .kt edits, the migration is toolchain-only. Compat verified before push: Gradle 8.7 wrapper in KGP 2.0.20's supported range; AGP 8.6.1 independent of KGP; no kapt/no freeCompilerArgs/no opt-in flags anywhere (grepped); coroutines 1.8.0 metadata readable by K2; Compose BOM 2024.09.03 (ui 1.7.2) pairs with the 2.0.20 compose plugin.
+- [WHAT THE UPGRADE BUYS] Compose strong skipping is enabled BY DEFAULT from 2.0.20: unstable parameters (List, lambda, data-class-with-var fields) no longer invalidate whole composables; lambdas are auto-remembered; comparison-based skipping covers the previously-unstable cases. On top of t216's manual keys/remember work, this eliminates the residual whole-screen recomposition class across all Tier-1 screens (Welcome/auth suite/Cart/Orders/PDP/WebScreen chrome).
+- [CI — the compile gate + a runtime gate] b083ded pushed (25dbfdc..b083ded). android-build SUCCESS (K2 + compose plugin + KSP 2.0.20-1.0.25 + Room 2.6.1 all compile clean). android-screenshots SUCCESS — the app BOOTED on a real emulator against a live CI backend and captured Welcome gate, Login, Continue-with-Email, Register buyer, native PDP (real seeded product), native Cart: runtime proof the 2.0 build launches and renders the core screens. ios-build SUCCESS (SwiftUI line, independent).
+- [WEB — new-dimension responsive sweep] 15 key pages × 3 NEW viewports (320×568 small-phone, 812×375 landscape, 740×360 landscape) = 45 page-loads: ALL 0px horizontal overflow. Cumulative audited page-views across rounds: 185+.
+- [tsc/lint] not re-run this round (zero web source changes; last gates on c227a2f web-ci SUCCESS remain the web evidence).
+
+Stage Summary:
+- The Kotlin toolchain is now 2.0.20/K2 with strong skipping ON — compile-gated green and emulator-boot-proven via CI. This was the final flagged recomposition-lag lever; combined with t216's 10 fixes the native perf work has no further known levers short of on-device profiling.
+- Web re-proven responsive at 320px and both landscape orientations (45/45 zero-overflow).
+- Open facts (unchanged): frame-timing measurement needs real hardware (JankProfiler/adb); release signing still debug-only; QuickChip dead code in Color.kt still a maintainer call.
