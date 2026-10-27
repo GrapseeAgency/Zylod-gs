@@ -21,11 +21,24 @@ import { broadcastToRoom } from '@/lib/realtime-broadcast'
 
 const BANNER_POSITIONS = ['home_top', 'home_middle', 'category_top', 'sidebar'] as const
 
+/**
+ * Same contract as the POST route: absolute http(s) URL or root-relative
+ * path starting with a single `/` — portable storage for same-origin assets.
+ */
+const bannerImageUrl = z
+  .string()
+  .trim()
+  .max(2048)
+  .refine(
+    (v) => /^https?:\/\/\S+$/.test(v) || /^\/(?!\/)/.test(v),
+    'must be an absolute http(s) URL or a root-relative path starting with /',
+  )
+
 const BannerPatchSchema = z
   .object({
     title: z.string().trim().min(1).max(120).optional(),
     subtitle: z.string().trim().max(200).nullable().optional(),
-    imageUrl: z.string().trim().url().max(2048).optional(),
+    imageUrl: bannerImageUrl.optional(),
     linkPageId: z.string().trim().max(120).nullable().optional(),
     linkParams: z.string().trim().max(300).nullable().optional(),
     position: z.enum(BANNER_POSITIONS).optional(),

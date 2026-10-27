@@ -241,7 +241,7 @@ for (const p of dailyTargets) {
   log(`daily deal: ${p.name} @ ${dealPrice}`)
 }
 
-// ─── 7. Home banners (admin rail, absolute URLs) ───────────────
+// ─── 7. Home banners (admin rail, root-relative image URLs) ─────
 const BANNERS = [
   { title: 'Source Textiles Direct From Mills', subtitle: 'Verified suppliers · MOQ from 100 meters · Tier discounts up to 15%', imageUrl: '/images/banners/textile-warehouse.png', linkPageId: 'category-products', linkParams: 'category=textiles-fabrics', sortOrder: 0 },
   { title: 'Bulk Agro & Jute Exports', subtitle: 'Basmati, jute bags & packaging — factory-direct BDT pricing', imageUrl: '/images/banners/bulk-goods.png', linkPageId: 'category-products', linkParams: 'category=agriculture-food', sortOrder: 1 },
