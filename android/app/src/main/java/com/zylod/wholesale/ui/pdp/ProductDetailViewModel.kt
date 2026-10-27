@@ -49,14 +49,16 @@ data class PdpUiState(
     val toast: String? = null,
     val authed: Boolean = false,
     val wishlistNeedsLogin: Boolean = false,
-    /** t201: dedicated CART sign-in nudge — reusing wishlistNeedsLogin showed
-     * cart users the wrong message ("Sign in to save items to your wishlist"). */
+    /** t201: dedicated CART sign-in flag — guest add-to-cart/buy-now taps
+     * route the screen to the NATIVE login screen (t214: the wall is a route,
+     * not a toast). */
     val cartNeedsLogin: Boolean = false,
     /**
      * One-shot: [buyNow] validated and the screen should open the WebView
      * buy-now page (openPage("buy-now", "productId=…&quantity=…")) — consumed
      * by [consumeBuyNowRequested] BEFORE navigating so Back can never re-fire
-     * it. Guest taps never raise it (they get the sign-in nudge instead).
+     * it. Guest taps never raise it (they hit the login wall instead — t214:
+     * the screen routes guests to the native login screen).
      */
     val buyNowRequested: Boolean = false,
     /** t209: the REAL product Q&A rail (public GET /api/products/{id}/qa). */
@@ -255,8 +257,8 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
 
     /**
      * t209: ask — POST /api/products/{id}/qa {question} (5..500). Guest → the
-     * established one-shot sign-in nudge (qaNeedsLogin; the screen shows
-     * "Sign in to ask the supplier a question"). Success re-pulls the
+     * one-shot qaNeedsLogin flag (t214: the screen routes guests to the
+     * native login screen). Success re-pulls the
      * authoritative list (the POST echo carries no asker display name).
      */
     fun askQuestion(rawQuestion: String) {
@@ -321,7 +323,9 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
         // The OLD flow stored the line in the local CartStore FIRST and only
         // skipped the server sync for guests — a guest could build a whole
         // cart, buy and never once sign in. The gate now runs FIRST: no
-        // token, no stored item — the established sign-in nudge instead.
+        // token, no stored item — the flag routes the screen to the native
+        // login wall (web forced-login parity); the toast resurfaces as
+        // context if the user backs out of login.
         if (SessionManager.token() == null) {
             _state.update { it.copy(cartNeedsLogin = true, toast = "Sign in to add products to your cart") }
             return
@@ -411,7 +415,10 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
      * and no payment step; the t190 server contract now REQUIRES a
      * buyer-owned shippingAddressId and rejects that body with 400.
      *
-     * Guest → the established sign-in nudge (toast + login prompt). Authed →
+     * Guest → the login wall: [PdpUiState.cartNeedsLogin] routes the screen
+     * to the NATIVE login screen (t214 — web forced-login parity; the old
+     * snackbar-only nudge made Buy Now look like a silent no-op) and the
+     * toast mirrors the SPA buy-now wall copy. Authed →
      * raises [PdpUiState.buyNowRequested]; the screen routes to the WebView
      * buy-now page (openPage("buy-now", …) → RouteOwnership.resolve →
      * Destination.Web, since "buy-now" is not in the native ownership set),
@@ -421,7 +428,12 @@ class ProductDetailViewModel(private val appContext: Context) : ViewModel() {
     fun buyNow() {
         val product = _state.value.product ?: return
         if (SessionManager.token() == null) {
-            _state.update { it.copy(cartNeedsLogin = true, toast = "Sign in to place an order") }
+            _state.update {
+                it.copy(
+                    cartNeedsLogin = true,
+                    toast = "Sign in required — You need a buyer account to place an order.",
+                )
+            }
             return
         }
         if (product.stockQuantity == 0) {

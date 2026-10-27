@@ -30,6 +30,7 @@ import {
   ArrowLeft, Wallet, Plus, Loader2,
   ShieldCheck, AlertCircle, CheckCircle2,
   Clock, XCircle, Landmark, ChevronRight, Info,
+  LogIn,
 } from 'lucide-react'
 
 type ClaimRow = {
@@ -76,6 +77,11 @@ export function AddMoneyPage() {
 
   const [claims, setClaims] = useState<ClaimRow[]>([])
   const [claimsLoading, setClaimsLoading] = useState(true)
+
+  // t214 GUEST WALL: a funding claim always belongs to an account (the API
+  // 401s without a session) — a logged-out visitor gets the sign-in state
+  // instead of a form that can only fail.
+  const isAuthed = useAuthStore((s) => s.isAuthenticated)
 
   const presets = ['5000', '15000', '25000', '50000', '100000', '250000']
 
@@ -155,6 +161,45 @@ export function AddMoneyPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // ─── t214 GUEST WALL — before any form rendering ───
+  if (!isAuthed) {
+    return (
+      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <span className="text-base font-black tracking-tight text-primary">Deposit Capital</span>
+          <div className="w-8" />
+        </header>
+        <main className="max-w-lg mx-auto px-4 py-16 md:py-24 text-center">
+          <div className="w-20 h-20 mx-auto rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
+            <LogIn className="h-9 w-9 text-slate-400 dark:text-slate-500" />
+          </div>
+          <h2 className="text-base font-black">Sign in to add funds</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6 max-w-xs mx-auto">
+            Funding claims are tied to your Zylod account — sign in or create one to submit one.
+          </p>
+          <div className="flex flex-col gap-2 max-w-xs mx-auto">
+            <Button
+              onClick={() => navigate('login')}
+              className="w-full h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-sm"
+            >
+              Sign In
+            </Button>
+            <Button
+              onClick={() => navigate('register-buyer')}
+              variant="outline"
+              className="w-full h-11 rounded-2xl font-bold text-sm"
+            >
+              Create Account
+            </Button>
+          </div>
+        </main>
+      </div>
+    )
   }
 
   return (

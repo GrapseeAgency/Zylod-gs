@@ -12,6 +12,7 @@ import {
   CreditCard, RefreshCw, Eye, EyeOff, Plus,
   FileText, CheckCircle2, TrendingUp, AlertCircle,
   HelpCircle, Receipt, DollarSign, Building2, XCircle,
+  LogIn,
 } from 'lucide-react'
 
 type FundingClaim = {
@@ -63,6 +64,14 @@ export function MyWalletPage() {
   const [showBalance, setShowBalance] = useState(true)
   const [claims, setClaims] = useState<FundingClaim[]>([])
 
+  // t214 MONEY-PATH HONESTY: a guest (or a session expired mid-flight) must
+  // NEVER see this screen — the zeros below are not data, they would be a
+  // fabricated financial state. The wallet is server truth (GET /api/wallet);
+  // without a session there IS no wallet, so the sign-in wall renders instead.
+  const isAuthed = useAuthStore((s) => s.isAuthenticated)
+  // Server verdict when the token exists but the session died (401).
+  const [sessionInvalid, setSessionInvalid] = useState(false)
+
   const loadClaims = async () => {
     if (!token) return
     try {
@@ -70,6 +79,10 @@ export function MyWalletPage() {
         headers: { Authorization: `Bearer ${token}` },
       })
       const json = await res.json().catch(() => null)
+      if (res.status === 401) {
+        setSessionInvalid(true)
+        return
+      }
       if (res.ok && json?.success && Array.isArray(json.data)) setClaims(json.data)
     } catch {
       // the claims ledger is secondary — a network miss leaves the wallet usable
@@ -85,6 +98,12 @@ export function MyWalletPage() {
       const res = await fetch('/api/wallet', {
         headers: { Authorization: `Bearer ${token}` },
       })
+      if (res.status === 401) {
+        // Expired/invalid session: show the sign-in wall, never the zeros —
+        // zeros would read as a real (empty) wallet.
+        setSessionInvalid(true)
+        return
+      }
       if (res.ok) {
         const json = await res.json()
         if (json.data) setWalletData(json.data)
@@ -100,6 +119,47 @@ export function MyWalletPage() {
     loadWallet()
     loadClaims()
   }, [token])
+
+  // ─── t214 GUEST WALL — a wallet UI for a logged-out visitor would be a
+  // fabricated financial statement (৳0 balance that is not server truth).
+  // Same wall pattern as the cart page. ───
+  if (!isAuthed || sessionInvalid) {
+    return (
+      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <span className="text-base font-black tracking-tight text-primary">Wholesale Wallet</span>
+          <div className="w-8" />
+        </header>
+        <main className="max-w-lg mx-auto px-4 py-16 md:py-24 text-center">
+          <div className="w-20 h-20 mx-auto rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
+            <LogIn className="h-9 w-9 text-slate-400 dark:text-slate-500" />
+          </div>
+          <h2 className="text-base font-black">{sessionInvalid ? 'Your session expired' : 'Sign in to open your wallet'}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6 max-w-xs mx-auto">
+            Your wallet balance, funding claims and payouts live in your Zylod account — sign in or create one to continue.
+          </p>
+          <div className="flex flex-col gap-2 max-w-xs mx-auto">
+            <Button
+              onClick={() => navigate('login')}
+              className="w-full h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-sm"
+            >
+              Sign In
+            </Button>
+            <Button
+              onClick={() => navigate('register-buyer')}
+              variant="outline"
+              className="w-full h-11 rounded-2xl font-bold text-sm"
+            >
+              Create Account
+            </Button>
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">

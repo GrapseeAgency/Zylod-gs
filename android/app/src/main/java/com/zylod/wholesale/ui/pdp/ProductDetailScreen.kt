@@ -111,6 +111,12 @@ import java.util.Locale
  * validation lives there and surfaces through toasts. Buy Now places NO
  * inline order — the VM validates and the screen routes to the WebView
  * buy-now flow (auth + shipping address enforced, t190 server contract).
+ *
+ * t214 GUEST WALL: every login-gated action (add-to-cart, buy-now, wishlist,
+ * Q&A) routes the guest to the NATIVE login screen — the web forced-login
+ * parity (guest add-to-cart / buy-now → ?page=login / "Sign in required",
+ * verified t212). The former snackbar-only nudges made the taps look like
+ * silent no-ops.
  */
 @Composable
 fun ProductDetailScreen(
@@ -133,30 +139,40 @@ fun ProductDetailScreen(
     LaunchedEffect(state.toast) {
         state.toast?.let { snackbar.showSnackbar(it); vm.consumeToast() }
     }
+    // t214: guest wall = a ROUTE, not a toast. The web wishlist heart forces
+    // ?page=login for guests; RouteOwnership maps "login" to the native auth
+    // route. Back out of login returns to the PDP — no dead end.
     LaunchedEffect(state.wishlistNeedsLogin) {
         if (state.wishlistNeedsLogin) {
-            snackbar.showSnackbar("Sign in to save items to your wishlist")
             vm.consumeWishlistNeedsLogin()
+            openPage("login", "")
         }
     }
-    // t201: dedicated cart sign-in nudge — correct message for cart/buy taps.
+    // t201/t214 GUEST MONEY WALL: add-to-cart AND buy-now taps from a guest
+    // land HERE — the screen routes to the NATIVE login screen, mirroring the
+    // web's forced ?page=login (t212 E2E evidence). The former snackbar-only
+    // nudge left Buy Now looking like a silent no-op. The VM's pending toast
+    // ("Sign in required — You need a buyer account to place an order." /
+    // cart variant) resurfaces as context if the user backs out of login.
     LaunchedEffect(state.cartNeedsLogin) {
         if (state.cartNeedsLogin) {
-            snackbar.showSnackbar("Create a Zylod account or sign in to continue")
             vm.consumeCartNeedsLogin()
+            openPage("login", "")
         }
     }
-    // t209: Q&A ask nudge for guests (same one-shot channel as cart/wishlist).
+    // t209/t214: asking a question requires a session — guests route to the
+    // native login screen (same wall as cart/buy/wishlist; the POST would
+    // 401 anyway).
     LaunchedEffect(state.qaNeedsLogin) {
         if (state.qaNeedsLogin) {
-            snackbar.showSnackbar("Sign in to ask the supplier a question")
             vm.consumeQaNeedsLogin()
+            openPage("login", "")
         }
     }
     // t190: Buy Now places NO inline order — the one-click createDirect COD
     // order is gone (the server now REQUIRES a buyer-owned shippingAddressId
     // on /api/orders/create-direct and 400s without it). [ProductDetailViewModel.buyNow]
-    // validates (guest nudge / stock / MOQ) and raises buyNowRequested; the
+    // validates (guest wall / stock / MOQ) and raises buyNowRequested; the
     // request is consumed BEFORE navigating so Back into the PDP can never
     // re-fire it. pageId "buy-now" is not in the native ownership set, so
     // RouteOwnership.resolve sends it to Destination.Web → WebScreen renders

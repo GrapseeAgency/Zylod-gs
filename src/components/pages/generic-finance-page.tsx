@@ -278,7 +278,11 @@ function TopUpPanel({ token, formatPrice, onDone }: { token: string | null; form
               ? <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
               : <ShieldCheck className={`h-5 w-5 shrink-0 ${banner === 'cancelled' ? 'text-amber-600' : 'text-red-600'}`} />}
             <p className="text-sm font-medium">
-              {banner === 'success' && 'Top-up verified and credited to your wallet.'}
+              {/* t214: this banner is driven by the gateway callback's ?topup=
+                  param (only set after server-side validation), but a hand-typed
+                  URL can also render it — so the copy never asserts money moved;
+                  the balance card below always shows the real API number. */}
+              {banner === 'success' && 'Gateway reported success. Your balance below comes from the wallet API — the credit lands only if server-side verification passed.'}
               {banner === 'cancelled' && 'Payment was cancelled. Nothing was charged.'}
               {banner === 'failed' && 'Payment could not be verified. If money left your account, contact support with your TrxID.'}
             </p>
