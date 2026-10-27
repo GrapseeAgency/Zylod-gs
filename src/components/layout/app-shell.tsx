@@ -65,11 +65,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   // Mobile layout
   if (isMobile) {
-    // Home page has its own top nav + bottom nav
+    // t214: home previously rendered BARE children here ("home has its own
+    // top nav + bottom nav") — true for the pre-t211 mobile home, FALSE since
+    // the homepage rebuild: mobile users landed on a chrome-less page with no
+    // menu, no cart, no login, no search — they were stuck. Home now uses the
+    // same shell as every other page: content + MobileBottomNav (Home /
+    // Categories / Hot Deals / Cart / Profile), hero-first design kept.
     if (currentPage === 'home') {
       return (
-        <div className="min-h-screen bg-background">
-          {children}
+        <div data-zylod-nav-padding="" className={`min-h-screen bg-background ${isNative ? 'pb-4' : 'pb-[calc(64px+env(safe-area-inset-bottom)+16px)]'}`}>
+          <main className="flex-1">
+            {children}
+          </main>
+          <MobileBottomNav />
         </div>
       )
     }

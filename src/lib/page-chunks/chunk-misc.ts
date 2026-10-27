@@ -260,7 +260,12 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'account-overview': () => import('@/components/pages/account-settings-page'),
     'add-listing': () => import('@/components/pages/seller-add-product-page'),
     'all-orders': () => import('@/components/pages/orders-page'),
-    'all-products': () => import('@/components/pages/supplier-products-page'),
+    // t214: all-products = the GLOBAL products listing. It previously mapped
+    // to supplier-products-page, which REQUIRES a supplier context — header
+    // "Products" (and any other all-products link) rendered "No supplier
+    // selected". category-products-page handles category='all' as a real
+    // full-catalog listing (the same target the homepage View All uses).
+    'all-products': () => import('@/components/pages/category-products-page'),
     'all-reviews': () => import('@/components/pages/product-reviews-page'),
     'analytics-dashboard': () => import('@/components/pages/seller-analytics-page'),
     'approved-suppliers': () => import('@/components/pages/suppliers-directory-page'),
