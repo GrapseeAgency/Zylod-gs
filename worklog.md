@@ -6634,3 +6634,13 @@ Stage Summary:
 - The single biggest fake-data remaining on the user-visible surface (featured products with dead ids) is now real API data end-to-end, and the card component can no longer fabricate ratings/reviews/suppliers/verification.
 - Infinite scroll shipped on both product rails the user scrolls; scroll-to-top verified on every navigation path reachable in a browser; guest purchase walls re-proven after the user's own 203-file commit.
 - Honest limits: dev-server cold-chunk latency (not a production defect), tsc full-run OOM in-sandbox (CI gates it), frame-rate numbers still require real hardware.
+
+### t223 close-out verification round (fresh browser session, IP rotated):
+- [CI]: HEAD 07e6b53 — all 5 workflows SUCCESS (web-ci, android-build, ios-build, android-screenshots, web-screenshots).
+- [HOME FEATURED — real data live]: 12 cards, 14 imgs, 0 broken; click card 0 → real PDP cuid cmvs53gwb004trfumjig7xmoy, title matches card, land scrollY=0.
+- [SCROLL-TO-TOP re-proven on 4 more paths from depth]: featured card click (scrollY 841→0), footer "Barcode Scanner" from absolute page bottom → barcode-scanner at scrollY=0, footer "Verified Suppliers" from bottom → suppliers at scrollY=0, mobile PDP deep link → scrollY=0. Navigation reset + footer deep links confirmed working (user's "stuck in place" path).
+- [INFINITE SCROLL live both viewports]: desktop category-products 18 → 26 cards auto-loaded on scroll (no click); mobile 375px 8 → 16 cards auto-loaded. Sentinel + re-arm works.
+- [IMAGE SIZING — the "highest priority" complaint, verified fixed]: desktop PDP gallery 6 imgs, main 692x692 rendered from 1024 natural, 0 broken; mobile PDP main image exactly 375x375 full-bleed square, fits viewport, NO horizontal overflow (scrollWidth == innerWidth). Root causes fixed earlier this round: fabricated mockup images with dead ids (gone — real API products), dev-optimizer cold-start white void (shimmer added).
+- [GUEST WALL re-proven in fresh session]: PDP Buy Now as guest → ?page=buy-now renders "Sign in required — You need a buyer account to place an order" with Sign In CTA; scrollY=0.
+- [CODE HYGIENE]: next/image deprecated onLoadingComplete → onLoad in mobile-product-detail-page.tsx (shimmer hook); page 200 post-edit, shimmer clears on load; eslint exit 0; console shows ZERO errors across the whole session (only the now-fixed deprecation warning + info logs).
+- [CRON]: all 3 prior jobs platform-disabled ("exec limits exceeded") — recreated 15min webDevReview cron at close.

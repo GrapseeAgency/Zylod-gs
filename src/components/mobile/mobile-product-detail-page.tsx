@@ -476,7 +476,7 @@ export function MobileProductDetailPage() {
                 className="object-contain p-4"
                 sizes="100vw"
                 priority
-                onLoadingComplete={() => setHeroImageLoaded(true)}
+                onLoad={() => setHeroImageLoaded(true)}
               />
             </>
           ) : (
