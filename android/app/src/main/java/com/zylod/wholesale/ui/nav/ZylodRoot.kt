@@ -311,10 +311,27 @@ fun ZylodRoot() {
                     activeTab = activeTab,
                     cartBadge = cartState.items.size,
                     onTab = { tab ->
-                        // THE contract: tab taps go through the SAME resolver as
-                        // every other entry point. RouteOwnership decides native
-                        // (home/cart) vs WebView — no per-tab special cases.
-                        openPage(tab.pageId, "")
+                        // t227 owner bug: tapping HOME while the native route is
+                        // ALREADY home is a launchSingleTop no-op at the
+                        // NavController — if the SPA drifted inside the home
+                        // shell (in-page link navigation), the tap did nothing
+                        // at all. Probe the SPA's live page: drifted → soft home
+                        // reset (the home WebScreen's drive effect consumes the
+                        // tick — never a reload); already home / not ready →
+                        // nothing to do. A DIFFERENT tab still navigates through
+                        // the resolver (the same contract as every entry point).
+                        if (tab.id == "home" && route == HOME_ROUTE) {
+                            probeSpaPage(com.zylod.wholesale.ui.web.NativeWebRegistry.webView) { page ->
+                                if (page != null && page != "null" && page != "home") {
+                                    com.zylod.wholesale.ui.web.NativeWebBus.requestHomeReset()
+                                }
+                            }
+                        } else {
+                            // THE contract: tab taps go through the SAME resolver as
+                            // every other entry point. RouteOwnership decides native
+                            // (home/cart) vs WebView — no per-tab special cases.
+                            openPage(tab.pageId, "")
+                        }
                     },
                 )
             }
@@ -536,31 +553,46 @@ fun ZylodRoot() {
     // chrome from the content — the exact drift class this architecture
     // forbids. The probe+reset contract reaches the same UX deterministically.
     BackHandler(enabled = route == HOME_ROUTE) {
-        val webView = com.zylod.wholesale.ui.web.NativeWebRegistry.webView
-        if (webView == null) {
-            (context as? android.app.Activity)?.moveTaskToBack(true)
-            return@BackHandler
-        }
-        val probe = """
-            (function(){
-              try{
-                if (window.__zylodSpaReady !== true) return 'null';
-                var page = window.__zylodCurrentPage;
-                return (typeof page === 'string' && page) ? page : 'null';
-              }catch(e){ return 'null'; }
-            })();
-        """.trimIndent()
-        webView.evaluateJavascript(probe) { result ->
-            // evaluateJavascript returns a JSON-quoted string for JS strings;
-            // JS null comes back as the literal unquoted "null".
-            val page = result?.trim()?.removeSurrounding("\"")
-            android.os.Handler(android.os.Looper.getMainLooper()).post {
-                if (page != null && page != "null" && page != "home") {
-                    com.zylod.wholesale.ui.web.NativeWebBus.requestHomeReset()
-                } else {
-                    (context as? android.app.Activity)?.moveTaskToBack(true)
-                }
+        // Same probe as the HOME-tab tap (t227): drifted → soft home reset;
+        // not ready / already home → standard root-back semantics (recents).
+        probeSpaPage(com.zylod.wholesale.ui.web.NativeWebRegistry.webView) { page ->
+            if (page != null && page != "null" && page != "home") {
+                com.zylod.wholesale.ui.web.NativeWebBus.requestHomeReset()
+            } else {
+                (context as? android.app.Activity)?.moveTaskToBack(true)
             }
+        }
+    }
+}
+
+/**
+ * The shared SPA live-page probe (t227 — the hardware Back contract and the
+ * HOME-tab tap run the IDENTICAL contract). Reads window.__zylodCurrentPage
+ * from the visible shell's WebView. Result semantics (evaluateJavascript
+ * JSON-quotes JS strings; JS null comes back as the literal unquoted "null"):
+ *   - null    → SPA not ready / no shell (probe returned 'null' or no WebView)
+ *   - "home"  → SPA's committed state IS the home page (no drift)
+ *   - other   → the SPA's live pageId (drift)
+ * The callback ALWAYS runs on the main thread.
+ */
+private fun probeSpaPage(webView: android.webkit.WebView?, onResult: (String?) -> Unit) {
+    if (webView == null) {
+        onResult(null)
+        return
+    }
+    val probe = """
+        (function(){
+          try{
+            if (window.__zylodSpaReady !== true) return 'null';
+            var page = window.__zylodCurrentPage;
+            return (typeof page === 'string' && page) ? page : 'null';
+          }catch(e){ return 'null'; }
+        })();
+    """.trimIndent()
+    webView.evaluateJavascript(probe) { result ->
+        val page = result?.trim()?.removeSurrounding("\"")
+        android.os.Handler(android.os.Looper.getMainLooper()).post {
+            onResult(page)
         }
     }
 }
