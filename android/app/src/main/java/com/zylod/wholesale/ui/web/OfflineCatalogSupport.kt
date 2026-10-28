@@ -30,11 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.data.model.OfflineProduct
 import kotlinx.coroutines.CoroutineScope
@@ -234,7 +236,10 @@ private fun OfflineProductRow(product: OfflineProduct) {
                 )
             } else {
                 AsyncImage(
-                    model = product.imageUrl,
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(product.imageUrl)
+                        .crossfade(200)
+                        .build(),
                     contentDescription = product.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),

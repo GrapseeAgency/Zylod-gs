@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -202,7 +203,15 @@ fun OtpInputBox(
         if (index + digits.length < boxCount) focusRequesters[target].requestFocus()
     }
 
-    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    // Cap to the old fixed footprint (6×46 + 5×8 = 316dp): identical layout on
+    // normal phones; below it the weighted boxes shrink instead of the row
+    // overflowing 320dp screens. widthIn goes BEFORE fillMaxWidth — fillMaxWidth
+    // passes fixed constraints inward, which would clamp widthIn's cap to the
+    // parent width and disable it on wide screens.
+    Row(
+        modifier = modifier.widthIn(max = 316.dp).fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         repeat(boxCount) { index ->
             val char = value.getOrNull(index)?.toString().orEmpty()
             BasicTextField(
@@ -218,7 +227,7 @@ fun OtpInputBox(
                 ),
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 modifier = Modifier
-                    .width(46.dp)
+                    .weight(1f)
                     .height(52.dp)
                     .focusRequester(focusRequesters[index])
                     .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(10.dp)),

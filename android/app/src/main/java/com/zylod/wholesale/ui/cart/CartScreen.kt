@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.zylod.wholesale.data.api.CartItemData
 import kotlinx.coroutines.launch
 
@@ -253,7 +255,10 @@ private fun CartItemCard(
                     val url = resolveImageUrl(item.productImage)
                     if (url != null) {
                         AsyncImage(
-                            model = url,
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(url)
+                                .crossfade(200)
+                                .build(),
                             contentDescription = item.productName,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize(),
@@ -364,7 +369,8 @@ private fun QuantityStepper(quantity: Int, onChange: (Int) -> Unit) {
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.width(44.dp),
+            maxLines = 1,
+            modifier = Modifier.widthIn(min = 44.dp),
         )
         StepperIcon(Icons.Outlined.Add, "Increase quantity", enabled = true) { onChange(1) }
     }

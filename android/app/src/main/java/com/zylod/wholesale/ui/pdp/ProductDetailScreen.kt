@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -713,7 +714,8 @@ private fun QuantityStepper(quantity: Int, enabled: Boolean, onAdjust: (Int) -> 
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.width(44.dp),
+            maxLines = 1,
+            modifier = Modifier.widthIn(min = 44.dp),
         )
         TextButton(onClick = { onAdjust(10) }, enabled = enabled) {
             Text("+10", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
@@ -1345,7 +1347,15 @@ private fun PdpError(message: String, onRetry: () -> Unit) {
 
 @Composable
 private fun QrDialog(productName: String, url: String, onDismiss: () -> Unit) {
-    val qrBitmap = remember(url) { generateQrBitmap(url, QR_SIZE) }
+    // t216 follow-up: the 420×420 zxing encode + pixel loop ran synchronously
+    // during composition (main-thread jank). It now completes on
+    // Dispatchers.Default; until it lands, the dialog holds a same-size 220dp
+    // surface so the layout never jumps.
+    val qrBitmap by androidx.compose.runtime.produceState<android.graphics.Bitmap?>(initialValue = null, key1 = url) {
+        value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+            generateQrBitmap(url, QR_SIZE)
+        }
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Product QR Code", fontSize = 16.sp, fontWeight = FontWeight.Bold) },
@@ -1362,14 +1372,17 @@ private fun QrDialog(productName: String, url: String, onDismiss: () -> Unit) {
                     overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(12.dp))
-                if (qrBitmap != null) {
+                val qr = qrBitmap
+                if (qr != null) {
                     Image(
-                        bitmap = qrBitmap.asImageBitmap(),
+                        bitmap = qr.asImageBitmap(),
                         contentDescription = "QR code linking to this product",
                         modifier = Modifier.size(220.dp),
                     )
                 } else {
-                    Text("Could not generate the QR code.", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
+                    // Initial async frame (or generation failure): keep the exact
+                    // 220dp footprint — never a 0-size → 220dp layout jump.
+                    Box(Modifier.size(220.dp))
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(
