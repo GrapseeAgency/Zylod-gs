@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
     amount?: number
     status?: string
     gateway?: string
+    method?: string
   }
   try {
     payload = JSON.parse(raw)
@@ -62,6 +63,12 @@ export async function POST(request: NextRequest) {
   }
 
   const { orderId, transactionId, amount, status } = payload
+  // t229: the gateway declares the method; we validate it against the schema
+  // enum instead of silently recording every gateway event as 'bank_transfer'.
+  const VALID_METHODS = ['cod', 'bank_transfer', 'card', 'mobile_banking', 'wallet'] as const
+  const method = VALID_METHODS.includes(payload.method as (typeof VALID_METHODS)[number])
+    ? (payload.method as (typeof VALID_METHODS)[number])
+    : 'bank_transfer'
   if (!orderId || !transactionId || typeof amount !== 'number' || !status) {
     return NextResponse.json(
       { error: 'orderId, transactionId, amount and status are required' },
@@ -98,7 +105,7 @@ export async function POST(request: NextRequest) {
     payment = await tx.payments.create({
       data: {
         orderId: order.id,
-        method: 'bank_transfer',
+        method,
         amount,
         status: status === 'success' ? 'success' : 'failed',
         transactionId,

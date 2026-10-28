@@ -6,15 +6,35 @@ const SALT_ROUNDS = 10
 async function main() {
   console.log('🧹 Cleaning existing data...')
 
-  // Truncate all public tables (resets identities, cascades to dependents)
-  await db.$executeRawUnsafe(`
-    DO $$ DECLARE r RECORD;
-    BEGIN
-      FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename != '_prisma_migrations') LOOP
-        EXECUTE format('TRUNCATE TABLE %I RESTART IDENTITY CASCADE', r.tablename);
-      END LOOP;
-    END $$;
-  `)
+  // t229: this TRUNCATE block is Postgres-only (`pg_tables`). The deployed
+  // datasource is SQLite — running it there crashed the seeder instantly.
+  // SQLite (and any non-Postgres provider) falls back to per-model deleteMany
+  // in FK-safe child→parent order; Postgres keeps the identity-resetting
+  // truncate.
+  const provider = process.env.ZYLOD_DB_PROVIDER || 'postgresql'
+  if (provider === 'postgresql') {
+    await db.$executeRawUnsafe(`
+      DO $$ DECLARE r RECORD;
+      BEGIN
+        FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename != '_prisma_migrations') LOOP
+          EXECUTE format('TRUNCATE TABLE %I RESTART IDENTITY CASCADE', r.tablename);
+        END LOOP;
+      END $$;
+    `)
+  } else {
+    const tables = [
+      'orderTracking', 'walletTransactions', 'escrowAccounts', 'payments',
+      'orderItems', 'subOrders', 'orders', 'cartItems', 'carts',
+      'productVideos', 'productVariants', 'productPriceTiers', 'productImages',
+      'products', 'flashDeals', 'dailyDeals', 'categories', 'supplierProfiles',
+      'buyerProfiles', 'addresses', 'users',
+    ]
+    for (const t of tables) {
+      try {
+        await db.$executeRawUnsafe(`DELETE FROM "${t}"`)
+      } catch { /* table may not exist in older DBs — skip */ }
+    }
+  }
 
   console.log('✅ Database cleaned')
 

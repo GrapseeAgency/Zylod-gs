@@ -4,6 +4,7 @@ import android.content.Context
 import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.data.api.CartItemData
 import com.zylod.wholesale.data.api.calculatePrice
+import com.zylod.wholesale.data.session.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,6 +66,14 @@ object CartStore {
 
     /** cart-store.ts addItem — merge by productId::variantId, recompute tier price. */
     fun addItem(item: CartItemData): CartItemData {
+        // t229 LAST-RESORT MONEY WALL (web cart-store.ts t197 parity): the cart
+        // is account-scoped. The PDP wall (t201/t214) already routes guests to
+        // the native login screen BEFORE this runs, but any future call site
+        // that forgets the wall can no longer silently grow a guest cart —
+        // a logged-out write is refused outright (no state mutation, no
+        // persistence). The untouched argument is returned so the caller's
+        // signature holds; no "Added" state can ever be observed for guests.
+        if (SessionManager.token() == null) return item
         val existing = _state.value.items.firstOrNull { it.mergeKey == item.mergeKey }
         if (existing != null) {
             val newQuantity = maxOf(existing.quantity + item.quantity, item.moq)

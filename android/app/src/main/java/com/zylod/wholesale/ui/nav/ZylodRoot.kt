@@ -34,13 +34,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -155,11 +158,22 @@ private val FULLSCREEN_ROUTES = setOf(
 @Composable
 fun ZylodRoot() {
     val context = LocalContext.current
+    // t229 NATIVE FEEL: every tab tap gives the standard light haptic tick —
+    // the platform bottom bars all do this; its absence reads as "web page,
+    // not app". One funnel (onTab) = one haptic site, no per-button spam.
+    val haptics = LocalHapticFeedback.current
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val route = backStackEntry?.destination?.route
     val webPageId = backStackEntry?.arguments?.getString("pageId")
     val cartState by CartStore.state.collectAsStateWithLifecycle()
+    // t229 SMOOTHNESS: the root Scaffold consumes exactly ONE fact from the
+    // cart stream — the badge count. Deriving it confines recomposition to
+    // the badge read: a cart mutation anywhere (native add, server merge,
+    // sync) no longer recomposes the whole Scaffold + bottom bar + NavHost
+    // content lambda. The owner's standing bar: "no matter how much thing we
+    // added the app won't get laggy at all."
+    val cartBadge by remember { derivedStateOf { cartState.items.size } }
 
     // First-run gate (web AppEntry: mobile first-run → welcome).
     val startDestination = remember { if (isOnboardingSeen(context)) "home" else "welcome" }
@@ -309,8 +323,12 @@ fun ZylodRoot() {
             if (showBottomBar) {
                 ZylodBottomBar(
                     activeTab = activeTab,
-                    cartBadge = cartState.items.size,
+                    cartBadge = cartBadge,
                     onTab = { tab ->
+                        // t229: light tick on every tab activation — native
+                        // bottom-bar parity (TextHandleMove = the standard
+                        // light tap feedback; LongPress would buzz).
+                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         // t227 owner bug: tapping HOME while the native route is
                         // ALREADY home is a launchSingleTop no-op at the
                         // NavController — if the SPA drifted inside the home

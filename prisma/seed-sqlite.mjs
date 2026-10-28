@@ -167,24 +167,18 @@ const localImageMap = {
   'nakshi-kantha-embroidered': '/images/products/tribal-fabric.png',
 }
 
-const tagDefs = [
-  { name: 'Wholesale', slug: 'wholesale' },
-  { name: 'Bangladesh Made', slug: 'bangladesh-made' },
-  { name: 'Export Quality', slug: 'export-quality' },
-  { name: 'Eco Friendly', slug: 'eco-friendly' },
-  { name: 'Bulk Buy', slug: 'bulk-buy' },
-]
+// t229: tagDefs REMOVED — the schema has no productTags/productTagRelations
+// models (this seeder crashed at runtime on the phantom `db.productTags`).
+// Tags are not part of the product contract; the marketplace runs without them.
 
 async function cleanup() {
   // FK-safe child→parent order (SQLite enforces foreign keys).
   await db.flashDeals.deleteMany({})
   await db.dailyDeals.deleteMany({})
-  await db.productTagRelations.deleteMany({})
   await db.productVariants.deleteMany({})
   await db.productPriceTiers.deleteMany({})
   await db.productImages.deleteMany({})
   await db.products.deleteMany({})
-  await db.productTags.deleteMany({})
   await db.categories.deleteMany({})
   await db.supplierProfiles.deleteMany({})
   await db.users.deleteMany({})
@@ -254,13 +248,6 @@ async function main() {
   categoryMap.set(beauty.slug, beauty.id)
   console.log(`  ✅ ${categoryMap.size} categories`)
 
-  /* ── Product tags ── */
-  const tagMap = new Map()
-  for (const t of tagDefs) {
-    const created = await db.productTags.create({ data: { name: t.name, slug: t.slug } })
-    tagMap.set(t.slug, created.id)
-  }
-
   /* ── Products ── */
   console.log(`📦 Seeding ${productsData.length} products...`)
   let productCount = 0
@@ -268,7 +255,6 @@ async function main() {
     const p = productsData[i]
     const h = hash(p.slug)
     const thumbnail = localImageMap[p.slug] ?? picsum(p.slug)
-    const tagSlugs = [...new Set(['wholesale', p.slug.includes('jute') ? 'eco-friendly' : (h % 3 === 0 ? 'export-quality' : 'bangladesh-made'), h % 2 === 0 ? 'bulk-buy' : 'export-quality'])]
     await db.products.create({
       data: {
         supplierId: suppliers[i % suppliers.length].id,
@@ -303,13 +289,12 @@ async function main() {
         variants: p.variants
           ? { create: p.variants.map((v) => ({ variantName: v.name, variantValue: v.value, sku: v.sku, stockQuantity: v.stock, priceOverride: v.priceOverride ?? null })) }
           : undefined,
-        tagRelations: { create: tagSlugs.map((ts) => ({ tagId: tagMap.get(ts) })) },
       },
     })
     productCount++
     if (productCount % 10 === 0) console.log(`  ... ${productCount}/${productsData.length}`)
   }
-  console.log(`  ✅ ${productCount} products with images, price tiers, SKUs, tags`)
+  console.log(`  ✅ ${productCount} products with images, price tiers, SKUs`)
 
   /* ── Flash Deals (Hot Deals) & Daily Deals ── */
   console.log('🔥 Seeding flash & daily deals...')

@@ -50,20 +50,20 @@ function BuyerIllustration() {
       <circle cx="50" cy="50" r="48" fill="#FDE4E7" />
       <ellipse cx="50" cy="85" rx="34" ry="5" fill="#F1B7BF" opacity="0.4" />
       <rect x="12" y="78" width="76" height="5" rx="2.5" fill="#CBD5E1" />
-      <path d="M28 80 C28 65 37 60 50 60 C63 60 72 65 72 80 Z" fill="#1E293B" />
+      <path d="M28 80 C28 65 37 60 50 60 C63 60 72 65 72 80 Z" fill="#27272A" />
       <path d="M43 60 L50 71 L57 60 Z" fill="#FFFFFF" />
       <path d="M48 69 L50 78 L52 69 Z" fill="#E31C3D" />
       <rect x="46" y="52" width="8" height="10" rx="2" fill="#FBCFE8" />
       <circle cx="50" cy="42" r="14" fill="#FBCFE8" />
       <path
         d="M36 40 C36 28 42 22 50 22 C58 22 64 28 64 40 C64 42 62 43 59 40 C55 35 45 35 41 40 C38 43 36 42 36 40 Z"
-        fill="#334155"
+        fill="#3F3F3F"
       />
-      <rect x="41" y="38" width="7" height="5" rx="2" stroke="#1E293B" strokeWidth="1.5" fill="none" />
-      <rect x="52" y="38" width="7" height="5" rx="2" stroke="#1E293B" strokeWidth="1.5" fill="none" />
-      <line x1="48" y1="40" x2="52" y2="40" stroke="#1E293B" strokeWidth="1.5" />
+      <rect x="41" y="38" width="7" height="5" rx="2" stroke="#27272A" strokeWidth="1.5" fill="none" />
+      <rect x="52" y="38" width="7" height="5" rx="2" stroke="#27272A" strokeWidth="1.5" fill="none" />
+      <line x1="48" y1="40" x2="52" y2="40" stroke="#27272A" strokeWidth="1.5" />
       <path d="M47 48 Q50 51 53 48" stroke="#9D174D" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-      <rect x="34" y="62" width="32" height="19" rx="2" fill="#475569" />
+      <rect x="34" y="62" width="32" height="19" rx="2" fill="#525252" />
       <rect x="36" y="64" width="28" height="15" rx="1" fill="#F8FAFC" />
       <path d="M39 74 L44 69 L48 72 L54 66 L60 70" stroke="#E31C3D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
       <path d="M39 76 L59 76" stroke="#CBD5E1" strokeWidth="1" strokeLinecap="round" />

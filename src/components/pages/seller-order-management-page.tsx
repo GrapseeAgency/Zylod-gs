@@ -59,6 +59,8 @@ const RETURN_STATUS_CHIP: Record<string, string> = {
 
 interface SupplierOrderRow {
   id: string;
+  /** t229: PARENT order id — the fulfillment APIs resolve this, not the subOrder id. */
+  orderId: string;
   orderNumber: string;
   createdAt: string;
   status: string;
@@ -405,9 +407,11 @@ export function SellerOrderManagementPage() {
     );
   }, [orders, searchQuery]);
 
-  const acceptOrder = async (subOrderId: string) => {
+  const acceptOrder = async (parentOrderId: string) => {
     try {
-      const res = await fetch(`/api/supplier/orders/${subOrderId}`, {
+      // t229: PATCH /api/supplier/orders/[id] resolves the PARENT order id.
+      // This used to receive the subOrder id and 404 — Accept never worked.
+      const res = await fetch(`/api/supplier/orders/${parentOrderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -779,7 +783,7 @@ export function SellerOrderManagementPage() {
                   </div>
                 </div>
 
-                <div className="p-4 cursor-pointer" onClick={() => navigate('seller-order-detail', { orderId: order.id })}>
+                <div className="p-4 cursor-pointer" onClick={() => navigate('seller-order-detail', { orderId: order.orderId })}>
                   <div className="flex items-start gap-3 mb-3">
                     <div className="w-16 h-16 bg-gray-100 dark:bg-gray-900 rounded-md flex-shrink-0 overflow-hidden">
                       {order.items?.[0]?.imageUrl && (
@@ -818,13 +822,13 @@ export function SellerOrderManagementPage() {
                     <>
                       <button
                         className="min-h-11 py-2 px-4 bg-white dark:bg-gray-900 border border-primary text-primary text-sm font-medium rounded-lg"
-                        onClick={() => navigate('seller-order-cancellation', { orderId: order.id })}
+                        onClick={() => navigate('seller-order-cancellation', { orderId: order.orderId })}
                       >
                         Reject
                       </button>
                       <button
                         className="min-h-11 py-2 px-4 bg-primary text-white text-sm font-medium rounded-lg"
-                        onClick={() => void acceptOrder(order.id)}
+                        onClick={() => void acceptOrder(order.orderId)}
                       >
                         Accept Order
                       </button>
@@ -833,7 +837,7 @@ export function SellerOrderManagementPage() {
                   {(order.status === 'confirmed' || order.status === 'packed') && (
                     <button
                       className="col-span-2 min-h-11 py-2 px-4 bg-primary text-white text-sm font-medium rounded-lg"
-                      onClick={() => navigate('seller-order-fulfillment', { orderId: order.id })}
+                      onClick={() => navigate('seller-order-fulfillment', { orderId: order.orderId })}
                     >
                       Book Courier
                     </button>
@@ -841,7 +845,7 @@ export function SellerOrderManagementPage() {
                   {order.status !== 'pending' && order.status !== 'confirmed' && order.status !== 'packed' && (
                     <button
                       className="col-span-2 min-h-11 py-2 px-4 bg-white dark:bg-gray-900 border border-gray-300 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg"
-                      onClick={() => navigate('seller-order-detail', { orderId: order.id })}
+                      onClick={() => navigate('seller-order-detail', { orderId: order.orderId })}
                     >
                       View Details
                     </button>

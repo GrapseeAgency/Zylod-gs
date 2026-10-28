@@ -2469,7 +2469,6 @@ function SearchHomePage({ navigate }: { navigate: (page: string, params?: Record
           value={query}
           onChange={e => setQuery(e.target.value)}
           className="pl-10 text-sm rounded-xl bg-white dark:bg-gray-900 border-border"
-          autoFocus
         />
       </form>
 

@@ -74,6 +74,12 @@ export async function GET(request: NextRequest) {
       const buyerCompanyName = sub.order.buyer?.buyerProfile?.businessName || buyerName
       return {
         id: sub.id,
+        // t229: the fulfillment APIs (GET/PATCH /api/supplier/orders/[id]) resolve
+        // the PARENT order (`db.orders.findUnique({ where: { id } })`). Shipping
+        // only the subOrder id here made every Accept/Pack/Ship/Deliver button
+        // 404 — the exact seller→buyer→admin gap the owner flagged. The parent
+        // id rides along and the UI now PATCHes/navigates with it.
+        orderId: sub.orderId,
         orderNumber: sub.order.orderNumber,
         createdAt: sub.createdAt.toISOString(),
         status: sub.status,

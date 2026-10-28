@@ -619,6 +619,12 @@ private fun applyVerification(
             val started = missingRetryAt[generation]
             if (started == null) {
                 missingRetryAt[generation] = SystemClock.elapsedRealtime()
+                // t229 leak fix: generations monotonically increase; a user who
+                // navigates away mid-retry strands this generation's entry
+                // forever (the remove() below only runs for a LIVE generation).
+                // Sweep everything older than the current retry window on
+                // every write — the map stays O(1), not O(session).
+                missingRetryAt.keys.retainAll { it >= generation - 1 }
                 Log.w(WebProvenance.LOG_TAG,
                     "served endpoint=$endpoint bundle=NONE verdict=UNKNOWN action=PURGE_CACHE_AND_RELOAD " +
                         "(self-healing retry for a stale pre-provenance cache entry)")

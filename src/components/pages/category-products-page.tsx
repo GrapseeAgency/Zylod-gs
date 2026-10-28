@@ -20,6 +20,8 @@ import {
   MessageSquare, Clock,
 } from 'lucide-react'
 
+// t229: server pagination now owns page size (24/row page). The legacy
+// client-windowing constant is kept only for the grid's skeleton count.
 const ITEMS_PER_PAGE = 8
 
 interface CategoryProduct {
@@ -346,7 +348,15 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
   const [activeSubFilter, setActiveSubFilter] = useState(0)
   const [allProducts, setAllProducts] = useState<CategoryProduct[]>([])
   const [loading, setLoading] = useState(true)
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
+  // t229: TRUE server-paginated endless scroll. The old code one-shotted
+  // `limit=100` and windowed client-side — categories with >100 products were
+  // silently truncated at the server cap. Now each scroll-in appends the next
+  // SERVER page (24 rows), so the feed keeps growing as long as the catalog has
+  // products — social-media style — with the Load More button kept as a
+  // keyboard / no-observer fallback.
+  const [serverPage, setServerPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [filterOpen, setFilterOpen] = useState(false)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const [filters, setFilters] = useState<FilterState>({
@@ -359,19 +369,37 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
   useEffect(() => {
     let mounted = true
     setLoading(true)
-    setVisibleCount(ITEMS_PER_PAGE)
+    setServerPage(1)
+    setTotalPages(1)
 
     const fetchProducts = async () => {
       try {
-        const url = categorySlug
-          ? `/api/products?category=${encodeURIComponent(categorySlug)}&limit=100`
-          : '/api/products?limit=100'
-        const res = await fetch(url, { credentials: 'include' })
-        if (!res.ok) throw new Error(`Request failed: ${res.status}`)
-        const data = await res.json()
-        const items = Array.isArray(data.data) ? data.data.map(normalizeApiProduct) : []
+        // First paint: two server pages (48 rows) so the grid feels full;
+        // deeper pages stream in on scroll via loadMorePages().
+        const base = categorySlug
+          ? `/api/products?category=${encodeURIComponent(categorySlug)}`
+          : '/api/products'
+        const pages = await Promise.all([
+          fetch(`${base}&page=1&limit=24`, { credentials: 'include' }),
+          fetch(`${base}&page=2&limit=24`, { credentials: 'include' }),
+        ])
+        if (!pages[0].ok) throw new Error(`Request failed: ${pages[0].status}`)
+        const jsons = await Promise.all(pages.map((r) => (r.ok ? r.json() : { data: [] })))
+        const first = jsons[0]
+        const items: CategoryProduct[] = []
+        const seen = new Set<string>()
+        for (const j of jsons) {
+          for (const raw of (Array.isArray(j.data) ? j.data : [])) {
+            if (!seen.has(raw.id)) {
+              seen.add(raw.id)
+              items.push(normalizeApiProduct(raw))
+            }
+          }
+        }
         if (mounted) {
           setAllProducts(items)
+          setTotalPages(Number(first?.pagination?.totalPages) || 1)
+          setServerPage(pages[1].ok ? 2 : 1)
           setLoading(false)
         }
       } catch {
@@ -385,6 +413,35 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
     fetchProducts()
     return () => { mounted = false }
   }, [categorySlug])
+
+  // t229: append the next server page. Guarded so overlapping observers,
+  // double sentinel hits and the fallback button can never duplicate rows
+  // or fire past the last page.
+  const loadMorePages = useCallback(async () => {
+    if (loading || loadingMore) return
+    if (serverPage >= totalPages) return
+    setLoadingMore(true)
+    try {
+      const base = categorySlug
+        ? `/api/products?category=${encodeURIComponent(categorySlug)}`
+        : '/api/products'
+      const res = await fetch(`${base}&page=${serverPage + 1}&limit=24`, { credentials: 'include' })
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+      const json = await res.json()
+      const rows = Array.isArray(json.data) ? json.data : []
+      setAllProducts((prev) => {
+        const seen = new Set(prev.map((p) => p.id))
+        const fresh = rows.map(normalizeApiProduct).filter((p) => !seen.has(p.id))
+        return fresh.length ? [...prev, ...fresh] : prev
+      })
+      setServerPage((p) => p + 1)
+      if (json?.pagination?.totalPages) setTotalPages(Number(json.pagination.totalPages))
+    } catch {
+      // Silent: the Load More button remains for a manual retry.
+    } finally {
+      setLoadingMore(false)
+    }
+  }, [categorySlug, loading, loadingMore, serverPage, totalPages])
 
   const categoryProducts = useMemo(() => {
     let items = allProducts
@@ -419,13 +476,13 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
     return sorted
   }, [allProducts, activeSubFilter, searchQuery, sortBy, subcategories, filters])
 
-  const visibleProducts = categoryProducts.slice(0, visibleCount)
-  const hasMore = visibleCount < categoryProducts.length
+  const visibleProducts = categoryProducts
+  const hasMore = serverPage < totalPages
 
-  // t223: social-media-style infinite scroll — when the sentinel at the end
-  // of the grid scrolls into view, auto-extend the visible window instead of
-  // requiring a button tap. The Load More button stays as a keyboard/no-JS
-  // observer fallback, and the observer re-arms on every filter/sort change.
+  // t223/t229: social-media-style infinite scroll — when the sentinel at the
+  // end of the grid scrolls into view, append the next SERVER page. The Load
+  // More button stays as a keyboard/no-JS observer fallback, and the observer
+  // re-arms on every filter/sort change.
   useEffect(() => {
     if (!hasMore || loading) return
     const el = sentinelRef.current
@@ -433,14 +490,14 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
-          setVisibleCount((c) => Math.min(c + ITEMS_PER_PAGE, categoryProducts.length))
+          void loadMorePages()
         }
       },
       { rootMargin: '400px 0px' },
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [hasMore, loading, categoryProducts.length])
+  }, [hasMore, loading, loadMorePages])
 
   const handleAddToCart = useCallback(
     (product: CategoryProduct) => {
@@ -727,10 +784,11 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
             <div className="mt-5 flex justify-center">
               <Button
                 variant="outline"
+                disabled={loadingMore}
                 className="text-primary border-primary font-semibold text-sm px-8"
-                onClick={() => setVisibleCount((c) => c + ITEMS_PER_PAGE)}
+                onClick={() => void loadMorePages()}
               >
-                Load More Products
+                {loadingMore ? 'Loading…' : 'Load More Products'}
               </Button>
             </div>
           </>

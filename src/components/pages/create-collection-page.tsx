@@ -43,7 +43,7 @@ export function CreateCollectionPage() {
     return () => clearTimeout(t)
   }, [isAuthenticated])
 
-  const PRESET_COLORS = ['#C8102E', '#2563EB', '#16A34A', '#D97706', '#9333EA', '#4B5563', '#000000', '']
+  const PRESET_COLORS = ['#C8102E', '#E11D48', '#16A34A', '#D97706', '#9333EA', '#4B5563', '#000000', '']
 
   useEffect(() => {
     // Task 97: load the REAL wishlist for the picker (both create and edit

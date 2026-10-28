@@ -53,7 +53,11 @@ import { notifyPaymentSubmitted } from '@/lib/notifications'
 
 const RATE_LIMIT = { limit: 10, windowMs: 60_000 }
 
-const PAYMENT_METHODS = ['bank_transfer', 'mobile_banking', 'cod', 'wallet', 'card'] as const
+// t229: 'card' removed — there is NO card gateway wired; accepting the string
+// here created payments that sat pending forever with no path to completion
+// (the exact half-fake surface the owner bans). The schema enum keeps 'card'
+// for a future gateway; the submit contract does not offer it until then.
+const PAYMENT_METHODS = ['bank_transfer', 'mobile_banking', 'cod', 'wallet'] as const
 
 const submitSchema = z.object({
   method: z.enum(PAYMENT_METHODS),

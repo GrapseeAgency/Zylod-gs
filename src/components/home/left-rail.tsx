@@ -25,7 +25,7 @@ const CATEGORIES = [
   { slug: 'electronics', label: 'Electronics & Accessories', icon: Smartphone, chip: '#FFEDD5', color: '#EA580C' },
   { slug: 'packaging', label: 'Packaging & Jute', icon: Package, chip: '#FEF3C7', color: '#D97706' },
   { slug: 'home-garden', label: 'Home & Crafts', icon: Home, chip: '#FEE2E2', color: '#DC2626' },
-  { slug: 'garments', label: 'Garments & Apparel', icon: Shirt, chip: '#DBEAFE', color: '#2563EB' },
+  { slug: 'garments', label: 'Garments & Apparel', icon: Shirt, chip: '#FFE4E6', color: '#E11D48' },
   { slug: 'leather', label: 'Leather Goods', icon: ShoppingBag, chip: '#FCE7F3', color: '#DB2777' },
   { slug: 'led-lighting', label: 'LED & Lighting', icon: Lightbulb, chip: '#FEF9C3', color: '#CA8A04' },
 ]

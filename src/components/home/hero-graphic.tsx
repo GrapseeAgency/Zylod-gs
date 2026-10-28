@@ -54,8 +54,8 @@ export function HeroProductsGraphic() {
 
           <linearGradient id="fab-denim" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="#60A5FA" />
-            <stop offset="60%" stopColor="#2563EB" />
-            <stop offset="100%" stopColor="#1E40AF" />
+            <stop offset="60%" stopColor="#E31C3D" />
+            <stop offset="100%" stopColor="#BE123C" />
           </linearGradient>
 
           <linearGradient id="fab-teal" x1="0" y1="0" x2="1" y2="0">
@@ -121,9 +121,9 @@ export function HeroProductsGraphic() {
             d="M255 285 C255 273 275 273 385 273 C400 273 410 282 410 291 C410 300 400 309 385 309 L272 309 C260 309 255 301 255 291 Z"
             fill="url(#fab-denim)"
           />
-          <ellipse cx="272" cy="291" rx="17" ry="14" fill="#1E40AF" />
+          <ellipse cx="272" cy="291" rx="17" ry="14" fill="#BE123C" />
           <line x1="289" y1="283" x2="385" y2="283" stroke="#60A5FA" strokeWidth="1" opacity="0.4" />
-          <line x1="289" y1="299" x2="385" y2="299" stroke="#1D4ED8" strokeWidth="1" opacity="0.5" />
+          <line x1="289" y1="299" x2="385" y2="299" stroke="#9F1239" strokeWidth="1" opacity="0.5" />
 
           {/* Layer 2: Crimson Red Cotton Fabric */}
           <path
@@ -253,7 +253,7 @@ export function HeroProductsGraphic() {
             y="126"
             fontSize="11.5"
             fontWeight="700"
-            fill="#1E293B"
+            fill="#27272A"
             fontFamily="system-ui, -apple-system, sans-serif"
           >
             100% Export

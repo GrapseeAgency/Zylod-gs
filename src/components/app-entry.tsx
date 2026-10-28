@@ -42,6 +42,30 @@ async function getChunkLoader() {
   return _chunkLoaderPromise
 }
 
+/** t229: belt-and-braces scroll anchor. navigation-store resets the scroll
+ * synchronously inside navigate()/setCurrentPage(), but the new page MOUNTS
+ * asynchronously (chunk load) — anything that grabs focus or expands layout
+ * after mount (autofocus search inputs, mobile keyboards, late images) can
+ * still drag the viewport away from the top. This renders with EVERY page
+ * mount: one rAF pass (post-layout) and one short-timeout pass (post-async
+ * side effects). Fires only on mount, never during user scrolling. */
+function ScrollTopOnMount() {
+  useEffect(() => {
+    const reset = () => {
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+    }
+    const raf = requestAnimationFrame(reset)
+    const late = window.setTimeout(reset, 120)
+    return () => {
+      cancelAnimationFrame(raf)
+      clearTimeout(late)
+    }
+  }, [])
+  return null
+}
+
 function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Record<string, string> }) {
   const [PageComponent, setPageComponent] = useState<any>(null)
   const [genericType, setGenericType] = useState<GenericPageType | null>(null)
@@ -155,16 +179,27 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
   }
 
   if (genericType) {
-    return <GenericPageRenderer genericType={genericType} pageId={pageId} pageParams={pageParams} />
+    return (
+      <>
+        <ScrollTopOnMount />
+        <GenericPageRenderer genericType={genericType} pageId={pageId} pageParams={pageParams} />
+      </>
+    )
   }
 
   if (PageComponent) {
     // t228: key the host by pageId+params so a same-component navigation
     // (e.g. product-detail → product-detail for a different id) REMOUNTS
     // instead of leaking the previous page's internal state.
-    return <PageComponent key={pageId + (pageParams && Object.keys(pageParams).length ? '?' + new URLSearchParams(pageParams).toString() : '')} />
+    // t229: ScrollTopOnMount rides every mount — the async mount no longer
+    // risks landing mid-page when late effects (autofocus/keyboard) scroll.
+    return (
+      <>
+        <ScrollTopOnMount />
+        <PageComponent key={pageId + (pageParams && Object.keys(pageParams).length ? '?' + new URLSearchParams(pageParams).toString() : '')} />
+      </>
+    )
   }
-
   return (
     <div className="min-h-[60vh] flex items-center justify-center">
       <div className="text-center">

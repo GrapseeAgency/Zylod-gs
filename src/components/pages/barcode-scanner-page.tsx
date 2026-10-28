@@ -44,6 +44,9 @@ export function BarcodeScannerPage() {
   const streamRef = useRef<MediaStream | null>(null)
   const detectRafRef = useRef<number | null>(null)
   const lastDetectRef = useRef(0)
+  // t229: controls handle for the zxing live-decode fallback (below) —
+  // stopCamera() must tear down BOTH decode paths.
+  const zxingControlsRef = useRef<{ stop: () => void } | null>(null)
   // Inside the Android shell the native MLKit scanner is faster and more
   // reliable than any in-browser decoding.
   const [nativeMode] = useState(() => isNativeAndroidApp())
@@ -82,6 +85,10 @@ export function BarcodeScannerPage() {
       streamRef.current = stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream
+        await videoRef.current.play().catch(() => {
+          // Autoplay of a muted camera stream is allowed everywhere; a denied
+          // play() still leaves the element ready for zxing's own pump.
+        })
       }
       setScanState('scanning')
       startBrowserDetection()
@@ -93,30 +100,66 @@ export function BarcodeScannerPage() {
 
   /** Live decoding via the platform BarcodeDetector API when available. */
   function startBrowserDetection() {
+    const video = videoRef.current
     const detectorCtor = (window as unknown as { BarcodeDetector?: new (opts?: { formats?: string[] }) => { detect: (source: HTMLVideoElement) => Promise<Array<{ rawValue: string }>> } }).BarcodeDetector
-    if (!detectorCtor || !videoRef.current) return
-    let detector: InstanceType<typeof detectorCtor>
-    try {
-      detector = new detectorCtor()
-    } catch {
-      return
-    }
-    const step = (timestamp: number) => {
-      if (!streamRef.current || !videoRef.current) return
-      if (timestamp - lastDetectRef.current > 350) {
-        lastDetectRef.current = timestamp
-        detector.detect(videoRef.current)
-          .then(codes => {
-            const value = codes?.[0]?.rawValue
-            if (value) lookupCode(value)
-          })
-          .catch(() => {
-            // Transient per-frame decode failures are expected; keep scanning.
-          })
+    if (detectorCtor && video) {
+      let detector: InstanceType<typeof detectorCtor>
+      try {
+        detector = new detectorCtor()
+      } catch {
+        return startZxingFallback(video)
+      }
+      const step = (timestamp: number) => {
+        if (!streamRef.current || !videoRef.current) return
+        if (timestamp - lastDetectRef.current > 350) {
+          lastDetectRef.current = timestamp
+          detector.detect(videoRef.current)
+            .then(codes => {
+              const value = codes?.[0]?.rawValue
+              if (value) lookupCode(value)
+            })
+            .catch(() => {
+              // Transient per-frame decode failures are expected; keep scanning.
+            })
+        }
+        detectRafRef.current = requestAnimationFrame(step)
       }
       detectRafRef.current = requestAnimationFrame(step)
+      return
     }
-    detectRafRef.current = requestAnimationFrame(step)
+    if (video) startZxingFallback(video)
+  }
+
+  /** t229: when the platform BarcodeDetector is missing (desktop Chrome,
+   * Safari, Firefox — the environments where the owner reported the scanner
+   * "opening the camera and never finding anything"), the rAF loop above
+   * silently no-oped and the page LOOKED fake: camera on, zero feedback.
+   * Fall back to @zxing/browser's continuous video decoder — the same
+   * on-device engine used for uploaded photos — so live scanning works on
+   * every browser with a camera. */
+  function startZxingFallback(video: HTMLVideoElement) {
+    try {
+      const reader = new BrowserMultiFormatReader()
+      const maybeControls = reader.decodeFromVideoElement(video, (result) => {
+        if (result) {
+          const text = typeof result.getText === 'function' ? result.getText() : String(result)
+          if (text) lookupCode(text)
+        }
+        // Per-frame NotFoundException-style errors are expected while nothing
+        // is in frame; zxing keeps pumping regardless.
+      })
+      Promise.resolve(maybeControls)
+        .then((controls) => {
+          zxingControlsRef.current = controls ?? null
+        })
+        .catch(() => {
+          setCameraError('Live scanning is not supported in this browser — use “Scan from Photo” or type the code below.')
+          setScanState('idle')
+        })
+    } catch {
+      setCameraError('Live scanning is not supported in this browser — use “Scan from Photo” or type the code below.')
+      setScanState('idle')
+    }
   }
 
   function stopCamera() {
@@ -124,6 +167,11 @@ export function BarcodeScannerPage() {
       cancelAnimationFrame(detectRafRef.current)
       detectRafRef.current = null
     }
+    // t229: tear down the zxing fallback loop too.
+    try {
+      zxingControlsRef.current?.stop()
+    } catch { /* controls may already be stopped with the unmounted video */ }
+    zxingControlsRef.current = null
     streamRef.current?.getTracks().forEach(track => track.stop())
     streamRef.current = null
   }
@@ -440,3 +488,4 @@ export function BarcodeScannerPage() {
 }
 
 export default BarcodeScannerPage
+
