@@ -152,7 +152,7 @@ export function FeaturedSection() {
 
       {/* Loading — skeletons in the real grid layout */}
       {products === null && !loadFailed && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-2.5 sm:gap-3 xl:gap-3.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2.5 sm:gap-3 xl:gap-3.5">
           {SKELETONS.map((i) => (
             <CardSkeleton key={i} />
           ))}
@@ -171,7 +171,7 @@ export function FeaturedSection() {
             No products are live in the marketplace yet — check back soon.
           </p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-2.5 sm:gap-3 xl:gap-3.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2.5 sm:gap-3 xl:gap-3.5">
             {products.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

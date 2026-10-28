@@ -6644,3 +6644,20 @@ Stage Summary:
 - [GUEST WALL re-proven in fresh session]: PDP Buy Now as guest → ?page=buy-now renders "Sign in required — You need a buyer account to place an order" with Sign In CTA; scrollY=0.
 - [CODE HYGIENE]: next/image deprecated onLoadingComplete → onLoad in mobile-product-detail-page.tsx (shimmer hook); page 200 post-edit, shimmer clears on load; eslint exit 0; console shows ZERO errors across the whole session (only the now-fixed deprecation warning + info logs).
 - [CRON]: all 3 prior jobs platform-disabled ("exec limits exceeded") — recreated 15min webDevReview cron at close.
+
+---
+Task ID: t224
+Agent: ZCode (GLM)
+Task: "home page isn't responsive at all" — full-width responsive audit + fix.
+
+Work Log:
+- [AUDIT — 10 widths, 320→1920]: found REAL horizontal overflow in two whole desktop breakpoint bands the redesign agent never tested: (1) lg band 1024–1279 — scrollWidth 1157 @ 1024 (133px sideways scroll; header right cluster children 415px > 387px available); (2) xl band 1280–1535 — scrollWidth 1352 @ 1280 (right cluster 626 > 529). Mobile (320/375/640/768) and 1440+/1920 were clean. Root cause: the home redesign was only verified at 1440; the fixed-width header search + always-on account-name text + 7 nav items + 5 utilities simply do not fit between 1024 and 1535.
+- [FIX — header.tsx + header-internal-search.tsx]: budget-aware responsive widths, zero features removed: search input w-[220px] lg:w-[170px] xl:w-[260px] 2xl:w-[360px]; nav items px-1.5 xl:px-3 (was px-2); right-cluster gap lg:gap-1 xl:gap-1.5; account name/role text now hidden in the two cramped bands (hidden md:flex lg:hidden 2xl:flex) — icon-only there, full text at <lg and ≥2xl. Everything stays reachable (dropdown unchanged).
+- [FIX — featured-section.tsx]: grid was 6 columns already at lg → 80px-wide cards with truncated gibberish titles at 1024. Now lg:grid-cols-4 xl:grid-cols-6 (cards 136px at lg, readable titles/prices/MOQ). Applied to both skeleton and real grid.
+- [HONESTY DEFECT FOUND & FIXED — header.tsx]: the LOGGED-OUT account button hardcoded a FAKE person: "Md Kailem / Buyer" as the visible label and "Md Kailem / Buyer Account" as the dropdown header — shown to every guest on every page (exactly the fabrication class the user keeps flagging). Replaced: button label "Account / Guest"; dropdown header "Welcome to Zylod / Sign in to your buyer or supplier account". Sign In / Register as Buyer / Register as Supplier actions unchanged. Sweep: "Md Kailem" now only exists in a historical code comment (app-entry.tsx), zero rendered occurrences.
+- [VERIFY — browser, post-fix]: overflow sweep 10 widths {320,375,640,768,1024,1152,1280,1440,1536,1920} — ALL scrollWidth == innerWidth, zero sideways scroll anywhere. Screenshots: 1024 (4-col grid readable, header fits), 1280 light (6-col, honest guest dropdown rendered open and correct), 1280 dark (true-black theme, no navy). Guest dropdown text verified live: "Welcome to Zylod | Sign in to your buyer or supplier account | Sign In / Switch Account | Register as Buyer | Register as Supplier".
+- [GATES]: eslint exit 0 on all 3 touched files; all routes 200 in dev.
+
+Stage Summary:
+- The user's "home page isn't responsive at all" was real and specific: two entire desktop breakpoint bands (1024–1535) scrolled sideways and 6-col cards were unreadable at lg. Both bands now fit with slack; verified at 10 widths including both previously-broken bands.
+- Bonus catch: the guest account button fabricated a person's name — the last rendered fake-identity string on the global chrome, now honest.

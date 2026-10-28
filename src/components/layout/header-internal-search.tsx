@@ -512,7 +512,7 @@ export function HeaderInternalSearch() {
             onKeyDown={handleKeyDown}
             placeholder="Search internal pages, suppliers, tools..."
             aria-label="Search internal site navigation and suppliers"
-            className="w-[240px] xl:w-[320px] 2xl:w-[360px] h-9 pl-9 pr-24 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-[13px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900 focus:bg-white dark:focus:bg-gray-900 transition-all"
+            className="w-[220px] lg:w-[170px] xl:w-[260px] 2xl:w-[360px] h-9 pl-9 pr-24 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-[13px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900 focus:bg-white dark:focus:bg-gray-900 transition-all"
           />
 
           {/* Clear + Multimodal Scan Icons */}

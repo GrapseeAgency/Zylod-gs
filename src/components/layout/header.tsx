@@ -314,7 +314,7 @@ export function Header() {
                   key={item.page}
                   onClick={() => handleNavClick(item.page)}
                   className={cn(
-                    'relative px-2 xl:px-3 py-2 text-[13px] xl:text-sm font-medium rounded-md transition-colors whitespace-nowrap',
+                    'relative px-1.5 xl:px-3 py-2 text-[13px] xl:text-sm font-medium rounded-md transition-colors whitespace-nowrap',
                     active
                       ? 'text-primary font-semibold'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -334,7 +334,7 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <button
                   className={cn(
-                    'flex items-center gap-1 px-2 xl:px-3 py-2 text-[13px] xl:text-sm font-medium rounded-md transition-colors whitespace-nowrap',
+                    'flex items-center gap-1 px-1.5 xl:px-3 py-2 text-[13px] xl:text-sm font-medium rounded-md transition-colors whitespace-nowrap',
                     moreNavItems.some((i) => isPageActive(i.page))
                       ? 'text-primary'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -364,7 +364,7 @@ export function Header() {
           {/* -------------------------------------------------------- */}
           {/*  RIGHT: Search pill + utilities (mockup order)           */}
           {/* -------------------------------------------------------- */}
-          <div className="flex items-center gap-1 sm:gap-1.5 shrink min-w-0 ml-auto lg:ml-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-1 xl:gap-1.5 shrink min-w-0 ml-auto lg:ml-0">
             {/* Header search pill — Intelligent Internal Navigation & Site Search Engine */}
             <HeaderInternalSearch />
 
@@ -423,7 +423,7 @@ export function Header() {
                     <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground bg-primary">
                       {user.fullName?.charAt(0) || user.email?.charAt(0) || 'U'}
                     </div>
-                    <span className="hidden md:flex flex-col items-start leading-tight">
+                    <span className="hidden md:flex lg:hidden 2xl:flex flex-col items-start leading-tight">
                       <span className="text-[13px] font-semibold max-w-[110px] truncate text-foreground">
                         {user.fullName || 'User'}
                       </span>
@@ -467,19 +467,19 @@ export function Header() {
                     <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm" style={{ background: '#E31C3D' }}>
                       <User className="h-4 w-4" />
                     </div>
-                    <span className="hidden md:flex flex-col items-start leading-tight text-left">
+                    <span className="hidden md:flex lg:hidden 2xl:flex flex-col items-start leading-tight text-left">
                       <span className="text-[13px] font-semibold text-foreground">
-                        Md Kailem
+                        Account
                       </span>
-                      <span className="text-[11px] text-muted-foreground">Buyer</span>
+                      <span className="text-[11px] text-muted-foreground">Guest</span>
                     </span>
                     <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-3 py-2 border-b">
-                    <p className="font-semibold text-sm">Md Kailem</p>
-                    <p className="text-xs text-muted-foreground">Buyer Account</p>
+                    <p className="font-semibold text-sm">Welcome to Zylod</p>
+                    <p className="text-xs text-muted-foreground">Sign in to your buyer or supplier account</p>
                   </div>
                   <DropdownMenuItem onClick={() => navigate('login')} className="cursor-pointer font-semibold text-primary">
                     <User className="h-4 w-4 mr-2" /> Sign In / Switch Account
