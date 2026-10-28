@@ -188,7 +188,7 @@ object RouteOwnership {
         // pageId in src/lib/page-loader.ts, so both highlight "search").
         putAll(listOf("search-results", "search").associateWith { "search" })
         putAll(listOf("chat-list", "chat-detail", "messages").associateWith { "profile" })
-        putAll(listOf("flash-sale", "flash-deals", "daily-deals").associateWith { "deals" })
+        putAll(listOf("flash-sale", "flash-deals", "daily-deals", "deals").associateWith { "deals" })
         // t208: the rest of the CHECKOUT FLOW highlighted "home" — buy-now is
         // opened from the NATIVE PDP, order-summary/order-confirmation from
         // the checkout flow itself, while "checkout" already highlighted the

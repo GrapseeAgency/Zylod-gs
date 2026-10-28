@@ -43,7 +43,7 @@ export function MobileBottomNav() {
     if (['category-products', 'category-browser', 'textiles-fabrics', 'agriculture-food', 'electronics', 'construction', 'packaging', 'home-garden', 'gifts-crafts', 'beauty-personal-care', 'promotional-items', 'garments', 'spices', 'mobile-accessories', 'led-lighting', 'automotive', 'sports-fitness', 'books-stationery', 'toys', 'jewelry', 'medical-supplies', 'furniture'].includes(currentPage)) return 'categories'
     if (currentPage === 'search-results' || currentPage === 'search' || currentPage === 'search-home') return 'search'
     if (['chat-list', 'chat-detail', 'messages'].includes(currentPage)) return 'profile'
-    if (['flash-sale', 'flash-deals', 'daily-deals'].includes(currentPage)) return 'deals'
+    if (['flash-sale', 'flash-deals', 'daily-deals', 'deals'].includes(currentPage)) return 'deals'
     if (['cart', 'checkout'].includes(currentPage)) return 'cart'
     if (['profile', 'buyer-dashboard', 'buyer-orders', 'buyer-wishlist', 'buyer-settings', 'buyer-profile', 'supplier-dashboard', 'supplier-profile', 'admin-dashboard', 'notification-preferences', 'privacy-settings', 'language-settings', 'theme-settings', 'linked-accounts', 'business-profile'].includes(currentPage)) return 'profile'
     return 'home'
