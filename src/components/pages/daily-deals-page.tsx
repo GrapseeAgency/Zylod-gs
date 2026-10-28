@@ -60,10 +60,15 @@ export function DailyDealsPage() {
     return () => { cancelled = true }
   }, [])
 
-  // Live countdown to the end of the deal day (real expiry from the API)
+  // Live countdown to the end of the deal day (real expiry from the API).
+  // t221 SMOOTHNESS: the displayed value is HOURS ("Xh left", line ~147) —
+  // the previous 1 Hz tick re-rendered the whole page (hero + framer-motion
+  // grid) 3600× more often than the shown value could ever change, a pure
+  // dropped-frame tax while scrolling inside the native WebView. A 60 s tick
+  // is still 60× finer than the display granularity.
   useEffect(() => {
     if (deals.length === 0) return
-    const timer = setInterval(() => setNowTs(Date.now()), 1000)
+    const timer = setInterval(() => setNowTs(Date.now()), 60_000)
     return () => clearInterval(timer)
   }, [deals.length])
 

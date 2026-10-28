@@ -72,6 +72,28 @@ object WebShellScripts {
      * The full document-start script: native flag + suppression stylesheet +
      * idempotent DOM sweep with a MutationObserver + legacy-bar click capture
      * that routes taps into the native navigation bridge.
+     *
+     * t221 smoothness fix — the observer was previously an UNBOUNDED
+     * always-on tax: every DOM mutation batch in the SPA (and a React/Next
+     * app mutates constantly — hydration, fetch re-renders, hover states,
+     * animations) ran a full-document querySelectorAll + getElementById on
+     * the WebView's main thread, for the entire life of every page. On
+     * low-end devices that is exactly the "scrolling feels laggy" class.
+     * Two bounds now apply, without weakening the fallback contract:
+     *
+     *  1. THROTTLE — mutation-driven sweeps run at most twice per second
+     *     (mutate-batches between sweeps simply coalesce; the stylesheet
+     *     alone keeps any late bar invisible meanwhile, so a coalesced
+     *     sweep can never flash chrome).
+     *  2. SHUTDOWN — once the SPA has signalled hydration
+     *     (window.__zylodSpaReady, the same flag the soft-navigate contract
+     *     uses) AND five consecutive sweeps found no bar, the observer
+     *     disconnects. The modern bundle self-suppresses (isNative → the
+     *     bar never enters the DOM), so after hydration "no bar five times"
+     *     is conclusive; pre-hydration renders are still fully covered by
+     *     the stylesheet + readyState/DOMContentLoaded/load sweeps. Bundles
+     *     that never signal readiness (old fallback targets) keep the
+     *     unthrottled-shutdown-free observer exactly as before.
      */
     fun chromeSuppressionScript(): String {
         val pageIdsLiteral = LEGACY_BAR_PAGE_IDS.joinToString(",") { "'$it'" }
@@ -95,10 +117,16 @@ object WebShellScripts {
             // capture clicks on the legacy bar so a tap can only ever reach
             // the native navigation contract (never a divergent SPA nav).
             var PAGE_IDS = [$pageIdsLiteral];
+            var observer = null;
+            var lastSweep = 0;
+            var cleanStreak = 0;
             function sweep(){
               try{
                 addStyle();
                 var bars = document.querySelectorAll('nav[data-zylod-mobile-nav], nav.fixed.bottom-0');
+                // Any bar present (even one already wired) keeps the observer
+                // alive — shutdown below requires literally ZERO bars.
+                if (bars.length > 0) cleanStreak = 0;
                 for (var i = 0; i < bars.length; i++){
                   var bar = bars[i];
                   if (bar.getAttribute('data-zylod-shell-nav') === '1') continue;
@@ -119,10 +147,27 @@ object WebShellScripts {
                     }catch(err){}
                   }, true);
                 }
+                if (bars.length === 0 && window.__zylodSpaReady === true){
+                  cleanStreak++;
+                  if (cleanStreak >= 5 && observer){
+                    // Hydrated bundle, five clean passes: the SPA has committed
+                    // its chrome decision (no bar) — stop observing. The CSS
+                    // stays; the readyState/DOMContentLoaded/load sweeps stay.
+                    observer.disconnect();
+                    observer = null;
+                  }
+                }
               }catch(e){}
             }
+            function onMutate(){
+              var now = Date.now();
+              if (now - lastSweep < 500) return; // coalesce bursts: ≤2 sweeps/sec
+              lastSweep = now;
+              sweep();
+            }
             if (window.MutationObserver){
-              new MutationObserver(sweep).observe(document.documentElement, {childList:true, subtree:true});
+              observer = new MutationObserver(onMutate);
+              observer.observe(document.documentElement, {childList:true, subtree:true});
             }
             document.addEventListener('DOMContentLoaded', sweep);
             window.addEventListener('load', sweep);

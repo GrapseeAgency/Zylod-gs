@@ -6,6 +6,7 @@ import android.view.Choreographer
 import com.zylod.wholesale.BuildConfig
 import java.util.ArrayDeque
 import java.util.Locale
+import java.util.concurrent.Executors
 
 /**
  * Round-4 performance mandate (owner): "First measure the actual native Home
@@ -70,14 +71,26 @@ object JankProfiler {
     private val frameCallback = object : Choreographer.FrameCallback {
         override fun doFrame(frameTimeNanos: Long) {
             if (!running) return
+            var dumpSurface: String? = null
+            var dumpFrames: LongArray? = null
             synchronized(this@JankProfiler) {
                 val gap = frameTimeNanos - lastFrameNs
                 lastFrameNs = frameTimeNanos
                 if (gap in 1L until IDLE_GAP_NS) {
                     frames.addLast(gap)
                     while (frames.size > 600) frames.removeFirst()
-                    if (frames.size % 300 == 0) surface?.let { dumpLocked(it) }
+                    if (frames.size % 300 == 0) {
+                        // t221: the percentile dump used to run HERE — inside
+                        // doFrame on the main thread — sorting 600 samples in
+                        // the exact pipeline it measures. Snapshot under the
+                        // lock (a copy, ~µs), format+log off-thread.
+                        dumpSurface = surface
+                        dumpFrames = frames.toLongArray()
+                    }
                 }
+            }
+            if (dumpSurface != null && dumpFrames != null) {
+                dumpExecutor.execute { dump(dumpSurface!!, dumpFrames!!) }
             }
             choreographer?.postFrameCallback(this)
         }
@@ -141,15 +154,20 @@ object JankProfiler {
         choreographer?.removeFrameCallback(frameCallback)
     }
 
-    private fun dumpLocked(surfaceName: String) {
-        if (frames.isEmpty()) {
+    /** Serialization point for off-thread dumps (single thread, no races). */
+    private val dumpExecutor = Executors.newSingleThreadExecutor { r ->
+        Thread(r, "ZylodPerf-dump").apply { isDaemon = true }
+    }
+
+    private fun dump(surfaceName: String, sample: LongArray) {
+        if (sample.isEmpty()) {
             Log.i(TAG, "$surfaceName: (no frames)")
             return
         }
-        val sorted = frames.toSortedSet().toLongArray()
+        val sorted = sample.toSortedSet().toLongArray()
         fun pct(p: Double): Long = sorted[((sorted.size - 1) * p).toInt().coerceIn(0, sorted.size - 1)]
-        val jank = frames.count { it > vsyncPeriodNs * 3 / 2 }
-        val frozen = frames.count { it > vsyncPeriodNs * 3 }
+        val jank = sample.count { it > vsyncPeriodNs * 3 / 2 }
+        val frozen = sample.count { it > vsyncPeriodNs * 3 }
         val worst = sorted.last()
         Log.i(
             TAG,
@@ -157,8 +175,8 @@ object JankProfiler {
                 Locale.US,
                 "%s: frames=%d jank=%.1f%% (>%.1fms) frozen=%d p50=%.1fms p90=%.1fms p95=%.1fms p99=%.1fms worst=%.1fms",
                 surfaceName,
-                frames.size,
-                100.0 * jank / frames.size,
+                sample.size,
+                100.0 * jank / sample.size,
                 vsyncPeriodNs * 1.5 / 1_000_000.0,
                 frozen,
                 pct(0.50) / 1_000_000.0,
@@ -168,5 +186,13 @@ object JankProfiler {
                 worst / 1_000_000.0,
             ),
         )
+    }
+
+    private fun dumpLocked(surfaceName: String) {
+        if (frames.isEmpty()) {
+            Log.i(TAG, "$surfaceName: (no frames)")
+            return
+        }
+        dump(surfaceName, frames.toLongArray())
     }
 }

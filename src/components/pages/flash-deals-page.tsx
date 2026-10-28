@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
@@ -86,7 +86,13 @@ export function FlashDealsPage() {
     }
   }, [endsAt, nowTs])
 
-  const handleAddToCart = (e: React.MouseEvent, deal: FlashDeal) => {
+  // t221 SMOOTHNESS: the 1 Hz countdown tick previously re-created the ENTIRE
+  // grid JSX — ~20 framer-motion cards reconciled every second (a dropped-frame
+  // source while scrolling the page inside the native WebView on low-end
+  // devices). handleAddToCart is now stable (useCallback over stable store
+  // refs) and the grid is memoized on it, so a nowTs tick re-renders ONLY the
+  // header countdown spans; React bails out of the card grid entirely.
+  const handleAddToCart = useCallback((e: React.MouseEvent, deal: FlashDeal) => {
     e.stopPropagation()
     // t197 ACCOUNT WALL — a guest never grows a cart (PDP parity).
     if (!useAuthStore.getState().isAuthenticated) {
@@ -117,9 +123,89 @@ export function FlashDealsPage() {
     toast.success(`Added ${deal.productName} to cart!`, {
       description: `Flash deal price applied — MOQ ${deal.moq} ${deal.unit}.`,
     })
-  }
+  }, [addItem, navigate])
 
   const formatDigit = (num: number) => num.toString().padStart(2, '0')
+
+  const dealGrid = useMemo(() => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+    {deals.map((deal, idx) => {
+      const claimedPercent = deal.totalStock > 0
+        ? Math.min(100, Math.round(((deal.totalStock - deal.remainingStock) / deal.totalStock) * 100))
+        : 100
+      const stockText = claimedPercent >= 85
+        ? 'Almost Gone'
+        : claimedPercent >= 40
+          ? `${claimedPercent}% Claimed`
+          : `Only ${deal.remainingStock} left`
+
+      return (
+        <motion.div
+          key={deal.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: idx * 0.05 }}
+          onClick={() => navigate('product-detail', { productId: deal.productId })}
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-md cursor-pointer hover:border-[#FF4D6D]/40 transition-colors"
+        >
+          {/* Product image with badge */}
+          <div className="relative aspect-[16/9] w-full bg-slate-100 dark:bg-[#121212]">
+            {deal.productThumbnail ? (
+               
+              <img src={deal.productThumbnail} alt={deal.productName} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Zap className="h-10 w-10 text-gray-700 dark:text-gray-300" />
+              </div>
+            )}
+            <span className="absolute top-3 right-3 bg-primary text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded shadow">
+              -{deal.discountPercent}%
+            </span>
+          </div>
+
+          <div className="p-4">
+            <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-2">
+              {deal.productName}
+            </h3>
+
+            <div className="flex items-baseline gap-2 mt-2">
+              <span className="text-lg font-black text-gray-900 dark:text-white">
+                {formatPrice(deal.dealPrice)}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 line-through">
+                {formatPrice(deal.originalPrice)}
+              </span>
+              <span className="text-[11px] text-gray-400 dark:text-gray-500">/ {deal.unit}</span>
+            </div>
+
+            {/* Stock level progress bar */}
+            <div className="mt-3">
+              <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 mb-1">
+                <span>Stock Level</span>
+                <span className="text-gray-700 dark:text-gray-300 font-semibold">{stockText}</span>
+              </div>
+              <div className="w-full h-1.5 bg-gray-200 dark:bg-[#2C2C2C] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full"
+                  style={{ width: `${claimedPercent}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Add to Cart button */}
+            <button
+              onClick={(e) => handleAddToCart(e, deal)}
+              className="w-full mt-4 h-11 bg-primary hover:bg-primary/90 active:scale-[0.98] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Add to Cart · MOQ {deal.moq} {deal.unit}
+            </button>
+          </div>
+        </motion.div>
+      )
+    })}
+    </div>
+  ), [deals, handleAddToCart, navigate, formatPrice])
 
   return (
     <div className="min-h-screen bg-background text-gray-900 dark:text-white pb-24 md:pb-8">
@@ -209,84 +295,8 @@ export function FlashDealsPage() {
           </div>
         )}
 
-        {/* ─── Flash Deal Cards ─── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-        {deals.map((deal, idx) => {
-          const claimedPercent = deal.totalStock > 0
-            ? Math.min(100, Math.round(((deal.totalStock - deal.remainingStock) / deal.totalStock) * 100))
-            : 100
-          const stockText = claimedPercent >= 85
-            ? 'Almost Gone'
-            : claimedPercent >= 40
-              ? `${claimedPercent}% Claimed`
-              : `Only ${deal.remainingStock} left`
-
-          return (
-            <motion.div
-              key={deal.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
-              onClick={() => navigate('product-detail', { productId: deal.productId })}
-              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-md cursor-pointer hover:border-[#FF4D6D]/40 transition-colors"
-            >
-              {/* Product image with badge */}
-              <div className="relative aspect-[16/9] w-full bg-slate-100 dark:bg-[#121212]">
-                {deal.productThumbnail ? (
-                   
-                  <img src={deal.productThumbnail} alt={deal.productName} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Zap className="h-10 w-10 text-gray-700 dark:text-gray-300" />
-                  </div>
-                )}
-                <span className="absolute top-3 right-3 bg-primary text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded shadow">
-                  -{deal.discountPercent}%
-                </span>
-              </div>
-
-              <div className="p-4">
-                <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-2">
-                  {deal.productName}
-                </h3>
-
-                <div className="flex items-baseline gap-2 mt-2">
-                  <span className="text-lg font-black text-gray-900 dark:text-white">
-                    {formatPrice(deal.dealPrice)}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 line-through">
-                    {formatPrice(deal.originalPrice)}
-                  </span>
-                  <span className="text-[11px] text-gray-400 dark:text-gray-500">/ {deal.unit}</span>
-                </div>
-
-                {/* Stock level progress bar */}
-                <div className="mt-3">
-                  <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 mb-1">
-                    <span>Stock Level</span>
-                    <span className="text-gray-700 dark:text-gray-300 font-semibold">{stockText}</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-gray-200 dark:bg-[#2C2C2C] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary rounded-full"
-                      style={{ width: `${claimedPercent}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Add to Cart button */}
-                <button
-                  onClick={(e) => handleAddToCart(e, deal)}
-                  className="w-full mt-4 h-11 bg-primary hover:bg-primary/90 active:scale-[0.98] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"
-                >
-                  <ShoppingCart className="h-4 w-4" />
-                  Add to Cart · MOQ {deal.moq} {deal.unit}
-                </button>
-              </div>
-            </motion.div>
-          )
-        })}
-        </div>
+        {/* ─── Flash Deal Cards (memoized — see t221 note above) ─── */}
+        {dealGrid}
       </div>
     </div>
   )
