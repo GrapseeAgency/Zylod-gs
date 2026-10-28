@@ -137,14 +137,16 @@ export function FeaturedSection() {
         const seen = new Set(products.map((p) => p.id))
         const fresh = mapProductRows(rows).filter((p) => !seen.has(p.id))
         const pag = body?.pagination
-        // Stop when the API is out of pages OR a page returned nothing new.
-        if (pag && pag.page < pag.totalPages && fresh.length > 0) {
+        // t228b: append whatever is NEW — including the FINAL page (the old
+        // `page < totalPages` gate discarded the last page's rows entirely,
+        // so with limit=12/totalPages=2 the grid could never exceed 12).
+        // hasMore is computed independently: true only if the API says more
+        // pages exist after the one just consumed.
+        if (fresh.length > 0) {
           setProducts((prev) => (prev ? [...prev, ...fresh] : fresh))
           pageRef.current = nextPage
-          setHasMore(true)
-        } else {
-          setHasMore(false)
         }
+        setHasMore(Boolean(pag && pag.page < pag.totalPages))
       } else {
         setHasMore(false)
       }
