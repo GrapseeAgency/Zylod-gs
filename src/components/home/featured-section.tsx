@@ -33,6 +33,7 @@ interface ApiProduct {
   ratingAvg?: number | null
   reviewCount?: number | null
   thumbnailUrl?: string | null
+  isActive?: boolean
   supplier?: ApiSupplier | null
 }
 
