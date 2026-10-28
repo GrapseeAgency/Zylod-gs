@@ -6661,3 +6661,16 @@ Work Log:
 Stage Summary:
 - The user's "home page isn't responsive at all" was real and specific: two entire desktop breakpoint bands (1024–1535) scrolled sideways and 6-col cards were unreadable at lg. Both bands now fit with slack; verified at 10 widths including both previously-broken bands.
 - Bonus catch: the guest account button fabricated a person's name — the last rendered fake-identity string on the global chrome, now honest.
+
+---
+Task ID: t225
+Agent: ZCode (GLM)
+Task: "build a pure native apk then update the release page. then hard stop."
+
+Work Log:
+- [BUILD]: local pod has no Android SDK (CI is the Kotlin gate) — APK produced by CI android-build run 40712014783 (success) from main HEAD 144d5a3. Downloaded artifact, verified: com.zylod.wholesale.debug, versionName 2.4.5-144d5a3, versionCode 245, 45,251,008 bytes, 16 dex files, APK Signing Block v2 present (debug key — keystore.properties still pending), sha256 c38b841515fdb23dd0a7b030b2768f80d3648f5652551c79aa5349d3dd0a44a9. First release POST attempt hit a sandbox tool-session break (gateway 403s for the whole session); pod reset wiped /tmp; on recovery the artifact was re-downloaded and sha256 re-verified identical before proceeding.
+- [RELEASE]: created https://github.com/GrapseeAgency/Zylod-gs/releases/tag/v2.4.5-144d5a3 (release id 426889808, HTTP 201) following the established v2.4.5-<sha> convention; uploaded Zylod-v2.4.5-144d5a3-debug.apk (state: uploaded). Verified via /releases/latest: now points at v2.4.5-144d5a3 (was v2.4.5-4533204, 341 commits behind).
+- [HARD STOP]: no other work performed per user instruction.
+
+Stage Summary:
+- Native APK from the current main is published as the repo's Latest release with full provenance (commit, CI run, sha256, signing state). Release page reflects t223+t224 state (real featured data, infinite scroll, responsive fix, guest-chrome honesty).
