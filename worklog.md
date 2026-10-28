@@ -6674,3 +6674,13 @@ Work Log:
 
 Stage Summary:
 - Native APK from the current main is published as the repo's Latest release with full provenance (commit, CI run, sha256, signing state). Release page reflects t223+t224 state (real featured data, infinite scroll, responsive fix, guest-chrome honesty).
+
+---
+Task ID: t226
+Agent: ZCode (GLM)
+Task: "backend can't reach anything — give demo/buyer, seller, admin credentials; activate the backend back online; hard stop."
+
+Work Log:
+- [BACKEND STATE VERIFIED ONLINE]: localhost:3000 / = 200, /api/products = 200; the user's own preview URL https://preview-chat-a71d16fe-4230-4770-8de5-4a51e638e6e8.space-z.ai/?page=home = 200 (0.11s) and its /api/products = 200. Full login executed THROUGH the preview URL: HTTP 200 success:true with real user object + session token. The user's "can't reach anything" was transient (dev server OOM pattern during Turbopack compile bursts — it died once earlier this session and the watchdog had it back before this round).
+- [CREDENTIALS — REAL, API-VERIFIED, not fabricated]: current DB (@zylod.bd accounts) was seeded by scripts/qa/seed-marketplace.mjs with password Passw0rd!23. Live POST /api/auth/login verified for all three roles: admin market@zylod.bd (200, token), buyer buyer1@zylod.bd (200, token), supplier dhaka.textile@zylod.bd (200, token). Buyer token proven functional on an authed endpoint: guest /api/cart = 401 (wall intact) vs Bearer-token /api/cart = 200 with real cart payload. Other accounts on the same password: buyer2@zylod.bd; suppliers bengal.agro / smart.tech / green.jute / muslin.craft / led.bangla / bangla.garments @zylod.bd. Stale doc passwords (admin123/buyer123/supplier123 from older seeds) were TESTED and correctly rejected 401 — credentials reported here are the ones that actually work.
+- [HARD STOP]: nothing else changed; no code touched this round.
