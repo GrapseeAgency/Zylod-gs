@@ -31,9 +31,20 @@ export function BarcodeScannerPage() {
   const { navigate, goBack } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const [scanState, setScanState] = useState<ScanState>('idle')
-  const [mode, setMode] = useState<ScanMode>('barcode')
-  const [manualEntry, setManualEntry] = useState(false)
-  const [manualCode, setManualCode] = useState('')
+  // t229b: these three pairs are declared through tuple access instead of
+  // array destructuring — an environment-level byte-mangler kept rewriting
+  // `const [m…` openings on exactly these lines (mode / manualEntry /
+  // manualCode), which shipped a SyntaxError chunk and made the scanner page
+  // unusable (the owner's "scan is fake/abnormal" root cause).
+  const modeTuple = useState<ScanMode>('barcode')
+  const mode = modeTuple[0]
+  const setMode = modeTuple[1]
+  const manualEntryTuple = useState(false)
+  const manualEntry = manualEntryTuple[0]
+  const setManualEntry = manualEntryTuple[1]
+  const manualCodeTuple = useState('')
+  const manualCode = manualCodeTuple[0]
+  const setManualCode = manualCodeTuple[1]
   const [scannedCode, setScannedCode] = useState('')
   const [resultMessage, setResultMessage] = useState('')
   const [product, setProduct] = useState<ScannedProduct | null>(null)
@@ -58,7 +69,7 @@ export function BarcodeScannerPage() {
     }
     startCamera()
     return () => stopCamera()
-     
+
   }, [])
 
   async function launchNativeScan() {
@@ -153,11 +164,11 @@ export function BarcodeScannerPage() {
           zxingControlsRef.current = controls ?? null
         })
         .catch(() => {
-          setCameraError('Live scanning is not supported in this browser — use “Scan from Photo” or type the code below.')
+          setCameraError('Live scanning is not supported in this browser — use "Scan from Photo" or type the code below.')
           setScanState('idle')
         })
     } catch {
-      setCameraError('Live scanning is not supported in this browser — use “Scan from Photo” or type the code below.')
+      setCameraError('Live scanning is not supported in this browser — use "Scan from Photo" or type the code below.')
       setScanState('idle')
     }
   }
@@ -488,4 +499,3 @@ export function BarcodeScannerPage() {
 }
 
 export default BarcodeScannerPage
-
