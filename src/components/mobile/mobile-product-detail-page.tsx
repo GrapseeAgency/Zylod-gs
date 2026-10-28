@@ -99,6 +99,7 @@ export function MobileProductDetailPage() {
   const [justAdded, setJustAdded] = useState(false)
   const [sampleOpen, setSampleOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [heroImageLoaded, setHeroImageLoaded] = useState(false)
   const [quantity, setQuantity] = useState(50)
   const [loading, setLoading] = useState(true)
   const [product, setProduct] = useState<ApiProduct | null>(null)
@@ -461,14 +462,23 @@ export function MobileProductDetailPage() {
       <div className="relative bg-white dark:bg-gray-900">
         <div className="relative w-full" style={{ aspectRatio: '1/1' }}>
           {hasImage ? (
-            <Image
-              src={productImages[currentImageIndex] || productImages[0]}
-              alt={product.name}
-              fill
-              className="object-contain p-4"
-              sizes="100vw"
-              priority
-            />
+            <>
+              {/* t223: shimmer behind the image — during dev-optimizer cold
+                  starts (or slow networks) the box shows a loading shimmer
+                  instead of an empty white void that reads as "broken". */}
+              {!heroImageLoaded && (
+                <div className="absolute inset-0 animate-pulse bg-gray-100 dark:bg-gray-800" aria-hidden />
+              )}
+              <Image
+                src={productImages[currentImageIndex] || productImages[0]}
+                alt={product.name}
+                fill
+                className="object-contain p-4"
+                sizes="100vw"
+                priority
+                onLoadingComplete={() => setHeroImageLoaded(true)}
+              />
+            </>
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-950">
               <Package className="w-16 h-16 text-gray-300" />

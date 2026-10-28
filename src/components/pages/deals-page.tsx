@@ -213,7 +213,7 @@ export function DealsPage() {
               <ImageOff className="h-8 w-8 text-muted-foreground/50" />
             </div>
           )}
-          <span className="absolute top-3 left-3 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+          <span className="absolute top-3 left-3 bg-black/70 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
             {tag === 'flash' ? 'Flash' : 'Daily'}
           </span>
           <span className="absolute top-3 right-3 bg-primary text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded shadow">

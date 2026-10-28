@@ -79,8 +79,8 @@ const INTERNAL_DIRECTORY: InternalDestination[] = [
     badge: 'Account',
     keywords: ['orders', 'purchase history', 'my orders', 'invoices', 'receipts', 'past orders'],
     icon: FileText,
-    iconColor: 'text-slate-600',
-    iconBg: 'bg-slate-50 dark:bg-slate-900',
+    iconColor: 'text-gray-600 dark:text-gray-300',
+    iconBg: 'bg-gray-50 dark:bg-gray-900',
   },
 
   // 2. Suppliers & RFQ

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -348,6 +348,7 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
   const [loading, setLoading] = useState(true)
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
   const [filterOpen, setFilterOpen] = useState(false)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
   const [filters, setFilters] = useState<FilterState>({
     priceMin: 0,
     priceMax: 9999999,
@@ -420,6 +421,26 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
 
   const visibleProducts = categoryProducts.slice(0, visibleCount)
   const hasMore = visibleCount < categoryProducts.length
+
+  // t223: social-media-style infinite scroll — when the sentinel at the end
+  // of the grid scrolls into view, auto-extend the visible window instead of
+  // requiring a button tap. The Load More button stays as a keyboard/no-JS
+  // observer fallback, and the observer re-arms on every filter/sort change.
+  useEffect(() => {
+    if (!hasMore || loading) return
+    const el = sentinelRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisibleCount((c) => Math.min(c + ITEMS_PER_PAGE, categoryProducts.length))
+        }
+      },
+      { rootMargin: '400px 0px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hasMore, loading, categoryProducts.length])
 
   const handleAddToCart = useCallback(
     (product: CategoryProduct) => {
@@ -699,17 +720,20 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
           </div>
         )}
 
-        {/* Load More */}
+        {/* Infinite-scroll sentinel + Load More fallback */}
         {!loading && hasMore && (
-          <div className="mt-5 flex justify-center">
-            <Button
-              variant="outline"
-              className="text-primary border-primary font-semibold text-sm px-8"
-              onClick={() => setVisibleCount((c) => c + ITEMS_PER_PAGE)}
-            >
-              Load More Products
-            </Button>
-          </div>
+          <>
+            <div ref={sentinelRef} className="h-px" aria-hidden />
+            <div className="mt-5 flex justify-center">
+              <Button
+                variant="outline"
+                className="text-primary border-primary font-semibold text-sm px-8"
+                onClick={() => setVisibleCount((c) => c + ITEMS_PER_PAGE)}
+              >
+                Load More Products
+              </Button>
+            </div>
+          </>
         )}
       </div>
 

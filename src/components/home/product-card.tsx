@@ -73,8 +73,14 @@ export function ProductCard({ product }: { product: HomeProduct }) {
   const [wished, setWished] = useState<boolean>(Boolean(product.isFavorited))
   const [toggling, setToggling] = useState(false)
 
-  const rating = product.ratingAvg && product.ratingAvg > 0 ? product.ratingAvg.toFixed(1) : '4.8'
-  const reviews = product.reviewCount || 100
+  // t223 honesty: no fabricated rating/review/supplier fallbacks — an
+  // unrated product shows "New", a zero-review product hides the count,
+  // a missing supplier shows an em-dash, and the Verified chip only
+  // renders when the supplier is ACTUALLY verified.
+  const hasRating = typeof product.ratingAvg === 'number' && product.ratingAvg > 0
+  const rating = hasRating ? product.ratingAvg!.toFixed(1) : null
+  const reviews = typeof product.reviewCount === 'number' && product.reviewCount > 0 ? product.reviewCount : null
+  const showVerified = product.supplierVerified === true
 
   const handleWishlistToggle = useCallback(
     async (e: React.MouseEvent) => {
@@ -182,27 +188,39 @@ export function ProductCard({ product }: { product: HomeProduct }) {
         {/* Supplier with circular building icon */}
         <p className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1 min-w-0">
           <SupplierStoreIcon className="h-3.5 w-3.5 shrink-0 text-gray-400" />
-          <span className="text-[10px] xl:text-[10.5px] truncate">{product.supplierName || 'Dhaka Textile Mills Ltd'}</span>
+          <span className="text-[10px] xl:text-[10.5px] truncate">{product.supplierName || '—'}</span>
         </p>
 
-        {/* Rating with gold star and (+) review count */}
+        {/* Rating with gold star — real ratings only, "New" when unrated */}
         <p className="flex items-center gap-1 mb-1 whitespace-nowrap">
-          <Star className="h-3 w-3 shrink-0" style={{ color: STAR_AMBER, fill: STAR_AMBER }} aria-hidden />
-          <span className="text-[10px] xl:text-[10.5px] font-semibold text-gray-700 dark:text-gray-300">
-            {rating}
-          </span>
-          <span className="text-[10px] xl:text-[10.5px] text-gray-400 dark:text-gray-500">
-            ({reviews}+)
-          </span>
+          {rating ? (
+            <>
+              <Star className="h-3 w-3 shrink-0" style={{ color: STAR_AMBER, fill: STAR_AMBER }} aria-hidden />
+              <span className="text-[10px] xl:text-[10.5px] font-semibold text-gray-700 dark:text-gray-300">
+                {rating}
+              </span>
+              {reviews !== null && (
+                <span className="text-[10px] xl:text-[10.5px] text-gray-400 dark:text-gray-500">
+                  ({reviews}+)
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="text-[10px] xl:text-[10.5px] font-medium text-gray-500 dark:text-gray-400 rounded-full bg-gray-100 dark:bg-gray-800 px-1.5 py-px">
+              New
+            </span>
+          )}
         </p>
 
-        {/* Verified Supplier with green checkmark shield */}
-        <p className="flex items-center gap-1 whitespace-nowrap">
-          <VerifiedShieldIcon className="h-3.5 w-3.5 shrink-0" />
-          <span className="text-[10px] xl:text-[10.5px] font-semibold" style={{ color: VERIFIED_GREEN }}>
-            Verified Supplier
-          </span>
-        </p>
+        {/* Verified Supplier chip — only when actually verified */}
+        {showVerified && (
+          <p className="flex items-center gap-1 whitespace-nowrap">
+            <VerifiedShieldIcon className="h-3.5 w-3.5 shrink-0" />
+            <span className="text-[10px] xl:text-[10.5px] font-semibold" style={{ color: VERIFIED_GREEN }}>
+              Verified Supplier
+            </span>
+          </p>
+        )}
       </div>
     </article>
   )

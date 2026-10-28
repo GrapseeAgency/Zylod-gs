@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -97,6 +97,52 @@ export function SearchResultsPage() {
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
+
+  // t223: social-media-style infinite scroll — one loader shared by the
+  // auto sentinel and the button fallback: expand local visibility first
+  // (cheaper than a network round-trip), then fetch the next API page.
+  const handleLoadMore = useCallback(async () => {
+    if (loadingMore) return
+    if (visibleCount < products.length) {
+      setVisibleCount((c) => c + 10)
+      return
+    }
+    if (!hasMore) return
+    setLoadingMore(true)
+    try {
+      const nextPage = page + 1
+      const res = await fetch(`/api/products?search=${encodeURIComponent(activeSearch.trim())}&limit=20&page=${nextPage}`)
+      if (res.ok) {
+        const json = await res.json()
+        const items = Array.isArray(json?.data) ? json.data.map(normalizeProduct) : []
+        setProducts((prev) => [...prev, ...items])
+        setVisibleCount((c) => c + items.length)
+        setPage(nextPage)
+        const pag = json?.pagination
+        setHasMore(pag ? pag.page < pag.totalPages : false)
+      }
+    } catch {
+      // best-effort — keep what we have
+    } finally {
+      setLoadingMore(false)
+    }
+  }, [loadingMore, visibleCount, products.length, hasMore, page, activeSearch])
+
+  const loadMoreSentinelRef = useRef<HTMLDivElement | null>(null)
+  const canLoadMore = !loading && !loadError && (visibleCount < products.length || hasMore)
+  useEffect(() => {
+    if (!canLoadMore) return
+    const el = loadMoreSentinelRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) void handleLoadMore()
+      },
+      { rootMargin: '400px 0px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [canLoadMore, handleLoadMore])
 
   // Deep-link / in-place navigation with a new query must re-run the search.
   useEffect(() => {
@@ -479,47 +525,25 @@ export function SearchResultsPage() {
           </div>
         )}
 
-        {/* Load More Results — fetches the next page from the API (was previously just slicing local state) */}
-        {!loading && !loadError && (visibleCount < products.length || hasMore) && (
-          <div className="mt-6 text-center">
-            <button
-              onClick={async () => {
-                // First expand local visibility (cheaper than a network round-trip)
-                if (visibleCount < products.length) {
-                  setVisibleCount((c) => c + 10)
-                  return
-                }
-                // When local buffer is exhausted, fetch the next page from the API.
-                if (!hasMore || loadingMore) return
-                setLoadingMore(true)
-                try {
-                  const nextPage = page + 1
-                  const res = await fetch(`/api/products?search=${encodeURIComponent(activeSearch.trim())}&limit=20&page=${nextPage}`)
-                  if (res.ok) {
-                    const json = await res.json()
-                    const items = Array.isArray(json?.data) ? json.data.map(normalizeProduct) : []
-                    setProducts((prev) => [...prev, ...items])
-                    setVisibleCount((c) => c + items.length)
-                    setPage(nextPage)
-                    const pag = json?.pagination
-                    setHasMore(pag ? pag.page < pag.totalPages : false)
-                  }
-                } catch {
-                  // best-effort — keep what we have
-                } finally {
-                  setLoadingMore(false)
-                }
-              }}
-              disabled={loadingMore}
-              className="text-xs font-bold text-primary hover:underline py-3 px-4 rounded-full min-h-11 disabled:opacity-50"
-            >
-              {loadingMore
-                ? 'Loading...'
-                : hasMore
-                  ? `Load More Results (page ${page + 1})`
-                  : `Show all ${products.length} results`}
-            </button>
-          </div>
+        {/* Infinite-scroll sentinel + Load More fallback (fetches the next
+            page from the API; previously button-only) */}
+        {canLoadMore && (
+          <>
+            <div ref={loadMoreSentinelRef} className="h-px" aria-hidden />
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => void handleLoadMore()}
+                disabled={loadingMore}
+                className="text-xs font-bold text-primary hover:underline py-3 px-4 rounded-full min-h-11 disabled:opacity-50"
+              >
+                {loadingMore
+                  ? 'Loading...'
+                  : hasMore
+                    ? `Load More Results (page ${page + 1})`
+                    : `Show all ${products.length} results`}
+              </button>
+            </div>
+          </>
         )}
 
         {/* Sign-in hint for cart sync — cart persistence requires a buyer account */}
