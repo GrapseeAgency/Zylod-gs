@@ -6684,3 +6684,24 @@ Work Log:
 - [BACKEND STATE VERIFIED ONLINE]: localhost:3000 / = 200, /api/products = 200; the user's own preview URL https://preview-chat-a71d16fe-4230-4770-8de5-4a51e638e6e8.space-z.ai/?page=home = 200 (0.11s) and its /api/products = 200. Full login executed THROUGH the preview URL: HTTP 200 success:true with real user object + session token. The user's "can't reach anything" was transient (dev server OOM pattern during Turbopack compile bursts — it died once earlier this session and the watchdog had it back before this round).
 - [CREDENTIALS — REAL, API-VERIFIED, not fabricated]: current DB (@zylod.bd accounts) was seeded by scripts/qa/seed-marketplace.mjs with password Passw0rd!23. Live POST /api/auth/login verified for all three roles: admin market@zylod.bd (200, token), buyer buyer1@zylod.bd (200, token), supplier dhaka.textile@zylod.bd (200, token). Buyer token proven functional on an authed endpoint: guest /api/cart = 401 (wall intact) vs Bearer-token /api/cart = 200 with real cart payload. Other accounts on the same password: buyer2@zylod.bd; suppliers bengal.agro / smart.tech / green.jute / muslin.craft / led.bangla / bangla.garments @zylod.bd. Stale doc passwords (admin123/buyer123/supplier123 from older seeds) were TESTED and correctly rejected 401 — credentials reported here are the ones that actually work.
 - [HARD STOP]: nothing else changed; no code touched this round.
+
+---
+Task ID: t227
+Agent: ZCode (GLM)
+Task: Owner defect report on released APK v2.4.5-144d5a3 — (1) "Can't reach anything" error screen on every surface, (2) bottom-bar HOME dead after entering search/hot-deals, (3) system back key dead, (4) demand for an offline page, (5) demand for a reachable server.
+
+Work Log:
+- [ROOT CAUSES — established with evidence]:
+  - SERVER_ENDPOINTS (release: only https://zylod.com → probe 404; debug: LAN/localhost/tunnels all dead on owner device) — no candidate could serve /api/app/version with a genuine bundle identity, so ServerConfig.resolve failed and every WebView surface rendered the error state. Probe evidence: preview-chat-a71d16fe-4230-4770-8de5-4a51e638e6e8.space-z.ai/api/app/version → HTTP 200 with bundle identity; zylod.com → 404.
+  - Bottom-bar HOME tap while native route == home is a launchSingleTop no-op at the NavController; when the SPA drifted inside the home shell (in-page link navigation), the tap never recovered it (drift probe existed only in the new hardware-Back handler, not on the tap path).
+  - Offline cache was only populated via the web page's JS bridge call; a page that never loaded left the cache empty forever — guaranteed dead-end offline.
+- [FIX — commit ebeb17c]: build.gradle.kts SERVER_ENDPOINTS lead with the deployed live backend (release + debug); WebScreen retryConnection shared retry contract; error state renders OfflineCatalogScreen (real cached rows) when Room cache is non-empty; OfflineCatalogSupport.kt (new) — native-side throttled /api/products cache sync on every authoritative reveal; ZylodRoot hardware-Back home contract (drift → requestHomeReset, home → moveTaskToBack).
+- [FIX — commit ba2fc7b]: probeSpaPage() shared helper; HOME-tab tap runs the same drift probe → soft home reset; BackHandler refactored onto the shared helper.
+- [VERIFICATION — CI]: android-build run 40744149456 (commit ba2fc7b) → SUCCESS; artifact Zylod-debug-apk-ba2fc7bea4f0468cf0fbc6d5fef63f4d5a416351; versionName 2.4.5-ba2fc7b, versionCode 245. ios-build also success on the same commit.
+- [VERIFICATION — bundle identity]: re-stamped to ba2fc7b (scripts/generate-bundle-identity.mjs; gitignored file); served identity verified on localhost:3000 AND the preview URL → new APK expectedCommit == served commit → Verdict.Ok (gate remains fail-open per t208).
+- [RELEASE]: published v2.4.5-ba2fc7b (id 427037344) with assets zylod-b2b-v2.4.5-ba2fc7b.apk (45,267,388 bytes) + .sha256; SHA256 52bfb491283d1de3bed33c733e234b60cffcc8ade8ef134465c3b7160c8c9ce3.
+- [NOT VERIFIED / HARD STOPS]: no device/emulator in sandbox — on-device behavior of the nav/back/offline fixes is NOT directly verified; owner "smoothness/abnormal" report not independently reproducible (no repro info); android-screenshots CI run for ba2fc7b was still in progress at time of writing.
+
+Stage Summary:
+- All five owner-reported defects root-caused with evidence and fixed in two commits (ebeb17c, ba2fc7b): live backend leads SERVER_ENDPOINTS in both flavors, the error state now falls back to a real cached OfflineCatalogScreen fed by native-side syncs, and HOME-tap/back-key drift is recovered by a shared probeSpaPage() contract.
+- Release v2.4.5-ba2fc7b published from CI-green commit ba2fc7b (sha256-verified, bundle identity Verdict.Ok); on-device behavior of the nav/back/offline fixes remains the open verification gap (no hardware in sandbox).
