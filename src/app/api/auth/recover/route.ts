@@ -46,13 +46,18 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    // In production, send email with recovery instructions
-    console.log(`Account recovery token for ${email}: ${recoveryToken} (method: ${method})`)
+    // In production, send email with recovery instructions (never log the token)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`Account recovery token for ${email}: ${recoveryToken} (method: ${method})`)
+    }
 
+    // SECURITY: devToken is a recovery credential — never send it in a
+    // production response (the real delivery channel is the email link).
+    const dev = process.env.NODE_ENV !== 'production' ? { devToken: recoveryToken } : {}
     return NextResponse.json({
       success: true,
       message: 'If an account exists with this email, recovery instructions have been sent.',
-      devToken: recoveryToken
+      ...dev,
     })
   } catch (error) {
     console.error('Account recovery error:', error)

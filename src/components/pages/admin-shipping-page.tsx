@@ -74,7 +74,7 @@ export function AdminShippingPage() {
         fetch('/api/admin/shipping/methods', { credentials: 'include' }),
         fetch('/api/admin/shipping/rates', { credentials: 'include' }),
       ])
-      if (zRes.status === 401 || mRes.status === 401 || rRes.status === 401) {
+      if (zRes.status === 401 || zRes.status === 403 || mRes.status === 401 || mRes.status === 403 || rRes.status === 401 || rRes.status === 403) {
         setAuthGate('denied')
         return
       }

@@ -4,31 +4,77 @@ import React, { useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Users, Coins, Gift, CheckCircle2, Clock
 } from 'lucide-react'
 
 export function ReferralEarningsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [refData, setRefData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  // Honesty fix: the referral ledger is the signed-in account's real earnings —
+  // guests get an account gate instead of a fabricated "+0 Pts".
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/referrals', { headers })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.data) {
+      .then(res => res.json().then(data => ({ res, data })).catch(() => ({ res, data: null })))
+      .then(({ res, data }) => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        if (!res.ok) {
+          setLoadError(data?.error || `Failed to load your referral earnings (${res.status})`)
+          return
+        }
+        if (data?.success && data?.data) {
           setRefData(data.data)
+        } else {
+          setLoadError('Your referral earnings are unavailable right now.')
         }
       })
-      .catch(console.error)
+      .catch(() => setLoadError('Could not reach the server to load your referral earnings.'))
       .finally(() => setLoading(false))
-  }, [token])
+  }, [isAuthenticated, token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your referral earnings." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view referral earnings"
+        message="Referral rewards are credited to your account when invited merchants join. Sign in to see your real ledger."
+      />
+    )
+  }
+  if (loadError) {
+    return (
+      <div className="min-h-[60vh] bg-background flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-card border border-border rounded-2xl p-6 text-center space-y-3">
+          <Coins className="h-8 w-8 mx-auto text-primary" />
+          <h1 className="text-base font-bold text-foreground">Could not load referral earnings</h1>
+          <p className="text-sm text-muted-foreground">{loadError}</p>
+          <Button onClick={() => window.location.reload()} className="h-9 px-4 font-bold text-xs rounded-xl">
+            Try again
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

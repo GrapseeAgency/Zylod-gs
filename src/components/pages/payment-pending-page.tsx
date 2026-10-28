@@ -8,9 +8,10 @@ import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { ArrowLeft, Clock, ShieldCheck, Lock, ChevronRight, AlertCircle, Building2, CheckCircle2, RefreshCw } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
+import { AccountGate } from '@/components/shared/account-gate'
 export function PaymentPendingPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [pendingItems, setPendingItems] = useState<Array<{
@@ -26,9 +27,20 @@ export function PaymentPendingPage() {
   }>>([])
 
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  // Honesty fix: pending clearances are YOUR payments — guests must not see a
+  // fabricated "৳0 / All settlements cleared" banner.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     async function loadPending() {
+      if (!isAuthenticated) return
       if (!token) {
         setLoading(false)
         return
@@ -37,18 +49,35 @@ export function PaymentPendingPage() {
         const res = await fetch('/api/payments/pending', {
           headers: { Authorization: `Bearer ${token}` },
         })
-        if (res.ok) {
-          const json = await res.json()
-          if (json.data) setPendingItems(json.data)
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        if (!res.ok) {
+          const json = await res.json().catch(() => null)
+          throw new Error(json?.error || `Failed to load pending payments (${res.status})`)
         }
+        const json = await res.json()
+        if (json.data) setPendingItems(json.data)
+      } catch (e: unknown) {
+        setLoadError(e instanceof Error ? e.message : 'Failed to load pending payments')
       } finally {
         setLoading(false)
       }
     }
     loadPending()
-  }, [token])
+  }, [isAuthenticated, token])
 
   const totalPending = pendingItems.reduce((acc, curr) => acc + curr.amount, 0)
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your pending payments." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view pending clearances"
+        message="Pending clearances are the payment reports on your own orders. Sign in to see the real amounts."
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
@@ -84,6 +113,12 @@ export function PaymentPendingPage() {
         <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
           {loading ? (
             <PageLoader label="Scanning Pending Clearances…" />
+          ) : loadError ? (
+            <div className="md:col-span-2 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-3xl p-6 text-center space-y-2">
+              <AlertCircle className="h-8 w-8 mx-auto text-red-400" />
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">Could not load pending payments</span>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{loadError}</p>
+            </div>
           ) : pendingItems.length > 0 ? (
             pendingItems.map((item) => (
               <div

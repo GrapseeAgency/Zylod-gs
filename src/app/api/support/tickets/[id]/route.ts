@@ -93,6 +93,13 @@ export async function PATCH(
       return NextResponse.json({ error: 'Ticket not found' }, { status: 404 })
     }
 
+    // Buyers only move their OWN thread between open/closed — the lifecycle
+    // states (in_progress / waiting_buyer / resolved) belong to the responder.
+    const BUYER_STATUSES = ['open', 'closed']
+    if (!BUYER_STATUSES.includes(String(status || existing.status))) {
+      return NextResponse.json({ error: `status must be one of: ${BUYER_STATUSES.join(' | ')}` }, { status: 400 })
+    }
+
     const updated = await db.supportTickets.update({
       where: { id },
       data: {

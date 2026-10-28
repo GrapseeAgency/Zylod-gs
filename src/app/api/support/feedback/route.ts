@@ -20,6 +20,17 @@ export async function GET(request: NextRequest) {
       },
       orderBy: { createdAt: 'desc' },
       take: limit,
+      // Community wall: never expose the submitter's identity columns.
+      select: {
+        id: true,
+        type: true,
+        subject: true,
+        description: true,
+        rating: true,
+        status: true,
+        pageContext: true,
+        createdAt: true,
+      },
     })
 
     return NextResponse.json({ success: true, data: feedback })

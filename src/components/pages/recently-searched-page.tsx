@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { ArrowLeft, Trash2, Search, Clock, TrendingUp, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -13,26 +15,43 @@ interface SearchHistory {
 
 export function RecentlySearchedPage() {
   const { goBack, navigate } = useNavigationStore();
+  const { isAuthenticated, token } = useAuthStore();
   const [query, setQuery] = useState('');
   const [history, setHistory] = useState<SearchHistory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
+    if (isAuthenticated) return;
+    const t = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     const fetchHistory = async () => {
       try {
-        const res = await fetch('/api/search/history');
-        if (res.ok) {
+        const res = await fetch('/api/search/history', {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true);
+        } else if (res.ok) {
           const { data } = await res.json();
-          setHistory(data);
+          setHistory(data ?? []);
+        } else {
+          setError('Could not load your recent searches.');
         }
       } catch (error) {
         console.error('Failed to fetch search history', error);
+        setError('Could not load your recent searches.');
       } finally {
         setLoading(false);
       }
     };
     fetchHistory();
-  }, []);
+  }, [isAuthenticated, token]);
 
   const handleSearch = (term: string) => {
     if (term.trim()) {
@@ -42,21 +61,48 @@ export function RecentlySearchedPage() {
 
   const removeHistoryItem = async (term: string) => {
     try {
-      await fetch(`/api/search/history?term=${encodeURIComponent(term)}`, { method: 'DELETE' });
+      const res = await fetch(`/api/search/history?term=${encodeURIComponent(term)}`, { method: 'DELETE' });
+      if (!res.ok) {
+        setError('Could not remove that search from your history.');
+        return;
+      }
       setHistory(prev => prev.filter(item => item.query !== term));
     } catch (error) {
       console.error('Failed to remove history item', error);
+      setError('Could not remove that search from your history.');
     }
   };
 
   const clearAll = async () => {
     try {
-      await fetch('/api/search/history', { method: 'DELETE' });
+      const res = await fetch('/api/search/history', { method: 'DELETE' });
+      if (!res.ok) {
+        setError('Could not clear your search history.');
+        return;
+      }
       setHistory([]);
     } catch (error) {
       console.error('Failed to clear search history', error);
+      setError('Could not clear your search history.');
     }
   };
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session is no longer valid. Sign in again to see your recent searches."
+      />
+    );
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to see your recent searches"
+        message="Recent Searches shows your real account search history. Sign in to continue."
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -106,6 +152,12 @@ export function RecentlySearchedPage() {
               {[...Array(5)].map((_, i) => (
                 <Skeleton key={i} className="h-12 w-full rounded-lg" />
               ))}
+            </div>
+          </div>
+        ) : error ? (
+          <div className="p-4">
+            <div className="bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900 rounded-xl p-4 text-center">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           </div>
         ) : (

@@ -5,9 +5,10 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, CreditCard, Plus, Trash2, CheckCircle2,
-  ShieldCheck, Check, Loader2, Lock, Building2
+  ShieldCheck, Check, Loader2, Lock, Building2, AlertCircle
 } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 
@@ -23,35 +24,60 @@ interface SavedCard {
 
 export function CreditDebitCardsPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [cards, setCards] = useState<SavedCard[]>([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const loadCards = async () => {
-    if (!token) {
-      setLoading(false)
-      return
-    }
+    if (!token) return
     try {
       const res = await fetch('/api/cards', {
         headers: { Authorization: `Bearer ${token}` },
       })
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok) {
         const json = await res.json()
         if (json.data) setCards(json.data)
+        setLoadError('')
+      } else {
+        setLoadError(`Could not load your saved cards (HTTP ${res.status}).`)
       }
     } catch {
-      // Handled
+      setLoadError('Network error while loading your saved cards. Check your connection and retry.')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    loadCards()
+    if (token) loadCards()
   }, [token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your saved cards." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your saved cards"
+        message="Saved cards are the real tokenized cards on your account. Sign in to continue."
+      />
+    )
+  }
 
   const handleSetDefault = async (id: string) => {
     setActionLoading(id)
@@ -118,6 +144,12 @@ export function CreditDebitCardsPage() {
         </div>
 
         {/* Cards List */}
+        {loadError && (
+          <div className="bg-red-50 border border-red-200 rounded-3xl px-4 py-3 flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-xs font-bold text-red-600">{loadError}</p>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
           {loading ? (
             <PageLoader label="Loading Saved Cards…" />

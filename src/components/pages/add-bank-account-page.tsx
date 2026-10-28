@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Landmark, Plus, Check, Loader2,
   AlertCircle, CheckCircle2, ShieldCheck, Building2
@@ -14,7 +15,16 @@ import {
 
 export function AddBankAccountPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
+
+  // Auth honesty: bank accounts are user-scoped — gate guests instead of
+  // letting them fill a form that could never be saved to an account.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const [bankName, setBankName] = useState('City Bank PLC')
   const [accountNumber, setAccountNumber] = useState('')
@@ -67,6 +77,16 @@ export function AddBankAccountPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Gate guests — a settlement bank account always belongs to an account.
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to link a bank account"
+        message="Commercial bank accounts are saved to your account for real settlements. Sign in to continue."
+      />
+    )
   }
 
   return (

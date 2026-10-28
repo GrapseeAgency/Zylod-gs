@@ -4,6 +4,7 @@ import { Shield, ArrowLeft, Fingerprint, Info } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 
 // HONESTY NOTE: this page previously presented fake Android-only security
 // switches (biometric "SafePay Release", FLAG_SECURE, quick PIN) that persisted
@@ -11,6 +12,10 @@ import { useNavigationStore } from '@/store/navigation-store'
 // these features exist on the Zylod web app, so the page now says so honestly.
 export function AppSecuritySettingsPage() {
   const { navigate } = useNavigationStore()
+  // Owner-published support contact (Admin → System Settings) — honest
+  // generic wording when nothing is published, never a fabricated address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl lg:max-w-4xl space-y-6">
@@ -45,7 +50,9 @@ export function AppSecuritySettingsPage() {
           </div>
 
           <p className="text-xs text-muted-foreground pt-2 border-t">
-            In the meantime, your session is protected by signed login tokens — manage them from Account Settings, and email support@zylod.com if you notice anything unusual.
+            {supportEmail
+              ? `In the meantime, your session is protected by signed login tokens — manage them from Account Settings, and email ${supportEmail} if you notice anything unusual.`
+              : 'In the meantime, your session is protected by signed login tokens — manage them from Account Settings, and reach us through the Help Center if you notice anything unusual.'}
           </p>
         </CardContent>
       </Card>

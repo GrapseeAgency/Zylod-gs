@@ -5,12 +5,13 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useCurrencyStore } from '@/store/currency-store'
 import { ArrowLeft, AlertTriangle, RefreshCw, CreditCard, ChevronRight, HelpCircle, Building2, ArrowRight } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 export function PaymentFailedPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [failedItems, setFailedItems] = useState<Array<{
@@ -24,10 +25,19 @@ export function PaymentFailedPage() {
   }>>([])
 
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  // Guests have no payment history — stop the spinner honestly; the gate
+  // below explains what this page is.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     async function loadFailed() {
-      if (!token) {
+      if (!isAuthenticated) {
         setLoading(false)
         return
       }
@@ -38,13 +48,29 @@ export function PaymentFailedPage() {
         if (res.ok) {
           const json = await res.json()
           if (json.data) setFailedItems(json.data)
+          else setLoadError('Your failed-payment list could not be loaded.')
+        } else {
+          setLoadError(`Your failed-payment list could not be loaded (HTTP ${res.status}).`)
         }
+      } catch {
+        setLoadError('Network error — your failed-payment list could not be loaded. Please retry.')
       } finally {
         setLoading(false)
       }
     }
     loadFailed()
-  }, [token])
+  }, [isAuthenticated])
+
+  // Honest gate — failed transactions are account-scoped; a guest never sees
+  // the fabricated "Zero failed payments" empty state.
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view failed payments"
+        message="Failed gateway transactions are listed from your own account's orders. Sign in to see the real list."
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
@@ -78,6 +104,12 @@ export function PaymentFailedPage() {
           {loading ? (
             <div className="py-12 md:col-span-2 flex flex-col items-center justify-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
               <PageLoader className="min-h-0" />
+            </div>
+          ) : loadError ? (
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 md:col-span-2 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+              <AlertTriangle className="h-10 w-10 mx-auto text-amber-500 stroke-[1.5]" />
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">Could not load failed payments</span>
+              <p className="text-xs text-slate-500 dark:text-slate-500 dark:text-slate-400 max-w-xs mx-auto">{loadError}</p>
             </div>
           ) : failedItems.length > 0 ? (
             failedItems.map((item) => (

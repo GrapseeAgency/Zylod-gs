@@ -2,12 +2,17 @@
 
 import React from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, CheckCircle2, ShieldCheck, FileText, ShoppingBag } from 'lucide-react'
 
 export function BuyerTermsPage() {
   const { navigate, goBack } = useNavigationStore()
+  // Owner-published support contact (Admin → System Settings) — honest
+  // generic wording when nothing is published, never a fabricated address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
 
   const terms = [
     {
@@ -20,7 +25,9 @@ export function BuyerTermsPage() {
     },
     {
       title: 'Inspection & Defect Reporting Protocol',
-      desc: 'Defects, shortages, or discrepancies should be documented with unboxing video/photos and reported to support@zylod.com as early as possible. Return eligibility follows the supplier\u2019s published return policy.',
+      desc: supportEmail
+        ? `Defects, shortages, or discrepancies should be documented with unboxing video/photos and reported to ${supportEmail} as early as possible. Return eligibility follows the supplier\u2019s published return policy.`
+        : 'Defects, shortages, or discrepancies should be documented with unboxing video/photos and reported to the Zylod team through the Help Center as early as possible. Return eligibility follows the supplier\u2019s published return policy.',
     },
     {
       title: 'Cancellation & Order Amendments',

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -34,30 +35,47 @@ interface DeliveryUpdate {
 
 export function DeliveryUpdatesPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [activeFilter, setActiveFilter] = useState<'all' | 'in_transit' | 'delivered'>('all')
   const [updates, setUpdates] = useState<DeliveryUpdate[]>([])
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
   const fetchDeliveries = useCallback(async () => {
+    if (!isAuthenticated || !token) return
     try {
       setLoading(true)
-      const headers: Record<string, string> = {}
-      if (token) headers['Authorization'] = `Bearer ${token}`
-
-      const res = await fetch('/api/notifications/delivery-updates?limit=30', { headers })
-      const data = await res.json()
-      if (data.success && data.data) {
-        setUpdates(data.data)
+      const res = await fetch('/api/notifications/delivery-updates?limit=30', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
       }
+      if (!res.ok || !data?.success) {
+        setLoadError(data?.error || `Could not load delivery updates (HTTP ${res.status}).`)
+        return
+      }
+      setLoadError('')
+      setUpdates(data.data || [])
     } catch (err) {
       console.error('Failed to load delivery updates:', err)
+      setLoadError('Network error while loading delivery updates. Check your connection and retry.')
     } finally {
       setLoading(false)
     }
-  }, [token])
+  }, [token, isAuthenticated])
 
   useEffect(() => {
     fetchDeliveries()
@@ -86,6 +104,22 @@ export function DeliveryUpdatesPage() {
     return 0
   }
 
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has expired. Sign in again to see your real delivery updates."
+      />
+    )
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view delivery updates"
+        message="Delivery Updates shows your real orders, courier waybills and arrival estimates. Sign in to continue."
+      />
+    )
+  }
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {/* Header */}
@@ -131,6 +165,12 @@ export function DeliveryUpdatesPage() {
 
       {/* Content */}
       <div className="flex-1 px-4 py-4 md:px-6 md:py-6 max-w-3xl mx-auto w-full space-y-4 pb-24 md:pb-8 lg:max-w-5xl">
+        {!loading && loadError && (
+          <div className="flex items-start gap-2 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl p-3 text-xs text-red-700 dark:text-red-300">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <span>{loadError}</span>
+          </div>
+        )}
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (

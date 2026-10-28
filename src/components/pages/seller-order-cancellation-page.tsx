@@ -10,8 +10,10 @@
  * server's verbatim error and stays on the page.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -20,9 +22,41 @@ const REASONS = ['Out of stock', 'Price dispute', 'Buyer requested cancellation'
 
 export function SellerOrderCancellationPage() {
   const { pageParams, goBack } = useNavigationStore();
+  // Supplier-only action: a guest gets an account gate, not a cancellation
+  // form for an order it cannot touch.
+  const { isAuthenticated, user } = useAuthStore();
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin');
+  const [bootWait, setBootWait] = useState(true);
   const [reason, setReason] = useState('');
   const [notes, setNotes] = useState('');
   const [cancelling, setCancelling] = useState(false);
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setBootWait(false);
+      return;
+    }
+    const t = setTimeout(() => setBootWait(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
+
+  if (!bootWait && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Seller sign-in required"
+        message="Cancelling an order changes your store's real order record. Sign in with a supplier account to continue."
+      />
+    );
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`Order cancellation belongs to supplier accounts — you are signed in as a ${user.userType}.`}
+      />
+    );
+  }
 
   const handleCancel = async () => {
     setCancelling(true);

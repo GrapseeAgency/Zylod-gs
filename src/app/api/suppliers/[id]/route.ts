@@ -51,7 +51,8 @@ export async function GET(
         companyName: supplier.companyName,
         tradeLicenseNumber: supplier.tradeLicenseNumber,
         verificationStatus: supplier.verificationStatus,
-        rejectionReason: supplier.rejectionReason,
+        // rejectionReason is the admin's internal note to the supplier —
+        // never on a public endpoint (the supplier sees it via their own profile).
         ratingAvg: supplier.ratingAvg,
         ratingCount: supplier._count.supplierReviews,
         productCount: supplier._count.products,

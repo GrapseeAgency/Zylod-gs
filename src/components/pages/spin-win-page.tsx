@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, useAnimation } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import { soundEffects } from '@/lib/sound-effects'
 import { toast } from 'sonner'
@@ -24,26 +25,42 @@ const PRIZES = [
 
 export function SpinWinPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [spinning, setSpinning] = useState(false)
   const [spinsRemaining, setSpinsRemaining] = useState(3)
   const [wonPrize, setWonPrize] = useState<any>(null)
   const [rotation, setRotation] = useState(0)
+  const [loadingSession, setLoadingSession] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoadingSession(false)
+      return
+    }
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/rewards/spin-history', { headers })
-      .then(res => res.json())
+      .then(async res => {
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return null
+        }
+        return res.json()
+      })
       .then(data => {
-        if (data.success) {
+        if (data && data.success) {
           setSpinsRemaining(data.spinsRemaining ?? 3)
         }
       })
       .catch(console.error)
-  }, [token])
+      .finally(() => setLoadingSession(false))
+  }, [token, isAuthenticated])
+
+  if (sessionExpired) return <AccountGate title="Session expired" message="Your session has expired. Sign in again to spin the Lucky Wheel." />
+  if (!loadingSession && !isAuthenticated) return <AccountGate title="Sign in to spin & win" message="The Lucky Wheel rewards your account with vouchers and loyalty points. Sign in to continue." />
 
   const handleSpin = async () => {
     if (spinning || spinsRemaining <= 0) return

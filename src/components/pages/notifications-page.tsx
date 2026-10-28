@@ -8,6 +8,7 @@ import { useRealtimeRoom } from '@/hooks/use-realtime-room'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { PageLoader } from '@/components/ui/page-loader'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   Bell, CheckCheck, Trash2, ArrowLeft, Filter, Search,
   Package, Truck, Tag, TrendingDown, Layers, Shield,
@@ -44,7 +45,7 @@ export function NotificationsPage() {
   }))
   const filterActive = Boolean(activeFilter.types || activeFilter.unreadOnly || activeFilter.startDate || activeFilter.endDate)
 
-  const { token, user } = useAuthStore()
+  const { token, user, isAuthenticated } = useAuthStore()
 
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'order' | 'promotion' | 'delivery' | 'system'>('all')
   const [notifications, setNotifications] = useState<NotificationItem[]>([])
@@ -53,8 +54,18 @@ export function NotificationsPage() {
   const [refreshing, setRefreshing] = useState(false)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(false)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Honesty fix: the inbox is YOUR notifications — guests get a gate, never a
+  // fabricated "empty inbox".
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const fetchNotifications = useCallback(async (pageNum = 1, append = false) => {
+    if (!isAuthenticated) return
     try {
       if (pageNum === 1 && !append) setLoading(true)
       const headers: Record<string, string> = {}
@@ -74,9 +85,10 @@ export function NotificationsPage() {
       }
 
       const res = await fetch(url, { headers })
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
       const data = await res.json()
 
-      if (data.success) {
+      if (res.ok && data.success) {
         setNotifications(prev => append ? [...prev, ...(data.data || [])] : (data.data || []))
         if (data.unreadCount !== undefined) setUnreadCount(data.unreadCount)
         setHasMore((data.pagination?.page || 1) < (data.pagination?.totalPages || 1))
@@ -87,8 +99,9 @@ export function NotificationsPage() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [token, activeTab, filterActive, activeFilter])
+  }, [isAuthenticated, token, activeTab, filterActive, activeFilter])
 
+  // Hooks MUST run on every render — kept above the gate early-returns below.
   useEffect(() => {
     setPage(1)
     fetchNotifications(1, false)
@@ -105,6 +118,18 @@ export function NotificationsPage() {
       }
     }, [fetchNotifications]),
   })
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your notifications." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view notifications"
+        message="Your inbox shows order, delivery and promotion updates for your own account. Sign in to see yours."
+      />
+    )
+  }
 
   const handleMarkAllRead = async () => {
     try {

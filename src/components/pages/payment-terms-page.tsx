@@ -18,6 +18,7 @@ export function PaymentTermsPage() {
   const [faqs, setFaqs] = useState<LegalFaq[]>([])
   const [loading, setLoading] = useState(true)
   const [openFaq, setOpenFaq] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
     Promise.all([
@@ -26,7 +27,10 @@ export function PaymentTermsPage() {
     ]).then(([docData, faqData]) => {
       if (docData.success) setDoc(docData.data.document)
       if (faqData.success) setFaqs(faqData.data)
-    }).catch(console.error).finally(() => setLoading(false))
+      if (!docData.success) setLoadError('The payment terms document could not be loaded.')
+    }).catch(() => {
+      setLoadError('Could not reach the server to load the payment terms. Check your connection and refresh.')
+    }).finally(() => setLoading(false))
   }, [])
 
   // HONESTY NOTE: only the two real payment routes are listed — no invented
@@ -123,6 +127,12 @@ export function PaymentTermsPage() {
         </div>
 
         {/* Full policy */}
+        {loadError && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl p-4 text-xs text-red-800 dark:text-red-300 flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <span>{loadError}</span>
+          </div>
+        )}
         {doc && (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3">Full Payment Terms</h3>

@@ -3,31 +3,68 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Award, Crown, Check, Sparkles, ChevronRight
 } from 'lucide-react'
 
 export function MembershipTiersPage() {
   const { navigate, goBack } = useNavigationStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [tiers, setTiers] = useState<any[]>([])
   const [currentTier, setCurrentTier] = useState('standard')
+  const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  // Honesty fix: the VIP API computes YOUR current tier from YOUR paid orders —
+  // guests must not see a fabricated "Your Active Tier" card.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
-    fetch('/api/vip')
-      .then(res => res.json())
-      .then(data => {
+    if (!isAuthenticated) return
+    const headers: Record<string, string> = {}
+    if (token) headers['Authorization'] = `Bearer ${token}`
+
+    fetch('/api/vip', { headers })
+      .then(async res => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        const data = await res.json().catch(() => null)
+        if (!res.ok) throw new Error(data?.error || `Failed to load membership tiers (${res.status})`)
         if (data.success && data.data) {
           setTiers(data.data.tiers || [])
           setCurrentTier(data.data.currentTier || 'standard')
+        } else {
+          throw new Error('Membership tiers are unavailable right now.')
         }
       })
-      .catch(console.error)
-  }, [])
+      .catch((e: unknown) => {
+        if (e instanceof Error) setLoadError(e.message)
+      })
+      .finally(() => setLoading(false))
+  }, [isAuthenticated, token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your membership tier." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your membership tier"
+        message="Your active tier is calculated from your real paid order volume. Sign in to see where you stand."
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -53,6 +90,12 @@ export function MembershipTiersPage() {
         </div>
 
         {/* Tiers List */}
+        {loadError && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl p-4 text-xs text-red-800 dark:text-red-300 flex items-center gap-3">
+            <Award className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <span>{loadError} Refresh the page to try again.</span>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
           {tiers.map(tier => {
             const isCurrent = currentTier.toLowerCase() === tier.id.toLowerCase()

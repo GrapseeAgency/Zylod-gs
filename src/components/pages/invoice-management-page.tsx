@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, FileText, Download, Printer,
   CheckCircle2, Clock, ChevronRight, Loader2,
@@ -52,11 +53,13 @@ interface MushakDoc {
 
 export function InvoiceManagementPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [invoices, setInvoices] = useState<InvoiceItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
   const [filter, setFilter] = useState('all')
 
   // Task 132: the Mushak 6.3 detail dialog — consumes GET /api/invoices/[id],
@@ -86,27 +89,60 @@ export function InvoiceManagementPage() {
     }
   }, [token])
 
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
   useEffect(() => {
     async function loadInvoices() {
-      if (!token) {
+      if (!isAuthenticated || !token) {
         setLoading(false)
         return
       }
       setLoading(true)
+      setLoadError('')
       try {
         const res = await fetch(`/api/invoices?status=${filter}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        if (res.ok) {
-          const json = await res.json()
-          if (json.data) setInvoices(json.data)
+        const json = await res.json().catch(() => null)
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
         }
+        if (!res.ok || !json?.success) {
+          setLoadError(json?.error || `Could not load invoices (HTTP ${res.status}).`)
+          return
+        }
+        setInvoices(json.data || [])
+      } catch {
+        setLoadError('Network error while loading invoices. Check your connection and retry.')
       } finally {
         setLoading(false)
       }
     }
     loadInvoices()
-  }, [token, filter])
+  }, [token, isAuthenticated, filter])
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has expired. Sign in again to view your real commercial invoices."
+      />
+    )
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view invoices"
+        message="Commercial invoices are real VAT documents issued against your orders. Sign in to continue."
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
@@ -161,6 +197,11 @@ export function InvoiceManagementPage() {
 
         {/* Invoice List */}
         <div>
+          {!loading && loadError && (
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-2xl p-3 text-xs text-red-700 dark:text-red-300 mb-3" role="alert">
+              {loadError}
+            </div>
+          )}
           {loading ? (
             <PageLoader label="Generating Invoice Documents…" />
           ) : invoices.length > 0 ? (

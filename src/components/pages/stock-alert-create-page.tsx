@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +15,7 @@ import {
 
 export function StockAlertCreatePage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const initialProductId = pageParams?.productId || ''
@@ -25,6 +26,7 @@ export function StockAlertCreatePage() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [searchError, setSearchError] = useState<string | null>(null)
 
   useEffect(() => {
     if (initialProductId) {
@@ -43,13 +45,17 @@ export function StockAlertCreatePage() {
     if (!searchQuery.trim()) return
     try {
       setSearching(true)
+      setSearchError(null)
       const res = await fetch(`/api/products?search=${encodeURIComponent(searchQuery)}&limit=10`)
       const data = await res.json()
       if (data.success) {
         setSearchResults(data.data || [])
+      } else {
+        setSearchError('Could not search products right now. Please try again.')
       }
     } catch (err) {
       console.error('Search error:', err)
+      setSearchError('Could not search products right now. Please try again.')
     } finally {
       setSearching(false)
     }
@@ -81,6 +87,10 @@ export function StockAlertCreatePage() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (!isAuthenticated) {
+    return <AccountGate title="Sign in to set a restock alert" message="Restock alerts notify your account when a product is back in stock. Sign in to continue." />
   }
 
   return (
@@ -135,6 +145,9 @@ export function StockAlertCreatePage() {
                 </div>
 
                 <div className="space-y-2 max-h-60 overflow-y-auto pt-2">
+                  {searchError && (
+                    <p className="text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-950/40 p-3 rounded-xl">{searchError}</p>
+                  )}
                   {searchResults.map(p => (
                     <div
                       key={p.id}

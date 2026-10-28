@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Moon, Clock, BellOff, ShieldAlert,
   CheckCircle2, Sparkles, Check
@@ -14,21 +15,33 @@ import {
 
 export function NotificationQuietHoursPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [enabled, setEnabled] = useState(false)
   const [start, setStart] = useState('22:00')
   const [end, setEnd] = useState('07:00')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Honesty fix: quiet hours are saved on YOUR notification preferences —
+  // guests get a gate instead of silently discarding their toggles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/notifications/preferences', { headers })
-      .then(res => res.json())
-      .then(data => {
+      .then(async res => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        const data = await res.json()
         if (data.success && data.data) {
           setEnabled(data.data.quietHoursEnabled ?? false)
           if (data.data.quietHoursStart) setStart(data.data.quietHoursStart)
@@ -36,7 +49,20 @@ export function NotificationQuietHoursPage() {
         }
       })
       .catch(console.error)
-  }, [token])
+      .finally(() => setLoading(false))
+  }, [isAuthenticated, token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to manage quiet hours." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to set quiet hours"
+        message="Quiet hours are saved to your account's notification preferences. Sign in to configure yours."
+      />
+    )
+  }
 
   const handleSave = async (newEnabled = enabled, newStart = start, newEnd = end) => {
     try {

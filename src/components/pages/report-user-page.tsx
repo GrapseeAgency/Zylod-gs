@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, ShieldAlert, AlertTriangle, CheckCircle2,
   Send, AlertCircle, FileText, Lock, Search, Store,
@@ -27,6 +29,7 @@ interface UserOrder {
 
 export function ReportUserPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
+  const { isAuthenticated } = useAuthStore()
   const targetId = pageParams.userId || pageParams.sellerId || ''
   const targetName = pageParams.name || pageParams.sellerName || pageParams.userName || ''
 
@@ -47,6 +50,10 @@ export function ReportUserPage() {
   const [reportRef, setReportRef] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [copied, setCopied] = useState(false)
+  // Honesty fix: reports are saved against the signed-in account — a 401 on
+  // submit shows a sign-in gate, never a fake "report saved". (The optional
+  // "attach my order" list is simply not fetched for guests.)
+  const [sessionExpired, setSessionExpired] = useState(false)
 
   const reasons = [
     { value: 'scam', label: 'Fraud / Asking for Off-Platform Cash Payment (bKash/Direct Handover)' },
@@ -68,6 +75,7 @@ export function ReportUserPage() {
   }
 
   async function fetchUserOrders() {
+    if (!isAuthenticated) return
     try {
       const res = await fetch('/api/orders/my-orders?limit=10')
       if (res.ok) {
@@ -112,6 +120,10 @@ export function ReportUserPage() {
         body: JSON.stringify(formData),
       })
       const json = await res.json()
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok) {
         setReportRef(json.data?.id || '')
         setSubmitted(true)
@@ -122,6 +134,15 @@ export function ReportUserPage() {
       setErrorMsg('Network error. Please try again.')
     }
     setLoading(false)
+  }
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Sign in to submit a report"
+        message="Reports are saved to your account so Trust & Safety can follow up with you. Sign in to continue."
+      />
+    )
   }
 
   const filteredSuppliers = suppliers.filter(s =>

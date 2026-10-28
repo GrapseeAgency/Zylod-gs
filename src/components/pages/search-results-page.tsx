@@ -121,8 +121,20 @@ export function SearchResultsPage() {
       setLoadError(null)
       setErrorStatus(null)
       try {
+        const searchUrl = new URLSearchParams({
+          search: activeSearch.trim(),
+          limit: '20',
+          page: '1',
+        })
+        if (pageParams.minPrice) searchUrl.set('minPrice', String(pageParams.minPrice))
+        if (pageParams.maxPrice) searchUrl.set('maxPrice', String(pageParams.maxPrice))
+        if (pageParams.moq) searchUrl.set('moq', String(pageParams.moq))
+        if (pageParams.sortBy) searchUrl.set('sortBy', String(pageParams.sortBy))
+        if (pageParams.sortOrder) searchUrl.set('sortOrder', String(pageParams.sortOrder))
+        if (pageParams.category) searchUrl.set('category', String(pageParams.category))
+
         const [prodRes, catRes] = await Promise.all([
-          fetch(`/api/products?search=${encodeURIComponent(activeSearch.trim())}&limit=20&page=1`),
+          fetch(`/api/products?${searchUrl.toString()}`),
           fetch('/api/categories'),
         ])
 

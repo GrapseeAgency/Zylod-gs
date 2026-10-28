@@ -1,18 +1,33 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Download, Trash2, Edit3, ShieldAlert, CheckCircle2, Send } from 'lucide-react'
+import { ArrowLeft, Download, Trash2, Edit3, ShieldAlert, CheckCircle2, Send, AlertCircle } from 'lucide-react'
 
 export function DataRightsPage() {
   const { navigate, goBack } = useNavigationStore()
+  const { isAuthenticated } = useAuthStore()
   const [selectedType, setSelectedType] = useState('access')
   const [reason, setReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [resultRef, setResultRef] = useState('')
+  const [submitError, setSubmitError] = useState('')
+  const [gateLoading, setGateLoading] = useState(true)
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setGateLoading(false)
+      return
+    }
+    const t = setTimeout(() => setGateLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const rights = [
     { type: 'access', title: 'Right to Access', desc: 'Request a machine-readable export of all your commercial order data.', icon: Download },
@@ -24,22 +39,35 @@ export function DataRightsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    setSubmitError('')
     try {
       const res = await fetch('/api/legal/data-rights', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestType: selectedType, reason }),
       })
-      const data = await res.json()
-      if (data.success) {
+      const data = await res.json().catch(() => null)
+      if (res.ok && data?.success) {
         setSubmitted(true)
         setResultRef(data.data.requestId)
+      } else {
+        setSubmitError(data?.error || `Could not submit your request (HTTP ${res.status}).`)
       }
     } catch (err) {
       console.error(err)
+      setSubmitError('Network error while submitting your request. Check your connection and retry.')
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (!gateLoading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to submit a data rights request"
+        message="Data rights requests (export, correction, deletion) apply to your real account. Sign in to continue."
+      />
+    )
   }
 
   return (
@@ -100,6 +128,13 @@ export function DataRightsPage() {
                 className="w-full p-3 bg-slate-50 dark:bg-background rounded-2xl border border-gray-200 dark:border-gray-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
+
+            {submitError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>{submitError}</span>
+              </div>
+            )}
 
             <Button
               type="submit"

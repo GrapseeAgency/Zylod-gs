@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Copy, Share2, Check, QrCode } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useWishlistStore } from '@/store/wishlist-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { toast } from 'sonner'
 
 export function SharedWishlistPage() {
@@ -16,27 +18,38 @@ export function SharedWishlistPage() {
   const [shareData, setShareData] = useState<any>(null)
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const { isAuthenticated } = useAuthStore()
 
   useEffect(() => {
     const fetchShareData = async () => {
       try {
         if (mode === 'owner') {
+          if (!isAuthenticated) return
           const res = await fetch('/api/wishlist/share')
+          if (res.status === 401 || res.status === 403) {
+            setSessionExpired(true)
+            return
+          }
           const json = await res.json()
           if (json.success) setShareData(json.data)
+          else setLoadError('Could not load your wishlist sharing settings. Please try again later.')
         } else if (shareToken) {
           const res = await fetch(`/api/wishlist/shared?token=${shareToken}`)
           const json = await res.json()
           if (json.success) setShareData(json.data)
+          else setLoadError('This shared wishlist link is invalid or has expired.')
         }
       } catch (error) {
         console.error('Failed to fetch share data', error)
+        setLoadError('Something went wrong while loading this wishlist. Please try again later.')
       } finally {
         setLoading(false)
       }
     }
     fetchShareData()
-  }, [mode, shareToken])
+  }, [mode, shareToken, isAuthenticated])
 
   const copyToClipboard = () => {
     if (shareData?.token) {
@@ -55,6 +68,8 @@ export function SharedWishlistPage() {
   }
 
   if (mode === 'owner') {
+    if (sessionExpired) return <AccountGate title="Session expired" message="Your session has expired. Sign in again to manage wishlist sharing." />
+    if (!loading && !isAuthenticated) return <AccountGate title="Sign in to share your wishlist" message="Wishlist sharing is tied to your account. Sign in to continue." />
     return (
       <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
         <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b flex items-center px-4 h-14">
@@ -66,6 +81,9 @@ export function SharedWishlistPage() {
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Share Wishlist</h1>
 
         <main className="flex-1 p-4 space-y-6">
+          {loadError && (
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 rounded-lg p-3 text-sm">{loadError}</div>
+          )}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -131,6 +149,9 @@ export function SharedWishlistPage() {
       </header>
 
       <main className="flex-1 p-4 pb-[calc(var(--bottom-nav-h)+140px)]">
+        {loadError && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 rounded-lg p-3 text-sm mb-6">{loadError}</div>
+        )}
         {shareData?.owner && (
           <div className="flex items-center gap-3 mb-6 bg-white dark:bg-gray-900 p-3 rounded-lg border shadow-sm">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">

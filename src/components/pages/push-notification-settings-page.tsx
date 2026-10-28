@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Bell, Smartphone, Mail, Volume2, Moon,
   Package, Truck, Tag, TrendingDown, Layers, MessageSquare,
@@ -43,22 +44,34 @@ interface Preferences {
 
 export function PushNotificationSettingsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [prefs, setPrefs] = useState<Preferences | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
+  // Honesty fix: notification preferences belong to the signed-in account —
+  // guests get an account gate, real failures never render fake settings.
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const fetchPrefs = useCallback(async () => {
+    if (!isAuthenticated) return
     try {
       setLoading(true)
       const headers: Record<string, string> = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
 
       const res = await fetch('/api/notifications/preferences', { headers })
-      const data = await res.json()
-      if (data.success && data.data) {
+      const data = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+      if (data?.success && data?.data) {
         setPrefs(data.data)
       }
     } catch (err) {
@@ -66,7 +79,7 @@ export function PushNotificationSettingsPage() {
     } finally {
       setLoading(false)
     }
-  }, [token])
+  }, [isAuthenticated, token])
 
   useEffect(() => {
     fetchPrefs()
@@ -163,6 +176,18 @@ export function PushNotificationSettingsPage() {
       emailKey: null,
     },
   ]
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to manage notification settings." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage notification settings"
+        message="Notification preferences are saved to your account. Sign in to continue."
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

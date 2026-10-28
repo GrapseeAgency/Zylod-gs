@@ -34,7 +34,7 @@ export function LeftRail() {
   const { navigate } = useNavigationStore()
 
   return (
-    <aside className="hidden lg:flex flex-col gap-4 w-[240px] shrink-0" aria-label="Categories and supplier onboarding">
+    <aside className="hidden lg:flex flex-col gap-3.5 xl:gap-4 w-full shrink-0" aria-label="Categories and supplier onboarding">
 
       {/* ── Categories card ── */}
       <nav

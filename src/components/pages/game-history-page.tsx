@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import {
   ArrowLeft, Gamepad2, Trophy, Coins, Brain, Layers, Package
@@ -10,25 +11,53 @@ import {
 
 export function GameHistoryPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [scores, setScores] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
-    const headers: Record<string, string> = {}
-    if (token) headers['Authorization'] = `Bearer ${token}`
-
-    fetch('/api/mini-games', { headers })
-      .then(res => res.json())
+    if (!isAuthenticated || !token) return
+    fetch('/api/mini-games', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => res.json().catch(() => null))
       .then(data => {
-        if (data.success && data.data) {
+        if (data?.success && data.data) {
           setScores(data.data.recentScores || [])
+        } else {
+          setLoadError('Could not load your game history right now — please try again later.')
         }
       })
-      .catch(console.error)
+      .catch(() => {
+        setLoadError('Network error while loading your game history. Check your connection and retry.')
+      })
       .finally(() => setLoading(false))
-  }, [token])
+  }, [token, isAuthenticated])
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has expired. Sign in again to see your real mini game scores."
+      />
+    )
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view game history"
+        message="Score history shows your real mini game plays and points. Sign in to continue."
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -56,6 +85,10 @@ export function GameHistoryPage() {
         <h1 className="hidden md:block text-2xl font-bold text-gray-900 dark:text-gray-100">Mini Games Score History</h1>
         {loading ? (
           <div className="text-center py-16 text-gray-400 dark:text-gray-500 dark:text-gray-400">Loading your game records...</div>
+        ) : loadError ? (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-2xl p-4 text-xs text-red-700 dark:text-red-300">
+            {loadError}
+          </div>
         ) : scores.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 text-center text-gray-400 dark:text-gray-500 dark:text-gray-400 text-xs">
             No mini game scores submitted yet. Play trivia or puzzles to start earning points!

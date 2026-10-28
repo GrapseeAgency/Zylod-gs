@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import {
   ArrowLeft, TrendingUp, DollarSign, Share2,
@@ -13,42 +14,67 @@ import { toast } from 'sonner'
 
 export function AffiliateProgramPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [affiliate, setAffiliate] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [enrolling, setEnrolling] = useState(false)
+  const [enrollError, setEnrollError] = useState('')
   const [copied, setCopied] = useState(false)
 
+  // Auth honesty: enrollment and tracking links belong to an account — gate
+  // guests instead of an enroll button that can only 401.
+  const [authChecking, setAuthChecking] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
   useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    if (!isAuthenticated) { setLoading(false); return }
+    let cancelled = false
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/affiliate', { headers })
-      .then(res => res.json())
+      .then(async (res) => {
+        if (res.status === 401 || res.status === 403) {
+          if (!cancelled) setSessionExpired(true)
+          return null
+        }
+        return res.json().catch(() => null)
+      })
       .then(data => {
-        if (data.enrolled && data.data) {
+        if (cancelled) return
+        if (data?.enrolled && data.data) {
           setAffiliate(data.data)
         }
       })
       .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [token])
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [token, isAuthenticated])
 
   const handleEnroll = async () => {
     try {
       setEnrolling(true)
+      setEnrollError('')
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
 
       const res = await fetch('/api/affiliate', { method: 'POST', headers })
-      const data = await res.json()
-      if (res.ok && data.success) {
+      const data = await res.json().catch(() => null)
+      if (res.ok && data?.success) {
         setAffiliate(data.data)
         toast.success('Enrolled in Wholesale Affiliate Partner Program!')
+      } else {
+        setEnrollError(data?.error || `Enrollment was refused (HTTP ${res.status}). You were NOT enrolled.`)
       }
     } catch (err) {
       console.error(err)
+      setEnrollError('Network error — enrollment did not go through. Please retry.')
     } finally {
       setEnrolling(false)
     }
@@ -59,6 +85,25 @@ export function AffiliateProgramPage() {
     navigator.clipboard.writeText(affiliate.trackingLink)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  // Auth gates — enrollment is an account action; never offer a button that
+  // can only fail with 401.
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to join the affiliate program"
+        message="Affiliate tracking links and commissions belong to your account. Sign in to enroll."
+      />
+    )
+  }
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has ended. Sign in again to manage your affiliate enrollment."
+      />
+    )
   }
 
   return (
@@ -162,6 +207,12 @@ export function AffiliateProgramPage() {
             >
               {enrolling ? 'Setting up account...' : 'Enroll in Affiliate Program (Free)'}
             </Button>
+
+            {enrollError && (
+              <p className="text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+                {enrollError}
+              </p>
+            )}
           </div>
         )}
 

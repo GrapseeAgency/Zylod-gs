@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { ArrowLeft, Phone, Pencil, Plus, CheckCircle2 } from 'lucide-react'
 
 interface ShippingAddress {
@@ -24,13 +26,29 @@ export function ShippingAddressPage() {
   const [addresses, setAddresses] = useState<ShippingAddress[]>([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<string>('')
+  // t216 honesty fix: a guest's 401 must show a sign-in gate — never an
+  // "empty address book" that implies the visitor's data was read.
+  const [needsAuth, setNeedsAuth] = useState(false)
+  const { isAuthenticated } = useAuthStore()
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     let mounted = true
     const fetchAddresses = async () => {
       setLoading(true)
       try {
         const res = await fetch('/api/addresses')
+        if (res.status === 401) {
+          if (mounted) { setNeedsAuth(true); setLoading(false) }
+          return
+        }
         if (res.ok) {
           const data = await res.json()
           const list: ShippingAddress[] = (data.data || data || []).map((a: any) => ({
@@ -45,9 +63,9 @@ export function ShippingAddressPage() {
             country: a.country || 'Bangladesh',
             phone: a.phone || a.contact_phone || '',
           }))
-          if (mounted && list.length > 0) {
+          if (mounted) {
             setAddresses(list)
-            setSelected(list.find((a) => a.isDefault)?.id || list[0].id)
+            setSelected(list.find((a) => a.isDefault)?.id || list[0].id || '')
             setLoading(false)
             return
           }
@@ -56,14 +74,23 @@ export function ShippingAddressPage() {
         console.error('Addresses fetch error:', e)
       }
       if (mounted) {
-        // Show empty state with add button — no fallback mock data
+        // Authenticated fetch failure — honest error, not a fake empty book
         setAddresses([])
         setLoading(false)
       }
     }
     fetchAddresses()
     return () => { mounted = false }
-  }, [])
+  }, [isAuthenticated])
+
+  if (needsAuth || (!loading && !isAuthenticated)) {
+    return (
+      <AccountGate
+        title="Sign in to view your addresses"
+        message="Your address book is tied to your account. Sign in to view, add, and manage your delivery addresses."
+      />
+    )
+  }
 
   const selectedAddress = addresses.find((a) => a.id === selected)
 

@@ -10,14 +10,19 @@ export function PaymentFaqPage() {
   const [faqs, setFaqs] = useState<Array<{ id: string; questionEn: string; answerEn: string }>>([])
   const [openId, setOpenId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     fetch('/api/legal/faq?docType=payment_terms')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`Request failed (${res.status})`)
+        return res.json()
+      })
       .then(res => {
         if (res.success) setFaqs(res.data)
+        else setError('Could not load the Payment FAQ right now.')
       })
-      .catch(console.error)
+      .catch(() => setError('Could not load the Payment FAQ right now.'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -37,6 +42,14 @@ export function PaymentFaqPage() {
         {loading ? (
           <div className="space-y-3 animate-pulse">
             {[1, 2, 3].map(i => <div key={i} className="h-16 bg-gray-200 rounded-2xl" />)}
+          </div>
+        ) : error ? (
+          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-red-200 dark:border-red-900 shadow-sm p-5 text-center">
+            <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+          </div>
+        ) : faqs.length === 0 ? (
+          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400">No Payment FAQs have been published yet.</p>
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden divide-y divide-gray-50">

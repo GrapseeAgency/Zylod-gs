@@ -20,25 +20,30 @@ export function DmcaSubmitPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [ticketRef, setTicketRef] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.declarationSigned) return
     setSubmitting(true)
+    setSubmitError('')
     try {
       const res = await fetch('/api/legal/dmca', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       })
-      const data = await res.json()
-      if (data.success) {
+      const data = await res.json().catch(() => null)
+      if (res.ok && data?.success) {
         setSubmitted(true)
         setTicketRef(data.data.ticketRef)
+      } else {
+        setSubmitError(data?.error || `Your notice could not be submitted (HTTP ${res.status}). Please try again.`)
       }
     } catch (err) {
       console.error(err)
+      setSubmitError('Network error while submitting your notice. Check your connection and retry.')
     } finally {
       setSubmitting(false)
     }
@@ -75,6 +80,11 @@ export function DmcaSubmitPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {submitError && (
+              <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl p-3 text-xs text-red-700 dark:text-red-300" role="alert">
+                {submitError}
+              </div>
+            )}
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-3.5">
               <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">Claimant Information</h3>
               <div className="space-y-2.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-4 md:gap-y-2.5">

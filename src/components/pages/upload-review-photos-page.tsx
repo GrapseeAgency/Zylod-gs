@@ -4,6 +4,8 @@ import React, { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   X, UploadCloud, Play, Plus, CheckCircle2,
   Image as ImageIcon, Film, FileCheck
@@ -20,6 +22,7 @@ interface MediaFile {
 
 export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
   const { navigate, goBack, pageParams: storeParams } = useNavigationStore()
+  const { isAuthenticated, user } = useAuthStore()
   const pageParams = _pageParams || storeParams || {}
   const productId = pageParams.productId || pageParams.id || ''
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -100,6 +103,13 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
       // storage unavailable — media simply won't carry over, no fake fallback
     }
     navigate('write-review', { productId })
+  }
+
+  if (!isAuthenticated) {
+    return <AccountGate title="Sign in to upload review media" message="Photos and videos are attached to reviews on your buyer account. Sign in to continue." />
+  }
+  if (user && user.userType !== 'buyer') {
+    return <AccountGate title="Buyer accounts only" message={`Review media is uploaded from buyer accounts — you are signed in as a ${user.userType}.`} />
   }
 
   return (

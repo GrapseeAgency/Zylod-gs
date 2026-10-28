@@ -19,16 +19,19 @@ export function PrivacyPolicyPage() {
   const [doc, setDoc] = useState<LegalDoc | null>(null)
   const [faqs, setFaqs] = useState<LegalFaq[]>([])
   const [loading, setLoading] = useState(true)
+  const [docError, setDocError] = useState(false)
   const [openFaq, setOpenFaq] = useState<string | null>(null)
 
   useEffect(() => {
+    const load = (p: Promise<any>) => p.catch(() => ({ success: false }))
     Promise.all([
-      fetch('/api/legal/privacy_policy').then(r => r.json()),
-      fetch('/api/legal/faq?docType=privacy_policy').then(r => r.json()),
+      load(fetch('/api/legal/privacy_policy').then(r => r.json())),
+      load(fetch('/api/legal/faq?docType=privacy_policy').then(r => r.json())),
     ]).then(([docData, faqData]) => {
       if (docData.success) setDoc(docData.data.document)
+      else setDocError(true)
       if (faqData.success) setFaqs(faqData.data)
-    }).catch(console.error).finally(() => setLoading(false))
+    }).finally(() => setLoading(false))
   }, [])
 
   const dataCategories = [
@@ -65,7 +68,7 @@ export function PrivacyPolicyPage() {
                 Zylod is committed to protecting your personal and business data in compliance with Bangladesh's Digital Security Act and international GDPR standards.
               </p>
               <div className="flex gap-4 pt-1">
-                <div><p className="text-xs font-black">v{doc?.version || '1.0'}</p><p className="text-xs text-emerald-200">Version</p></div>
+                <div><p className="text-xs font-black">{doc ? `v${doc.version}` : '—'}</p><p className="text-xs text-emerald-200">Version</p></div>
                 <div><p className="text-xs font-black">GDPR</p><p className="text-xs text-emerald-200">Compliant</p></div>
                 <div><p className="text-xs font-black">PDPA</p><p className="text-xs text-emerald-200">BD Law</p></div>
               </div>
@@ -110,6 +113,13 @@ export function PrivacyPolicyPage() {
             </div>
 
             {/* Full policy content */}
+            {docError && (
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-red-200 dark:border-red-900 shadow-sm">
+                <p className="text-xs text-red-600 dark:text-red-400">
+                  The full Privacy Policy document could not be loaded right now.
+                </p>
+              </div>
+            )}
             {doc && (
               <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm">
                 <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3">Full Privacy Policy</h3>

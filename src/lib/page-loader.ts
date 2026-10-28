@@ -43,6 +43,7 @@ const REAL_PAGES = new Set([
   'admin-dashboard', 'admin-payments', 'admin-users', 'admin-products', 'admin-reports', 'admin-moderation', 'admin-suppliers', 'admin-analytics', 'admin-returns', 'admin-categories', 'admin-complaints', 'admin-settings', 'admin-orders', 'admin-inventory', 'admin-rfq', 'admin-support-tickets', 'admin-content', 'admin-inspections', 'admin-shipping', 'admin-deliveries', 'admin-audit-logs', 'supplier-dashboard', 'buyer-dashboard', 'my-samples', 'supplier-samples',
   'buyer-complaints',
   'explore', 'discover', 'trending-products', 'trending', 'flash-sale', 'flash-deals', 'daily-deals', 'new-arrivals',
+  'deals', 'logistics',
   'clearance', 'clearance-sale', 'seasonal-offers', 'seasonal-sale', 'brand-showcase', 'category-browser',
   // Wishlist & Favorites (121-128 + sub-pages)
   'wishlist', 'wishlist-detail', 'favorites', 'favorite-suppliers', 'favorite-products', 'favorite-categories',
@@ -175,6 +176,9 @@ const REAL_PAGES = new Set([
   // previously unregistered, so they fell through to GenericInfoPage
   // placeholders that contradicted the dashboard's real data (t183).
   'buyer-orders', 'buyer-credit', 'category-list',
+  // Retired placeholder ids — deep links must land on the REAL page, never
+  // the generic-info fallback (t215).
+  'buyer-rewards', 'supplier-earnings', 'supplier-directory', 'address-book',
   'supplier-analytics', 'supplier-warehouse', 'supplier-insights', 'supplier-verification-status',
 ])
 
@@ -276,7 +280,7 @@ export function getChunkForPage(pageId: string): string | null {
     'frequently-bought', 'frequently-bought-together', 'product-variants',
     'explore', 'discover', 'trending-products', 'trending', 'flash-sale', 'flash-deals', 'daily-deals', 'new-arrivals',
     'clearance', 'clearance-sale', 'seasonal-offers', 'seasonal-sale', 'brand-showcase', 'category-browser',
-    'suppliers', 'rfq-list',
+    'suppliers', 'rfq-list', 'deals', 'logistics',
   ].includes(pageId)) return 'browse'
   if ([
     'cart', 'checkout', 'orders', 'my-orders', 'order-detail',

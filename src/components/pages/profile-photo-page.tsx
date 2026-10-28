@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   Menu, User, ArrowLeft, Upload, Trash2, CheckCircle2,
   Building2, Store, Check, Camera, ShoppingBag, MessageSquare,
@@ -13,7 +14,7 @@ import {
 
 export function ProfilePhotoPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { user, token, updateUser } = useAuthStore()
+  const { user, token, updateUser, isAuthenticated } = useAuthStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [currentPhoto, setCurrentPhoto] = useState<string>(
@@ -21,12 +22,23 @@ export function ProfilePhotoPage() {
   )
   const [uploading, setUploading] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState('')
+
+  if (!isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage your photo"
+        message="Profile Photo Management changes your real account avatar. Sign in to continue."
+      />
+    )
+  }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !token) return
 
     setUploading(true)
+    setError('')
     try {
       const formData = new FormData()
       formData.append('photo', file)
@@ -46,10 +58,15 @@ export function ProfilePhotoPage() {
           }
           setSaved(true)
           setTimeout(() => setSaved(false), 2500)
+        } else {
+          setError('Upload succeeded but the server did not return a photo URL.')
         }
+      } else {
+        setError('Photo upload failed. Please try again.')
       }
     } catch (err) {
       console.error('Photo upload failed:', err)
+      setError('Photo upload failed. Please check your connection and try again.')
     } finally {
       setUploading(false)
     }
@@ -58,7 +75,7 @@ export function ProfilePhotoPage() {
   const handleRemovePhoto = async () => {
     if (!token) return
     try {
-      await fetch('/api/profile/me', {
+      const res = await fetch('/api/profile/me', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -66,12 +83,16 @@ export function ProfilePhotoPage() {
         },
         body: JSON.stringify({ avatarUrl: null }),
       })
+      if (!res.ok) {
+        setError('Could not remove the photo. Please try again.')
+        return
+      }
       setCurrentPhoto('')
       if (updateUser) {
         updateUser({ avatarUrl: null })
       }
     } catch {
-      // Graceful
+      setError('Could not remove the photo. Please check your connection and try again.')
     }
   }
 
@@ -164,6 +185,10 @@ export function ProfilePhotoPage() {
             <p className="text-xs font-bold text-emerald-600 flex items-center justify-center gap-1">
               <Check className="h-4 w-4" /> Photo updated successfully!
             </p>
+          )}
+
+          {error && (
+            <p className="text-xs font-semibold text-red-600">{error}</p>
           )}
 
           <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">

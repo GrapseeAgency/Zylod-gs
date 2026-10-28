@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -30,30 +31,50 @@ interface StockAlert {
 
 export function BackInStockAlertsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [activeTab, setActiveTab] = useState<'active' | 'notified' | 'cancelled'>('active')
   const [alerts, setAlerts] = useState<StockAlert[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Auth honesty: stock watches are user-scoped — gate guests instead of
+  // showing an empty "no watches" state as if it were their real list.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const fetchAlerts = useCallback(async () => {
+    if (!isAuthenticated) { setLoading(false); return }
     try {
       setLoading(true)
+      setLoadError(null)
       const headers: Record<string, string> = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
 
       const res = await fetch(`/api/stock-alerts?status=${activeTab}&limit=50`, { headers })
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       const data = await res.json()
       if (data.success && data.data) {
         setAlerts(data.data)
+      } else {
+        setLoadError(data?.error || `Could not load your stock watches (HTTP ${res.status}).`)
       }
     } catch (err) {
       console.error('Failed to load stock alerts:', err)
+      setLoadError('Network error — could not reach the stock alerts service.')
     } finally {
       setLoading(false)
     }
-  }, [token, activeTab])
+  }, [token, activeTab, isAuthenticated])
 
   useEffect(() => {
     fetchAlerts()
@@ -65,11 +86,45 @@ export function BackInStockAlertsPage() {
       const headers: Record<string, string> = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
 
-      await fetch(`/api/stock-alerts/${id}`, { method: 'DELETE', headers })
-      setAlerts(prev => prev.filter(a => a.id !== id))
+      const res = await fetch(`/api/stock-alerts/${id}`, { method: 'DELETE', headers })
+      if (res.ok) {
+        setAlerts(prev => prev.filter(a => a.id !== id))
+      } else {
+        setLoadError(`The watch was NOT cancelled (HTTP ${res.status}). Please retry.`)
+      }
     } catch (err) {
       console.error('Failed to cancel stock alert:', err)
+      setLoadError('Network error — the watch was NOT cancelled. Please retry.')
     }
+  }
+
+  // Auth gates — guests/wrong-role first, then expired session, then a real
+  // load failure (never a fake "no watches" state).
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your stock watches"
+        message="Back-in-stock alerts are tied to your account. Sign in to see the products you are watching."
+      />
+    )
+  }
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has ended. Sign in again to view your stock watches."
+      />
+    )
+  }
+  if (!loading && loadError && alerts.length === 0) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center space-y-3 max-w-md">
+          <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{loadError}</p>
+          <Button variant="outline" size="sm" onClick={fetchAlerts}>Retry</Button>
+        </div>
+      </div>
+    )
   }
 
   return (

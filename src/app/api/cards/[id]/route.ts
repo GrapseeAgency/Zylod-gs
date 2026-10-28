@@ -67,6 +67,14 @@ export async function PATCH(
     const userId = auth.user.id
     const body = await request.json()
 
+    // Ownership check: the row must belong to the caller before it is mutated
+    const existing = await db.paymentMethods.findFirst({
+      where: { id, userId, type: { in: ['card', 'debit', 'credit'] } },
+    })
+    if (!existing) {
+      return NextResponse.json({ error: 'Card not found' }, { status: 404 })
+    }
+
     if (body.isDefault) {
       await db.paymentMethods.updateMany({
         where: { userId, type: { in: ['card', 'debit', 'credit'] } },

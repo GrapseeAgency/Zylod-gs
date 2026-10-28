@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -21,6 +22,10 @@ interface InvestorDoc {
 
 export function InvestorRelationsPage() {
   const { navigate, goBack } = useNavigationStore()
+  // Owner-published support contact (Admin → System Settings) — honest
+  // generic wording when nothing is published, never a fabricated address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
   const [docs, setDocs] = useState<InvestorDoc[]>([])
   const [grouped, setGrouped] = useState<Record<string, InvestorDoc[]>>({})
   const [years, setYears] = useState<string[]>([])
@@ -72,8 +77,10 @@ export function InvestorRelationsPage() {
           </h2>
           <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
             Investor relations materials — audited financials, filings, funding information — have
-            not been released. They will appear on this page as they are published. In the meantime,
-            contact support@zylod.com.
+            not been released. They will appear on this page as they are published.
+            {supportEmail
+              ? ` In the meantime, contact ${supportEmail}.`
+              : ' In the meantime, reach us through the Help Center.'}
           </p>
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-black/10 dark:border-white/10">
             <div className="text-center">
@@ -128,7 +135,9 @@ export function InvestorRelationsPage() {
               <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 leading-relaxed max-w-md mx-auto">
                 Investor relations materials are not published yet. Nothing is listed here because
                 nothing has been released — reports and filings will appear on this page as they are
-                published. Contact support@zylod.com with any inquiry.
+                published.{supportEmail
+                  ? ` Contact ${supportEmail} with any inquiry.`
+                  : ' Reach us through the Help Center with any inquiry.'}
               </p>
             </div>
           ) : (

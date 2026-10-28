@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Landmark, ShieldCheck, CheckCircle2,
   FileText, Download, Check, Loader2, AlertCircle,
@@ -14,7 +15,7 @@ import {
 
 export function TaxInformationPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { user, token } = useAuthStore()
+  const { user, token, isAuthenticated } = useAuthStore()
 
   const [taxId, setTaxId] = useState('')
   const [vatNumber, setVatNumber] = useState('')
@@ -27,34 +28,48 @@ export function TaxInformationPage() {
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [notSupported, setNotSupported] = useState(false)
+  // Honesty fix: the tax profile is the signed-in account's REAL credentials —
+  // guests get an account gate instead of an editable-looking empty form.
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     async function loadTax() {
-      if (!token) {
-        setLoading(false)
-        return
-      }
+      if (!isAuthenticated) return
       try {
         const res = await fetch('/api/profile/tax', {
           headers: { Authorization: `Bearer ${token}` },
         })
-        if (res.ok) {
-          const json = await res.json()
-          if (json.data) {
-            setTaxId(json.data.taxId !== 'Not Set' ? json.data.taxId : '')
-            setVatNumber(json.data.vatNumber !== 'N/A' ? json.data.vatNumber : '')
-            if (json.data.businessEntityType) setBusinessEntityType(json.data.businessEntityType)
-            if (Array.isArray(json.data.documents)) setDocuments(json.data.documents)
-          }
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
+        }
+        if (!res.ok) {
+          setLoadError(`Could not load your saved tax information (HTTP ${res.status}).`)
+          return
+        }
+        const json = await res.json()
+        if (json.data) {
+          setTaxId(json.data.taxId !== 'Not Set' ? json.data.taxId : '')
+          setVatNumber(json.data.vatNumber !== 'N/A' ? json.data.vatNumber : '')
+          if (json.data.businessEntityType) setBusinessEntityType(json.data.businessEntityType)
+          if (Array.isArray(json.data.documents)) setDocuments(json.data.documents)
         }
       } catch {
-        // Graceful
+        setLoadError('Network error while loading your tax information. Check your connection and retry.')
       } finally {
         setLoading(false)
       }
     }
     loadTax()
-  }, [token])
+  }, [isAuthenticated, token])
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -74,6 +89,10 @@ export function TaxInformationPage() {
         body: JSON.stringify(body),
       })
       const json = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.status === 501) {
         setNotSupported(true)
         setSaveError(json?.error || 'Not implemented yet — requires backend support')
@@ -92,6 +111,19 @@ export function TaxInformationPage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  // Gates — placed after every hook so all hooks always run.
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to manage your tax information." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage your tax information"
+        message="Tax & VAT credentials belong to your account. Sign in to view and save your real e-TIN and BIN details."
+      />
+    )
   }
 
   if (loading) {
@@ -185,6 +217,14 @@ export function TaxInformationPage() {
               Your verified BIN and e-TIN are automatically rendered on all standard wholesale B2B commercial invoices generated on Zylod for corporate audit compliance.
             </p>
           </div>
+
+          {/* Honest load failure — the form below may not reflect saved data */}
+          {loadError && (
+            <div className="rounded-3xl px-4 py-3 border bg-amber-50 border-amber-200 flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-amber-500" />
+              <p className="text-xs font-bold text-amber-700">{loadError}</p>
+            </div>
+          )}
 
           {/* Real save error / honest limitation — verbatim from the server */}
           {saveError && (

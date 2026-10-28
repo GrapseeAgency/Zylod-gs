@@ -17,7 +17,7 @@ export async function DELETE(
   try {
     const { itemId } = await params
     await (db as any).savedForLater.deleteMany({
-      where: { id: itemId, buyerId: auth.user.id }
+      where: { id: itemId, userId: auth.user.id }
     })
     return NextResponse.json({ success: true, message: 'Item removed' })
   } catch (error) {

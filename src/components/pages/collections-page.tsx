@@ -2,31 +2,60 @@
 
 import React, { useEffect, useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
-import { ArrowLeft, Plus, MoreVertical, Lock, Globe, Link as LinkIcon, Folder } from 'lucide-react'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
+import { ArrowLeft, Plus, MoreVertical, Lock, Globe, Link as LinkIcon, Folder, AlertCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export function CollectionsPage() {
   const { navigate, goBack } = useNavigationStore()
+  const { token, isAuthenticated } = useAuthStore()
   const [collections, setCollections] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [sortOption, setSortOption] = useState('recent')
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setIsLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!token) return
     const fetchCollections = async () => {
       try {
-        const res = await fetch('/api/collections')
-        const data = await res.json()
-        if (data.success) {
+        const res = await fetch('/api/collections', { headers: { Authorization: `Bearer ${token}` } })
+        const data = await res.json().catch(() => null)
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        if (data?.success) {
           setCollections(data.data)
+        } else {
+          setLoadError(data?.error || `Could not load your collections (HTTP ${res.status}).`)
         }
       } catch (err) {
         console.error('Error fetching collections', err)
+        setLoadError('Network error while loading your collections. Check your connection and retry.')
       } finally {
         setIsLoading(false)
       }
     }
     fetchCollections()
-  }, [])
+  }, [token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your collections." />
+  }
+  if (!isLoading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your collections"
+        message="Collections organize the products you saved. Sign in to continue."
+      />
+    )
+  }
 
   const sortedCollections = [...collections].sort((a, b) => {
     if (sortOption === 'name') return a.name.localeCompare(b.name)
@@ -88,6 +117,16 @@ export function CollectionsPage() {
               </div>
             ))}
           </div>
+        ) : loadError ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center text-center mt-20"
+          >
+            <AlertCircle className="w-10 h-10 text-red-300 mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Could not load collections</h2>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-sm">{loadError}</p>
+          </motion.div>
         ) : sortedCollections.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}

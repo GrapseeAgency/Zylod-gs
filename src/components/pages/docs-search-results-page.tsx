@@ -32,9 +32,11 @@ export function DocsSearchResultsPage() {
   const [articles, setArticles] = useState<SearchResultArticle[]>([])
   const [faqs, setFaqs] = useState<SearchResultFaq[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   async function fetchResults(search: string) {
     setLoading(true)
+    setLoadError('')
     try {
       const [artRes, faqRes] = await Promise.all([
         fetch(`/api/support/articles?q=${encodeURIComponent(search)}`),
@@ -43,12 +45,16 @@ export function DocsSearchResultsPage() {
       if (artRes.ok) {
         const json = await artRes.json()
         setArticles(json.data || [])
+      } else {
+        setLoadError(`Documentation search is unavailable right now (HTTP ${artRes.status}).`)
       }
       if (faqRes.ok) {
         const json = await faqRes.json()
         setFaqs(json.data || [])
       }
-    } catch {}
+    } catch {
+      setLoadError('Network error while searching documentation. Check your connection and retry.')
+    }
     setLoading(false)
   }
 
@@ -99,6 +105,10 @@ export function DocsSearchResultsPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-20 w-full rounded-2xl" />)}
+          </div>
+        ) : loadError ? (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-2xl p-4 text-xs text-red-700 dark:text-red-300">
+            {loadError}
           </div>
         ) : totalMatches === 0 ? (
           <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 space-y-2">

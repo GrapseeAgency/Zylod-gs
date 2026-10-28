@@ -11,6 +11,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -46,27 +47,45 @@ const TASK_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
 
 export function EarnCouponsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
   const [completingId, setCompletingId] = useState<string | null>(null)
 
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
   const loadTasks = useCallback(async () => {
+    if (!isAuthenticated || !token) return
     try {
-      const headers: Record<string, string> = {}
-      if (token) headers['Authorization'] = `Bearer ${token}`
-      const res = await fetch('/api/coupons/earn', { headers })
-      const data = await res.json()
-      if (data.success && data.data) {
-        setTasks(data.data)
+      const res = await fetch('/api/coupons/earn', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
       }
+      if (!res.ok || !data?.success) {
+        setLoadError(data?.error || `Could not load reward tasks (HTTP ${res.status}).`)
+        return
+      }
+      setLoadError('')
+      setTasks(data.data || [])
     } catch (err) {
       console.error(err)
+      setLoadError('Network error while loading reward tasks. Check your connection and retry.')
     } finally {
       setLoading(false)
     }
-  }, [token])
+  }, [token, isAuthenticated])
 
   useEffect(() => {
     loadTasks()
@@ -103,6 +122,23 @@ export function EarnCouponsPage() {
   const getTaskIcon = (type: string) => {
     const Icon = TASK_ICONS[type] ?? Sparkles
     return <Icon className="w-5 h-5 text-red-600" />
+  }
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has expired. Sign in again to see your real reward progress and vouchers."
+      />
+    )
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to earn vouchers"
+        message="Rewards are verified against your real account activity — sign in to see your actual progress and claim vouchers."
+      />
+    )
   }
 
   return (
@@ -157,6 +193,12 @@ export function EarnCouponsPage() {
           <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1">
             Available Tasks ({tasks.length})
           </h2>
+
+          {!loading && loadError && (
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-2xl p-3 text-xs text-red-700 dark:text-red-300">
+              {loadError}
+            </div>
+          )}
 
           {loading ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

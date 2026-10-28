@@ -79,12 +79,14 @@ export async function POST(request: NextRequest) {
 
     // In production, send OTP via SMS/email service
     // For dev, return the OTP in response
+    // SECURITY: the code leaves the server ONLY outside production — an
+    // unconditional devCode would let anyone reset any account's password.
+    const dev =
+      process.env.NODE_ENV !== 'production' ? { otpCode, devCode: otpCode } : {}
     return NextResponse.json({
       success: true,
       message: `OTP sent to ${phoneOrEmail}`,
-      // Development only - remove in production
-      otpCode,
-      devCode: otpCode,
+      ...dev,
       expiresAt,
     })
   } catch (error) {

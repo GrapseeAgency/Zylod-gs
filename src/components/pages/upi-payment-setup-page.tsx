@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Smartphone, Plus, CheckCircle2,
   Trash2, ShieldCheck, Check, Loader2, CreditCard,
@@ -25,11 +26,13 @@ interface MFSAccount {
 
 export function UpiPaymentSetupPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [accounts, setAccounts] = useState<MFSAccount[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
 
   const [provider, setProvider] = useState<'bKash' | 'Nagad' | 'Rocket' | 'Upay'>('bKash')
   const [accountNumber, setAccountNumber] = useState('')
@@ -49,12 +52,19 @@ export function UpiPaymentSetupPage() {
       const res = await fetch('/api/payment-methods/mobile-banking', {
         headers: { Authorization: `Bearer ${token}` },
       })
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok) {
         const json = await res.json()
         if (json.data) setAccounts(json.data)
+        else setLoadError('Could not load your linked mobile banking accounts. Please try again later.')
+      } else {
+        setLoadError('Could not load your linked mobile banking accounts. Please try again later.')
       }
     } catch {
-      // Graceful
+      setLoadError('Could not load your linked mobile banking accounts. Please try again later.')
     } finally {
       setLoading(false)
     }
@@ -104,6 +114,9 @@ export function UpiPaymentSetupPage() {
       setSubmitting(false)
     }
   }
+
+  if (sessionExpired) return <AccountGate title="Session expired" message="Your session has expired. Sign in again to manage your mobile banking accounts." />
+  if (!loading && !isAuthenticated) return <AccountGate title="Sign in to manage mobile banking" message="Linked bKash, Nagad, Rocket or Upay accounts belong to your account. Sign in to continue." />
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-10">
@@ -223,6 +236,12 @@ export function UpiPaymentSetupPage() {
 
         {/* Existing MFS Accounts */}
         <div className="space-y-3">
+          {loadError && (
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs font-bold text-rose-600 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {loadError}
+            </div>
+          )}
           {loading ? (
             <PageLoader label="Loading Mobile Banking Links…" />
           ) : accounts.length > 0 ? (
@@ -255,7 +274,7 @@ export function UpiPaymentSetupPage() {
                 </div>
               </div>
             ))
-          ) : (
+          ) : !loadError ? (
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
               <Smartphone className="h-10 w-10 mx-auto text-slate-400 dark:text-slate-300 stroke-[1.5]" />
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">No MFS accounts linked</span>
@@ -263,7 +282,7 @@ export function UpiPaymentSetupPage() {
                 Connect your bKash or Nagad wallet for 1-click order payments and refunds.
               </p>
             </div>
-          )}
+          ) : null}
         </div>
 
         {!showAddForm && (

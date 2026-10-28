@@ -13,16 +13,21 @@ export function LiveShoppingPage() {
 
   const [streams, setStreams] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     fetch('/api/live-shopping')
-      .then(res => res.json())
+      .then(res => res.json().catch(() => null))
       .then(data => {
-        if (data.success && data.data) {
+        if (data?.success && data.data) {
           setStreams(data.data)
+        } else {
+          setLoadError('Could not load live streams right now — please try again later.')
         }
       })
-      .catch(console.error)
+      .catch(() => {
+        setLoadError('Network error while loading live streams. Check your connection and retry.')
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -58,6 +63,10 @@ export function LiveShoppingPage() {
           {loading ? (
             <div className="col-span-full">
               <PageLoader className="min-h-0 py-10" />
+            </div>
+          ) : loadError ? (
+            <div className="col-span-full bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-2xl p-4 text-xs text-red-700 dark:text-red-300">
+              {loadError}
             </div>
           ) : streams.length === 0 ? (
             <div className="col-span-full text-center py-16">

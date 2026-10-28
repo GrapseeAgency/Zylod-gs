@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 
 interface Overview {
   gmv: number;
@@ -65,6 +67,7 @@ const MAX_BAR_H = 56;
 export function ProductPerformancePagePage() {
   const navigate = useNavigationStore((state) => state.navigate);
   const goBack = useNavigationStore((state) => state.goBack);
+  const { isAuthenticated, user } = useAuthStore();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -78,7 +81,7 @@ export function ProductPerformancePagePage() {
         const res = await fetch('/api/supplier/analytics');
         const json = await res.json().catch(() => null);
         if (!alive) return;
-        if (res.status === 401) {
+        if (res.status === 401 || res.status === 403) {
           setAuthRequired(true);
           setError('');
           setData(null);
@@ -149,16 +152,24 @@ export function ProductPerformancePagePage() {
             </Card>
           </div>
         ) : authRequired ? (
-          <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
-            <CardContent className="p-8 text-center space-y-3">
-              <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
-              <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Seller sign-in required</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                Sign in with a supplier account to see how your products are performing.
-              </p>
-              <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
-            </CardContent>
-          </Card>
+          isAuthenticated && user && user.userType !== 'supplier' && user.userType !== 'admin' ? (
+            <AccountGate
+              title="Supplier accounts only"
+              message={`Product performance shows your store's real sales data — it belongs to supplier accounts, and you are signed in as a ${user.userType}.`}
+              showBecomeSupplier
+            />
+          ) : (
+            <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
+              <CardContent className="p-8 text-center space-y-3">
+                <Lock className="w-10 h-10 text-gray-300 mx-auto dark:text-gray-600 dark:text-gray-400 dark:text-gray-500" />
+                <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Seller sign-in required</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                  Sign in with a supplier account to see how your products are performing.
+                </p>
+                <Button onClick={() => navigate('login')} className="h-11">Sign In</Button>
+              </CardContent>
+            </Card>
+          )
         ) : error ? (
           <Card className="border-none shadow-sm dark:bg-gray-900 dark:border-gray-800">
             <CardContent className="p-6 text-center text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-300">

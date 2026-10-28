@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { FolderArchive, ArrowLeft, Download, CheckCircle2, RefreshCw, Layers } from 'lucide-react'
+import { FolderArchive, ArrowLeft, Download, CheckCircle2, RefreshCw, Layers, AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -12,14 +12,18 @@ export function OfflineDataManagerPage() {
   const [downloading, setDownloading] = useState(false)
   const [synced, setSynced] = useState(false)
   const [dataPackage, setDataPackage] = useState<any>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/app/offline-sync')
-      .then(res => res.json())
-      .then(json => {
+      .then(async res => {
+        const json = await res.json().catch(() => null)
+        if (!res.ok) throw new Error(json?.error || `Failed to load the offline package (${res.status})`)
         if (json.data) setDataPackage(json.data)
       })
-      .catch(console.error)
+      .catch((e: unknown) => {
+        setLoadError(e instanceof Error ? e.message : 'Failed to load the offline package')
+      })
   }, [])
 
   const handleDownloadPackage = async () => {
@@ -27,11 +31,15 @@ export function OfflineDataManagerPage() {
     try {
       const res = await fetch('/api/app/offline-sync')
       const json = await res.json()
+      if (!res.ok) throw new Error(json?.error || `Download failed (${res.status})`)
       if (json.data) {
         setDataPackage(json.data)
+        setLoadError(null)
         setSynced(true)
         setTimeout(() => setSynced(false), 3000)
       }
+    } catch (e: unknown) {
+      setLoadError(e instanceof Error ? e.message : 'Download failed — the package was NOT saved.')
     } finally {
       setDownloading(false)
     }
@@ -55,6 +63,13 @@ export function OfflineDataManagerPage() {
         </div>
       )}
 
+      {loadError && (
+        <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl text-red-800 dark:text-red-300 flex items-center gap-2 text-sm">
+          <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+          {loadError} Reload the page to try again.
+        </div>
+      )}
+
       <Card className="rounded-2xl border shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -63,25 +78,25 @@ export function OfflineDataManagerPage() {
               Active Offline Snapshot
             </CardTitle>
             <Badge variant="outline" className="font-mono text-xs">
-              v{dataPackage?.version || '2026.08.18'}
+              {dataPackage?.version ? `v${dataPackage.version}` : 'not synced yet'}
             </Badge>
           </div>
           <CardDescription className="text-xs">
-            Snapshot timestamp: {dataPackage?.timestamp ? new Date(dataPackage.timestamp).toLocaleString() : 'Just now'}
+            Snapshot timestamp: {dataPackage?.timestamp ? new Date(dataPackage.timestamp).toLocaleString() : 'No package downloaded yet'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-3 gap-3 md:gap-4">
             <div className="p-3 md:p-4 bg-muted/30 rounded-xl border text-center">
-              <div className="text-lg md:text-2xl font-black text-foreground">{dataPackage?.catalogue?.categories?.length || 30}</div>
+              <div className="text-lg md:text-2xl font-black text-foreground">{dataPackage?.catalogue?.categories?.length ?? 0}</div>
               <div className="text-xs text-muted-foreground">Categories</div>
             </div>
             <div className="p-3 md:p-4 bg-muted/30 rounded-xl border text-center">
-              <div className="text-lg md:text-2xl font-black text-foreground">{dataPackage?.catalogue?.products?.length || 50}</div>
+              <div className="text-lg md:text-2xl font-black text-foreground">{dataPackage?.catalogue?.products?.length ?? 0}</div>
               <div className="text-xs text-muted-foreground">Top Products</div>
             </div>
             <div className="p-3 md:p-4 bg-muted/30 rounded-xl border text-center">
-              <div className="text-lg md:text-2xl font-black text-foreground">{dataPackage?.catalogue?.suppliers?.length || 20}</div>
+              <div className="text-lg md:text-2xl font-black text-foreground">{dataPackage?.catalogue?.suppliers?.length ?? 0}</div>
               <div className="text-xs text-muted-foreground">Verified Mills</div>
             </div>
           </div>

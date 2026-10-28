@@ -20,17 +20,22 @@ export function GroupBuyPage() {
 
   const [campaigns, setCampaigns] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   const fetchCampaigns = useCallback(async () => {
     try {
       setLoading(true)
       const res = await fetch('/api/group-buy')
-      const data = await res.json()
-      if (data.success && data.data) {
-        setCampaigns(data.data)
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.success) {
+        setLoadError(data?.error || `Could not load group buy pools (HTTP ${res.status}) — please try again later.`)
+        return
       }
+      setLoadError('')
+      setCampaigns(data.data || [])
     } catch (err) {
       console.error(err)
+      setLoadError('Network error while loading group buy pools. Check your connection and retry.')
     } finally {
       setLoading(false)
     }
@@ -79,6 +84,10 @@ export function GroupBuyPage() {
                 <Skeleton className="h-2 w-full rounded-full" />
               </div>
             ))
+          ) : loadError ? (
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-2xl p-4 text-xs text-red-700 dark:text-red-300">
+              {loadError}
+            </div>
           ) : campaigns.length === 0 ? (
             <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500">
               No active group buy pools at this moment.

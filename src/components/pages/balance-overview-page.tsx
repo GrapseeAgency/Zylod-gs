@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   ArrowLeft, Wallet, ShieldCheck,
@@ -15,7 +16,7 @@ import {
 
 export function BalanceOverviewPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [data, setData] = useState<{
@@ -39,24 +40,73 @@ export function BalanceOverviewPage() {
   })
 
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Auth honesty: wallet balance is user-scoped — gate guests instead of
+  // rendering "৳0 available" as if it were their real wallet.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     async function load() {
-      if (!token) return
+      if (!token || !isAuthenticated) { setLoading(false); return }
       try {
         const res = await fetch('/api/wallet/balance', {
           headers: { Authorization: `Bearer ${token}` },
         })
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
+        }
         if (res.ok) {
           const json = await res.json()
           if (json.data) setData(json.data)
+        } else {
+          setLoadError(`Could not load your wallet balance (HTTP ${res.status}).`)
         }
+      } catch {
+        setLoadError('Network error — could not reach the wallet service.')
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [token])
+  }, [token, isAuthenticated])
+
+  // Auth gates — guests first, then expired session, then a real load failure
+  // (never a fabricated ৳0 balance).
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your wallet"
+        message="Your balance and cash-flow figures come from your real wallet record. Sign in to continue."
+      />
+    )
+  }
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has ended. Sign in again to view your wallet balance."
+      />
+    )
+  }
+  if (!loading && loadError) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center space-y-3 max-w-md">
+          <AlertCircle className="h-10 w-10 mx-auto text-primary" />
+          <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{loadError}</p>
+          <Button variant="outline" size="sm" onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">

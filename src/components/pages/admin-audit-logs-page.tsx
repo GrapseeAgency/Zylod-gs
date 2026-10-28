@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { toast } from 'sonner'
 import { ChevronDown, ChevronRight, ChevronLeft, RefreshCw, ScrollText, Search } from 'lucide-react'
 
@@ -56,10 +57,21 @@ function prettyMeta(raw: string | null): string {
 
 export function AdminAuditLogsPage() {
   const { goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, user, isAuthenticated } = useAuthStore()
+  const isAdmin = user?.userType === 'admin'
   const [payload, setPayload] = useState<Payload | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Auth honesty: the audit trail is admin-only — gate guests and non-admins
+  // instead of relying on the fetch error alone.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
   const [page, setPage] = useState(1)
   const [actionFilter, setActionFilter] = useState('')
   const [entityTypeFilter, setEntityTypeFilter] = useState('')
@@ -80,8 +92,9 @@ export function AdminAuditLogsPage() {
         credentials: 'include',
       })
       const json = await res.json().catch(() => null)
-      if (res.status === 401) {
-        setError('Admin access required — sign in as an administrator to read the audit trail.')
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        setError(null)
         setPayload(null)
       } else if (!res.ok || !json?.success) {
         setError(json?.error || `Failed to load audit logs (HTTP ${res.status})`)
@@ -119,6 +132,34 @@ export function AdminAuditLogsPage() {
 
   const rows = payload?.data ?? []
   const pagination = payload?.pagination
+
+  // Auth gates — order matters: guests and wrong-role users get their own
+  // honest gate; only a genuinely expired authenticated session gets the
+  // session-expired gate.
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view the audit trail"
+        message="The audit trail records every privileged platform write. Sign in with an administrator account to continue."
+      />
+    )
+  }
+  if (!authChecking && isAuthenticated && user && !isAdmin) {
+    return (
+      <AccountGate
+        title="Admin accounts only"
+        message={`The audit trail belongs to administrator accounts — you are signed in as a ${user.userType}.`}
+      />
+    )
+  }
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your admin session has ended. Sign in again with an administrator account to read the audit trail."
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50/40 via-white to-orange-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">

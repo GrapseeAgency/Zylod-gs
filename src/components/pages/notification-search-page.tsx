@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Input } from '@/components/ui/input'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Search, X, Clock, ChevronRight,
   Package, Truck, Tag, TrendingDown, Layers, Bell
@@ -12,25 +13,49 @@ import {
 
 export function NotificationSearchPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [query, setQuery] = useState('')
   const [allNotifs, setAllNotifs] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Honesty fix: search runs over YOUR notifications — a guest must not see a
+  // fabricated "No matching notifications" result for their (nonexistent) inbox.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/notifications?limit=50', { headers })
-      .then(res => res.json())
-      .then(data => {
+      .then(async res => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        const data = await res.json()
         if (data.success && data.data) {
           setAllNotifs(data.data)
         }
       })
       .catch(console.error)
-  }, [token])
+      .finally(() => setLoading(false))
+  }, [isAuthenticated, token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to search your notifications." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to search notifications"
+        message="Notification search only covers the notifications on your own account. Sign in to search yours."
+      />
+    )
+  }
 
   const results = query.trim()
     ? allNotifs.filter(n =>

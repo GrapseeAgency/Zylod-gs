@@ -1,13 +1,47 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { AlertCircle } from 'lucide-react';
 
 export function SellerReviewReplyPage({ id }: { id?: string }) {
   const { goBack } = useNavigationStore();
+  // Supplier-only rail: a guest gets an account gate instead of composing
+  // a reply that can never be posted.
+  const { isAuthenticated, user } = useAuthStore();
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin');
+  const [bootWait, setBootWait] = useState(true);
   const [reply, setReply] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setBootWait(false);
+      return;
+    }
+    const t = setTimeout(() => setBootWait(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
+
+  if (!bootWait && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Seller sign-in required"
+        message="Review replies are posted from your supplier account. Sign in with a supplier account to continue."
+      />
+    );
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`Replying to buyer reviews belongs to supplier accounts — you are signed in as a ${user.userType}.`}
+      />
+    );
+  }
 
   const handleSubmit = async () => {
     if (!reply.trim()) {

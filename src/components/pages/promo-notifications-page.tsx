@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Tag, Sparkles, Flame, Percent, Gift,
   ChevronRight, Megaphone, ShoppingBag, SlidersHorizontal
@@ -24,29 +25,46 @@ interface PromoNotification {
 
 export function PromoNotificationsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [promos, setPromos] = useState<PromoNotification[]>([])
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState<'all' | 'flash' | 'seasonal' | 'clearance' | 'coupon'>('all')
+  // Honesty fix: this feed is the signed-in account's promotion notifications —
+  // guests get an account gate, and real API failures show an error.
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const fetchPromos = useCallback(async () => {
+    if (!isAuthenticated) return
     try {
       setLoading(true)
+      setLoadError(null)
       const headers: Record<string, string> = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
 
       const res = await fetch('/api/notifications/by-type?type=promotion&limit=30', { headers })
-      const data = await res.json()
+      const data = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+      if (!res.ok) throw new Error(data?.error || `Failed to load promotions (${res.status})`)
       if (data.success && data.data) {
         setPromos(data.data)
+      } else {
+        setPromos([])
       }
     } catch (err) {
-      console.error('Failed to load promotions:', err)
+      setLoadError(err instanceof Error ? err.message : 'Failed to load promotions')
     } finally {
       setLoading(false)
     }
-  }, [token])
+  }, [isAuthenticated, token])
 
   useEffect(() => {
     fetchPromos()
@@ -74,6 +92,18 @@ export function PromoNotificationsPage() {
       return { border: 'border-l-4 border-l-amber-500', icon: Percent, iconBg: 'bg-amber-50 text-amber-600' }
     }
     return { border: 'border-l-4 border-l-purple-500', icon: Sparkles, iconBg: 'bg-purple-50 text-purple-600' }
+  }
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view promotions." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view promotions"
+        message="Promotion notifications are tied to your account. Sign in to see the real deals feed."
+      />
+    )
   }
 
   return (
@@ -151,7 +181,25 @@ export function PromoNotificationsPage() {
 
       {/* Promotions List */}
       <div className="flex-1 px-4 py-4 max-w-3xl mx-auto w-full space-y-3 pb-24 md:max-w-5xl md:px-6 md:py-6 md:pb-10 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:space-y-0">
-        {loading ? (
+        {loadError ? (
+          <div className="md:col-span-2 lg:col-span-3 text-center py-16 space-y-3">
+            <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+              <Megaphone className="w-8 h-8" />
+            </div>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Could not load promotions</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">{loadError}</p>
+            <div className="pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchPromos()}
+                className="text-xs font-bold"
+              >
+                Try again
+              </Button>
+            </div>
+          </div>
+        ) : loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
               <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 animate-pulse space-y-2">

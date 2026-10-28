@@ -2,6 +2,7 @@ import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { authenticateRequest } from '@/lib/auth'
+import { getSettingValue } from '@/lib/admin-settings'
 
 /**
  * GET /api/support/chat/sessions — list user's chat sessions
@@ -56,7 +57,13 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Add initial system / welcome message
+    // Add initial system / welcome message. The only legitimate support email
+    // is the one the site owner published under Admin → System Settings
+    // (support.email); when unset, the welcome message stays honest and
+    // generic instead of naming an invented address.
+    const publishedEmail = await getSettingValue('support.email')
+    const supportEmail = typeof publishedEmail === 'string' ? publishedEmail.trim() : ''
+
     await db.chatMessages.create({
       data: {
         sessionId: session.id,
@@ -64,7 +71,9 @@ export async function POST(request: NextRequest) {
         senderType: 'system',
         message: type === 'chatbot'
           ? 'Hello! I am the Zylod Help Assistant. I can point you to help articles about wholesale orders, supplier verification, and payment verification.'
-          : 'Welcome to Zylod Support Chat. Messages are saved here for the Zylod team to review — for urgent issues, email support@zylod.com.',
+          : supportEmail
+            ? `Welcome to Zylod Support Chat. Messages are saved here for the Zylod team to review — for urgent issues, email ${supportEmail}.`
+            : 'Welcome to Zylod Support Chat. Messages are saved here for the Zylod team to review — for urgent issues, reach us through the Help Center.',
       },
     })
 

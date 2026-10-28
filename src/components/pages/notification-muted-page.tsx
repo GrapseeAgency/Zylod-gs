@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, VolumeX, Bell, Check, Clock,
   Shield, Package, Tag, Layers
@@ -12,11 +13,20 @@ import {
 
 export function NotificationMutedPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [pausedUntil, setPausedUntil] = useState<string | null>(null)
   const [prefs, setPrefs] = useState<any>({})
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Honesty fix: muted categories come from YOUR saved preferences — guests
+  // must not see a fabricated "Promotions muted" list.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     const savedPause = localStorage.getItem('zylod_notif_pause_until')
@@ -24,19 +34,34 @@ export function NotificationMutedPage() {
       setPausedUntil(savedPause)
     }
 
+    if (!isAuthenticated) return
+
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/notifications/preferences', { headers })
-      .then(res => res.json())
-      .then(data => {
+      .then(async res => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        const data = await res.json()
         if (data.success && data.data) {
           setPrefs(data.data)
         }
       })
       .catch(console.error)
       .finally(() => setLoading(false))
-  }, [token])
+  }, [isAuthenticated, token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to manage your muted alerts." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage muted alerts"
+        message="Muted categories come from your account's notification preferences. Sign in to see yours."
+      />
+    )
+  }
 
   const pauseFor = (hours: number) => {
     const until = new Date(Date.now() + hours * 60 * 60 * 1000).toISOString()

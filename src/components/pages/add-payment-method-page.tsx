@@ -1,10 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, CreditCard, Smartphone, Building2,
   Save, ShieldCheck, Loader2,
@@ -29,9 +31,19 @@ type TabType = 'card' | 'mfs' | 'bank'
 
 export function AddPaymentMethodPage() {
   const { navigate, goBack } = useNavigationStore()
+  const { isAuthenticated } = useAuthStore()
   const [activeTab, setActiveTab] = useState<TabType>('mfs')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Auth honesty: a payment method always belongs to an account — render the
+  // sign-in gate for guests instead of a form whose POST could only 401.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   // Card form state (tokenized — last 4 only)
   const [cardLast4, setCardLast4] = useState('')
@@ -153,6 +165,16 @@ export function AddPaymentMethodPage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  // Gate guests — the doc contract above promises the honest sign-in gate.
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to add a payment method"
+        message="A payment method always belongs to an account. Sign in to link your wallet, card, or bank."
+      />
+    )
   }
 
   return (

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,26 +15,46 @@ import {
 
 export function VipMembershipPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [vipData, setVipData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false)
+      return
+    }
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/vip', { headers })
-      .then(res => res.json())
+      .then(async res => {
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return null
+        }
+        if (!res.ok) throw new Error('Request failed')
+        return res.json()
+      })
       .then(data => {
-        if (data.success && data.data) {
+        if (data && data.success && data.data) {
           setVipData(data.data)
+        } else if (data && !data.success) {
+          setLoadError('Could not load your VIP status. Please try again later.')
         }
       })
-      .catch(console.error)
+      .catch(() => {
+        setLoadError('Could not load your VIP status. Please try again later.')
+      })
       .finally(() => setLoading(false))
-  }, [token])
+  }, [token, isAuthenticated])
+
+  if (sessionExpired) return <AccountGate title="Session expired" message="Your session has expired. Sign in again to view your VIP status." />
+  if (!loading && !isAuthenticated) return <AccountGate title="Sign in to view your VIP status" message="VIP tier and annual wholesale volume are calculated from your real order history. Sign in to continue." />
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
@@ -60,6 +81,10 @@ export function VipMembershipPage() {
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">VIP Wholesale Club</h1>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24">
+        {loadError && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 rounded-lg p-3 text-sm">{loadError}</div>
+        )}
+
         {/* VIP Status Card */}
         <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-yellow-700 rounded-3xl p-6 text-slate-950 shadow-2xl space-y-4">
           <div className="flex items-center justify-between">

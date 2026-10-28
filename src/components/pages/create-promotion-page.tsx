@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 
 /**
  * Task 115: CREATE A REAL CAMPAIGN. This page used to be a static mockup —
@@ -47,6 +48,8 @@ async function uploadBanner(file: File): Promise<string> {
 export function CreatePromotionPage() {
   const { goBack, navigate } = useNavigationStore();
   const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const [gateLoading, setGateLoading] = useState(true);
 
   const [name, setName] = useState('');
   const [type, setType] = useState<'percentage' | 'fixed'>('percentage');
@@ -178,6 +181,35 @@ export function CreatePromotionPage() {
     validUntil.length > 0 &&
     new Date(validUntil) > new Date(validFrom) &&
     selected.size > 0;
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setGateLoading(false);
+      return;
+    }
+    const t = setTimeout(() => setGateLoading(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
+
+  if (!gateLoading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to create campaigns"
+        message="Campaigns are created on your supplier store and priced with your real products. Sign in to continue."
+        showBecomeSupplier
+      />
+    );
+  }
+  if (isAuthenticated && user && user.userType !== 'supplier' && user.userType !== 'admin') {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`Campaigns belong to supplier stores — you are signed in as a ${user.userType}.`}
+        showBecomeSupplier
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 dark:bg-gray-900 flex flex-col">

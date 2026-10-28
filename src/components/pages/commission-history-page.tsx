@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
-import { ArrowLeft, Percent, DollarSign, Receipt, CheckCircle2, Calendar, FileText, ShieldCheck, TrendingUp } from 'lucide-react'
+import { AccountGate } from '@/components/shared/account-gate'
+import { ArrowLeft, Percent, DollarSign, Receipt, CheckCircle2, Calendar, FileText, ShieldCheck, TrendingUp, AlertCircle } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 export function CommissionHistoryPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated, user } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [data, setData] = useState<{
@@ -34,27 +35,64 @@ export function CommissionHistoryPage() {
   })
 
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     async function load() {
-      if (!token) {
-        setLoading(false)
-        return
-      }
+      if (!token) return
       try {
         const res = await fetch('/api/finance/commissions', {
           headers: { Authorization: `Bearer ${token}` },
         })
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
+        }
         if (res.ok) {
           const json = await res.json()
           if (json.data) setData(json.data)
+          else setLoadError('No commission data was returned for your account.')
+        } else {
+          setLoadError(`Could not load your commission statements (HTTP ${res.status}).`)
         }
+      } catch {
+        setLoadError('Network error while loading your commission statements. Check your connection and retry.')
       } finally {
         setLoading(false)
       }
     }
     load()
   }, [token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your commission statements." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your commission statements"
+        message="Commission statements show the real platform fees deducted from your fulfilled orders. Sign in to continue."
+        showBecomeSupplier
+      />
+    )
+  }
+  if (isAuthenticated && user && user.userType !== 'supplier') {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`Commission statements belong to supplier accounts — you are signed in as a ${user.userType}.`}
+        showBecomeSupplier
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
@@ -91,6 +129,13 @@ export function CommissionHistoryPage() {
             Commission entries recorded on fulfilled wholesale orders — amounts and rates come from your real order records.
           </p>
         </div>
+
+        {loadError && (
+          <div className="bg-red-50 border border-red-200 rounded-3xl px-4 py-3 flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-xs font-bold text-red-600">{loadError}</p>
+          </div>
+        )}
 
         {/* Ledger */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">

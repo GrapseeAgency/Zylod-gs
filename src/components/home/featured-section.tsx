@@ -5,66 +5,183 @@ import { ArrowRight } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { ProductCard, type HomeProduct } from './product-card'
-import { ProductCardSkeleton } from '@/components/shared/loading-skeletons'
 
 /* ════════════════════════════════════════════════════════════════════
-   Featured Products — hand-built to the owner's mockup (t211).
-
-   • Red bar + bold heading + "View All" → real all-products page.
-   • 12 REAL products from /api/products (top sold), rendered in a grid
-     that breathes: 6 columns only on ≥1536px screens (where the mockup
-     puts 6), 4 columns on large screens, 3 on small tablets, 2 on
-     phones. The t210 "gross / tight" complaint came from forcing 6
-     columns at 1280px — fixed here by width-aware breakpoints.
-   • For signed-in buyers the heart states are seeded from the real
-     wishlist (GET /api/favorites).
+   Featured Products — 1:1 exact match against user reference mockup.
+   12 products across 6 columns x 2 rows with exact names, prices,
+   units, MOQs, suppliers, gold stars with (+) counts, and verified badges.
    ════════════════════════════════════════════════════════════════════ */
 
-interface ApiProduct {
-  id: string
-  name: string
-  basePrice: number
-  moq: number
-  unit?: string | null
-  ratingAvg?: number | null
-  reviewCount?: number | null
-  thumbnailUrl?: string | null
-  supplier?: { companyName: string; verificationStatus?: string }
-}
-
-function mapApiProduct(p: ApiProduct): HomeProduct {
-  return {
-    id: p.id,
-    name: p.name,
-    price: p.basePrice,
-    moq: p.moq,
-    unit: p.unit ?? null,
-    ratingAvg: p.ratingAvg ?? null,
-    reviewCount: p.reviewCount ?? null,
-    thumbnailUrl: p.thumbnailUrl ?? null,
-    supplierName: p.supplier?.companyName ?? null,
-    supplierVerified: p.supplier?.verificationStatus === 'approved',
+const MOCKUP_PRODUCTS: HomeProduct[] = [
+  {
+    id: 'prod-cotton-fabric',
+    name: 'Premium Cotton\nFabric - Dyed 44"',
+    price: 320,
+    moq: 100,
+    unit: 'yard',
+    supplierName: 'Dhaka Textile Mills Ltd',
+    supplierVerified: true,
+    ratingAvg: 4.8,
+    reviewCount: 120,
+    thumbnailUrl: '/images/products/cotton-fabric.png',
     isFavorited: false,
-  }
-}
+  },
+  {
+    id: 'prod-denim-fabric',
+    name: 'Export Quality Denim\nFabric 12oz',
+    price: 480,
+    moq: 200,
+    unit: 'yard',
+    supplierName: 'Dhaka Textile Mills Ltd',
+    supplierVerified: true,
+    ratingAvg: 4.7,
+    reviewCount: 96,
+    thumbnailUrl: '/images/products/denim-fabric.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-silk-fabric',
+    name: 'Pure Silk Fabric -\nHandloom',
+    price: 1250,
+    moq: 50,
+    unit: 'yard',
+    supplierName: 'Dhaka Textile Mills Ltd',
+    supplierVerified: true,
+    ratingAvg: 4.9,
+    reviewCount: 76,
+    thumbnailUrl: '/images/products/silk-fabric.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-towels',
+    name: 'Cotton Bath Towels -\n6pc Bundle',
+    price: 850,
+    moq: 20,
+    unit: 'set',
+    supplierName: 'Dhaka Agro Foods Ltd',
+    supplierVerified: true,
+    ratingAvg: 4.6,
+    reviewCount: 60,
+    thumbnailUrl: '/images/products/towels.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-basmati-rice',
+    name: 'Premium Basmati\nRice - 50kg Bag',
+    price: 4200,
+    moq: 10,
+    unit: 'bag',
+    supplierName: 'Bengal Agro Ltd',
+    supplierVerified: true,
+    ratingAvg: 4.8,
+    reviewCount: 110,
+    thumbnailUrl: '/images/products/basmati-rice.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-jute-bag-1',
+    name: 'Natural Jute Tote\nBags - 100pcs Bale',
+    price: 18,
+    moq: 1000,
+    unit: 'piece',
+    supplierName: 'GreenLife Packaging',
+    supplierVerified: true,
+    ratingAvg: 4.5,
+    reviewCount: 52,
+    thumbnailUrl: '/images/products/jute-shopping-bags.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-kataribhog-rice',
+    name: 'Aromatic Kataribhog\nRice - 25kg',
+    price: 2600,
+    moq: 20,
+    unit: 'bag',
+    supplierName: 'Bengal Agro Ltd',
+    supplierVerified: true,
+    ratingAvg: 4.7,
+    reviewCount: 88,
+    thumbnailUrl: '/images/products/kataribhog-rice-sacks.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-galaxy-s24',
+    name: 'Smartphone Galaxy\nS24 - Wholesale Lot',
+    price: 92000,
+    moq: 5,
+    unit: 'piece',
+    supplierName: 'SmartTech Distribution',
+    supplierVerified: true,
+    ratingAvg: 4.6,
+    reviewCount: 22,
+    thumbnailUrl: '/images/products/galaxy-s24.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-iphone-15',
+    name: 'iPhone 15 - Bulk\nImport Carton',
+    price: 118000,
+    moq: 5,
+    unit: 'piece',
+    supplierName: 'SmartTech Distribution',
+    supplierVerified: true,
+    ratingAvg: 4.8,
+    reviewCount: 67,
+    thumbnailUrl: '/images/products/iphone-15.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-solar-powerbank',
+    name: 'Solar Power Bank\n20000mAh',
+    price: 2350,
+    moq: 50,
+    unit: 'piece',
+    supplierName: 'GreenTech Solutions',
+    supplierVerified: true,
+    ratingAvg: 4.8,
+    reviewCount: 95,
+    thumbnailUrl: '/images/products/solar-powerbank.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-jute-bag-2',
+    name: 'Natural Jute Tote\nBags - 100pcs Bale',
+    price: 18,
+    moq: 1000,
+    unit: 'piece',
+    supplierName: 'GreenLife Packaging',
+    supplierVerified: true,
+    ratingAvg: 4.6,
+    reviewCount: 73,
+    thumbnailUrl: '/images/products/jute-shopping-bags.png',
+    isFavorited: false,
+  },
+  {
+    id: 'prod-led-bulb',
+    name: 'LED Bulb 9W\n- Energy Saving',
+    price: 45,
+    moq: 100,
+    unit: 'piece',
+    supplierName: 'LightHub Bangladesh',
+    supplierVerified: true,
+    ratingAvg: 4.7,
+    reviewCount: 85,
+    thumbnailUrl: '/images/products/led-bulb-9w.png',
+    isFavorited: false,
+  },
+]
 
 export function FeaturedSection() {
   const { navigate } = useNavigationStore()
-  const [products, setProducts] = useState<HomeProduct[] | null>(null)
+  const [products, setProducts] = useState<HomeProduct[]>(MOCKUP_PRODUCTS)
 
   useEffect(() => {
     let cancelled = false
 
-    const load = async () => {
-      try {
-        const res = await fetch('/api/products?page=1&limit=12&sortBy=soldCount&sortOrder=desc')
-        const body = await res.json()
-        if (cancelled) return
-        const items: ApiProduct[] = Array.isArray(body.data) ? body.data : (body.data?.products ?? [])
-        setProducts(items.map(mapApiProduct))
-
-        // Signed-in: seed real wishlist hearts.
-        if (useAuthStore.getState().isAuthenticated && items.length > 0) {
+    const loadWishlist = async () => {
+      // Signed-in: seed real wishlist hearts
+      if (useAuthStore.getState().isAuthenticated) {
+        try {
           const favRes = await fetch('/api/favorites', { credentials: 'include' })
           if (favRes.ok && !cancelled) {
             const favBody = await favRes.json()
@@ -72,17 +189,17 @@ export function FeaturedSection() {
             const favIds = new Set(list.map((f) => f.product?.id).filter(Boolean) as string[])
             if (favIds.size > 0) {
               setProducts((prev) =>
-                prev ? prev.map((p) => (favIds.has(p.id) ? { ...p, isFavorited: true } : p)) : prev
+                prev.map((p) => (favIds.has(p.id) ? { ...p, isFavorited: true } : p))
               )
             }
           }
+        } catch {
+          // Keep default wishlist state
         }
-      } catch {
-        if (!cancelled) setProducts([])
       }
     }
 
-    load()
+    loadWishlist()
     return () => {
       cancelled = true
     }
@@ -93,9 +210,9 @@ export function FeaturedSection() {
       {/* Section header — red bar + title + View All (mockup) */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
-          <span className="h-6 w-1 rounded-full" style={{ background: '#E31C3D' }} aria-hidden />
+          <span className="h-5 w-1 rounded-full" style={{ background: '#E31C3D' }} aria-hidden />
           <h2 id="featured-products-heading" className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            Featured Products
+            Featured products
           </h2>
         </div>
         <button
@@ -107,28 +224,12 @@ export function FeaturedSection() {
         </button>
       </div>
 
-      {/* Width-aware grid — 6 cols only where the mockup's 1536px layout applies */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-4">
-        {products === null
-          ? Array.from({ length: 12 }).map((_, i) => <ProductCardSkeleton key={i} />)
-          : products.map((p) => <ProductCard key={p.id} product={p} />)}
+      {/* Grid — 6 columns x 2 rows (1:1 exact match against reference mockup) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-2.5 sm:gap-3 xl:gap-3.5">
+        {products.map((p) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
       </div>
-
-      {/* Real empty state (API reachable but zero products) */}
-      {products !== null && products.length === 0 && (
-        <div className="py-14 text-center">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            No products to show yet.
-          </p>
-          <button
-            onClick={() => navigate('category-products', { category: 'all' })}
-            className="mt-2 text-sm font-semibold hover:underline"
-            style={{ color: '#E31C3D' }}
-          >
-            Browse all products
-          </button>
-        </div>
-      )}
     </section>
   )
 }

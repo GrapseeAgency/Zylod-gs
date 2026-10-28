@@ -47,20 +47,23 @@ function DesktopHomePage() {
 
   return (
     <div className="w-full bg-white dark:bg-background">
-      <div className="mx-auto w-full max-w-[1536px] px-3 sm:px-4 lg:px-6 py-4 lg:py-5">
-        <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_300px] gap-4 xl:gap-5 items-start">
+      <div className="mx-auto w-full max-w-[1800px] 2xl:max-w-[1920px] px-2 sm:px-3 lg:px-4 xl:px-6 py-4 lg:py-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[180px_minmax(0,1fr)_205px] xl:grid-cols-[185px_minmax(0,1fr)_215px] 2xl:grid-cols-[200px_minmax(0,1fr)_230px] gap-3 lg:gap-3.5 xl:gap-4 items-start">
 
-          {/* LEFT — categories + supplier onboarding (240px, mockup) */}
+          {/* LEFT — categories + supplier onboarding */}
           <LeftRail />
 
-          {/* CENTER — hero + featured grid (+ inline CTAs below xl) */}
-          <div className="min-w-0 space-y-6 lg:space-y-7">
+          {/* CENTER — hero + featured grid */}
+          <div className="min-w-0 space-y-5 lg:space-y-6">
             <Hero />
             <FeaturedSection />
-            <RightRail variant="inline" />
+            {/* Inline CTAs only on mobile / small-tablet screens (<1024px) */}
+            <div className="block lg:hidden pt-2">
+              <RightRail variant="inline" />
+            </div>
           </div>
 
-          {/* RIGHT — CTA rail (300px, mockup) */}
+          {/* RIGHT — CTA rail on desktop (lg+) */}
           <RightRail variant="rail" />
 
         </div>

@@ -2,12 +2,17 @@
 
 import React, { useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, Send, CheckCircle2, Mail, Building2 } from 'lucide-react'
 
 export function InvestorContactPage() {
   const { navigate, goBack } = useNavigationStore()
+  // Owner-published support contact (Admin → System Settings) — honest
+  // generic wording when nothing is published, never a fabricated address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -62,8 +67,10 @@ export function InvestorContactPage() {
             <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Inquiry Received</h2>
             <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500">
               Your inquiry reference is <strong>{refNo}</strong>. It has been saved to our inbox for
-              review — we reply by email when action is needed. For anything urgent, email
-              support@zylod.com.
+              review — we reply by email when action is needed.
+              {supportEmail
+                ? ` For anything urgent, email ${supportEmail}.`
+                : ' For anything urgent, reach us through the Help Center.'}
             </p>
             <Button onClick={() => navigate('investor-relations')} className="bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold">
               Back to Investor Portal

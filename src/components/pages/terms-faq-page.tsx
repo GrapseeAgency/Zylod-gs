@@ -10,14 +10,19 @@ export function TermsFaqPage() {
   const [faqs, setFaqs] = useState<Array<{ id: string; questionEn: string; answerEn: string }>>([])
   const [openId, setOpenId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     fetch('/api/legal/faq?docType=terms_of_service')
-      .then(res => res.json())
       .then(res => {
-        if (res.success) setFaqs(res.data)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
       })
-      .catch(console.error)
+      .then(json => {
+        if (json?.success) setFaqs(json.data)
+        else throw new Error(json?.error || 'Unexpected response')
+      })
+      .catch(() => setLoadError('Could not load the FAQ list right now. Check your connection and retry.'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -38,6 +43,10 @@ export function TermsFaqPage() {
         {loading ? (
           <div className="space-y-3 animate-pulse">
             {[1, 2, 3].map(i => <div key={i} className="h-16 bg-gray-200 rounded-2xl" />)}
+          </div>
+        ) : loadError ? (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl p-4 text-center text-xs font-bold text-red-600 dark:text-red-400">
+            {loadError}
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden divide-y divide-gray-50">

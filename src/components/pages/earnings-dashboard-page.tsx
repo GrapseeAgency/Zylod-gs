@@ -6,61 +6,125 @@ import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, DollarSign, TrendingUp, BarChart3,
   Calendar, ArrowUpRight, ArrowDownLeft, ShieldCheck,
   Building2, Receipt, Percent, Loader2, ChevronRight
 } from 'lucide-react'
 
+interface EarningsData {
+  grossGMV: number
+  netEarnings: number
+  platformCommission: number
+  availablePayout: number
+  pendingEscrow: number
+  totalPaidOut?: number
+  totalOrders: number
+  commissionRate: string
+  recentSales: Array<{ total: number; date: string }>
+}
+
 export function EarningsDashboardPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated, user } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
-  const [data, setData] = useState<{
-    grossGMV: number
-    netEarnings: number
-    platformCommission: number
-    availablePayout: number
-    pendingEscrow: number
-    totalPaidOut?: number
-    totalOrders: number
-    commissionRate: string
-    recentSales: Array<{ total: number; date: string }>
-  }>({
-    grossGMV: 0,
-    netEarnings: 0,
-    platformCommission: 0,
-    availablePayout: 0,
-    pendingEscrow: 0,
-    totalPaidOut: 0,
-    totalOrders: 0,
-    commissionRate: '3.0%',
-    recentSales: [],
-  })
-
+  // t216 honesty fix: this is a SUPPLIER money page. Guests and buyer
+  // accounts get an account gate — never a fabricated ৳0 revenue dashboard.
+  const [data, setData] = useState<EarningsData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [retryNonce, setRetryNonce] = useState(0)
+
+  const isSupplier = isAuthenticated && user?.userType === 'supplier'
+
+  // Deep links can mount before the boot session probe settles — keep the
+  // skeleton up briefly, then show the honest sign-in gate for real guests.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
-    async function loadEarnings() {
-      if (!token) {
-        setLoading(false)
-        return
-      }
+    if (!isSupplier) return
+    let cancelled = false
+    setLoading(true)
+    setLoadError(null)
+    setSessionExpired(false)
+    ;(async () => {
       try {
         const res = await fetch('/api/finance/earnings', {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         })
-        if (res.ok) {
-          const json = await res.json()
-          if (json.data) setData(json.data)
-        }
+        if (cancelled) return
+        if (res.status === 401) { setSessionExpired(true); return }
+        const json = await res.json().catch(() => null)
+        if (!res.ok) throw new Error(json?.error || `Failed to load earnings (${res.status})`)
+        if (!json?.data) throw new Error('Earnings data is unavailable right now.')
+        setData(json.data)
+      } catch (e) {
+        if (!cancelled) setLoadError(e instanceof Error ? e.message : 'Failed to load earnings')
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
-    }
-    loadEarnings()
-  }, [token])
+    })()
+    return () => { cancelled = true }
+  }, [isSupplier, token, retryNonce])
+
+  // ── Honest gates — no fabricated numbers beyond this point ──
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view earnings"
+        message="Earnings & Revenue shows the real payout state of a supplier account. Sign in with your supplier account to continue."
+        showBecomeSupplier
+      />
+    )
+  }
+  if (isAuthenticated && !isSupplier) {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`Earnings & Revenue belongs to supplier accounts — you are signed in as a ${user?.userType ?? 'buyer'}, so there is no supplier revenue to show. Register a supplier business to start selling on Zylod.`}
+        showBecomeSupplier
+      />
+    )
+  }
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session is no longer valid. Sign in again with your supplier account to view earnings."
+      />
+    )
+  }
+  if (loading || (!data && !loadError)) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+  if (loadError || !data) {
+    return (
+      <div className="min-h-[60vh] bg-background flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-card border border-border rounded-2xl p-6 text-center space-y-3">
+          <ShieldCheck className="h-8 w-8 mx-auto text-primary" />
+          <h1 className="text-base font-bold text-foreground">Could not load your earnings</h1>
+          <p className="text-sm text-muted-foreground">{loadError || 'Earnings data is unavailable right now.'}</p>
+          <Button
+            onClick={() => setRetryNonce(n => n + 1)}
+            className="h-9 px-4 font-bold text-xs rounded-xl"
+          >
+            Try again
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">

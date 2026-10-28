@@ -8,6 +8,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Tag, Copy, Check, Clock,
   Gift, ShoppingBag, ChevronRight, AlertCircle
@@ -29,13 +30,15 @@ interface UserCoupon {
 
 export function MyCouponsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [activeTab, setActiveTab] = useState<'active' | 'used' | 'expired'>('active')
   const [coupons, setCoupons] = useState<UserCoupon[]>([])
   const [loading, setLoading] = useState(true)
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const fetchMyCoupons = useCallback(async () => {
     try {
@@ -44,20 +47,44 @@ export function MyCouponsPage() {
       if (token) headers['Authorization'] = `Bearer ${token}`
 
       const res = await fetch(`/api/coupons/my?status=${activeTab}&limit=50`, { headers })
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
       const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || `Failed to load coupons (${res.status})`)
       if (data.success && data.data) {
         setCoupons(data.data)
+      } else {
+        throw new Error('Your coupon vault is unavailable right now.')
       }
     } catch (err) {
-      console.error('Failed to load user coupons:', err)
+      setLoadError(err instanceof Error ? err.message : 'Failed to load your coupons')
     } finally {
       setLoading(false)
     }
   }, [token, activeTab])
 
+  // Honesty fix: the coupon vault holds YOUR claimed vouchers — guests get a
+  // gate instead of a fabricated "No active coupons in your vault" card.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
   useEffect(() => {
     fetchMyCoupons()
   }, [fetchMyCoupons])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your coupon vault." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your coupon vault"
+        message="Your vault shows the vouchers you have actually claimed. Sign in to see your real coupons."
+      />
+    )
+  }
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code)
@@ -119,6 +146,17 @@ export function MyCouponsPage() {
                 <Skeleton className="h-8 w-full rounded-2xl" />
               </div>
             ))}
+          </div>
+        ) : loadError ? (
+          <div className="text-center py-16 space-y-3 text-gray-500 dark:text-gray-400">
+            <AlertCircle className="w-12 h-12 text-red-300 mx-auto" />
+            <p className="font-bold text-sm text-gray-800 dark:text-gray-200">Could not load your coupons</p>
+            <p className="text-xs max-w-xs mx-auto">{loadError}</p>
+            <div className="pt-2">
+              <Button onClick={fetchMyCoupons} className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl">
+                Try Again
+              </Button>
+            </div>
           </div>
         ) : coupons.length === 0 ? (
           <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-3">

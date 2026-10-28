@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { ArrowLeft, TrendingUp, DollarSign, Activity, Users, ShoppingCart, MousePointerClick, BellRing } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -38,22 +40,40 @@ interface AnalyticsData {
 export function SellerAnalyticsPage() {
   const navigate = useNavigationStore((state) => state.navigate);
   const goBack = useNavigationStore((state) => state.goBack);
+  // Honesty fix: these are REAL supplier sales figures (GMV, orders, units) —
+  // guests and non-supplier accounts get an account gate, never "৳0 GMV".
+  const { isAuthenticated, user } = useAuthStore();
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin');
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [timeRange, setTimeRange] = useState('7D');
+  const [authRequired, setAuthRequired] = useState(false);
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return;
+    const t = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     const fetchAnalytics = async () => {
       try {
         setLoading(true);
         const res = await fetch('/api/supplier/analytics');
-        const json = await res.json();
-        if (res.ok && json.success && json.data) {
+        const json = await res.json().catch(() => null);
+        if (res.status === 401 || res.status === 403) {
+          setAuthRequired(true);
+          setData(null);
+          return;
+        }
+        if (res.ok && json?.success && json?.data) {
           setData(json.data);
           setError('');
         } else {
-          setError(json.error || 'Failed to fetch analytics');
+          setError(json?.error || 'Failed to fetch analytics');
           setData(null);
         }
       } catch (error) {
@@ -65,7 +85,31 @@ export function SellerAnalyticsPage() {
       }
     };
     fetchAnalytics();
-  }, [timeRange]);
+  }, [isAuthenticated, timeRange]);
+
+  const wrongRoleGate = (
+    <AccountGate
+      title="Supplier accounts only"
+      message={`Seller analytics shows your store's real sales data — it belongs to supplier accounts, and you are signed in as a ${user?.userType}.`}
+      showBecomeSupplier
+    />
+  );
+  const guestGate = (
+    <AccountGate
+      title="Seller sign-in required"
+      message="Seller analytics shows your store's real sales figures. Sign in with a supplier account to continue."
+    />
+  );
+
+  if (authRequired) {
+    return isAuthenticated && user && !isAllowedRole ? wrongRoleGate : guestGate;
+  }
+  if (!loading && !isAuthenticated) {
+    return guestGate;
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return wrongRoleGate;
+  }
 
   return (
     <motion.div 

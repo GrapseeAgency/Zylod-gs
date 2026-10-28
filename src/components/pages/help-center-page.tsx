@@ -32,6 +32,7 @@ export function HelpCenterPage() {
   const [popularFaqs, setPopularFaqs] = useState<FAQItem[]>([])
   const [status, setStatus] = useState<SystemStatus | null>(null)
   const [loading, setLoading] = useState(true)
+  const [faqLoadError, setFaqLoadError] = useState('')
 
   // Real support contacts published by the site owner (Admin → System
   // Settings). Never fabricated: if nothing is published, the card says so
@@ -43,6 +44,7 @@ export function HelpCenterPage() {
 
   async function fetchData() {
     setLoading(true)
+    setFaqLoadError('')
     try {
       const [faqRes, statusRes] = await Promise.all([
         fetch('/api/support/faqs?limit=4'),
@@ -51,12 +53,16 @@ export function HelpCenterPage() {
       if (faqRes.ok) {
         const json = await faqRes.json()
         setPopularFaqs(json.data || [])
+      } else {
+        setFaqLoadError(`FAQs are unavailable right now (HTTP ${faqRes.status}).`)
       }
       if (statusRes.ok) {
         const json = await statusRes.json()
         setStatus(json.data || null)
       }
-    } catch {}
+    } catch {
+      setFaqLoadError('Network error while loading FAQs. Check your connection and retry.')
+    }
     setLoading(false)
   }
 
@@ -254,6 +260,8 @@ export function HelpCenterPage() {
             <div className="space-y-3 pt-2">
               {[1, 2, 3].map(i => <Skeleton key={i} className="h-10 w-full rounded-xl" />)}
             </div>
+          ) : faqLoadError ? (
+            <p className="pt-2 text-xs text-red-600">{faqLoadError}</p>
           ) : (
             <div className="divide-y divide-gray-50">
               {popularFaqs.map(faq => (

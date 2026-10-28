@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import {
   ArrowLeft, ShieldCheck,
   CheckCircle2, AlertCircle
 } from 'lucide-react'
+import { AccountGate } from '@/components/shared/account-gate'
 
 // HONESTY NOTE: this form previously faked success with setTimeout, an invented
 // case id (#DSP-2023-9012), a fake supplier name, and a "funds frozen in Zylod
@@ -27,6 +29,14 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
   const [submitted, setSubmitted] = useState(false)
   const [reference, setReference] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
+  // Owner-published support contact (Admin → System Settings) — error and
+  // evidence copy point to the Help Center when nothing is published, never
+  // an invented email.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
+  // Honesty fix: complaints are saved against the signed-in account — a 401
+  // shows a sign-in gate, never a fake "complaint saved".
+  const [sessionExpired, setSessionExpired] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,17 +54,34 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
         }),
       })
       const json = await res.json()
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok && json.data) {
         setReference(json.data.id || '')
         setSubmitted(true)
       } else {
-        setErrorMsg(json.error || 'Failed to submit complaint. Please try again or email support@zylod.com.')
+        setErrorMsg(json.error || (supportEmail
+          ? `Failed to submit complaint. Please try again or email ${supportEmail}.`
+          : 'Failed to submit complaint. Please try again or reach us through the Help Center.'))
       }
     } catch {
-      setErrorMsg('Network error. Please try again or email support@zylod.com.')
+      setErrorMsg(supportEmail
+        ? `Network error. Please try again or email ${supportEmail}.`
+        : 'Network error. Please try again or reach us through the Help Center.')
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Sign in to raise a complaint"
+        message="Complaints are saved to your account so the Zylod team can follow up. Sign in to continue."
+      />
+    )
   }
 
   if (submitted) {
@@ -178,14 +205,18 @@ export function RaiseComplaintPage({ pageParams: _pageParams }: { pageParams?: R
             <Textarea
               value={statement}
               onChange={(e) => setStatement(e.target.value)}
-              placeholder="Explain what went wrong, and email photos/video to support@zylod.com with your reference afterwards..."
+              placeholder={supportEmail
+                ? `Explain what went wrong, and email photos/video to ${supportEmail} with your reference afterwards...`
+                : 'Explain what went wrong. Afterwards, share photos/video with the Zylod team through the Help Center using your reference...'}
               rows={4}
               className="rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium resize-none"
               required
             />
 
             <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
-              Photo or video evidence cannot be uploaded here yet — include it in your follow-up email to support@zylod.com.
+              {supportEmail
+                ? `Photo or video evidence cannot be uploaded here yet — include it in your follow-up email to ${supportEmail}.`
+                : 'Photo or video evidence cannot be uploaded here yet — share it with the Zylod team through the Help Center afterwards.'}
             </p>
           </div>
 

@@ -10,10 +10,11 @@ import {
   ArrowLeft, Tag, Sparkles, Check, Mail, Smartphone,
   Sliders, Flame, Gift, Percent
 } from 'lucide-react'
+import { AccountGate } from '@/components/shared/account-gate'
 
 export function PromoPreferencesPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [pushPromos, setPushPromos] = useState(false)
   const [emailPromos, setEmailPromos] = useState(false)
@@ -22,21 +23,39 @@ export function PromoPreferencesPage() {
   const [vouchers, setVouchers] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  // Honesty fix: notification preferences belong to the signed-in account —
+  // guests get an account gate, and a failed save never claims "Saved".
+  const [gateLoading, setGateLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) { setGateLoading(false); return }
+    const t = setTimeout(() => setGateLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/notifications/preferences', { headers })
-      .then(res => res.json())
-      .then(data => {
+      .then(res => res.json().then(data => ({ res, data })).catch(() => ({ res, data: null })))
+      .then(({ res, data }) => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        if (!res.ok) {
+          setLoadError(data?.error || `Failed to load preferences (${res.status})`)
+          return
+        }
         if (data.success && data.data) {
           setPushPromos(data.data.pushPromotions ?? false)
           setEmailPromos(data.data.emailPromotions ?? false)
         }
       })
-      .catch(console.error)
-  }, [token])
+      .catch(() => setLoadError('Could not reach the server to load your preferences'))
+  }, [isAuthenticated, token])
 
   const handleToggle = async (key: 'pushPromotions' | 'emailPromotions', val: boolean) => {
     if (key === 'pushPromotions') setPushPromos(val)
@@ -47,18 +66,35 @@ export function PromoPreferencesPage() {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
 
-      await fetch('/api/notifications/preferences', {
+      const res = await fetch('/api/notifications/preferences', {
         method: 'PATCH',
         headers,
         body: JSON.stringify({ [key]: val }),
       })
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+      if (!res.ok) {
+        setLoadError('Your change could not be saved. Please try again.')
+        return
+      }
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } catch (err) {
-      console.error(err)
+      setLoadError('Your change could not be saved. Please try again.')
     } finally {
       setSaving(false)
     }
+  }
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to manage promotion preferences." />
+  }
+  if (!gateLoading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage promotion preferences"
+        message="Notification preferences are saved to your account. Sign in to continue."
+      />
+    )
   }
 
   return (
@@ -79,6 +115,9 @@ export function PromoPreferencesPage() {
       </div>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24 md:px-6 md:py-8 md:max-w-3xl md:space-y-8 md:pb-10">
+        {loadError && (
+          <p className="text-xs font-bold text-red-600 bg-red-50 border border-red-100 p-3 rounded-xl">{loadError}</p>
+        )}
         <div className="hidden md:flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Promotion Preferences</h1>
           {saved && (

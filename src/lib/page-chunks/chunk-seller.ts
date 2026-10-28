@@ -94,6 +94,9 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     // 129. Seller Dashboard
     'seller-dashboard': () => import('@/components/pages/seller-dashboard-page'),
     'supplier-dashboard': () => import('@/components/pages/seller-dashboard-page'),
+    // t215: retired placeholder ids — deep links land on the REAL rails.
+    'supplier-earnings': () => import('@/components/pages/earnings-dashboard-page'),
+    'supplier-directory': () => import('@/components/pages/suppliers-directory-page'),
 
     // 130. Seller Registration
     'seller-registration': () => import('@/components/pages/seller-registration-page'),

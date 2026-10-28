@@ -23,25 +23,28 @@ export function MobileFeaturedProducts() {
   const { formatPrice } = useCurrencyStore()
   const [products, setProducts] = useState<FeaturedProduct[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     fetch('/api/products?sortBy=soldCount&sortOrder=desc&limit=8')
-      .then(res => res.json())
-      .then(json => {
-        if (json.success && Array.isArray(json.data)) {
-          setProducts(json.data.map((p: any) => ({
-            id: p.id,
-            name: p.name,
-            price: p.basePrice,
-            moq: p.moq,
-            sold: p.soldCount || 0,
-            rating: p.ratingAvg || 0,
-            thumbnailUrl: p.thumbnailUrl || null,
-            unit: p.unit || 'pcs',
-          })))
-        }
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
       })
-      .catch(() => {})
+      .then(json => {
+        if (!(json.success && Array.isArray(json.data))) throw new Error('Unexpected response')
+        setProducts(json.data.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          price: p.basePrice,
+          moq: p.moq,
+          sold: p.soldCount || 0,
+          rating: p.ratingAvg || 0,
+          thumbnailUrl: p.thumbnailUrl || null,
+          unit: p.unit || 'pcs',
+        })))
+      })
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false))
   }, [])
 
@@ -57,6 +60,10 @@ export function MobileFeaturedProducts() {
         <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {loading ? (
             [1, 2, 3, 4].map(i => <Skeleton key={i} className="flex-none w-[150px] h-44 rounded-xl" />)
+          ) : loadError ? (
+            <div className="flex-none w-full py-6 text-xs text-muted-foreground">
+              Best sellers couldn&apos;t be loaded right now — check your connection and refresh.
+            </div>
           ) : (
             products.map((product) => (
               <motion.button

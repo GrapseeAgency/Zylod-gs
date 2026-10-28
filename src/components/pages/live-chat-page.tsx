@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   ArrowLeft, Send, Paperclip, MoreVertical, ShieldCheck,
@@ -25,12 +27,22 @@ interface ChatSession {
 
 export function LiveChatPage() {
   const { navigate, goBack } = useNavigationStore()
+  const { token, isAuthenticated } = useAuthStore()
   const [session, setSession] = useState<ChatSession | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState('')
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [chatError, setChatError] = useState('')
   const [sending, setSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   async function loadMessages(sessionId: string) {
     try {
@@ -43,10 +55,18 @@ export function LiveChatPage() {
   }
 
   async function initChatSession() {
+    if (!isAuthenticated || !token) return
     setLoading(true)
+    setChatError('')
     try {
       // Find active live_chat session or create new
-      const res = await fetch('/api/support/chat/sessions')
+      const res = await fetch('/api/support/chat/sessions', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok) {
         const json = await res.json()
         const active = (json.data || []).find((s: any) => s.type === 'live_chat' && s.status === 'active')
@@ -61,15 +81,24 @@ export function LiveChatPage() {
       // Create new session
       const createRes = await fetch('/api/support/chat/sessions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ type: 'live_chat', subject: 'Wholesale Buyer Support' }),
       })
+      if (createRes.status === 401 || createRes.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (createRes.ok) {
         const json = await createRes.json()
         setSession(json.data)
         await loadMessages(json.data.id)
+      } else {
+        const json = await createRes.json().catch(() => null)
+        setChatError(json?.error || `Live chat is unavailable right now (HTTP ${createRes.status}).`)
       }
-    } catch {}
+    } catch {
+      setChatError('Network error while opening the chat session. Check your connection and retry.')
+    }
     setLoading(false)
   }
 
@@ -109,15 +138,22 @@ export function LiveChatPage() {
     try {
       const res = await fetch(`/api/support/chat/sessions/${session.id}/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ message: text }),
       })
       if (res.ok) {
         const json = await res.json()
         setMessages(prev => prev.map(m => m.id === tempMsg.id ? json.data : m))
+      } else {
+        const json = await res.json().catch(() => null)
+        setMessages(prev => prev.filter(m => m.id !== tempMsg.id))
+        setInputMessage(text)
+        setChatError(json?.error || `Your message could not be sent (HTTP ${res.status}).`)
       }
     } catch {
-      // Keep optimistic message or retry
+      setMessages(prev => prev.filter(m => m.id !== tempMsg.id))
+      setInputMessage(text)
+      setChatError('Network error — your message was not sent. Check your connection and retry.')
     }
     setSending(false)
   }
@@ -127,11 +163,28 @@ export function LiveChatPage() {
     try {
       await fetch(`/api/support/chat/sessions/${session.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ status: 'ended' }),
       })
       setSession(s => s ? { ...s, status: 'ended' } : null)
     } catch {}
+  }
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has expired. Sign in again to chat with Zylod support."
+      />
+    )
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to use live chat"
+        message="Live support chats are tied to your real account and orders. Sign in to continue."
+      />
+    )
   }
 
   return (
@@ -172,6 +225,13 @@ export function LiveChatPage() {
 
       {/* Chat Messages Body */}
       <div className="flex-1 overflow-y-auto p-4 md:px-6 md:py-5 space-y-3">
+        {!loading && chatError && (
+          <div className="flex items-start gap-2 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl p-3 text-xs text-red-700 dark:text-red-300" role="alert">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <span className="flex-1">{chatError}</span>
+            <button onClick={initChatSession} className="text-[11px] font-bold underline flex-shrink-0">Retry</button>
+          </div>
+        )}
         {loading ? (
           <div className="space-y-3 pt-4">
             <Skeleton className="h-10 w-2/3 rounded-2xl" />

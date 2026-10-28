@@ -141,9 +141,25 @@ async function handleProfileUpdate(request: NextRequest) {
       include: { buyerProfile: true, supplierProfile: true },
     })
 
+    if (!updated) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // SECURITY: never echo the raw users row — it carries passwordHash,
+    // twoFactorSecret, googleId and suspension metadata. Return a safe
+    // projection (profiles only; the same shapes the GET already exposes).
     return NextResponse.json({
       success: true,
-      data: updated,
+      data: {
+        id: updated.id,
+        userType: updated.userType,
+        email: updated.email,
+        phone: updated.phone,
+        isEmailVerified: updated.isEmailVerified,
+        isPhoneVerified: updated.isPhoneVerified,
+        buyerProfile: updated.buyerProfile,
+        supplierProfile: updated.supplierProfile,
+      },
       message: 'Profile updated successfully',
     })
   } catch (error) {

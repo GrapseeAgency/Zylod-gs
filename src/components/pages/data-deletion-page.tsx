@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Trash2, AlertTriangle, CheckCircle2, ShieldAlert } from 'lucide-react'
+import { ArrowLeft, Trash2, AlertTriangle, CheckCircle2, ShieldAlert, XCircle } from 'lucide-react'
 
 export function DataDeletionPage() {
   const { navigate, goBack } = useNavigationStore()
@@ -12,19 +12,35 @@ export function DataDeletionPage() {
   const [reason, setReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [needsSignIn, setNeedsSignIn] = useState(false)
 
   const handleDelete = async () => {
     if (!confirmed) return
     setSubmitting(true)
+    setErrorMsg(null)
+    setNeedsSignIn(false)
     try {
-      await fetch('/api/legal/data-rights', {
+      const res = await fetch('/api/legal/data-rights', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestType: 'deletion', reason: `Account Deletion: ${reason}` }),
       })
+      if (!res.ok) {
+        // The request was NOT recorded — never show the success screen.
+        if (res.status === 401 || res.status === 403) {
+          setNeedsSignIn(true)
+          setErrorMsg('Your deletion request was not submitted — you must be signed in to the account you want deleted. Sign in and try again.')
+        } else {
+          const json = await res.json().catch(() => null)
+          setErrorMsg(json?.error || `Your deletion request could not be submitted (HTTP ${res.status}). Nothing was recorded — please try again.`)
+        }
+        return
+      }
       setDone(true)
     } catch (err) {
       console.error(err)
+      setErrorMsg('Network error — your deletion request was not submitted. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -100,6 +116,19 @@ export function DataDeletionPage() {
                 <Trash2 className="w-4 h-4 mr-2" />
                 {submitting ? 'Submitting...' : 'Confirm & Request Account Deletion'}
               </Button>
+
+              {errorMsg && (
+                <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-2xl p-3.5 space-y-2">
+                  <p className="text-xs font-semibold text-red-700 dark:text-red-300 flex items-start gap-2">
+                    <XCircle className="w-4 h-4 shrink-0 mt-0.5" /> {errorMsg}
+                  </p>
+                  {needsSignIn && (
+                    <Button onClick={() => navigate('login')} className="bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold">
+                      Sign In
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
             </div>
           </>

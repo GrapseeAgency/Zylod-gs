@@ -1,34 +1,14 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
-import { useAuthStore } from '@/store/auth-store'
-import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import {
-  ArrowLeft, Coins, ShieldCheck, Gift, HelpCircle
+  ArrowLeft, Coins
 } from 'lucide-react'
 
 export function PointsDetailPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
-  const { formatPrice } = useCurrencyStore()
-
-  const [loyalty, setLoyalty] = useState<any>(null)
-
-  useEffect(() => {
-    const headers: Record<string, string> = {}
-    if (token) headers['Authorization'] = `Bearer ${token}`
-
-    fetch('/api/rewards/loyalty', { headers })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.data) {
-          setLoyalty(data.data)
-        }
-      })
-      .catch(console.error)
-  }, [token])
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

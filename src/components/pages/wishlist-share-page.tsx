@@ -4,27 +4,80 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Copy, RefreshCw, QrCode, Trash2, ShieldAlert } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
+import { toast } from 'sonner'
 
 export function WishlistSharePage() {
   const { goBack } = useNavigationStore()
+  const { token, isAuthenticated } = useAuthStore()
   const [shareData, setShareData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [settings, setSettings] = useState({ allowAddToCart: true, showPrices: true })
+  // Honesty fix: share settings belong to the signed-in account — guests get
+  // an account gate instead of a fake "You haven't shared your wishlist yet".
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     fetchShareStatus()
-  }, [])
+  }, [isAuthenticated])
 
-  const fetchShareStatus = async () => {
+  // Gates — placed after every hook so all hooks always run.
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to manage wishlist sharing." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage wishlist sharing"
+        message="Wishlist share links and view counts belong to your account. Sign in to continue."
+      />
+    )
+  }
+  if (loadError) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 items-center justify-center p-4">
+        <div className="max-w-md w-full bg-card border border-border rounded-2xl p-6 text-center space-y-3">
+          <ShieldAlert className="h-8 w-8 mx-auto text-primary" />
+          <h1 className="text-base font-bold text-foreground">Could not load sharing settings</h1>
+          <p className="text-sm text-muted-foreground">{loadError}</p>
+          <button onClick={() => window.location.reload()} className="h-9 px-4 bg-primary text-white rounded-xl text-xs font-bold">
+            Try again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  async function fetchShareStatus() {
     try {
-      const res = await fetch('/api/wishlist/share')
-      const json = await res.json()
-      if (json.success && json.data) {
+      const res = await fetch('/api/wishlist/share', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      })
+      const json = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
+      if (!res.ok || !json?.success) {
+        setLoadError(json?.error || `Could not load your share status (HTTP ${res.status}).`)
+        return
+      }
+      if (json.data) {
         setShareData(json.data)
         setSettings({ allowAddToCart: json.data.allowAddToCart, showPrices: json.data.showPrices })
       }
-    } catch (error) {
-      console.error('Failed to fetch share status', error)
+    } catch {
+      setLoadError('Network error while loading your share status. Check your connection and retry.')
     } finally {
       setLoading(false)
     }
@@ -37,10 +90,19 @@ export function WishlistSharePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
       })
-      const json = await res.json()
-      if (json.success) setShareData(json.data)
-    } catch (error) {
-      console.error('Failed to create share link', error)
+      const json = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
+      if (!res.ok || !json?.success) {
+        toast.error(json?.error || `Could not save the share link (HTTP ${res.status}).`)
+        return
+      }
+      setShareData(json.data)
+      toast.success(json.data.token ? 'Share link is live' : 'Sharing settings saved')
+    } catch {
+      toast.error('Network error while saving the share link. Check your connection and retry.')
     }
   }
 
@@ -48,10 +110,19 @@ export function WishlistSharePage() {
     if (!confirm('Are you sure you want to revoke this link? Anyone with the link will no longer be able to view your wishlist.')) return
     try {
       const res = await fetch('/api/wishlist/share', { method: 'DELETE' })
-      const json = await res.json()
-      if (json.success) setShareData(null)
-    } catch (error) {
-      console.error('Failed to revoke share link', error)
+      const json = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
+      if (!res.ok || !json?.success) {
+        toast.error(json?.error || `Could not revoke the share link (HTTP ${res.status}).`)
+        return
+      }
+      setShareData(null)
+      toast.success('Share link revoked')
+    } catch {
+      toast.error('Network error while revoking the share link. Check your connection and retry.')
     }
   }
 

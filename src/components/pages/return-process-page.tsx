@@ -2,12 +2,17 @@
 
 import React from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, RotateCcw, Camera, ShieldCheck, Truck, Clock, CheckCircle2 } from 'lucide-react'
 
 export function ReturnProcessPage() {
   const { navigate, goBack } = useNavigationStore()
+  // Owner-published support contact (Admin → System Settings) — honest
+  // generic wording when nothing is published, never a fabricated address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
 
   // HONESTY NOTE: no automatic escrow freeze, SLA clocks, or instant refunds
   // exist. Returns are reported to Zylod, reviewed by the team, and any refund
@@ -22,7 +27,9 @@ export function ReturnProcessPage() {
     {
       step: '2',
       title: 'Report the Issue',
-      desc: 'Email support@zylod.com or open a return request from your order detail with your order number, affected quantity, and documentation.',
+      desc: supportEmail
+        ? `Email ${supportEmail} or open a return request from your order detail with your order number, affected quantity, and documentation.`
+        : 'Open a return request from your order detail, or reach us through the Help Center, with your order number, affected quantity, and documentation.',
       icon: RotateCcw,
     },
     {

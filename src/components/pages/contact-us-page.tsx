@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import {
   ArrowLeft, Mail, Send,
   MessageCircle, CheckCircle2, AlertCircle
@@ -10,6 +11,11 @@ import {
 
 export function ContactUsPage() {
   const { navigate, goBack } = useNavigationStore()
+  // Real, owner-published support contact (Admin → System Settings). When the
+  // owner has not published one, the email card says so honestly instead of
+  // showing an invented address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -74,12 +80,19 @@ export function ContactUsPage() {
       <div className="flex-1 px-4 py-6 md:px-6 md:py-8 space-y-6 md:space-y-8 max-w-2xl lg:max-w-4xl mx-auto w-full pb-24 md:pb-8">
         {/* Contact Info — t187-d: only REAL, verifiable contact channels.
             The invented hotline number and the invented Gulshan HQ address
-            were removed; the email is the same support@zylod.com used
-            everywhere else on the site. */}
+            were removed; the email shown here is the one the site owner
+            published in Admin → System Settings. When nothing is published,
+            this card says so honestly instead of inventing an address. */}
         <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-1 max-w-sm">
           <Mail className="w-5 h-5 text-red-600 mb-2" />
           <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">Email Support</p>
-          <a href="mailto:support@zylod.com" className="text-xs font-bold text-red-600 hover:underline">support@zylod.com</a>
+          {supportEmail ? (
+            <a href={`mailto:${supportEmail}`} className="text-xs font-bold text-red-600 hover:underline break-all">{supportEmail}</a>
+          ) : (
+            <p className="text-xs font-bold text-red-600">
+              No support email published yet — use the inquiry form below or reach us through the Help Center.
+            </p>
+          )}
           <p className="text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
             For anything urgent, use Live Chat — a support team member reviews every message.
           </p>

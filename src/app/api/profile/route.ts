@@ -113,13 +113,32 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // Fetch updated user
+    // Fetch updated user — same shape as GET (never return the raw row:
+    // users carries passwordHash / twoFactorSecret)
     const updatedUser = await db.users.findUnique({
       where: { id: userId },
       include: { buyerProfile: true, supplierProfile: true, addresses: true },
     })
 
-    return NextResponse.json({ success: true, data: updatedUser })
+    return NextResponse.json({
+      success: true,
+      data: updatedUser
+        ? {
+            id: updatedUser.id,
+            userType: updatedUser.userType,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            authProvider: updatedUser.authProvider,
+            accountStatus: updatedUser.accountStatus,
+            isEmailVerified: updatedUser.isEmailVerified,
+            isPhoneVerified: updatedUser.isPhoneVerified,
+            createdAt: updatedUser.createdAt,
+            buyerProfile: updatedUser.buyerProfile,
+            supplierProfile: updatedUser.supplierProfile,
+            addresses: updatedUser.addresses,
+          }
+        : null,
+    })
   } catch (error) {
     console.error('Profile PUT error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

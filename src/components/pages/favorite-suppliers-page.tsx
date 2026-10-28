@@ -5,6 +5,8 @@ import { useNavigationStore } from '@/store/navigation-store';
 import { ArrowLeft, Building2, MapPin, Star, Heart, CheckCircle2, ChevronDown, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 
 // Types — mapped from the real /api/buyer/favorite-suppliers response shape:
 //   { id, buyerId, supplierId, createdAt, supplier: { id, companyName, verificationStatus, ratingAvg, ratingCount, createdAt } }
@@ -22,6 +24,7 @@ interface Supplier {
 
 export function FavoriteSuppliersPage() {
   const { goBack, navigate } = useNavigationStore();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,13 +32,23 @@ export function FavoriteSuppliersPage() {
   // Filters and Sort
   const [sortBy, setSortBy] = useState<'Recently Added' | 'Top Rated' | 'Most Products'>('Recently Added');
 
+  // Guests have no followed suppliers — stop the spinner honestly; the gate
+  // below explains what this page is.
   useEffect(() => {
+    if (isAuthenticated) return;
+    const t = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     const fetchSuppliers = async () => {
       try {
         setLoading(true);
+        setError(null);
         // Real endpoint — returns only suppliers the buyer actually follows.
         const res = await fetch('/api/buyer/favorite-suppliers');
-        if (!res.ok) throw new Error('Failed to fetch favorite suppliers');
+        if (!res.ok) throw new Error(`Could not load your followed suppliers (HTTP ${res.status})`);
         const data = await res.json();
         const raw: any[] = Array.isArray(data?.data) ? data.data : [];
         const mapped: Supplier[] = raw.map((r: any) => {
@@ -60,7 +73,7 @@ export function FavoriteSuppliersPage() {
       }
     };
     fetchSuppliers();
-  }, []);
+  }, [isAuthenticated]);
 
   // Sort the in-memory list whenever sortBy changes
   const sortedSuppliers = React.useMemo(() => {
@@ -69,6 +82,16 @@ export function FavoriteSuppliersPage() {
     else if (sortBy === 'Most Products') arr.sort((a, b) => b.productsCount - a.productsCount);
     return arr;
   }, [suppliers, sortBy]);
+
+  // Honest gate — followed suppliers are account-scoped.
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your favorite suppliers"
+        message="The suppliers you follow are saved to your account. Sign in to see the real list."
+      />
+    );
+  }
 
   const handleRemoveFavorite = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();

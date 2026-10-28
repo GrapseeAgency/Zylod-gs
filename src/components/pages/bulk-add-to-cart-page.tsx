@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, CheckSquare, Square, ShoppingCart, Info, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { PageLoader } from '@/components/ui/page-loader'
 
 interface BulkResult {
@@ -15,32 +17,45 @@ interface BulkResult {
 
 export function BulkAddToCartPage() {
   const { goBack, navigate } = useNavigationStore()
+  const { isAuthenticated } = useAuthStore()
   const [items, setItems] = useState<any[]>([])
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [quantities, setQuantities] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
+  const [wishlistError, setWishlistError] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
   const [success, setSuccess] = useState<{ added: number; merged: number; rejected: string[] } | null>(null)
 
+  // Guests cannot have a wishlist — stop the loading spinner honestly instead
+  // of spinning forever (the gate below explains the situation).
   useEffect(() => {
-    fetchWishlist()
-  }, [])
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    if (isAuthenticated) fetchWishlist()
+  }, [isAuthenticated])
 
   const fetchWishlist = async () => {
     try {
       // Real wishlist API — quantities default to each product's MOQ
       const res = await fetch('/api/wishlist')
-      const json = await res.json()
-      if (json.success && json.data) {
+      const json = await res.json().catch(() => null)
+      if (res.ok && json?.success && json.data) {
         setItems(json.data)
         const initialQs: Record<string, number> = {}
         json.data.forEach((item: any) => {
           initialQs[item.id] = item.product.moq || 1
         })
         setQuantities(initialQs)
+      } else {
+        setWishlistError(json?.error || `Could not load your wishlist (HTTP ${res.status}).`)
       }
     } catch (error) {
       console.error('Failed to fetch wishlist', error)
+      setWishlistError('Network error — your wishlist could not be loaded. Please retry.')
     } finally {
       setLoading(false)
     }
@@ -167,6 +182,17 @@ export function BulkAddToCartPage() {
     )
   }
 
+  // Honest gate — the wishlist is account-scoped, so a guest never sees the
+  // (fabricated) empty grid.
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to add to cart"
+        message="Your wishlist is tied to your account. Sign in to select wishlist items and add them to your cart."
+      />
+    )
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8">
       <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b flex items-center px-4 h-14 md:hidden">
@@ -207,6 +233,13 @@ export function BulkAddToCartPage() {
 
         {loading ? (
           <PageLoader />
+        ) : wishlistError ? (
+          <div className="bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900/60 rounded-xl p-6 text-center space-y-2">
+            <p className="text-sm font-semibold text-red-600 dark:text-red-400">{wishlistError}</p>
+            <button onClick={fetchWishlist} className="text-xs font-bold text-primary hover:underline">
+              Retry
+            </button>
+          </div>
         ) : (
           <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:grid-cols-3">
             {items.map((item) => (

@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Star, Plus, Trash2, GripVertical, Check, Eye,
   Sparkles, Layers, Search, Save, AlertCircle
@@ -38,15 +40,27 @@ export function StoreFeaturedProductsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [savedSuccess, setSavedSuccess] = useState(false)
   const [activeTab, setActiveTab] = useState<'featured' | 'catalog'>('featured')
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const { isAuthenticated, user } = useAuthStore()
 
   useEffect(() => {
     async function loadData() {
       try {
         setLoading(true)
+        setLoadError(null)
         const [prodRes, storeRes] = await Promise.all([
           fetch('/api/supplier/products'),
           fetch('/api/supplier/storefront')
         ])
+        if (prodRes.status === 401 || prodRes.status === 403 || storeRes.status === 401 || storeRes.status === 403) {
+          setSessionExpired(true)
+          return
+        }
+        if (!prodRes.ok || !storeRes.ok) {
+          setLoadError('Could not load your catalog and storefront settings. Please try again later.')
+        }
 
         const prodData = await prodRes.json()
         const storeData = await storeRes.json()
@@ -74,6 +88,7 @@ export function StoreFeaturedProductsPage() {
         }
       } catch (err) {
         console.error('Failed to load featured products:', err)
+        setLoadError('Could not load your catalog and storefront settings. Please try again later.')
       } finally {
         setLoading(false)
       }
@@ -114,6 +129,7 @@ export function StoreFeaturedProductsPage() {
   const handleSave = async () => {
     try {
       setSaving(true)
+      setSaveError(null)
       const res = await fetch('/api/supplier/storefront', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -124,9 +140,14 @@ export function StoreFeaturedProductsPage() {
       if (res.ok) {
         setSavedSuccess(true)
         setTimeout(() => setSavedSuccess(false), 3000)
+      } else if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+      } else {
+        setSaveError(`Publish failed (HTTP ${res.status}). Please try again.`)
       }
     } catch (err) {
       console.error('Failed to save featured products:', err)
+      setSaveError('Could not reach the save service. Check your connection and try again.')
     } finally {
       setSaving(false)
     }
@@ -139,6 +160,10 @@ export function StoreFeaturedProductsPage() {
   const catalogFiltered = products.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  if (sessionExpired) return <AccountGate title="Session expired" message="Your session has expired. Sign in again to manage featured products." />
+  if (!isAuthenticated) return <AccountGate title="Sign in to manage featured products" message="The featured products showcase edits your supplier storefront. Sign in with a supplier account to continue." showBecomeSupplier />
+  if (user && user.userType !== 'supplier') return <AccountGate title="Supplier accounts only" message={`Featured products belong to supplier storefronts — you are signed in as a ${user.userType}.`} showBecomeSupplier />
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pb-20 md:pb-8">
@@ -182,6 +207,14 @@ export function StoreFeaturedProductsPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {/* Real load/save errors */}
+        {(loadError || saveError) && (
+          <div className="flex items-start gap-2 rounded-xl border border-red-900 bg-red-950/60 px-4 py-3">
+            <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+            <p className="text-xs font-semibold text-red-300">{loadError || saveError}</p>
+          </div>
+        )}
+
         {/* Info Banner */}
         <div className="bg-white dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm flex items-start gap-3">
           <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />

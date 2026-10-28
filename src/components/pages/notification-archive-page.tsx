@@ -6,6 +6,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Archive, Trash2, Clock, CheckCircle2,
   Package, Truck, Tag, TrendingDown, Layers, Bell
@@ -13,11 +14,13 @@ import {
 
 export function NotificationArchivePage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [archived, setArchived] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [clearing, setClearing] = useState(false)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const fetchArchive = useCallback(async () => {
     try {
@@ -26,20 +29,44 @@ export function NotificationArchivePage() {
       if (token) headers['Authorization'] = `Bearer ${token}`
 
       const res = await fetch('/api/notifications/archive?limit=50', { headers })
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
       const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || `Failed to load archive (${res.status})`)
       if (data.success && data.data) {
         setArchived(data.data)
+      } else {
+        throw new Error('The notification archive is unavailable right now.')
       }
     } catch (err) {
-      console.error('Failed to load archive:', err)
+      setLoadError(err instanceof Error ? err.message : 'Failed to load the archive')
     } finally {
       setLoading(false)
     }
   }, [token])
 
+  // Honesty fix: the archive holds YOUR archived notifications — guests get a
+  // gate, never a fabricated "No Archived Notifications" page.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
   useEffect(() => {
     fetchArchive()
   }, [fetchArchive])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your archived notifications." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your archive"
+        message="The archive stores notifications from your own account. Sign in to see yours."
+      />
+    )
+  }
 
   const handleClearAll = async () => {
     if (!window.confirm('Are you sure you want to permanently delete all archived notifications?')) return
@@ -98,6 +125,13 @@ export function NotificationArchivePage() {
                 <Skeleton className="h-3 w-full rounded" />
               </div>
             ))}
+          </div>
+        ) : loadError ? (
+          <div className="text-center py-16 space-y-3 text-gray-500 dark:text-gray-400">
+            <Archive className="w-12 h-12 text-red-300 mx-auto" />
+            <p className="font-bold text-sm text-gray-700 dark:text-gray-300">Could not load the archive</p>
+            <p className="text-xs max-w-xs mx-auto">{loadError}</p>
+            <Button size="sm" onClick={fetchArchive} className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl">Try Again</Button>
           </div>
         ) : archived.length === 0 ? (
           <div className="text-center py-16 space-y-2 text-gray-500 dark:text-gray-400 dark:text-gray-500">

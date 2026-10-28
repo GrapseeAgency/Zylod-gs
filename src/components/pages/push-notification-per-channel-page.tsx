@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Switch } from '@/components/ui/switch'
 import {
   ArrowLeft, Smartphone, Mail, Bell, Check,
@@ -12,43 +13,86 @@ import {
 
 export function PushNotificationPerChannelPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [prefs, setPrefs] = useState<any>({})
   const [loading, setLoading] = useState(true)
   const [saved, setSaved] = useState(false)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    if (!isAuthenticated) return
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/notifications/preferences', { headers })
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return null
+        }
+        if (!res.ok) throw new Error(`Request failed (${res.status})`)
+        return res.json()
+      })
       .then(data => {
-        if (data.success && data.data) {
+        if (data && data.success && data.data) {
           setPrefs(data.data)
+        } else if (data && !data.success) {
+          setError('Could not load your notification preferences.')
         }
       })
-      .catch(console.error)
+      .catch(() => setError('Could not load your notification preferences.'))
       .finally(() => setLoading(false))
-  }, [token])
+  }, [isAuthenticated, token])
 
   const handleUpdate = async (key: string, val: boolean) => {
-    setPrefs((prev: any) => ({ ...prev, [key]: val }))
+    const prev = prefs[key]
+    setPrefs((p: any) => ({ ...p, [key]: val }))
     try {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (token) headers['Authorization'] = `Bearer ${token}`
 
-      await fetch('/api/notifications/preferences', {
+      const res = await fetch('/api/notifications/preferences', {
         method: 'PATCH',
         headers,
         body: JSON.stringify({ [key]: val }),
       })
+      if (!res.ok) {
+        setPrefs((p: any) => ({ ...p, [key]: prev }))
+        setError('Could not save the change. Please try again.')
+        return
+      }
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } catch (e) {
+      setPrefs((p: any) => ({ ...p, [key]: prev }))
+      setError('Could not save the change. Please check your connection and try again.')
       console.error(e)
     }
+  }
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session is no longer valid. Sign in again to manage your notification preferences."
+      />
+    )
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage notifications"
+        message="The Channel Matrix shows and changes your real account notification preferences. Sign in to continue."
+      />
+    )
   }
 
   return (
@@ -77,6 +121,11 @@ export function PushNotificationPerChannelPage() {
             </span>
           )}
         </div>
+        {error && (
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-red-200 dark:border-red-900 p-3">
+            <p className="text-xs font-semibold text-red-600 dark:text-red-400">{error}</p>
+          </div>
+        )}
         {/* Push Section */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-2.5">

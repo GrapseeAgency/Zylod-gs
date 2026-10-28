@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { ArrowLeft, Filter, Star, Heart, CheckCircle2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 
 interface FavoriteItem {
   id: string
@@ -21,36 +23,56 @@ interface FavoriteItem {
 
 export function FavoritesPage() {
   const { navigate, goBack } = useNavigationStore()
+  const { token, isAuthenticated } = useAuthStore()
   const [items, setItems] = useState<FavoriteItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   const [activeFilter, setActiveFilter] = useState('All')
   const filters = ['All', 'Electronics', 'Industrial', 'Textiles', 'Food']
-  
+
   const [sortOption, setSortOption] = useState<'RATING' | 'PRICE_ASC' | 'RECENT'>('RATING')
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     const fetchFavorites = async () => {
+      if (!isAuthenticated || !token) return
       try {
         setLoading(true)
-        const response = await fetch('/api/favorites')
-        if (!response.ok) throw new Error('Failed to fetch favorites')
+        const response = await fetch('/api/favorites', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (response.status === 401 || response.status === 403) {
+          setSessionExpired(true)
+          return
+        }
+        if (!response.ok) throw new Error(`Failed to load favorites (HTTP ${response.status}).`)
         const data = await response.json()
+        setError(null)
         setItems(data.items || [])
       } catch (err: any) {
-        setError(err.message)
+        setError(err?.message || 'Network error while loading favorites.')
       } finally {
         setLoading(false)
       }
     }
     fetchFavorites()
-  }, [])
+  }, [isAuthenticated, token])
 
   const handleRemove = async (itemId: string, e: React.MouseEvent) => {
     e.stopPropagation()
     try {
-      await fetch(`/api/favorites/${itemId}`, { method: 'DELETE' })
+      await fetch(`/api/favorites/${itemId}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      })
       setItems(items.filter(item => item.id !== itemId))
     } catch (err) {
       console.error(err)
@@ -74,6 +96,23 @@ export function FavoritesPage() {
   }
 
   const displayedItems = getFilteredAndSortedItems()
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has expired. Sign in again to see your real saved products."
+      />
+    )
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view favorites"
+        message="Favorites shows the products you actually saved. Sign in to continue."
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">

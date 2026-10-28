@@ -101,8 +101,8 @@ export function TermsOfServicePage() {
         ) : !doc ? (
           <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm text-center space-y-3">
             <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
-            <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Terms document loading</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Our legal team is finalizing the latest version. Please check back shortly.</p>
+            <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Terms document unavailable</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">The terms of service document couldn&apos;t be loaded right now. Please try again later.</p>
           </div>
         ) : (
           <>

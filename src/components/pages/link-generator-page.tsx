@@ -94,11 +94,13 @@ export function LinkGeneratorPage() {
         let rows: EntityOption[] = []
         if (destination === 'product-detail') {
           const res = await fetch('/api/products?limit=50', { signal: controller.signal })
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
           const json = await res.json().catch(() => null)
           const list: any[] = json?.data?.products ?? json?.data ?? []
           rows = list.map((p) => ({ id: p.id, label: p.name, sub: `৳${p.basePrice} · MOQ ${p.moq}` }))
         } else if (destination === 'supplier-storefront') {
           const res = await fetch('/api/suppliers?limit=50', { signal: controller.signal })
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
           const json = await res.json().catch(() => null)
           const list: any[] = json?.data?.suppliers ?? json?.data ?? []
           rows = list
@@ -106,6 +108,7 @@ export function LinkGeneratorPage() {
             .map((s) => ({ id: s.id, label: s.companyName, sub: s.verificationStatus ?? 'approved' }))
         } else if (destination === 'exclusive-deal-detail') {
           const res = await fetch('/api/deals?limit=50', { signal: controller.signal })
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
           const json = await res.json().catch(() => null)
           const list: any[] = json?.data?.deals ?? json?.data ?? []
           rows = list
@@ -113,6 +116,7 @@ export function LinkGeneratorPage() {
             .map((d) => ({ id: d.id, label: d.product?.name ?? d.id, sub: `৳${d.dealPrice} · -${d.discountPercent}%` }))
         } else if (destination === 'live-shopping-detail') {
           const res = await fetch('/api/live-shopping?limit=50', { signal: controller.signal })
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
           const json = await res.json().catch(() => null)
           const list: any[] = json?.data?.streams ?? json?.data ?? []
           rows = list.map((s) => ({
@@ -128,7 +132,7 @@ export function LinkGeneratorPage() {
         }
       } catch (e: any) {
         if (e?.name === 'AbortError') return
-        if (alive) setOptionsError('Could not reach the listings service.')
+        if (alive) setOptionsError(`Could not reach the listings service${e?.message ? ` (${e.message})` : ''}.`)
       } finally {
         if (alive) setOptionsLoading(false)
       }

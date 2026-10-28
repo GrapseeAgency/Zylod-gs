@@ -112,6 +112,9 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'buyer-orders': () => import('@/components/pages/orders-page'),
     'buyer-credit': () => import('@/components/pages/credit-limit-page'),
     'category-list': () => import('@/components/pages/category-navigation-page'),
+    // t215: retired placeholder ids — deep links land on the REAL rails.
+    'buyer-rewards': () => import('@/components/pages/loyalty-points-page'),
+    'address-book': () => import('@/components/pages/shipping-address-page'),
 
     // Core Notifications Pages 171-178
     'notifications': () => import('@/components/pages/notifications-page'),

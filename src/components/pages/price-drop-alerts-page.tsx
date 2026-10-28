@@ -8,6 +8,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, TrendingDown, Plus, Trash2, SlidersHorizontal,
   Package, CheckCircle2, AlertCircle, ShoppingCart, Tag,
@@ -31,30 +32,47 @@ interface PriceAlert {
 
 export function PriceDropAlertsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [activeTab, setActiveTab] = useState<'active' | 'triggered' | 'cancelled'>('active')
   const [alerts, setAlerts] = useState<PriceAlert[]>([])
   const [loading, setLoading] = useState(true)
+  // Honesty fix: price watches are account data — guests get an account gate
+  // and real API failures surface an error instead of a fake empty list.
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const fetchAlerts = useCallback(async () => {
+    if (!isAuthenticated) return
     try {
       setLoading(true)
+      setLoadError(null)
       const headers: Record<string, string> = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
 
       const res = await fetch(`/api/price-alerts?status=${activeTab}&limit=50`, { headers })
-      const data = await res.json()
+      const data = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+      if (!res.ok) throw new Error(data?.error || `Failed to load price alerts (${res.status})`)
       if (data.success && data.data) {
         setAlerts(data.data)
+      } else {
+        setAlerts([])
       }
     } catch (err) {
-      console.error('Failed to fetch price alerts:', err)
+      setLoadError(err instanceof Error ? err.message : 'Failed to load price alerts')
     } finally {
       setLoading(false)
     }
-  }, [token, activeTab])
+  }, [isAuthenticated, token, activeTab])
 
   useEffect(() => {
     fetchAlerts()
@@ -71,6 +89,18 @@ export function PriceDropAlertsPage() {
     } catch (err) {
       console.error('Failed to cancel alert:', err)
     }
+  }
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your price drop alerts." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view price alerts"
+        message="Price drop watches are saved to your account. Sign in to see your real alerts."
+      />
+    )
   }
 
   return (
@@ -156,7 +186,22 @@ export function PriceDropAlertsPage() {
 
       {/* List Content */}
       <div className="flex-1 px-4 py-4 max-w-3xl mx-auto w-full space-y-3 pb-24 md:px-6 md:py-6 md:pb-8 lg:max-w-5xl md:space-y-4">
-        {loading ? (
+        {loadError ? (
+          <div className="text-center py-16 space-y-3">
+            <div className="w-16 h-16 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+              <AlertCircle className="w-8 h-8" />
+            </div>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Could not load price alerts</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">{loadError}</p>
+            <Button
+              onClick={() => fetchAlerts()}
+              variant="outline"
+              className="text-xs font-bold rounded-xl"
+            >
+              Try again
+            </Button>
+          </div>
+        ) : loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
               <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 flex gap-3 animate-pulse">

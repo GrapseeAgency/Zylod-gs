@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 import {
@@ -142,7 +143,19 @@ function SettingsRow({
 // ─── MAIN ACCOUNT SETTINGS PAGE ─────────────────────────────────────────────
 export function AccountSettingsPage() {
   const { navigate } = useNavigationStore()
-  const { user, token, logout } = useAuthStore()
+  const { user, token, logout, isAuthenticated } = useAuthStore()
+
+  // Auth honesty: settings are user-scoped — gate guests instead of
+  // rendering default toggles as if they were the visitor's real settings.
+  const [authChecking, setAuthChecking] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    // Deep links can mount before the boot session probe settles.
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   // Section state
   const [activeSection, setActiveSection] = useState<
@@ -192,6 +205,11 @@ export function AccountSettingsPage() {
           fetch('/api/profile/settings', { headers: { Authorization: `Bearer ${token}` } }),
           fetch('/api/profile/notifications', { headers: { Authorization: `Bearer ${token}` } }),
         ])
+
+        if (settingsRes.status === 401 || notifRes.status === 401) {
+          setSessionExpired(true)
+          return
+        }
 
         if (settingsRes.ok) {
           const sJson = await settingsRes.json()
@@ -281,6 +299,25 @@ export function AccountSettingsPage() {
   }
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
+  // Auth gates — a guest or expired session must never see default toggles
+  // presented as their real account settings.
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has ended. Sign in again to manage your account settings."
+      />
+    )
+  }
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your settings"
+        message="Account Settings manages your real credentials, alerts, and privacy choices. Sign in to continue."
+      />
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24">
       {/* Header */}

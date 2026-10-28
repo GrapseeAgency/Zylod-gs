@@ -8,6 +8,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, TrendingDown, Search, CheckCircle2,
   Package, Tag, AlertCircle, Sparkles
@@ -15,7 +16,7 @@ import {
 
 export function PriceAlertCreatePage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const initialProductId = pageParams?.productId || ''
@@ -27,6 +28,17 @@ export function PriceAlertCreatePage() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Honesty fix: creating a price watch writes to the signed-in account's
+  // alerts — guests get an account gate, never a fake "watch activated".
+  const [gateLoading, setGateLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) { setGateLoading(false); return }
+    const t = setTimeout(() => setGateLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     if (initialProductId) {
@@ -83,6 +95,10 @@ export function PriceAlertCreatePage() {
       })
       const data = await res.json()
 
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok && data.success) {
         setSuccess(true)
       } else {
@@ -93,6 +109,18 @@ export function PriceAlertCreatePage() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to set a price drop alert." />
+  }
+  if (!gateLoading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to set a price alert"
+        message="Price drop watches are saved to your account and notify you when suppliers lower prices. Sign in to continue."
+      />
+    )
   }
 
   return (

@@ -18,6 +18,16 @@ export async function GET(
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
+    // Ownership: only the session's owner may read its thread (same rule as
+    // POST below). A foreign/phantom session id is the same no-leak 404.
+    const session = await db.chatSessions.findFirst({
+      where: { id, userId: auth.user.id },
+      select: { id: true },
+    })
+    if (!session) {
+      return NextResponse.json({ error: 'Chat session not found' }, { status: 404 })
+    }
+
     const messages = await db.chatMessages.findMany({
       where: { sessionId: id },
       orderBy: { createdAt: 'asc' },

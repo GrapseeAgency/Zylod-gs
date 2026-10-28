@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Send, AlertTriangle, Package, Paperclip,
   CheckCircle2, AlertCircle, ShieldAlert
@@ -19,6 +21,7 @@ interface UserOrder {
 
 export function SubmitTicketPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
+  const { isAuthenticated } = useAuthStore()
   const initialOrderId = pageParams.orderId || pageParams.id || ''
   const [orders, setOrders] = useState<UserOrder[]>([])
   const [formData, setFormData] = useState({
@@ -48,6 +51,7 @@ export function SubmitTicketPage() {
   ]
 
   async function fetchOrders() {
+    if (!isAuthenticated) return
     try {
       const res = await fetch('/api/orders/my-orders?limit=10')
       if (res.ok) {
@@ -59,7 +63,7 @@ export function SubmitTicketPage() {
 
   useEffect(() => {
     fetchOrders()
-  }, [])
+  }, [isAuthenticated])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -82,6 +86,10 @@ export function SubmitTicketPage() {
       setErrorMsg('Network error. Please try again.')
     }
     setLoading(false)
+  }
+
+  if (!isAuthenticated) {
+    return <AccountGate title="Sign in to open a ticket" message="Support tickets are tied to your account so our team can follow up. Sign in to continue." />
   }
 
   return (

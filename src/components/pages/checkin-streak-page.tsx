@@ -3,32 +3,61 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import {
-  ArrowLeft, Flame, Calendar, Trophy, CheckCircle2, Gift
+  ArrowLeft, Flame, Calendar, Trophy, CheckCircle2, Gift, AlertCircle
 } from 'lucide-react'
 
 export function CheckinStreakPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [history, setHistory] = useState<any[]>([])
   const [currentStreak, setCurrentStreak] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLoading(false)
+      return
+    }
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
-    const headers: Record<string, string> = {}
-    if (token) headers['Authorization'] = `Bearer ${token}`
+    if (!token) return
+    const headers: Record<string, string> = { 'Authorization': `Bearer ${token}` }
 
     fetch('/api/rewards/checkin', { headers })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.data) {
+      .then(async res => {
+        const data = await res.json().catch(() => null)
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        if (data?.success && data.data) {
           setCurrentStreak(data.data.currentStreak || 0)
           setHistory(data.data.history || [])
+        } else {
+          setLoadError(data?.error || `Could not load your check-in streak (HTTP ${res.status}).`)
         }
       })
-      .catch(console.error)
+      .catch(() => setLoadError('Network error while loading your check-in streak. Check your connection and retry.'))
   }, [token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your check-in streak." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your check-in streak"
+        message="Your streak and check-in ledger come from your real account. Sign in to continue."
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -68,7 +97,12 @@ export function CheckinStreakPage() {
             Recent Check-in Ledger
           </h3>
 
-          {history.length === 0 ? (
+          {loadError ? (
+            <div className="bg-red-50 border border-red-200 rounded-3xl p-6 text-center text-red-600 text-xs font-bold flex items-center justify-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              {loadError}
+            </div>
+          ) : history.length === 0 ? (
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 text-center text-gray-400 dark:text-gray-500 dark:text-gray-400 text-xs">
               No previous check-in records found. Start today!
             </div>

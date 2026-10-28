@@ -34,6 +34,7 @@ export function CouponsPage() {
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [claimingId, setClaimingId] = useState<string | null>(null)
   const [claimedCodes, setClaimedCodes] = useState<Set<string>>(new Set())
+  const [loadError, setLoadError] = useState('')
 
   // Task 74: ADMIN creation panel — the API became admin-only, so the admin
   // surface lives here (one coupons page, both halves connected).
@@ -85,12 +86,16 @@ export function CouponsPage() {
     try {
       setLoading(true)
       const res = await fetch('/api/coupons')
-      const data = await res.json()
-      if (data.success && data.data) {
+      const data = await res.json().catch(() => null)
+      if (res.ok && data?.success && data.data) {
         setCoupons(data.data)
+        setLoadError('')
+      } else {
+        setLoadError(data?.error || `Could not load coupons (HTTP ${res.status}).`)
       }
     } catch (err) {
       console.error('Failed to load coupons:', err)
+      setLoadError('Network error while loading coupons. Check your connection and retry.')
     } finally {
       setLoading(false)
     }
@@ -279,6 +284,12 @@ export function CouponsPage() {
                 <Skeleton className="h-10 w-full rounded-2xl" />
               </div>
             ))}
+          </div>
+        ) : loadError ? (
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-2">
+            <Gift className="w-12 h-12 text-gray-300 mx-auto" />
+            <p className="font-bold text-sm text-gray-800 dark:text-gray-200">Could not load coupons</p>
+            <p className="text-xs">{loadError}</p>
           </div>
         ) : coupons.length === 0 ? (
           <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-2">

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
 import { X, Mic, MicOff, Search } from 'lucide-react'
 import { hasNativeVoiceRecognition, recognizeSpeechWithNative } from '@/lib/native-bridge'
 
@@ -16,6 +17,7 @@ type RecognitionState = 'idle' | 'listening' | 'processing' | 'done' | 'unsuppor
 
 export function VoiceSearchPage() {
   const { navigate, goBack } = useNavigationStore()
+  const { isAuthenticated } = useAuthStore()
   const [state, setState] = useState<RecognitionState>('idle')
   const [transcript, setTranscript] = useState('')
   const [voiceHistory, setVoiceHistory] = useState<VoiceHistoryItem[]>([])
@@ -32,6 +34,7 @@ export function VoiceSearchPage() {
   ]
 
   async function fetchVoiceHistory() {
+    if (!isAuthenticated) return
     setLoadingHistory(true)
     try {
       const res = await fetch('/api/search/history?type=voice')
@@ -51,7 +54,7 @@ export function VoiceSearchPage() {
     }
 
     fetchVoiceHistory()
-  }, [])
+  }, [isAuthenticated])
 
 
   function startListening() {

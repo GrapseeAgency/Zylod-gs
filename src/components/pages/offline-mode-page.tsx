@@ -13,7 +13,8 @@ import {
   HardDrive,
   Building2,
   ChevronRight,
-  Database
+  Database,
+  AlertTriangle
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,14 +26,19 @@ export function OfflineModePage() {
   const [offlineData, setOfflineData] = useState<any>(null)
   const [syncing, setSyncing] = useState(false)
   const [syncDone, setSyncDone] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [syncError, setSyncError] = useState<string | null>(null)
 
   const fetchOfflinePackage = () => {
     fetch('/api/app/offline-sync')
-      .then(res => res.json())
-      .then(json => {
+      .then(async res => {
+        const json = await res.json().catch(() => null)
+        if (!res.ok) throw new Error(json?.error || `Failed to load the offline package (${res.status})`)
         if (json.data) setOfflineData(json.data)
       })
-      .catch(console.error)
+      .catch((e: unknown) => {
+        setLoadError(e instanceof Error ? e.message : 'Failed to load the offline package')
+      })
   }
 
   useEffect(() => {
@@ -41,8 +47,9 @@ export function OfflineModePage() {
 
   const handleSyncQueue = async () => {
     setSyncing(true)
+    setSyncError(null)
     try {
-      await fetch('/api/app/offline-sync', {
+      const res = await fetch('/api/app/offline-sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -52,9 +59,17 @@ export function OfflineModePage() {
           ],
         }),
       })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) {
+        throw new Error(json?.error || (res.status === 401
+          ? 'Sign in to sync queued operations with the server.'
+          : `Sync failed (${res.status}) — queued operations were NOT synchronized.`))
+      }
       setSyncDone(true)
       fetchOfflinePackage()
       setTimeout(() => setSyncDone(false), 3000)
+    } catch (e: unknown) {
+      setSyncError(e instanceof Error ? e.message : 'Sync failed — queued operations were NOT synchronized.')
     } finally {
       setSyncing(false)
     }
@@ -93,6 +108,20 @@ export function OfflineModePage() {
         </div>
       )}
 
+      {syncError && (
+        <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl text-red-800 dark:text-red-300 flex items-center gap-2 text-sm">
+          <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+          {syncError}
+        </div>
+      )}
+
+      {loadError && (
+        <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl text-red-800 dark:text-red-300 flex items-center gap-2 text-sm">
+          <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+          Could not load the offline package: {loadError} Reload to try again.
+        </div>
+      )}
+
       {/* Offline Status & SQLite Snapshot */}
       <Card className="rounded-2xl border shadow-sm">
         <CardHeader>
@@ -108,15 +137,15 @@ export function OfflineModePage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
             <div className="p-4 bg-muted/30 rounded-xl border text-center space-y-1">
-              <div className="text-2xl font-black text-foreground">{offlineData?.catalogue?.products?.length || 50}</div>
+              <div className="text-2xl font-black text-foreground">{offlineData?.catalogue?.products?.length ?? 0}</div>
               <div className="text-xs text-muted-foreground">Wholesale SKUs</div>
             </div>
             <div className="p-4 bg-muted/30 rounded-xl border text-center space-y-1">
-              <div className="text-2xl font-black text-foreground">{offlineData?.catalogue?.categories?.length || 30}</div>
+              <div className="text-2xl font-black text-foreground">{offlineData?.catalogue?.categories?.length ?? 0}</div>
               <div className="text-xs text-muted-foreground">Categories</div>
             </div>
             <div className="p-4 bg-muted/30 rounded-xl border text-center space-y-1">
-              <div className="text-2xl font-black text-foreground">{offlineData?.catalogue?.suppliers?.length || 20}</div>
+              <div className="text-2xl font-black text-foreground">{offlineData?.catalogue?.suppliers?.length ?? 0}</div>
               <div className="text-xs text-muted-foreground">Verified Factories</div>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import crypto from 'crypto'
+import { createSession, getClientIP, setAuthCookie } from '@/lib/auth'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
@@ -85,12 +86,15 @@ export async function POST(request: NextRequest) {
         })
       }
 
-      const token = crypto.randomBytes(32).toString('hex')
-
-      return NextResponse.json({
+      // t220 fix: purpose 'login' must mint a REAL session (createSession +
+      // auth cookie), not a random token stored nowhere — the otp-verification
+      // page signs the user in with this token, and every authed API call used
+      // to 401 against it (a fake login).
+      const sessionToken = await createSession(user.id, getClientIP(request), request.headers.get('user-agent') || undefined)
+      const response = NextResponse.json({
         success: true,
         verified: true,
-        token,
+        token: sessionToken,
         user: {
           id: user.id,
           userType: user.userType,
@@ -100,6 +104,8 @@ export async function POST(request: NextRequest) {
           accountStatus: user.accountStatus,
         },
       })
+      setAuthCookie(response, sessionToken)
+      return response
     }
 
     return NextResponse.json({

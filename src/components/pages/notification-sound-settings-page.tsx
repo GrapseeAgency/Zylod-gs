@@ -6,6 +6,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Volume2, VolumeX, Vibrate, Music,
   Check, Sparkles, Sliders
@@ -14,27 +15,52 @@ import { soundEffects } from '@/lib/sound-effects'
 
 export function NotificationSoundSettingsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [sound, setSound] = useState<string>('default')
   const [vibrate, setVibrate] = useState(true)
   const [inAppSound, setInAppSound] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Honesty fix: the saved tone lives on YOUR notification preferences —
+  // guests get a gate instead of silently failing to save a choice.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/notifications/preferences', { headers })
-      .then(res => res.json())
-      .then(data => {
+      .then(async res => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        const data = await res.json()
         if (data.success && data.data) {
           setSound(data.data.notificationSound || 'default')
         }
       })
       .catch(console.error)
-  }, [token])
+      .finally(() => setLoading(false))
+  }, [isAuthenticated, token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to manage notification sounds." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage sound settings"
+        message="Your notification tone is saved to your account's preferences. Sign in to change it."
+      />
+    )
+  }
 
   const handleSaveSound = async (val: string) => {
     setSound(val)

@@ -1,6 +1,7 @@
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { authenticateRequest } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,10 +9,23 @@ export async function GET(request: NextRequest) {
     const productIdsParam = searchParams.get('productIds')
     const buyerId = searchParams.get('buyerId')
 
-    // If buyerId is provided, get their compare list from the database
+    // SECURITY: a compare list is user-scoped data. The caller's identity
+    // comes from the session ONLY — a client-supplied buyerId can never read
+    // (or even name) another user's list.
+    let sessionBuyerId: string | null = null
     if (buyerId) {
+      const auth = await authenticateRequest(request)
+      if (!auth.authenticated || !auth.user) {
+        return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      }
+      sessionBuyerId = auth.user.id
+    }
+
+    // If the caller is authenticated (or asked for their list), get THEIR
+    // compare list from the database
+    if (sessionBuyerId) {
       const compareItems = await db.compareItems.findMany({
-        where: { buyerId },
+        where: { buyerId: sessionBuyerId },
         include: {
           product: {
             include: {
@@ -199,12 +213,20 @@ export async function POST(request: NextRequest) {
   if (!rl.ok) return rateLimitResponse(rl)
 
   try {
-    const body = await request.json()
-    const { buyerId, productId } = body
+    // SECURITY: the compare list belongs to the SESSION user — a
+    // client-supplied buyerId is never trusted (IDOR hardening).
+    const auth = await authenticateRequest(request)
+    if (!auth.authenticated || !auth.user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+    const buyerId = auth.user.id
 
-    if (!buyerId || !productId) {
+    const body = await request.json()
+    const { productId } = body
+
+    if (!productId) {
       return NextResponse.json(
-        { error: 'buyerId and productId are required' },
+        { error: 'productId is required' },
         { status: 400 }
       )
     }
@@ -279,12 +301,20 @@ export async function DELETE(request: NextRequest) {
   if (!rl.ok) return rateLimitResponse(rl)
 
   try {
-    const body = await request.json()
-    const { buyerId, productId } = body
+    // SECURITY: removal is scoped to the SESSION user's own list — a
+    // client-supplied buyerId is never trusted (IDOR hardening).
+    const auth = await authenticateRequest(request)
+    if (!auth.authenticated || !auth.user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+    const buyerId = auth.user.id
 
-    if (!buyerId || !productId) {
+    const body = await request.json()
+    const { productId } = body
+
+    if (!productId) {
       return NextResponse.json(
-        { error: 'buyerId and productId are required' },
+        { error: 'productId is required' },
         { status: 400 }
       )
     }

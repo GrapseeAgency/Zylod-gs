@@ -10,6 +10,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   DollarSign, TrendingUp, Package, ShoppingCart, Clock, ChevronRight, AlertCircle,
   AlertTriangle, BarChart3, Users, MapPin, Star, PlusCircle, ClipboardList,
@@ -95,16 +97,77 @@ const QUICK_ACTIONS = [
 export function SupplierDashboardPage() {
   const { navigate } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
+  const { token, isAuthenticated, user } = useAuthStore()
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  // Honesty fix: the dashboard shows the signed-in supplier's REAL store
+  // metrics — guests and non-supplier roles get an account gate instead of
+  // fabricated "0 revenue" cards.
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin')
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
-    fetch('/api/supplier/dashboard')
-      .then(res => res.json())
-      .then(json => { if (json.success) setData(json.data) })
-      .catch(() => {})
+    if (!isAuthenticated) return
+    fetch('/api/supplier/dashboard', {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
+      .then(res => res.json().then(json => ({ res, json })).catch(() => ({ res, json: null })))
+      .then(({ res, json }) => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        if (!res.ok) {
+          setLoadError(json?.error || `Failed to load your dashboard (HTTP ${res.status})`)
+          return
+        }
+        if (json?.success) setData(json.data)
+        else setLoadError('Your dashboard data is unavailable right now.')
+      })
+      .catch(() => setLoadError('Could not reach the server to load your dashboard.'))
       .finally(() => setLoading(false))
-  }, [])
+  }, [isAuthenticated, token])
+
+  // Gates — placed after every hook so all hooks always run.
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your supplier dashboard." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your supplier dashboard"
+        message="The supplier dashboard shows your real store's revenue, orders and inventory. Sign in to continue."
+      />
+    )
+  }
+  if (isAuthenticated && user && user.userType !== 'supplier' && user.userType !== 'admin') {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`The supplier dashboard belongs to supplier accounts — you are signed in as a ${user.userType}.`}
+      />
+    )
+  }
+  if (loadError) {
+    return (
+      <div className="max-w-[1280px] mx-auto px-4 py-16">
+        <div className="max-w-md mx-auto bg-card border border-border rounded-2xl p-6 text-center space-y-3">
+          <AlertCircle className="h-8 w-8 mx-auto text-primary" />
+          <h1 className="text-base font-bold text-foreground">Could not load the supplier dashboard</h1>
+          <p className="text-sm text-muted-foreground">{loadError}</p>
+          <Button onClick={() => window.location.reload()} className="h-9 px-4 font-bold text-xs rounded-xl">
+            Try again
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   const revenueCards = data ? [
     { title: 'Total Revenue', value: data.stats.totalRevenueBDT, isCurrency: true, icon: DollarSign, color: 'text-primary', bg: 'bg-red-50' },

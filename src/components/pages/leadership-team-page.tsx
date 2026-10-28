@@ -2,12 +2,18 @@
 
 import React from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Users, Mail, Briefcase } from 'lucide-react'
 
 export function LeadershipTeamPage() {
   const { navigate, goBack } = useNavigationStore()
+  // Owner-published support contact (Admin → System Settings) — the Contact
+  // card links to it when published, otherwise to the Help Center. Never an
+  // invented address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -59,14 +65,24 @@ export function LeadershipTeamPage() {
               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Contact</h3>
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400 dark:text-gray-500 leading-relaxed">
-              Questions for the team? Reach us by email.
+              Questions for the team?
+              {supportEmail ? ' Reach us by email.' : ' Reach us through the Help Center.'}
             </p>
-            <a
-              href="mailto:support@zylod.com"
-              className="block w-full text-center bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-2.5 transition"
-            >
-              support@zylod.com
-            </a>
+            {supportEmail ? (
+              <a
+                href={`mailto:${supportEmail}`}
+                className="block w-full text-center bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-2.5 transition"
+              >
+                {supportEmail}
+              </a>
+            ) : (
+              <button
+                onClick={() => navigate('help-center')}
+                className="block w-full text-center bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold py-2.5 transition"
+              >
+                Open the Help Center
+              </button>
+            )}
           </div>
         </div>
 

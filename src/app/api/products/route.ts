@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
     const minPrice = searchParams.get('minPrice')
     const maxPrice = searchParams.get('maxPrice')
+    const moq = searchParams.get('moq') || searchParams.get('maxMoq')
     const supplier = searchParams.get('supplier')
     const supplierId = searchParams.get('supplierId')
     const brand = searchParams.get('brand')
@@ -59,6 +60,10 @@ export async function GET(request: NextRequest) {
           if (minPrice) priceFilter.gte = parseFloat(minPrice)
           if (maxPrice) priceFilter.lte = parseFloat(maxPrice)
           where.basePrice = priceFilter
+        }
+
+        if (moq) {
+          where.moq = { lte: parseInt(moq) }
         }
 
         if (supplier) {

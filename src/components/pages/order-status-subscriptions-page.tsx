@@ -6,6 +6,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Package, Check, CheckCircle2,
   Clock, Truck, RefreshCw
@@ -13,7 +14,7 @@ import {
 
 export function OrderStatusSubscriptionsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [pushOrders, setPushOrders] = useState(true)
   const [emailOrders, setEmailOrders] = useState(true)
@@ -23,21 +24,46 @@ export function OrderStatusSubscriptionsPage() {
   const [stepDelivered, setStepDelivered] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Honesty fix: order-update subscriptions are saved per account — guests get
+  // a gate instead of toggles that silently write to nothing.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/notifications/preferences', { headers })
-      .then(res => res.json())
-      .then(data => {
+      .then(async res => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        const data = await res.json()
         if (data.success && data.data) {
           setPushOrders(data.data.pushOrderUpdates ?? true)
           setEmailOrders(data.data.emailOrderUpdates ?? true)
         }
       })
       .catch(console.error)
-  }, [token])
+      .finally(() => setLoading(false))
+  }, [isAuthenticated, token])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to manage order status subscriptions." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage subscriptions"
+        message="Order status subscriptions are saved to your account's notification preferences. Sign in to configure yours."
+      />
+    )
+  }
 
   const handleToggle = async (key: 'pushOrderUpdates' | 'emailOrderUpdates', val: boolean) => {
     if (key === 'pushOrderUpdates') setPushOrders(val)

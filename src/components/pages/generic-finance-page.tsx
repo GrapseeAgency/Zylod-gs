@@ -13,6 +13,7 @@ import {
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useToast } from '@/hooks/use-toast'
 import {
   ArrowLeft, Wallet, CreditCard, Receipt, Clock, ArrowRight, ArrowDownToLine,
@@ -60,12 +61,13 @@ function methodMeta(type: string) {
 export function GenericFinancePage({ pageId }: { pageId: string }) {
   const { navigate } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { toast } = useToast()
 
   const [tab, setTab] = useState<FinanceTab>('overview')
   const [data, setData] = useState<FinanceData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [methods, setMethods] = useState<PaymentMethod[]>([])
   const [methodsLoading, setMethodsLoading] = useState(false)
 
@@ -82,29 +84,53 @@ export function GenericFinancePage({ pageId }: { pageId: string }) {
     else setTab('overview')
   }, [pageId])
 
+  // Guests have no wallet — stop the loading spinner honestly; the gate below
+  // explains what this page is.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
   const loadBalance = useCallback(async () => {
+    if (!isAuthenticated) { setLoading(false); return }
     try {
       const res = await fetch('/api/profile/credits', { headers: authHeaders() })
-      const json = await res.json()
-      if (json.success && json.data) setData(json.data)
-    } catch { /* keep last known state */ }
-    finally { setLoading(false) }
-  }, [authHeaders])
+      const json = await res.json().catch(() => null)
+      if (res.ok && json?.success && json.data) setData(json.data)
+      else setLoadError(json?.error || `Your wallet balance could not be loaded (HTTP ${res.status}).`)
+    } catch {
+      setLoadError('Network error — your wallet balance could not be loaded. Please retry.')
+    } finally { setLoading(false) }
+  }, [authHeaders, isAuthenticated])
 
   const loadMethods = useCallback(async () => {
+    if (!isAuthenticated) { setMethodsLoading(false); return }
     setMethodsLoading(true)
     try {
       const res = await fetch('/api/payment-methods', { headers: authHeaders() })
-      const json = await res.json()
-      if (json.success && Array.isArray(json.data)) setMethods(json.data)
-    } catch { /* ignore */ }
+      const json = await res.json().catch(() => null)
+      if (res.ok && json?.success && Array.isArray(json.data)) setMethods(json.data)
+      else setMethods([])
+    } catch { /* methods panel shows its own empty state; balance error covers the page */ }
     finally { setMethodsLoading(false) }
-  }, [authHeaders])
+  }, [authHeaders, isAuthenticated])
 
   useEffect(() => { loadBalance() }, [loadBalance])
   useEffect(() => { loadMethods() }, [loadMethods])
 
   const title = pageId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+
+  // Honest gate — the wallet, credits, and saved payment methods belong to a
+  // signed-in account; a guest never sees a fabricated ৳0 balance.
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage your wallet"
+        message="Your balance, top-ups, withdrawals, and saved payment methods are tied to your account. Sign in to continue."
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -133,6 +159,13 @@ export function GenericFinancePage({ pageId }: { pageId: string }) {
         {/* Balance strip */}
         {loading ? (
           <Skeleton className="h-24 rounded-xl mb-6" />
+        ) : loadError ? (
+          <Card className="border-red-200 dark:border-red-900/60 bg-card mb-6">
+            <CardContent className="p-5 flex items-center gap-3">
+              <Info className="h-5 w-5 text-red-600 shrink-0" />
+              <p className="text-sm font-medium text-red-600 dark:text-red-400">{loadError}</p>
+            </CardContent>
+          </Card>
         ) : (
           <Card className="border-border/50 bg-card mb-6">
             <CardContent className="p-5 flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">

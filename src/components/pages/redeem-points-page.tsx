@@ -8,6 +8,7 @@ import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { soundEffects } from '@/lib/sound-effects'
 import { toast } from 'sonner'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Gift, Coins, Wallet, Tag,
   CheckCircle2, AlertCircle, ChevronRight
@@ -29,7 +30,7 @@ const REDEEM_OPTIONS = [
 
 export function RedeemPointsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [pointsBalance, setPointsBalance] = useState(0)
@@ -37,21 +38,40 @@ export function RedeemPointsPage() {
   const [redeeming, setRedeeming] = useState<number | null>(null)
   const [customPoints, setCustomPoints] = useState('')
   const [customBusy, setCustomBusy] = useState(false)
+  // Honesty fix: the points balance is the signed-in account's real balance —
+  // guests get an account gate instead of a fabricated "0 Pts".
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/rewards/loyalty', { headers })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.data) {
+      .then(res => res.json().then(data => ({ res, data })).catch(() => ({ res, data: null })))
+      .then(({ res, data }) => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        if (!res.ok) {
+          setLoadError(data?.error || `Failed to load your points balance (${res.status})`)
+          return
+        }
+        if (data?.success && data?.data) {
           setPointsBalance(data.data.pointsBalance)
+        } else {
+          setLoadError('Your points balance is unavailable right now.')
         }
       })
-      .catch(console.error)
+      .catch(() => setLoadError('Could not reach the server to load your points balance.'))
       .finally(() => setLoading(false))
-  }, [token])
+  }, [isAuthenticated, token])
 
   const handleRedeem = async (option: typeof REDEEM_OPTIONS[0]) => {
     if (pointsBalance < option.points) {
@@ -74,6 +94,7 @@ export function RedeemPointsPage() {
       })
       const data = await res.json()
 
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
       if (res.ok && data.success) {
         setPointsBalance(prev => prev - option.points)
         soundEffects.playByName('chime')
@@ -116,6 +137,7 @@ export function RedeemPointsPage() {
         body: JSON.stringify({ pointsToRedeem: pts, rewardType: 'voucher' }),
       })
       const data = await res.json()
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
       if (res.ok && data.success) {
         setPointsBalance(prev => prev - pts)
         setCustomPoints('')
@@ -135,6 +157,32 @@ export function RedeemPointsPage() {
     } finally {
       setCustomBusy(false)
     }
+  }
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to redeem your points." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to redeem points"
+        message="Loyalty points are earned on wholesale purchase orders, reviews, and referrals. Sign in to see and redeem your real balance."
+      />
+    )
+  }
+  if (loadError) {
+    return (
+      <div className="min-h-[60vh] bg-background flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-card border border-border rounded-2xl p-6 text-center space-y-3">
+          <AlertCircle className="h-8 w-8 mx-auto text-amber-500" />
+          <h1 className="text-base font-bold text-foreground">Could not load your points</h1>
+          <p className="text-sm text-muted-foreground">{loadError}</p>
+          <Button onClick={() => window.location.reload()} className="h-9 px-4 font-bold text-xs rounded-xl">
+            Try again
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (

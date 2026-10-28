@@ -88,6 +88,7 @@ export function MobileCategoryPills() {
   const [pills, setPills] = useState<CategoryPill[]>([])
   const [subcatMap, setSubcatMap] = useState<Record<string, Subcategory[]>>({})
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   /* ─── Drawer state ─── */
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -100,29 +101,31 @@ export function MobileCategoryPills() {
   /* ─── Load real categories + counts ─── */
   useEffect(() => {
     fetch('/api/categories')
-      .then(r => r.json())
-      .then(json => {
-        if (json.success && Array.isArray(json.data)) {
-          const cats: LiveCat[] = json.data
-          const built: CategoryPill[] = [
-            { id: 'all', name: 'All', icon: LayoutGrid, color: '#E53935', count: 0 },
-            ...cats.map((c, i) => ({
-              id: c.slug,
-              name: c.name,
-              icon: ICONS[c.slug] || LayoutGrid,
-              color: COLORS[i % COLORS.length],
-              count: c.productCount || 0,
-            })),
-          ]
-          setPills(built)
-          const subMap: Record<string, Subcategory[]> = {}
-          cats.forEach(c => {
-            subMap[c.slug] = (c.children || []).map(ch => ({ name: ch.name, count: ch.productCount || 0, slug: ch.slug }))
-          })
-          setSubcatMap(subMap)
-        }
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json()
       })
-      .catch(() => {})
+      .then(json => {
+        if (!(json.success && Array.isArray(json.data))) throw new Error('Unexpected response')
+        const cats: LiveCat[] = json.data
+        const built: CategoryPill[] = [
+          { id: 'all', name: 'All', icon: LayoutGrid, color: '#E53935', count: 0 },
+          ...cats.map((c, i) => ({
+            id: c.slug,
+            name: c.name,
+            icon: ICONS[c.slug] || LayoutGrid,
+            color: COLORS[i % COLORS.length],
+            count: c.productCount || 0,
+          })),
+        ]
+        setPills(built)
+        const subMap: Record<string, Subcategory[]> = {}
+        cats.forEach(c => {
+          subMap[c.slug] = (c.children || []).map(ch => ({ name: ch.name, count: ch.productCount || 0, slug: ch.slug }))
+        })
+        setSubcatMap(subMap)
+      })
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false))
   }, [])
 
@@ -195,6 +198,10 @@ export function MobileCategoryPills() {
         {loading ? (
           <div className="flex gap-1.5">
             {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-7 w-20 rounded-full flex-none" />)}
+          </div>
+        ) : loadError ? (
+          <div className="px-3 py-1 text-[11px] text-muted-foreground">
+            Categories couldn&apos;t be loaded right now — check your connection and refresh.
           </div>
         ) : (
           pills.map((pill, i) => {

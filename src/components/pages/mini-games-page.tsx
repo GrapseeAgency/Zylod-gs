@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
+import { AccountGate } from '@/components/shared/account-gate'
 import { toast } from 'sonner'
 import { soundEffects } from '@/lib/sound-effects'
 import {
@@ -45,11 +46,13 @@ const MEMORY_SYMBOL_GLYPHS: Record<string, string> = {
 
 export function MiniGamesPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [games, setGames] = useState<GameCard[]>([])
   const [usage, setUsage] = useState<Record<string, number> | null>(null)
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const [quiz, setQuiz] = useState<{ challengeId: string; questions: Question[]; answers: Record<number, number> } | null>(null)
   const [quizResult, setQuizResult] = useState<{ correct: number; total: number; pointsWon: number; message: string } | null>(null)
@@ -73,22 +76,46 @@ export function MiniGamesPage() {
       const headers: Record<string, string> = {}
       if (token) headers['Authorization'] = `Bearer ${token}`
       const res = await fetch('/api/mini-games', { headers })
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
       const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || `Failed to load games (${res.status})`)
       if (data.success && data.data) {
         setGames(data.data.games || [])
         setUsage(data.data.usage ?? null)
+      } else {
+        throw new Error('Games are unavailable right now.')
       }
     } catch (err) {
-      console.error(err)
+      setLoadError(err instanceof Error ? err.message : 'Could not reach the games service')
     } finally {
       setLoading(false)
     }
   }, [token])
 
+  // Honesty fix: game attempts and points are personal — guests get a gate,
+  // never a fabricated "0 of 3 used today" board.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
   useEffect(() => {
     loadGames()
     return () => { memTimers.current.forEach(clearTimeout) }
   }, [loadGames])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to play and earn points." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to play & earn"
+        message="Game rounds and the points you win are tied to your account. Sign in to see your real daily attempts and rewards."
+      />
+    )
+  }
 
   const requireAuth = (): boolean => {
     if (token) return true
@@ -392,6 +419,10 @@ export function MiniGamesPage() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-3xl" />)}
+            </div>
+          ) : loadError ? (
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl p-4 text-xs text-red-800 dark:text-red-300">
+              {loadError} Reload the page to try again.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">

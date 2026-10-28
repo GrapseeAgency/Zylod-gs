@@ -18,6 +18,7 @@ export function WholesaleTermsPage() {
   const [faqs, setFaqs] = useState<LegalFaq[]>([])
   const [loading, setLoading] = useState(true)
   const [openFaq, setOpenFaq] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
     Promise.all([
@@ -26,7 +27,13 @@ export function WholesaleTermsPage() {
     ]).then(([docData, faqData]) => {
       if (docData.success) setDoc(docData.data.document)
       if (faqData.success) setFaqs(faqData.data)
-    }).catch(console.error).finally(() => setLoading(false))
+      if (!docData.success && !faqData.success) {
+        setLoadError('Could not load the wholesale terms right now. Please try again later.')
+      }
+    }).catch((err) => {
+      console.error(err)
+      setLoadError('Could not load the wholesale terms right now. Please try again later.')
+    }).finally(() => setLoading(false))
   }, [])
 
   const supplierObligations = [
@@ -60,6 +67,13 @@ export function WholesaleTermsPage() {
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Wholesale Terms</h1>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-5 pb-24">
+        {loadError && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 rounded-2xl p-4 text-sm flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            {loadError}
+          </div>
+        )}
+
         {/* Hero */}
         <div className="bg-rose-600 rounded-3xl p-5 text-white space-y-2">
           <div className="flex items-center gap-2">

@@ -98,8 +98,10 @@ export async function POST(request: NextRequest) {
           syncAction: syncAction || 'SYNC_ACTION',
           entityType: entityType || 'generic',
           payloadJson: JSON.stringify(payload || {}),
-          status: 'completed',
-          syncedAt: new Date(),
+          // t220 honesty fix: this endpoint ARCHIVES the queued operations for
+          // later processing — it does not apply them. Marking rows 'completed'
+          // and telling the user "Successfully synchronized" was a lie.
+          status: 'pending',
         },
       })
       processed.push(record.id)
@@ -107,7 +109,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Successfully synchronized ${processed.length} offline operations`,
+      message: `${processed.length} offline operation${processed.length === 1 ? '' : 's'} recorded. They will be applied when background processing runs.`,
       processedCount: processed.length,
       processedIds: processed,
     })

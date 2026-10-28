@@ -257,12 +257,16 @@ export function AppEntry() {
      Runs BEFORE cart hydration below so syncWithApi sees the reconciled
      user. */
   useEffect(() => {
-    const auth = useAuthStore.getState()
-    ;(async () => {
+    // t216: the probe MUST run against the REHYDRATED store. It used to read
+    // the store synchronously at effect time and could race zustand-persist
+    // hydration — a dead-cookie visitor then stayed a zombie "Md Kailem"
+    // header while every API 401'd. Hydrate first, probe after, and always
+    // read the store FRESH inside the probe.
+    const runProbe = async () => {
       try {
         const res = await fetch('/api/auth/session-info', { credentials: 'include' })
         if (res.ok) {
-          if (!auth.isAuthenticated) {
+          if (!useAuthStore.getState().isAuthenticated) {
             // Cookie is live but the store lost the user → rehydrate from
             // the server profile so header/UI match the real session.
             try {
@@ -297,12 +301,19 @@ export function AppEntry() {
         } else if (res.status === 401) {
           // Server verdict: NO valid session. Any persisted "logged in"
           // state is a lie — clear it so the UI can never order as a ghost.
-          if (auth.isAuthenticated) {
+          if (useAuthStore.getState().isAuthenticated) {
             useAuthStore.setState({ isAuthenticated: false, user: null, token: null })
           }
         }
       } catch { /* network error — keep existing state, APIs will 401 anyway */ }
-    })()
+    }
+
+    if (useAuthStore.persist.hasHydrated()) {
+      void runProbe()
+      return
+    }
+    const unsub = useAuthStore.persist.onFinishHydration(() => { void runProbe() })
+    return unsub
   }, [])
 
   /* ─── Server-cart hydration at boot ───

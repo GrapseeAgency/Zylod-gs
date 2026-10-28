@@ -41,13 +41,18 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    // In production, send email with reset link
-    console.log(`Password reset token for ${email}: ${resetToken}`)
+    // In production, send email with reset link (the token never goes to logs)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`Password reset token for ${email}: ${resetToken}`)
+    }
 
-    return NextResponse.json({ 
-      success: true, 
+    // SECURITY: devToken is the reset credential — never send it in a
+    // production response (the real delivery channel is the email link).
+    const dev = process.env.NODE_ENV !== 'production' ? { devToken: resetToken } : {}
+    return NextResponse.json({
+      success: true,
       message: 'If an account exists with this email, a reset link has been sent.',
-      devToken: resetToken 
+      ...dev,
     })
   } catch (error) {
     console.error('Forgot password error:', error)

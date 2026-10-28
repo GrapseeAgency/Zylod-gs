@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import {
   ArrowLeft, Scale, Clock, ShieldCheck, FileCheck,
   CheckCircle2, AlertTriangle, ChevronRight, Video, Camera
@@ -10,6 +11,10 @@ import {
 
 export function DisputeResolutionGuidePage() {
   const { navigate, goBack } = useNavigationStore()
+  // Owner-published support contact (Admin → System Settings) — honest
+  // generic wording when nothing is published, never a fabricated address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
 
   // HONESTY NOTE: Zylod has no escrow system and no automated dispute engine.
   // Disputes are reported by email/ticket and reviewed by the Zylod team; the
@@ -24,7 +29,9 @@ export function DisputeResolutionGuidePage() {
     {
       time: 'Step 2: Report the Issue',
       title: 'Contact Zylod Support',
-      desc: 'Email support@zylod.com or open a support ticket with your order number, photos, and video. Every report is read by the Zylod team.',
+      desc: supportEmail
+        ? `Email ${supportEmail} or open a support ticket with your order number, photos, and video. Every report is read by the Zylod team.`
+        : 'Open a support ticket or reach us through the Help Center with your order number, photos, and video. Every report is read by the Zylod team.',
       icon: Scale,
     },
     {

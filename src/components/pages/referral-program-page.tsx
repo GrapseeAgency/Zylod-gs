@@ -6,6 +6,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Users, Copy, Check, Share2,
   Gift, Sparkles, TrendingUp, ChevronRight
@@ -14,28 +15,42 @@ import { toast } from 'sonner'
 
 export function ReferralProgramPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [refData, setRefData] = useState<any>(null)
   const [friendCode, setFriendCode] = useState('')
   const [claiming, setClaiming] = useState(false)
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(true)
+  // Honesty fix: the invite code and stats belong to the signed-in account —
+  // guests get an account gate instead of "LOADING..." / "+0 Points".
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/referrals', { headers })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.data) {
+      .then(res => res.json().then(data => ({ res, data })).catch(() => ({ res, data: null })))
+      .then(({ res, data }) => {
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        if (res.ok && data?.success && data?.data) {
           setRefData(data.data)
+        } else if (!res.ok) {
+          toast.error(data?.error || `Failed to load your referral code (${res.status})`)
         }
       })
-      .catch(console.error)
+      .catch(() => toast.error('Could not reach the server to load your referral code.'))
       .finally(() => setLoading(false))
-  }, [token])
+  }, [isAuthenticated, token])
 
   const copyInvite = () => {
     if (!refData) return
@@ -57,6 +72,7 @@ export function ReferralProgramPage() {
         body: JSON.stringify({ referralCode: friendCode.trim() }),
       })
       const data = await res.json()
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
       if (res.ok && data.success) {
         toast.success(data.message || 'Referral code claimed!')
         setFriendCode('')
@@ -68,6 +84,18 @@ export function ReferralProgramPage() {
     } finally {
       setClaiming(false)
     }
+  }
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to use the referral program." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to use the referral program"
+        message="Invite codes and referral rewards are tied to your account. Sign in to get your real invite code."
+      />
+    )
   }
 
   return (

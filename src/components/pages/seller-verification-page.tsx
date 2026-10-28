@@ -6,6 +6,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, ShieldCheck, UploadCloud, FileText, CheckCircle2,
   Clock, AlertCircle, RefreshCw, ChevronRight, FileCheck, Award
@@ -31,31 +33,82 @@ const DOC_TYPES = [
 
 export function SellerVerificationPage() {
   const { navigate } = useNavigationStore()
+  // Honesty fix: these are REAL KYC document statuses — guests and
+  // non-supplier accounts get an account gate, never a fabricated "0% verified".
+  const { isAuthenticated, user } = useAuthStore()
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin')
 
   const [docs, setDocs] = useState<DocumentItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+  const [authRequired, setAuthRequired] = useState(false)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) return
+    let alive = true
     async function loadDocs() {
       try {
         setLoading(true)
+        setLoadError('')
         const res = await fetch('/api/supplier/verification')
-        const data = await res.json()
-        if (data.success && Array.isArray(data.data)) {
+        const data = await res.json().catch(() => null)
+        if (!alive) return
+        if (res.status === 401 || res.status === 403) {
+          setAuthRequired(true)
+          setDocs([])
+          return
+        }
+        if (data?.success && Array.isArray(data.data)) {
           setDocs(data.data)
+        } else {
+          setLoadError(data?.error || 'Failed to load your verification documents')
+          setDocs([])
         }
       } catch (err) {
         console.error('Failed to load verification docs:', err)
+        if (alive) setLoadError('Could not reach the verification service')
       } finally {
-        setLoading(false)
+        if (alive) setLoading(false)
       }
     }
     loadDocs()
-  }, [])
+    return () => { alive = false }
+  }, [isAuthenticated])
 
   const verifiedCount = docs.filter(d => d.status === 'verified').length
   const totalRequired = DOC_TYPES.filter(d => d.required).length
   const progressPercent = Math.min(100, Math.round((verifiedCount / totalRequired) * 100))
+
+  const guestGate = (
+    <AccountGate
+      title="Seller sign-in required"
+      message="Seller verification shows your store's real KYC document progress. Sign in with a supplier account to continue."
+    />
+  )
+  const wrongRoleGate = (
+    <AccountGate
+      title="Supplier accounts only"
+      message={`Seller verification belongs to supplier accounts — you are signed in as a ${user?.userType}.`}
+      showBecomeSupplier
+    />
+  )
+
+  if (authRequired) {
+    return isAuthenticated && user && !isAllowedRole ? wrongRoleGate : guestGate
+  }
+  if (!loading && !isAuthenticated) {
+    return guestGate
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return wrongRoleGate
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pb-20 md:pb-8">
@@ -89,6 +142,24 @@ export function SellerVerificationPage() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+        {loading ? (
+          /* Honest loading state — no "0% verified" is shown before data arrives */
+          <Card className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800">
+            <CardContent className="p-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
+              Checking your verification status…
+            </CardContent>
+          </Card>
+        ) : loadError ? (
+          /* Real API failure — surfaced, never replaced by a fake zero-state */
+          <Card className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800">
+            <CardContent className="p-6 text-center space-y-2">
+              <AlertCircle className="w-8 h-8 text-red-400 mx-auto" />
+              <p className="text-sm font-semibold">Could not load your verification status</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">{loadError}</p>
+            </CardContent>
+          </Card>
+        ) : (
+        <>
         {/* Verification Progress Card */}
         <div className="bg-gradient-to-r from-sky-950/50 to-neutral-900 border border-sky-800/40 rounded-2xl p-5 shadow-lg">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -191,6 +262,8 @@ export function SellerVerificationPage() {
             })}
           </div>
         </div>
+        </>
+        )}
 
         {/* Verification Status Tracking Link */}
         <div className="pt-2">

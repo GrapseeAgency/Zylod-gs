@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,26 +14,80 @@ import { toast } from 'sonner'
 
 export function AffiliateDashboardPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [dashData, setDashData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Auth honesty: affiliate earnings are user-scoped — gate guests instead of
+  // rendering zero clicks / ৳0 payouts as if they were the visitor's numbers.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) { setLoading(false); return }
+    let cancelled = false
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
+    setLoading(true)
+    setLoadError(null)
     fetch('/api/affiliate/dashboard', { headers })
-      .then(res => res.json())
+      .then(async (res) => {
+        if (res.status === 401 || res.status === 403) {
+          if (!cancelled) setSessionExpired(true)
+          return null
+        }
+        return res.json().catch(() => null)
+      })
       .then(data => {
-        if (data.success && data.data) {
+        if (cancelled) return
+        if (data?.success && data.data) {
           setDashData(data.data)
+        } else if (!sessionExpired) {
+          setLoadError(data?.error || 'Could not load your affiliate data.')
         }
       })
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [token])
+      .catch(() => { if (!cancelled) setLoadError('Network error — could not reach the affiliate service.') })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [token, isAuthenticated])
+
+  // Auth gates — guests/wrong-role first, then expired session, then a real
+  // load failure (never silent zeros).
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view affiliate analytics"
+        message="Clicks, conversions, and pending payouts are your real account earnings. Sign in to continue."
+      />
+    )
+  }
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has ended. Sign in again to view your affiliate analytics."
+      />
+    )
+  }
+  if (!loading && !dashData && loadError) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center space-y-3 max-w-md">
+          <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{loadError}</p>
+          <Button variant="outline" size="sm" onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -117,11 +172,14 @@ export function AffiliateDashboardPage() {
             </p>
           </div>
 
+          {/* t219 honesty fix: NO payout-request API exists yet — the old button
+              faked "submitted" with a toast. Show the real state instead. */}
           <Button
-            onClick={() => toast.success('Payout request submitted for bKash/Bank settlement.')}
-            className="bg-emerald-500 hover:bg-emerald-600 text-gray-900 dark:text-white font-bold rounded-xl text-xs sm:text-sm px-5 py-3 shadow-md"
+            onClick={() => toast('Payout transfers are not open yet. Your pending balance is tracked and will be payable when the affiliate payout program launches.')}
+            variant="outline"
+            className="bg-transparent border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-bold rounded-xl text-xs sm:text-sm px-5 py-3"
           >
-            Request Payout Transfer
+            Payout Transfers — Coming Soon
           </Button>
         </div>
 
@@ -130,6 +188,12 @@ export function AffiliateDashboardPage() {
           <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Attributed Purchase Order Conversions
           </h3>
+
+          {(dashData?.recentConversions || []).length === 0 && (
+            <p className="py-4 text-center text-xs text-gray-400 dark:text-gray-500">
+              No attributed conversions recorded yet. Orders placed through your tracking link will appear here.
+            </p>
+          )}
 
           <div className="space-y-2 md:hidden">
             {(dashData?.recentConversions || []).map((conv: any) => (

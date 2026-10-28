@@ -8,9 +8,10 @@ import { SellerProfilePage } from './seller-profile-page'
 import { AdminProfilePage } from './admin-profile-page'
 import { StaffProfilePage } from './staff-profile-page'
 import { BuyerProfilePage } from './buyer-profile-page'
+import { AccountGate } from '@/components/shared/account-gate'
 
 export function ProfilePage() {
-  const { user, token } = useAuthStore()
+  const { user, token, isAuthenticated } = useAuthStore()
   const { pageParams } = useNavigationStore()
 
   // Real user role: 'supplier' | 'buyer' | 'staff' | 'admin'
@@ -18,6 +19,16 @@ export function ProfilePage() {
     (pageParams?.role as any) || (user?.userType as any) || 'buyer'
   )
   const [loading, setLoading] = useState(!user)
+  // Honesty fix: deep links can mount before the boot session probe settles —
+  // wait briefly before showing the sign-in gate so a restored session is not
+  // mistaken for a guest.
+  const [gateReady, setGateReady] = useState(false)
+
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setGateReady(true), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     async function loadData() {
@@ -50,6 +61,15 @@ export function ProfilePage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <PageLoader label="Loading Profile…" className="min-h-0" />
       </div>
+    )
+  }
+
+  if (!isAuthenticated && gateReady) {
+    return (
+      <AccountGate
+        title="Sign in to view your profile"
+        message="Your profile shows your real account details. Sign in to continue."
+      />
     )
   }
 

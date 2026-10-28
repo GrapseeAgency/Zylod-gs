@@ -63,11 +63,14 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // SECURITY: the code is delivered by SMS in production — an unconditional
+    // debug echo would defeat the second factor it exists to prove.
+    const dev = process.env.NODE_ENV !== 'production' ? { debug: code } : {}
     return NextResponse.json({
       success: true,
       method,
       message: 'Verification code sent to your phone',
-      debug: code,
+      ...dev,
     })
   } catch (error) {
     console.error('2FA setup error:', error)

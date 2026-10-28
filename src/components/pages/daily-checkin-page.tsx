@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { soundEffects } from '@/lib/sound-effects'
@@ -15,29 +16,39 @@ import {
 
 export function DailyCheckinPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [checkedInToday, setCheckedInToday] = useState(false)
   const [currentStreak, setCurrentStreak] = useState(0)
   const [schedule, setSchedule] = useState<number[]>([50, 75, 100, 150, 200, 300, 500])
   const [loading, setLoading] = useState(true)
   const [checkingIn, setCheckingIn] = useState(false)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
 
   const fetchCheckinStatus = useCallback(async () => {
+    if (!token) return
     try {
       setLoading(true)
-      const headers: Record<string, string> = {}
-      if (token) headers['Authorization'] = `Bearer ${token}`
+      const headers: Record<string, string> = { 'Authorization': `Bearer ${token}` }
 
       const res = await fetch('/api/rewards/checkin', { headers })
-      const data = await res.json()
-      if (data.success && data.data) {
+      const data = await res.json().catch(() => null)
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
+      if (data?.success && data.data) {
         setCheckedInToday(data.data.checkedInToday)
         setCurrentStreak(data.data.currentStreak)
         if (data.data.schedule) setSchedule(data.data.schedule)
+        setLoadError('')
+      } else {
+        setLoadError(data?.error || `Could not load your check-in status (HTTP ${res.status}).`)
       }
     } catch (err) {
       console.error(err)
+      setLoadError('Network error while loading your check-in status. Check your connection and retry.')
     } finally {
       setLoading(false)
     }
@@ -46,6 +57,25 @@ export function DailyCheckinPage() {
   useEffect(() => {
     fetchCheckinStatus()
   }, [fetchCheckinStatus])
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to claim your daily check-in." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to claim daily check-in"
+        message="Daily check-in awards loyalty points to your real account. Sign in to continue."
+      />
+    )
+  }
 
   const handleCheckin = async () => {
     try {
@@ -149,6 +179,9 @@ export function DailyCheckinPage() {
 
         {/* Check-in Action */}
         <div className="space-y-3 pt-2 lg:max-w-xl lg:w-full lg:mx-auto">
+          {loadError && (
+            <p className="text-center text-xs font-bold text-red-600">{loadError}</p>
+          )}
           <Button
             onClick={handleCheckin}
             disabled={checkedInToday || checkingIn}

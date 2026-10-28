@@ -40,7 +40,18 @@ export async function GET(
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    const isParticipatingSupplier = order.subOrders.some(so => so.supplierId === auth.user?.id)
+    // SECURITY: subOrders.supplierId is a supplierProfiles.id (NOT a users.id)
+    // — comparing it to auth.user.id can never match, so a participating
+    // supplier was always 403-locked out of their own orders' tracking.
+    // Resolve the caller's real profile id and compare like-for-like.
+    let isParticipatingSupplier = false
+    if (auth.user.userType === 'supplier') {
+      const profile = await db.supplierProfiles.findUnique({
+        where: { userId: auth.user.id },
+        select: { id: true },
+      })
+      isParticipatingSupplier = Boolean(profile && order.subOrders.some((so) => so.supplierId === profile.id))
+    }
     if (order.buyerId !== auth.user.id && !isParticipatingSupplier && auth.user.userType !== 'admin') {
       return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
     }
@@ -124,8 +135,18 @@ export async function POST(
       return NextResponse.json({ error: 'Sub-order not found in this order' }, { status: 404 })
     }
 
-    // Only the supplier/driver can push location
-    if (subOrder.supplierId !== auth.user.id && auth.user.userType !== 'admin') {
+    // SECURITY: only the assigned supplier can push location. subOrders.supplierId
+    // is a supplierProfiles.id (NOT a users.id) — resolve the caller's real
+    // profile id and compare like-for-like (same trap the GET handler fixes).
+    let isAssignedSupplier = false
+    if (auth.user.userType === 'supplier') {
+      const profile = await db.supplierProfiles.findUnique({
+        where: { userId: auth.user.id },
+        select: { id: true },
+      })
+      isAssignedSupplier = Boolean(profile && subOrder.supplierId === profile.id)
+    }
+    if (!isAssignedSupplier && auth.user.userType !== 'admin') {
       return NextResponse.json({ error: 'Only the assigned supplier can push tracking' }, { status: 403 })
     }
 

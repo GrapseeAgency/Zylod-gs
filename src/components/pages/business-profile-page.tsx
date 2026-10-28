@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Building2, ShieldCheck, CheckCircle2,
   Edit3, Check, Loader2, Landmark, MapPin, Phone,
@@ -29,17 +30,24 @@ export function BusinessProfilePage() {
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [notPersisted, setNotPersisted] = useState<string[]>([])
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     async function loadBiz() {
       if (!token) {
-        setLoading(false)
+        // Deep links can mount before the boot session probe settles.
+        setTimeout(() => setLoading(false), 1500)
         return
       }
       try {
         const res = await fetch('/api/profile/business', {
           headers: { Authorization: `Bearer ${token}` },
         })
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
+        }
         if (res.ok) {
           const json = await res.json()
           if (json.data) {
@@ -55,9 +63,11 @@ export function BusinessProfilePage() {
               setDocuments(json.data.documents)
             }
           }
+        } else {
+          setLoadError(`Could not load your business profile (HTTP ${res.status}).`)
         }
       } catch {
-        // Graceful
+        setLoadError('Network error while loading your business profile. Check your connection and retry.')
       } finally {
         setLoading(false)
       }
@@ -111,6 +121,18 @@ export function BusinessProfilePage() {
     )
   }
 
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your business profile." />
+  }
+  if (!loading && !token) {
+    return (
+      <AccountGate
+        title="Sign in to view your business profile"
+        message="Your business profile shows your company's real registration data. Sign in to continue."
+      />
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
       {/* Top Header */}
@@ -143,6 +165,13 @@ export function BusinessProfilePage() {
             </div>
           </div>
         </div>
+
+        {loadError && (
+          <div className="bg-red-50 border border-red-200 rounded-3xl px-4 py-3 flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-xs font-bold text-red-600">{loadError}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSave} className="space-y-4">
           {/* Corporate Entity Details */}

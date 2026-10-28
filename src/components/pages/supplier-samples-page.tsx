@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useRealtimeRoom } from '@/hooks/use-realtime-room'
 import { toast } from 'sonner'
 import { ArrowRight, PackageOpen, RefreshCw, Truck, Trash2, MapPin } from 'lucide-react'
@@ -56,6 +57,7 @@ function fmtDate(iso: string): string {
 
 export function SupplierSamplesPage() {
   const navigate = useNavigationStore((s) => s.navigate)
+  const { isAuthenticated } = useAuthStore()
   const [sellerId, setSellerId] = useState('')
   const [samples, setSamples] = useState<SupplierSampleRow[]>([])
   const [stats, setStats] = useState<SampleStats | null>(null)
@@ -212,6 +214,10 @@ export function SupplierSamplesPage() {
     } finally {
       setShipping(false)
     }
+  }
+
+  if (!loading && !isAuthenticated) {
+    return <AccountGate title="Sign in as a supplier to view sample requests" message="Sample requests are tied to your supplier account. Sign in to continue." showBecomeSupplier />
   }
 
   return (

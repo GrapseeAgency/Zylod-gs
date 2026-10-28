@@ -6,6 +6,7 @@ import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Coins, TrendingUp, TrendingDown,
   Clock, Filter, Gift
@@ -13,13 +14,16 @@ import {
 
 export function PointsHistoryPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [activeType, setActiveType] = useState<string>('')
   const [transactions, setTransactions] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const fetchHistory = useCallback(async () => {
+    if (!isAuthenticated) return
     try {
       setLoading(true)
       const headers: Record<string, string> = {}
@@ -27,20 +31,44 @@ export function PointsHistoryPage() {
 
       const query = activeType ? `?type=${activeType}` : ''
       const res = await fetch(`/api/rewards/history${query}`, { headers })
+      if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
       const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || `Failed to load points history (${res.status})`)
       if (data.success && data.data) {
         setTransactions(data.data)
+      } else {
+        throw new Error('Your points ledger is unavailable right now.')
       }
     } catch (err) {
-      console.error(err)
+      setLoadError(err instanceof Error ? err.message : 'Failed to load your points history')
     } finally {
       setLoading(false)
     }
-  }, [token, activeType])
+  }, [isAuthenticated, token, activeType])
+
+  // Honesty fix: the ledger holds YOUR point transactions — guests get a gate,
+  // never a fabricated "No point transactions found" page.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     fetchHistory()
   }, [fetchHistory])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your points history." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your points ledger"
+        message="Every point you earn and redeem is recorded on your account. Sign in to see your real transaction history."
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -96,6 +124,13 @@ export function PointsHistoryPage() {
                 <Skeleton className="h-3 w-1/4 rounded" />
               </div>
             ))}
+          </div>
+        ) : loadError ? (
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400 space-y-2">
+            <Coins className="w-12 h-12 text-red-300 mx-auto" />
+            <p className="font-bold text-sm text-gray-800 dark:text-gray-200">Could not load your points history</p>
+            <p className="text-xs">{loadError}</p>
+            <Button size="sm" onClick={fetchHistory} className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl">Try Again</Button>
           </div>
         ) : transactions.length === 0 ? (
           <div className="text-center py-16 text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-2">

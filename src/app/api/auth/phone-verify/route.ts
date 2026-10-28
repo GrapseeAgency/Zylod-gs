@@ -37,12 +37,17 @@ export async function POST(req: NextRequest) {
     })
 
     // In production, send SMS with OTP
-    console.log(`Phone verification OTP for ${fullPhone}: ${otp}`)
-
-    return NextResponse.json({ 
-      success: true, 
+    // SECURITY: devOtp is sent only outside production — the SMS is the real
+    // delivery channel and an unconditional code would let anyone verify any
+    // phone number.
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`Phone verification OTP for ${fullPhone}: ${otp}`)
+    }
+    const dev = process.env.NODE_ENV !== 'production' ? { devOtp: otp } : {}
+    return NextResponse.json({
+      success: true,
       message: 'Verification code sent',
-      devOtp: otp
+      ...dev,
     })
   } catch (error) {
     console.error('Phone verification error:', error)

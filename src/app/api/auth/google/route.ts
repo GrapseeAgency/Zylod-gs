@@ -31,6 +31,26 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // SECURITY: this rail cannot verify the caller actually owns the email
+    // (no provider credential is configured — see src/lib/social-auth.ts), so
+    // a password-protected account that is NOT already linked to this Google
+    // id must never be exchanged for a session here: that would be a full
+    // account takeover. Social sign-in stays available for accounts created
+    // through this rail (googleId already set) and for passwordless accounts.
+    if (
+      user &&
+      user.googleId !== googleId && // not already linked to THIS Google id
+      (user.googleId || user.passwordHash)
+    ) {
+      return NextResponse.json(
+        {
+          error: 'This email is registered with a password. Sign in with your password instead.',
+          code: 'PASSWORD_ACCOUNT',
+        },
+        { status: 403 }
+      )
+    }
+
     if (!user) {
       // Create new user via Google OAuth
       user = await db.users.create({

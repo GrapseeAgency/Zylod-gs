@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { authenticateRequest } from '@/lib/auth'
+import { requireUserType } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
-  const auth = await authenticateRequest(request)
+  // t216: supplier-scoped money data. A buyer hitting this endpoint must get
+  // an explicit 403 — never a zero-shaped payload that reads like revenue.
+  const auth = await requireUserType(request, ['supplier'])
   if (!auth.authenticated || !auth.user) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    // auth.user present + !authenticated = role denial (403); no user = no session (401)
+    return NextResponse.json({ error: auth.error || 'Supplier account required' }, { status: auth.user ? 403 : 401 })
   }
 
   try {

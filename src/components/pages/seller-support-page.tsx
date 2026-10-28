@@ -1,6 +1,8 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { motion } from 'framer-motion';
 import { LifeBuoy, PlusCircle, AlertCircle, TicketCheck } from 'lucide-react';
 
@@ -15,9 +17,14 @@ interface TicketRow {
 
 export function SellerSupportPage() {
   const { navigate, goBack } = useNavigationStore();
+  // Honesty fix: these are the signed-in supplier's OWN tickets — guests and
+  // non-supplier accounts get an account gate, never a fabricated empty list.
+  const { isAuthenticated, user } = useAuthStore();
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin');
   const [tickets, setTickets] = useState<TicketRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [authRequired, setAuthRequired] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -25,6 +32,11 @@ export function SellerSupportPage() {
     try {
       const res = await fetch('/api/supplier/support');
       const json = await res.json();
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true);
+        setTickets([]);
+        return;
+      }
       if (res.ok && json.success && Array.isArray(json.data)) {
         setTickets(json.data);
       } else {
@@ -42,6 +54,26 @@ export function SellerSupportPage() {
   useEffect(() => {
     load();
   }, []);
+
+  const guestGate = (
+    <AccountGate
+      title="Seller sign-in required"
+      message="Support tickets are tied to your supplier account. Sign in with a supplier account to see and open tickets."
+    />
+  );
+  const wrongRoleGate = (
+    <AccountGate
+      title="Supplier accounts only"
+      message={`Seller support belongs to supplier accounts — you are signed in as a ${user?.userType}.`}
+    />
+  );
+
+  if (authRequired) {
+    return isAuthenticated && user && !isAllowedRole ? wrongRoleGate : guestGate;
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return wrongRoleGate;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">

@@ -4,41 +4,67 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import {
   ArrowLeft, Truck, Package, MapPin, CheckCircle2,
-  Clock, ShieldAlert, Check, Copy
+  Clock, ShieldAlert, Check, Copy, AlertCircle
 } from 'lucide-react'
 
 export function DeliveryTrackingAlertsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [pushDelivery, setPushDelivery] = useState(true)
   const [deliveries, setDeliveries] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const fetchActiveDeliveries = useCallback(async () => {
+    if (!token) return
     try {
       setLoading(true)
-      const headers: Record<string, string> = {}
-      if (token) headers['Authorization'] = `Bearer ${token}`
+      const headers: Record<string, string> = { 'Authorization': `Bearer ${token}` }
 
       const [prefRes, delRes] = await Promise.all([
-        fetch('/api/notifications/preferences', { headers }).then(r => r.json()),
-        fetch('/api/notifications/delivery-updates?limit=20', { headers }).then(r => r.json()),
+        fetch('/api/notifications/preferences', { headers }),
+        fetch('/api/notifications/delivery-updates?limit=20', { headers }),
       ])
 
-      if (prefRes.success && prefRes.data) {
-        setPushDelivery(prefRes.data.pushDelivery ?? true)
+      if (prefRes.status === 401 || prefRes.status === 403 || delRes.status === 401 || delRes.status === 403) {
+        setSessionExpired(true)
+        return
       }
-      if (delRes.success && delRes.data) {
-        setDeliveries(delRes.data)
+
+      const [prefJson, delJson] = await Promise.all([
+        prefRes.json().catch(() => null),
+        delRes.json().catch(() => null),
+      ])
+
+      if (prefJson?.success && prefJson.data) {
+        setPushDelivery(prefJson.data.pushDelivery ?? true)
+      }
+      if (delJson?.success && delJson.data) {
+        setDeliveries(delJson.data)
+      }
+      if (!prefJson?.success || !delJson?.success) {
+        setLoadError(prefJson?.error || delJson?.error || 'Could not load your delivery tracking alerts.')
+      } else {
+        setLoadError('')
       }
     } catch (err) {
       console.error(err)
+      setLoadError('Network error while loading your delivery alerts. Check your connection and retry.')
     } finally {
       setLoading(false)
     }
@@ -47,6 +73,18 @@ export function DeliveryTrackingAlertsPage() {
   useEffect(() => {
     fetchActiveDeliveries()
   }, [fetchActiveDeliveries])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your delivery alerts." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view delivery tracking alerts"
+        message="Delivery alerts follow the real shipments on your account. Sign in to continue."
+      />
+    )
+  }
 
   const handleToggle = async (val: boolean) => {
     setPushDelivery(val)
@@ -100,6 +138,13 @@ export function DeliveryTrackingAlertsPage() {
           <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
             Active Consignments ({deliveries.length})
           </h2>
+
+          {loadError && (
+            <div className="bg-red-50 border border-red-200 rounded-3xl p-4 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-xs font-bold text-red-600">{loadError}</p>
+            </div>
+          )}
 
           {deliveries.length === 0 ? (
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-2">

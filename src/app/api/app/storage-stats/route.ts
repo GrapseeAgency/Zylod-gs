@@ -76,7 +76,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Cache category '${cacheCategory}' cleared successfully`,
+      // t220: the SERVER does not clear device caches — it records the device's
+      // clear event. Say exactly that instead of claiming a server-side clear.
+      message: `Clear event for '${cacheCategory}' recorded. Clearing happens on your device.`,
       data: audit,
     })
   } catch (error) {

@@ -18,15 +18,19 @@ export function ShippingPolicyPage() {
   const [faqs, setFaqs] = useState<LegalFaq[]>([])
   const [loading, setLoading] = useState(true)
   const [openFaq, setOpenFaq] = useState<string | null>(null)
+  const [docFailed, setDocFailed] = useState(false)
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/legal/shipping_policy').then(r => r.json()),
-      fetch('/api/legal/faq?docType=shipping_policy').then(r => r.json()),
-    ]).then(([docData, faqData]) => {
-      if (docData.success) setDoc(docData.data.document)
-      if (faqData.success) setFaqs(faqData.data)
-    }).catch(console.error).finally(() => setLoading(false))
+      fetch('/api/legal/shipping_policy')
+        .then(async r => ({ ok: r.ok, json: await r.json().catch(() => null) })),
+      fetch('/api/legal/faq?docType=shipping_policy')
+        .then(async r => ({ ok: r.ok, json: await r.json().catch(() => null) })),
+    ]).then(([docRes, faqRes]) => {
+      if (docRes.ok && docRes.json?.success) setDoc(docRes.json.data.document)
+      else setDocFailed(true)
+      if (faqRes.ok && faqRes.json?.success) setFaqs(faqRes.json.data)
+    }).catch(() => setDocFailed(true)).finally(() => setLoading(false))
   }, [])
 
   const couriers = [
@@ -138,6 +142,13 @@ export function ShippingPolicyPage() {
             ))}
           </div>
         </div>
+
+        {/* Honest failure state for the legal document */}
+        {!loading && docFailed && (
+          <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-2xl p-4 text-center text-xs font-bold text-amber-700 dark:text-amber-400">
+            The full shipping policy document couldn&apos;t be loaded right now — the courier and rate info below is platform reference content. Please try again later.
+          </div>
+        )}
 
         {/* Full policy */}
         {doc && (

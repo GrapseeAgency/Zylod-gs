@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Image as ImageIcon, Plus, Trash2, Smartphone,
   Monitor, Link as LinkIcon, Save, Check, Eye, AlertCircle, ImageOff
@@ -141,6 +143,14 @@ export function StoreBannerEditorPage() {
   }, [banners])
 
   const hero = banners[0]
+
+  const { isAuthenticated, user } = useAuthStore()
+  if (!isAuthenticated) {
+    return <AccountGate title="Sign in to manage your store banners" message="The hero banner manager edits your supplier storefront. Sign in with a supplier account to continue." showBecomeSupplier />
+  }
+  if (user && user.userType !== 'supplier') {
+    return <AccountGate title="Supplier accounts only" message={`The hero banner manager belongs to supplier storefronts — you are signed in as a ${user.userType}.`} showBecomeSupplier />
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pb-20 md:pb-8">

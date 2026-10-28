@@ -82,7 +82,7 @@ export function AdminDeliveriesPage() {
         fetch('/api/admin/deliveries/assignments'),
         fetch('/api/admin/orders?limit=50'),
       ]);
-      if (dr.status === 401 || as.status === 401 || or.status === 401) {
+      if (dr.status === 401 || dr.status === 403 || as.status === 401 || as.status === 403 || or.status === 401 || or.status === 403) {
         setAuthRequired(true);
         return;
       }
@@ -119,7 +119,7 @@ export function AdminDeliveriesPage() {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
       });
       const json = await res.json().catch(() => null);
-      if (res.status === 401) { setAuthRequired(true); return; }
+      if (res.status === 401 || res.status === 403) { setAuthRequired(true); return; }
       if (res.status === 201 || json?.driver) {
         setCreateMsg({ ok: true, text: `Driver account created for ${json?.driver?.email ?? dEmail}` });
         setDEmail(''); setDPassword(''); setDPhone('');
@@ -144,7 +144,7 @@ export function AdminDeliveriesPage() {
         body: JSON.stringify({ subOrderId: aSubOrder.trim(), driverId: aDriver }),
       });
       const json = await res.json().catch(() => null);
-      if (res.status === 401) { setAuthRequired(true); return; }
+      if (res.status === 401 || res.status === 403) { setAuthRequired(true); return; }
       if (res.status === 201 || json?.ok) {
         setAssignMsg({ ok: true, text: `Driver assigned — live tracking is now armed for this sub-order.` });
         setASubOrder(''); setADriver('');

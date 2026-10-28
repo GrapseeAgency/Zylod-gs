@@ -1,25 +1,33 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ChevronDown, AlertCircle } from 'lucide-react'
 
 export function CookieFaqPage() {
   const { navigate, goBack } = useNavigationStore()
   const [faqs, setFaqs] = useState<Array<{ id: string; questionEn: string; answerEn: string }>>([])
   const [openId, setOpenId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true)
+    setLoadError(false)
     fetch('/api/legal/faq?docType=cookie_policy')
       .then(res => res.json())
       .then(res => {
-        if (res.success) setFaqs(res.data)
+        if (res?.success && Array.isArray(res.data)) setFaqs(res.data)
+        else setLoadError(true)
       })
-      .catch(console.error)
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -37,6 +45,20 @@ export function CookieFaqPage() {
         {loading ? (
           <div className="space-y-3 animate-pulse">
             {[1, 2, 3].map(i => <div key={i} className="h-16 bg-gray-200 rounded-2xl" />)}
+          </div>
+        ) : loadError ? (
+          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-8 text-center space-y-2">
+            <AlertCircle className="w-8 h-8 text-gray-300 mx-auto" />
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Could not load the FAQ</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">The FAQ list is temporarily unavailable — please try again later.</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={load}
+              className="mt-2"
+            >
+              Retry
+            </Button>
           </div>
         ) : (
           <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden divide-y divide-gray-50 md:divide-y-0 grid grid-cols-1 md:grid-cols-2 gap-x-6">

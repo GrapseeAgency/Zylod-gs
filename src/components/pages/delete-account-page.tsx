@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, AlertTriangle, Trash2, ShieldAlert,
   CheckCircle2, X, Loader2, Lock, FileText, Check
@@ -33,11 +34,22 @@ export function DeleteAccountPage() {
           if (json.data) setAccountData(json.data)
         }
       } catch {
-        // Graceful
+        // Graceful — the summary shows an honest dash below, never a fake 0.
       }
     }
     checkAccount()
   }, [token])
+
+  // Honest gate — account termination only makes sense for the signed-in
+  // account; a guest has no account to delete.
+  if (!token) {
+    return (
+      <AccountGate
+        title="Sign in to close your account"
+        message="Account termination applies to your signed-in account. Sign in with the account you want to delete."
+      />
+    )
+  }
 
   const handleDelete = async () => {
     if (confirmText !== 'DELETE') {
@@ -113,7 +125,7 @@ export function DeleteAccountPage() {
             </div>
             <div className="py-2.5 flex justify-between">
               <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Order History &amp; POs</span>
-              <span className="font-bold text-slate-900 dark:text-slate-100">{accountData.ordersCount ?? 0} records archived</span>
+              <span className="font-bold text-slate-900 dark:text-slate-100">{accountData.ordersCount ?? '—'} records archived</span>
             </div>
             <div className="py-2.5 flex justify-between">
               <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Wholesale Storefront</span>

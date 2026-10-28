@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { getSettingValue } from '@/lib/admin-settings'
 
 /**
  * POST /api/support/chatbot/query
@@ -80,10 +81,20 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // 3. Fallback honest answers — no escrow, no invented SLAs
-    let fallbackAnswer = language === 'bn'
-      ? '\u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09a8\u09b2\u09c7\u099c \u09ac\u09c7\u09b8\u09c7 \u09b8\u09b0\u09be\u09b8\u09b0\u09bf \u0989\u09a4\u09cd\u09a4\u09b0 \u09aa\u09be\u0993\u09df\u09be \u09af\u09be\u09df\u09a8\u09bf\u0964 \u0986\u09aa\u09a8\u09bf \u098f\u0995\u099f\u09bf \u09b8\u09be\u09aa\u09cb\u09b0\u09cd\u099f \u099f\u09bf\u0995\u09c7\u099f \u0993\u09aa\u09c7\u09a8 \u0995\u09b0\u09a4\u09c7 \u09aa\u09be\u09b0\u09c7\u09a8 \u0985\u09a5\u09ac\u09be support@zylod.com \u098f \u0987\u09ae\u09c7\u0987\u09b2 \u0995\u09b0\u09a4\u09c7 \u09aa\u09be\u09b0\u09c7\u09a8\u0964'
-      : 'I could not find an exact match in our knowledge base. You can open a support ticket or email support@zylod.com.'
+    // 3. Fallback honest answers — no escrow, no invented SLAs.
+    // The only legitimate support email is the one the site owner published
+    // under Admin → System Settings (support.email). Unset → honest generic
+    // wording, never a fabricated address.
+    const publishedEmail = await getSettingValue('support.email')
+    const supportEmail = typeof publishedEmail === 'string' ? publishedEmail.trim() : ''
+
+    let fallbackAnswer = supportEmail
+      ? language === 'bn'
+        ? `\u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09a8\u09b2\u09c7\u099c \u09ac\u09c7\u09b8\u09c7 \u09b8\u09b0\u09be\u09b8\u09b0\u09bf \u0989\u09a4\u09cd\u09a4\u09b0 \u09aa\u09be\u0993\u09df\u09be \u09af\u09be\u09df\u09a8\u09bf\u0964 \u0986\u09aa\u09a8\u09bf \u098f\u0995\u099f\u09bf \u09b8\u09be\u09aa\u09cb\u09b0\u09cd\u099f \u099f\u09bf\u0995\u09c7\u099f \u0993\u09aa\u09c7\u09a8 \u0995\u09b0\u09a4\u09c7 \u09aa\u09be\u09b0\u09c7\u09a8 \u0985\u09a5\u09ac\u09be ${supportEmail} \u098f \u0987\u09ae\u09c7\u0987\u09b2 \u0995\u09b0\u09a4\u09c7 \u09aa\u09be\u09b0\u09c7\u09a8\u0964`
+        : `I could not find an exact match in our knowledge base. You can open a support ticket or email ${supportEmail}.`
+      : language === 'bn'
+        ? '\u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09a8\u09b2\u09c7\u099c \u09ac\u09c7\u09b8\u09c7 \u09b8\u09b0\u09be\u09b8\u09b0\u09bf \u0989\u09a4\u09cd\u09a4\u09b0 \u09aa\u09be\u0993\u09df\u09be \u09af\u09be\u09df\u09a8\u09bf\u0964 \u0986\u09aa\u09a8\u09bf \u098f\u0995\u099f\u09bf \u09b8\u09be\u09aa\u09cb\u09b0\u09cd\u099f \u099f\u09bf\u0995\u09c7\u099f \u0993\u09aa\u09c7\u09a8 \u0995\u09b0\u09a4\u09c7 \u09aa\u09be\u09b0\u09c7\u09a8 \u0985\u09a5\u09ac\u09be \u09b9\u09c7\u09b2\u09cd\u09aa \u09b8\u09c7\u09a8\u09cd\u099f\u09be\u09b0\u09c7\u09b0 \u09ae\u09be\u09a7\u09cd\u09af\u09ae\u09c7 \u09af\u09cb\u0997\u09be\u09af\u09cb\u0997 \u0995\u09b0\u09a4\u09c7 \u09aa\u09be\u09b0\u09c7\u09a8\u0964'
+        : 'I could not find an exact match in our knowledge base. You can open a support ticket or reach us through the Help Center.'
 
     if (q.includes('order') || q.includes('\u0985\u09b0\u09cd\u09a1\u09be\u09b0')) {
       fallbackAnswer = language === 'bn'

@@ -1,6 +1,8 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { motion } from 'framer-motion';
 import { MessageCircle, AlertCircle, Inbox } from 'lucide-react';
 
@@ -16,9 +18,21 @@ interface QueryRow {
 
 export function CustomerQueriesPage() {
   const { navigate, goBack } = useNavigationStore();
+  const { isAuthenticated, user } = useAuthStore();
   const [queries, setQueries] = useState<QueryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [gateLoading, setGateLoading] = useState(true);
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setGateLoading(false);
+      return;
+    }
+    const t = setTimeout(() => setGateLoading(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
 
   const load = async () => {
     setLoading(true);
@@ -43,6 +57,25 @@ export function CustomerQueriesPage() {
   useEffect(() => {
     load();
   }, []);
+
+  if (!gateLoading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view customer queries"
+        message="Customer queries are the real messages buyers sent your store. Sign in to continue."
+        showBecomeSupplier
+      />
+    );
+  }
+  if (isAuthenticated && user && user.userType !== 'supplier' && user.userType !== 'admin') {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`Customer queries belong to supplier accounts — you are signed in as a ${user.userType}.`}
+        showBecomeSupplier
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">

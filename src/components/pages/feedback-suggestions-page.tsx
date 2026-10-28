@@ -23,6 +23,7 @@ export function FeedbackSuggestionsPage() {
   const { navigate, goBack } = useNavigationStore()
   const [items, setItems] = useState<FeedbackItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [showSubmitModal, setShowSubmitModal] = useState(false)
   const [typeFilter, setTypeFilter] = useState('all')
 
@@ -34,6 +35,7 @@ export function FeedbackSuggestionsPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const types = [
     { value: 'all', label: 'All Ideas' },
@@ -44,14 +46,19 @@ export function FeedbackSuggestionsPage() {
 
   async function fetchFeedback() {
     setLoading(true)
+    setLoadError('')
     try {
       const url = typeFilter === 'all' ? '/api/support/feedback' : `/api/support/feedback?type=${typeFilter}`
       const res = await fetch(url)
       if (res.ok) {
         const json = await res.json()
         setItems(json.data || [])
+      } else {
+        setLoadError(`Could not load feedback right now (HTTP ${res.status}) — please try again later.`)
       }
-    } catch {}
+    } catch {
+      setLoadError('Network error while loading feedback. Check your connection and retry.')
+    }
     setLoading(false)
   }
 
@@ -63,6 +70,7 @@ export function FeedbackSuggestionsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
+    setSubmitError('')
     try {
       const res = await fetch('/api/support/feedback', {
         method: 'POST',
@@ -77,8 +85,15 @@ export function FeedbackSuggestionsPage() {
           setFormData({ type: 'feature_request', subject: '', description: '', rating: 5 })
           fetchFeedback()
         }, 1200)
+      } else if (res.status === 401 || res.status === 403) {
+        setSubmitError('Posting feedback requires a signed-in account. Please sign in and try again.')
+      } else {
+        const json = await res.json().catch(() => null)
+        setSubmitError(json?.error || `Your feedback could not be posted (HTTP ${res.status}). Please try again.`)
       }
-    } catch {}
+    } catch {
+      setSubmitError('Network error while posting feedback. Check your connection and retry.')
+    }
     setSubmitting(false)
   }
 
@@ -135,6 +150,10 @@ export function FeedbackSuggestionsPage() {
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
+            </div>
+          ) : loadError ? (
+            <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-3xl p-4 text-xs text-red-700 dark:text-red-300 md:col-span-2">
+              <span className="flex items-center gap-1.5"><AlertCircle className="w-4 h-4 flex-shrink-0" /> {loadError}</span>
             </div>
           ) : items.length === 0 ? (
             <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 md:col-span-2">
@@ -199,6 +218,11 @@ export function FeedbackSuggestionsPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-3">
+                {submitError && (
+                  <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl p-3 text-xs text-red-700 dark:text-red-300" role="alert">
+                    {submitError}
+                  </div>
+                )}
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Feedback Type</label>
                   <select

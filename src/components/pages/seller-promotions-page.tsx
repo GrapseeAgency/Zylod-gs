@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Tag, AlertCircle, Loader2, BarChart3, Trash2, MousePointerClick } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -61,10 +63,15 @@ const STATUS_STYLES: Record<string, string> = {
 
 export function SellerPromotionsPage() {
   const { navigate, goBack } = useNavigationStore();
+  // Honesty fix: campaigns are real seller-funded pricing rows — guests and
+  // non-supplier accounts get an account gate, never an empty campaigns list.
+  const { isAuthenticated, user } = useAuthStore();
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin');
   const [rows, setRows] = useState<CampaignRow[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [authRequired, setAuthRequired] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [editRow, setEditRow] = useState<CampaignRow | null>(null);
   const [editForm, setEditForm] = useState(EMPTY_EDIT);
@@ -77,6 +84,11 @@ export function SellerPromotionsPage() {
     try {
       const res = await fetch('/api/supplier/promotions', { credentials: 'include' });
       const json = await res.json();
+      if (res.status === 401 || res.status === 403) {
+        setAuthRequired(true);
+        setRows([]);
+        return;
+      }
       if (res.ok && json.success) {
         setRows(json.data ?? []);
         setStats(json.stats ?? null);
@@ -193,6 +205,27 @@ export function SellerPromotionsPage() {
       setBusyId(null);
     }
   };
+
+  const guestGate = (
+    <AccountGate
+      title="Seller sign-in required"
+      message="Campaigns discount your own products at checkout — they belong to your supplier account. Sign in with a supplier account to continue."
+    />
+  );
+  const wrongRoleGate = (
+    <AccountGate
+      title="Supplier accounts only"
+      message={`Seller campaigns belong to supplier accounts — you are signed in as a ${user?.userType}.`}
+      showBecomeSupplier
+    />
+  );
+
+  if (authRequired) {
+    return isAuthenticated && user && !isAllowedRole ? wrongRoleGate : guestGate;
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return wrongRoleGate;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 dark:bg-gray-900 flex flex-col">

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, ShieldCheck, CreditCard, TrendingUp,
   Plus, CheckCircle2, AlertCircle, Loader2,
@@ -15,7 +16,7 @@ import {
 
 export function CreditLimitPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const [limitData, setLimitData] = useState<{
@@ -26,17 +27,11 @@ export function CreditLimitPage() {
     interestFreeGracePeriod: string
     nextSettlementDate: string
     status: string
-  }>({
-    creditLimit: 250000,
-    usedCredit: 0,
-    availableCredit: 250000,
-    currency: 'BDT',
-    interestFreeGracePeriod: '30 Days',
-    nextSettlementDate: '',
-    status: 'active',
-  })
+  } | null>(null)
 
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
   const [showIncreaseForm, setShowIncreaseForm] = useState(false)
   const [requestedLimit, setRequestedLimit] = useState('500000')
   const [reason, setReason] = useState('Higher seasonal procurement for wholesale inventory')
@@ -46,24 +41,37 @@ export function CreditLimitPage() {
 
   useEffect(() => {
     async function loadLimit() {
-      if (!token) {
-        setLoading(false)
-        return
-      }
+      if (!token) return
       try {
         const res = await fetch('/api/credits/limit', {
           headers: { Authorization: `Bearer ${token}` },
         })
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
+        }
         if (res.ok) {
           const json = await res.json()
           if (json.data) setLimitData(json.data)
+          else setLoadError('No trade credit facility data is available for your account yet.')
+        } else {
+          setLoadError(`Could not load your trade credit line (HTTP ${res.status}).`)
         }
+      } catch {
+        setLoadError('Network error while loading your trade credit line. Check your connection and retry.')
       } finally {
         setLoading(false)
       }
     }
     loadLimit()
   }, [token])
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const handleRequestIncrease = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -98,7 +106,21 @@ export function CreditLimitPage() {
     }
   }
 
-  const usedPct = Math.round((limitData.usedCredit / limitData.creditLimit) * 100)
+  const usedPct = limitData && limitData.creditLimit > 0
+    ? Math.round((limitData.usedCredit / limitData.creditLimit) * 100)
+    : 0
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your trade credit line." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your trade credit line"
+        message="Your credit line shows your real approved facility and utilization. Sign in to continue."
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
@@ -118,6 +140,13 @@ export function CreditLimitPage() {
       </header>
 
       <main className="max-w-lg lg:max-w-4xl mx-auto px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6">
+        {loadError && (
+          <div className="bg-red-50 border border-red-200 rounded-3xl px-4 py-3 flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-xs font-bold text-red-600">{loadError}</p>
+          </div>
+        )}
+        {limitData && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-start">
         {/* Main Credit Card */}
         <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-slate-950 dark:via-slate-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white shadow-2xl space-y-4 relative overflow-hidden">
@@ -177,6 +206,7 @@ export function CreditLimitPage() {
           </div>
         </div>
         </div>
+        )}
 
         {successMsg && (
           <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs font-bold text-emerald-700 flex items-center gap-2">

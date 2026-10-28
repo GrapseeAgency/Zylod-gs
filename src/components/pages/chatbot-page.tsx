@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import {
   ArrowLeft, Send, Sparkles, Bot, User, Globe,
   BookOpen, ExternalLink, ShieldCheck, ChevronRight
@@ -19,6 +20,11 @@ interface BotMessage {
 
 export function ChatbotPage() {
   const { navigate, goBack } = useNavigationStore()
+  // Owner-published support contact (Admin → System Settings) — fallback
+  // messages point to the Help Center when nothing is published, never an
+  // invented email.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
   const [messages, setMessages] = useState<BotMessage[]>([
     {
       id: 'init-1',
@@ -70,7 +76,9 @@ export function ChatbotPage() {
       const botMsg: BotMessage = {
         id: 'bot-' + Date.now(),
         sender: 'bot',
-        text: json.answer || 'I could not find that in our knowledge base. Please try rephrasing, or email support@zylod.com.',
+        text: json.answer || (supportEmail
+          ? `I could not find that in our knowledge base. Please try rephrasing, or email ${supportEmail}.`
+          : 'I could not find that in our knowledge base. Please try rephrasing, or reach us through the Help Center.'),
         articleSlug: json.articleSlug,
         articleTitle: json.articleTitle,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -80,7 +88,9 @@ export function ChatbotPage() {
       const errorMsg: BotMessage = {
         id: 'bot-err-' + Date.now(),
         sender: 'bot',
-        text: 'Unable to reach the knowledge base. Please check your connection or email support@zylod.com.',
+        text: supportEmail
+          ? `Unable to reach the knowledge base. Please check your connection or email ${supportEmail}.`
+          : 'Unable to reach the knowledge base. Please check your connection or reach us through the Help Center.',
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       }
       setMessages(prev => [...prev, errorMsg])

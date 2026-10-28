@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { ArrowLeft, Camera, UploadCloud, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -25,11 +27,26 @@ const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp'];
 
 export const SellerVerificationUploadPage = () => {
   const { goBack, pageParams } = useNavigationStore();
+  // Supplier-only rail: a guest gets an account gate instead of an upload
+  // form that can never submit.
+  const { isAuthenticated, user } = useAuthStore();
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin');
+  const [bootWait, setBootWait] = useState(true);
   const [docType, setDocType] = useState<string>('trade_license');
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setBootWait(false);
+      return;
+    }
+    const t = setTimeout(() => setBootWait(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
 
   // Deep-link support: the Verification Hub passes ?docType=<type>
   useEffect(() => {
@@ -37,6 +54,24 @@ export const SellerVerificationUploadPage = () => {
       setDocType(pageParams.docType);
     }
   }, [pageParams.docType]);
+
+  if (!bootWait && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Seller sign-in required"
+        message="KYC documents upload to your supplier account. Sign in with a supplier account to continue."
+      />
+    );
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`KYC document upload belongs to supplier accounts — you are signed in as a ${user.userType}.`}
+        showBecomeSupplier
+      />
+    );
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError('');

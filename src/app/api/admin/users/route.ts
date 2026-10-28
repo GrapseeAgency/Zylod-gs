@@ -103,9 +103,21 @@ export async function PATCH(request: NextRequest) {
 
     const accountStatus = action === 'suspend' ? 'suspended' : action === 'ban' ? 'banned' : 'active'
 
+    // Never echo the raw row: users carries passwordHash and twoFactorSecret.
     const user = await db.users.update({
       where: { id: userId },
       data: { accountStatus },
+      select: {
+        id: true,
+        userType: true,
+        email: true,
+        phone: true,
+        accountStatus: true,
+        suspensionReason: true,
+        suspendedAt: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
 
     // Log the action

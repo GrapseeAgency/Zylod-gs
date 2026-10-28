@@ -1,13 +1,25 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { ArrowLeft, Phone, Save, Building2 } from 'lucide-react'
 
 export function AddAddressPage() {
   const { navigate, goBack } = useNavigationStore()
+  const { isAuthenticated } = useAuthStore()
+
+  // Auth honesty: addresses are user-scoped — gate guests before they type
+  // an address that could never be saved to an account.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const [form, setForm] = useState({
     fullName: '',
@@ -78,6 +90,16 @@ export function AddAddressPage() {
     'Bangladesh', 'India', 'Pakistan', 'China', 'USA', 'UK', 'UAE',
     'Germany', 'Japan', 'South Korea', 'Turkey', 'Malaysia', 'Singapore',
   ]
+
+  // Gate guests — an address always belongs to an account.
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to add an address"
+        message="Delivery addresses are saved to your account. Sign in to add yours."
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8 text-slate-900 dark:text-slate-100">

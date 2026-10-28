@@ -7,6 +7,7 @@ import {
   ArrowLeft, Bug, AlertTriangle, CheckCircle2, Laptop,
   Send, AlertCircle, Info, RefreshCw
 } from 'lucide-react'
+import { AccountGate } from '@/components/shared/account-gate'
 
 export function ReportProblemPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
@@ -19,6 +20,9 @@ export function ReportProblemPage() {
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
+  // Honesty fix: bug reports are saved against the signed-in account — a 401
+  // shows a sign-in gate, never a fake "report logged".
+  const [sessionExpired, setSessionExpired] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -57,6 +61,10 @@ export function ReportProblemPage() {
         }),
       })
       const json = await res.json()
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok) {
         setSubmitted(true)
       } else {
@@ -66,6 +74,15 @@ export function ReportProblemPage() {
       setErrorMsg('Network error. Please try again.')
     }
     setLoading(false)
+  }
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Sign in to submit a report"
+        message="Bug reports are saved to your account so our team can follow up with you. Sign in to continue."
+      />
+    )
   }
 
   return (

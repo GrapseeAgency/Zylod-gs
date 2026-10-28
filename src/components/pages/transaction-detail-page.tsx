@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useCurrencyStore } from '@/store/currency-store'
 import {
   ArrowLeft, Receipt, CheckCircle2, ShieldCheck,
@@ -14,7 +15,7 @@ import { PageLoader } from '@/components/ui/page-loader'
 
 export function TransactionDetailPage() {
   const { goBack, pageParams, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   const txId = pageParams?.id || ''
@@ -33,6 +34,8 @@ export function TransactionDetailPage() {
   } | null>(null)
 
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
 
   useEffect(() => {
     async function loadDetail() {
@@ -44,12 +47,19 @@ export function TransactionDetailPage() {
         const res = await fetch(`/api/wallet/transactions/${txId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        if (res.ok) {
-          const json = await res.json()
-          if (json.data) setData(json.data)
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
         }
+        if (!res.ok) {
+          setLoadError('Could not load this transaction. Please try again later.')
+          return
+        }
+        const json = await res.json()
+        if (json.data) setData(json.data)
+        else setLoadError('This transaction could not be found.')
       } catch {
-        // Handled
+        setLoadError('Could not load this transaction. Please try again later.')
       } finally {
         setLoading(false)
       }
@@ -61,6 +71,19 @@ export function TransactionDetailPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <PageLoader className="min-h-0" />
+      </div>
+    )
+  }
+
+  if (sessionExpired) return <AccountGate title="Session expired" message="Your session has expired. Sign in again to view this transaction." />
+  if (!isAuthenticated) return <AccountGate title="Sign in to view this transaction" message="Transaction receipts show real movements from your Zylod wallet. Sign in to continue." />
+  if (!data && !loadError) return <AccountGate title="Transaction not found" message="This transaction could not be found in your wallet history." />
+  if (loadError && !data) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-3 px-4 text-center">
+        <Receipt className="h-10 w-10 text-muted-foreground" />
+        <p className="text-sm font-semibold text-foreground">{loadError}</p>
+        <Button variant="outline" onClick={goBack} className="text-xs">Go back</Button>
       </div>
     )
   }

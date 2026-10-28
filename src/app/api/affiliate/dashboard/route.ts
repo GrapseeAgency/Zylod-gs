@@ -39,24 +39,11 @@ export async function GET(request: NextRequest) {
           pendingPayoutBDT: profile.pendingPayout,
           paidPayoutBDT: profile.paidPayout,
         },
-        recentConversions: [
-          {
-            id: 'conv-1',
-            orderNumber: 'ORD-2026-9102',
-            orderAmount: 48500,
-            commissionBDT: 2425,
-            status: 'credited',
-            date: new Date(Date.now() - 2 * 86400000).toISOString(),
-          },
-          {
-            id: 'conv-2',
-            orderNumber: 'ORD-2026-8841',
-            orderAmount: 120000,
-            commissionBDT: 6000,
-            status: 'pending_escrow',
-            date: new Date(Date.now() - 5 * 86400000).toISOString(),
-          },
-        ],
+        // t220 honesty fix: this list used to return two HARDCODED fake
+        // conversion rows. No per-conversion ledger exists yet (the affiliate
+        // profile only keeps aggregate counters) — serve the real empty list
+        // until a conversions table ships.
+        recentConversions: [],
       },
     })
   } catch (error) {

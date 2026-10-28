@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   ArrowLeft, ShieldAlert, AlertTriangle, CheckCircle2,
@@ -26,11 +28,24 @@ interface ModerationReport {
 
 export function AdminReportsPage() {
   const { navigate, goBack } = useNavigationStore()
+  const { user, isAuthenticated } = useAuthStore()
+  const isAdmin = user?.userType === 'admin'
   const [reports, setReports] = useState<ModerationReport[]>([])
   const [metrics, setMetrics] = useState({ total: 0, pending: 0, actionTaken: 0, dismissed: 0 })
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState('all')
   const [reasonFilter, setReasonFilter] = useState('all')
+
+  // Auth honesty: moderation queue is admin-only — gate guests and non-admins
+  // instead of rendering zero metrics as if they were real.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   // Selected report for action modal
   const [selectedReport, setSelectedReport] = useState<ModerationReport | null>(null)
@@ -38,17 +53,27 @@ export function AdminReportsPage() {
   const [adminNotes, setAdminNotes] = useState('')
   const [submittingAction, setSubmittingAction] = useState(false)
   const [actionSuccess, setActionSuccess] = useState('')
+  const [actionError, setActionError] = useState('')
 
   async function fetchReports() {
     setLoading(true)
+    setLoadError(null)
     try {
       const res = await fetch(`/api/admin/reports?status=${statusFilter}&reason=${reasonFilter}`)
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok) {
         const json = await res.json()
         setReports(json.data || [])
         if (json.metrics) setMetrics(json.metrics)
+      } else {
+        setLoadError(`Failed to load the moderation queue (HTTP ${res.status}).`)
       }
-    } catch {}
+    } catch {
+      setLoadError('Network error — could not reach the moderation service.')
+    }
     setLoading(false)
   }
 
@@ -61,6 +86,7 @@ export function AdminReportsPage() {
     if (!selectedReport) return
 
     setSubmittingAction(true)
+    setActionError('')
     try {
       const res = await fetch(`/api/admin/reports/${selectedReport.id}`, {
         method: 'PATCH',
@@ -71,8 +97,8 @@ export function AdminReportsPage() {
           adminNotes,
         }),
       })
+      const json = await res.json().catch(() => null)
       if (res.ok) {
-        const json = await res.json()
         setActionSuccess(json.message || 'Action executed successfully')
         setTimeout(() => {
           setSelectedReport(null)
@@ -80,8 +106,12 @@ export function AdminReportsPage() {
           setAdminNotes('')
           fetchReports()
         }, 1200)
+      } else {
+        setActionError(json?.error || `The moderation action was refused (HTTP ${res.status}). Nothing was changed.`)
       }
-    } catch {}
+    } catch {
+      setActionError('Network error — the moderation action was NOT applied. Please retry.')
+    }
     setSubmittingAction(false)
   }
 
@@ -99,6 +129,49 @@ export function AdminReportsPage() {
     under_review: { label: 'Under Investigation', class: 'bg-primary/5 text-primary border-primary/30' },
     action_taken: { label: 'Action Taken', class: 'bg-green-50 dark:bg-green-950/40 text-green-800 dark:text-green-200 border-green-200 dark:border-green-900/60' },
     dismissed: { label: 'Dismissed', class: 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800' },
+  }
+
+  // Auth gates — guests/wrong-role first, then expired session, then a real
+  // load failure (never silent zero metrics).
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view the moderation center"
+        message="Trust & Safety reports are handled by administrator accounts. Sign in to continue."
+      />
+    )
+  }
+  if (!authChecking && isAuthenticated && user && !isAdmin) {
+    return (
+      <AccountGate
+        title="Admin accounts only"
+        message={`The moderation center belongs to administrator accounts — you are signed in as a ${user.userType}.`}
+      />
+    )
+  }
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your admin session has ended. Sign in again with an administrator account to review reports."
+      />
+    )
+  }
+  if (!loading && loadError && reports.length === 0) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center space-y-3 max-w-md">
+          <AlertTriangle className="w-10 h-10 mx-auto text-red-600" />
+          <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{loadError}</p>
+          <button
+            onClick={fetchReports}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -291,6 +364,9 @@ export function AdminReportsPage() {
               </div>
             ) : (
               <form onSubmit={handleExecuteAction} className="space-y-4">
+                {actionError && (
+                  <p className="text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">{actionError}</p>
+                )}
                 <div className="bg-slate-50 dark:bg-background p-3 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs space-y-1">
                   <p><strong>Target:</strong> {selectedReport.reportedEntity.name} ({selectedReport.reportedUserId})</p>
                   <p><strong>Allegation:</strong> {selectedReport.reason.replace('_', ' ')}</p>

@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ShoppingCart, Package, CreditCard, TrendingUp, Heart, Star, Clock,
   ArrowRight, MapPin, Award, BarChart3, Truck, Tag, Search, FileText,
@@ -88,16 +90,28 @@ const getStatusColor = (status: string) => {
 export default function BuyerDashboardPage() {
   const { navigate } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
+  const { token, isAuthenticated, user } = useAuthStore()
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
-    fetch('/api/buyer/dashboard')
-      .then(res => res.json())
-      .then(json => { if (json.success) setData(json.data) })
-      .catch(() => {})
+    if (!token) {
+      // Deep links can mount before the boot session probe settles — keep loading briefly.
+      const t = setTimeout(() => setLoading(false), 1500)
+      return () => clearTimeout(t)
+    }
+    fetch('/api/buyer/dashboard', { headers: { Authorization: `Bearer ${token}` } })
+      .then(async res => {
+        const json = await res.json().catch(() => null)
+        if (res.status === 401 || res.status === 403) { setSessionExpired(true); return }
+        if (res.ok && json?.success) setData(json.data)
+        else setLoadError(json?.error || `Could not load your dashboard (HTTP ${res.status}).`)
+      })
+      .catch(() => setLoadError('Network error while loading your dashboard. Check your connection and retry.'))
       .finally(() => setLoading(false))
-  }, [])
+  }, [token])
 
   const stats = data ? [
     { title: 'Total Orders', value: data.stats.totalOrders, icon: ShoppingCart, color: 'text-primary', bg: 'bg-red-50' },
@@ -110,6 +124,26 @@ export default function BuyerDashboardPage() {
     if (type === 'order') return { Icon: ShoppingCart, color: 'text-primary', bg: 'bg-red-50' }
     if (type === 'wishlist') return { Icon: Heart, color: 'text-primary', bg: 'bg-red-50' }
     return { Icon: Clock, color: 'text-muted-foreground', bg: 'bg-gray-50' }
+  }
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your buyer dashboard." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your buyer dashboard"
+        message="The buyer dashboard shows your real orders, spending and savings. Sign in to continue."
+      />
+    )
+  }
+  if (isAuthenticated && user && user.userType !== 'buyer') {
+    return (
+      <AccountGate
+        title="Buyer accounts only"
+        message={`The buyer dashboard belongs to buyer accounts — you are signed in as a ${user.userType}.`}
+      />
+    )
   }
 
   return (
@@ -129,6 +163,10 @@ export default function BuyerDashboardPage() {
         </div>
         <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-red-50" onClick={() => navigate('buyer-settings')}>Settings</Button>
       </div>
+
+      {loadError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600">{loadError}</div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

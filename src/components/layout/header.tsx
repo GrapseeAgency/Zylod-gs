@@ -26,7 +26,6 @@ import {
   Tag,
   Truck,
   BadgePercent,
-  Search,
   LayoutGrid,
   ShoppingCart,
   MoreHorizontal,
@@ -49,6 +48,7 @@ import {
   X,
   PackageOpen,
 } from 'lucide-react'
+import { HeaderInternalSearch } from './header-internal-search'
 import { cn } from '@/lib/utils'
 
 /* ─── Lazy-loaded heavy sub-components ─── */
@@ -285,7 +285,7 @@ export function Header() {
           scrolled ? 'shadow-md' : 'shadow-sm'
         )}
       >
-        <div className="mx-auto flex h-[64px] max-w-[1440px] items-center gap-3 px-4 lg:px-6">
+        <div className="mx-auto flex h-[64px] max-w-[1800px] 2xl:max-w-[1920px] items-center gap-3 px-2 sm:px-3 lg:px-4 xl:px-6">
           {/* -------------------------------------------------------- */}
           {/*  LEFT: Logo                                              */}
           {/* -------------------------------------------------------- */}
@@ -365,27 +365,8 @@ export function Header() {
           {/*  RIGHT: Search pill + utilities (mockup order)           */}
           {/* -------------------------------------------------------- */}
           <div className="flex items-center gap-1 sm:gap-1.5 shrink min-w-0 ml-auto lg:ml-0">
-            {/* Header search pill (mockup) — xl+ only, center column owns its own search */}
-            <form
-              className="hidden xl:flex items-center mr-1"
-              onSubmit={(e) => {
-                e.preventDefault()
-                const input = (e.currentTarget.elements.namedItem('q') as HTMLInputElement | null)
-                const q = input?.value.trim()
-                if (q) navigate('search-results', { query: q })
-              }}
-            >
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  name="q"
-                  type="text"
-                  placeholder="Search for products, suppliers, or categories..."
-                  aria-label="Search"
-                  className="w-[240px] 2xl:w-[300px] h-9 pl-9 pr-3 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-[13px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900 focus:bg-white dark:focus:bg-gray-900 transition-all"
-                />
-              </div>
-            </form>
+            {/* Header search pill — Intelligent Internal Navigation & Site Search Engine */}
+            <HeaderInternalSearch />
 
             {/* Theme Toggle */}
             {mounted && (
@@ -477,13 +458,40 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button
-                onClick={() => navigate('login')}
-                className="h-9 px-5 rounded-md text-sm font-semibold text-primary-foreground border-0 hover:shadow-md transition-all hover:scale-[1.03] active:scale-[0.97] bg-primary"
-              >
-                <User className="h-4 w-4 mr-1.5" />
-                Login
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="flex items-center gap-2 h-10 pl-1.5 pr-2 rounded-full hover:bg-muted transition-colors"
+                    aria-label="Account menu"
+                  >
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm" style={{ background: '#E31C3D' }}>
+                      <User className="h-4 w-4" />
+                    </div>
+                    <span className="hidden md:flex flex-col items-start leading-tight text-left">
+                      <span className="text-[13px] font-semibold text-foreground">
+                        Md Kailem
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">Buyer</span>
+                    </span>
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-3 py-2 border-b">
+                    <p className="font-semibold text-sm">Md Kailem</p>
+                    <p className="text-xs text-muted-foreground">Buyer Account</p>
+                  </div>
+                  <DropdownMenuItem onClick={() => navigate('login')} className="cursor-pointer font-semibold text-primary">
+                    <User className="h-4 w-4 mr-2" /> Sign In / Switch Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('register-buyer')} className="cursor-pointer">
+                    Register as Buyer
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('register-supplier')} className="cursor-pointer">
+                    Register as Supplier
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
 
             {/* Mobile hamburger menu (lazy-loaded) */}

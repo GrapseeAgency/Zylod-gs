@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Building2, Factory, Users, Globe2, Award,
   ShieldCheck, Save, Check, Plus, Trash2, Camera
@@ -53,12 +55,24 @@ export function StoreStoryAboutPage() {
   // storefront — shown in the editor so the supplier sees exactly what a
   // buyer sees (server-computed statuses, expired rows badged).
   const [liveCertRollup, setLiveCertRollup] = useState<StorefrontCertRollup | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const { isAuthenticated, user } = useAuthStore()
 
   useEffect(() => {
     async function loadStory() {
       try {
         setLoading(true)
+        setLoadError(null)
         const res = await fetch('/api/supplier/storefront')
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
+        }
+        if (!res.ok) {
+          setLoadError('Could not load your company story. Please try again later.')
+        }
         const data = await res.json()
         if (data.success && data.data) {
           const supplier = data.data
@@ -92,6 +106,7 @@ export function StoreStoryAboutPage() {
         }
       } catch (err) {
         console.error('Failed to load story:', err)
+        setLoadError('Could not load your company story. Please try again later.')
       } finally {
         setLoading(false)
       }
@@ -102,6 +117,7 @@ export function StoreStoryAboutPage() {
   const handleSave = async () => {
     try {
       setSaving(true)
+      setSaveError(null)
       const res = await fetch('/api/supplier/storefront', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -122,9 +138,14 @@ export function StoreStoryAboutPage() {
       if (res.ok) {
         setSavedSuccess(true)
         setTimeout(() => setSavedSuccess(false), 3000)
+      } else if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+      } else {
+        setSaveError(`Save failed (HTTP ${res.status}). Please try again.`)
       }
     } catch (err) {
       console.error('Failed to save company story:', err)
+      setSaveError('Could not reach the save service. Check your connection and try again.')
     } finally {
       setSaving(false)
     }
@@ -178,6 +199,10 @@ export function StoreStoryAboutPage() {
     }))
   }
 
+  if (sessionExpired) return <AccountGate title="Session expired" message="Your session has expired. Sign in again to edit your company story." />
+  if (!isAuthenticated) return <AccountGate title="Sign in to edit your company story" message="The company story editor belongs to supplier storefronts. Sign in with a supplier account to continue." showBecomeSupplier />
+  if (user && user.userType !== 'supplier') return <AccountGate title="Supplier accounts only" message={`The company story editor belongs to supplier storefronts — you are signed in as a ${user.userType}.`} showBecomeSupplier />
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 pb-20 md:pb-8">
       {/* Top Bar */}
@@ -220,6 +245,13 @@ export function StoreStoryAboutPage() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {/* Real load/save errors */}
+        {(loadError || saveError) && (
+          <div className="rounded-xl border border-red-900 bg-red-950/60 px-4 py-3">
+            <p className="text-xs font-semibold text-red-300">{loadError || saveError}</p>
+          </div>
+        )}
+
         {/* Core Overview Card */}
         <Card className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-5 space-y-4">

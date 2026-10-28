@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch'
 import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { toast } from 'sonner'
 import {
   ArrowLeft, Bell, ShoppingBag, Truck, Star, DollarSign, Shield,
@@ -186,7 +187,7 @@ function CategoryCard({
 // ─── MAIN NOTIFICATION PREFERENCES PAGE ──────────────────────────────────────
 export function NotificationPreferencesPage() {
   const { navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   // Notification categories with full channel config
   const [categories, setCategories] = useState<NotifCategory[]>([
@@ -354,10 +355,22 @@ export function NotificationPreferencesPage() {
   // /api/profile/notifications and initialize the toggles from the SAVED
   // values; the hardcoded defaults apply only when no saved row exists.
   const [loadingPrefs, setLoadingPrefs] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Honesty fix: these toggles represent YOUR saved preferences — guests get
+  // an account gate instead of the hardcoded defaults posing as their settings.
+  // Deep links can mount before the boot session probe settles, so hold the
+  // loader briefly for unauthenticated mounts.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoadingPrefs(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
     let cancelled = false
     const loadSaved = async () => {
+      if (!isAuthenticated) return
       if (!token) {
         setLoadingPrefs(false)
         return
@@ -367,6 +380,10 @@ export function NotificationPreferencesPage() {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (cancelled) return
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
+        }
         if (!res.ok) {
           toast.error('Could not load your saved notification settings — showing defaults.')
           setLoadingPrefs(false)
@@ -408,7 +425,7 @@ export function NotificationPreferencesPage() {
     }
     loadSaved()
     return () => { cancelled = true }
-  }, [token])
+  }, [isAuthenticated, token])
 
   // ─── UPDATE CATEGORY ───────────────────────────────────────────────────────
   const updateCategory = (
@@ -514,6 +531,18 @@ export function NotificationPreferencesPage() {
       <div className="min-h-screen bg-background">
         <PageLoader />
       </div>
+    )
+  }
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to manage your notification preferences." />
+  }
+  if (!isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage notifications"
+        message="These notification preferences are saved to your account. Sign in to view and change yours."
+      />
     )
   }
 

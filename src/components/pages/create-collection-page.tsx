@@ -1,6 +1,8 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { ArrowLeft, Lock, Globe, Link as LinkIcon, Search, X, Check, Package, Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -11,6 +13,7 @@ interface WishRow {
 
 export function CreateCollectionPage() {
   const { navigate, goBack, pageParams } = useNavigationStore()
+  const { isAuthenticated } = useAuthStore()
   const isEditing = !!pageParams?.collectionId
 
   const [name, setName] = useState('')
@@ -28,6 +31,17 @@ export function CreateCollectionPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(isEditing)
   const [serverError, setServerError] = useState('')
+  const [gateLoading, setGateLoading] = useState(true)
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setGateLoading(false)
+      return
+    }
+    const t = setTimeout(() => setGateLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const PRESET_COLORS = ['#C8102E', '#2563EB', '#16A34A', '#D97706', '#9333EA', '#4B5563', '#000000', '']
 
@@ -56,17 +70,20 @@ export function CreateCollectionPage() {
       const fetchCollection = async () => {
         try {
           const res = await fetch(`/api/collections/${pageParams.collectionId}`)
-          const data = await res.json()
-          if (data.success) {
+          const data = await res.json().catch(() => null)
+          if (data?.success) {
             const col = data.data
             setName(col.name)
             setDescription(col.description || '')
             setPrivacy(col.privacy)
             setCoverColor(col.coverColor || '')
             setSelectedProducts(col.items.map((i: any) => i.product))
+          } else {
+            setServerError(data?.error || `Could not load the collection (HTTP ${res.status}).`)
           }
         } catch (err) {
           console.error('Error fetching collection', err)
+          setServerError('Could not reach the collections service.')
         } finally {
           setIsLoading(false)
         }
@@ -127,6 +144,15 @@ export function CreateCollectionPage() {
 
   if (isLoading) {
     return <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">Loading...</div>
+  }
+
+  if (!gateLoading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage collections"
+        message="Collections hold the products you saved from your real account. Sign in to continue."
+      />
+    )
   }
 
   return (

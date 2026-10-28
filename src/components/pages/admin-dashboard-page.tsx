@@ -10,6 +10,8 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   LayoutDashboard, DollarSign, Users, Clock, ShoppingCart, TrendingUp, Package,
   ChevronRight, AlertCircle, BarChart3, Server, Database, Wifi, AlertTriangle,
@@ -103,16 +105,45 @@ const QUICK_ADMIN_ACTIONS = [
 export function AdminDashboardPage() {
   const { navigate } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
+  const { user, isAuthenticated } = useAuthStore()
+  const isAdmin = user?.userType === 'admin'
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [reloadKey, setReloadKey] = useState(0)
+
+  // Auth honesty: platform metrics are admin-only — gate guests and
+  // non-admins instead of rendering zero KPIs as if they were real.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    if (!isAuthenticated) { setLoading(false); return }
+    let cancelled = false
+    setLoading(true)
+    setLoadError(null)
     fetch('/api/admin/dashboard')
-      .then(res => res.json())
-      .then(json => { if (json.success) setData(json.data) })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
+      .then(async (res) => {
+        if (res.status === 401 || res.status === 403) {
+          if (!cancelled) setSessionExpired(true)
+          return null
+        }
+        return res.json().catch(() => null)
+      })
+      .then(json => {
+        if (cancelled) return
+        if (json?.success) setData(json.data)
+        else setLoadError(json?.error || 'The admin dashboard service did not return real data.')
+      })
+      .catch(() => { if (!cancelled) setLoadError('Network error — could not reach the admin dashboard service.') })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [isAuthenticated, reloadKey])
 
   const kpiCards = data ? [
     { title: 'Total Users', value: data.platformOverview.totalUsers, icon: Users, chartData: data.registrationsChart, chartType: 'line' as const },
@@ -126,6 +157,44 @@ export function AdminDashboardPage() {
     if (type === 'registration') return { Icon: UserPlus, color: 'text-green-600', bg: 'bg-green-50' }
     if (type === 'order') return { Icon: ShoppingCart, color: 'text-primary', bg: 'bg-red-50' }
     return { Icon: AlertCircle, color: 'text-amber-600', bg: 'bg-amber-50' }
+  }
+
+  // Auth gates — order matters: guests/wrong-role first, then expired session,
+  // then a real load failure (never silent zeros).
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view the admin dashboard"
+        message="Platform metrics, revenue, and approval queues belong to administrator accounts. Sign in to continue."
+      />
+    )
+  }
+  if (!authChecking && isAuthenticated && user && !isAdmin) {
+    return (
+      <AccountGate
+        title="Admin accounts only"
+        message={`The admin dashboard belongs to administrator accounts — you are signed in as a ${user.userType}.`}
+      />
+    )
+  }
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your admin session has ended. Sign in again with an administrator account to view platform metrics."
+      />
+    )
+  }
+  if (!loading && !data && loadError) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center space-y-3 max-w-md">
+          <AlertTriangle className="h-10 w-10 mx-auto text-primary" />
+          <p className="text-sm font-bold">{loadError}</p>
+          <Button variant="outline" size="sm" onClick={() => setReloadKey((k) => k + 1)}>Retry</Button>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -19,6 +19,7 @@ import { ArrowLeft, AlertTriangle, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigationStore } from '@/store/navigation-store';
 import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { productPayloadSchema } from '@/lib/product-contract';
 import {
   ProductFormFields,
@@ -47,6 +48,19 @@ function optionalQty(value: string): number | null {
 export function SellerAddProductPage() {
   const { goBack, navigate } = useNavigationStore();
   const token = useAuthStore((s) => s.token);
+  // Honesty fix: publishing a product writes to a supplier catalog — guests
+  // and non-supplier accounts get an account gate, not a doomed form.
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const user = useAuthStore((s) => s.user);
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin');
+  const [gateLoading, setGateLoading] = useState(true);
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) { setGateLoading(false); return; }
+    const t = setTimeout(() => setGateLoading(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
 
   const [form, setForm] = useState<ProductFormState>(EMPTY_PRODUCT_FORM);
   const [tiers, setTiers] = useState<TierRow[]>([{ minQty: '', maxQty: '', pricePerUnit: '' }]);
@@ -250,6 +264,24 @@ export function SellerAddProductPage() {
       setLoading(false);
     }
   };
+
+  if (!gateLoading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Seller sign-in required"
+        message="Adding a product publishes to your supplier catalog. Sign in with a supplier account to continue."
+      />
+    );
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`Adding products belongs to supplier accounts — you are signed in as a ${user.userType}.`}
+        showBecomeSupplier
+      />
+    );
+  }
 
   return (
     <motion.div

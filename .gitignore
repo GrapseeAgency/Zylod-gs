@@ -85,4 +85,5 @@ public/uploads/
 db/*.db
 db/*.db-shm
 db/*.db-wal
+prisma/db/
 qa-screenshots/

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Landmark, Plus, Trash2, CheckCircle2,
   ShieldCheck, Check, Loader2, Building2, MoreVertical
@@ -24,27 +25,45 @@ interface BankAccount {
 
 export function BankAccountsPage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [accounts, setAccounts] = useState<BankAccount[]>([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // Auth honesty: settlement bank accounts are user-scoped — gate guests
+  // instead of showing an empty "no accounts" state as if it were theirs.
+  const [authChecking, setAuthChecking] = useState(true)
+  useEffect(() => {
+    if (isAuthenticated) { setAuthChecking(false); return }
+    const t = setTimeout(() => setAuthChecking(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   const loadAccounts = async () => {
-    if (!token) {
+    if (!token || !isAuthenticated) {
       setLoading(false)
       return
     }
     try {
+      setLoadError(null)
       const res = await fetch('/api/bank-accounts', {
         headers: { Authorization: `Bearer ${token}` },
       })
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok) {
         const json = await res.json()
         if (json.data) setAccounts(json.data)
+      } else {
+        setLoadError(`Could not load your bank accounts (HTTP ${res.status}).`)
       }
     } catch {
-      // Handled
+      setLoadError('Network error — could not reach the bank accounts service.')
     } finally {
       setLoading(false)
     }
@@ -83,6 +102,35 @@ export function BankAccountsPage() {
     } finally {
       setActionLoading(null)
     }
+  }
+
+  // Auth gates — guests first, then expired session, then a real load failure
+  // (never a fabricated "no accounts linked" state).
+  if (!authChecking && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your bank accounts"
+        message="Commercial bank accounts are saved to your account for settlements. Sign in to continue."
+      />
+    )
+  }
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has ended. Sign in again to manage your bank accounts."
+      />
+    )
+  }
+  if (!loading && loadError && accounts.length === 0) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center space-y-3 max-w-md">
+          <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{loadError}</p>
+          <Button variant="outline" size="sm" onClick={loadAccounts}>Retry</Button>
+        </div>
+      </div>
+    )
   }
 
   return (

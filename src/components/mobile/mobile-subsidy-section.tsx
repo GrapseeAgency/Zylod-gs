@@ -18,21 +18,24 @@ export function MobileSubsidySection() {
   const { formatPrice } = useCurrencyStore()
   const [products, setProducts] = useState<SubsidyProduct[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     fetch('/api/deals?type=flash&limit=8')
-      .then(res => res.json())
-      .then(json => {
-        if (json.success && Array.isArray(json.data)) {
-          setProducts(json.data.map((d: any) => ({
-            id: d.productId,
-            name: d.productName || d.product?.name || 'Product',
-            price: d.dealPrice || d.product?.basePrice || 0,
-            image: d.productThumbnail || d.product?.thumbnailUrl || null,
-          })))
-        }
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
       })
-      .catch(() => {})
+      .then(json => {
+        if (!(json.success && Array.isArray(json.data))) throw new Error('Unexpected response')
+        setProducts(json.data.map((d: any) => ({
+          id: d.productId,
+          name: d.productName || d.product?.name || 'Product',
+          price: d.dealPrice || d.product?.basePrice || 0,
+          image: d.productThumbnail || d.product?.thumbnailUrl || null,
+        })))
+      })
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false))
   }, [])
 
@@ -42,6 +45,8 @@ export function MobileSubsidySection() {
         <div className="flex items-center gap-0 overflow-x-auto pb-1 -mx-3 px-3" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {loading ? (
             [1, 2, 3, 4].map(i => <Skeleton key={i} className="flex-none w-[58px] aspect-square rounded-md" />)
+          ) : loadError ? (
+            <p className="px-3 text-[11px] text-muted-foreground">Flash deals couldn&apos;t be loaded right now — check your connection and refresh.</p>
           ) : (
             products.map((product, i) => (
               <motion.button

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { toast } from 'sonner'
 import {
   X, Mail, Phone, Briefcase, CheckCircle2,
@@ -15,7 +16,7 @@ import {
 
 export function EditProfilePage() {
   const { navigate, goBack } = useNavigationStore()
-  const { user, token, updateUser } = useAuthStore()
+  const { user, token, isAuthenticated, updateUser } = useAuthStore()
 
   const [activeSection, setActiveSection] = useState<'personal' | 'business' | 'factory' | 'compliance'>('personal')
 
@@ -41,8 +42,16 @@ export function EditProfilePage() {
   const [originPort, setOriginPort] = useState('Chittagong Port (BDCGP)')
 
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   // ─── LOAD INITIAL DATA FROM REAL API ────────────────────────────────────────
   useEffect(() => {
@@ -56,6 +65,11 @@ export function EditProfilePage() {
           fetch('/api/profile/me', { headers: { Authorization: `Bearer ${token}` } }),
           fetch('/api/profile/business', { headers: { Authorization: `Bearer ${token}` } }),
         ])
+
+        if (meRes.status === 401 || meRes.status === 403 || bizRes.status === 401 || bizRes.status === 403) {
+          setSessionExpired(true)
+          return
+        }
 
         if (meRes.ok) {
           const meJson = await meRes.json()
@@ -166,6 +180,23 @@ export function EditProfilePage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  if (sessionExpired) {
+    return (
+      <AccountGate
+        title="Session expired"
+        message="Your session has expired. Sign in again to edit your real profile."
+      />
+    )
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to edit your profile"
+        message="This form edits your real account details. Sign in to continue."
+      />
+    )
   }
 
   if (loading) {

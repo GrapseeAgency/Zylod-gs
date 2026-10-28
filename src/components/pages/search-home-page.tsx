@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
+import { useAuthStore } from '@/store/auth-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -35,6 +36,9 @@ interface Category {
 
 export function SearchHomePage() {
   const { navigate, goBack } = useNavigationStore()
+  // Honesty fix: search history is account-scoped — guests never fetch it (and
+  // never see a fabricated history). Popular searches and categories are public.
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
   const [query, setQuery] = useState('')
   const [history, setHistory] = useState<SearchHistoryItem[]>([])
   const [popular, setPopular] = useState<PopularSearch[]>([])
@@ -46,7 +50,8 @@ export function SearchHomePage() {
 
   useEffect(() => {
     inputRef.current?.focus()
-    fetchHistory()
+    if (isAuthenticated) fetchHistory()
+    else setLoadingHistory(false)
     fetchPopular()
     fetchCategories()
   }, [])

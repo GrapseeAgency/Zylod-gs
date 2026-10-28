@@ -1,6 +1,8 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { ArrowLeft, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -25,6 +27,11 @@ const PRIORITIES = [
 
 export function SellerCreateTicketPage() {
   const { goBack, navigate } = useNavigationStore();
+  // Supplier-only rail: a guest gets an account gate instead of composing
+  // a ticket that can never be submitted.
+  const { isAuthenticated, user } = useAuthStore();
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin');
+  const [bootWait, setBootWait] = useState(true);
   const [category, setCategory] = useState<string>('orders');
   const [priority, setPriority] = useState<string>('medium');
   const [subject, setSubject] = useState('');
@@ -32,6 +39,33 @@ export function SellerCreateTicketPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setBootWait(false);
+      return;
+    }
+    const t = setTimeout(() => setBootWait(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
+
+  if (!bootWait && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Seller sign-in required"
+        message="Support tickets are tied to your supplier account. Sign in with a supplier account to open one."
+      />
+    );
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`Support tickets belong to supplier accounts — you are signed in as a ${user.userType}.`}
+      />
+    );
+  }
 
   const handleSubmit = async () => {
     setError('');

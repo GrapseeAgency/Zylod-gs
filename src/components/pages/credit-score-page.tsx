@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, ShieldCheck, Award, TrendingUp,
   CheckCircle2, AlertCircle, FileText, ChevronRight,
@@ -13,7 +14,7 @@ import {
 
 export function CreditScorePage() {
   const { goBack, navigate } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [data, setData] = useState<{
     score: number
@@ -24,33 +25,32 @@ export function CreditScorePage() {
     tradeHistoryLength: string
     creditUtilization: string
     factors: Array<{ name: string; impact: string; description: string }>
-  }>({
-    score: 750,
-    maxScore: 850,
-    tier: 'Tier A (Excellent Commercial)',
-    riskRating: 'Low Risk',
-    repaymentTimeliness: '99.4%',
-    tradeHistoryLength: '5 orders recorded',
-    creditUtilization: '18.5%',
-    factors: [],
-  })
+  } | null>(null)
 
   const [loading, setLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     async function loadScore() {
-      if (!token) {
-        setLoading(false)
-        return
-      }
+      if (!token) return
       try {
         const res = await fetch('/api/credits/score', {
           headers: { Authorization: `Bearer ${token}` },
         })
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return
+        }
         if (res.ok) {
           const json = await res.json()
           if (json.data) setData(json.data)
+          else setLoadError('No trade credit score is available for your account yet.')
+        } else {
+          setLoadError(`Could not load your trade credit score (HTTP ${res.status}).`)
         }
+      } catch {
+        setLoadError('Network error while loading your trade credit score. Check your connection and retry.')
       } finally {
         setLoading(false)
       }
@@ -58,7 +58,26 @@ export function CreditScorePage() {
     loadScore()
   }, [token])
 
-  const scorePct = Math.round((data.score / data.maxScore) * 100)
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
+  const scorePct = data && data.maxScore > 0 ? Math.round((data.score / data.maxScore) * 100) : 0
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your trade credit score." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your trade credit score"
+        message="Your credit score is computed from your real repayment and order history. Sign in to continue."
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
@@ -78,6 +97,13 @@ export function CreditScorePage() {
       </header>
 
       <main className="max-w-lg lg:max-w-4xl mx-auto px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6">
+        {loadError && (
+          <div className="bg-red-50 border border-red-200 rounded-3xl px-4 py-3 flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-xs font-bold text-red-600">{loadError}</p>
+          </div>
+        )}
+        {data && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-start">
         {/* Score Gauge Card */}
         <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-slate-950 dark:via-slate-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white text-center shadow-2xl space-y-4">
@@ -148,6 +174,7 @@ export function CreditScorePage() {
         </div>
         </div>
         </div>
+        )}
 
         {/* Limit Action CTA */}
         <Button

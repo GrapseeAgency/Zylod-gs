@@ -75,13 +75,15 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    // In production, send verification email
-    console.log(`Email verification token for ${email}: ${verifyToken}`)
+    // SECURITY: devToken is the verification credential — never send it in a
+    // production response. Matches the forgot-password / recover pattern; the
+    // client already degrades gracefully when it is absent.
+    const dev = process.env.NODE_ENV !== 'production' ? { devToken: verifyToken } : {}
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Verification email sent',
-      devToken: verifyToken
+      ...dev
     })
   } catch (error) {
     console.error('Email verification error:', error)

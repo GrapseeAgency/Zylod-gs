@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useCountdown } from '@/lib/auth-security'
 import { toast } from 'sonner'
@@ -38,7 +39,7 @@ const fadeUp = {
 
 export function TwoFactorAuthPage() {
   const { goBack, navigate, pageParams } = useNavigationStore()
-  const { user: storeUser, token: storeToken, login: authLogin } = useAuthStore()
+  const { user: storeUser, token: storeToken, login: authLogin, isAuthenticated } = useAuthStore()
   const isMobile = useIsMobile()
 
   // flow: 'login' = completing a sign-in that requires the 2FA code;
@@ -698,6 +699,12 @@ export function TwoFactorAuthPage() {
       {secureButton}
     </>
   )
+
+  // Enrollment (settings) flow requires a signed-in account; the login
+  // challenge flow is legitimately used by guests completing sign-in.
+  if (!isLoginChallenge && !isAuthenticated) {
+    return <AccountGate title="Sign in to manage two-factor authentication" message="2FA settings belong to your account. Sign in to continue." />
+  }
 
   /* ─── Mobile Layout ─── */
   if (isMobile) {

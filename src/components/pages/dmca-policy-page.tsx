@@ -17,6 +17,7 @@ export function DmcaPolicyPage() {
   const [doc, setDoc] = useState<LegalDoc | null>(null)
   const [faqs, setFaqs] = useState<LegalFaq[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [openFaq, setOpenFaq] = useState<string | null>(null)
 
   useEffect(() => {
@@ -26,7 +27,12 @@ export function DmcaPolicyPage() {
     ]).then(([docData, faqData]) => {
       if (docData.success) setDoc(docData.data.document)
       if (faqData.success) setFaqs(faqData.data)
-    }).catch(console.error).finally(() => setLoading(false))
+      if (!docData.success && !faqData.success) {
+        setLoadError(docData.error || 'Could not load the DMCA policy right now — please try again later.')
+      }
+    }).catch(() => {
+      setLoadError('Network error while loading the DMCA policy. Check your connection and retry.')
+    }).finally(() => setLoading(false))
   }, [])
 
   return (
@@ -42,6 +48,11 @@ export function DmcaPolicyPage() {
       </div>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 md:px-6 md:py-8 space-y-5 md:space-y-8 lg:max-w-4xl pb-24 md:pb-8">
+        {loading ? null : loadError ? (
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-red-200 shadow-sm text-xs text-red-700 leading-relaxed">
+            {loadError}
+          </div>
+        ) : null}
         <div className="hidden md:block">
           <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">DMCA &amp; IP Protection</h1>
           {doc && <p className="text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-1">v{doc.version} · Updated {new Date(doc.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}

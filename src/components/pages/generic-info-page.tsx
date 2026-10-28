@@ -23,6 +23,7 @@ import {
   type SupplierDetail, type SupplierProduct,
 } from '@/lib/use-api'
 import { hasNativeVoiceRecognition, recognizeSpeechWithNative } from '@/lib/native-bridge'
+import { usePublicSettings } from '@/lib/use-public-settings'
 import {
   ArrowLeft, Truck, Wallet, Clock, FileText, Scale, Globe, Users, Heart,
   Megaphone, BookOpen, Mail, Phone, MessageCircle, HelpCircle, AlertTriangle, Lightbulb,
@@ -39,11 +40,27 @@ import {
   Camera, Mic, MicOff, ScanLine, Loader2,
 } from 'lucide-react'
 
-interface InfoSection { title: string; content: string; icon: React.ReactNode }
+/** Section content is either static text or built at render time from the
+ * owner-published support contact (see withSupportContact below). */
+interface InfoSection { title: string; content: string | ((supportEmail: string) => string); icon: React.ReactNode }
 
 interface InfoConfig {
   name: string; description: string; icon: React.ReactNode; sections: InfoSection[];
   quickLinks?: { label: string; pageId: string }[]; specialType?: string
+}
+
+/**
+ * Honest support-contact text: shows the support email the site owner
+ * published under Admin → System Settings (GET /api/settings/public), or
+ * honest generic wording when nothing is published — never a fabricated
+ * address.
+ */
+function withSupportContact(
+  publishedEmail: string,
+  withEmail: (email: string) => string,
+  withoutEmail: string
+): string {
+  return publishedEmail ? withEmail(publishedEmail) : withoutEmail
 }
 
 const INFO_CONFIGS: Record<string, InfoConfig> = {
@@ -75,7 +92,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Our Team', content: 'Zylod is built and operated from Dhaka, Bangladesh.', icon: <Users className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Careers', pageId: 'careers-page' }, { label: 'Press', pageId: 'press-media' }, { label: 'Contact', pageId: 'contact-us' }] },
   'contact-us': { name: 'Contact Us', description: 'Get in touch with our support team', icon: <Mail className="h-8 w-8 text-white" />, sections: [
-    { title: 'Email', content: 'support@zylod.com — for general inquiries and order support', icon: <Mail className="h-4 w-4" /> },
+    { title: 'Email', content: (e) => withSupportContact(e, (em) => `${em} — for general inquiries and order support`, 'A support email has not been published yet — reach us through the Help Center for general inquiries and order support.'), icon: <Mail className="h-4 w-4" /> },
     { title: 'Phone', content: 'Contact details will be published by the site owner.', icon: <Phone className="h-4 w-4" /> },
     { title: 'Office', content: 'Office address will be published by the site owner.', icon: <Building2 className="h-4 w-4" /> },
   ] },
@@ -122,7 +139,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     sections: [
       { title: 'Level Up', content: 'Buyer levels are not available yet — your level will be based on real order history once the program launches.', icon: <TrendingUp className="h-4 w-4" /> },
     ],
-    quickLinks: [{ label: 'My Orders', pageId: 'buyer-orders' }, { label: 'Rewards', pageId: 'buyer-rewards' }],
+    quickLinks: [{ label: 'My Orders', pageId: 'buyer-orders' }, { label: 'Rewards', pageId: 'loyalty-points' }],
   },
 
   'buyer-favorites': {
@@ -140,7 +157,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     sections: [
       { title: 'Sales Performance', content: 'Monitor your sales, revenue, and customer trends to grow your business.', icon: <TrendingUp className="h-4 w-4" /> },
     ],
-    quickLinks: [{ label: 'Dashboard', pageId: 'supplier-dashboard' }, { label: 'Earnings', pageId: 'supplier-earnings' }],
+    quickLinks: [{ label: 'Dashboard', pageId: 'supplier-dashboard' }, { label: 'Earnings', pageId: 'earnings-dashboard' }],
   },
 
   'supplier-warehouse': {
@@ -473,10 +490,10 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   'help-center': { name: 'Help Center', description: 'Get help with Zylod', icon: <HelpCircle className="h-8 w-8 text-white" />, sections: [
     { title: 'Browse Help', content: 'Guides on buying, selling, payments, shipping, and account help.', icon: <HelpCircle className="h-4 w-4" /> },
     { title: 'Popular Topics', content: 'Ordering, returns, refunds, verification, and shipping FAQs.', icon: <BookOpen className="h-4 w-4" /> },
-    { title: 'Contact Support', content: 'Email support@zylod.com for help with your account and orders.', icon: <MessageCircle className="h-4 w-4" /> },
+    { title: 'Contact Support', content: (e) => withSupportContact(e, (em) => `Email ${em} for help with your account and orders.`, 'No support email is published yet — use the contact form or open a support ticket for help with your account and orders.'), icon: <MessageCircle className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'FAQs', pageId: 'faq' }, { label: 'Contact Us', pageId: 'contact-us' }] },
   'live-chat': { name: 'Live Chat', description: 'Chat with support in real time', icon: <MessageCircle className="h-8 w-8 text-white" />, sections: [
-    { title: 'Live Chat', content: 'Live chat with support is not available yet — email support@zylod.com for help.', icon: <MessageCircle className="h-4 w-4" /> },
+    { title: 'Live Chat', content: (e) => withSupportContact(e, (em) => `Live chat with support is not available yet — email ${em} for help.`, 'Live chat with support is not available yet — reach us through the Help Center for help.'), icon: <MessageCircle className="h-4 w-4" /> },
   ] },
   'chatbot': { name: 'Chatbot', description: 'Automated support assistant', icon: <HelpCircle className="h-8 w-8 text-white" />, sections: [
     { title: 'Chatbot', content: 'Automated answers to common questions.', icon: <HelpCircle className="h-4 w-4" /> },
@@ -614,11 +631,11 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Commission & Fees', content: 'Understand marketplace commission rates, listing fees, and payment processing charges.', icon: <TrendingDown className="h-4 w-4" /> },
     { title: 'Withdrawals', content: 'Withdraw your balance via bank transfer, bKash, or Nagad.', icon: <ArrowUpRight className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Earnings', pageId: 'earnings-dashboard' }, { label: 'Orders', pageId: 'supplier-orders' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }] },
-  'supplier-earnings': { name: 'Earnings', description: 'Track your revenue and payouts', icon: <DollarSign className="h-8 w-8 text-white" />, sections: [
-    { title: 'Earnings Overview', content: 'See total revenue, monthly earnings, and balance available for withdrawal.', icon: <TrendingUp className="h-4 w-4" /> },
-    { title: 'Transactions', content: 'Review individual order payouts, refunds, and marketplace fee adjustments.', icon: <Activity className="h-4 w-4" /> },
-    { title: 'Payouts', content: 'Track payout schedule, methods, and delivery status of your withdrawals.', icon: <CalendarDays className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Finance', pageId: 'earnings-dashboard' }, { label: 'Orders', pageId: 'supplier-orders' }] },
+  // NOTE: 'buyer-rewards' and 'supplier-earnings' static configs were removed —
+  // both ids were reachable links that rendered this placeholder instead of the
+  // REAL data pages. Links now route to 'loyalty-points' (buyer rewards,
+  // /api/rewards) and 'earnings-dashboard' (supplier earnings,
+  // /api/finance/earnings).
   'supplier-catalog': { name: 'Product Catalog', description: 'Organize and manage your product collection', icon: <Store className="h-8 w-8 text-white" />, sections: [
     { title: 'Catalog Overview', content: 'Browse all your listings with live status — active, draft, and out of stock.', icon: <LayoutGrid className="h-4 w-4" /> },
     { title: 'Edit Products', content: 'Update prices, descriptions, and images for existing listings at any time.', icon: <Edit className="h-4 w-4" /> },
@@ -664,11 +681,6 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Business Details', content: 'Add your company registration, trade license, and tax information for verification.', icon: <BadgeCheck className="h-4 w-4" /> },
     { title: 'Account Preferences', content: 'Set default shipping addresses, currency, and communication preferences.', icon: <Settings className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Settings', pageId: 'buyer-settings' }, { label: 'Dashboard', pageId: 'buyer-dashboard' }] },
-  'buyer-rewards': { name: 'Rewards', description: 'Earn and redeem rewards on Zylod', icon: <Gift className="h-8 w-8 text-white" />, sections: [
-    { title: 'Earn Points', content: 'Earn reward points on every completed wholesale purchase, review, and referral.', icon: <Gift className="h-4 w-4" /> },
-    { title: 'Redeem', content: 'Redeem points for the rewards currently offered on the Redeem Points page.', icon: <Award className="h-4 w-4" /> },
-    { title: 'Tier Benefits', content: 'Loyalty tiers are based on your real activity — more rewards unlock as the program grows.', icon: <Crown className="h-4 w-4" /> },
-  ], quickLinks: [{ label: 'Orders', pageId: 'buyer-orders' }, { label: 'Favorites', pageId: 'buyer-favorites' }] },
   'admin-orders': { name: 'Order Management', description: 'Oversee all marketplace orders', icon: <FileBarChart className="h-8 w-8 text-white" />, sections: [
     { title: 'All Orders', content: 'Order oversight tools are being built. Payment verification is available today in the admin Payments queue.', icon: <Package className="h-4 w-4" /> },
     { title: 'Payment Verification', content: 'Orders only become paid after a payment is verified — by webhook or by an admin — before suppliers fulfil them.', icon: <Shield className="h-4 w-4" /> },
@@ -679,7 +691,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
     { title: 'Product Showcase', content: 'Feature selected products on your storefront to highlight your best wholesale offers.', icon: <Package className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Products', pageId: 'supplier-products' }, { label: 'Dashboard', pageId: 'supplier-dashboard' }], specialType: 'seller-storefront' },
   'support': { name: 'Support', description: 'Get help with your Zylod account', icon: <MessageCircle className="h-8 w-8 text-white" />, sections: [
-    { title: 'Contact Channels', content: 'Email support@zylod.com and our team will follow up.', icon: <Mail className="h-4 w-4" /> },
+    { title: 'Contact Channels', content: (e) => withSupportContact(e, (em) => `Email ${em} and our team will follow up.`, 'No support email is published yet — open a support ticket and our team will follow up.'), icon: <Mail className="h-4 w-4" /> },
     { title: 'Submit a Ticket', content: 'Open a support ticket with details about your issue and our team will follow up.', icon: <AlertTriangle className="h-4 w-4" /> },
     { title: 'Track Tickets', content: 'Follow the status of your open tickets and review past resolutions.', icon: <Clock className="h-4 w-4" /> },
   ], quickLinks: [{ label: 'Help Center', pageId: 'help-center' }, { label: 'Feedback', pageId: 'feedback' }], specialType: 'support' },
@@ -709,7 +721,7 @@ const INFO_CONFIGS: Record<string, InfoConfig> = {
   'partner-program': { name: 'Partner Program', description: 'Grow with Zylod partnerships', icon: <Award className="h-8 w-8 text-white" />, sections: [
     { title: 'Why Partner', content: 'Partner with Zylod to reach wholesale buyers across Bangladesh — program details are being finalized.', icon: <Award className="h-4 w-4" /> },
     { title: 'Partner Tiers', content: 'The tier structure has not been announced yet.', icon: <TrendingUp className="h-4 w-4" /> },
-    { title: 'Apply', content: 'Applications are not open yet. Email support@zylod.com to express interest.', icon: <Building className="h-4 w-4" /> },
+    { title: 'Apply', content: (e) => withSupportContact(e, (em) => `Applications are not open yet. Email ${em} to express interest.`, 'Applications are not open yet. Reach us through the Help Center to express interest.'), icon: <Building className="h-4 w-4" /> },
   ] },
   'quality-guarantee': { name: 'Quality Guarantee', description: 'Trade with confidence', icon: <BadgeCheck className="h-8 w-8 text-white" />, sections: [
     { title: 'What We Guarantee', content: 'Quality guarantee program details are being finalized. Review each supplier\u2019s verification status and ratings before ordering.', icon: <BadgeCheck className="h-4 w-4" /> },
@@ -736,7 +748,7 @@ function getInfoConfig(pageId: string): InfoConfig {
       { title: 'What You Can Do', content: `Explore ${name.toLowerCase()} resources, manage your wholesale account, and access buyer & supplier tools — all from one place.`, icon: <Lightbulb className="h-4 w-4" /> },
       { title: 'Key Points', content: 'Our policies are designed to protect both buyers and suppliers while ensuring fair and transparent wholesale commerce across Bangladesh.', icon: <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>check_circle</span> },
       { title: 'Getting Started', content: 'Register once as a buyer or supplier, verify your account, and browse products as suppliers list them.', icon: <Truck className="h-4 w-4" /> },
-      { title: 'Need Help?', content: 'Email our support team at support@zylod.com for assistance with your account or orders.', icon: <MessageCircle className="h-4 w-4" /> },
+      { title: 'Need Help?', content: (e) => withSupportContact(e, (em) => `Email our support team at ${em} for assistance with your account or orders.`, 'Reach us through the Help Center for assistance with your account or orders.'), icon: <MessageCircle className="h-4 w-4" /> },
     ],
     quickLinks: [
       { label: 'Home', pageId: 'home' }, { label: 'Help Center', pageId: 'help-center' },
@@ -1256,11 +1268,22 @@ function SupplierProfilePage({ navigate }: { navigate: (page: string, params?: R
 }
 
 function SupportPage() {
+  // Owner-published support contact (Admin → System Settings, GET
+  // /api/settings/public) — honest absence when nothing is set, never a
+  // fabricated address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
+
   return (
     <div className="space-y-4">
-      {/* Real contact channel — email only until a ticketing backend exists */}
+      {/* Real contact channel — the owner-published email only; honest
+          generic wording when none has been published */}
       <div className="grid grid-cols-1 gap-2">
-        <Card className="border border-border"><CardContent className="p-3 text-center"><Mail className="h-4 w-4 mx-auto mb-1 text-primary" /><p className="text-xs font-medium">Email</p><p className="text-[10px] text-muted-foreground">support@zylod.com</p></CardContent></Card>
+        {supportEmail ? (
+          <Card className="border border-border"><CardContent className="p-3 text-center"><Mail className="h-4 w-4 mx-auto mb-1 text-primary" /><p className="text-xs font-medium">Email</p><a href={`mailto:${supportEmail}`} className="text-[10px] text-muted-foreground break-all hover:text-primary">{supportEmail}</a></CardContent></Card>
+        ) : (
+          <Card className="border border-border"><CardContent className="p-3 text-center"><Mail className="h-4 w-4 mx-auto mb-1 text-primary" /><p className="text-xs font-medium">Email</p><p className="text-[10px] text-muted-foreground">Not published yet — reach us through the Help Center.</p></CardContent></Card>
+        )}
       </div>
 
       {/* Honest notice: ticketing is not implemented yet */}
@@ -1268,7 +1291,9 @@ function SupportPage() {
         <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><AlertTriangle className="h-4 w-4" />Support Tickets</CardTitle></CardHeader>
         <CardContent className="p-4 pt-2">
           <p className="text-xs text-muted-foreground">
-            Support tickets are not available yet. Email support@zylod.com from your registered address with your order number and a description of the issue, and our team will follow up with you directly.
+            {supportEmail
+              ? `Support tickets are not available yet. Email ${supportEmail} from your registered address with your order number and a description of the issue, and our team will follow up with you directly.`
+              : 'Support tickets are not available yet. Reach us through the Help Center with your order number and a description of the issue, and our team will follow up with you directly.'}
           </p>
         </CardContent>
       </Card>
@@ -2507,35 +2532,61 @@ function SearchHomePage({ navigate }: { navigate: (page: string, params?: Record
 
 // ========== LOYALTY POINTS PAGE ==========
 
+// NOTE: also rendered standalone for the 'points-history' / 'redeem-points'
+// special types — the auth-guard below must never crash on a cold mount.
 function LoyaltyPointsPage() {
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
+  const { navigate } = useNavigationStore()
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    // t215: deep links can mount BEFORE the session probe fills the auth
+    // store. No token yet is a legitimate state — keep the skeleton up while
+    // the boot probe runs, then render an honest sign-in wall, never a crash.
+    if (isAuthenticated) {
+      setLoading(true)
+      return
+    }
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    if (!isAuthenticated) return
+    let cancelled = false
     async function fetchRewards() {
-      if (!token) { setLoading(false); return }
       try {
-        const res = await fetch('/api/rewards', { headers: { Authorization: `Bearer ${token}` } })
+        const res = await fetch('/api/rewards', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
         const json = await res.json()
         if (!res.ok) throw new Error(json.error || 'Failed to load rewards')
-        setData(json.data)
+        if (!cancelled) setData(json.data)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load rewards')
+        if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load rewards')
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     }
     fetchRewards()
-  }, [token])
+    return () => { cancelled = true }
+  }, [token, isAuthenticated])
 
   if (loading) {
     return <div className="space-y-3">{[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}</div>
   }
 
-  if (error) {
-    return <Card className="border-destructive/30 bg-destructive/5"><CardContent className="p-3 text-xs text-destructive">{error}</CardContent></Card>
+  if (error || !data) {
+    return (
+      <Card className={error ? 'border-destructive/30 bg-destructive/5' : 'border-border'}>
+        <CardContent className="p-4 text-center space-y-2">
+          <p className="text-xs text-destructive">{error || 'Rewards are unavailable right now.'}</p>
+          {!isAuthenticated && (
+            <Button size="sm" className="h-8 text-xs" onClick={() => navigate('login')}>Sign in to view rewards</Button>
+          )}
+        </CardContent>
+      </Card>
+    )
   }
 
   const tierColors: Record<string, string> = { bronze: '#CD7F32', silver: '#9E9E9E', gold: '#FFD700', platinum: '#E5E4E2' }
@@ -3763,6 +3814,11 @@ function CategoryBrowserPage() {
 export function GenericInfoPage({ pageId }: { pageId: string }) {
   const { navigate } = useNavigationStore()
   const config = getInfoConfig(pageId)
+  // Owner-published support contact (Admin → System Settings). Section text
+  // that mentions support is resolved against it at render time — honest
+  // absence, never a fabricated address.
+  const { settings } = usePublicSettings()
+  const supportEmail = settings['support.email'] ?? ''
 
   const renderSpecialContent = () => {
     switch (config.specialType) {
@@ -3827,7 +3883,9 @@ export function GenericInfoPage({ pageId }: { pageId: string }) {
                     </div>
                     <h2 className="text-sm font-semibold">{section.title}</h2>
                   </div>
-                  <p className="text-xs leading-relaxed" style={{ color: '#424242' }}>{section.content}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: '#424242' }}>
+                    {typeof section.content === 'function' ? section.content(supportEmail) : section.content}
+                  </p>
                 </CardContent>
               </Card>
             ))}

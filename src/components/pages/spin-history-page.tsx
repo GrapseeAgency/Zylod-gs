@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { Button } from '@/components/ui/button'
 import {
   ArrowLeft, History, Trophy, Sparkles, Clock, Gift
@@ -10,25 +11,45 @@ import {
 
 export function SpinHistoryPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated } = useAuthStore()
 
   const [spins, setSpins] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false)
+      return
+    }
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/rewards/spin-history', { headers })
-      .then(res => res.json())
+      .then(async res => {
+        if (res.status === 401 || res.status === 403) {
+          setSessionExpired(true)
+          return null
+        }
+        if (!res.ok) throw new Error('Request failed')
+        return res.json()
+      })
       .then(data => {
-        if (data.success && data.data) {
+        if (data && data.success && data.data) {
           setSpins(data.data)
+        } else if (data && !data.success) {
+          setLoadError('Could not load your spin history. Please try again later.')
         }
       })
-      .catch(console.error)
+      .catch(() => {
+        setLoadError('Something went wrong while loading your spin history. Please try again later.')
+      })
       .finally(() => setLoading(false))
-  }, [token])
+  }, [token, isAuthenticated])
+
+  if (sessionExpired) return <AccountGate title="Session expired" message="Your session has expired. Sign in again to view your spin history." />
+  if (!loading && !isAuthenticated) return <AccountGate title="Sign in to view your spin history" message="Spin & Win history shows the prizes won on your account. Sign in to continue." />
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
@@ -54,9 +75,12 @@ export function SpinHistoryPage() {
       <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Spin Win History</h1>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-4 pb-24">
+        {loadError && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 rounded-lg p-3 text-sm text-center">{loadError}</div>
+        )}
         {loading ? (
           <div className="text-center py-16 text-slate-500 dark:text-slate-400 dark:text-slate-500">Loading spin results...</div>
-        ) : spins.length === 0 ? (
+        ) : spins.length === 0 && !loadError ? (
           <div className="text-center py-16 text-slate-500 dark:text-slate-400 dark:text-slate-500 space-y-2">
             <Gift className="w-12 h-12 text-slate-700 dark:text-slate-300 mx-auto" />
             <p className="font-bold text-sm text-slate-600 dark:text-slate-300">No spin history recorded</p>

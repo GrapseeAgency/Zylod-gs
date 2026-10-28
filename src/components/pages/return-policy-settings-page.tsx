@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigationStore } from '@/store/navigation-store';
+import { useAuthStore } from '@/store/auth-store';
+import { AccountGate } from '@/components/shared/account-gate';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Save, RefreshCcw, ShieldCheck, AlertCircle } from 'lucide-react';
 
@@ -34,6 +36,8 @@ interface PolicyRow {
 
 export function ReturnPolicySettingsPage() {
   const { goBack } = useNavigationStore();
+  const { isAuthenticated, user } = useAuthStore();
+  const isAllowedRole = isAuthenticated && (user?.userType === 'supplier' || user?.userType === 'admin');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -42,11 +46,20 @@ export function ReturnPolicySettingsPage() {
   const [policies, setPolicies] = useState<PolicyRow[]>([]);
 
   useEffect(() => {
+    if (isAuthenticated) return;
+    const t = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(t);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     const fetchPolicy = async () => {
       try {
         const res = await fetch('/api/supplier/return-policies');
         const json = await res.json();
-        if (res.ok && json.success && json.data) {
+        if (res.status === 401 || res.status === 403) {
+          setError('Your account does not have access to supplier return policies.');
+        } else if (res.ok && json.success && json.data) {
           setPolicies(json.data.policies || []);
         } else {
           setError(json.error || 'Could not load return policies');
@@ -59,7 +72,7 @@ export function ReturnPolicySettingsPage() {
       }
     };
     fetchPolicy();
-  }, []);
+  }, [isAuthenticated]);
 
   const updatePolicy = (policyType: string, patch: Partial<PolicyRow>) => {
     setSaved(false);
@@ -101,6 +114,24 @@ export function ReturnPolicySettingsPage() {
       setSaving(false);
     }
   };
+
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to manage your return policies"
+        message="Return & Warranty settings edit your store's real return terms. Sign in with a supplier account to continue."
+        showBecomeSupplier
+      />
+    );
+  }
+  if (isAuthenticated && user && !isAllowedRole) {
+    return (
+      <AccountGate
+        title="Supplier accounts only"
+        message={`Return & Warranty settings belong to supplier accounts — you are signed in as a ${user.userType}.`}
+      />
+    );
+  }
 
   if (loading) {
     return <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">Loading...</div>;

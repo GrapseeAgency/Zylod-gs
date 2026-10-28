@@ -38,44 +38,130 @@ const DASHBOARD_ACTIONS = [
   { icon: MessageSquare, label: 'Chat', page: 'chat-list' as const },
 ]
 
+function BuyerIllustration() {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      className="h-full w-full"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <circle cx="50" cy="50" r="48" fill="#FDE4E7" />
+      <ellipse cx="50" cy="85" rx="34" ry="5" fill="#F1B7BF" opacity="0.4" />
+      <rect x="12" y="78" width="76" height="5" rx="2.5" fill="#CBD5E1" />
+      <path d="M28 80 C28 65 37 60 50 60 C63 60 72 65 72 80 Z" fill="#1E293B" />
+      <path d="M43 60 L50 71 L57 60 Z" fill="#FFFFFF" />
+      <path d="M48 69 L50 78 L52 69 Z" fill="#E31C3D" />
+      <rect x="46" y="52" width="8" height="10" rx="2" fill="#FBCFE8" />
+      <circle cx="50" cy="42" r="14" fill="#FBCFE8" />
+      <path
+        d="M36 40 C36 28 42 22 50 22 C58 22 64 28 64 40 C64 42 62 43 59 40 C55 35 45 35 41 40 C38 43 36 42 36 40 Z"
+        fill="#334155"
+      />
+      <rect x="41" y="38" width="7" height="5" rx="2" stroke="#1E293B" strokeWidth="1.5" fill="none" />
+      <rect x="52" y="38" width="7" height="5" rx="2" stroke="#1E293B" strokeWidth="1.5" fill="none" />
+      <line x1="48" y1="40" x2="52" y2="40" stroke="#1E293B" strokeWidth="1.5" />
+      <path d="M47 48 Q50 51 53 48" stroke="#9D174D" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <rect x="34" y="62" width="32" height="19" rx="2" fill="#475569" />
+      <rect x="36" y="64" width="28" height="15" rx="1" fill="#F8FAFC" />
+      <path d="M39 74 L44 69 L48 72 L54 66 L60 70" stroke="#E31C3D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <path d="M39 76 L59 76" stroke="#CBD5E1" strokeWidth="1" strokeLinecap="round" />
+      <path d="M30 81 L70 81 L67 83 L33 83 Z" fill="#94A3B8" />
+      <circle cx="78" cy="28" r="10" fill="#E31C3D" />
+      <path
+        d="M74 28 L77 31 L83 25"
+        stroke="#FFFFFF"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function SupplierIllustration() {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      className="h-full w-full"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <circle cx="50" cy="50" r="48" fill="#FDE4E7" />
+      <ellipse cx="50" cy="84" rx="36" ry="6" fill="#F1B7BF" opacity="0.45" />
+      <rect x="20" y="40" width="60" height="42" rx="2" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="2" />
+      <rect x="27" y="52" width="18" height="30" rx="1.5" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="1.5" />
+      <rect x="30" y="56" width="12" height="14" rx="1" fill="#E2E8F0" />
+      <circle cx="41" cy="68" r="1.5" fill="#E31C3D" />
+      <rect x="49" y="52" width="25" height="20" rx="1.5" fill="#F0FDF4" stroke="#CBD5E1" strokeWidth="1.5" />
+      <line x1="51" y1="63" x2="72" y2="63" stroke="#CBD5E1" strokeWidth="1" />
+      <rect x="52" y="57" width="5" height="5.5" rx="0.5" fill="#E31C3D" />
+      <rect x="59" y="56" width="5" height="6.5" rx="0.5" fill="#059669" />
+      <rect x="66" y="58" width="4.5" height="4.5" rx="0.5" fill="#D97706" />
+      <path d="M16 40 L84 40 L79 26 L21 26 Z" fill="#FFFFFF" />
+      <path d="M21 26 L27 26 L23 40 L16 40 Z" fill="#E31C3D" />
+      <path d="M33 26 L39 26 L37 40 L30 40 Z" fill="#E31C3D" />
+      <path d="M45 26 L51 26 L51 40 L44 40 Z" fill="#E31C3D" />
+      <path d="M57 26 L63 26 L65 40 L58 40 Z" fill="#E31C3D" />
+      <path d="M69 26 L79 26 L84 40 L76 40 Z" fill="#E31C3D" />
+      <path
+        d="M16 40 Q20 44 24 40 Q28 44 32 40 Q36 44 40 40 Q44 44 48 40 Q52 44 56 40 Q60 44 64 40 Q68 44 72 40 Q76 44 80 40 Q82 43 84 40"
+        fill="none"
+        stroke="#E31C3D"
+        strokeWidth="2.5"
+      />
+      <rect x="30" y="16" width="40" height="12" rx="3" fill="#E31C3D" />
+      <text
+        x="50"
+        y="24.5"
+        fontSize="6.5"
+        fontWeight="800"
+        fill="#FFFFFF"
+        textAnchor="middle"
+        fontFamily="sans-serif"
+        letterSpacing="0.8"
+      >
+        ZYLOD
+      </text>
+      <rect x="74" y="70" width="14" height="12" rx="1.5" fill="#D97706" />
+      <line x1="74" y1="74" x2="88" y2="74" stroke="#B45309" strokeWidth="1.2" />
+      <line x1="81" y1="70" x2="81" y2="82" stroke="#B45309" strokeWidth="1.2" />
+    </svg>
+  )
+}
+
 function BuyerCtaCard() {
   const { navigate } = useNavigationStore()
   return (
-    <div className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200/90 dark:border-gray-800 shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
-      {/* Illustration flush to the card's top-right corner (mockup) */}
-      <div className="absolute top-0 right-0 h-[104px] w-[112px] rounded-tr-xl overflow-hidden pointer-events-none">
-        <img
-          src="/artwork/buyer-illustration.png"
-          alt=""
-          aria-hidden
-          loading="lazy"
-          className="h-full w-full object-cover"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none'
-          }}
-        />
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200/90 dark:border-gray-800 shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-4">
+      <div className="flex items-start justify-between gap-2.5 mb-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[14.5px] font-bold leading-snug text-gray-900 dark:text-gray-100 mb-1">
+            Ready to start buying wholesale?
+          </p>
+          <p className="text-[11.5px] leading-relaxed text-gray-500 dark:text-gray-400">
+            Create your account and get access to thousands of suppliers and competitive prices.
+          </p>
+        </div>
+        <div className="h-16 w-16 shrink-0 rounded-lg overflow-hidden flex items-center justify-center">
+          <BuyerIllustration />
+        </div>
       </div>
-      <div className="p-4 pr-[122px]">
-        <p className="text-[15px] font-bold leading-snug text-gray-900 dark:text-gray-100 mb-1.5">
-          Ready to start buying wholesale?
-        </p>
-        <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-400 mb-3.5">
-          Create your account and get access to thousands of suppliers and competitive prices.
-        </p>
-        <button
-          onClick={() => navigate('register-buyer')}
-          className="w-full h-9 rounded-lg text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:brightness-95 active:scale-[0.98] transition-all"
-          style={{ background: RED }}
-        >
-          Register as Buyer <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+      <button
+        onClick={() => navigate('register-buyer')}
+        className="w-full h-8.5 py-2 rounded-lg text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:brightness-95 active:scale-[0.98] transition-all"
+        style={{ background: RED }}
+      >
+        Register as Buyer <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+      </button>
+      <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+        Already have an account?{' '}
+        <button onClick={() => navigate('login')} className="font-semibold hover:underline" style={{ color: RED }}>
+          Login
         </button>
-        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2.5">
-          Already have an account?{' '}
-          <button onClick={() => navigate('login')} className="font-semibold hover:underline" style={{ color: RED }}>
-            Login
-          </button>
-        </p>
-      </div>
+      </p>
     </div>
   )
 }
@@ -86,18 +172,7 @@ function SupplierCtaCard() {
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200/90 dark:border-gray-800 shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-4">
       <div className="flex items-start gap-3 mb-3.5">
         <div className="h-20 w-20 shrink-0 rounded-lg overflow-hidden flex items-center justify-center">
-          <img
-            src="/artwork/supplier-illustration.png"
-            alt=""
-            aria-hidden
-            loading="lazy"
-            className="h-full w-full object-contain"
-            onError={(e) => {
-              const t = e.target as HTMLImageElement
-              t.style.display = 'none'
-              t.parentElement!.innerHTML = '<span style="font-size:34px">🏪</span>'
-            }}
-          />
+          <SupplierIllustration />
         </div>
         <div className="min-w-0">
           <p className="text-[15px] font-bold leading-snug text-gray-900 dark:text-gray-100 mb-1">
@@ -258,14 +333,14 @@ export function RightRail({ variant = 'rail' }: { variant?: 'rail' | 'inline' })
 
   if (variant === 'rail') {
     return (
-      <aside className="hidden 2xl:flex flex-col gap-4 w-[300px] shrink-0" aria-label="Marketplace highlights">
+      <aside className="hidden lg:flex flex-col gap-3.5 xl:gap-4 w-full shrink-0" aria-label="Marketplace highlights">
         {cards}
       </aside>
     )
   }
 
   return (
-    <section aria-label="Marketplace highlights" className="2xl:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <section aria-label="Marketplace highlights" className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
       {cards}
     </section>
   )

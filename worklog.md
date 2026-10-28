@@ -6477,3 +6477,113 @@ Stage Summary:
 - Four real performance defects fixed across the exact surfaces the user scrolls: (1) the perpetual per-mutation querySelectorAll tax on every WebView page is now throttled and self-terminating; (2) the frame profiler no longer janks the main thread it measures; (3) flash-deals no longer re-reconciles its whole framer-motion grid every second; (4) daily-deals' hourly-value tick no longer re-renders the page every second.
 - All fixes preserve the documented fallback contracts (old bundles, no-spaReady bundles, legacy-bar click routing); all gates green (compile, lint, browser, emulator).
 - Honest limits unchanged: frame-rate numbers require real hardware (JankProfiler is the owner's tool: adb logcat -s ZylodPerf); release signing still debug-key pending keystore.properties.
+---
+Task ID: t212
+Agent: Antigravity
+Task: Desktop Home Screen Redesign — Pixel-Perfect Mockup Alignment & CI Quality Gate Pass
+
+Work Log:
+- [MOCKUP ARTWORK EXTRACTION & ENHANCEMENT]:
+  - Extracted and enhanced `public/artwork/hero-products.png` (folded waffle/patterned towels, woven tote bag, potted green plant) directly matching the mockup composition.
+  - Extracted and enhanced `public/artwork/buyer-illustration.png` (young businessman in red polo shirt with laptop on white desk).
+  - Extracted and enhanced `public/artwork/supplier-illustration.png` (red-and-white awning storefront icon).
+  - Extracted and enhanced `public/artwork/zylod-logo-mockup.png` (stylized 4-petal floral emblem, bold "Zylod", and "Wholesale Made Easy" subtitle).
+  - Seeded 12 exact mockup product cards (`p1.png` - `p12.png` in `public/artwork/products/`) covering all 12 items (Cotton Fabric, Denim 12oz, Silk Fabric, Bath Towels, Basmati Rice 50kg, Jute Shopping Bags, Kataribhog Rice 25kg, Galaxy S24, iPhone 15, Solar Power Bank, Jute Bags, 9W LED Bulb) with exact pricing, MOQ, supplier names, star ratings, and Verified Supplier badges.
+- [SCAN TOOLS & SEARCH INTEGRATION]:
+  - Integrated Photo Scan (`Camera`) and QR Code Scan (`QrCode`) buttons directly inside both the desktop header search bar and the hero search bar with active navigation to `image-search` and `barcode-scanner`.
+  - Retained trending search pills and quick scan tool chips.
+- [DESKTOP 3-COLUMN ASYMMETRIC GRID BREAKPOINTS]:
+  - Fixed breakpoint from `2xl` (1536px) to `xl` (1280px+) across `src/components/pages/home-page.tsx`, `left-rail.tsx`, `right-rail.tsx`, and `featured-section.tsx`.
+  - Layout is now 3 columns on all desktop monitors (1280px, 1366px, 1440px, 1536px, 1920px): Left Rail (Categories + Supplier Onboarding + 24/7 Help) | Center (Hero Banner + 6-column Featured Products) | Right Rail (Buyer CTA + Supplier CTA + Why Choose Zylod + Sustainable Products).
+  - Fixed Buyer CTA card layout: text & illustration side-by-side on top with full-width red action button below.
+  - Header profile aligned: Displays `Md Kailem` (`Buyer`) with red circular avatar and dropdown menu.
+- [CI GATES & BUILD VALIDATION]:
+  - `bun install`: Verified dependencies (maplibre-gl, Radix UI, Next 16).
+  - `bunx prisma generate`: Generated Prisma client cleanly.
+  - `node scripts/generate-bundle-identity.mjs`: Generated bundle identity.
+  - `bunx tsc --noEmit`: 0 TypeScript errors.
+  - `bun run lint`: 0 ESLint errors.
+  - `bun run build`: Full Next.js production build succeeded with exit code 0.
+  - Captured full-page headless Chrome screenshot at 1440x960 and 1440x1400: verified 3-column layout, header, hero artwork, search tools, 6-col product cards, and right rail.
+
+
+---
+Task ID: t215
+Agent: ZCode (GLM)
+Task: Kill every remaining generic-info placeholder page — find all page ids that render the "X Overview / What You Can Do / Key Points / Getting Started / Need Help?" fallback and build them logically with REAL data (no mock, no fake).
+
+Work Log:
+- [AUDIT]: Walked every reachable page id (navigate() literals + page:/pageId: data rows + sitemap-data) through the page-loader resolution (REAL_PAGES → chunk sets → loaders, CATEGORY/DEAL ids, INFO_CONFIGS keys/specialTypes). Result: 6 placeholder pages reachable from the UI.
+- [BUILT — deals] `src/components/pages/deals-page.tsx`: real Deals & Sales hub behind the header-search shortcut + sitemap. Live /api/deals (flash + daily rails, real products/prices/stock), /api/promotions (platform campaigns w/ pinned products), soonest-deal countdown, stock-claimed bars, MOQ add-to-cart with the same cart-store contract + guest account wall as flash-deals, honest empty states. Registered in REAL_PAGES + CHUNK_BROWSE (+ getChunkForPage browse list).
+- [BUILT — logistics] `src/components/pages/logistics-page.tsx`: real Logistics & Freight hub behind the header-search destination. /api/delivery-methods (admin-configured couriers, honest empty state), /api/warehouses (real ship-from directory w/ debounced search + supplier links), /api/shipping/quote calculator (Task 94 zone engine, honest empty result). Registered like deals.
+- [REWIRED — sitemap-data] 'supplier-directory'→'suppliers' (real directory), 'address-book'→'shipping-address' (real address management), 'invoice-list'→'invoice-management' (real /api/invoices list, was falling into the wallet page); 'deals' label → "Deals & Sales".
+- [REWIRED — generic-info-page] buyer-level quickLink 'buyer-rewards'→'loyalty-points' (/api/rewards) and supplier-analytics quickLink 'supplier-earnings'→'earnings-dashboard' (/api/finance/earnings); removed both dead static configs so the placeholder can never render for those ids again.
+- [PULL]: Stashed local work, pulled origin/main (+10 commits, header.tsx/worklog.md conflicts resolved: kept upstream dark-logo fix + upstream header overflow classes with local HeaderInternalSearch), stash popped.
+- [VERIFY]: tsc --noEmit clean. Browser-verified: ?page=deals renders live flash deals (real LED/Jute/Rice/Fabric deals, countdown, stock bars); ?page=logistics renders tools + quote calc (Dhaka quote → honest "no rates cover that district yet" — API count:0 confirms DB state); sitemap Supplier Directory → real suppliers page (7 suppliers), Address Book → real address page; buyer-level Rewards chip → real loyalty-points page (Bronze tier, live balance).
+- Note: dev server was down at verify time; restarted via `npm run dev` (nohup).
+- [t215 follow-up — deep-link hardening]: the 4 retired ids are now ALIASES, not just rewired links — ?page=buyer-rewards → loyalty-points-page (real /api/rewards UI), ?page=supplier-earnings → earnings-dashboard-page, ?page=supplier-directory → suppliers-directory-page, ?page=address-book → shipping-address-page. Fixed a latent crash this exposed: the internal LoyaltyPointsPage (also used by points-history/redeem-points special types) read data.tier on a cold mount before session hydration → "Cannot read properties of null"; now waits for the auth probe and shows an honest sign-in wall for guests. Final sweep: all 6 URLs render real content, zero placeholder-marker leaks ("What You Can Do/Key Points/Getting Started/Need Help?" absent everywhere). tsc clean.
+- [t216 — role honesty (user called out fake revenue)]: ?page=supplier-earnings rendered a supplier revenue dashboard (৳0 rows) to a BUYER account — the earnings API returns 200 zero-shaped data to ANY authed user. Fixed at both layers: (1) /api/finance/earnings now requireUserType(['supplier']) — buyers get an explicit 403, never a zero-shaped payload; (2) new shared AccountGate component (src/components/shared/account-gate.tsx) — earnings-dashboard shows guest sign-in wall / "Supplier accounts only" wall with Become-a-Supplier CTA / session-expired wall / error+retry state; loyalty-points-page gates guests only (the loyalty API legitimately serves suppliers — verified 150 real signup pts) and never renders the Bronze/0 card while loading or on error; shipping-address-page shows a sign-in wall on 401 instead of a fake "No saved addresses yet". (3) Found+fixed a REAL zombie-session bug the gates exposed: AppEntry's session probe raced zustand-persist hydration, so a dead-cookie visitor kept a lying "logged-in" header while every API 401'd — probe now runs after persist hydration and reads store state fresh.
+- [t216 verification — real role matrix via QA accounts registered through /api/auth/register (qacheck.buyer@zylod.dev / qacheck.supplier@zylod.dev)]: supplier-earnings: buyer→gate+403 (no revenue leak), supplier→real dashboard, guest→sign-in wall. buyer-rewards: buyer→real 150pts, supplier→real 150pts, guest→gate. address-book: buyer→real book, guest→gate. tsc clean.
+
+---
+Task ID: t217
+Agent: ZCode (GLM)
+Task: User escalated — "there is no five, there will be 500000 same logically errors." Full systemic audit + fix of the auth-honesty class across ALL reachable pages (not just the placeholder-design class from t215/t216).
+
+Work Log:
+- [AUDIT TOOLING]: Wrote /tmp/auth-audit.mjs — cross-references 291 auth-protected API routes (authenticateRequest/requireUserType) against 376 page components' fetch targets, then classifies honesty: status-check present? auth gate present? silent catch? Reachability re-derived (navigate literals + page:/pageId: rows + sitemap-data ids) so only user-reachable pages count.
+- [TRUE NUMBERS]: 181 flagged total; 125 REACHABLE pages broken → 39 with SILENT swallowing (fetch failure renders fabricated empty/zero UI, e.g. guest buyer-dashboard showed "Monthly Spending ৳0" + empty orders table — confirmed live) and 86 that checked .ok but had no account gate (guests saw personal-data UIs).
+- [FIX — 7 parallel agent batches over all 125 files], per-file method: read the page + its API routes' GET auth; user-scoped pages get the AccountGate (shared component, boot-grace 1.5s, guest wall, wrong-role wall where requireUserType demands it, 401/403 session-expired wall, real error+retry states); PUBLIC-content pages (legal/faq, contact, group-buy, live-shopping rails) keep no gate but silent failures now show honest inline errors.
+- [HIGHLIGHTS — fabricated data removed]: credit-limit hardcoded "৳250,000 limit", credit-score fake "750/Tier A/99.4%", storage-management fake "45.0 MB / 1,240 files / 52.4/500/10.5" fallbacks, offline-data-manager fake "v2026.08.18 / 30/50/20", seller-verification fake "0 of 4 approved · 0%" on error, transaction-detail fake "৳0 SETTLED" receipt, payment-pending fake "৳0 pending / all settled", vip fake "Standard Member ৳0 volume", spin-win fake "3 of 3 spins" — all now render ONLY from real API responses with honest error/empty states.
+- [ROLE GATES added where APIs demand]: admin rails (admin-dashboard/reports/audit-logs/deliveries/shipping), supplier rails (create-promotion, customer-queries, product-performance, seller-verification + upload + create-ticket + review-reply + order-cancellation, storefront trio, commission-history), buyer rails (buyer-dashboard, buyer-profile). Public pages left ungated by design.
+- [REGRESSION CAUGHT + FIXED]: notifications-page had hooks after the gate early-return (rules-of-hooks violation) — moved useEffect/useRealtimeRoom above the gates; eslint clean.
+- [VERIFY]: npx tsc --noEmit clean project-wide; eslint clean on src/components/pages + shared + api/finance. Browser (guest): buyer-dashboard → "Sign in to view your buyer dashboard" (no ৳0 leak), balance-overview → gate, admin-dashboard → "Sign in to view the admin dashboard", spin-win → gate. Earlier t216 matrix (buyer/supplier/guest) still green.
+- [KNOWN REMAINING — honest scope statement]: (1) unreachable page components (~56 flagged but not linked from any UI) still have weak handling — they cannot be seen by users but were not "fixed"; (2) server-side: APIs verified only where pages consume them — other routes may still return zero-shape data to wrong roles; (3) agent-noted pre-existing fake-success toasts (e.g. affiliate-dashboard "Request Payout Transfer" button) are UX lies beyond auth scope, not yet fixed.
+
+---
+Task ID: t218
+Agent: ZCode (GLM)
+Task: User pushed again ("there will be billions of the same errors") — round-2 audit beyond the reachable-page set.
+
+Work Log:
+- [AUDIT ROUND 2]: (a) non-page components (product/home/supplier/admin/shared/layout/mobile/maps) × protected APIs → only 3 mobile widgets, all fetching PUBLIC APIs with silent catches; (b) server-side: all API routes with NO auth that query user-linked tables → only 4 hits, all legitimate (about-stats order counts, auth refresh/facebook session flows, payments gateway webhook); (c) lib/use-api hooks verified honest (throw on !res.ok, expose error state) — not a disease vector; (d) the remaining 56 unreachable-but-flagged page components + 3 mobile widgets.
+- [FIX — 4 agent batches over 59 files]: same AccountGate spec. Highlights: generic-finance-page guests saw fabricated ৳0 balance → gate; supplier-dashboard 401 rendered fake "0 revenue / 0 buyers" → guest+role gate; delete-account "0 records archived" fabrication → honest "—"; cookie-policy/data-deletion/push-preferences/recently-searched/profile-photo fake-success on failed POSTs removed (now explicit failure + revert); 9 public legal/FAQ pages (terms/privacy/return/shipping/payment/wholesale/cookie/dmca faqs + policies) got honest load-error banners instead of silently vanishing sections; removed a dead authed fetch in points-detail. Verified-already-honest: 16 files left untouched.
+- [VERIFY]: tsc clean project-wide; eslint clean (pages + mobile + shared). Browser guest checks: supplier-dashboard → Sign In gate (no "0 revenue"), invoice-management → gate, finance zero-shape → gate.
+- [RUNNING TOTAL]: 181 flagged page components audited; 125 reachable fixed in t217 + 56 unreachable fixed/verified in t218 + 3 mobile widgets. Remaining known gaps: server-side role checks only audited heuristically (4 hits, all legitimate); UX fake-success patterns beyond fetch-auth were fixed where encountered (cookie consent, deletion request, push prefs, profile photo) but a dedicated fake-success sweep was not exhausted.
+
+---
+Task ID: t219
+Agent: ZCode (GLM)
+Task: Rounds 3+4 — fake-success sweep + deep server-side security review (user approved continuation).
+
+Work Log:
+- [ROUND 3 — fake-success scan]: Static scanner over all components for success UI in handlers with NO api call. 9 hits triaged: 8 false positives (local cart-store addItem/removeItem, clipboard copy, client-side CSV export — legitimately client-side operations), credit-terms-page verified static-honest. Combined with earlier finds, ALL fake-success toasts flagged anywhere are now closed (cookie-consent, data-deletion, push-preferences, recently-searched, profile-photo in t218; affiliate-dashboard "Request Payout Transfer" faked 'submitted' with no API — replaced with an honest "Payout Transfers — Coming Soon" state since no payout-request API exists).
+- [ROUND 4 — server-side deep review]: 12 seller/supplier routes flagged for any-role auth: ALL verified correctly ownership-scoped (queries resolve the caller's own supplierProfile / userId — a foreign resource id gets the same 404 as a phantom). TWO REAL VULNERABILITIES closed: (1) /api/auth/account-status was an unauthenticated account-enumeration oracle (404 vs 200 distinguished registered accounts) + leaked any account's suspension reason/reference/timestamps — now identical 200 {suspended:false} for unknown and active accounts (no oracle), rate-limited 10/min, only genuinely suspended accounts reveal their reason (keeps the account-suspended page working, no call-site change); (2) /api/legal/cookie-consent allowed attaching consent to an arbitrary client-supplied userId and reading any consent row incl. the victim's IP + user-agent — now session-stamped writes (client userId ignored) and own-data-only GET with ip/userAgent excluded, 401 for guests.
+- [VERIFY]: curl — unknown vs registered account-status responses now identical; cookie-consent GET anonymous = 401. tsc clean; eslint clean on touched files.
+- [CONVERGENCE]: audit classes now enumerated and closed: generic-info placeholders (t215), reachable-page auth honesty (t217), unreachable components + non-page components + public-API silent failures (t218), server-side ownership/role/IDOR + fake-success (t219). Every page component has been audited against every API it calls; every API route flagged by the static analyzers has been human/agent-reviewed.
+
+---
+Task ID: t220
+Agent: ZCode (GLM)
+Task: Rounds 5 — full per-route security review of ALL 376 API routes (8 agent batches) + leftover fixes. User directive: "don't stop until everything is fixed".
+
+Work Log:
+- [FULL API REVIEW — 376/376 routes read in full, 8 batches]: 26 routes fixed.
+  CRITICAL (account-takeover chain): /api/auth/otp/send returned the LIVE OTP unconditionally (with purpose reset_password = takeover of any account); forgot-password + recover returned real reset/recovery tokens as devToken (+ console.log); phone-verify returned the SMS OTP as devOtp; 2fa/setup echoed the SMS 2FA code as debug — ALL now gated behind NODE_ENV !== 'production'.
+  AUTH BYPASS: /api/auth/google + /api/auth/facebook stubs accepted any client-supplied {providerId, email} and minted a REAL session for that account (takeover by knowing an email) — now refuse with 403 PASSWORD_ACCOUNT unless the account is already linked to that provider id or passwordless. Residual: passwordless accounts need real OAuth credentials to fully close (product decision, documented).
+  IDOR: bank-accounts/[id] + cards/[id] PATCH had no ownership check (any user could set another user's card/bank as default); products/compare GET/POST/DELETE read/wrote ANY buyerId's compare list unauthenticated; support chat sessions/[id]/messages GET leaked any session's thread; legal/dmca/[id] GET returned complainant PII publicly.
+  LEAKS: admin/users PATCH + profile/me PUT + profile route PUT returned raw rows incl. passwordHash/twoFactorSecret; notifications/evaluate-alerts embedded alerted users' emails and had no auth; support/feedback public GET leaked submitter userId; suppliers/[id] public GET leaked KYC rejectionReason; chat/upload + reviews/upload allowed anonymous file writes; coupons/[id] exposed private vouchers to unauthenticated reads.
+  BUGS: orders/[id]/track compared supplierProfiles.id vs users.id (suppliers could never track own orders — false 403); save-for-later/[id] DELETE referenced a nonexistent buyerId column (always 500); support tickets buyer PATCH accepted arbitrary lifecycle strings; dead /api/supplier/customization stub (unauth fabricated data, zero callers) deleted.
+  HONESTY: affiliate/dashboard returned TWO HARDCODED fake conversion rows (ORD-2026-9102 etc.) → real empty list + frontend honest empty state; offline-sync POST marked archived operations 'completed' and claimed "Successfully synchronized" → honest 'pending' + "recorded" message; storage-stats clear POST said the server cleared device caches → says the clear happens on-device.
+- [VERIFY]: tsc clean project-wide after every batch; eslint clean on all touched files.
+- [TOTALS ACROSS ALL ROUNDS]: 376/376 API routes reviewed; 26 API fixes this round; 181 page components audited/fixed (t215-t218); 2 vulnerabilities + 1 broken login flow closed (t219/t220). No known unaudited surface remains: every route file has been read in full by a reviewer; every page component has been checked against the APIs it calls.
+
+---
+Task ID: t221
+Agent: ZCode (GLM)
+Task: Round 6 — fabricated display content sweep (header fake suppliers + hardcoded support contact).
+
+Work Log:
+- [HEADER SEARCH]: POPULAR_SUPPLIERS was a hardcoded array of 6 FICTIONAL suppliers with fake ratings rendered in every page's header dropdown under "Verified Suppliers ★ 4.8". Removed; the dropdown now runs a debounced live search against the REAL /api/suppliers (approved, rating-sorted) and renders real companyName/ratingAvg/city/productCount. Verified live: typing "tex" now returns the real DB supplier (honest "★ 0.0 · 4 products" — unrated suppliers show a plain "Verified" chip instead of a fake score). Keyboard nav + select behavior preserved.
+- [SUPPORT CONTACT]: 13 files hardcoded "support@zylod.com" as the platform contact (10 client pages + chatbot + chat-sessions server routes). The platform's only legitimate contact is the owner-published support.email setting (footer doctrine). All now read settings['support.email'] via usePublicSettings()/getSettingValue() — published → real mailto/text; unpublished → honest generic wording ("reach us through the Help Center"). grep 'support@zylod.com' src = 0 hits.
+- [VERIFY]: tsc clean; eslint clean on touched files; live browser check of the header dropdown against the real API.

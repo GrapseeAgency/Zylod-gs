@@ -23,30 +23,38 @@ export function CookiePolicyPage() {
   const [marketing, setMarketing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState(false)
 
   useEffect(() => {
     Promise.all([
       fetch('/api/legal/cookie_policy').then(r => r.json()),
       fetch('/api/legal/faq?docType=cookie_policy').then(r => r.json()),
     ]).then(([docData, faqData]) => {
-      if (docData.success) setDoc(docData.data.document)
-      if (faqData.success) setFaqs(faqData.data)
+      if (docData?.success) setDoc(docData.data.document)
+      if (faqData?.success) setFaqs(faqData.data)
     }).catch(console.error).finally(() => setLoading(false))
   }, [])
 
   const savePreferences = async () => {
     setSaving(true)
+    setSaveError(false)
     try {
       const sessionId = `session-${Math.random().toString(36).slice(2)}`
-      await fetch('/api/legal/cookie-consent', {
+      const res = await fetch('/api/legal/cookie-consent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, analyticsAllowed: analytics, marketingAllowed: marketing }),
       })
+      if (!res.ok) {
+        // The consent was NOT recorded — never pretend it was saved.
+        setSaveError(true)
+        return
+      }
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch (err) {
       console.error(err)
+      setSaveError(true)
     } finally {
       setSaving(false)
     }
@@ -100,6 +108,11 @@ export function CookiePolicyPage() {
               </div>
             ))}
           </div>
+          {saveError && (
+            <p className="text-xs font-semibold text-red-600 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5" /> Your preferences could not be saved — they were NOT recorded. Please try again.
+            </p>
+          )}
           <Button
             onClick={savePreferences}
             disabled={saving}

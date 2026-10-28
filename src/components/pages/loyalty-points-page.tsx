@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { AccountGate } from '@/components/shared/account-gate'
 import {
   ArrowLeft, Coins, Sparkles, TrendingUp, History,
   Gift, Trophy, ChevronRight, Award
@@ -14,26 +15,85 @@ import {
 
 export function LoyaltyPointsPage() {
   const { navigate, goBack } = useNavigationStore()
-  const { token } = useAuthStore()
+  const { token, isAuthenticated, user } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
+  // t216 honesty fix: loyalty points belong to BUYER purchase activity.
+  // Guests and non-buyer accounts get an account gate — never a fabricated
+  // "Bronze Tier / 0 points" card.
   const [loyalty, setLoyalty] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [retryNonce, setRetryNonce] = useState(0)
+
+  // Deep links can mount before the boot session probe settles.
+  useEffect(() => {
+    if (isAuthenticated) return
+    const t = setTimeout(() => setLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   useEffect(() => {
+    // The loyalty API serves any authenticated account (it awards real signup
+    // points to suppliers too) — the page must not hide REAL data behind a
+    // role guess. Only guests are gated.
+    if (!isAuthenticated) return
+    let cancelled = false
+    setLoading(true)
+    setLoadError(null)
+    setSessionExpired(false)
     const headers: Record<string, string> = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     fetch('/api/rewards/loyalty', { headers })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.data) {
-          setLoyalty(data.data)
-        }
+      .then(async res => {
+        if (cancelled) return
+        if (res.status === 401) { setSessionExpired(true); return }
+        const data = await res.json().catch(() => null)
+        if (!res.ok) throw new Error(data?.error || `Failed to load loyalty points (${res.status})`)
+        if (!data?.success || !data?.data) throw new Error('Loyalty points are unavailable right now.')
+        setLoyalty(data.data)
       })
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [token])
+      .catch((e: unknown) => {
+        if (!cancelled) setLoadError(e instanceof Error ? e.message : 'Failed to load loyalty points')
+      })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [isAuthenticated, token, retryNonce])
+
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session is no longer valid. Sign in again to view your loyalty points." />
+  }
+  if (!loading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view loyalty points"
+        message="Loyalty points are earned on wholesale purchase orders, reviews, and referrals. Sign in to see your real balance."
+      />
+    )
+  }
+  if (loadError) {
+    return (
+      <div className="min-h-[60vh] bg-background flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-card border border-border rounded-2xl p-6 text-center space-y-3">
+          <Coins className="h-8 w-8 mx-auto text-amber-500" />
+          <h1 className="text-base font-bold text-foreground">Could not load loyalty points</h1>
+          <p className="text-sm text-muted-foreground">{loadError}</p>
+          <Button onClick={() => setRetryNonce(n => n + 1)} className="h-9 px-4 font-bold text-xs rounded-xl">
+            Try again
+          </Button>
+        </div>
+      </div>
+    )
+  }
+  if (loading || !loyalty) {
+    return (
+      <div className="min-h-[60vh] bg-background flex items-center justify-center">
+        <Coins className="h-8 w-8 animate-pulse text-amber-500" />
+      </div>
+    )
+  }
 
   const getTierColor = (tier: string) => {
     switch (tier?.toLowerCase()) {

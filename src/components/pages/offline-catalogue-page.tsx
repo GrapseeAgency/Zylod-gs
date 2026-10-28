@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { ShoppingBag, ArrowLeft, Search, Building2, Tag, Layers, CheckCircle2 } from 'lucide-react'
+import { ShoppingBag, ArrowLeft, Search, Building2, Tag, Layers, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,11 +13,13 @@ export function OfflineCataloguePage() {
   const [products, setProducts] = useState<any[]>([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/app/offline-sync')
-      .then(res => res.json())
-      .then(json => {
+      .then(async res => {
+        const json = await res.json().catch(() => null)
+        if (!res.ok) throw new Error(json?.error || `Failed to load the offline package (${res.status})`)
         if (json?.data?.catalogue?.products) {
           // Map the API's REAL field names (name/moq/basePrice/stockQuantity) —
           // the previous code invented title/minOrderQuantity/priceBDT/stock,
@@ -34,7 +36,9 @@ export function OfflineCataloguePage() {
           })))
         }
       })
-      .catch(console.error)
+      .catch((e: unknown) => {
+        setLoadError(e instanceof Error ? e.message : 'Failed to load the offline catalogue')
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -61,6 +65,16 @@ export function OfflineCataloguePage() {
         </div>
       </div>
 
+      {loadError ? (
+        <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl text-red-800 dark:text-red-300 flex items-center gap-2 text-sm">
+          <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+          Could not load the offline package: {loadError} Reload to try again.
+        </div>
+      ) : loading ? (
+        <div className="text-xs text-muted-foreground">Loading offline package…</div>
+      ) : products.length === 0 ? (
+        <div className="text-xs text-muted-foreground">The offline package contains no products yet.</div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filtered.map((p) => (
           <Card key={p.id} className="rounded-2xl border shadow-sm overflow-hidden flex flex-col justify-between">
@@ -88,6 +102,7 @@ export function OfflineCataloguePage() {
           </Card>
         ))}
       </div>
+      )}
     </div>
   )
 }

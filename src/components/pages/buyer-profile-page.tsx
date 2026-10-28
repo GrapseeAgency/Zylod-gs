@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { AccountGate } from '@/components/shared/account-gate'
 import { AccountVerificationCard } from './account-verification-card'
 import {
   User, ShoppingBag, DollarSign, Wallet, Truck,
@@ -119,7 +120,7 @@ function OrderStatusBadge({ status }: { status: string }) {
 // ─── MAIN BUYER PROFILE COMPONENT ─────────────────────────────────────────────
 export function BuyerProfilePage() {
   const { navigate } = useNavigationStore()
-  const { user, token, updateUser } = useAuthStore()
+  const { user, token, isAuthenticated, updateUser } = useAuthStore()
   const { formatPrice } = useCurrencyStore()
 
   // Tab state
@@ -143,6 +144,18 @@ export function BuyerProfilePage() {
   // UI
   const [orderSearch, setOrderSearch] = useState('')
   const [orderStatus, setOrderStatus] = useState('all')
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [gateLoading, setGateLoading] = useState(true)
+
+  // Deep links can mount before the boot session probe settles — keep loading briefly.
+  useEffect(() => {
+    if (isAuthenticated) {
+      setGateLoading(false)
+      return
+    }
+    const t = setTimeout(() => setGateLoading(false), 1500)
+    return () => clearTimeout(t)
+  }, [isAuthenticated])
 
   // ─── FETCH ──────────────────────────────────────────────────────────────────
   const fetchProfile = useCallback(async () => {
@@ -151,6 +164,10 @@ export function BuyerProfilePage() {
       const res = await fetch('/api/profile/me', {
         headers: { Authorization: `Bearer ${token}` },
       })
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true)
+        return
+      }
       if (res.ok) {
         const json = await res.json()
         if (json.data) {
@@ -277,6 +294,27 @@ export function BuyerProfilePage() {
   const creditAvailable = tradeCredit?.available ?? 0
   const creditPct = creditLimit > 0 ? Math.min(100, (creditUsed / creditLimit) * 100) : 0
   const totalOrdersCount = profileData?.stats?.totalOrders ?? orders.length
+
+  // ─── AUTH GATE (user-scoped data: profile, orders, credits) ─────────────────
+  if (sessionExpired) {
+    return <AccountGate title="Session expired" message="Your session has ended. Sign in again to view your buyer profile." />
+  }
+  if (!gateLoading && !isAuthenticated) {
+    return (
+      <AccountGate
+        title="Sign in to view your buyer profile"
+        message="Your buyer profile shows your real orders, saved suppliers and trade credit. Sign in to continue."
+      />
+    )
+  }
+  if (isAuthenticated && user && user.userType !== 'buyer') {
+    return (
+      <AccountGate
+        title="Buyer accounts only"
+        message={`The buyer profile belongs to buyer accounts — you are signed in as a ${user.userType}.`}
+      />
+    )
+  }
 
   // ─── RENDER ─────────────────────────────────────────────────────────────────
   return (
