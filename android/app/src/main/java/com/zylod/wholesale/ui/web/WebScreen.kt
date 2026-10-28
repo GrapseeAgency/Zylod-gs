@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zylod.wholesale.BuildConfig
 import com.zylod.wholesale.bridge.WebViewHost
 import com.zylod.wholesale.data.api.ServerConfig
@@ -96,6 +97,19 @@ object NativeWebPageAcks {
 object NativeWebBus {
     var reloadTick by mutableIntStateOf(0)
         private set
+
+    // t227: hardware Back at the HOME tab root asks the home shell to return
+    // the SPA to ?page=home (probe-driven soft nav — never a reload) instead
+    // of exiting the app while the user browsed inside the web home. Consumed
+    // ONLY by the WebScreen whose pageId == "home" (every other surface
+    // substitutes a constant key, so a reset can never re-drive other tabs).
+    var homeResetTick by mutableIntStateOf(0)
+        private set
+
+    fun requestHomeReset() {
+        homeResetTick++
+    }
+
     internal var pendingBase: String? = null
 
     fun requestReload(newBase: String? = null) {
@@ -218,7 +232,10 @@ fun WebScreen(pageId: String, query: String) {
     }
 
     val reloadTick = NativeWebBus.reloadTick
-    LaunchedEffect(baseUrl, pageId, query, reloadTick, manualReload) {
+    // t227: only the home surface consumes back-driven home resets (constant
+    // key elsewhere ⇒ no spurious re-drives on other tabs).
+    val homeResetTick = if (pageId == "home") NativeWebBus.homeResetTick else 0
+    LaunchedEffect(baseUrl, pageId, query, reloadTick, manualReload, homeResetTick) {
         val pending = NativeWebBus.pendingBase
         if (pending != null) {
             baseUrl = pending
@@ -262,6 +279,11 @@ fun WebScreen(pageId: String, query: String) {
                     pageError = false
                     pageLoading = false
                     suppressContent = false
+                    // t227: an authoritative reveal proves the backend is
+                    // alive — opportunistically refresh the offline catalog
+                    // (throttled, best-effort) so a later outage has REAL
+                    // data to show instead of a dead end.
+                    OfflineCatalogSupport.syncOfflineProductCache(context, base)
                 },
             )
         }
@@ -333,6 +355,41 @@ fun WebScreen(pageId: String, query: String) {
         }
     }
 
+    // t227: ONE retry contract shared by the error state and the offline
+    // catalog — re-probe every endpoint, then either adopt a new winner,
+    // hard-reload the same host, or re-arm the error. Never a silent no-op.
+    val retryConnection: () -> Unit = {
+        if (!resolving) {
+            resolving = true
+            pageError = false
+            scope.launch {
+                val fresh = runCatching { ServerConfig.resolve(context) }.getOrNull()
+                resolving = false
+                if (fresh == null) {
+                    // STILL unreachable — re-arm the error state (t206 B10:
+                    // never a blank screen after a failed retry).
+                    pageError = true
+                } else if (fresh != baseUrl) {
+                    // New winner: the drive effect re-runs on baseUrl, drops
+                    // the incompatible shell, and hard-loads on a fresh
+                    // checkout.
+                    baseUrl = fresh
+                } else {
+                    // Same host: force a hard reload via the effect's
+                    // forceReload branch.
+                    manualReload++
+                }
+            }
+        }
+    }
+
+    // t227: the device-local cached catalog (real products fetched while
+    // online). null ⇒ query not settled yet — render the plain error state
+    // until known, so the first error frame never flashes an empty list.
+    val cachedProducts by remember {
+        com.zylod.wholesale.ZylodApp.instance.database.productDao().getAllOfflineProducts()
+    }.collectAsStateWithLifecycle(initialValue = null)
+
     Box(
         Modifier
             .fillMaxSize()
@@ -351,40 +408,18 @@ fun WebScreen(pageId: String, query: String) {
                 },
             )
         } else if (pageError) {
-            WebErrorState(
-                message = "The server isn't responding. Check your connection and try again.",
-                onRetry = {
-                    if (!resolving) {
-                        resolving = true
-                        pageError = false
-                        scope.launch {
-                            val fresh = runCatching { ServerConfig.resolve(context) }.getOrNull()
-                            resolving = false
-                            if (fresh == null) {
-                                // t208: STILL unreachable — re-arm the error
-                                // state. The previous code forced a reload for
-                                // every non-new-winner outcome, but with
-                                // baseUrl still null the drive effect returns
-                                // BEFORE any load runs, leaving pageError=false
-                                // with no shell and no spinner → a permanent
-                                // blank screen after a failed retry (a dead
-                                // end, the exact class t206 B10 fixed for the
-                                // first attempt).
-                                pageError = true
-                            } else if (fresh != baseUrl) {
-                                // New winner: the effect re-runs on baseUrl,
-                                // drops the incompatible shell, and hard-loads
-                                // the target on a fresh checkout.
-                                baseUrl = fresh
-                            } else {
-                                // Same host: force a hard reload (the effect's
-                                // forceReload branch) — NEVER a silent no-op.
-                                manualReload++
-                            }
-                        }
-                    }
-                },
-            )
+            val cached = cachedProducts
+            if (cached != null && cached.isNotEmpty()) {
+                // t227: the device holds a REAL cached catalog — render it
+                // instead of a bare cloud icon (owner order: never dead-end
+                // with nothing when the app holds data).
+                OfflineCatalogScreen(products = cached, onRetry = retryConnection)
+            } else {
+                WebErrorState(
+                    message = "The server isn't responding. Check your connection and try again.",
+                    onRetry = retryConnection,
+                )
+            }
         } else {
             // Keyed on the checked-out shell: the AndroidView factory re-runs
             // when the pool hands us a (possibly different) WebView. Shell

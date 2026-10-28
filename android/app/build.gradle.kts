@@ -57,11 +57,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // HTTPS-only, production endpoint list.
+            // HTTPS-only, production endpoint list. t227: the deployed live
+            // backend comes FIRST — zylod.com is a placeholder that answers
+            // nothing today, and a release whose only candidate is dead shows
+            // "Can't reach Zylod" on every screen (owner device report).
+            // Probes are ordered: first GENUINE Zylod server wins
+            // (ServerConfig.resolve).
             buildConfigField(
                 "String[]",
                 "SERVER_ENDPOINTS",
-                "new String[]{\"https://zylod.com\"}"
+                "new String[]{\"https://preview-chat-a71d16fe-4230-4770-8de5-4a51e638e6e8.space-z.ai\", \"https://zylod.com\"}"
             )
             manifestPlaceholders["usesCleartextTraffic"] = "false"
             signingConfig = if (keystorePropertiesFile.exists()) {
@@ -75,13 +80,14 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             isDebuggable = true
-            // Dev discovery list: local Wi-Fi host, emulator, ADB reverse
-            // tunnel, public ngrok tunnel, production. Personal/dev URLs
-            // must never leak into release builds.
+            // Dev discovery list: LIVE DEPLOYED BACKEND first (t227 — verified
+            // 200 + bundle identity), then local Wi-Fi host, emulator, ADB
+            // reverse tunnel, public ngrok tunnels, production placeholder.
+            // Personal/dev URLs must never leak into release builds.
             buildConfigField(
                 "String[]",
                 "SERVER_ENDPOINTS",
-                "new String[]{\"http://192.168.2.100:3000\", \"http://192.168.2.101:3000\", \"http://192.168.43.79:3000\", \"http://10.0.2.2:3000\", \"http://localhost:3000\", \"https://jugular-winnings-backfield.ngrok-free.dev\", \"https://zylodbd.ngrok.dev\", \"https://zylod.com\"}"
+                "new String[]{\"https://preview-chat-a71d16fe-4230-4770-8de5-4a51e638e6e8.space-z.ai\", \"http://192.168.2.100:3000\", \"http://192.168.2.101:3000\", \"http://192.168.43.79:3000\", \"http://10.0.2.2:3000\", \"http://localhost:3000\", \"https://jugular-winnings-backfield.ngrok-free.dev\", \"https://zylodbd.ngrok.dev\", \"https://zylod.com\"}"
             )
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }

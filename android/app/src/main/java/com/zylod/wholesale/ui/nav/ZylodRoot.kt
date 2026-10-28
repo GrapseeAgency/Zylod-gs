@@ -1,6 +1,7 @@
 package com.zylod.wholesale.ui.nav
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -510,6 +511,55 @@ fun ZylodRoot() {
                     suspendedAt = entry.arguments?.getString("suspendedAt").orEmpty(),
                     onSignOut = { backToLogin() },
                 )
+            }
+        }
+    }
+
+    // ── Hardware Back contract (t227) ──────────────────────────────────
+    // Composed AFTER the NavHost so this callback takes dispatcher priority
+    // whenever it is enabled (home tab root only). Elsewhere it stays
+    // disabled and the NavHost's own pop behavior is untouched:
+    //
+    //   native screens / web/{pageId} routes → NavHost pops (unchanged —
+    //   Back from a web tab returns to Home; Back from buy-now returns to
+    //   the PDP; Back from checkout returns to the cart).
+    //
+    //   HOME tab root, SPA drifted from home → probe-driven SOFT reset of
+    //   the SPA to ?page=home (no reload; the home shell's own drive effect
+    //   consumes the tick and soft-navigates — divergence-free by design).
+    //
+    //   HOME tab root, SPA already on home → moveTaskToBack (standard
+    //   Android root-back semantics; the app keeps its state in recents).
+    //
+    // Walking WebView history is deliberately NOT done: a history pop can
+    // land on a page owned by a DIFFERENT tab and desynchronize the shell
+    // chrome from the content — the exact drift class this architecture
+    // forbids. The probe+reset contract reaches the same UX deterministically.
+    BackHandler(enabled = route == HOME_ROUTE) {
+        val webView = com.zylod.wholesale.ui.web.NativeWebRegistry.webView
+        if (webView == null) {
+            (context as? android.app.Activity)?.moveTaskToBack(true)
+            return@BackHandler
+        }
+        val probe = """
+            (function(){
+              try{
+                if (window.__zylodSpaReady !== true) return 'null';
+                var page = window.__zylodCurrentPage;
+                return (typeof page === 'string' && page) ? page : 'null';
+              }catch(e){ return 'null'; }
+            })();
+        """.trimIndent()
+        webView.evaluateJavascript(probe) { result ->
+            // evaluateJavascript returns a JSON-quoted string for JS strings;
+            // JS null comes back as the literal unquoted "null".
+            val page = result?.trim()?.removeSurrounding("\"")
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                if (page != null && page != "null" && page != "home") {
+                    com.zylod.wholesale.ui.web.NativeWebBus.requestHomeReset()
+                } else {
+                    (context as? android.app.Activity)?.moveTaskToBack(true)
+                }
             }
         }
     }
