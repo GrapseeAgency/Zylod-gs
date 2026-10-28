@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
-import { loadPage, getChunkForPage, isRegisteredPage } from '@/lib/page-loader'
+import { loadPage, getChunkForPage, isRegisteredPage, warmPageChunks } from '@/lib/page-loader'
 import type { GenericPageType } from '@/lib/page-loader'
 import { AppShell } from '@/components/layout/app-shell'
 import { SocialConsentModal } from '@/components/shared/social-consent-modal'
@@ -159,7 +159,10 @@ function PageRenderer({ pageId, pageParams }: { pageId: string; pageParams: Reco
   }
 
   if (PageComponent) {
-    return <PageComponent />
+    // t228: key the host by pageId+params so a same-component navigation
+    // (e.g. product-detail → product-detail for a different id) REMOUNTS
+    // instead of leaking the previous page's internal state.
+    return <PageComponent key={pageId + (pageParams && Object.keys(pageParams).length ? '?' + new URLSearchParams(pageParams).toString() : '')} />
   }
 
   return (
@@ -325,6 +328,15 @@ export function AppEntry() {
   useEffect(() => {
     const user = useAuthStore.getState().user
     if (user?.id) void useCartStore.getState().syncWithApi(user.id)
+  }, [])
+
+  /* ─── t228 chunk warm-up at boot ───
+     After the first render settles (idle), silently pre-fetch the
+     most-linked page chunks through page-loader's warmPageChunks() so the
+     first cold navigation renders instantly instead of the "Loading…"
+     spinner. Fire-and-forget; once per session; no routing changes. */
+  useEffect(() => {
+    warmPageChunks()
   }, [])
 
   // First-time onboarding: show welcome/onboarding flow to new users on mobile.

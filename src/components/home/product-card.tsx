@@ -119,13 +119,13 @@ export function ProductCard({ product }: { product: HomeProduct }) {
       className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200/90 dark:border-gray-800 overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5"
     >
       {/* Photo Container — clean by default per reference; heart reveals on hover */}
-      <div className="relative aspect-[144/104] bg-[#F7F8FA] dark:bg-gray-800/80 overflow-hidden flex items-center justify-center p-2">
+      <div className="relative aspect-square bg-[#F7F8FA] dark:bg-gray-800/80 overflow-hidden flex items-center justify-center p-2">
         {product.thumbnailUrl ? (
           <img
             src={product.thumbnailUrl}
             alt={product.name}
             loading="lazy"
-            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             onError={(e) => {
               const target = e.target as HTMLImageElement
               if (!target.src.includes('placeholder')) {

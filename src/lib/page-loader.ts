@@ -399,3 +399,63 @@ export function getChunkForPage(pageId: string): string | null {
   ].includes(pageId)) return 'support'
   return 'misc'
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   t228 cold-navigation warm-up.
+
+   Cold-navigating to a lazily-chunked page shows the "Loading…" spinner
+   while its chunk downloads. After the app first renders (idle), pre-fetch
+   the most-linked chunk pages through the SAME dynamic import() cache that
+   chunk-loader.ts uses (loadPageFromChunk → loadChunkByName), so the first
+   real navigation finds its module already in the cache and renders
+   instantly. No routing behavior changes; fires once per session; every
+   failure is silent (a failed warm-up must never break navigation).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const CHUNK_WARMUP_KEY = 'zylod-chunk-warmup-v1'
+
+let warmStarted = false
+
+/** One representative most-linked page per hot chunk. Each call also caches
+ *  the chunk module itself via chunk-loader's own import() switch. */
+const HOT_CHUNK_PAGES: Array<[string, string]> = [
+  ['browse', 'product-detail'],
+  ['browse', 'category-products'],
+  ['misc', 'blog'],
+  ['cart', 'cart'],
+  ['profile', 'profile'],
+  ['support', 'help-center'],
+  ['search', 'search-home'],
+]
+
+export function warmPageChunks(): void {
+  if (typeof window === 'undefined') return
+  if (warmStarted) return
+  try {
+    if (sessionStorage.getItem(CHUNK_WARMUP_KEY) === '1') return
+  } catch { /* storage unavailable — still warm once per document */ }
+  warmStarted = true
+
+  const run = () => {
+    void (async () => {
+      try {
+        // Lazy import so this module stays lean; same loader the app uses.
+        const { loadPageFromChunk } = await import('./chunk-loader')
+        for (const [chunkName, pageId] of HOT_CHUNK_PAGES) {
+          try {
+            await loadPageFromChunk(chunkName, pageId)
+          } catch { /* silent — keep warming the rest */ }
+        }
+        try { sessionStorage.setItem(CHUNK_WARMUP_KEY, '1') } catch { /* ignore */ }
+      } catch { /* silent */ }
+    })()
+  }
+
+  // Idle-time warm: never competes with the initial render.
+  const w = window as typeof window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }
+  if (typeof w.requestIdleCallback === 'function') {
+    w.requestIdleCallback(run, { timeout: 4000 })
+  } else {
+    setTimeout(run, 2500)
+  }
+}

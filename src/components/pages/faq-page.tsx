@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigationStore } from '@/store/navigation-store'
 import { Skeleton } from '@/components/ui/skeleton'
+import { filterFaqContent } from '@/lib/faq-content'
 import {
   ArrowLeft, Search, ThumbsUp, ThumbsDown, ChevronDown,
   HelpCircle, MessageCircle, Mail, Globe, Check
@@ -19,6 +20,8 @@ interface FAQItem {
   helpfulYes: number
   helpfulNo: number
   sortOrder: number
+  /** true = rendered from the in-repo fallback dataset (src/lib/faq-content.ts), not a DB-backed API row */
+  isStatic?: boolean
 }
 
 export function FAQPage() {
@@ -51,9 +54,19 @@ export function FAQPage() {
       const res = await fetch(url)
       if (res.ok) {
         const json = await res.json()
-        setFaqs(json.data || [])
+        const rows: FAQItem[] = Array.isArray(json.data) ? json.data : []
+        // t228: the faqItems table is only populated by
+        // prisma/seed-support-docs.ts. On unseeded databases the API returns
+        // 200 with zero rows and every tab rendered "No matching questions
+        // found" — fall back to the curated in-repo dataset so the page
+        // always shows genuine site-policy content. Seeded API rows win.
+        setFaqs(rows.length > 0 ? rows : filterFaqContent(selectedCategory))
+      } else {
+        setFaqs(filterFaqContent(selectedCategory))
       }
-    } catch {}
+    } catch {
+      setFaqs(filterFaqContent(selectedCategory))
+    }
     setLoading(false)
   }
 
@@ -64,6 +77,9 @@ export function FAQPage() {
   async function handleVote(id: string, helpful: boolean) {
     if (votedMap[id]) return
     setVotedMap(prev => ({ ...prev, [id]: helpful ? 'yes' : 'no' }))
+    // Static fallback rows have no DB-backed counters — never POST a vote
+    // for them (the local state above is already the session-only record).
+    if (id.startsWith('faq-static-')) return
     try {
       await fetch(`/api/support/faqs/${id}/vote`, {
         method: 'POST',
@@ -197,7 +213,9 @@ export function FAQPage() {
                           {answer}
                         </p>
 
-                        {/* Helpful vote section */}
+                        {/* Helpful vote section — API-backed rows only; the
+                            static fallback dataset carries no vote counters */}
+                        {!faq.isStatic && (
                         <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 dark:text-gray-500 dark:text-gray-400">
                           <span>
                             {language === 'bn' ? 'এই উত্তরটি কি সহায়ক ছিল?' : 'Was this answer helpful?'}
@@ -229,6 +247,7 @@ export function FAQPage() {
                             </button>
                           </div>
                         </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>

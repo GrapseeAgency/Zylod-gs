@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useAuthStore } from '@/store/auth-store'
@@ -60,7 +60,7 @@ function toHomeProduct(p: ApiProduct): HomeProduct {
 function CardSkeleton() {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200/90 dark:border-gray-800 overflow-hidden animate-pulse" aria-hidden>
-      <div className="aspect-[144/104] bg-gray-100 dark:bg-gray-800" />
+      <div className="aspect-square bg-gray-100 dark:bg-gray-800" />
       <div className="px-2 pt-1.5 pb-2 space-y-1.5">
         <div className="h-3 w-full rounded bg-gray-100 dark:bg-gray-800" />
         <div className="h-3 w-3/4 rounded bg-gray-100 dark:bg-gray-800" />
@@ -73,24 +73,43 @@ function CardSkeleton() {
 
 const SKELETONS = Array.from({ length: 12 }, (_, i) => i)
 
+const PAGE_SIZE = 12
+
+/** API row filter + mapper shared by the first page and every appended page. */
+function mapProductRows(rows: ApiProduct[]): HomeProduct[] {
+  return rows.filter((p) => p && p.id && p.isActive !== false).map(toHomeProduct)
+}
+
 export function FeaturedSection() {
   const { navigate } = useNavigationStore()
   const [products, setProducts] = useState<HomeProduct[] | null>(null) // null = loading
   const [loadFailed, setLoadFailed] = useState(false)
+  // t228 social-style infinite scroll (same pattern as search-results-page):
+  // a sentinel at the grid end fetches the next /api/products page and APPENDS
+  // rows (deduped by id) until the API runs out of pages.
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(false)
+  const [retryTick, setRetryTick] = useState(0)
+  const pageRef = useRef(1)
+  const loadingRef = useRef(false) // guards against concurrent sentinel double-fetches
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     let cancelled = false
 
     const load = async () => {
       try {
-        const res = await fetch('/api/products?sortBy=soldCount&sortOrder=desc&limit=12', {
+        const res = await fetch(`/api/products?sortBy=soldCount&sortOrder=desc&limit=${PAGE_SIZE}&page=1`, {
           credentials: 'include',
         })
         if (!res.ok) throw new Error(`products ${res.status}`)
         const body = await res.json()
         const rows: ApiProduct[] = Array.isArray(body.data) ? body.data : []
         if (cancelled) return
-        setProducts(rows.filter((p) => p && p.id && p.isActive !== false).map(toHomeProduct))
+        const pag = body?.pagination
+        setHasMore(pag ? pag.page < pag.totalPages : false)
+        pageRef.current = 1
+        setProducts(mapProductRows(rows))
       } catch {
         if (!cancelled) setLoadFailed(true)
       }
@@ -100,7 +119,56 @@ export function FeaturedSection() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [retryTick])
+
+  const handleLoadMore = useCallback(async () => {
+    if (loadingRef.current) return
+    if (!hasMore || products === null) return
+    loadingRef.current = true
+    setLoadingMore(true)
+    try {
+      const nextPage = pageRef.current + 1
+      const res = await fetch(`/api/products?sortBy=soldCount&sortOrder=desc&limit=${PAGE_SIZE}&page=${nextPage}`, {
+        credentials: 'include',
+      })
+      if (res.ok) {
+        const body = await res.json()
+        const rows: ApiProduct[] = Array.isArray(body.data) ? body.data : []
+        const seen = new Set(products.map((p) => p.id))
+        const fresh = mapProductRows(rows).filter((p) => !seen.has(p.id))
+        const pag = body?.pagination
+        // Stop when the API is out of pages OR a page returned nothing new.
+        if (pag && pag.page < pag.totalPages && fresh.length > 0) {
+          setProducts((prev) => (prev ? [...prev, ...fresh] : fresh))
+          pageRef.current = nextPage
+          setHasMore(true)
+        } else {
+          setHasMore(false)
+        }
+      } else {
+        setHasMore(false)
+      }
+    } catch {
+      // best-effort — keep what we have; the sentinel can retry on re-entry
+    } finally {
+      loadingRef.current = false
+      setLoadingMore(false)
+    }
+  }, [hasMore, products])
+
+  useEffect(() => {
+    if (!hasMore || products === null) return
+    const el = sentinelRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) void handleLoadMore()
+      },
+      { rootMargin: '400px 0px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [hasMore, products, handleLoadMore])
 
   // Signed-in: seed real wishlist hearts onto the loaded (real) products.
   useEffect(() => {
@@ -161,7 +229,7 @@ export function FeaturedSection() {
 
       {/* Failure — honest error with retry, never fabricated rows */}
       {loadFailed && (
-        <FeaturedLoadError onRetry={() => { setLoadFailed(false); setProducts(null) }} />
+        <FeaturedLoadError onRetry={() => { setLoadFailed(false); setProducts(null); setRetryTick((t) => t + 1) }} />
       )}
 
       {/* Loaded */}
@@ -171,11 +239,22 @@ export function FeaturedSection() {
             No products are live in the marketplace yet — check back soon.
           </p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2.5 sm:gap-3 xl:gap-3.5">
-            {products.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2.5 sm:gap-3 xl:gap-3.5">
+              {products.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+
+            {/* t228: infinite-scroll sentinel — fetches the next page when visible */}
+            {hasMore && (
+              <div ref={sentinelRef} aria-hidden className="py-3 text-center">
+                {loadingMore && (
+                  <p className="text-xs text-muted-foreground">Loading more products…</p>
+                )}
+              </div>
+            )}
+          </>
         )
       )}
     </section>
