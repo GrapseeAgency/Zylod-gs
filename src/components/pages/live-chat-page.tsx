@@ -26,7 +26,7 @@ interface ChatSession {
 }
 
 export function LiveChatPage() {
-  const { navigate, goBack } = useNavigationStore()
+  const { navigate, goBack, pageParams } = useNavigationStore()
   const { token, isAuthenticated } = useAuthStore()
   const [session, setSession] = useState<ChatSession | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -59,7 +59,10 @@ export function LiveChatPage() {
     setLoading(true)
     setChatError('')
     try {
-      // Find active live_chat session or create new
+      // t229i: chat-detail deep links carry conversationId (header chat
+      // notifications). Resolve that exact session first so the user lands
+      // inside THEIR conversation, not a fresh one.
+      const deepLinkId = (pageParams as Record<string, string> | undefined)?.conversationId
       const res = await fetch('/api/support/chat/sessions', {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -69,7 +72,12 @@ export function LiveChatPage() {
       }
       if (res.ok) {
         const json = await res.json()
-        const active = (json.data || []).find((s: any) => s.type === 'live_chat' && s.status === 'active')
+        const sessions: ChatSession[] = json.data || []
+        // Deep-linked conversation wins; otherwise the active live_chat
+        // session; if neither exists the create flow below runs.
+        const active = deepLinkId
+          ? sessions.find((s: any) => s.id === deepLinkId)
+          : sessions.find((s: any) => s.type === 'live_chat' && s.status === 'active')
         if (active) {
           setSession(active)
           await loadMessages(active.id)

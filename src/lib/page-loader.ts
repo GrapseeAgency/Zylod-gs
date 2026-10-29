@@ -180,6 +180,14 @@ const REAL_PAGES = new Set([
   // the generic-info fallback (t215).
   'buyer-rewards', 'supplier-earnings', 'supplier-directory', 'address-book',
   'supplier-analytics', 'supplier-warehouse', 'supplier-insights', 'supplier-verification-status',
+  // t229i: UI-linked ids that were unregistered and rendered generic-info
+  // placeholders instead of the real surfaces (missing-page audit):
+  // buyer dashboard Settings/Favorite-Suppliers buttons, buyer-orders
+  // quickLinks Returns/Settings, sidebar Store Settings, PDP "Visit Store",
+  // logistics warehouse supplier links, header/sidebar chat links.
+  'buyer-settings', 'buyer-favorites', 'buyer-returns',
+  'chat-list', 'chat-detail',
+  'supplier-profile', 'supplier-storefront',
 ])
 
 const CATEGORY_IDS = new Set([

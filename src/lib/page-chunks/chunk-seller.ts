@@ -193,6 +193,12 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     'supplier-insights': () => import('@/components/pages/seller-customer-insights-page'),
     'supplier-warehouse': () => import('@/components/pages/inventory-warehouse-locations-page'),
     'supplier-verification-status': () => import('@/components/pages/seller-verification-status-page'),
+    // t229i missing-page audit: supplier-profile (sidebar Store Settings,
+    // PDP "Visit Store") and supplier-storefront (logistics warehouse
+    // links) — both carry supplierId and render the real public storefront
+    // (no param = the signed-in supplier's own store).
+    'supplier-profile': () => import('@/components/pages/seller-storefront-page'),
+    'supplier-storefront': () => import('@/components/pages/seller-storefront-page'),
 
     // Sub-pages: Product & Inventory
     'product-variant-matrix': () => import('@/components/pages/product-variant-matrix-page'),

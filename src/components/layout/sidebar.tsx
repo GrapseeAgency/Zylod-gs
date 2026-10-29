@@ -35,7 +35,7 @@ const supplierSidebarItems: SidebarItem[] = [
   { label: 'Orders', pageId: 'supplier-orders', icon: <ClipboardList className="h-4 w-4" /> },
   { label: 'Chat', pageId: 'chat-list', icon: <MessageSquare className="h-4 w-4" /> },
   { label: 'Verification', pageId: 'supplier-verification-status', icon: <Shield className="h-4 w-4" /> },
-  { label: 'Store Settings', pageId: 'supplier-profile', icon: <Store className="h-4 w-4" /> },
+  { label: 'Store Settings', pageId: 'seller-storefront', icon: <Store className="h-4 w-4" /> },
 ]
 
 const adminSidebarItems: SidebarItem[] = [

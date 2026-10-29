@@ -115,6 +115,16 @@ export async function loadChunkPage(pageId: string): Promise<PageLoadResult> {
     // t215: retired placeholder ids — deep links land on the REAL rails.
     'buyer-rewards': () => import('@/components/pages/loyalty-points-page'),
     'address-book': () => import('@/components/pages/shipping-address-page'),
+    // t229i missing-page audit: UI-linked ids aliased to their real rails.
+    // buyer-* resolve here via the getChunkForPage buyer- prefix branch.
+    'buyer-settings': () => import('@/components/pages/account-settings-page'),
+    'buyer-favorites': () => import('@/components/pages/favorite-suppliers-page'),
+    'buyer-returns': () => import('@/components/pages/return-request-page'),
+    // chat-list/chat-detail are in CHUNK_MISC; header notifications, the
+    // supplier sidebar and buyer-profile link them — real surface is the
+    // live support chat (conversationId deep-link handled by the page).
+    'chat-list': () => import('@/components/pages/live-chat-page'),
+    'chat-detail': () => import('@/components/pages/live-chat-page'),
 
     // Core Notifications Pages 171-178
     'notifications': () => import('@/components/pages/notifications-page'),

@@ -1024,7 +1024,7 @@ export function MobileProductDetailPage() {
             <p className="text-[10px] text-muted-foreground">{product.supplier.city || '—'}</p>
           </div>
           <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/5 text-xs h-7"
-            onClick={() => navigate('supplier-profile', { supplierId: product.supplier.id })}>
+            onClick={() => navigate('supplier-storefront', { supplierId: product.supplier.id })}>
             Visit Store
           </Button>
         </div>
