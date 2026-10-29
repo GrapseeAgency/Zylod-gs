@@ -38,67 +38,80 @@ export async function GET(
     const { id } = await params
 
     const now = new Date()
-    const product = await db.products.findUnique({
-      where: { id },
-      include: {
-        // Task 100: the campaign currently pinned to this product (if any) —
-        // the PDP promo banner reads it. Window-filtered here; the payload
-        // carries only buyer-safe fields (no usedCount, no audit trail).
-        promotionProducts: {
-          where: { promotion: { isActive: true, validFrom: { lte: now }, validUntil: { gte: now } } },
-          select: {
-            promotion: {
-              select: {
-                id: true, name: true, description: true, type: true, value: true,
-                minOrderAmount: true, maxDiscount: true, validUntil: true,
-              },
+    // t229c: the PDP deep-link contract passes EITHER the product id or the
+    // product slug as the [id] segment (pageParams.productId || id || slug).
+    // findUnique-by-id alone 404'd every slug-shaped request — shared links
+    // and banner targets landed on "Product not found". One include, two
+    // resolvers: id first (fast path), slug as the documented fallback.
+    const productInclude = {
+      // Task 100: the campaign currently pinned to this product (if any) —
+      // the PDP promo banner reads it. Window-filtered here; the payload
+      // carries only buyer-safe fields (no usedCount, no audit trail).
+      promotionProducts: {
+        where: { promotion: { isActive: true, validFrom: { lte: now }, validUntil: { gte: now } } },
+        select: {
+          promotion: {
+            select: {
+              id: true, name: true, description: true, type: true, value: true,
+              minOrderAmount: true, maxDiscount: true, validUntil: true,
             },
           },
         },
-        supplier: {
-          select: {
-            id: true,
-            // userId lets the buyer open a REAL chat conversation with this
-            // supplier (conversations.supplierId references users.id).
-            userId: true,
-            companyName: true,
-            ratingAvg: true,
-            ratingCount: true,
-            verificationStatus: true,
-          },
+      },
+      supplier: {
+        select: {
+          id: true,
+          // userId lets the buyer open a REAL chat conversation with this
+          // supplier (conversations.supplierId references users.id).
+          userId: true,
+          companyName: true,
+          ratingAvg: true,
+          ratingCount: true,
+          verificationStatus: true,
         },
-        category: { select: { id: true, name: true, slug: true, parentId: true } },
-        images: { orderBy: { sortOrder: 'asc' } },
-        priceTiers: { orderBy: { minQty: 'asc' } },
-        variants: true,
-        videos: { orderBy: { sortOrder: 'asc' } },
-        reviews: {
-          where: { replyToId: null }, // top-level reviews only
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-          include: {
-            buyer: {
-              select: {
-                id: true,
-                buyerProfile: { select: { fullName: true, businessName: true } },
-              },
+      },
+      category: { select: { id: true, name: true, slug: true, parentId: true } },
+      images: { orderBy: { sortOrder: 'asc' } },
+      priceTiers: { orderBy: { minQty: 'asc' } },
+      variants: true,
+      videos: { orderBy: { sortOrder: 'asc' } },
+      reviews: {
+        where: { replyToId: null }, // top-level reviews only
+        take: 10,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          buyer: {
+            select: {
+              id: true,
+              buyerProfile: { select: { fullName: true, businessName: true } },
             },
-            replies: {
-              take: 5,
-              orderBy: { createdAt: 'asc' },
-              include: {
-                buyer: {
-                  select: {
-                    id: true,
-                    buyerProfile: { select: { fullName: true, businessName: true } },
-                  },
+          },
+          replies: {
+            take: 5,
+            orderBy: { createdAt: 'asc' },
+            include: {
+              buyer: {
+                select: {
+                  id: true,
+                  buyerProfile: { select: { fullName: true, businessName: true } },
                 },
               },
             },
           },
         },
       },
+    } as const
+
+    let product = await db.products.findUnique({
+      where: { id },
+      include: productInclude,
     })
+    if (!product) {
+      product = await db.products.findFirst({
+        where: { slug: id },
+        include: productInclude,
+      })
+    }
 
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })

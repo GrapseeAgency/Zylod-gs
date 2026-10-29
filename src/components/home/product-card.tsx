@@ -162,33 +162,35 @@ export function ProductCard({ product }: { product: HomeProduct }) {
       </div>
 
       {/* Body */}
-      <div className="px-2 pt-1.5 pb-2">
-        {/* Title — 2 lines matching reference */}
-        <h3 className="text-[10px] sm:text-[10.5px] xl:text-[11px] 2xl:text-[11.5px] font-semibold leading-[1.22] text-gray-900 dark:text-gray-100 h-[30px] line-clamp-2 mb-1 tracking-tight whitespace-pre-line">
+      <div className="px-2.5 pt-2 pb-2.5 sm:px-3">
+        {/* Title — 2 lines matching reference (t229c: sized for the 4/5-col
+            desktop grid — the old 10px micro-type matched the retired
+            6-col thumbnail grid the owner flagged as a preview-size bug) */}
+        <h3 className="text-[11px] sm:text-xs xl:text-[13px] 2xl:text-[13.5px] font-semibold leading-[1.22] text-gray-900 dark:text-gray-100 h-[32px] xl:h-[36px] line-clamp-2 mb-1 tracking-tight whitespace-pre-line">
           {product.name}
         </h3>
 
         {/* Price & Unit */}
         <p className="flex items-baseline mb-0.5 whitespace-nowrap overflow-hidden">
-          <span className="text-[14px] xl:text-[15px] 2xl:text-[16px] font-extrabold leading-none tracking-tight" style={{ color: RED }}>
+          <span className="text-[15px] xl:text-[17px] 2xl:text-[18px] font-extrabold leading-none tracking-tight" style={{ color: RED }}>
             ৳{product.price.toLocaleString()}
           </span>
           {product.unit && (
-            <span className="text-[10px] xl:text-[11px] font-normal text-gray-400 dark:text-gray-500 ml-1">
+            <span className="text-[10.5px] xl:text-[11.5px] font-normal text-gray-400 dark:text-gray-500 ml-1">
               / {product.unit}
             </span>
           )}
         </p>
 
         {/* MOQ */}
-        <p className="text-[10px] xl:text-[10.5px] font-normal text-gray-400 dark:text-gray-500 mb-1 whitespace-nowrap truncate">
+        <p className="text-[10.5px] xl:text-[11.5px] font-normal text-gray-400 dark:text-gray-500 mb-1 whitespace-nowrap truncate">
           MOQ: {product.moq} {product.unit || 'piece'}
         </p>
 
         {/* Supplier with circular building icon */}
         <p className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1 min-w-0">
           <SupplierStoreIcon className="h-3.5 w-3.5 shrink-0 text-gray-400" />
-          <span className="text-[10px] xl:text-[10.5px] truncate">{product.supplierName || '—'}</span>
+          <span className="text-[10.5px] xl:text-[11.5px] truncate">{product.supplierName || '—'}</span>
         </p>
 
         {/* Rating with gold star — real ratings only, "New" when unrated */}
@@ -196,17 +198,17 @@ export function ProductCard({ product }: { product: HomeProduct }) {
           {rating ? (
             <>
               <Star className="h-3 w-3 shrink-0" style={{ color: STAR_AMBER, fill: STAR_AMBER }} aria-hidden />
-              <span className="text-[10px] xl:text-[10.5px] font-semibold text-gray-700 dark:text-gray-300">
+              <span className="text-[10.5px] xl:text-[11.5px] font-semibold text-gray-700 dark:text-gray-300">
                 {rating}
               </span>
               {reviews !== null && (
-                <span className="text-[10px] xl:text-[10.5px] text-gray-400 dark:text-gray-500">
+                <span className="text-[10.5px] xl:text-[11.5px] text-gray-400 dark:text-gray-500">
                   ({reviews}+)
                 </span>
               )}
             </>
           ) : (
-            <span className="text-[10px] xl:text-[10.5px] font-medium text-gray-500 dark:text-gray-400 rounded-full bg-gray-100 dark:bg-gray-800 px-1.5 py-px">
+            <span className="text-[10.5px] xl:text-[11.5px] font-medium text-gray-500 dark:text-gray-400 rounded-full bg-gray-100 dark:bg-gray-800 px-1.5 py-px">
               New
             </span>
           )}
@@ -216,7 +218,7 @@ export function ProductCard({ product }: { product: HomeProduct }) {
         {showVerified && (
           <p className="flex items-center gap-1 whitespace-nowrap">
             <VerifiedShieldIcon className="h-3.5 w-3.5 shrink-0" />
-            <span className="text-[10px] xl:text-[10.5px] font-semibold" style={{ color: VERIFIED_GREEN }}>
+            <span className="text-[10.5px] xl:text-[11.5px] font-semibold" style={{ color: VERIFIED_GREEN }}>
               Verified Supplier
             </span>
           </p>

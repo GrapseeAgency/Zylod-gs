@@ -38,7 +38,13 @@ const nextConfig: NextConfig = {
     '21.0.2.200',
     '21.0.2.200:3000',
     '*.local',
-    '.space-z.ai',
+    // t229c: the preview panel hostname rotates per chat session. The old
+    // list hardcoded ONE chat's host, so every new chat got its /_next/*
+    // assets (CSS+JS) BLOCKED by Next 16's dev-origin guard — the preview
+    // rendered unstyled, script-less "nasty non-responsive" pages. The
+    // wildcard covers every present and future chat session host.
+    '*.space-z.ai',
+    'preview-chat-a71d16fe-4230-4770-8de5-4a51e638e6e8.space-z.ai',
     'preview-chat.chat-e3a890ad-d3c9-4afc-8e85-a407adad8d58.space-z.ai',
   ],
   images: {

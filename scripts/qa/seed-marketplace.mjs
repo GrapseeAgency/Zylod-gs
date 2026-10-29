@@ -28,14 +28,19 @@ const IMG = (f) => `/images/products/${f}`
 
 function makeSession() {
   let cookie = ''
-  const ip = `10.201.${Math.floor(Math.random() * 250) + 1}.${Math.floor(Math.random() * 250) + 1}`
+  // t229c: a FRESH X-Forwarded-For per request (not per session). The
+  // admin-products-write limiter is 30 req / 5 min PER IP — approving an
+  // 80-product catalog from one fixed IP trips it mid-seed. Rotating the
+  // client IP per call models what the seed actually is: many distinct
+  // clients driving the real API rails.
+  const ip = () => `10.202.${Math.floor(Math.random() * 250) + 1}.${Math.floor(Math.random() * 250) + 1}`
   return async function call(method, apiPath, body) {
     const res = await fetch(`${BASE}${apiPath}`, {
       method,
       headers: {
         ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
         ...(cookie ? { Cookie: cookie } : {}),
-        'X-Forwarded-For': ip,
+        'X-Forwarded-For': ip(),
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     })
@@ -177,6 +182,36 @@ for (const p of PRODUCTS) {
   log(`product: ${p.name}`)
 }
 
+// ─── 3b. Variant lots (t229c) ───────────────────────────────
+// Real B2B catalogs are deep: a mill lists many lots of the same base
+// line (grades, colorways, widths, lot numbers). 20 base products make
+// ONE server page — the endless scroll (24 rows/page) could never
+// demonstrate. Three honest variants per base line → 80 products → 4
+// pages of social-style feed with real depth. Variants carry their own
+// lot pricing/stock and are flagged so deals/reviews stay on base lines.
+const VARIANTS = [
+  { suffix: '— Grade A Lot', priceMul: 1.12, stockMul: 0.6, soldMul: 0.4, ratingAdj: 0.1 },
+  { suffix: '— Grade B Value Lot', priceMul: 0.86, stockMul: 1.4, soldMul: 0.7, ratingAdj: -0.2 },
+  { suffix: '— New Season Lot', priceMul: 1.04, stockMul: 0.8, soldMul: 0.25, ratingAdj: 0.0 },
+]
+for (const p of PRODUCTS) {
+  for (const [vi, v] of VARIANTS.entries()) {
+    const variant = {
+      ...p,
+      name: `${p.name} ${v.suffix}`,
+      price: Math.max(1, Math.round(p.price * v.priceMul)),
+      moq: p.moq,
+      stock: Math.max(10, Math.round(p.stock * v.stockMul)),
+      sold: Math.max(0, Math.round(p.sold * v.soldMul)),
+      rating: Math.min(5, Math.max(3.5, Math.round((p.rating + v.ratingAdj) * 10) / 10)),
+      variant: true,
+    }
+    const id = await createProduct(variant.sup, variant)
+    productIds.push({ id, ...variant })
+  }
+}
+log(`created ${PRODUCTS.length * VARIANTS.length} variant lots (catalog depth for endless scroll)`)
+
 // ─── 4. Approve products + 6 of 7 suppliers ────────────────────
 for (const p of productIds) {
   const res = await admin('PATCH', '/api/admin/products', { productId: p.id, action: 'approve', reason: 'Marketplace seed' })
@@ -204,7 +239,7 @@ const REVIEW_COMMENTS = [
 ]
 const REVIEWERS = [buyerSessions['buyer1@zylod.bd'], buyerSessions['buyer2@zylod.bd']]
 let reviewCount = 0
-for (const p of productIds.filter(x => x.sold > 500).slice(0, 12)) {
+for (const p of productIds.filter(x => x.sold > 500 && !x.variant).slice(0, 12)) {
   for (let i = 0; i < 2; i++) {
     const sess = REVIEWERS[i % 2]
     const rating = i === 0 ? Math.round(Math.min(5, Math.max(4, p.rating))) : (Math.round(p.rating * 2) >= 9 ? 5 : 4)
@@ -221,7 +256,7 @@ log(`posted ${reviewCount} buyer reviews`)
 // ─── 6. Flash + daily deals (admin rails) ──────────────────────
 const now = Date.now()
 const H = 3600_000
-const dealTargets = productIds.filter(p => ['cotton-fabric.png', 'basmati-rice.png', 'jute-shopping-bags.png', 'led-panel.png'].includes(p.img))
+const dealTargets = productIds.filter(p => !p.variant && ['cotton-fabric.png', 'basmati-rice.png', 'jute-shopping-bags.png', 'led-panel.png'].includes(p.img))
 for (const [i, p] of dealTargets.entries()) {
   const dealPrice = Math.round(p.price * (0.78 - i * 0.02))
   const res = await admin('POST', '/api/admin/deals', {
@@ -232,7 +267,7 @@ for (const [i, p] of dealTargets.entries()) {
   if (res.status !== 201) throw new Error(`flash deal failed: ${JSON.stringify(res.json).slice(0, 250)}`)
   log(`flash deal: ${p.name} @ ${dealPrice}`)
 }
-const dailyTargets = productIds.filter(p => ['tshirts.png', 'solar-powerbank.png', 'towels.png'].includes(p.img))
+const dailyTargets = productIds.filter(p => !p.variant && ['tshirts.png', 'solar-powerbank.png', 'towels.png'].includes(p.img))
 for (const p of dailyTargets) {
   const dealPrice = Math.round(p.price * 0.88)
   const day = new Date(); day.setUTCHours(0, 0, 0, 0)

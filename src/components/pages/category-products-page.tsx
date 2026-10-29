@@ -376,12 +376,18 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
       try {
         // First paint: two server pages (48 rows) so the grid feels full;
         // deeper pages stream in on scroll via loadMorePages().
-        const base = categorySlug
-          ? `/api/products?category=${encodeURIComponent(categorySlug)}`
-          : '/api/products'
+        // t229c: build the query with URLSearchParams — the old string concat
+        // produced `/api/products&page=1` (no `?`) when categorySlug was
+        // empty (the All Products page), a 404 path that silently emptied
+        // the grid into "No products found".
+        const q1 = new URLSearchParams()
+        if (categorySlug) q1.set('category', categorySlug)
+        q1.set('page', '1'); q1.set('limit', '24')
+        const q2 = new URLSearchParams(q1)
+        q2.set('page', '2')
         const pages = await Promise.all([
-          fetch(`${base}&page=1&limit=24`, { credentials: 'include' }),
-          fetch(`${base}&page=2&limit=24`, { credentials: 'include' }),
+          fetch(`/api/products?${q1}`, { credentials: 'include' }),
+          fetch(`/api/products?${q2}`, { credentials: 'include' }),
         ])
         if (!pages[0].ok) throw new Error(`Request failed: ${pages[0].status}`)
         const jsons = await Promise.all(pages.map((r) => (r.ok ? r.json() : { data: [] })))
@@ -422,10 +428,12 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
     if (serverPage >= totalPages) return
     setLoadingMore(true)
     try {
-      const base = categorySlug
-        ? `/api/products?category=${encodeURIComponent(categorySlug)}`
-        : '/api/products'
-      const res = await fetch(`${base}&page=${serverPage + 1}&limit=24`, { credentials: 'include' })
+      // t229c: URLSearchParams join — see fetchProducts (string concat lost
+      // the `?` on the uncategorized All Products feed).
+      const q = new URLSearchParams()
+      if (categorySlug) q.set('category', categorySlug)
+      q.set('page', String(serverPage + 1)); q.set('limit', '24')
+      const res = await fetch(`/api/products?${q}`, { credentials: 'include' })
       if (!res.ok) throw new Error(`Request failed: ${res.status}`)
       const json = await res.json()
       const rows = Array.isArray(json.data) ? json.data : []
