@@ -38,6 +38,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -290,8 +291,17 @@ fun ZylodRoot() {
     }
 
     // Web-initiated navigation rides the SAME contract as the native bar.
+    // t229e: rememberUpdatedState keeps the handler installed EXACTLY once
+    // (round-4 contract: registered while composed, cleared on dispose)
+    // while always invoking the CURRENT openPage. The old DisposableEffect
+    // capture froze the lambda (and its `route` capture) from the FIRST
+    // composition — navigateResolved's web→web popUpTo flatten decision then
+    // ran against a stale route for the whole process lifetime, shaping the
+    // back stack wrong and leaving extra destinations recomposing behind
+    // the visible screen.
+    val currentOpenPage by rememberUpdatedState(openPage)
     DisposableEffect(Unit) {
-        NativeNavBus.openPageHandler = { pageId, params -> openPage(pageId, params) }
+        NativeNavBus.openPageHandler = { pageId, params -> currentOpenPage(pageId, params) }
         onDispose { NativeNavBus.openPageHandler = null }
     }
 

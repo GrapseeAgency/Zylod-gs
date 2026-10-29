@@ -243,7 +243,22 @@ fun ProductDetailScreen(
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     item(key = "gallery") { Gallery(product) }
-                    item(key = "info") { ProductInfo(product, state, vm) }
+                    item(key = "info") {
+                        // t229e: recomposition confinement — pass the exact
+                        // fields this section reads, NOT the whole PdpUiState.
+                        // The broad object made every unrelated state change
+                        // (toast set/cleared, qaLoading, askingQuestion, the
+                        // qa list refresh, wishlist probe) structurally unequal
+                        // and recomposed the entire info block (name/price/
+                        // tier table/variant chips/stepper) on the PDP.
+                        ProductInfo(
+                            product = product,
+                            wishlisted = state.wishlisted,
+                            quantity = state.quantity,
+                            selectedVariantId = state.selectedVariantId,
+                            vm = vm,
+                        )
+                    }
                     item(key = "actions") {
                         ActionRow(
                             product = product,
@@ -252,7 +267,18 @@ fun ProductDetailScreen(
                             onBuyNow = vm::buyNow,
                         )
                     }
-                    item(key = "tabs") { TabsSection(product, state, vm) }
+                    item(key = "tabs") {
+                        // t229e: same confinement as the info item — the tabs
+                        // section only needs the spec/qa slice of the state.
+                        TabsSection(
+                            product = product,
+                            specifications = state.specifications,
+                            qa = state.qa,
+                            qaLoading = state.qaLoading,
+                            askingQuestion = state.askingQuestion,
+                            vm = vm,
+                        )
+                    }
                     item(key = "supplier") { SupplierCard(product, openPage) }
                     item { Spacer(Modifier.height(20.dp)) }
                 }
@@ -266,7 +292,12 @@ fun ProductDetailScreen(
             exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
             modifier = Modifier.align(Alignment.BottomCenter),
         ) {
-            StickyBuyBar(state = state, vm = vm)
+            // t229e: product + quantity only (was the whole state) — a toast
+            // or qa refresh no longer recomposes the sticky buy bar. let
+            // keeps the old `state.product ?: return` null contract.
+            product?.let { nonNull ->
+                StickyBuyBar(product = nonNull, quantity = state.quantity, vm = vm)
+            }
         }
 
         SnackbarHost(
@@ -436,7 +467,9 @@ private fun BadgeChip(text: String, modifier: Modifier = Modifier, destructive: 
 @Composable
 private fun ProductInfo(
     product: ProductDetailDto,
-    state: PdpUiState,
+    wishlisted: Boolean,
+    quantity: Int,
+    selectedVariantId: String?,
     vm: ProductDetailViewModel,
 ) {
     Surface(
@@ -456,7 +489,7 @@ private fun ProductInfo(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
-                WishlistHeart(wishlisted = state.wishlisted, onToggle = vm::toggleWishlist)
+                WishlistHeart(wishlisted = wishlisted, onToggle = vm::toggleWishlist)
             }
 
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
@@ -496,7 +529,7 @@ private fun ProductInfo(
             if (product.priceTiers.isNotEmpty()) {
                 TierTable(
                     tiers = product.priceTiers,
-                    quantity = state.quantity,
+                    quantity = quantity,
                     basePrice = product.basePrice,
                     unit = product.unit ?: "piece",
                 )
@@ -517,7 +550,7 @@ private fun ProductInfo(
                     // t216: stable keys (was a positional count overload) —
                     // selecting a variant only recomposes the affected chips.
                     items(product.variants, key = { it.id }, contentType = { "variant" }) { variant ->
-                        val selected = state.selectedVariantId == variant.id
+                        val selected = selectedVariantId == variant.id
                         val outOfStock = variant.stockQuantity == 0
                         Surface(
                             shape = RoundedCornerShape(8.dp),
@@ -564,7 +597,7 @@ private fun ProductInfo(
                     modifier = Modifier.weight(1f),
                 )
                 QuantityStepper(
-                    quantity = state.quantity,
+                    quantity = quantity,
                     enabled = product.stockQuantity > 0,
                     onAdjust = vm::adjustQuantity,
                 )
@@ -786,7 +819,14 @@ private enum class PdpTab(val label: String) {
 }
 
 @Composable
-private fun TabsSection(product: ProductDetailDto, state: PdpUiState, vm: ProductDetailViewModel) {
+private fun TabsSection(
+    product: ProductDetailDto,
+    specifications: Map<String, String>,
+    qa: List<ProductQaItemDto>,
+    qaLoading: Boolean,
+    askingQuestion: Boolean,
+    vm: ProductDetailViewModel,
+) {
     var selected by remember { mutableIntStateOf(0) }
     val tabs = PdpTab.entries
     Surface(
@@ -833,9 +873,14 @@ private fun TabsSection(product: ProductDetailDto, state: PdpUiState, vm: Produc
             Column(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
                 when (tabs[selected]) {
                     PdpTab.DETAILS -> DetailsTab(product)
-                    PdpTab.SPECS -> SpecsTab(state.specifications)
+                    PdpTab.SPECS -> SpecsTab(specifications)
                     PdpTab.REVIEWS -> ReviewsTab(product)
-                    PdpTab.QA -> QaTab(state, vm)
+                    PdpTab.QA -> QaTab(
+                        qa = qa,
+                        qaLoading = qaLoading,
+                        askingQuestion = askingQuestion,
+                        vm = vm,
+                    )
                 }
             }
         }
@@ -1023,7 +1068,12 @@ private fun ReviewCard(review: ReviewDto) {
  * (product-qa-ask 5/min) — no client bypass.
  */
 @Composable
-private fun QaTab(state: PdpUiState, vm: ProductDetailViewModel) {
+private fun QaTab(
+    qa: List<ProductQaItemDto>,
+    qaLoading: Boolean,
+    askingQuestion: Boolean,
+    vm: ProductDetailViewModel,
+) {
     var askOpen by remember { mutableStateOf(false) }
     var draft by remember { mutableStateOf("") }
 
@@ -1035,13 +1085,13 @@ private fun QaTab(state: PdpUiState, vm: ProductDetailViewModel) {
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.weight(1f),
             )
-            TextButton(onClick = { askOpen = true }, enabled = !state.askingQuestion) {
+            TextButton(onClick = { askOpen = true }, enabled = !askingQuestion) {
                 Text("Ask a question", fontSize = 12.sp)
             }
         }
-        if (state.qa.isEmpty()) {
+        if (qa.isEmpty()) {
             EmptyTabText(
-                if (state.qaLoading) {
+                if (qaLoading) {
                     "Loading questions…"
                 } else {
                     "No questions yet — ask the supplier about MOQ, bulk pricing or shipping."
@@ -1049,14 +1099,14 @@ private fun QaTab(state: PdpUiState, vm: ProductDetailViewModel) {
             )
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                state.qa.take(20).forEach { qa -> QaCard(qa) }
+                qa.take(20).forEach { entry -> QaCard(entry) }
             }
         }
     }
 
     if (askOpen) {
         AlertDialog(
-            onDismissRequest = { if (!state.askingQuestion) askOpen = false },
+            onDismissRequest = { if (!askingQuestion) askOpen = false },
             title = { Text("Ask the supplier", fontSize = 16.sp, fontWeight = FontWeight.Bold) },
             text = {
                 Column {
@@ -1085,7 +1135,7 @@ private fun QaTab(state: PdpUiState, vm: ProductDetailViewModel) {
                         draft = ""
                         vm.askQuestion(question)
                     },
-                    enabled = draft.trim().length in 5..500 && !state.askingQuestion,
+                    enabled = draft.trim().length in 5..500 && !askingQuestion,
                 ) {
                     Text("Post question", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                 }
@@ -1261,8 +1311,7 @@ private fun SupplierCard(product: ProductDetailDto, openPage: (String, String) -
 
 /** Sticky bar (product-detail-page.tsx:1628-1668): total + Buy Now. */
 @Composable
-private fun StickyBuyBar(state: PdpUiState, vm: ProductDetailViewModel) {
-    val product = state.product ?: return
+private fun StickyBuyBar(product: ProductDetailDto, quantity: Int, vm: ProductDetailViewModel) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.97f),
         shadowElevation = 8.dp,
@@ -1274,13 +1323,13 @@ private fun StickyBuyBar(state: PdpUiState, vm: ProductDetailViewModel) {
         ) {
             Column(Modifier.weight(1f)) {
                 Text(
-                    formatBdt(vm.applicablePrice() * state.quantity),
+                    formatBdt(vm.applicablePrice() * quantity),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Black,
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    "${state.quantity} ${product.unit ?: "piece"} × ${formatBdt(vm.applicablePrice())}",
+                    "$quantity ${product.unit ?: "piece"} × ${formatBdt(vm.applicablePrice())}",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

@@ -208,9 +208,18 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
                 val base = withContext(Dispatchers.IO) {
                     baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
                 }
+                // t229e: throttle upload progress to whole-percent steps. The
+                // counting body reports on EVERY 8 KB write — up to ~1000
+                // StateFlow emissions per 8 MB document, each one invalidating
+                // and recomposing the whole 4-step registration screen; the
+                // progress bar needs only ~1% granularity to look live.
+                var lastEmitted = 0f
                 val result = withContext(Dispatchers.IO) {
                     KycUploader.upload(base, file, kind) { fraction ->
-                        updateSlot(slot) { it.copy(progress = fraction) }
+                        if (fraction - lastEmitted >= 0.01f || fraction >= 1f) {
+                            lastEmitted = fraction
+                            updateSlot(slot) { it.copy(progress = fraction) }
+                        }
                     }
                 }
                 result.fold(
@@ -324,9 +333,15 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
             KycSlot.TRADE_LICENSE -> "trade-license"
         }
         val base = baseUrl ?: ServerConfig.resolve(appContext).also { baseUrl = it }
+        // t229e: same 1% progress throttle as upload() — submit() drives the
+        // identical counting body through uploadBlocking.
+        var lastEmitted = 0f
         return withContext(Dispatchers.IO) {
             KycUploader.upload(base, file, kind) { fraction ->
-                updateSlot(slot) { it.copy(progress = fraction) }
+                if (fraction - lastEmitted >= 0.01f || fraction >= 1f) {
+                    lastEmitted = fraction
+                    updateSlot(slot) { it.copy(progress = fraction) }
+                }
             }.getOrNull()
         }
     }
@@ -334,6 +349,22 @@ class RegisterSupplierViewModel(private val appContext: Context) : ViewModel() {
 
 /** Multipart /api/uploads/kyc client — returns the TOP-LEVEL url field. */
 private object KycUploader {
+
+    /**
+     * t229e: ONE upload client for the process. The former per-call
+     * OkHttpClient spun up a fresh connection pool + dispatcher thread set
+     * per document (up to 3 per registration) against the SAME host — pure
+     * GC and thread churn while the UI tried to animate a progress bar. The
+     * long write timeout is kept for slow uplinks (8 MB documents).
+     */
+    private val client by lazy {
+        okhttp3.OkHttpClient.Builder()
+            .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
+    }
+
     fun upload(baseUrl: String, file: File, kind: String, onProgress: (Float) -> Unit): Result<String> = runCatching {
         val contentType = "application/octet-stream".toMediaTypeOrNull()
         val countingBody = object : okhttp3.RequestBody() {
@@ -362,11 +393,6 @@ private object KycUploader {
         val request = okhttp3.Request.Builder()
             .url(baseUrl.trimEnd('/') + "/api/uploads/kyc")
             .post(multipart)
-            .build()
-        val client = okhttp3.OkHttpClient.Builder()
-            .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-            .writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
-            .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
             .build()
         client.newCall(request).execute().use { response ->
             val bodyStr = response.body?.string().orEmpty()

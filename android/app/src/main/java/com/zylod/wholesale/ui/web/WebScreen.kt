@@ -383,13 +383,6 @@ fun WebScreen(pageId: String, query: String) {
         }
     }
 
-    // t227: the device-local cached catalog (real products fetched while
-    // online). null ⇒ query not settled yet — render the plain error state
-    // until known, so the first error frame never flashes an empty list.
-    val cachedProducts by remember {
-        com.zylod.wholesale.ZylodApp.instance.database.productDao().getAllOfflineProducts()
-    }.collectAsStateWithLifecycle(initialValue = null)
-
     Box(
         Modifier
             .fillMaxSize()
@@ -408,18 +401,15 @@ fun WebScreen(pageId: String, query: String) {
                 },
             )
         } else if (pageError) {
-            val cached = cachedProducts
-            if (cached != null && cached.isNotEmpty()) {
-                // t227: the device holds a REAL cached catalog — render it
-                // instead of a bare cloud icon (owner order: never dead-end
-                // with nothing when the app holds data).
-                OfflineCatalogScreen(products = cached, onRetry = retryConnection)
-            } else {
-                WebErrorState(
-                    message = "The server isn't responding. Check your connection and try again.",
-                    onRetry = retryConnection,
-                )
-            }
+            // t229e: the cached-catalog Room observer is collected ONLY while
+            // this error branch is composed (OfflineErrorFallback below). The
+            // former top-level collection kept one observer on the whole
+            // offline_products table attached to EVERY WebView surface — home
+            // included — for the entire time the page rendered fine; every
+            // table write (the reveal-triggered catalog sync inserts ~60 rows)
+            // re-ran the query and re-emitted a full list into a state nobody
+            // on the happy path ever read.
+            OfflineErrorFallback(onRetry = retryConnection)
         } else {
             // Keyed on the checked-out shell: the AndroidView factory re-runs
             // when the pool hands us a (possibly different) WebView. Shell
@@ -835,6 +825,39 @@ private fun encodeQueryValues(query: String): String =
         if (eq < 0) Uri.encode(pair)
         else pair.substring(0, eq + 1) + Uri.encode(pair.substring(eq + 1))
     }
+
+/**
+ * t229e: the offline-catalog Room flow is collected ONLY while the WebView
+ * error branch is composed (see the pageError branch above — this composable
+ * owns the collection). Formerly the flow lived at the top of [WebScreen], so
+ * EVERY WebView surface — home and every Tier-3 page — kept an active observer
+ * on the whole offline_products table while the page rendered fine; each table
+ * write (the reveal-triggered catalog sync inserts ~60 rows) re-ran the query
+ * and re-emitted a full list per screen. Rendering behavior is byte-identical:
+ * cached rows → [OfflineCatalogScreen], else the plain error state.
+ */
+@Composable
+private fun OfflineErrorFallback(onRetry: () -> Unit) {
+    // t227: the device-local cached catalog (real products fetched while
+    // online). null ⇒ query not settled yet — render the plain error state
+    // until known, so the first error frame never flashes an empty list.
+    val cached by remember {
+        com.zylod.wholesale.ZylodApp.instance.database.productDao().getAllOfflineProducts()
+    }.collectAsStateWithLifecycle(initialValue = null)
+    // Local copy: smart-cast needs a plain val (delegated reads cannot cast).
+    val cachedProducts = cached
+    if (cachedProducts != null && cachedProducts.isNotEmpty()) {
+        // t227: the device holds a REAL cached catalog — render it
+        // instead of a bare cloud icon (owner order: never dead-end
+        // with nothing when the app holds data).
+        OfflineCatalogScreen(products = cachedProducts, onRetry = onRetry)
+    } else {
+        WebErrorState(
+            message = "The server isn't responding. Check your connection and try again.",
+            onRetry = onRetry,
+        )
+    }
+}
 
 /** Offline/error state for the WebView surface — same visual language as Home. */
 @Composable
