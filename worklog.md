@@ -6857,3 +6857,7 @@ Work Log:
 Stage Summary:
 - Four REAL defects found and fixed this round (badge-invisible-in-app; identity version drift; offline photos unloadable; frozen lockout countdown) + one perf fix (gallery recomposition). Every fix verified live where the surface is web-visible; Kotlin fixes await CI compile (the only compile gate).
 - Open: CI results for d1647bb; release v2.4.6-d1647bb after android-build SUCCESS; bKash/SSLCommerz sandbox; release debug-signed (keystore.properties not provided); orders API unpaginated.
+
+## t229h follow-up — CI compile fix (4e6650c)
+- [CI FAILURE ROOT CAUSE — display phantom STRIKES AGAIN, new mode]: d1647bb's android-build + android-screenshots failed on ONE error: LoginScreen.kt:634 Unresolved reference 'shapes'. The LockoutBanner composable was written with `MaterialTheme.colorScheme.shapes.medium` — copied from the DISPLAYED text of the original banner, but the REAL bytes were `MaterialTheme.shapes.medium` (git show d1647bb~1 proves it). The phantom doesn't only EAT bytes (t229f rule) — it can also INSERT them. RULE UPDATE: never copy expressions from tool display into new code; always re-derive identifiers from git show / od ground truth or from first principles.
+- FIXED in 4e6650c (one line). All other t229h Kotlin (GalleryDots, offline image resolution, Coil prefetch) compiled clean — the error list contained exactly one entry.
