@@ -491,6 +491,11 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
   // end of the grid scrolls into view, append the next SERVER page. The Load
   // More button stays as a keyboard/no-JS observer fallback, and the observer
   // re-arms on every filter/sort change.
+  // t229d: jump-proofing — a fast scroll (End key, scrollbar drag, anchor
+  // jump) can skip the sentinel's intersection transitions entirely and land
+  // in the footer below it, where the observer never fires. A passive scroll
+  // listener recomputes the geometric condition on every scroll event so
+  // jumps are caught too; loadMorePages' own guards prevent duplicates.
   useEffect(() => {
     if (!hasMore || loading) return
     const el = sentinelRef.current
@@ -504,7 +509,20 @@ export function CategoryProductsPage({ pageParams: _pageParams }: { pageParams?:
       { rootMargin: '400px 0px' },
     )
     observer.observe(el)
-    return () => observer.disconnect()
+    const onScroll = () => {
+      // Sentinel above or near the viewport bottom (400px lead) → append.
+      if (el.getBoundingClientRect().top <= window.innerHeight + 400) {
+        void loadMorePages()
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    // A jump may have already happened before this listener attached —
+    // check the current position once on arm.
+    onScroll()
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [hasMore, loading, loadMorePages])
 
   const handleAddToCart = useCallback(
