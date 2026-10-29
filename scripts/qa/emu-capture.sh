@@ -37,6 +37,23 @@ tap_text () {
   fi
 }
 
+# t229g: tap a BOTTOM-BAR tab by label, region-filtered to the bottom 15% of
+# the screen (WebView content can never match there — the Scaffold keeps the
+# tab bar zone clear). This is the deterministic way to drive the native
+# bottom bar from CI.
+tap_tab () {
+  local text="$1"
+  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
+  adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
+  local bounds
+  bounds=$(python3 scripts/qa/uia-tap-tab.py "$text" ui.xml)
+  if [ -n "$bounds" ]; then
+    adb shell input tap $bounds && echo "tapped tab '$text' at $bounds"
+  else
+    echo "::warning::tab '$text' not found in the bottom-bar region"
+  fi
+}
+
 log "Installing APK"
 adb install -r android/app/build/outputs/apk/debug/app-debug.apk || echo "::warning::apk install failed"
 
@@ -58,6 +75,42 @@ cap screenshots/01b-welcome-last-slide.png
 tap_text "Get Started"
 sleep 18
 cap screenshots/02-home.png
+
+log "t229g: owner-named native return flows — bottom-bar Home from web tabs + system Back"
+# These capture the EXACT flows the owner reported broken ("from search or
+# hot deals I cannot come back to the home page", "system back button doesn't
+# work"). Each screenshot is real evidence either way: if the return were
+# broken, 21/23/24 would show the previous page still painted.
+tap_tab "Search"
+sleep 10
+cap screenshots/20-search-tab.png
+tap_tab "Home"
+sleep 10
+cap screenshots/21-home-return-from-search.png
+
+tap_tab "Hot Deals"
+sleep 10
+cap screenshots/22-hot-deals-tab.png
+tap_tab "Home"
+sleep 10
+cap screenshots/23-home-return-from-hot-deals.png
+
+# System BACK from a web tab → NavHost pops → home must be visible again.
+tap_tab "Search"
+sleep 10
+adb shell input keyevent 4 || true
+sleep 8
+cap screenshots/24-back-from-search.png
+
+# Footer build badge inside the native shell (web commit + APK versionName):
+# scroll the home WebView to the footer and capture the identity line.
+adb shell input swipe 540 1800 540 500 400 || true
+sleep 2
+adb shell input swipe 540 1800 540 500 400 || true
+sleep 2
+adb shell input swipe 540 1800 540 500 400 || true
+sleep 3
+cap screenshots/25-footer-build-badge.png
 
 log "Native Login screen via the UI path (guest policy: unauthenticated Profile tab -> native login)"
 # RouteOwnership guest policy: an UNAUTHENTICATED Profile request opens the
