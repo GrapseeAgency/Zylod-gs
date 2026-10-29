@@ -6751,3 +6751,35 @@ Work Log:
 
 Stage Summary:
 - Every defect on the owner's re-sent list is either fixed-and-live-verified (footer nav, scroll reset, money wall, image sizing, endless scroll, scanner, All-Products feed, preview-origin block) or was already fixed in the t229/t229b commits now verified (seller Accept orderId contract, navy purge, native smoothness). The seller→buyer→admin loop is proven end-to-end in the real UI with a traceable order number across all three roles. Open gaps unchanged: no device/emulator in sandbox (on-device native behavior not directly verifiable), bKash/SSLCommerz sandbox-mode, release still debug-signed.
+
+---
+Task ID: t229d + t229e (hard-continue sweep)
+Agent: ZCode (GLM)
+Task: Owner re-sent the defect list with "hard continue with all the things i mentioned" — verify every claim on the live build, fix what actually reproduces, native perf pass, fresh release.
+
+Work Log:
+- [JUNK COMMIT REMOVED]: local HEAD carried an un-pushed UUID-named commit (426d289, 35 files / 6961 insertions — parallel-architecture MainActivity.kt, embedded assets/index.html, tmp scripts, supabase.ts). Verified pure-additions (0 modified files) → git reset --hard origin/main (bccf84a). Dev server stayed up (200 throughout).
+- [LIVE RE-VERIFICATION — agent-browser, localhost:3000, commit bccf84a tree]:
+  * Footer nav: footer "Flash Deals" → ?page=flash-sale, scrollY 0. WORKS.
+  * Scroll reset: deep position (scrollY 9594 on all-products) → Home → scrollY 0. WORKS.
+  * Money wall (3 surfaces): guest PDP Add-to-Cart → login redirect; guest Buy Now → "Sign in required" gate page; POST /api/orders and POST /api/cart both 401 {"error":"Authentication required"}. HOLDS.
+  * Image sizing: 210×210 product cards at 1440px, 170×170 at 1280px, natural 1024, square (no letterboxing). HOLDS.
+  * Theme: overlay backdrops computed black; zero bg-blue/navy/indigo classes; sky/cyan scales fully hue-less at CSS-token level. HOLDS.
+  * Responsive: zero horizontal overflow on home/all-products/flash-sale/barcode-scanner/cart/login/supplier-directory/support-center at 390×844. HOLDS.
+  * Scanner pages load clean (no SyntaxError chunks); Photo Scan → image-search page, Voice Search → voice-search page, both real.
+- [DEFECT FOUND+FIXED — endless scroll jump-skip (t229d, commit 10d039e)]: a fast scroll (End key, scrollbar drag, anchor jump) can skip the sentinel's 400px rootMargin intersection zone entirely and land in the ~1300px footer where the observer never fires — the feed silently stops. Fix: passive scroll listener in the same effect recomputing the geometric condition (sentinel top ≤ innerHeight+400) on every scroll event + one check on arm. Live-verified: single jump-to-bottom now appends pages 3+4 (48 → 80 products, doc height 7883 → 11818).
+- [DEFECT FOUND+FIXED — barcode scanner dead-on-arrival (t229d, same commit)]: ALL 80 products had sku=null — /api/search/barcode matches by sku/id, so every camera/manual/photo lookup honestly returned "no product matches" (read as "fake scanner"). scripts/backfill-sku.mjs existed from a prior stretch but had never been RUN. Ran it: 80 products backfilled (ZL-XXXXXXXX deterministic). Live-verified: manual entry "ZL-C1TFU3W2" → product card (SKU/price/stock) → View Product → PDP "Premium Cotton Fabric — Dyed 44"". Server match verified via API too.
+- [NATIVE PERF PASS (t229e, subagent, commit e6022ae — android-build CI run 40846076121 SUCCESS)]:
+  * 60 Kotlin files audited against a 12-category jank checklist.
+  * PDP broad-state split: ProductInfo/TabsSection/QaTab/StickyBuyBar received the whole PdpUiState → unrelated state changes structurally invalidated the heaviest sections; now exact-field params (strong skipping can skip).
+  * ZylodRoot NativeNavBus handler froze the first composition's openPage for the process lifetime → web→web popUpTo flatten against a stale route (back-stack pileup); now rememberUpdatedState.
+  * WebScreen collected getAllOfflineProducts() Room flow at the top level of EVERY WebView surface (home included) — every catalog sync re-queried + re-emitted into an unread state; moved into the error-fallback composable that renders it.
+  * RegisterSupplierScreen: KYC upload progress emitted per ~8KB write (~1000 recompositions of the 4-step screen per 8MB doc) → throttled to whole-percent; per-upload OkHttpClient (new pool+threads each) → memoized singleton.
+  * Missing-surface audit: every NATIVE row in RouteOwnership.kt cross-referenced against ZylodRoot NavHost + ui/ tree — zero dead routes, zero pageIds without screens. The "missing pages" class does not reproduce in the NATIVE ownership set (Tier-3 is WebView-owned by binding directive).
+  * Not fixed (documented reasoning): CartStore.persist() JSON encode on main (sub-ms for realistic carts, write-ordering risk if async); orders pagination (server contract has no cursor params — web parity); TimedAsyncImage dead code (release-inert).
+- [E2E COMMERCE CHAIN — re-proven TODAY with fresh order]: buyer1@zylod.bd → address book address (required since t191 — API refuses inline addresses) → POST /api/orders → ORD-MVTBDA9VURKI, ৳18,000, paymentStatus UNPAID (bank_transfer → manualPaymentId pending verification; no fake payment path). green.jute@zylod.bd (owns the product's supplier cmvt8yt0g…) → GET /api/supplier/orders shows it (response key is `orders`, not `data` — initial 0-row readings were a test-script bug, endpoint verified correct) → PATCH /api/supplier/orders/<parentOrderId> {"status":"confirmed"} → success + subOrder confirmed. Admin market@zylod.bd → order detail shows subOrder confirmed, payment unpaid. Chain intact end-to-end.
+- [RELEASE]: v2.4.6-e6022ae (release 427645925) — zylod-b2b-v2.4.6-e6022ae.apk (45,267,412 bytes, SHA256 93d8af2a8f4da629992494a168480ce60d7f143c269bcdfdf8045b2e48760a7d) + .sha256 asset. Debug-signed (keystore.properties still not provided).
+- [CI]: 10d039e → web-ci SUCCESS, android-build SUCCESS, ios-build SUCCESS, android-screenshots SUCCESS. e6022ae → android-build SUCCESS, ios-build SUCCESS (screenshots in-flight at log time).
+
+Stage Summary:
+- Every owner claim was re-tested on the live build: footer nav, scroll reset, money wall, image sizing, theme, responsive all verified working with browser evidence. Two NEW real defects found and fixed (jump-skip endless scroll; scanner sku=null dead-match). Native jank sources removed at the five worst code-level offenders; CI-green. Open gaps unchanged: no device/emulator in sandbox (on-device jank% needs adb logcat -s ZylodPerf), bKash/SSLCommerz sandbox-mode, release debug-signed, orders API unpaginated (server change needed first).
