@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useNavigationStore } from '@/store/navigation-store'
 import { ChevronDown } from 'lucide-react'
+import { BuildBadge } from '@/components/layout/build-badge'
 
 /**
  * MobileSiteLinks (t220)
@@ -76,8 +77,15 @@ export function MobileSiteLinks() {
         aria-expanded={open}
         className="flex w-full items-center justify-between px-4 py-3 text-left active:opacity-80 transition-opacity"
       >
-        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Site links &amp; legal
+        <span className="flex items-center gap-1.5 min-w-0">
+          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Site links &amp; legal
+          </span>
+          {/* t229h: the build badge was desktop-Footer-only, but the mobile
+              layout renders THIS component instead of <Footer> — the Android
+              WebView (mobile width) never showed any build identifier, which
+              is exactly the stale-APK confusion the badge exists to kill. */}
+          <BuildBadge />
         </span>
         <ChevronDown
           className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`}

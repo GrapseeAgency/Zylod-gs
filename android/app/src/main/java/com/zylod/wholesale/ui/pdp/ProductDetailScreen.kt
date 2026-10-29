@@ -35,6 +35,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -399,28 +400,17 @@ private fun Gallery(product: ProductDetailDto) {
                 )
             }
             if (images.size > 1) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                // t229h: the pagerState.currentPage read lives in GalleryDots'
+                // OWN scope — when it sat directly in Gallery's body, every
+                // page settle recomposed the whole gallery (HorizontalPager
+                // call + badge chips) instead of just the dot row.
+                GalleryDots(
+                    pagerState = pagerState,
+                    count = images.size,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 12.dp),
-                ) {
-                    images.indices.forEach { index ->
-                        val active = pagerState.currentPage == index
-                        Box(
-                            Modifier
-                                .size(width = if (active) 16.dp else 8.dp, height = 8.dp)
-                                .background(
-                                    if (active) {
-                                        MaterialTheme.colorScheme.primary
-                                    } else {
-                                        MaterialTheme.colorScheme.outline
-                                    },
-                                    RoundedCornerShape(50),
-                                ),
-                        )
-                    }
-                }
+                )
             }
         }
         if (product.isCustomizable) {
@@ -433,6 +423,37 @@ private fun Gallery(product: ProductDetailDto) {
                     .align(Alignment.TopEnd)
                     .padding(12.dp),
                 destructive = true,
+            )
+        }
+    }
+}
+
+/**
+ * Gallery pager dot indicators (mobile-product-detail-page.tsx dots).
+ * t229h: extracted from [Gallery] — this composable owns the ONLY
+ * pagerState.currentPage read, so a page-settle invalidation recomposes
+ * just the dot row; the HorizontalPager call and badge chips above are no
+ * longer re-executed on every swipe.
+ */
+@Composable
+private fun GalleryDots(pagerState: PagerState, count: Int, modifier: Modifier = Modifier) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = modifier,
+    ) {
+        repeat(count) { index ->
+            val active = pagerState.currentPage == index
+            Box(
+                Modifier
+                    .size(width = if (active) 16.dp else 8.dp, height = 8.dp)
+                    .background(
+                        if (active) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.outline
+                        },
+                        RoundedCornerShape(50),
+                    ),
             )
         }
     }

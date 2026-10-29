@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,8 +37,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.imageLoader
 import coil.request.ImageRequest
 import com.zylod.wholesale.ZylodApp
+import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.model.OfflineProduct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,6 +78,8 @@ object OfflineCatalogSupport {
     private const val KEY_LAST_SYNC = "offline_products_last_sync_ms"
     /** At most one native cache refresh per 10 minutes per process lifetime. */
     private const val MIN_SYNC_INTERVAL_MS = 10 * 60 * 1000L
+    /** Image URLs warmed into Coil's disk cache per sync (bandwidth guard). */
+    private const val PREFETCH_LIMIT = 30
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(8, TimeUnit.SECONDS)
@@ -109,12 +114,54 @@ object OfflineCatalogSupport {
                 val rows = data.toOfflineProducts()
                 if (rows.isEmpty()) return@launch
                 ZylodApp.instance.database.productDao().insertAll(rows)
+                // t229h: rows in Room are not enough — the product photos live
+                // on the server, and Coil's disk cache is separate from the
+                // WebView's HTTP cache. Warm it NOW (while online) so the
+                // offline catalog renders real photos, not letter placeholders.
+                prefetchOfflineImages(context, rows.mapNotNull { it.imageUrl })
                 Log.i(TAG, "offline cache refreshed rows=${rows.size}")
             } catch (e: Exception) {
                 // Cache maintenance is best-effort; never surface or crash.
                 Log.w(TAG, "offline cache refresh failed: ${e.message}")
             }
         }
+    }
+
+    /**
+     * t229h: fire-and-forget Coil prefetch (first [PREFETCH_LIMIT] rows) so
+     * the offline catalog's photos survive on disk. Runs on Coil's own
+     * dispatcher; best-effort.
+     */
+    private fun prefetchOfflineImages(context: Context, rawUrls: List<String>) {
+        try {
+            val loader = context.imageLoader
+            rawUrls.take(PREFETCH_LIMIT).forEach { raw ->
+                val url = absoluteImageUrl(context, raw) ?: return@forEach
+                loader.enqueue(
+                    ImageRequest.Builder(context)
+                        .data(url)
+                        .build(),
+                )
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "offline image prefetch skipped: ${e.message}")
+        }
+    }
+
+    /**
+     * t229h: /api/products rows carry RELATIVE image paths
+     * ("/images/products/x.png"). Coil cannot resolve a scheme-less path —
+     * fed raw, every offline catalog row rendered the letter placeholder
+     * forever (the photos could structurally never load). Resolve against
+     * the persisted last-known server base (readable offline). Absolute
+     * URLs pass through untouched.
+     */
+    fun absoluteImageUrl(context: Context, raw: String?): String? {
+        if (raw.isNullOrBlank()) return null
+        if (raw.startsWith("http://") || raw.startsWith("https://")) return raw
+        if (!raw.startsWith("/")) return null
+        val base = ServerConfig.cached(context) ?: return null
+        return base.trimEnd('/') + raw
     }
 
     /** Maps /api/products rows onto the offline cache entity, tolerating shape drift. */
@@ -213,6 +260,12 @@ fun OfflineCatalogScreen(products: List<OfflineProduct>, onRetry: () -> Unit) {
 
 @Composable
 private fun OfflineProductRow(product: OfflineProduct) {
+    // t229h: resolve the stored RELATIVE path against the persisted server
+    // base — Coil needs an absolute URL (see OfflineCatalogSupport docs).
+    val context = LocalContext.current
+    val resolvedImage = remember(product.imageUrl) {
+        OfflineCatalogSupport.absoluteImageUrl(context, product.imageUrl)
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -228,7 +281,7 @@ private fun OfflineProductRow(product: OfflineProduct) {
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center,
         ) {
-            if (product.imageUrl.isNullOrBlank()) {
+            if (resolvedImage == null) {
                 Text(
                     product.title.take(1).uppercase(),
                     fontWeight = FontWeight.Bold,
@@ -236,8 +289,8 @@ private fun OfflineProductRow(product: OfflineProduct) {
                 )
             } else {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(product.imageUrl)
+                    model = ImageRequest.Builder(context)
+                        .data(resolvedImage)
                         .crossfade(200)
                         .build(),
                     contentDescription = product.title,

@@ -365,15 +365,12 @@ fun LoginScreen(
     LaunchedEffect(state.toast) {
         state.toast?.let { snackbar.showSnackbar(it); vm.consumeToast() }
     }
-    // Lockout countdown tick (web useCountdown).
-    LaunchedEffect(state.rateLimited, state.lockedRemainingMs) {
-        var remaining = state.lockedRemainingMs
-        while (state.rateLimited && remaining > 0) {
-            delay(1000)
-            remaining = (remaining - 1000).coerceAtLeast(0)
-            if (remaining == 0L) vm.refreshLockout(AuthRateLimit.check(context))
-        }
-    }
+    // t229h: the lockout countdown MOVED into [LockoutBanner]. The former
+    // screen-level ticker decremented a local variable nobody rendered —
+    // the banner showed the ViewModel's frozen lockedRemainingMs for the
+    // whole lock duration ("try again in 60 seconds" never counted down).
+    // The banner now owns a tick scoped to itself: 1 Hz recomposition touches
+    // only that Surface, and the expiry re-check contract is preserved.
 
     ZylodEntrance {
         AuthScaffold(title = "Zylod", onBack = null, snackbarHostState = snackbar) {
@@ -460,26 +457,10 @@ fun LoginScreen(
 
             if (state.rateLimited) {
                 Spacer(Modifier.height(14.dp))
-                Surface(
-                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.08f),
-                    shape = MaterialTheme.shapes.medium,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.25f)),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.Security, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
-                        Spacer(Modifier.width(10.dp))
-                        Column {
-                            Text("Account Temporarily Locked", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.error)
-                            Text(
-                                "Too many failed login attempts. Please try again in ${formatCountdown(state.lockedRemainingMs)}",
-                                fontSize = 11.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 2.dp),
-                            )
-                        }
-                    }
-                }
+                LockoutBanner(
+                    initialRemainingMs = state.lockedRemainingMs,
+                    onExpired = { vm.refreshLockout(AuthRateLimit.check(context)) },
+                )
             }
 
             state.error?.let {
@@ -624,6 +605,50 @@ fun LoginScreen(
 private fun formatCountdown(ms: Long): String {
     val totalSeconds = (ms / 1000).coerceAtLeast(0)
     return String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60)
+}
+
+/**
+ * t229h: the lockout banner OWNS its countdown. The screen-level ticker that
+ * used to run in [LoginScreen] decremented a local variable no composable
+ * read, so the visible "try again in MM:SS" text was frozen at the
+ * ViewModel's snapshot for the entire lock. This composable holds a local
+ * 1 Hz tick keyed on the initial remaining time - only this Surface
+ * recomposes while counting - and fires [onExpired] once when the lock
+ * window elapses (same refresh contract as the deleted screen-level ticker).
+ */
+@Composable
+private fun LockoutBanner(initialRemainingMs: Long, onExpired: () -> Unit) {
+    var remaining by remember(initialRemainingMs) { mutableStateOf(initialRemainingMs) }
+    LaunchedEffect(initialRemainingMs) {
+        if (initialRemainingMs <= 0L) return@LaunchedEffect
+        var left = initialRemainingMs
+        while (left > 0L) {
+            delay(1000)
+            left = (left - 1000L).coerceAtLeast(0L)
+            remaining = left
+        }
+        onExpired()
+    }
+    Surface(
+        color = MaterialTheme.colorScheme.error.copy(alpha = 0.08f),
+        shape = MaterialTheme.colorScheme.shapes.medium,
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.25f)),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Outlined.Security, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(10.dp))
+            Column {
+                Text("Account Temporarily Locked", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.error)
+                Text(
+                    "Too many failed login attempts. Please try again in " + formatCountdown(remaining),
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+        }
+    }
 }
 
 @Composable

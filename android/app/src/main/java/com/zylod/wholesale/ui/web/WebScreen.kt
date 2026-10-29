@@ -852,8 +852,13 @@ private fun OfflineErrorFallback(onRetry: () -> Unit) {
         // with nothing when the app holds data).
         OfflineCatalogScreen(products = cachedProducts, onRetry = onRetry)
     } else {
+        // t229h: honest first-open-offline copy — the catalog is REAL but
+        // only self-saves after the first successful online session; say
+        // exactly that instead of a bare "check your connection".
         WebErrorState(
-            message = "The server isn't responding. Check your connection and try again.",
+            message = "The server isn't responding. Check your connection and try again. " +
+                "After your first successful connection, the product catalog saves on this " +
+                "device and keeps showing here while you're offline.",
             onRetry = onRetry,
         )
     }
