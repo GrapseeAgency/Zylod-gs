@@ -44,6 +44,7 @@ import com.zylod.wholesale.data.api.ServerConfig
 import com.zylod.wholesale.data.model.OfflineProduct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -164,7 +165,22 @@ object OfflineCatalogSupport {
         return base.trimEnd('/') + raw
     }
 
-    /** Maps /api/products rows onto the offline cache entity, tolerating shape drift. */
+    /**
+     * t233 — OFFLINE READ for the generated native pages: synchronous Room
+     * read of the last-synced catalog (see [syncOfflineProductCache], which
+     * self-populates it). NativePageRepository uses this as the fallback for
+     * product-shaped pages with no per-page saved payload — the offline
+     * catalog renders REAL previously-fetched products, never a white screen.
+     * Returns empty when the cache is cold; caller falls back to seed content.
+     */
+    suspend fun cachedOfflineProducts(limit: Int = 20): List<OfflineProduct> =
+        runCatching {
+            ZylodApp.instance.database.productDao().getAllOfflineProducts().first().take(limit)
+        }.getOrDefault(emptyList())
+
+    /**
+     * Maps /api/products rows onto the offline cache entity, tolerating shape drift.
+     */
     private fun JSONArray.toOfflineProducts(): List<OfflineProduct> {
         val result = mutableListOf<OfflineProduct>()
         for (i in 0 until length()) {

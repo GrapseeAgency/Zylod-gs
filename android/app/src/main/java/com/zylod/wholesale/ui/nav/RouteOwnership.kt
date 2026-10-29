@@ -1,68 +1,41 @@
 package com.zylod.wholesale.ui.nav
 
 /**
- * THE route-ownership table (owner round-4 audit, binding directive):
+ * THE route-ownership table:
  *
  *   pageId → NATIVE or WEBVIEW
  *
  * and every navigation entry point MUST use [resolve] — the one resolver.
- * No special-case routing may live inside individual screens, and no pageId
- * may be simultaneously owned by Compose and the WebView SPA.
+ * No special-case routing may live inside individual screens.
  *
- * Ownership decisions recorded here (Phase 1, NATIVE_PRODUCT_SPECIFICATION
- * §2.2 — Tier-1 surfaces native, Tier-3 long-tail WebView):
+ * t233 OWNER DIRECTIVE — PURE NATIVE, native-first (supersedes the §2.2
+ * Tier-1/Tier-3 split and the native-Home termination, both retired by the
+ * same order): EVERY page the web SPA serves must render as a native Kotlin
+ * screen — zero React/TypeScript in the app layer. Resolution order:
  *
- *  NATIVE   cart, product-detail, buyer-orders (Phase 2), hot deals (v2.4.8:
- *           flash-deals / daily-deals / hot-deals / deals — the last Tier-1
- *           surface moved off the WebView), and the auth suite entry points
- *           (welcome/login/register-buyer/register-supplier/forgot-password).
- *  WEBVIEW  home, plus everything else — the ~400 Tier-3 pageIds of the SPA
- *           contract (src/lib/page-loader.ts is the web-side registry; the
- *           default for an unknown pageId is WEBVIEW, matching the SPA's own
- *           isKnownPage() which never rejects).
+ *  1. dedicated parameterized rows: home (tab root — now the NATIVE
+ *     HomeScreen, t233), cart, buyer-orders, the v2.4.8 deals ids, the auth
+ *     suite, product-detail (needs its productId arg);
+ *  2. [NativePageRegistry] — EVERY other SPA pageId (the long-tail ids from
+ *     src/lib/page-loader.ts + page-chunks) resolves
+ *     Destination.NativePage(pageId): hand-written cores (search/categories/
+ *     profile/notifications/wishlist) + one generated per-pageId Compose
+ *     screen, all backed by ServerConfig/ApiClient data with the offline
+ *     cache contract (last-saved content, never white);
+ *  3. Destination.Web — LAST RESORT only, for ids the SPA contract itself
+ *     does not know (matching the SPA's own isKnownPage(), which never
+ *     rejects). A registered pageId can never fall through to the WebView.
  *
- * OWNER DIRECTIVE — native-Home TERMINATION (supersedes the §2.2 `home` row
- * after repeated real-device audit failures): home → WEBVIEW on BOTH
- * platforms. There is exactly ONE Home:
+ * This object remains the SINGLE copy of the tab-alias map (which bottom
+ * tab highlights for a given pageId); native pages add per-screen tabHint
+ * metadata which [activeTabFor] consults before the alias map.
  *
- *     Home tab → native application shell → WebView → ?page=home
- *
- * The native shell still owns the home TAB ROOT (bottom navigation, tab
- * state, Back, lifecycle, session) — [Destination.Home] is that tab root —
- * but its renderer is [com.zylod.wholesale.ui.web.WebScreen] with
- * pageId "home", subject to the same provenance contract as every other
- * pageId: verified endpoint → verified bundle identity → ?page=home →
- * SPA-confirmed pageId=home → reveal. No stale Home pixels, no Home
- * fallback, no "soft navigation succeeded" proof. The former Compose
- * HomeScreen/HomeViewModel are QUARANTINED (android/quarantine/native-home,
- * outside every source set) and must not be reactivated without a new
- * owner directive.
- *
- * This object is also the SINGLE copy of the tab-alias map (which bottom
- * tab highlights for a given pageId). It was previously duplicated in
- * Kotlin [ZylodRoot], the web bundle (mobile-bottom-nav.tsx getActiveId),
- * and implicitly on iOS — three copies that could drift; drift between the
- * shell's alias map and the web's is what produced wrong tab highlights.
- *
- * Guest policy (parity with the web bar's own behavior, which the native
- * shell must match so a surface behaves identically hosted or in a
- * browser): an UNAUTHENTICATED Profile request opens the native login
- * screen. Authenticated Profile is a WEBVIEW page (Phase 1 scope; native
- * Profile is a later phase — the spec is not silently reduced: this row is
- * the explicit Phase 1 ownership decision, revisitable in exactly one
- * place).
- *
- * Phase 2 guest policy — buyer-orders: an UNAUTHENTICATED buyer-orders
- * request opens the NATIVE Orders screen showing its in-screen sign-in CTA
- * (NOT the hard login redirect the profile row above uses). Precedent and
- * consistency argument: Cart is the established native guest-reachable
- * surface — a guest can always open the cart tab and sees a soft "sign in
- * to sync" CTA, never a redirect. Orders are strictly a subset of that
- * behavior (order history is meaningless to a guest, but the screen renders
- * its honest needsAuth state), and a hard redirect would additionally
- * strand the post-login return path (no back into orders after
- * goHomeAfterAuth). The in-screen CTA routes through the SAME openAuth
- * path CartScreen uses — no special-case routing outside this table.
+ * Guest policy (unchanged): an UNAUTHENTICATED Profile request opens the
+ * native login screen (web-bar parity). buyer-orders renders natively for
+ * guests TOO — the screen's own needsAuth state is the guest UX (soft CTA,
+ * never a redirect; the Phase 2 rationale is preserved verbatim: Cart is
+ * the established native guest-reachable surface, Orders are a strict
+ * subset, and a hard redirect would strand the post-login return path).
  */
 object RouteOwnership {
 
@@ -76,11 +49,11 @@ object RouteOwnership {
      */
     sealed class Destination {
         /**
-         * Home TAB ROOT. The root entry itself is native shell state (the
-         * bottom bar, Back and lifecycle own it), but its RENDERER is the
-         * WebView shell — `WebScreen(pageId = "home")`, i.e. `?page=home`
-         * under the full provenance contract. Home ownership is WEBVIEW
-         * (owner directive); the Compose Home is quarantined.
+         * Home TAB ROOT. t233: the root entry is native shell state AND its
+         * renderer is the NATIVE [com.zylod.wholesale.ui.home.HomeScreen]
+         * (banners + stats + deals + categories + infinite featured grid).
+         * The WebView-rendered home of the t22x directive was retired by
+         * the same order that made the whole SPA native.
          */
         data object Home : Destination()
 
@@ -112,7 +85,16 @@ object RouteOwnership {
         /** Native fullscreen auth screen — [route] is the NavHost route name. */
         data class Auth(val route: String) : Destination()
 
-        /** WebView shell surface for the SPA pageId (Tier 3). */
+        /**
+         * t233 — ANY registered native page (NativePageRegistry): the
+         * hand-written cores and the per-pageId generated Compose screens.
+         * Rendered by the single `native/{pageId}` destination through
+         * NativePageHost. [query] rides along like the web contract's
+         * query string (e.g. category-products?category=…).
+         */
+        data class NativePage(val pageId: String, val query: String) : Destination()
+
+        /** WebView shell surface — LAST RESORT for ids the SPA doesn't know. */
         data class Web(val pageId: String, val query: String) : Destination()
     }
 
@@ -131,13 +113,14 @@ object RouteOwnership {
     // the web bar's deals tab targets "flash-deals", deep links use the rest).
     private val NATIVE_DEALS_PAGE_IDS = setOf("flash-deals", "daily-deals", "hot-deals", "deals")
 
-    // NOTE: PAGE_HOME is deliberately NOT in the native set — home → WEBVIEW
-    // (owner directive). It survives as a named constant because the tab
-    // root, tab aliases and deep links still speak the "home" pageId.
+    // NOTE: PAGE_HOME is deliberately NOT in the deals set — home has its own
+    // dedicated row (t233: NATIVE HomeScreen). The constant survives because
+    // the tab root, tab aliases and deep links still speak "home".
 
     // Native auth-suite pageIds (mirrors ZylodRoot's fullscreen routes).
+    // t233: the generic "register" pageId joins them (→ buyer registration).
     private val NATIVE_AUTH_PAGE_IDS = setOf(
-        "welcome", "login", "register-buyer", "register-supplier", "forgot-password",
+        "welcome", "login", "register", "register-buyer", "register-supplier", "forgot-password",
     )
 
     /**
@@ -153,16 +136,14 @@ object RouteOwnership {
         // Unknown/blank pageIds can never resolve to a native surface.
         if (pageId.isBlank()) return Destination.Web(pageId, query)
         return when (pageId) {
-            // The home tab root — rendered by the WebView shell (?page=home),
-            // NOT a native surface. See Destination.Home.
+            // The home tab root — t233: the NATIVE HomeScreen.
             PAGE_HOME -> Destination.Home
             PAGE_CART -> Destination.Cart
-            // Phase 2 row: buyer-orders renders natively for guests TOO —
-            // the screen's own needsAuth state is the guest UX (soft CTA);
-            // see the Phase 2 guest-policy note in the object KDoc.
+            // Phase 2 row (preserved): buyer-orders renders natively for
+            // guests TOO — the screen's own needsAuth state is the guest UX.
             PAGE_BUYER_ORDERS -> Destination.Orders
-            // v2.4.8: the Hot Deals tab (and every alias pageId) renders the
-            // NATIVE Compose deals screen — see Destination.Deals.
+            // v2.4.8 (preserved by t233): the Hot Deals tab (and every alias
+            // pageId) renders the NATIVE Compose deals screen.
             in NATIVE_DEALS_PAGE_IDS -> Destination.Deals
             PAGE_PRODUCT_DETAIL -> {
                 // Links use either `productId=` (web PDP contract) or `id=`
@@ -170,19 +151,25 @@ object RouteOwnership {
                 val productId = RouteOwnership.queryParam(query, "productId")
                     .ifBlank { RouteOwnership.queryParam(query, "id") }
                 if (productId.isNotBlank()) Destination.Product(productId)
-                // A product-detail without an id cannot render natively —
-                // the SPA surface handles the missing-id state.
+                // A product-detail without an id cannot render natively.
                 else Destination.Web(pageId, query)
             }
             in NATIVE_AUTH_PAGE_IDS -> when (pageId) {
-                // The welcome GATE is shell state, not a navigation target —
-                // an openPage("welcome") request means "go to the app start",
-                // which is the WebView-rendered home tab root.
+                // The welcome GATE is shell state — an openPage("welcome")
+                // request means "go to the app start" (the native home root).
                 "welcome" -> Destination.Home
+                // t233: the generic "register" pageId opens buyer registration.
+                "register" -> Destination.Auth("register-buyer")
                 else -> Destination.Auth(pageId)
             }
-            "profile" -> if (isAuthenticated) Destination.Web(pageId, query) else Destination.Auth("login")
-            else -> Destination.Web(pageId, query)
+            // t233 native-first: an authenticated profile renders the NATIVE
+            // ProfileScreen (guests still get the native login row above).
+            "profile" -> if (isAuthenticated) Destination.NativePage(pageId, query) else Destination.Auth("login")
+            // t233 native-first: ANY pageId the Kotlin registry knows renders
+            // NATIVELY — the WebView row below is LAST-RESORT fallback only.
+            else ->
+                if (NativePageRegistry.knows(pageId)) Destination.NativePage(pageId, query)
+                else Destination.Web(pageId, query)
         }
     }
 
@@ -237,8 +224,11 @@ object RouteOwnership {
         )
     }
 
-    fun activeTabFor(pageId: String?): String = when (pageId) {
-        null, PAGE_HOME -> "home"
+    fun activeTabFor(pageId: String?): String = when {
+        pageId == null || pageId == PAGE_HOME -> "home"
+        // t233: native pages carry their own tab hint (search → the search
+        // tab, profile pages → the profile tab, …) — before the alias map.
+        NativePageRegistry.tabHintFor(pageId) != null -> NativePageRegistry.tabHintFor(pageId)!!
         else -> TAB_ALIASES[pageId] ?: "home"
     }
 

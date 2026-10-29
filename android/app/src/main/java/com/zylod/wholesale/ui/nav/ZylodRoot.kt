@@ -226,30 +226,15 @@ fun ZylodRoot() {
     val navigateResolved: (Destination) -> Unit = { destination ->
         when (destination) {
             is Destination.Home ->
-                // t229g (CI-emulator-reproduced defect): the previous
-                // navigate(HOME_ROUTE){popUpTo(HOME_ROUTE){saveState=true};
-                // launchSingleTop; restoreState} triple was a COMPLETE NO-OP
-                // whenever a web/{pageId} entry sat on top of home — the
-                // NavController deduped the navigate against the post-pop top
-                // and the pop never landed (android-screenshots 21/23: the
-                // Search / Hot Deals page still painted after the Home tab
-                // tap, its tab still highlighted). popBackStack(HOME_ROUTE)
-                // is the EXACT mechanism the hardware Back key drives — CI
-                // screenshot 24 proves that path recomposes home's WebScreen
-                // and soft-navigates back to ?page=home correctly — so the
-                // Home destination uses it too. Fallback (home not on the
-                // stack, e.g. a cold deep link) pushes it. When home is
-                // ALREADY the native route, the SPA may have drifted inside
-                // the home shell — the SAME probe/reset contract as the
-                // Home-tab tap (t227).
+                // t229g (CI-emulator-reproduced defect): navigate+popUpTo+saveState
+                // was a NO-OP whenever another entry sat on top of home, so the
+                // Home destination uses popBackStack(HOME_ROUTE) — the EXACT
+                // mechanism the hardware Back key drives. Fallback (home not on
+                // the stack, e.g. a cold deep link) pushes it. When home is
+                // ALREADY the route, this is a no-op — t233: home is the NATIVE
+                // HomeScreen, so there is no SPA drift to probe/reset.
                 if (!navController.popBackStack(HOME_ROUTE, inclusive = false)) {
-                    if (route == HOME_ROUTE) {
-                        probeSpaPage(com.zylod.wholesale.ui.web.NativeWebRegistry.webView) { page ->
-                            if (page != null && page != "null" && page != "home") {
-                                com.zylod.wholesale.ui.web.NativeWebBus.requestHomeReset()
-                            }
-                        }
-                    } else {
+                    if (route != HOME_ROUTE) {
                         navController.navigate(HOME_ROUTE) { launchSingleTop = true }
                     }
                 }
@@ -291,6 +276,29 @@ fun ZylodRoot() {
                 }
             is Destination.Auth ->
                 navController.navigate(destination.route) { launchSingleTop = true }
+            is Destination.NativePage -> {
+                // t233 — registered native page. Tab-like pages (tab roots:
+                // search/categories/…) push with standard tab state semantics;
+                // stack pages flatten web→native and native→native hops onto
+                // HOME_ROUTE so system Back and the bottom-bar Home tap ALWAYS
+                // return Home (the existing popBackStack contract), and no
+                // page pileup can rebuild below the visible screen.
+                val tabLike = NativePageRegistry.tabLike(destination.pageId)
+                navController.navigate(
+                    "native/${Uri.encode(destination.pageId)}?params=${Uri.encode(destination.query)}",
+                ) {
+                    if (tabLike) {
+                        popUpTo(HOME_ROUTE) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    } else {
+                        if (route?.startsWith("web/") == true || route?.startsWith("native/") == true) {
+                            popUpTo(HOME_ROUTE) { saveState = false }
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            }
             is Destination.Web ->
                 // params is an optional query argument: a path segment cannot
                 // match an empty value, so an empty query rides the query string.
@@ -382,27 +390,13 @@ fun ZylodRoot() {
                         // bottom-bar parity (TextHandleMove = the standard
                         // light tap feedback; LongPress would buzz).
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        // t227 owner bug: tapping HOME while the native route is
-                        // ALREADY home is a launchSingleTop no-op at the
-                        // NavController — if the SPA drifted inside the home
-                        // shell (in-page link navigation), the tap did nothing
-                        // at all. Probe the SPA's live page: drifted → soft home
-                        // reset (the home WebScreen's drive effect consumes the
-                        // tick — never a reload); already home / not ready →
-                        // nothing to do. A DIFFERENT tab still navigates through
-                        // the resolver (the same contract as every entry point).
-                        if (tab.id == "home" && route == HOME_ROUTE) {
-                            probeSpaPage(com.zylod.wholesale.ui.web.NativeWebRegistry.webView) { page ->
-                                if (page != null && page != "null" && page != "home") {
-                                    com.zylod.wholesale.ui.web.NativeWebBus.requestHomeReset()
-                                }
-                            }
-                        } else {
-                            // THE contract: tab taps go through the SAME resolver as
-                            // every other entry point. RouteOwnership decides native
-                            // (home/cart) vs WebView — no per-tab special cases.
-                            openPage(tab.pageId, "")
-                        }
+                        // t233: home is the NATIVE HomeScreen — no SPA probe
+                        // is needed. Tapping Home while already home resolves
+                        // to Destination.Home, whose popBackStack is a no-op.
+                        // Every tab goes through the SAME resolver as every
+                        // other entry point (RouteOwnership decides native
+                        // vs the last-resort WebView) — no special cases.
+                        openPage(tab.pageId, "")
                     },
                 )
             }
@@ -422,15 +416,32 @@ fun ZylodRoot() {
             popExitTransition = { fadeOut(tween(200)) },
         ) {
             composable(HOME_ROUTE) {
-                // OWNER DIRECTIVE — home → WEBVIEW (native Home terminated).
-                // Exactly ONE Home: the home tab root renders the WebView
-                // shell through the SAME provenance contract as every other
-                // pageId — verified endpoint → verified bundle identity →
-                // ?page=home → SPA-confirmed pageId=home → reveal. No stale
-                // Home pixels, no Home fallback. The former native
-                // HomeScreen/HomeViewModel are quarantined
-                // (android/quarantine/native-home) and NOT part of this graph.
-                WebScreen(pageId = "home", query = "")
+                // t233 OWNER DIRECTIVE — PURE NATIVE: the home tab root is the
+                // NATIVE Compose HomeScreen (banners + stats + deals +
+                // categories + an infinitely appending featured grid). The
+                // WebView shell no longer renders ANY page in the app; the
+                // `web/{pageId}` route below survives only as the last-resort
+                // fallback for ids the Kotlin registry does not know.
+                com.zylod.wholesale.ui.home.HomeScreen(
+                    onBack = null, // tab root — no back bar
+                    openPage = { pageId, query -> openPage(pageId, query) },
+                )
+            }
+            composable(
+                route = "native/{pageId}?params={params}",
+                arguments = listOf(
+                    navArgument("pageId") { type = NavType.StringType },
+                    navArgument("params") { type = NavType.StringType; defaultValue = "" },
+                ),
+            ) { entry ->
+                // t233 — THE one native page destination: every registered
+                // pageId (NativePageRegistry) renders its Kotlin screen here.
+                NativePageHost(
+                    pageId = entry.arguments?.getString("pageId").orEmpty(),
+                    query = entry.arguments?.getString("params").orEmpty(),
+                    onBack = { navController.popBackStack() },
+                    openPage = { pageId, query -> openPage(pageId, query) },
+                )
             }
             composable(
                 route = "web/{pageId}?params={params}",
@@ -614,68 +625,21 @@ fun ZylodRoot() {
         }
     }
 
-    // ── Hardware Back contract (t227) ──────────────────────────────────
+    // ── Hardware Back contract (t233 native) ────────────────────────────
     // Composed AFTER the NavHost so this callback takes dispatcher priority
     // whenever it is enabled (home tab root only). Elsewhere it stays
     // disabled and the NavHost's own pop behavior is untouched:
     //
-    //   native screens / web/{pageId} routes → NavHost pops (unchanged —
-    //   Back from a web tab returns to Home; Back from buy-now returns to
-    //   the PDP; Back from checkout returns to the cart).
+    //   native pages / web fallback routes → NavHost pops (Back from any
+    //   sub-page returns toward Home — the popBackStack contract).
     //
-    //   HOME tab root, SPA drifted from home → probe-driven SOFT reset of
-    //   the SPA to ?page=home (no reload; the home shell's own drive effect
-    //   consumes the tick and soft-navigates — divergence-free by design).
+    //   HOME tab root (the native HomeScreen) → moveTaskToBack: standard
+    //   Android root-back semantics; the app keeps its state in recents.
     //
-    //   HOME tab root, SPA already on home → moveTaskToBack (standard
-    //   Android root-back semantics; the app keeps its state in recents).
-    //
-    // Walking WebView history is deliberately NOT done: a history pop can
-    // land on a page owned by a DIFFERENT tab and desynchronize the shell
-    // chrome from the content — the exact drift class this architecture
-    // forbids. The probe+reset contract reaches the same UX deterministically.
+    // Walking any history is deliberately NOT done: Back must land on the
+    // tab root, exactly like the bottom-bar Home tap does.
     BackHandler(enabled = route == HOME_ROUTE) {
-        // Same probe as the HOME-tab tap (t227): drifted → soft home reset;
-        // not ready / already home → standard root-back semantics (recents).
-        probeSpaPage(com.zylod.wholesale.ui.web.NativeWebRegistry.webView) { page ->
-            if (page != null && page != "null" && page != "home") {
-                com.zylod.wholesale.ui.web.NativeWebBus.requestHomeReset()
-            } else {
-                (context as? android.app.Activity)?.moveTaskToBack(true)
-            }
-        }
-    }
-}
-
-/**
- * The shared SPA live-page probe (t227 — the hardware Back contract and the
- * HOME-tab tap run the IDENTICAL contract). Reads window.__zylodCurrentPage
- * from the visible shell's WebView. Result semantics (evaluateJavascript
- * JSON-quotes JS strings; JS null comes back as the literal unquoted "null"):
- *   - null    → SPA not ready / no shell (probe returned 'null' or no WebView)
- *   - "home"  → SPA's committed state IS the home page (no drift)
- *   - other   → the SPA's live pageId (drift)
- * The callback ALWAYS runs on the main thread.
- */
-private fun probeSpaPage(webView: android.webkit.WebView?, onResult: (String?) -> Unit) {
-    if (webView == null) {
-        onResult(null)
-        return
-    }
-    val probe = """
-        (function(){
-          try{
-            if (window.__zylodSpaReady !== true) return 'null';
-            var page = window.__zylodCurrentPage;
-            return (typeof page === 'string' && page) ? page : 'null';
-          }catch(e){ return 'null'; }
-        })();
-    """.trimIndent()
-    webView.evaluateJavascript(probe) { result ->
-        val page = result?.trim()?.removeSurrounding("\"")
-        android.os.Handler(android.os.Looper.getMainLooper()).post {
-            onResult(page)
-        }
+        (context as? android.app.Activity)?.moveTaskToBack(true)
     }
 }
 

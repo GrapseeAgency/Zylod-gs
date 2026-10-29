@@ -107,3 +107,23 @@ data class DealDto(
 @Immutable
 @Serializable
 data class StatsDto(val productCount: Int = 0, val supplierCount: Int = 0)
+
+// t233 — native Home banner rail: GET api/banners?position=home_top returns
+// data as { banners: [...] } — only active, in-schedule rows, public fields.
+@Immutable
+@Serializable
+data class BannerDto(
+    val id: String,
+    val title: String,
+    val subtitle: String? = null,
+    val imageUrl: String? = null,
+    val linkPageId: String? = null,
+    val linkParams: String? = null,
+    val position: String? = null,
+    val sortOrder: Int = 0,
+)
+
+@Serializable
+data class BannersData(
+    val banners: List<BannerDto> = emptyList(),
+)

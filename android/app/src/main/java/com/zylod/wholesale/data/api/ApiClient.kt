@@ -32,7 +32,15 @@ interface ZylodApi {
         @Query("sortOrder") sortOrder: String = "desc",
         @Query("limit") limit: Int = 20,
         @Query("page") page: Int = 1,
+        // t233 — native Search/Categories/category pages reuse this endpoint
+        // with the web contract's own filter params (src/app/api/products).
+        @Query("search") search: String? = null,
+        @Query("category") category: String? = null,
     ): ApiEnvelope<List<ProductDto>>
+
+    // t233 — native Home banner rail (public banners table, home_top slot).
+    @GET("api/banners")
+    suspend fun banners(@Query("position") position: String = "home_top"): ApiEnvelope<BannersData>
 
     @GET("api/deals")
     suspend fun flashDeals(

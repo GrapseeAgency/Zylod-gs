@@ -595,3 +595,23 @@ private fun formatBdt(value: Double): String =
 
 private val DealItemDto.effectivePrice: Double
     get() = dealPrice ?: originalPrice ?: 0.0
+
+// ── t233 native page metadata ──────────────────────────────────────────────
+// Kotlin registry entry for the Hot Deals pageIds (v2.4.8 native surface,
+// preserved unchanged by t233). Appended without touching the screen above.
+
+/**
+ * t233 page metadata — the native Hot Deals tab (pageIds flash-deals,
+ * daily-deals, hot-deals, deals — see RouteOwnership's v2.4.8 row).
+ */
+data object DealsPageMeta : com.zylod.wholesale.ui.pages.NativePageMeta() {
+    override val pageId = "deals"
+    override val title = "Hot Deals"
+    override val category = "Shopping & Products"
+    override val kind = com.zylod.wholesale.ui.pages.NativePageKind.DEALS
+    override val endpoint = "api/deals?type=all&page=1&limit=20"
+    override val summary =
+        "Flash + daily deals from GET api/deals with keyed infinite append — the v2.4.8 " +
+            "native surface preserved by t233."
+    override val tabHint = "deals"
+}

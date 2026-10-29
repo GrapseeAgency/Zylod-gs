@@ -491,3 +491,23 @@ private fun OrdersError(message: String, onRetry: () -> Unit) {
 private fun formatBdt(value: Double): String =
     if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance().format(value.toLong())
     else "৳" + String.format(java.util.Locale.US, "%.2f", value)
+
+// ── t233 native page metadata ──────────────────────────────────────────────
+// Kotlin registry entry for the SPA pageId "buyer-orders" (Phase 2 native
+// surface, highlights the profile tab). Appended by t233 without touching
+// the screen above.
+
+/**
+ * t233 page metadata — buyer orders stay a tab-like native destination.
+ */
+data object OrdersPageMeta : com.zylod.wholesale.ui.pages.NativePageMeta() {
+    override val pageId = "buyer-orders"
+    override val title = "My Orders"
+    override val category = "Orders & Logistics"
+    override val kind = com.zylod.wholesale.ui.pages.NativePageKind.ORDERS
+    override val endpoint = "api/orders/my-orders"
+    override val summary =
+        "The authenticated buyer's order history (GET api/orders/my-orders) — the Phase 2 " +
+            "native surface; guests see the in-screen sign-in CTA."
+    override val tabHint = "profile"
+}

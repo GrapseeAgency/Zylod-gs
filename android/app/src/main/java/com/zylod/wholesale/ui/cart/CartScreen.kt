@@ -560,3 +560,22 @@ private fun resolveImageUrl(raw: String?): String? {
 private fun formatBdt(value: Double): String =
     if (value % 1.0 == 0.0) "৳" + java.text.NumberFormat.getIntegerInstance().format(value.toLong())
     else "৳" + String.format(java.util.Locale.US, "%.2f", value)
+
+// ── t233 native page metadata ──────────────────────────────────────────────
+// Kotlin registry entry for the SPA pageId "cart" (the Cart tab root).
+// Appended by t233 without touching the screen above.
+
+/**
+ * t233 page metadata — the cart tab stays a tab-like native destination.
+ */
+data object CartPageMeta : com.zylod.wholesale.ui.pages.NativePageMeta() {
+    override val pageId = "cart"
+    override val title = "Cart"
+    override val category = "Cart & Checkout"
+    override val kind = com.zylod.wholesale.ui.pages.NativePageKind.CONTENT
+    override val endpoint: String? = null // CartScreen owns its own CartApi pipeline
+    override val summary =
+        "The native cart tab: session-synced lines, quantity edits, buyer/supplier grouping " +
+            "and the checkout entry — untouched by t233, registered here for the page registry."
+    override val tabHint = "cart"
+}
