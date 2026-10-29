@@ -6818,3 +6818,10 @@ Work Log:
 
 Stage Summary:
 - Round-3 re-test: every user-named web path verified working live; both user-named native paths code-audited correct (symptoms match pre-t227 builds). One REAL systemic defect found, root-caused and fixed (7 pages × placeholder-instead-of-photo). 87-page responsive sweep clean. Build badge deployed. Open gaps unchanged: no emulator in sandbox (native paths verified at code+CI level only), bKash/SSLCommerz sandbox-mode, release debug-signed, orders API unpaginated.
+
+## t229g continuation — CI evidence + release
+- [CI]: ee68c76 → android-build SUCCESS (run 40862206318), web-ci SUCCESS, ios-build SUCCESS. android-screenshots in-flight at log time (run 40862206382, now with the t229g capture extension).
+- [RELEASE]: v2.4.6-ee68c76 (release 427761137) — zylod-b2b-v2.4.6-ee68c76.apk (45,267,412 bytes, SHA256 7d9d9f7f81d1e7e9b7177ebc1443d57ee0053c31da5f52898a419a30f6ddea92) + .sha256 asset. Debug-signed (keystore.properties still not provided).
+- [NEW CI CAPABILITY — emulator drives the owner-named flows]: android-screenshots now captures screenshots 20-25: Search tab → Home tab return, Hot Deals tab → Home tab return, system BACK from a web tab, and the in-app footer build badge (scroll-to-footer). tap_tab() (scripts/qa/uia-tap-tab.py) region-filters uiautomator matches to the bottom 15% of the screen so WebView text can never shadow a bottom-bar label. scripts/qa/** added to the workflow's trigger paths.
+- [MONEY WALL re-verified on the image-fixed surface]: guest on category-products → cart button → login redirect + toast. Holds.
+- [CRON]: new webDevReview job 483750 (15-min fixed rate) — all previous jobs disabled by exec limits.
