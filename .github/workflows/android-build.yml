@@ -36,6 +36,16 @@ jobs:
           # can be traced to its exact commit on-device.
           ./gradlew :app:assembleDebug "-PcommitSuffix=${GITHUB_SHA::7}" --stacktrace
 
+      # t229h: the RELEASE APK is the package users actually update in place
+      # (com.zylod.wholesale — the debug variant installs as a SEPARATE .debug
+      # app and can never upgrade an existing install). Debug-key signing is
+      # used until a release keystore is added; same key as every previously
+      # published zylod-b2b-*.apk, so in-place updates keep working.
+      - name: Build release APK (update package)
+        run: |
+          cd android
+          ./gradlew :app:assembleRelease "-PcommitSuffix=${GITHUB_SHA::7}" --stacktrace
+
       - name: Lint (non-blocking — report surfaces as artifact)
         run: |
           cd android
@@ -53,12 +63,14 @@ jobs:
       - name: Build info
         run: |
           {
-            echo "app:            Zylod (com.zylod.wholesale.debug)"
+            echo "app:            Zylod (com.zylod.wholesale — release / .debug — debug)"
             echo "commit:         $GITHUB_SHA"
             echo "built from:     https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
             echo "workflow run:   ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           } > build-info.txt
           cat android/app/build/outputs/apk/debug/output-metadata.json >> build-info.txt
+          echo '--- release metadata ---' >> build-info.txt
+          cat android/app/build/outputs/apk/release/output-metadata.json >> build-info.txt || true
           cat build-info.txt
 
       - name: Upload APK artifact
@@ -68,5 +80,14 @@ jobs:
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             build-info.txt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload release APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zylod-release-apk-${{ github.sha }}
+          path: |
+            android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 30

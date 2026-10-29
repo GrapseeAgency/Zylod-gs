@@ -24,18 +24,21 @@ export function MobileProductCard({ product }: MobileProductCardProps) {
       className="w-full text-left bg-card rounded-md overflow-hidden transition-all active:scale-[0.98]"
       onClick={handleCardClick}
     >
-      {/* Image — square, social-style crop (t228) */}
-      <div className="relative overflow-hidden bg-white dark:bg-gray-900" style={{ aspectRatio: '1/1' }}>
+      {/* Image — square, social-style crop (t228). t229h preview fix: the tile
+          stays WHITE in both modes (white-background product art blends
+          seamlessly in dark mode too — no harsh bright square on a dark tile)
+          and object-CONTAIN keeps the full product visible, never cropped. */}
+      <div className="relative overflow-hidden bg-white dark:bg-white" style={{ aspectRatio: '1/1' }}>
         {hasImage ? (
           <Image
             src={product.images[0]}
             alt={product.name}
             fill
-            className="object-cover"
+            className="object-contain"
             sizes="(max-width: 768px) 50vw, 180px"
           />
         ) : (
-          <div className="w-full h-full bg-white dark:bg-gray-900" />
+          <div className="w-full h-full bg-white dark:bg-white" />
         )}
       </div>
 

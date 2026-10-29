@@ -692,7 +692,7 @@ function DesktopProductDetailPage() {
                   <CarouselItem key={img.id}>
                     <div className="aspect-square bg-muted rounded-xl flex items-center justify-center overflow-hidden">
                       {img.imageUrl ? (
-                        <img src={img.imageUrl} alt={img.altText || productName} className="w-full h-full object-cover" />
+                        <img src={img.imageUrl} alt={img.altText || productName} className="w-full h-full object-contain" />
                       ) : (
                         <Package className="h-24 w-24 text-muted-foreground" />
                       )}
@@ -712,7 +712,7 @@ function DesktopProductDetailPage() {
           ) : (
             <div className="aspect-square bg-muted rounded-xl flex items-center justify-center overflow-hidden">
               {product?.thumbnailUrl ? (
-                <img src={product.thumbnailUrl} alt={productName} className="w-full h-full object-cover" />
+                <img src={product.thumbnailUrl} alt={productName} className="w-full h-full object-contain" />
               ) : (
                 <Package className="h-24 w-24 text-muted-foreground" />
               )}
@@ -725,7 +725,7 @@ function DesktopProductDetailPage() {
               {realImages.slice(0, 4).map((img) => (
                 <div key={img.id} className="aspect-square bg-muted rounded-lg overflow-hidden">
                   {img.imageUrl ? (
-                    <img src={img.imageUrl} alt={img.altText || productName} className="w-full h-full object-cover" />
+                    <img src={img.imageUrl} alt={img.altText || productName} className="w-full h-full object-contain" />
                   ) : (
                     <Package className="h-8 w-8 mx-auto text-muted-foreground" />
                   )}

@@ -118,14 +118,18 @@ export function ProductCard({ product }: { product: HomeProduct }) {
       onClick={() => navigate('product-detail', { productId: product.id })}
       className="group bg-white dark:bg-gray-900 rounded-xl border border-gray-200/90 dark:border-gray-800 overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5"
     >
-      {/* Photo Container — clean by default per reference; heart reveals on hover */}
-      <div className="relative aspect-square bg-[#F7F8FA] dark:bg-gray-800/80 overflow-hidden flex items-center justify-center p-2">
+      {/* Photo Container — clean by default per reference; heart reveals on hover.
+          t229h image-preview fix: the tile stays LIGHT in BOTH modes (white
+          product photos get a seamless white tile in dark mode too — the
+          standard Amazon/Alibaba dark-mode treatment) and the art is
+          object-CONTAIN so no product is ever cropped by the square frame. */}
+      <div className="relative aspect-square bg-[#F7F8FA] dark:bg-[#F7F8FA] overflow-hidden flex items-center justify-center p-2 sm:p-2.5">
         {product.thumbnailUrl ? (
           <img
             src={product.thumbnailUrl}
             alt={product.name}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
             onError={(e) => {
               const target = e.target as HTMLImageElement
               if (!target.src.includes('placeholder')) {
