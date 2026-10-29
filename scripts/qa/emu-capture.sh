@@ -114,15 +114,10 @@ SW=$(adb shell wm size | grep -oE '[0-9]+' | head -1 | tr -d '[:space:]')
 SH=$(adb shell wm size | grep -oE '[0-9]+' | tail -1 | tr -d '[:space:]')
 SW=${SW:-320}; SH=${SH:-640}
 CX=$((SW / 2)); Y1=$((SH * 3 / 4)); Y2=$((SH / 5))
-adb shell input swipe $CX $Y1 $CX $Y2 400 || true
-sleep 2
-adb shell input swipe $CX $Y1 $CX $Y2 400 || true
-sleep 2
-adb shell input swipe $CX $Y1 $CX $Y2 400 || true
-sleep 2
-adb shell input swipe $CX $Y1 $CX $Y2 400 || true
-sleep 2
-adb shell input swipe $CX $Y1 $CX $Y2 400 || true
+for i in 1 2 3 4 5 6 7 8; do
+  adb shell input swipe $CX $Y1 $CX $Y2 400 || true
+  sleep 2
+done
 sleep 3
 cap screenshots/25-footer-build-badge.png
 
