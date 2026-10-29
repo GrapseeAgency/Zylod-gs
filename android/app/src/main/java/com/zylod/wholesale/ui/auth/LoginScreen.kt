@@ -631,7 +631,7 @@ private fun LockoutBanner(initialRemainingMs: Long, onExpired: () -> Unit) {
     }
     Surface(
         color = MaterialTheme.colorScheme.error.copy(alpha = 0.08f),
-        shape = MaterialTheme.colorScheme.shapes.medium,
+        shape = MaterialTheme.shapes.medium,
         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.25f)),
         modifier = Modifier.fillMaxWidth(),
     ) {
