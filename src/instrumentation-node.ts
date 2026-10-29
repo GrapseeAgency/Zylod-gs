@@ -58,7 +58,63 @@ export async function registerNode() {
     }
 
     const products = count('products')
-    if (products > 0) return // healthy — nothing to do
+
+    // Shared script runner + sleep — declared BEFORE every consumer so no
+    // branch can hit a temporal-dead-zone binding (t229f refactor: the
+    // content-only branch also needs `run`).
+    const run = (script: string) =>
+      new Promise<void>((resolve) => {
+        execFile(
+          process.execPath,
+          [path.join(cwd, 'scripts', 'qa', script)],
+          { cwd, timeout: 180_000 },
+          (err, stdout) => {
+            if (err)
+              console.error(`[instrumentation] ${script} failed:`, err.message)
+            else
+              console.log(
+                `[instrumentation] ${script} done:`,
+                String(stdout).trim().split('\n').slice(-2).join(' | '),
+              )
+            resolve()
+          },
+        )
+      })
+
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+    if (products > 0) {
+      // t229f: products-healthy is NOT content-healthy. The t229 DB rebuild
+      // (wipe + seed-marketplace) restored the catalog but skipped
+      // seed-content.mjs — every legal footer page (terms, privacy, payment
+      // terms, DMCA…) rendered "document unavailable" for 9 dead-looking
+      // links while the products-only guard called the DB healthy. The
+      // content gap heals NON-destructively: seed-content.mjs is pure
+      // idempotent upserts, so a live marketplace (orders, users) is never
+      // wiped for a missing legal table.
+      const legal = count('legalDocuments')
+      if (legal === 0) {
+        console.log('[instrumentation] legalDocuments EMPTY — content-only reseed starting…')
+        void (async () => {
+          try {
+            let up = false
+            for (let i = 0; i < 120; i++) {
+              try {
+                const res = await fetch('http://127.0.0.1:3000/api/products?limit=1')
+                if (res.ok || res.status === 401 || res.status === 429) { up = true; break }
+              } catch { /* not listening yet */ }
+              await sleep(1000)
+            }
+            if (!up) return
+            await run('seed-content.mjs')
+            console.log('[instrumentation] content-only reseed complete.')
+          } catch (err) {
+            console.error('[instrumentation] content reseed error:', err)
+          }
+        })()
+      }
+      return
+    }
 
     // ── cross-worker lock (O_CREAT|O_EXCL is atomic on POSIX) ──
     // Lock content = `${pid}:${now}`. A lock is ONLY respected while its PID
@@ -98,27 +154,6 @@ export async function registerNode() {
     console.log(
       `[instrumentation] products table EMPTY${dirty ? ' (dirty DB — wipe first)' : ''} — auto-seed chain starting…`,
     )
-
-    const run = (script: string) =>
-      new Promise<void>((resolve) => {
-        execFile(
-          process.execPath,
-          [path.join(cwd, 'scripts', 'qa', script)],
-          { cwd, timeout: 180_000 },
-          (err, stdout) => {
-            if (err)
-              console.error(`[instrumentation] ${script} failed:`, err.message)
-            else
-              console.log(
-                `[instrumentation] ${script} done:`,
-                String(stdout).trim().split('\n').slice(-2).join(' | '),
-              )
-            resolve()
-          },
-        )
-      })
-
-    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
     // DETACHED healing chain — never awaited by register().
     void (async () => {

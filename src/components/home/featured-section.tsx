@@ -169,7 +169,23 @@ export function FeaturedSection() {
       { rootMargin: '400px 0px' },
     )
     observer.observe(el)
-    return () => observer.disconnect()
+    // t229f: jump-proofing ported from category-products-page (t229d) — a
+    // fast scroll (End key, scrollbar drag) can skip the sentinel's
+    // intersection transitions and land below it where the observer never
+    // fires, silently ending the feed. A passive scroll listener recomputes
+    // the geometric condition on every scroll event; handleLoadMore's own
+    // loadingRef guard prevents duplicates.
+    const onScroll = () => {
+      if (el.getBoundingClientRect().top <= window.innerHeight + 400) {
+        void handleLoadMore()
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [hasMore, products, handleLoadMore])
 
   // Signed-in: seed real wishlist hearts onto the loaded (real) products.
