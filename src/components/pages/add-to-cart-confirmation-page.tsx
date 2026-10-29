@@ -129,59 +129,59 @@ export function AddToCartConfirmationPage() {
   }
 
   return (
-    <div className="min-h-[70vh] bg-slate-50 dark:bg-background flex items-end sm:items-center justify-center p-0 sm:p-4 text-slate-900 dark:text-slate-100">
+    <div className="min-h-[70vh] bg-slate-50 dark:bg-background flex items-end sm:items-center justify-center p-0 sm:p-4 text-slate-900 dark:text-neutral-100">
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className="w-full max-w-lg md:max-w-2xl bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto"
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-neutral-800">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-            <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-neutral-100">
               {lastItem ? 'Added to cart' : 'Your cart'}
             </h2>
           </div>
-          <button onClick={goBack} className="p-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300" title="Close" aria-label="Close">
+          <button onClick={goBack} className="p-1 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 hover:text-slate-700 dark:text-neutral-300" title="Close" aria-label="Close">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Main item — the REAL latest cart line */}
         {lastItem ? (
-          <div className="bg-slate-50 dark:bg-background rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800 flex gap-3.5 items-center">
-            <div className="w-16 h-16 rounded-xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 overflow-hidden shrink-0">
+          <div className="bg-slate-50 dark:bg-background rounded-2xl p-3.5 border border-slate-100 dark:border-neutral-800 flex gap-3.5 items-center">
+            <div className="w-16 h-16 rounded-xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 overflow-hidden shrink-0">
               <img src={lastItem.productImage || '/placeholder.svg'} alt={lastItem.productName} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1 leading-snug">{lastItem.productName}</h3>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100 line-clamp-1 leading-snug">{lastItem.productName}</h3>
+              <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5 truncate">
                 {lastItem.supplierName}
                 {lastItem.variantName ? ` · ${lastItem.variantName}` : ''}
               </p>
               <div className="flex items-baseline gap-2 mt-1.5 flex-wrap">
-                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Qty: <strong className="text-slate-900 dark:text-slate-100">{lastItem.quantity}</strong>
+                <span className="text-xs font-bold text-slate-700 dark:text-neutral-300">
+                  Qty: <strong className="text-slate-900 dark:text-neutral-100">{lastItem.quantity}</strong>
                 </span>
                 <span className="text-xs font-black text-primary">{formatPrice(lastItem.totalPrice)}</span>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">
+                <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-normal">
                   ({formatPrice(lastItem.unitPrice)}/unit)
                 </span>
               </div>
             </div>
           </div>
         ) : (
-          <div className="bg-slate-50 dark:bg-background rounded-2xl p-8 border border-slate-100 dark:border-slate-800 text-center space-y-2">
+          <div className="bg-slate-50 dark:bg-background rounded-2xl p-8 border border-slate-100 dark:border-neutral-800 text-center space-y-2">
             <Package className="h-8 w-8 text-slate-300 mx-auto" />
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Nothing added yet</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Open a product and add it to your cart — your latest line shows up here.</p>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-neutral-100">Nothing added yet</h3>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Open a product and add it to your cart — your latest line shows up here.</p>
           </div>
         )}
 
         {/* Real add-ons from the public catalog */}
         <div className="space-y-3 pt-1">
-          <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
+          <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
             Frequently bought by wholesale buyers
           </h3>
 
@@ -191,25 +191,25 @@ export function AddToCartConfirmationPage() {
             </div>
           )}
           {addonsState === 'error' && (
-            <div className="rounded-2xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 p-4 text-center space-y-2">
-              <AlertCircle className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mx-auto" />
-              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Couldn't load suggestions right now.</p>
+            <div className="rounded-2xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 p-4 text-center space-y-2">
+              <AlertCircle className="h-5 w-5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mx-auto" />
+              <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Couldn't load suggestions right now.</p>
               <Button onClick={() => { setAddonsState('loading'); fetch('/api/products?limit=4', { credentials: 'include' }).then(r => r.json()).then(json => { setAddons((Array.isArray(json?.data) ? json.data : []).slice(0, 4)); setAddonsState('ready') }).catch(() => setAddonsState('error')) }} variant="outline" className="h-8 text-[11px] font-bold">
                 Retry
               </Button>
             </div>
           )}
           {addonsState === 'ready' && addons.length === 0 && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">No suggestions available right now.</p>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">No suggestions available right now.</p>
           )}
           {addonsState === 'ready' && addons.map(p => (
-            <div key={p.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 p-3 flex gap-3 items-center">
+            <div key={p.id} className="rounded-2xl border border-slate-200 dark:border-neutral-800 p-3 flex gap-3 items-center">
               <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-card overflow-hidden shrink-0">
                 <img src={apiProductImage(p)} alt={p.name} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1">{p.name}</h4>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                <h4 className="text-xs font-bold text-slate-900 dark:text-neutral-100 line-clamp-1">{p.name}</h4>
+                <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                   MOQ {p.moq} {p.unit} · {formatPrice(p.basePrice)}/{p.unit}
                   {p.supplier?.companyName ? ` · ${p.supplier.companyName}` : ''}
                 </p>
@@ -243,7 +243,7 @@ export function AddToCartConfirmationPage() {
           <Button
             onClick={() => navigate('product-list')}
             variant="outline"
-            className="flex-1 bg-white dark:bg-gray-900 text-slate-800 dark:text-slate-200 font-bold h-12 rounded-2xl text-xs gap-2"
+            className="flex-1 bg-white dark:bg-gray-900 text-slate-800 dark:text-neutral-200 font-bold h-12 rounded-2xl text-xs gap-2"
           >
             Keep shopping <ArrowRight className="h-4 w-4" />
           </Button>

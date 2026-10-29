@@ -108,18 +108,18 @@ export function SellerTicketDetailPage({ pageParams: _pageParams }: { pageParams
     open: 'bg-sky-50 text-sky-700 border-sky-200',
     in_progress: 'bg-amber-50 text-amber-700 border-amber-200',
     resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    closed: 'bg-slate-100 dark:bg-card text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800',
+    closed: 'bg-slate-100 dark:bg-card text-slate-500 dark:text-neutral-400 border-slate-200 dark:border-neutral-800',
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       <header className="bg-white dark:bg-gray-900 p-4 md:px-6 flex items-center justify-between border-b sticky top-0 z-20">
         <div className="flex items-center min-w-0">
-          <button onClick={goBack} className="md:hidden flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100" aria-label="Go back">←</button>
+          <button onClick={goBack} className="md:hidden flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform text-slate-600 dark:text-neutral-400 dark:text-neutral-500 hover:text-slate-900 dark:text-neutral-100" aria-label="Go back">←</button>
           <h1 className="font-bold truncate">{thread?.subject ?? 'Ticket'}</h1>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={loadThread} className="flex h-9 w-9 items-center justify-center rounded-md text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:text-slate-300 transition-colors" aria-label="Refresh">
+          <button onClick={loadThread} className="flex h-9 w-9 items-center justify-center rounded-md text-slate-400 dark:text-neutral-500 hover:text-slate-700 dark:text-neutral-300 transition-colors" aria-label="Refresh">
             <RefreshCw className="w-5 h-5" />
           </button>
           {thread && (
@@ -139,13 +139,13 @@ export function SellerTicketDetailPage({ pageParams: _pageParams }: { pageParams
         ) : needsAuth ? (
           <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl text-center shadow-sm">
             <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">Sign in required</p>
+            <p className="text-sm font-bold text-slate-700 dark:text-neutral-300">Sign in required</p>
             <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">Sign in with the seller account that opened this ticket.</p>
           </div>
         ) : error ? (
           <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl text-center shadow-sm">
             <AlertTriangle className="w-8 h-8 text-red-300 mx-auto mb-2" />
-            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{error}</p>
+            <p className="text-sm font-bold text-slate-700 dark:text-neutral-300">{error}</p>
             <Button variant="outline" onClick={loadThread} className="mt-3 rounded-xl text-xs font-bold">
               Retry
             </Button>
@@ -154,21 +154,21 @@ export function SellerTicketDetailPage({ pageParams: _pageParams }: { pageParams
           <>
             <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-2 flex-wrap mb-1">
-                <span className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                <span className="text-[9px] font-black uppercase text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                   You · opened {new Date(thread.createdAt).toLocaleDateString('en-GB')}
                 </span>
-                <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400">· {thread.category.replace(/_/g, ' ')}</span>
+                <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-neutral-500 dark:text-neutral-400">· {thread.category.replace(/_/g, ' ')}</span>
               </div>
-              <p className="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{thread.description}</p>
+              <p className="text-xs text-slate-700 dark:text-neutral-300 whitespace-pre-wrap">{thread.description}</p>
             </div>
             {thread.messages.map((m) => {
               const isAdmin = m.senderRole === 'admin';
               return (
                 <div key={m.id} className={`p-4 rounded-2xl border ${isAdmin ? 'bg-primary/5 border-primary/20' : 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 shadow-sm'}`}>
-                  <span className={`text-[9px] font-black uppercase ${isAdmin ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`}>
+                  <span className={`text-[9px] font-black uppercase ${isAdmin ? 'text-primary' : 'text-slate-400 dark:text-neutral-500'}`}>
                     {isAdmin ? 'Zylod Support' : 'You'} · {new Date(m.createdAt).toLocaleString('en-GB')}
                   </span>
-                  <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-wrap">{m.message}</p>
+                  <p className="text-xs text-slate-700 dark:text-neutral-300 mt-1 whitespace-pre-wrap">{m.message}</p>
                 </div>
               );
             })}

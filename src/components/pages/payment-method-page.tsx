@@ -101,43 +101,43 @@ export function PaymentMethodPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 active:scale-95 transition-transform" aria-label="Go back">
+          <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100 active:scale-95 transition-transform" aria-label="Go back">
             ←
           </button>
-          <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">My Payment Methods</h1>
+          <h1 className="text-base font-bold text-slate-900 dark:text-neutral-100">My Payment Methods</h1>
         </div>
       </header>
 
       <main className="px-4 py-5 space-y-4 max-w-lg mx-auto md:max-w-3xl md:px-6 md:py-6 lg:max-w-4xl">
-        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">My Payment Methods</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">My Payment Methods</h1>
 
         {/* The buyer's REAL saved instruments */}
         <div className="space-y-2">
           {loading ? (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center">
               <PageLoader className="min-h-0" />
             </div>
           ) : needsAuth ? (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-              <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Sign in to see your saved methods</p>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
+              <p className="text-sm font-bold text-slate-800 dark:text-neutral-200">Sign in to see your saved methods</p>
               <Button onClick={() => navigate('login')} className="w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl">
                 Sign in
               </Button>
             </div>
           ) : error ? (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{error}</p>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
+              <p className="text-sm font-semibold text-slate-700 dark:text-neutral-300">{error}</p>
               <Button variant="outline" size="sm" onClick={load}><RefreshCw className="h-4 w-4 mr-1" /> Retry</Button>
             </div>
           ) : methods.length === 0 ? (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 text-center space-y-2">
               <Wallet className="h-7 w-7 text-slate-300 mx-auto" />
-              <p className="text-sm font-bold text-slate-800 dark:text-slate-200">No saved payment instruments yet</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+              <p className="text-sm font-bold text-slate-800 dark:text-neutral-200">No saved payment instruments yet</p>
+              <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">
                 Link a wallet, tokenize a card (last 4 only), or add a bank account — every entry is a real
                 database row with a financial-audit trail. Payments themselves are made per order below.
               </p>
@@ -146,15 +146,15 @@ export function PaymentMethodPage() {
             methods.map((m) => {
               const Icon = typeIcon(m.type)
               return (
-                <div key={m.id} className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center gap-3.5">
+                <div key={m.id} className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-neutral-800 shadow-2xs flex items-center gap-3.5">
                   <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-card flex items-center justify-center shrink-0">
                     <Icon className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black text-slate-900 dark:text-slate-100 truncate">{m.label}</p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono">{maskAccount(m.accountNumber)}</p>
+                    <p className="text-xs font-black text-slate-900 dark:text-neutral-100 truncate">{m.label}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-mono">{maskAccount(m.accountNumber)}</p>
                   </div>
-                  <span className="shrink-0 text-[9px] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-full">
+                  <span className="shrink-0 text-[9px] font-black uppercase tracking-wide text-slate-500 dark:text-neutral-400 dark:text-neutral-500 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-full">
                     {m.type}
                   </span>
                 </div>
@@ -177,15 +177,15 @@ export function PaymentMethodPage() {
           {routes.map((opt) => (
             <div
               key={opt.title}
-              className="w-full text-left bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs"
+              className="w-full text-left bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs"
             >
               <div className="flex items-start gap-3.5">
                 <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-card flex items-center justify-center shrink-0 mt-0.5">
                   <opt.icon className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-xs md:text-sm font-bold text-slate-900 dark:text-slate-100">{opt.title}</h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">{opt.subtitle}</p>
+                  <h3 className="text-xs md:text-sm font-bold text-slate-900 dark:text-neutral-100">{opt.title}</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 leading-relaxed">{opt.subtitle}</p>
                 </div>
               </div>
             </div>
@@ -193,7 +193,7 @@ export function PaymentMethodPage() {
         </div>
 
         {/* Security badge */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-200 dark:border-slate-800 flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-200 dark:border-neutral-800 flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
           <Info className="h-4 w-4 text-emerald-600 shrink-0" />
           <span>Zylod does not hold payments in escrow. An order stays UNPAID until your payment is verified.</span>
         </div>

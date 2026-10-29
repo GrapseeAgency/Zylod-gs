@@ -159,15 +159,15 @@ export function AffiliateDashboardPage() {
         </div>
 
         {/* Payout Balance Card */}
-        <div className="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 rounded-3xl p-6 text-gray-900 dark:text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-neutral-900 dark:to-neutral-800 rounded-3xl p-6 text-gray-900 dark:text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">
               Pending Payout
             </span>
             <h2 className="text-3xl font-black text-emerald-400">
               {formatPrice(dashData?.stats?.pendingPayoutBDT ?? 0)}
             </h2>
-            <p className="text-xs text-slate-600 dark:text-slate-300">
+            <p className="text-xs text-slate-600 dark:text-neutral-300">
               Paid to date: {formatPrice(dashData?.stats?.paidPayoutBDT ?? 0)}
             </p>
           </div>

@@ -81,14 +81,14 @@ export function PressMediaPage() {
           </button>
         </div>
         {/* Hero */}
-        <div className="bg-gradient-to-r from-slate-100 via-slate-100 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 rounded-3xl p-6 text-gray-900 dark:text-white space-y-3">
+        <div className="bg-gradient-to-r from-slate-100 via-slate-100 to-slate-100 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-900 rounded-3xl p-6 text-gray-900 dark:text-white space-y-3">
           <Badge className="bg-primary/10 text-primary/60 border-primary/30 text-xs">
             Corporate Newsroom
           </Badge>
           <h2 className="text-xl md:text-2xl font-black leading-tight">
             Latest Headlines & Industry Breakthroughs
           </h2>
-          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-neutral-300 leading-relaxed">
             Stay updated with corporate milestones, funding announcements, product innovations, and strategic logistics partnerships across Bangladesh.
           </p>
           <div className="flex flex-col sm:flex-row gap-2 pt-1 [&>button]:w-full sm:[&>button]:w-auto">

@@ -53,7 +53,7 @@ export function ExclusiveDealsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
+      <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-neutral-800 px-4 py-3.5 flex items-center justify-between shadow-sm md:hidden">
         <div className="flex items-center gap-3">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition md:hidden">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -77,11 +77,11 @@ export function ExclusiveDealsPage() {
         {/* Banner */}
         <div className="bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 rounded-3xl p-5 md:p-6 text-slate-950 shadow-xl space-y-1.5 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+            <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-neutral-100">
               <Sparkles className="w-4 h-4" /> Live Supplier Promotions
             </div>
             <h2 className="text-base sm:text-lg md:text-2xl font-black">Active Wholesale Campaigns</h2>
-            <p className="text-xs text-slate-900 dark:text-slate-100">
+            <p className="text-xs text-slate-900 dark:text-neutral-100">
               Time-boxed promotions from real suppliers — pricing comes straight from each campaign&apos;s actual terms, applied again at checkout.
             </p>
           </div>
@@ -89,7 +89,7 @@ export function ExclusiveDealsPage() {
           <Button
             size="sm"
             onClick={() => navigate('vip-membership')}
-            className="hidden md:inline-flex h-9 text-xs font-bold bg-slate-950 hover:bg-slate-900 text-amber-400 rounded-xl shrink-0"
+            className="hidden md:inline-flex h-9 text-xs font-bold bg-neutral-950 hover:bg-neutral-900 text-amber-400 rounded-xl shrink-0"
           >
             My VIP Status
           </Button>
@@ -99,13 +99,13 @@ export function ExclusiveDealsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           {loading ? (
             [1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-white dark:bg-card rounded-3xl p-4 border border-slate-200 dark:border-slate-700 animate-pulse space-y-3">
+              <div key={i} className="bg-white dark:bg-card rounded-3xl p-4 border border-slate-200 dark:border-neutral-700 animate-pulse space-y-3">
                 <Skeleton className="h-28 w-full rounded-2xl bg-slate-200 dark:bg-gray-800" />
                 <Skeleton className="h-4 w-3/4 rounded bg-slate-200 dark:bg-gray-800" />
               </div>
             ))
           ) : deals.length === 0 ? (
-            <div className="col-span-2 lg:col-span-3 text-center py-16 text-slate-400 dark:text-slate-500">
+            <div className="col-span-2 lg:col-span-3 text-center py-16 text-slate-400 dark:text-neutral-500">
               No exclusive deals active at this moment.
             </div>
           ) : (
@@ -120,7 +120,7 @@ export function ExclusiveDealsPage() {
               <div
                 key={deal.id}
                 onClick={() => navigate('product-detail', { id: deal.productId })}
-                className="bg-white dark:bg-card/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-4 space-y-3 shadow-sm hover:border-amber-400 transition cursor-pointer flex flex-col justify-between"
+                className="bg-white dark:bg-card/90 border border-slate-200 dark:border-neutral-700 rounded-3xl p-4 space-y-3 shadow-sm hover:border-amber-400 transition cursor-pointer flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
@@ -128,7 +128,7 @@ export function ExclusiveDealsPage() {
                       {deal.promotionName}
                     </Badge>
                     {msLeft > 0 && (
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1 shrink-0">
+                      <span className="text-[10px] text-slate-400 dark:text-neutral-500 flex items-center gap-1 shrink-0">
                         <Clock className="w-3 h-3" /> Ends in {Math.max(1, hoursLeft)}h
                       </span>
                     )}
@@ -143,26 +143,26 @@ export function ExclusiveDealsPage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <ShoppingBag className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+                      <ShoppingBag className="w-8 h-8 text-slate-300 dark:text-neutral-600" />
                     )}
                   </div>
 
                   <div>
                     <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white line-clamp-2">{deal.name}</h3>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate">
+                    <p className="text-[11px] text-slate-400 dark:text-neutral-500 truncate">
                       {deal.supplierName ? `${deal.supplierName} · ` : ''}MOQ: {deal.moq} Units
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
+                <div className="pt-2 border-t border-slate-200 dark:border-neutral-700/80 flex items-center justify-between">
                   <div>
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-base font-black text-amber-600 dark:text-amber-400">
                         {formatPrice(deal.dealPriceBDT ?? deal.regularPriceBDT)}
                       </span>
                       {realSaving > 0 && (
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 line-through">{formatPrice(deal.regularPriceBDT)}</span>
+                        <span className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 line-through">{formatPrice(deal.regularPriceBDT)}</span>
                       )}
                     </div>
                     {realSaving > 0 && (

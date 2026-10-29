@@ -90,10 +90,10 @@ export function AddBankAccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Add Bank Account</span>
@@ -102,14 +102,14 @@ export function AddBankAccountPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6 lg:max-w-3xl">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-neutral-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
               <Landmark className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base font-black">Link Commercial Bank</h1>
-              <p className="text-xs text-slate-600 dark:text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-neutral-300">
                 Authorized for EFTN and RTGS automated bulk wholesale settlements.
               </p>
             </div>
@@ -117,14 +117,14 @@ export function AddBankAccountPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3.5">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3.5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Commercial Bank</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">Commercial Bank</label>
               <select
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
+                className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-neutral-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-neutral-100 focus:outline-none focus:border-primary"
               >
                 <option value="City Bank PLC">City Bank PLC</option>
                 <option value="BRAC Bank PLC">BRAC Bank PLC</option>
@@ -138,55 +138,55 @@ export function AddBankAccountPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">
                 Account Number
               </label>
               <Input
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
                 placeholder="13-16 digit account number"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-mono font-bold"
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">
                 Account Holder Name / Entity Title
               </label>
               <Input
                 value={accountHolderName}
                 onChange={(e) => setAccountHolderName(e.target.value)}
                 placeholder="Exact legal name matching bank statement"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-semibold"
               />
             </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Branch Name</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">Branch Name</label>
                 <Input
                   value={branchName}
                   onChange={(e) => setBranchName(e.target.value)}
                   placeholder="Branch"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-semibold"
                 />
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Routing Number</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">Routing Number</label>
                 <Input
                   value={routingNumber}
                   onChange={(e) => setRoutingNumber(e.target.value)}
                   placeholder="9-digit routing"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-mono font-semibold"
                 />
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="pt-2 border-t border-slate-100 dark:border-neutral-800 flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">Set as Primary Account</span>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Default destination for sales proceeds</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-neutral-100 block">Set as Primary Account</span>
+                <span className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">Default destination for sales proceeds</span>
               </div>
               <Switch checked={isDefault} onCheckedChange={setIsDefault} className="data-[state=checked]:bg-primary" />
             </div>

@@ -145,7 +145,7 @@ export function AdminUsersPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">User management is restricted to Zylod admins. Sign in with an admin account.</p>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-sm mx-auto">User management is restricted to Zylod admins. Sign in with an admin account.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -155,7 +155,7 @@ export function AdminUsersPage() {
     if (s === 'active') return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
     if (s === 'suspended') return 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400'
     if (s === 'banned') return 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400'
-    return 'bg-slate-100 dark:bg-card text-slate-600 dark:bg-card dark:text-slate-400'
+    return 'bg-slate-100 dark:bg-card text-slate-600 dark:bg-card dark:text-neutral-400'
   }
 
   return (
@@ -168,10 +168,10 @@ export function AdminUsersPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">User Management</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">All registered accounts with real order/review counts. Suspend, ban, or reactivate — every action is audit-logged.</p>
+            <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">All registered accounts with real order/review counts. Suspend, ban, or reactivate — every action is audit-logged.</p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => loadUsers()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
+        <Button variant="outline" onClick={() => loadUsers()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-neutral-800 dark:border-neutral-700">
           <RefreshCw className="h-3.5 w-3.5" /> Refresh
         </Button>
       </div>
@@ -182,7 +182,7 @@ export function AdminUsersPage() {
           <button
             key={r || 'all'}
             onClick={() => applyFilter({ role: r, page: 1 })}
-            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${role === r ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${role === r ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 dark:text-neutral-300'}`}
           >
             {r || 'All roles'}
           </button>
@@ -198,7 +198,7 @@ export function AdminUsersPage() {
           <option value="banned">Banned</option>
         </select>
         <div className="relative flex-1 min-w-[200px] max-w-sm ml-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -219,11 +219,11 @@ export function AdminUsersPage() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load users</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -232,10 +232,10 @@ export function AdminUsersPage() {
           </Button>
         </div>
       ) : users.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-neutral-800 text-center space-y-2">
           <Users className="h-10 w-10 text-slate-300 mx-auto" />
           <h2 className="text-sm font-black">No users found</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-sm mx-auto">
             {search || role || status
               ? 'No accounts match the current filters. Adjust the role/status filters or search term.'
               : 'No accounts are registered yet. New buyers and suppliers appear here the moment they sign up.'}
@@ -248,7 +248,7 @@ export function AdminUsersPage() {
             const isActionTarget = actionTarget === u.id
             const displayName = u.companyName || u.businessName || u.fullName || '--'
             return (
-              <div key={u.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={u.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 overflow-hidden">
                 {/* Row */}
                 <div className="p-4 flex flex-wrap items-center gap-3">
                   <div className="min-w-[170px] flex-1">
@@ -258,14 +258,14 @@ export function AdminUsersPage() {
                         {u.accountStatus}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 truncate mt-0.5">
                       {u.email || u.phone || 'no contact on file'}
-                      <span className="text-slate-300 dark:text-slate-600 dark:text-slate-400 dark:text-slate-500"> · </span>
+                      <span className="text-slate-300 dark:text-neutral-600 dark:text-neutral-400 dark:text-neutral-500"> · </span>
                       <span className="capitalize">{u.userType}</span>
                       {u.userType === 'supplier' && u.verificationStatus ? ` · ${u.verificationStatus}` : ''}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3 text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 min-w-[150px]">
+                  <div className="flex items-center gap-3 text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 min-w-[150px]">
                     <span>{u.orderCount} order{u.orderCount === 1 ? '' : 's'}</span>
                     <span>{u.reviewCount} review{u.reviewCount === 1 ? '' : 's'}</span>
                     <span>{new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
@@ -287,7 +287,7 @@ export function AdminUsersPage() {
                     )}
                     <button
                       onClick={() => { setDetailsId(showDetails ? null : u.id); setRowError('') }}
-                      className="p-2 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200"
+                      className="p-2 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 hover:text-slate-700 dark:text-neutral-300 dark:hover:text-slate-200"
                       title={showDetails ? 'Hide details' : 'Show details'}
                     >
                       {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -297,19 +297,19 @@ export function AdminUsersPage() {
 
                 {/* Details / action panel */}
                 {(showDetails || isActionTarget) && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
+                  <div className="border-t border-slate-100 dark:border-neutral-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
                     {/* Real account details */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px]">
-                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Contact</span><span className="font-bold break-all">{u.email || '--'}</span><span className="block text-slate-400 dark:text-slate-500 dark:text-slate-400">{u.phone || ''}</span></div>
-                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Verified</span><span className="font-bold">Email: {u.isEmailVerified ? 'yes' : 'no'} · Phone: {u.isPhoneVerified ? 'yes' : 'no'}</span></div>
-                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Activity</span><span className="font-bold">{u.orderCount} orders · {u.reviewCount} reviews · {u.quoteRequestCount} RFQs</span></div>
-                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Supplier rating</span><span className="font-bold">{u.userType === 'supplier' && u.ratingAvg > 0 ? u.ratingAvg.toFixed(1) : '--'}</span></div>
+                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Contact</span><span className="font-bold break-all">{u.email || '--'}</span><span className="block text-slate-400 dark:text-neutral-500 dark:text-neutral-400">{u.phone || ''}</span></div>
+                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Verified</span><span className="font-bold">Email: {u.isEmailVerified ? 'yes' : 'no'} · Phone: {u.isPhoneVerified ? 'yes' : 'no'}</span></div>
+                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Activity</span><span className="font-bold">{u.orderCount} orders · {u.reviewCount} reviews · {u.quoteRequestCount} RFQs</span></div>
+                      <div><span className="block text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Supplier rating</span><span className="font-bold">{u.userType === 'supplier' && u.ratingAvg > 0 ? u.ratingAvg.toFixed(1) : '--'}</span></div>
                     </div>
 
                     {/* Action confirm panel — only when an action button was clicked for THIS row */}
                     {isActionTarget && (
                       <div className="space-y-2.5">
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+                        <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">
                           {action === 'ban' && 'Banning permanently blocks this account. Provide a reason — it is recorded in the audit log.'}
                           {action === 'suspend' && 'Suspending temporarily blocks this account. Provide a reason — it is recorded in the audit log.'}
                           {action === 'activate' && 'Reactivating restores full access to this account.'}
@@ -323,7 +323,7 @@ export function AdminUsersPage() {
                           </div>
                         )}
                         <div className="flex flex-wrap gap-2 justify-end">
-                          <Button variant="outline" onClick={() => setActionTarget(null)} className="h-9 px-4 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 dark:border-slate-700">Cancel</Button>
+                          <Button variant="outline" onClick={() => setActionTarget(null)} className="h-9 px-4 rounded-xl text-xs font-bold border-slate-200 dark:border-neutral-800 dark:border-neutral-700">Cancel</Button>
                           <Button
                             onClick={() => submitAction(u)}
                             disabled={actingId === u.id || (action !== 'activate' && !reason.trim())}
@@ -344,7 +344,7 @@ export function AdminUsersPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{total} account{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">{total} account{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); loadUsers({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const p = page + 1; setPage(p); loadUsers({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>

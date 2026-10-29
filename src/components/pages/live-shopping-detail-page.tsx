@@ -43,7 +43,7 @@ export function LiveShoppingDetailPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-neutral-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -60,7 +60,7 @@ export function LiveShoppingDetailPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-gray-900 animate-ping" /> LIVE
             </span>
           )}
-          <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
+          <span className="text-xs text-slate-400 dark:text-neutral-500 flex items-center gap-1">
             <Eye className="w-3.5 h-3.5" /> {stream?.viewerCount ?? 0}
           </span>
         </div>
@@ -68,7 +68,7 @@ export function LiveShoppingDetailPage() {
 
       <div className="flex-1 px-4 py-4 max-w-3xl mx-auto w-full space-y-4 pb-24 md:pb-8 lg:max-w-6xl lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start lg:space-y-0 lg:px-6 lg:py-6">
         {/* Live Video Stage */}
-        <div className="relative aspect-video w-full rounded-3xl overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl lg:col-span-2 flex items-center justify-center">
+        <div className="relative aspect-video w-full rounded-3xl overflow-hidden bg-gradient-to-br from-neutral-800 via-neutral-900 to-neutral-950 border border-neutral-800 shadow-2xl lg:col-span-2 flex items-center justify-center">
           {stream?.thumbnailUrl ? (
             <img
               src={stream.thumbnailUrl}
@@ -77,8 +77,8 @@ export function LiveShoppingDetailPage() {
             />
           ) : (
             <div className="text-center space-y-2">
-              <Radio className="w-10 h-10 text-slate-600 dark:text-slate-400 dark:text-slate-500 mx-auto" />
-              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">No stream video yet</p>
+              <Radio className="w-10 h-10 text-slate-600 dark:text-neutral-400 dark:text-neutral-500 mx-auto" />
+              <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">No stream video yet</p>
             </div>
           )}
 
@@ -97,31 +97,31 @@ export function LiveShoppingDetailPage() {
         </div>
 
         {/* Live Chat & Messages */}
-        <div className="bg-card rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 lg:col-span-1">
-          <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Live Factory Floor Q&amp;A</h3>
+        <div className="bg-card rounded-3xl p-4 border border-slate-200 dark:border-neutral-800 shadow-sm space-y-3 lg:col-span-1">
+          <h3 className="text-xs font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-wider">Live Factory Floor Q&amp;A</h3>
 
           <div className="space-y-2 max-h-48 lg:max-h-[420px] overflow-y-auto pr-1">
             {messages.length === 0 ? (
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">
                 No messages yet. Live chat opens for everyone once the host starts broadcasting.
               </p>
             ) : (
               messages.map((m, i) => (
                 <div key={i} className="text-xs flex items-baseline gap-2">
                   <span className="font-bold text-amber-600 dark:text-amber-400">{m.sender}:</span>
-                  <span className="text-slate-700 dark:text-slate-200">{m.text}</span>
+                  <span className="text-slate-700 dark:text-neutral-200">{m.text}</span>
                 </div>
               ))
             )}
           </div>
 
-          <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-neutral-800">
             <Input
               placeholder="Chat opens when the stream is live"
               value={inputMsg}
               onChange={e => setInputMsg(e.target.value)}
               disabled={!stream?.isLive}
-              className="bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-gray-900 dark:text-white text-xs disabled:opacity-50"
+              className="bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-gray-900 dark:text-white text-xs disabled:opacity-50"
             />
             <Button
               size="sm"

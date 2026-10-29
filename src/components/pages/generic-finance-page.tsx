@@ -135,7 +135,7 @@ export function GenericFinancePage({ pageId }: { pageId: string }) {
   return (
     <div className="min-h-screen bg-background pb-16">
       {/* Banner */}
-      <div className="relative overflow-hidden py-10 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-100 to-slate-100 dark:from-slate-900 dark:to-slate-900 text-gray-900 dark:text-white">
+      <div className="relative overflow-hidden py-10 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-100 to-slate-100 dark:from-neutral-900 dark:to-neutral-900 text-gray-900 dark:text-white">
         <div className="max-w-7xl mx-auto relative z-10">
           <button
             onClick={() => navigate('buyer-dashboard')}
@@ -236,7 +236,7 @@ function Overview({ data, loading, formatPrice, navigate }: {
             <p className="text-xs text-muted-foreground font-medium">Total Spent / Debited</p>
             <h3 className="text-2xl font-bold text-foreground mt-1">{formatPrice(data?.totalUsed || 0)}</h3>
           </div>
-          <div className="p-3 rounded-full bg-slate-500/10 text-slate-600 dark:text-slate-400 dark:text-slate-500"><Receipt className="h-6 w-6" /></div>
+          <div className="p-3 rounded-full bg-slate-500/10 text-slate-600 dark:text-neutral-400 dark:text-neutral-500"><Receipt className="h-6 w-6" /></div>
         </CardContent>
       </Card>
       <Card className="border-border/50 bg-card">

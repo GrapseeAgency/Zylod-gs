@@ -227,10 +227,10 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
-            <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
+            <PackageSearch className="h-7 w-7 text-slate-400 dark:text-neutral-500" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No product selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">No product selected</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">
             Select a product to see its bulk pricing — every calculator is tied to one real listing and its live tier ladder.
           </p>
           <Button onClick={browseProducts} className="bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-2xl text-xs px-6">
@@ -246,10 +246,10 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
-            <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
+            <PackageSearch className="h-7 w-7 text-slate-400 dark:text-neutral-500" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">Product not found</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">Product not found</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">
             This listing may have been removed or is no longer available, so there is no bulk pricing to calculate.
           </p>
           <Button onClick={browseProducts} className="bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-2xl text-xs px-6">
@@ -267,13 +267,13 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
           <div className="w-14 h-14 rounded-3xl bg-rose-50 dark:bg-rose-950/50 flex items-center justify-center mx-auto">
             <AlertTriangle className="h-7 w-7 text-primary" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load bulk pricing</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{errorMsg || 'Something went wrong on our side. Please try again.'}</p>
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">Couldn&apos;t load bulk pricing</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">{errorMsg || 'Something went wrong on our side. Please try again.'}</p>
           <div className="flex items-center justify-center gap-2 pt-1">
             <Button
               variant="outline"
               onClick={() => window.location.reload()}
-              className="h-11 rounded-2xl text-xs font-bold border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 gap-2"
+              className="h-11 rounded-2xl text-xs font-bold border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-neutral-300 gap-2"
             >
               <RefreshCw className="h-4 w-4" /> Retry
             </Button>
@@ -295,15 +295,15 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
   const sliderMax = Math.max(sliderMin + 10, 1200)
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between mb-2">
-          <button onClick={() => navigate('home')} className="p-1 text-slate-700 dark:text-slate-300" title="QR">
+          <button onClick={() => navigate('home')} className="p-1 text-slate-700 dark:text-neutral-300" title="QR">
             <QrCode className="h-6 w-6 text-primary" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300" title="Notifications" aria-label="Notifications">
+          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-neutral-300" title="Notifications" aria-label="Notifications">
             <Bell className="h-6 w-6" />
           </button>
         </div>
@@ -312,20 +312,20 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
       <main className="px-4 py-4 max-w-lg mx-auto space-y-4 md:max-w-3xl lg:max-w-4xl md:py-6 md:space-y-6">
         {/* Title & SKU */}
         <div>
-          <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">
             Bulk Pricing Calculator
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5 leading-relaxed">
             Adjust quantity to see real-time volume discounts for {product.name}
             {product.sku ? ` (SKU: ${product.sku})` : ''}.
           </p>
 
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-card px-2.5 py-1 rounded-md">
+            <span className="text-[11px] font-bold text-slate-700 dark:text-neutral-300 bg-slate-100 dark:bg-card px-2.5 py-1 rounded-md">
               In Stock: {Math.floor(product.stockQuantity).toLocaleString()}
             </span>
             {product.moq > 1 && (
-              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-card px-2.5 py-1 rounded-md">
+              <span className="text-[11px] font-bold text-slate-700 dark:text-neutral-300 bg-slate-100 dark:bg-card px-2.5 py-1 rounded-md">
                 MOQ: {Math.floor(product.moq).toLocaleString()} {unitLabel}
               </span>
             )}
@@ -333,17 +333,17 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
         </div>
 
         {/* Product Snippet */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-3 border border-slate-200 dark:border-slate-800 flex items-center gap-3 shadow-2xs">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-3 border border-slate-200 dark:border-neutral-800 flex items-center gap-3 shadow-2xs">
           <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-card overflow-hidden shrink-0 flex items-center justify-center">
             {productImage ? (
               <img src={productImage} alt={product.name} className="w-full h-full object-cover" />
             ) : (
-              <Package className="h-8 w-8 text-slate-300 dark:text-slate-600" />
+              <Package className="h-8 w-8 text-slate-300 dark:text-neutral-600" />
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1">{product.name}</h3>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100 line-clamp-1">{product.name}</h3>
+            <p className="text-[10px] text-slate-400 dark:text-neutral-500 mt-0.5 truncate">
               Supplier: {product.supplier?.companyName || 'Unknown supplier'}
               {supplierVerified ? ' • Verified Supplier' : ''}
             </p>
@@ -354,9 +354,9 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
         </div>
 
         {/* Quantity Selector Slider */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Select Quantity</span>
+            <span className="text-xs font-bold text-slate-800 dark:text-neutral-200">Select Quantity</span>
             <div className="bg-primary text-white text-xs font-black px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1">
               <Package className="h-3.5 w-3.5" />
               <span>{quantity.toLocaleString()} {isBundle ? 'Bundles' : 'Units'}</span>
@@ -372,7 +372,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
             className="py-2"
           />
 
-          <div className="flex justify-between text-[10px] text-slate-400 dark:text-slate-500 font-bold px-1">
+          <div className="flex justify-between text-[10px] text-slate-400 dark:text-neutral-500 font-bold px-1">
             {[0, 0.25, 0.5, 0.75, 1].map((f) => (
               <span key={f}>
                 {Math.round(sliderMin + (sliderMax - sliderMin) * f).toLocaleString()}
@@ -382,12 +382,12 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
 
           {/* Current Tier Result Box */}
           {activeTier && (
-            <div className="bg-slate-50 dark:bg-background rounded-2xl p-4 border border-slate-100 dark:border-slate-800 text-center space-y-1">
+            <div className="bg-slate-50 dark:bg-background rounded-2xl p-4 border border-slate-100 dark:border-neutral-800 text-center space-y-1">
               <span className="text-[10px] font-black uppercase tracking-wider text-primary">
                 {activeTier.isBase ? 'BASE PRICE (NO TIER AT THIS QUANTITY)' : `CURRENT TIER: ${activeTier.label} ${unitLabel}`}
               </span>
-              <div className="text-xl md:text-3xl font-black text-slate-900 dark:text-slate-100">
-                {formatPrice(activeTier.price)} <span className="text-xs font-normal text-slate-500 dark:text-slate-400">/ {unitLabel}</span>
+              <div className="text-xl md:text-3xl font-black text-slate-900 dark:text-neutral-100">
+                {formatPrice(activeTier.price)} <span className="text-xs font-normal text-slate-500 dark:text-neutral-400">/ {unitLabel}</span>
               </div>
               {activeTier.discountPercent > 0 && (
                 <div className="text-xs font-bold text-primary flex items-center justify-center gap-1">
@@ -400,32 +400,32 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
         </div>
 
         {/* Volume Discount Tiers Table — real tiers only */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xs">
-          <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
-            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Volume Discount Tiers</h3>
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 overflow-hidden shadow-2xs">
+          <div className="px-4 py-3 border-b border-slate-100 dark:border-neutral-800">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Volume Discount Tiers</h3>
             {tierRows.length <= 1 && (
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+              <p className="text-[10px] text-slate-400 dark:text-neutral-500 mt-0.5">
                 This product has no volume tiers configured — the base price applies at every quantity.
               </p>
             )}
           </div>
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-background/70 text-[10px] font-black uppercase text-slate-400 dark:text-slate-500">
+              <tr className="border-b border-slate-100 dark:border-neutral-800 bg-slate-50 dark:bg-background/70 text-[10px] font-black uppercase text-slate-400 dark:text-neutral-500">
                 <th className="p-3">Quantity</th>
                 <th className="p-3">Unit Price</th>
                 <th className="p-3">Discount</th>
                 <th className="p-3 text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+            <tbody className="divide-y divide-slate-100 dark:divide-neutral-800 font-medium">
               {tierRows.map((t) => {
                 const isActive = activeTier?.key === t.key
                 return (
                   <tr
                     key={t.key}
                     className={`transition-colors ${
-                      isActive ? 'bg-rose-50/60 dark:bg-rose-950/40 font-bold' : 'text-slate-700 dark:text-slate-300'
+                      isActive ? 'bg-rose-50/60 dark:bg-rose-950/40 font-bold' : 'text-slate-700 dark:text-neutral-300'
                     }`}
                   >
                     <td className="p-3">{t.label}</td>
@@ -449,20 +449,20 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
 
         {/* Order Summary Card */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border-2 border-rose-100 dark:border-rose-900/60 shadow-sm space-y-3">
-          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Order Summary</h3>
+          <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Order Summary</h3>
 
-          <div className="space-y-2 text-xs divide-y divide-slate-50 dark:divide-slate-800">
-            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400">
+          <div className="space-y-2 text-xs divide-y divide-slate-50 dark:divide-neutral-800">
+            <div className="flex justify-between py-1 text-slate-500 dark:text-neutral-400">
               <span>Base Price (1 {unitLabel})</span>
-              <span className="font-semibold text-slate-800 dark:text-slate-200">{formatPrice(basePrice)}</span>
+              <span className="font-semibold text-slate-800 dark:text-neutral-200">{formatPrice(basePrice)}</span>
             </div>
-            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400">
+            <div className="flex justify-between py-1 text-slate-500 dark:text-neutral-400">
               <span>Quantity</span>
-              <span className="font-semibold text-slate-800 dark:text-slate-200">{quantity.toLocaleString()} {unitLabel}</span>
+              <span className="font-semibold text-slate-800 dark:text-neutral-200">{quantity.toLocaleString()} {unitLabel}</span>
             </div>
-            <div className="flex justify-between py-1 text-slate-500 dark:text-slate-400">
+            <div className="flex justify-between py-1 text-slate-500 dark:text-neutral-400">
               <span>Subtotal (Base)</span>
-              <span className="line-through text-slate-400 dark:text-slate-500">{formatPrice(baseSubtotal)}</span>
+              <span className="line-through text-slate-400 dark:text-neutral-500">{formatPrice(baseSubtotal)}</span>
             </div>
             <div className="flex justify-between py-1 text-sm font-black text-primary">
               <span>Volume Price</span>
@@ -479,7 +479,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
               <div className="text-lg font-black text-primary mt-0.5">
                 {formatPrice(savings)}
               </div>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">vs. buying {quantity.toLocaleString()} {unitLabel} at the base price.</p>
+              <p className="text-[10px] text-slate-500 dark:text-neutral-400 mt-0.5">vs. buying {quantity.toLocaleString()} {unitLabel} at the base price.</p>
             </div>
           )}
 
@@ -495,7 +495,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
             <Button
               variant="outline"
               onClick={() => navigate('product-detail', { productId: product.id })}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
             >
               <FileText className="h-4 w-4" />
               Request Formal Quote
@@ -504,7 +504,7 @@ export function BulkPricingPage({ pageParams: _pageParams }: { pageParams?: Reco
         </div>
 
         {/* Trust Badges */}
-        <div className="space-y-2 pt-1 text-xs text-slate-500 dark:text-slate-400 font-medium">
+        <div className="space-y-2 pt-1 text-xs text-slate-500 dark:text-neutral-400 font-medium">
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <span>Trade Assurance protects your orders.</span>

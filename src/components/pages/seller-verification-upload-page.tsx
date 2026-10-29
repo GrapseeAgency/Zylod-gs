@@ -139,7 +139,7 @@ export const SellerVerificationUploadPage = () => {
         </button>
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">Upload Document</h1>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Upload Document</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Upload Document</h1>
 
       <main className="flex-1 p-4 space-y-6">
         <div className="space-y-2">

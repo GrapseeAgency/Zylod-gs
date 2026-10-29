@@ -60,32 +60,32 @@ export function DeliveryChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col pb-24 md:pb-0 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background flex flex-col pb-24 md:pb-0 text-slate-900 dark:text-neutral-100">
       {/* Top Main Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={() => navigate("home")} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Menu" aria-label="Menu">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={() => navigate("home")} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Menu" aria-label="Menu">
           <Menu className="h-6 w-6" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Logistics Suite</span>
-        <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="More" aria-label="More options">
+        <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="More" aria-label="More options">
           <MoreVertical className="h-5 w-5" />
         </button>
       </header>
 
       {/* Participant Sub-Header — no invented driver identity or ETA */}
-      <div className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-2xs">
+      <div className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-neutral-800 px-4 py-3 flex items-center justify-between shadow-2xs">
         <div className="flex items-center gap-3">
           <ParticipantAvatar sizeClass="w-11 h-11" />
           <div>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100">Delivery Chat</h2>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Not connected to a delivery conversation</p>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-neutral-100">Delivery Chat</h2>
+            <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Not connected to a delivery conversation</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('shipping-tracker')}
-            className="w-9 h-9 rounded-full bg-slate-100 dark:bg-card hover:bg-slate-200 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-colors"
+            className="w-9 h-9 rounded-full bg-slate-100 dark:bg-card hover:bg-slate-200 text-slate-700 dark:text-neutral-300 flex items-center justify-center transition-colors"
             title="Open shipment tracker"
           >
             <Info className="h-4 w-4" />
@@ -117,8 +117,8 @@ export function DeliveryChatPage() {
         {messages.length === 0 ? (
           <div className="text-center py-14">
             <MessageSquareOff className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No messages yet</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
+            <h3 className="text-base font-bold text-slate-800 dark:text-neutral-200">No messages yet</h3>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs mx-auto leading-relaxed">
               This conversation has no messages. Live chat with your delivery partner will appear
               here once a shipment with real-time tracking is active.
             </p>
@@ -128,9 +128,9 @@ export function DeliveryChatPage() {
             {messages.map((msg) => (
               <div key={msg.id} className="flex gap-2.5 items-end justify-start">
                 <ParticipantAvatar sizeClass="w-7 h-7" />
-                <div className="max-w-[78%] rounded-3xl p-4 shadow-2xs space-y-1 bg-white dark:bg-gray-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-bl-none">
+                <div className="max-w-[78%] rounded-3xl p-4 shadow-2xs space-y-1 bg-white dark:bg-gray-900 text-slate-900 dark:text-neutral-100 border border-slate-200 dark:border-neutral-800 rounded-bl-none">
                   <p className="text-xs md:text-sm leading-relaxed">{msg.text}</p>
-                  <div className="flex items-center justify-end text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center justify-end text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                     <span>{msg.time}</span>
                   </div>
                 </div>
@@ -141,7 +141,7 @@ export function DeliveryChatPage() {
       </main>
 
       {/* Input Bar — sending without a backend shows a real error */}
-      <div className="bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-slate-800 p-3 max-w-lg mx-auto w-full lg:max-w-3xl">
+      <div className="bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-neutral-800 p-3 max-w-lg mx-auto w-full lg:max-w-3xl">
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -153,7 +153,7 @@ export function DeliveryChatPage() {
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="Type a message..."
-            className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium focus-visible:ring-primary"
+            className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-medium focus-visible:ring-primary"
           />
 
           <Button

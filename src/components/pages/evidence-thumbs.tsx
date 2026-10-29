@@ -48,17 +48,17 @@ export function EvidenceThumbs({ photos, label = 'Evidence' }: EvidenceThumbsPro
   if (photos.length === 0) {
     return (
       <div className="space-y-1.5">
-        <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+        <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 flex items-center gap-1.5">
           <ImageIcon className="h-3 w-3" /> {label} (0)
         </p>
-        <p className="text-[10px] text-slate-400 dark:text-slate-500">No evidence — the buyer attached no photos.</p>
+        <p className="text-[10px] text-slate-400 dark:text-neutral-500">No evidence — the buyer attached no photos.</p>
       </div>
     )
   }
 
   return (
     <div className="space-y-1.5">
-      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 flex items-center gap-1.5">
         <ImageIcon className="h-3 w-3" /> {label} ({photos.length})
       </p>
       <div className="flex flex-wrap gap-2">
@@ -69,7 +69,7 @@ export function EvidenceThumbs({ photos, label = 'Evidence' }: EvidenceThumbsPro
             onClick={() => setOpenPhoto(p)}
             title={p.note ? `Evidence photo: ${p.note}` : `Evidence photo ${i + 1}`}
             aria-label={`View evidence photo ${i + 1}${p.note ? `: ${p.note}` : ''}`}
-            className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 dark:border-neutral-800 dark:border-neutral-700 hover:border-slate-400 dark:hover:border-slate-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             {/* Plain <img> — bytes come from the authed /api/attachments route. */}
             <img
@@ -88,9 +88,9 @@ export function EvidenceThumbs({ photos, label = 'Evidence' }: EvidenceThumbsPro
             <>
               <DialogHeader>
                 <DialogTitle className="text-sm font-black flex items-center gap-2">
-                  <ImageIcon className="h-4 w-4 text-slate-400 dark:text-slate-500" /> Buyer evidence photo
+                  <ImageIcon className="h-4 w-4 text-slate-400 dark:text-neutral-500" /> Buyer evidence photo
                 </DialogTitle>
-                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
+                <DialogDescription className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 break-words">
                   {openPhoto.note ? `“${openPhoto.note}”` : 'No caption was provided for this photo.'}
                 </DialogDescription>
               </DialogHeader>
@@ -98,9 +98,9 @@ export function EvidenceThumbs({ photos, label = 'Evidence' }: EvidenceThumbsPro
                 <img
                   src={openPhoto.url}
                   alt={openPhoto.note ? `Evidence photo: ${openPhoto.note}` : 'Buyer evidence photo'}
-                  className="max-h-[65vh] w-full rounded-xl object-contain border border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-slate-50 dark:bg-background"
+                  className="max-h-[65vh] w-full rounded-xl object-contain border border-slate-200 dark:border-neutral-800 dark:border-neutral-700 bg-slate-50 dark:bg-background"
                 />
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 tabular-nums break-all">
+                <p className="text-[10px] text-slate-400 dark:text-neutral-500 tabular-nums break-all">
                   {openPhoto.mimeType} · {formatBytes(openPhoto.sizeBytes)} · served by /api/attachments (owner/admin only)
                 </p>
               </div>

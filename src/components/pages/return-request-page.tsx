@@ -171,13 +171,13 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
   /* ─── No order id — honest state ─── */
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-neutral-100">
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
-          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 flex items-center justify-center mb-4">
             <Box className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No order selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">No order selected</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs mx-auto leading-relaxed">
             Returns are started from a specific order. Open one of your delivered orders and choose
             “Return”.
           </p>
@@ -195,23 +195,23 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
   /* ─── Auth / not found / load error — honest states ─── */
   if (notFound || needsAuth || error) {
     return (
-      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
-        <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-neutral-100">
+        <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
               <ArrowLeft className="h-5 w-5 text-primary" />
             </button>
             <h1 className="text-base font-bold text-primary">Return Request</h1>
           </div>
         </header>
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
-          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 flex items-center justify-center mb-4">
             {needsAuth ? <LogIn className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <AlertCircle className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">
             {notFound ? 'Order not found' : needsAuth ? 'Sign in required' : 'Couldn\u2019t load this order'}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs mx-auto leading-relaxed">
             {notFound
               ? 'We couldn\u2019t find this order. It may belong to a different account.'
               : needsAuth
@@ -230,7 +230,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
               <Button
                 variant="outline"
                 onClick={fetchOrder}
-                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 Try Again
@@ -239,7 +239,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
             <Button
               variant="outline"
               onClick={goBack}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-10 rounded-2xl"
             >
               Go Back
             </Button>
@@ -250,11 +250,11 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
   }
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-10 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
             <ArrowLeft className="h-5 w-5 text-primary" />
           </button>
           <h1 className="text-base font-bold text-primary">Return Request</h1>
@@ -265,17 +265,17 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
         <h1 className="hidden md:block text-2xl font-bold text-primary">Return Request</h1>
 
         {/* Progress Card — real order identity */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Order #{order?.orderNumber}</h2>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+              <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Order #{order?.orderNumber}</h2>
+              <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                 {order?.placedAt
                   ? `Placed ${new Date(order.placedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
                   : null}
               </p>
             </div>
-            <span className="bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[10px] font-black px-2.5 py-1 rounded-md capitalize">
+            <span className="bg-slate-100 dark:bg-card text-slate-600 dark:text-neutral-400 dark:text-neutral-500 text-[10px] font-black px-2.5 py-1 rounded-md capitalize">
               {order?.paymentStatus || ''}
             </span>
           </div>
@@ -284,12 +284,12 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
             <div className="bg-primary h-full rounded-full w-1/3" />
           </div>
 
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">Select items to return</p>
+          <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-medium">Select items to return</p>
         </div>
 
         {/* Section: Select Items */}
         <div className="space-y-3">
-          <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Select Items</h2>
+          <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Select Items</h2>
 
           {items.map((item) => {
             const isSelected = !!selectedItems[item.id]
@@ -301,7 +301,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
               <div
                 key={item.id}
                 className={`bg-white dark:bg-gray-900 rounded-3xl border transition-all overflow-hidden shadow-2xs ${
-                  isSelected ? 'border-primary ring-1 ring-primary/20 border-l-4 border-l-primary' : 'border-slate-200 dark:border-slate-800'
+                  isSelected ? 'border-primary ring-1 ring-primary/20 border-l-4 border-l-primary' : 'border-slate-200 dark:border-neutral-800'
                 }`}
               >
                 {/* Item Header */}
@@ -313,7 +313,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
                     className="w-4 h-4 rounded text-primary accent-primary mt-1 shrink-0 cursor-pointer"
                   />
 
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-slate-200 dark:border-slate-800">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-slate-200 dark:border-neutral-800">
                     {image ? (
                       <img src={image} alt={item.product?.name || 'Product'} className="w-full h-full object-cover" />
                     ) : (
@@ -324,22 +324,22 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100 line-clamp-2 leading-snug">
                       {item.product?.name || 'Product'}
                     </h3>
                     {item.variant && (
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                         {item.variant.variantName}: {item.variant.variantValue}
                       </p>
                     )}
                     <div className="flex justify-between items-baseline mt-2">
                       <span className="text-xs font-black text-primary">
                         {formatPrice(item.unitPrice)}{' '}
-                        <span className="text-[10px] font-normal text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                        <span className="text-[10px] font-normal text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                           / {item.product?.unit || 'unit'}
                         </span>
                       </span>
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
+                      <span className="text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-medium">
                         Qty: {orderedQty}
                       </span>
                     </div>
@@ -348,16 +348,16 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
 
                 {/* Return Details Form (Shown if item is checked) */}
                 {isSelected && (
-                  <div className="p-4 bg-slate-50 dark:bg-background/70 border-t border-slate-100 dark:border-slate-800 space-y-4">
+                  <div className="p-4 bg-slate-50 dark:bg-background/70 border-t border-slate-100 dark:border-neutral-800 space-y-4">
                     {/* Reason */}
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      <label className="text-xs font-semibold text-slate-800 dark:text-neutral-200">
                         Reason for Return *
                       </label>
                       <select
                         value={reasons[item.id] || ''}
                         onChange={(e) => setReasons((prev) => ({ ...prev, [item.id]: e.target.value }))}
-                        className="w-full h-11 rounded-2xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 text-xs font-medium px-3 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className="w-full h-11 rounded-2xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 text-xs font-medium px-3 text-slate-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
                       >
                         <option value="">Select a reason…</option>
                         {REASONS.map((r) => (
@@ -368,34 +368,34 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
 
                     {/* Quantity Stepper */}
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      <label className="text-xs font-semibold text-slate-800 dark:text-neutral-200">
                         Quantity to Return
                       </label>
                       <div className="flex items-center gap-3">
-                        <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-gray-900 p-1">
+                        <div className="flex items-center border border-slate-200 dark:border-neutral-800 rounded-xl bg-white dark:bg-gray-900 p-1">
                           <button
                             onClick={() => handleQtyChange(item.id, -1, orderedQty)}
-                            className="w-7 h-7 rounded-lg bg-slate-50 dark:bg-background hover:bg-slate-100 dark:bg-card dark:hover:bg-card flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500"
+                            className="w-7 h-7 rounded-lg bg-slate-50 dark:bg-background hover:bg-slate-100 dark:bg-card dark:hover:bg-card flex items-center justify-center text-slate-600 dark:text-neutral-400 dark:text-neutral-500"
                           >
                             <Minus className="h-3 w-3" />
                           </button>
-                          <span className="w-10 text-center text-xs font-bold text-slate-900 dark:text-slate-100">
+                          <span className="w-10 text-center text-xs font-bold text-slate-900 dark:text-neutral-100">
                             {qty}
                           </span>
                           <button
                             onClick={() => handleQtyChange(item.id, 1, orderedQty)}
-                            className="w-7 h-7 rounded-lg bg-slate-50 dark:bg-background hover:bg-slate-100 dark:bg-card dark:hover:bg-card flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500"
+                            className="w-7 h-7 rounded-lg bg-slate-50 dark:bg-background hover:bg-slate-100 dark:bg-card dark:hover:bg-card flex items-center justify-center text-slate-600 dark:text-neutral-400 dark:text-neutral-500"
                           >
                             <Plus className="h-3 w-3" />
                           </button>
                         </div>
-                        <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400">of {orderedQty} ordered</span>
+                        <span className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400">of {orderedQty} ordered</span>
                       </div>
                     </div>
 
                     {/* Additional Comments */}
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                      <label className="text-xs font-semibold text-slate-800 dark:text-neutral-200">
                         Additional Comments
                       </label>
                       <Textarea
@@ -403,7 +403,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
                         onChange={(e) => setComments(e.target.value)}
                         placeholder="Describe the issue in detail..."
                         rows={2}
-                        className="rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium resize-none"
+                        className="rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-medium resize-none"
                       />
                     </div>
                   </div>
@@ -415,12 +415,12 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
 
         {/* Empty order items — honest */}
         {items.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 flex items-center justify-center mb-4">
               <Package className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Nothing to return</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">Nothing to return</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-sm mx-auto leading-relaxed">
               This order doesn&apos;t contain any line items, so there is nothing to return.
             </p>
           </div>
@@ -429,7 +429,7 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
 
       {/* Sticky Bottom Bar */}
       {items.length > 0 && (
-        <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
+        <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-neutral-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
           <div className="max-w-lg md:max-w-2xl mx-auto space-y-2">
             {submitError && (
               <p className="text-[11px] text-rose-600 bg-rose-50 border border-rose-100 rounded-xl p-2.5 leading-relaxed flex items-start gap-1.5">
@@ -439,11 +439,11 @@ export function ReturnRequestPage({ pageParams: _pageParams }: { pageParams?: Re
             )}
 
             <div className="flex justify-between items-baseline text-xs">
-              <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">
+              <span className="text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                 Selected: <strong>{selectedCount}</strong> item{selectedCount === 1 ? '' : 's'} · Qty: <strong>{selectedQty}</strong>
               </span>
               <div className="text-right">
-                <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 text-[10px] block">Estimated Refund:</span>
+                <span className="text-slate-400 dark:text-neutral-500 dark:text-neutral-400 text-[10px] block">Estimated Refund:</span>
                 <span className="text-sm font-black text-primary">{formatPrice(totalRefund)}</span>
               </div>
             </div>

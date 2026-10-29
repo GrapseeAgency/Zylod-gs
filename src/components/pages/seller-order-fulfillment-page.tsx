@@ -130,7 +130,7 @@ export function SellerOrderFulfillmentPage() {
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-4">
-        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">Fulfill Order</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100 mb-4">Fulfill Order</h1>
 
         {loading ? (
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 animate-pulse space-y-3">

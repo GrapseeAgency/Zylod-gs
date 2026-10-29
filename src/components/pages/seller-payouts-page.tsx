@@ -41,7 +41,7 @@ function statusChip(status: string) {
     case 'processing':
       return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Processing</Badge>;
     case 'pending':
-      return <Badge className="bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Pending</Badge>;
+      return <Badge className="bg-slate-200 text-slate-700 dark:text-neutral-300 hover:bg-slate-200">Pending</Badge>;
     case 'failed':
       return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Failed</Badge>;
     default:
@@ -105,7 +105,7 @@ export function SellerPayoutsPagePage() {
 
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
         <div className="hidden md:flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Payouts</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-neutral-100 dark:text-white">Payouts</h1>
           <Button size="sm" onClick={() => navigate('withdraw-money')} className="h-9">
             <ArrowUpRight className="h-4 w-4 mr-1" />
             Request payout

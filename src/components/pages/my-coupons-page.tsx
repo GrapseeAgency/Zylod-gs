@@ -195,7 +195,7 @@ export function MyCouponsPage() {
                     <span className="text-base font-extrabold text-red-600">
                       {coupon.discountLabel}
                     </span>
-                    <Badge className="bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-card border-gray-200 dark:border-gray-800 text-[10px]">
+                    <Badge className="bg-slate-100 dark:bg-card text-slate-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-card border-gray-200 dark:border-gray-800 text-[10px]">
                       {coupon.categoryLabel || 'Wholesale'}
                     </Badge>
                   </div>

@@ -242,10 +242,10 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
-            <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
+            <PackageSearch className="h-7 w-7 text-slate-400 dark:text-neutral-500" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No product selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">No product selected</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">
             Open a product first — bundles are built from that product&apos;s real companion listings.
           </p>
           <Button onClick={browseProducts} className="bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-2xl text-xs px-6">
@@ -261,10 +261,10 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
-            <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
+            <PackageSearch className="h-7 w-7 text-slate-400 dark:text-neutral-500" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">Product not found</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">Product not found</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">
             This listing may have been removed or is no longer available, so there is no bundle to build.
           </p>
           <Button onClick={browseProducts} className="bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-2xl text-xs px-6">
@@ -282,13 +282,13 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
           <div className="w-14 h-14 rounded-3xl bg-rose-50 dark:bg-rose-950/50 flex items-center justify-center mx-auto">
             <AlertTriangle className="h-7 w-7 text-primary" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load this bundle</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{errorMsg || 'Something went wrong on our side. Please try again.'}</p>
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">Couldn&apos;t load this bundle</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400">{errorMsg || 'Something went wrong on our side. Please try again.'}</p>
           <div className="flex items-center justify-center gap-2 pt-1">
             <Button
               variant="outline"
               onClick={() => window.location.reload()}
-              className="h-11 rounded-2xl text-xs font-bold border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 gap-2"
+              className="h-11 rounded-2xl text-xs font-bold border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-neutral-300 gap-2"
             >
               <RefreshCw className="h-4 w-4" /> Retry
             </Button>
@@ -305,37 +305,37 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
   // this listing. Never render an invented bundle to fill the space.
   if (items.length <= 1) {
     return (
-      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
           <div className="flex items-center justify-between">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-            <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300" title="Notifications" aria-label="Notifications">
+            <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-neutral-300" title="Notifications" aria-label="Notifications">
               <Bell className="h-6 w-6" />
             </button>
           </div>
         </header>
         <main className="px-4 py-4 max-w-lg mx-auto md:max-w-5xl md:px-6 md:py-6">
-          <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">
             Frequently Bought Together
           </h1>
-          <div className="mt-6 bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+          <div className="mt-6 bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
             <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
-              <PackageSearch className="h-7 w-7 text-slate-400 dark:text-slate-500" />
+              <PackageSearch className="h-7 w-7 text-slate-400 dark:text-neutral-500" />
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">
               No frequently-bought bundles for this product yet
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+            <p className="text-xs text-slate-500 dark:text-neutral-400 max-w-sm mx-auto">
               {note || 'No other live products from this supplier or in this category yet — check back as the catalog grows.'}
             </p>
             <div className="flex items-center justify-center gap-2 pt-1">
               <Button
                 variant="outline"
                 onClick={goBack}
-                className="h-11 rounded-2xl text-xs font-bold border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300"
+                className="h-11 rounded-2xl text-xs font-bold border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-neutral-300"
               >
                 Go Back
               </Button>
@@ -350,15 +350,15 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300" title="Notifications" aria-label="Notifications">
+          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-neutral-300" title="Notifications" aria-label="Notifications">
             <Bell className="h-6 w-6" />
           </button>
         </div>
@@ -367,27 +367,27 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
       <main className="px-4 py-4 max-w-lg mx-auto space-y-4 md:max-w-5xl md:px-6 md:py-6 md:space-y-5">
         {/* Title */}
         <div>
-          <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">
             Frequently Bought Together
           </h1>
-          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs md:text-sm text-slate-500 dark:text-neutral-400 mt-0.5">
             Live companion listings for {currentProduct?.name} — from the same supplier or the same category.
           </p>
         </div>
 
         <div className="space-y-4 md:space-y-5 lg:grid lg:grid-cols-3 lg:gap-5 lg:space-y-0 lg:items-start">
         {/* Bundle Items Container */}
-        <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-6 md:p-6">
+        <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-6 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-5">
           {items.map((item, idx) => (
             <div key={item.id} className="space-y-3">
               {/* Product Preview Box — real photo, neutral icon when none */}
-              <div className="relative w-full aspect-square rounded-2xl bg-slate-100 dark:bg-card overflow-hidden border border-slate-100 dark:border-slate-800">
+              <div className="relative w-full aspect-square rounded-2xl bg-slate-100 dark:bg-card overflow-hidden border border-slate-100 dark:border-neutral-800">
                 {item.image ? (
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <Package className="h-8 w-8 text-slate-300 dark:text-slate-600" />
+                    <Package className="h-8 w-8 text-slate-300 dark:text-neutral-600" />
                   </div>
                 )}
                 {item.isCurrent && (
@@ -399,11 +399,11 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
 
               {/* Product Meta */}
               <div>
-                <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">
+                <h3 className="text-xs font-bold text-slate-800 dark:text-neutral-200 leading-snug">
                   {item.name}
                 </h3>
                 {item.supplierName && (
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                  <p className="text-[10px] text-slate-400 dark:text-neutral-500 mt-0.5 truncate">
                     {item.supplierName}
                   </p>
                 )}
@@ -411,9 +411,9 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
                   <span className="text-sm font-black text-primary">
                     {formatPrice(item.price)}
                   </span>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">/ {item.unit}</span>
+                  <span className="text-[10px] text-slate-400 dark:text-neutral-500 font-normal">/ {item.unit}</span>
                 </div>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">MOQ: {item.moq.toLocaleString()}</p>
+                <p className="text-[10px] text-slate-400 dark:text-neutral-500 mt-0.5">MOQ: {item.moq.toLocaleString()}</p>
 
                 {/* Checkbox Trigger */}
                 <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none">
@@ -424,14 +424,14 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
                     disabled={item.isCurrent}
                     className="w-4 h-4 rounded text-primary accent-primary focus:ring-primary"
                   />
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <span className="text-xs font-semibold text-slate-700 dark:text-neutral-300">
                     {item.isCurrent ? 'Included' : 'Add to bundle'}
                   </span>
                 </label>
               </div>
 
               {/* Divider if not last */}
-              {idx < items.length - 1 && <div className="border-b border-slate-100 dark:border-slate-800 pt-2 md:hidden" />}
+              {idx < items.length - 1 && <div className="border-b border-slate-100 dark:border-neutral-800 pt-2 md:hidden" />}
             </div>
           ))}
           </div>
@@ -439,24 +439,24 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
 
         {/* Bundle Summary Card */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border-2 border-rose-100 dark:border-rose-900/60 shadow-sm space-y-3">
-          <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Bundle Summary</h2>
+          <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Bundle Summary</h2>
 
-          <div className="space-y-2 text-xs divide-y divide-slate-50 dark:divide-slate-800">
+          <div className="space-y-2 text-xs divide-y divide-slate-50 dark:divide-neutral-800">
             {selectedItems.map((item) => (
-              <div key={item.id} className="flex justify-between py-1 text-slate-500 dark:text-slate-400">
+              <div key={item.id} className="flex justify-between py-1 text-slate-500 dark:text-neutral-400">
                 <span className="truncate pr-2">{item.name} × {item.moq.toLocaleString()}</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200 shrink-0">
+                <span className="font-semibold text-slate-800 dark:text-neutral-200 shrink-0">
                   {formatPrice(item.price * item.moq)}
                 </span>
               </div>
             ))}
             <div className="flex justify-between items-baseline pt-2">
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Total Bundle Price</span>
+              <span className="text-xs font-bold text-slate-800 dark:text-neutral-200">Total Bundle Price</span>
               <div className="text-right">
                 <div className="text-xl font-black text-primary">
                   {formatPrice(totalBundlePrice)}
                 </div>
-                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-card px-1.5 py-0.5 rounded">
+                <span className="text-[9px] font-bold text-slate-400 dark:text-neutral-500 bg-slate-100 dark:bg-card px-1.5 py-0.5 rounded">
                   At each item&apos;s MOQ
                 </span>
               </div>
@@ -475,7 +475,7 @@ export function FrequentlyBoughtTogetherPage({ pageParams: _pageParams }: { page
           </div>
 
           {/* Honest shipping note */}
-          <div className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl p-3 flex items-start gap-2.5 text-[10px] text-slate-600 dark:text-slate-400">
+          <div className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 rounded-2xl p-3 flex items-start gap-2.5 text-[10px] text-slate-600 dark:text-neutral-400">
             <Package className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               Each item is fulfilled by its own supplier at that supplier&apos;s standard processing time.

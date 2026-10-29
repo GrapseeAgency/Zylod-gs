@@ -69,16 +69,16 @@ export function TransactionHistoryPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-10">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-10">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 md:px-6 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="md:hidden p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 md:px-6 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="md:hidden p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base md:text-xl font-black tracking-tight text-primary">Transaction Ledger</span>
         <button
           onClick={() => navigate('balance-overview')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-neutral-300 hover:bg-slate-200"
           title="Summary"
         >
           <Receipt className="h-4 w-4" />
@@ -88,12 +88,12 @@ export function TransactionHistoryPage() {
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-2xl md:px-6 md:py-6">
         {/* Search Bar */}
         <form onSubmit={handleSearchSubmit} className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by transaction reference or keyword..."
-            className="h-11 pl-10 pr-4 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-semibold shadow-2xs focus:border-primary"
+            className="h-11 pl-10 pr-4 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-semibold shadow-2xs focus:border-primary"
           />
         </form>
 
@@ -108,7 +108,7 @@ export function TransactionHistoryPage() {
                 className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   isSelected
                     ? 'bg-primary text-white shadow-xs'
-                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-neutral-400 border border-slate-200 dark:border-neutral-800 hover:bg-slate-50 dark:hover:bg-card'
                 }`}
               >
                 {label}
@@ -118,11 +118,11 @@ export function TransactionHistoryPage() {
         </div>
 
         {/* Transaction List */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-2xs overflow-hidden">
           {loading ? (
             <PageLoader label="Loading Ledger Records…" />
           ) : transactions.length > 0 ? (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-slate-100 dark:divide-neutral-800">
               {transactions.map((tx) => (
                 <div
                   key={tx.id}
@@ -136,8 +136,8 @@ export function TransactionHistoryPage() {
                       {tx.amount >= 0 ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
                     </div>
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block truncate">{tx.description}</span>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-0.5">
+                      <span className="text-xs font-bold text-slate-900 dark:text-neutral-100 block truncate">{tx.description}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block mt-0.5">
                         {new Date(tx.createdAt).toLocaleString()}
                       </span>
                     </div>
@@ -145,11 +145,11 @@ export function TransactionHistoryPage() {
 
                   <div className="text-right shrink-0">
                     <span className={`text-xs font-black font-mono block ${
-                      tx.amount >= 0 ? 'text-emerald-600' : 'text-slate-900 dark:text-slate-100'
+                      tx.amount >= 0 ? 'text-emerald-600' : 'text-slate-900 dark:text-neutral-100'
                     }`}>
                       {tx.amount >= 0 ? '+' : ''}{formatPrice(Math.abs(tx.amount))}
                     </span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block font-mono">
+                    <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block font-mono">
                       Bal: {formatPrice(tx.balanceAfter)}
                     </span>
                   </div>
@@ -157,10 +157,10 @@ export function TransactionHistoryPage() {
               ))}
             </div>
           ) : (
-            <div className="py-12 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 space-y-1">
+            <div className="py-12 text-center text-slate-400 dark:text-neutral-500 dark:text-neutral-400 space-y-1">
               <Receipt className="h-8 w-8 mx-auto text-slate-300 stroke-[1.5]" />
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 block">No matching transactions found</span>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Try adjusting your search or category filter.</p>
+              <span className="text-xs font-bold text-slate-600 dark:text-neutral-400 dark:text-neutral-500 block">No matching transactions found</span>
+              <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Try adjusting your search or category filter.</p>
             </div>
           )}
         </div>

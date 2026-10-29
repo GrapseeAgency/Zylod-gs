@@ -37,7 +37,7 @@ const STATUS_STYLES: Record<string, string> = {
   open: 'bg-amber-50 text-amber-700 border-amber-200',
   replied: 'bg-sky-50 text-sky-700 border-sky-200',
   resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  closed: 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800',
+  closed: 'bg-slate-100 dark:bg-card text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-neutral-800',
 };
 
 export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: string; pageParams?: Record<string, string> }) {
@@ -211,7 +211,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
           <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform" aria-label="Go back">←</button>
           <h1 className="font-bold text-sm">Query thread</h1>
         </div>
-        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${STATUS_STYLES[query.status] || 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'}`}>
+        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${STATUS_STYLES[query.status] || 'bg-slate-100 dark:bg-card text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-neutral-800'}`}>
           {query.status}
         </span>
       </header>
@@ -226,7 +226,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
                 {query.buyerName} · {new Date(query.createdAt).toLocaleString()}
               </p>
             </div>
-            <span className={`hidden md:inline-flex text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${STATUS_STYLES[query.status] || 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'}`}>
+            <span className={`hidden md:inline-flex text-[10px] font-black px-2 py-0.5 rounded-full border uppercase ${STATUS_STYLES[query.status] || 'bg-slate-100 dark:bg-card text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-neutral-800'}`}>
               {query.status}
             </span>
           </div>
@@ -287,7 +287,7 @@ export function CustomerQueryDetailPage({ id: idProp, pageParams }: { id?: strin
               <Button
                 variant="outline" size="sm" disabled={statusMoving}
                 onClick={() => moveStatus('closed')}
-                className="h-8 text-[11px] font-bold gap-1.5 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
+                className="h-8 text-[11px] font-bold gap-1.5 border-slate-200 dark:border-neutral-800 text-slate-600 dark:text-neutral-400 dark:text-neutral-500 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
               >
                 <XCircle className="h-3.5 w-3.5" /> Close
               </Button>

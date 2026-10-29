@@ -102,11 +102,11 @@ export function AddAddressPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-base font-bold text-primary">Add New Address</h1>
@@ -115,7 +115,7 @@ export function AddAddressPage() {
       </header>
 
       <main className="px-4 py-5 md:px-6 md:py-6 space-y-5 md:space-y-6 max-w-lg mx-auto lg:max-w-3xl">
-        <h2 className="text-base md:text-xl font-black text-slate-900 dark:text-slate-100">Delivery Information</h2>
+        <h2 className="text-base md:text-xl font-black text-slate-900 dark:text-neutral-100">Delivery Information</h2>
 
         {/* Server Error */}
         {errors._server && (
@@ -126,51 +126,51 @@ export function AddAddressPage() {
 
         {/* Contact Details Section */}
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-neutral-500 dark:text-neutral-400 border-b border-slate-100 dark:border-neutral-800 pb-2">
             Contact Details
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-semibold text-slate-700 dark:text-neutral-300">
               Full Name <span className="text-primary">*</span>
             </label>
             <Input
               value={form.fullName}
               onChange={(e) => setField('fullName', e.target.value)}
               placeholder="e.g. John Doe"
-              className={`h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.fullName ? 'border-red-400' : ''}`}
+              className={`h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-medium ${errors.fullName ? 'border-red-400' : ''}`}
             />
             {errors.fullName && <p className="text-[10px] text-red-500 font-medium">{errors.fullName}</p>}
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Business Name <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400">(Optional)</span>
+            <label className="text-xs font-semibold text-slate-700 dark:text-neutral-300">
+              Business Name <span className="text-slate-400 dark:text-neutral-500 dark:text-neutral-400">(Optional)</span>
             </label>
             <Input
               value={form.businessName}
               onChange={(e) => setField('businessName', e.target.value)}
               placeholder="e.g. Acme Corp"
-              className="h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium"
+              className="h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-medium"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-semibold text-slate-700 dark:text-neutral-300">
               Phone Number <span className="text-primary">*</span>
             </label>
             <div className="relative">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
               <Input
                 type="tel"
                 value={form.phone}
                 onChange={(e) => setField('phone', e.target.value)}
                 placeholder="+1 (555) 000-0000"
-                className={`h-11 pl-10 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.phone ? 'border-red-400' : ''}`}
+                className={`h-11 pl-10 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-medium ${errors.phone ? 'border-red-400' : ''}`}
               />
             </div>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium pl-1">Used for delivery updates.</p>
+            <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-medium pl-1">Used for delivery updates.</p>
             {errors.phone && <p className="text-[10px] text-red-500 font-medium">{errors.phone}</p>}
           </div>
           </div>
@@ -178,20 +178,20 @@ export function AddAddressPage() {
 
         {/* Address Section */}
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-neutral-500 dark:text-neutral-400 border-b border-slate-100 dark:border-neutral-800 pb-2">
             Address
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-semibold text-slate-700 dark:text-neutral-300">
               Country/Region <span className="text-primary">*</span>
             </label>
             <select
               value={form.country}
               onChange={(e) => setField('country', e.target.value)}
-              className={`w-full h-11 rounded-2xl bg-white dark:bg-gray-900 border text-xs font-medium px-3.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 ${
-                errors.country ? 'border-red-400' : 'border-slate-200 dark:border-slate-800'
+              className={`w-full h-11 rounded-2xl bg-white dark:bg-gray-900 border text-xs font-medium px-3.5 text-slate-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                errors.country ? 'border-red-400' : 'border-slate-200 dark:border-neutral-800'
               }`}
             >
               <option value="">Select a country</option>
@@ -203,44 +203,44 @@ export function AddAddressPage() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-semibold text-slate-700 dark:text-neutral-300">
               Street Address <span className="text-primary">*</span>
             </label>
             <Input
               value={form.streetLine1}
               onChange={(e) => setField('streetLine1', e.target.value)}
               placeholder="Street address, P.O. box, company name, c/o"
-              className={`h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.streetLine1 ? 'border-red-400' : ''}`}
+              className={`h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-medium ${errors.streetLine1 ? 'border-red-400' : ''}`}
             />
             <Input
               value={form.streetLine2}
               onChange={(e) => setField('streetLine2', e.target.value)}
               placeholder="Apartment, suite, unit, building, floor, etc. (Optional)"
-              className="h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium mt-2"
+              className="h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-medium mt-2"
             />
             {errors.streetLine1 && <p className="text-[10px] text-red-500 font-medium">{errors.streetLine1}</p>}
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-semibold text-slate-700 dark:text-neutral-300">
               City <span className="text-primary">*</span>
             </label>
             <Input
               value={form.city}
               onChange={(e) => setField('city', e.target.value)}
-              className={`h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.city ? 'border-red-400' : ''}`}
+              className={`h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-medium ${errors.city ? 'border-red-400' : ''}`}
             />
             {errors.city && <p className="text-[10px] text-red-500 font-medium">{errors.city}</p>}
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-semibold text-slate-700 dark:text-neutral-300">
               Postal/Zip Code <span className="text-primary">*</span>
             </label>
             <Input
               value={form.postalCode}
               onChange={(e) => setField('postalCode', e.target.value)}
-              className={`h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium ${errors.postalCode ? 'border-red-400' : ''}`}
+              className={`h-11 rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-medium ${errors.postalCode ? 'border-red-400' : ''}`}
             />
             {errors.postalCode && <p className="text-[10px] text-red-500 font-medium">{errors.postalCode}</p>}
           </div>
@@ -255,7 +255,7 @@ export function AddAddressPage() {
             onChange={(e) => setField('setAsDefault', e.target.checked)}
             className="w-4 h-4 rounded accent-primary"
           />
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Set as default shipping address</span>
+          <span className="text-xs font-semibold text-slate-700 dark:text-neutral-300">Set as default shipping address</span>
         </label>
 
         {/* Desktop Actions */}
@@ -271,7 +271,7 @@ export function AddAddressPage() {
           <Button
             variant="outline"
             onClick={goBack}
-            className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-12 rounded-2xl text-xs px-8"
+            className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold h-12 rounded-2xl text-xs px-8"
           >
             Cancel
           </Button>
@@ -279,7 +279,7 @@ export function AddAddressPage() {
       </main>
 
       {/* Fixed Bottom Actions */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 md:hidden">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-neutral-800 p-4 shadow-xl z-30 md:hidden">
         <div className="max-w-lg mx-auto space-y-2">
           <Button
             onClick={handleSave}
@@ -292,7 +292,7 @@ export function AddAddressPage() {
           <Button
             variant="outline"
             onClick={goBack}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold h-11 rounded-2xl text-xs"
           >
             Cancel
           </Button>

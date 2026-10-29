@@ -51,7 +51,7 @@ export function SellerTierBenefitsPagePage() {
       </header>
 
       <main className="p-4 space-y-6 md:p-6 md:max-w-3xl md:mx-auto md:pt-6">
-        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Tier benefits</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100 dark:text-white">Tier benefits</h1>
 
         <Card className="border-none shadow-sm dark:bg-gray-800">
           <CardContent className="p-6 md:p-8 text-center space-y-3">

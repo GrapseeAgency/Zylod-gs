@@ -73,7 +73,7 @@ export function SellerReviewsPage() {
         <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform" aria-label="Go back">←</button>
         <h1 className="text-xl font-bold">Seller Reviews</h1>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Seller Reviews</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Seller Reviews</h1>
       <main className="flex-1 p-4">
         {loading ? (
           <div className="animate-pulse space-y-4">
@@ -130,7 +130,7 @@ export function SellerReviewsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         {review.kind === 'store' && (
-                          <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-card px-2 py-0.5 rounded">Store</span>
+                          <span className="text-[10px] font-bold text-slate-700 dark:text-neutral-300 bg-slate-100 dark:bg-card px-2 py-0.5 rounded">Store</span>
                         )}
                         <span className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, i) => (

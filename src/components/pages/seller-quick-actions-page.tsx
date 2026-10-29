@@ -38,7 +38,7 @@ export function SellerQuickActionsPage() {
   const { navigate, goBack } = useNavigationStore()
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100">
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center gap-3 shadow-sm md:hidden">
         <button
           onClick={goBack}

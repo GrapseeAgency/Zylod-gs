@@ -142,7 +142,7 @@ export function WishlistSharePage() {
         </button>
         <h1 className="font-semibold text-gray-900 dark:text-gray-100">Sharing Settings</h1>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Sharing Settings</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Sharing Settings</h1>
 
       <main className="flex-1 p-4 space-y-6">
         <motion.div

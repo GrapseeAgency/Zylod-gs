@@ -72,7 +72,7 @@ export function VipBenefitsPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
-      <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-neutral-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -83,16 +83,16 @@ export function VipBenefitsPage() {
           </div>
         </div>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">VIP Wholesale Enterprise Club</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">VIP Wholesale Enterprise Club</h1>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24">
         <div className="text-center space-y-1">
           <h2 className="text-xl font-black text-amber-600 dark:text-amber-400">Enterprise Procurement Privileges</h2>
-          <p className="text-xs text-slate-400 dark:text-slate-500">
+          <p className="text-xs text-slate-400 dark:text-neutral-500">
             Membership tiers are based on your verified lifetime spend on Zylod.
           </p>
           {token && data && (
-            <p className="text-xs font-bold text-slate-700 dark:text-slate-300 pt-1">
+            <p className="text-xs font-bold text-slate-700 dark:text-neutral-300 pt-1">
               Your lifetime paid spend: {formatPrice(data.totalSpendBDT)}
             </p>
           )}
@@ -101,15 +101,15 @@ export function VipBenefitsPage() {
         {loading ? (
           <PageLoader />
         ) : fetchFailed || !data ? (
-          <div className="bg-white dark:bg-card/90 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 text-center space-y-3">
-            <ShieldCheck className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+          <div className="bg-white dark:bg-card/90 border border-slate-200 dark:border-neutral-700 rounded-3xl p-8 text-center space-y-3">
+            <ShieldCheck className="w-10 h-10 text-slate-300 dark:text-neutral-600 mx-auto" />
+            <p className="text-xs text-slate-500 dark:text-neutral-400">
               The VIP tier configuration couldn&apos;t be loaded, so we won&apos;t guess at the benefits. Please try again.
             </p>
             <Button
               onClick={loadVip}
               variant="outline"
-              className="h-10 rounded-xl text-xs font-bold gap-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-card text-slate-700 dark:text-slate-300"
+              className="h-10 rounded-xl text-xs font-bold gap-2 border-slate-200 dark:border-neutral-700 bg-white dark:bg-card text-slate-700 dark:text-neutral-300"
             >
               <RefreshCw className="w-4 h-4" /> Retry
             </Button>
@@ -122,7 +122,7 @@ export function VipBenefitsPage() {
                 <div
                   key={tier.id}
                   className={`bg-white dark:bg-card/90 border rounded-3xl p-5 space-y-3 shadow-sm ${
-                    isCurrent ? 'border-amber-400 ring-1 ring-amber-400/40' : 'border-slate-200 dark:border-slate-700'
+                    isCurrent ? 'border-amber-400 ring-1 ring-amber-400/40' : 'border-slate-200 dark:border-neutral-700'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -132,7 +132,7 @@ export function VipBenefitsPage() {
                       </div>
                       <div>
                         <h3 className="text-sm font-bold text-gray-900 dark:text-white">{tier.name}</h3>
-                        <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                        <p className="text-[11px] text-slate-400 dark:text-neutral-500">
                           {tier.minSpendBDT > 0
                             ? `${formatPrice(tier.minSpendBDT)}+ lifetime paid spend`
                             : 'No spend requirement'}
@@ -140,7 +140,7 @@ export function VipBenefitsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-full">
+                      <span className="text-[9px] font-black uppercase tracking-wider text-slate-500 dark:text-neutral-400 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-full">
                         {tier.badge}
                       </span>
                       {isCurrent && (
@@ -152,7 +152,7 @@ export function VipBenefitsPage() {
                   </div>
                   <ul className="space-y-1.5 pl-1">
                     {tier.benefits.map((benefit) => (
-                      <li key={benefit} className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
+                      <li key={benefit} className="flex items-start gap-2 text-xs text-slate-600 dark:text-neutral-300">
                         <Check className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                         <span>{benefit}</span>
                       </li>

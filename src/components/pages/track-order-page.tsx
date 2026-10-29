@@ -164,12 +164,12 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
   // ─── No order selected — honest state, no fake fallback id ───
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-neutral-100">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card dark:bg-card flex items-center justify-center mb-4">
-          <PackageSearch className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+          <PackageSearch className="h-8 w-8 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
         </div>
-        <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
+        <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100">No order selected</h1>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs leading-relaxed">
           Open one of your orders and choose the tracking action there — this screen
           tracks a specific order.
         </p>
@@ -198,7 +198,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
       : overallBadge === 'CANCELLED'
         ? 'bg-red-500'
         : overallBadge === 'PROCESSING'
-          ? 'bg-slate-800 dark:bg-slate-600'
+          ? 'bg-neutral-800 dark:bg-neutral-600'
           : 'bg-primary'
 
   const etaCandidates = subOrders
@@ -219,27 +219,27 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
     .sort((a, b) => new Date(b.trackedAt).getTime() - new Date(a.trackedAt).getTime())
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 dark:hover:text-white" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100 dark:hover:text-white" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Track Order</h1>
+          <h1 className="text-base font-bold text-slate-900 dark:text-neutral-100">Track Order</h1>
         </div>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Track Order</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Track Order</h1>
 
       {/* Neutral header band — no fake live map, no live-tracking claim */}
-      <div className="bg-white dark:bg-card border-b border-slate-200 dark:border-slate-800">
+      <div className="bg-white dark:bg-card border-b border-slate-200 dark:border-neutral-800">
         <div className="max-w-lg mx-auto px-4 py-6 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-gray-900/10 flex items-center justify-center shrink-0">
             <Truck className="h-5 w-5 text-primary" />
           </div>
           <div>
             <h2 className="text-sm font-black text-gray-900 dark:text-white">Shipment Tracking</h2>
-            <p className="text-[11px] text-slate-600 dark:text-slate-300">Status updates from your suppliers</p>
+            <p className="text-[11px] text-slate-600 dark:text-neutral-300">Status updates from your suppliers</p>
           </div>
         </div>
       </div>
@@ -247,12 +247,12 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
       <main className="px-4 -mt-8 relative z-20 space-y-4 max-w-lg mx-auto">
         {/* Sign-in required (401) */}
         {needsAuth && (
-          <div className="bg-white dark:bg-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
+          <div className="bg-white dark:bg-card rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
             <div className="w-14 h-14 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900 text-primary flex items-center justify-center mx-auto mb-3">
               <LogIn className="h-6 w-6" />
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Sign in required</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1.5">{error}</p>
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">Sign in required</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1.5">{error}</p>
             <div className="mt-5 flex items-center justify-center gap-2">
               <Button
                 onClick={() => navigate('login')}
@@ -263,7 +263,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               <Button
                 variant="outline"
                 onClick={loadOrder}
-                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold text-xs h-10 px-5 rounded-2xl"
+                className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 dark:text-neutral-200 border-slate-200 dark:border-neutral-800 dark:border-neutral-700 font-bold text-xs h-10 px-5 rounded-2xl"
               >
                 Retry
               </Button>
@@ -273,12 +273,12 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
 
         {/* Not found (404) */}
         {!needsAuth && notFound && (
-          <div className="bg-white dark:bg-card rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-3">
+          <div className="bg-white dark:bg-card rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
+            <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-neutral-500 dark:text-neutral-400 flex items-center justify-center mx-auto mb-3">
               <PackageSearch className="h-6 w-6" />
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Order not found</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1.5">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">Order not found</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1.5">
               This order doesn&apos;t exist or the link you followed is incorrect.
             </p>
             <Button
@@ -315,14 +315,14 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
         {!loading && !error && !needsAuth && !notFound && order && (
           <>
             {/* Status Card */}
-            <div className="bg-white dark:bg-card rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-5">
+            <div className="bg-white dark:bg-card rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-lg space-y-5">
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">
                     Order Number
                   </span>
-                  <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
+                  <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">
                     #{order.orderNumber || '--'}
                   </h2>
                 </div>
@@ -334,20 +334,20 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
 
               {/* Estimated Delivery — only a real supplier-set date */}
               <div className="text-center py-1">
-                <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 block">Estimated Delivery</span>
+                <span className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 block">Estimated Delivery</span>
                 {estimatedDelivery ? (
                   <div className="text-xl font-black text-primary mt-0.5 tracking-tight">
                     {estimatedDelivery}
                   </div>
                 ) : (
-                  <div className="text-sm font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1">
+                  <div className="text-sm font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-1">
                     To be scheduled by the supplier
                   </div>
                 )}
               </div>
 
               {/* 4-Step Progress — derived only from real subOrder statuses */}
-              <div className="flex items-center justify-between px-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-between px-2 pt-2 border-t border-slate-100 dark:border-neutral-800">
                 {PROGRESS_STEPS.map((step, idx) => {
                   const position = idx + 1
                   const completed = allDelivered || position < stage
@@ -365,7 +365,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                               ? 'bg-primary text-white shadow-xs'
                               : active
                                 ? 'border-2 border-primary bg-white dark:bg-gray-900'
-                                : 'bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-slate-500'
+                                : 'bg-slate-100 dark:bg-card dark:bg-card text-slate-400 dark:text-neutral-500'
                           }`}
                         >
                           {completed ? (
@@ -380,7 +380,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                           className={`text-[10px] mt-1 ${
                             completed || active
                               ? 'font-black text-primary'
-                              : 'font-bold text-slate-400 dark:text-slate-500'
+                              : 'font-bold text-slate-400 dark:text-neutral-500'
                           }`}
                         >
                           {step.label}
@@ -399,14 +399,14 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               />
 
               {/* Per-shipment tracking — real numbers only */}
-              <div className="space-y-2.5 pt-1 border-t border-slate-100 dark:border-slate-800">
+              <div className="space-y-2.5 pt-1 border-t border-slate-100 dark:border-neutral-800">
                 {subOrders.length === 0 && (
-                  <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-1">No shipments recorded for this order.</p>
+                  <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 py-1">No shipments recorded for this order.</p>
                 )}
                 {subOrders.map((so, idx) => (
                   <div
                     key={so.id}
-                    className="bg-slate-50 dark:bg-background dark:bg-card/60 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800 space-y-2.5"
+                    className="bg-slate-50 dark:bg-background dark:bg-card/60 rounded-2xl p-3.5 border border-slate-100 dark:border-neutral-800 space-y-2.5"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-3 min-w-0">
@@ -414,34 +414,34 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                           <Truck className="h-5 w-5" />
                         </div>
                         <div className="min-w-0">
-                          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                          <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100 truncate">
                             {so.supplier?.companyName || '--'}
                           </h3>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+                          <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
                             Shipment {idx + 1} of {subOrders.length}
                           </p>
                         </div>
                       </div>
-                      <span className="bg-slate-200 dark:bg-gray-700 text-slate-700 dark:text-slate-300 dark:text-slate-200 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md shrink-0">
+                      <span className="bg-slate-200 dark:bg-gray-700 text-slate-700 dark:text-neutral-300 dark:text-neutral-200 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md shrink-0">
                         {(so.status || 'pending').toUpperCase()}
                       </span>
                     </div>
 
                     {so.trackingNumber ? (
-                      <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-xl px-3 py-2 border border-slate-100 dark:border-slate-800">
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono truncate">
+                      <div className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-xl px-3 py-2 border border-slate-100 dark:border-neutral-800">
+                        <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-mono truncate">
                           Tracking: {so.trackingNumber}
                         </p>
                         <button
                           onClick={() => handleCopy(so.id, so.trackingNumber as string)}
-                          className="p-1.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200 rounded-lg shrink-0"
+                          className="p-1.5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 hover:text-slate-700 dark:text-neutral-300 dark:hover:text-slate-200 rounded-lg shrink-0"
                           title="Copy tracking number"
                         >
                           {copiedId === so.id ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
                         </button>
                       </div>
                     ) : (
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 italic">
+                      <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 italic">
                         No tracking number assigned yet
                       </p>
                     )}
@@ -451,9 +451,9 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
             </div>
 
             {/* Tracking History — only real events from the API */}
-            <div className="bg-white dark:bg-card rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+            <div className="bg-white dark:bg-card rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-black text-slate-900 dark:text-slate-100">
+                <h2 className="text-xs font-black text-slate-900 dark:text-neutral-100">
                   Tracking History{trackingEvents.length > 0 ? ` (${trackingEvents.length})` : ''}
                 </h2>
                 <button
@@ -467,15 +467,15 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
               {trackingEvents.length === 0 ? (
                 <div className="py-6 text-center">
                   <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-card dark:bg-card flex items-center justify-center mx-auto mb-3">
-                    <Truck className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+                    <Truck className="h-5 w-5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
                   </div>
-                  <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">No tracking updates yet</h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
+                  <h3 className="text-xs font-black text-slate-900 dark:text-neutral-100">No tracking updates yet</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs mx-auto leading-relaxed">
                     Updates appear here once the supplier ships your order.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-5 pl-2 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:bg-card dark:before:bg-slate-800">
+                <div className="space-y-5 pl-2 relative before:absolute before:left-3.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100 dark:bg-card dark:before:bg-neutral-800">
                   {trackingEvents.map((event, idx) => {
                     const isLatest = idx === 0
                     return (
@@ -485,7 +485,7 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                           className={`w-3.5 h-3.5 rounded-full border-2 mt-0.5 shrink-0 z-10 bg-white dark:bg-gray-900 ${
                             isLatest
                               ? 'border-primary ring-4 ring-rose-100 dark:ring-rose-950'
-                              : 'border-slate-300 dark:border-slate-600'
+                              : 'border-slate-300 dark:border-neutral-600'
                           }`}
                         >
                           {isLatest && <div className="w-1.5 h-1.5 rounded-full bg-primary mx-auto my-auto" />}
@@ -496,23 +496,23 @@ export function TrackOrderPage({ pageParams: _pageParams }: { pageParams?: Recor
                           <h3
                             className={`text-xs uppercase tracking-wide ${
                               isLatest
-                                ? 'font-black text-slate-900 dark:text-slate-100'
-                                : 'font-semibold text-slate-700 dark:text-slate-300'
+                                ? 'font-black text-slate-900 dark:text-neutral-100'
+                                : 'font-semibold text-slate-700 dark:text-neutral-300'
                             }`}
                           >
                             {(event.status || '--').replace(/_/g, ' ')}
                           </h3>
-                          <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                          <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                             {event.location ? `${event.location} • ` : ''}
                             {formatDateTime(event.trackedAt)}
                           </p>
                           {event.note && (
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
+                            <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 leading-relaxed">
                               {event.note}
                             </p>
                           )}
                           {event.supplierName && (
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-1">
                               {event.supplierName}
                             </p>
                           )}

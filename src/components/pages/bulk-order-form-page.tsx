@@ -499,15 +499,15 @@ export function BulkOrderFormPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-28 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-28 md:pb-10 text-slate-900 dark:text-neutral-100">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:px-6">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:px-6">
         <div className="md:max-w-6xl md:mx-auto">
-          <h1 className="text-base md:text-xl font-black tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <h1 className="text-base md:text-xl font-black tracking-tight text-slate-900 dark:text-neutral-100 flex items-center gap-2">
             <LayoutGrid className="h-5 w-5 text-primary" />
             Bulk Order Builder
           </h1>
-          <p className="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+          <p className="text-[11px] md:text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
             Mix products into one wholesale order — every line shows unit, MOQ, and volume-tier savings. Decimals allowed for kg lines.
           </p>
         </div>
@@ -515,7 +515,7 @@ export function BulkOrderFormPage() {
 
       <main className="px-4 py-4 space-y-5 max-w-lg mx-auto md:max-w-6xl md:px-6 md:py-6 lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0 lg:items-start">
         {/* ─── Product finder ─── */}
-        <section className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs p-4 lg:col-span-2 order-2 lg:order-1">
+        <section className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 shadow-2xs p-4 lg:col-span-2 order-2 lg:order-1">
           <form
             onSubmit={(e) => {
               e.preventDefault()
@@ -524,13 +524,13 @@ export function BulkOrderFormPage() {
             }}
             className="relative flex items-center"
           >
-            <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 pointer-events-none" />
+            <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 pointer-events-none" />
             <Input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search the wholesale catalog…"
               aria-label="Search catalog products"
-              className="pl-10 pr-4 h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
+              className="pl-10 pr-4 h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
             />
           </form>
 
@@ -542,7 +542,7 @@ export function BulkOrderFormPage() {
                 className={`shrink-0 min-h-11 px-3 rounded-full text-xs font-bold border transition-colors ${
                   categorySlug === ''
                     ? 'bg-primary text-white border-primary'
-                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-primary'
+                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-neutral-800 hover:border-primary'
                 }`}
               >
                 All categories
@@ -554,7 +554,7 @@ export function BulkOrderFormPage() {
                   className={`shrink-0 min-h-11 px-3 rounded-full text-xs font-bold border transition-colors ${
                     categorySlug === c.slug
                       ? 'bg-primary text-white border-primary'
-                      : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-primary'
+                      : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-neutral-400 border-slate-200 dark:border-neutral-800 hover:border-primary'
                   }`}
                 >
                   {c.name}
@@ -568,7 +568,7 @@ export function BulkOrderFormPage() {
             {catalogLoading ? (
               <div className="space-y-3">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="border border-slate-100 dark:border-slate-800 rounded-2xl p-3 flex gap-3">
+                  <div key={i} className="border border-slate-100 dark:border-neutral-800 rounded-2xl p-3 flex gap-3">
                     <Skeleton className="w-14 h-14 rounded-xl shrink-0" />
                     <div className="flex-1 space-y-2 py-1">
                       <Skeleton className="h-4 w-3/4" />
@@ -579,10 +579,10 @@ export function BulkOrderFormPage() {
                 ))}
               </div>
             ) : catalogError ? (
-              <div className="text-center py-10 border border-slate-100 dark:border-slate-800 rounded-2xl">
+              <div className="text-center py-10 border border-slate-100 dark:border-neutral-800 rounded-2xl">
                 <AlertTriangle className="h-10 w-10 mx-auto text-primary mb-2" />
-                <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{catalogError}</p>
-                {catalogStatus ? <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">HTTP {catalogStatus} from /api/products</p> : null}
+                <p className="text-sm font-bold text-slate-800 dark:text-neutral-200">{catalogError}</p>
+                {catalogStatus ? <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">HTTP {catalogStatus} from /api/products</p> : null}
                 <Button
                   variant="outline"
                   size="sm"
@@ -593,10 +593,10 @@ export function BulkOrderFormPage() {
                 </Button>
               </div>
             ) : catalog.length === 0 ? (
-              <div className="text-center py-10 border border-slate-100 dark:border-slate-800 rounded-2xl">
+              <div className="text-center py-10 border border-slate-100 dark:border-neutral-800 rounded-2xl">
                 <Package className="h-10 w-10 mx-auto text-slate-300 mb-2" />
-                <p className="text-sm font-bold text-slate-800 dark:text-slate-200">No products found</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
+                <p className="text-sm font-bold text-slate-800 dark:text-neutral-200">No products found</p>
+                <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs mx-auto">
                   {activeSearch || categorySlug
                     ? 'Nothing matches this search or category yet. Try different terms.'
                     : 'The wholesale catalog is empty right now. Check back soon.'}
@@ -604,7 +604,7 @@ export function BulkOrderFormPage() {
               </div>
             ) : (
               <>
-                <ul className="divide-y divide-slate-100 dark:divide-slate-800 max-h-[420px] overflow-y-auto">
+                <ul className="divide-y divide-slate-100 dark:divide-neutral-800 max-h-[420px] overflow-y-auto">
                   {catalog.map((p) => {
                     const savings = tierSavings(p)
                     const outOfStock = p.stockQuantity <= 0 && p.variants.every((v) => v.stockQuantity <= 0)
@@ -618,8 +618,8 @@ export function BulkOrderFormPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{p.name}</p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+                          <p className="text-xs font-bold text-slate-800 dark:text-neutral-200 line-clamp-1">{p.name}</p>
+                          <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
                             {formatPrice(p.basePrice)}/{p.unit} · MOQ {p.moq.toLocaleString()} {p.unit}
                             {p.variants.length > 0 ? ` · ${p.variants.length} variant${p.variants.length === 1 ? '' : 's'}` : ''}
                           </p>
@@ -661,13 +661,13 @@ export function BulkOrderFormPage() {
         </section>
 
         {/* ─── Order summary ─── */}
-        <section className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs p-4 space-y-3 order-1 lg:order-2 lg:sticky lg:top-20">
+        <section className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 shadow-2xs p-4 space-y-3 order-1 lg:order-2 lg:sticky lg:top-20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Layers className="h-4 w-4 text-primary" />
-              <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Your Bulk Order</h2>
+              <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Your Bulk Order</h2>
             </div>
-            <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
               {rows.length} line{rows.length === 1 ? '' : 's'}
             </span>
           </div>
@@ -676,8 +676,8 @@ export function BulkOrderFormPage() {
           {authGate && (
             <div className="rounded-xl border border-primary/30 bg-red-50 p-4 text-center space-y-2">
               <LogIn className="h-6 w-6 mx-auto text-primary" />
-              <p className="text-xs font-bold text-slate-800 dark:text-slate-200">Sign in to add to your cart</p>
-              <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
+              <p className="text-xs font-bold text-slate-800 dark:text-neutral-200">Sign in to add to your cart</p>
+              <p className="text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
                 The bulk cart API answered: &ldquo;{authGate.message}&rdquo; — cart persistence requires a buyer account.
               </p>
               <Button
@@ -687,7 +687,7 @@ export function BulkOrderFormPage() {
                 Sign In
               </Button>
               <button
-                className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-primary min-h-11"
+                className="text-[11px] font-semibold text-slate-500 dark:text-neutral-400 dark:text-neutral-500 hover:text-primary min-h-11"
                 onClick={() => setAuthGate(null)}
               >
                 Keep editing without an account
@@ -698,20 +698,20 @@ export function BulkOrderFormPage() {
           {submitError && (
             <div className="rounded-xl border border-primary/30 bg-red-50 p-3 flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-              <p className="text-[11px] text-slate-700 dark:text-slate-300">{submitError}</p>
+              <p className="text-[11px] text-slate-700 dark:text-neutral-300">{submitError}</p>
             </div>
           )}
 
           {/* Per-item server outcomes — the REAL results[] of the last bulk
               submit, rendered honestly per line. */}
           {outcomes && outcomes.length > 0 && (
-            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background p-3 space-y-2">
+            <div className="rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-background p-3 space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500 uppercase tracking-wide">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-neutral-400 dark:text-neutral-500 uppercase tracking-wide">
                   Server outcomes — last submit
                 </p>
                 <button
-                  className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-primary min-h-11 px-2"
+                  className="text-[11px] font-semibold text-slate-500 dark:text-neutral-400 dark:text-neutral-500 hover:text-primary min-h-11 px-2"
                   onClick={() => setOutcomes(null)}
                 >
                   Dismiss
@@ -728,15 +728,15 @@ export function BulkOrderFormPage() {
                       <XCircle className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
                     )}
                     <div className="min-w-0">
-                      <p className="font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{o.name}</p>
+                      <p className="font-bold text-slate-800 dark:text-neutral-200 line-clamp-1">{o.name}</p>
                       {o.status === 'added' && (
-                        <p className="text-slate-600 dark:text-slate-400 dark:text-slate-500">
+                        <p className="text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
                           Added to cart — {o.quantity.toLocaleString()} {o.unit}
                           {o.variantLabel ? ` · ${o.variantLabel}` : ''}
                         </p>
                       )}
                       {o.status === 'merged' && (
-                        <p className="text-slate-600 dark:text-slate-400 dark:text-slate-500">
+                        <p className="text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
                           Merged into your existing cart line —{' '}
                           {(o.previousQuantity ?? 0).toLocaleString()} → {o.quantity.toLocaleString()} {o.unit}
                           {o.variantLabel ? ` · ${o.variantLabel}` : ''}
@@ -765,15 +765,15 @@ export function BulkOrderFormPage() {
           )}
 
           {rows.length === 0 ? (
-            <div className="text-center py-8 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+            <div className="text-center py-8 border border-dashed border-slate-200 dark:border-neutral-800 rounded-xl">
               <Package className="h-8 w-8 mx-auto text-slate-300 mb-2" />
-              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No lines yet</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 px-4">
+              <p className="text-xs font-semibold text-slate-700 dark:text-neutral-300">No lines yet</p>
+              <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 px-4">
                 Search above and press &ldquo;Add&rdquo; to start building a multi-product wholesale order.
               </p>
             </div>
           ) : (
-            <ul className="divide-y divide-slate-100 dark:divide-slate-800 max-h-[320px] overflow-y-auto -mx-1 px-1">
+            <ul className="divide-y divide-slate-100 dark:divide-neutral-800 max-h-[320px] overflow-y-auto -mx-1 px-1">
               {rows.map((row) => {
                 const { unitPrice, totalPrice } = rowPrice(row)
                 const error = rowError(row)
@@ -790,8 +790,8 @@ export function BulkOrderFormPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{row.product.name}</p>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                        <p className="text-xs font-bold text-slate-800 dark:text-neutral-200 line-clamp-1">{row.product.name}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                           {row.product.supplierName ? `${row.product.supplierName} · ` : ''}
                           MOQ {row.product.moq.toLocaleString()} {row.product.unit}
                           {row.product.maxOrderQty != null ? ` · max ${row.product.maxOrderQty.toLocaleString()}` : ''}
@@ -800,7 +800,7 @@ export function BulkOrderFormPage() {
                       <button
                         onClick={() => removeRow(row.key)}
                         aria-label={`Remove ${row.product.name} from bulk list`}
-                        className="h-11 w-11 flex items-center justify-center text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-primary shrink-0"
+                        className="h-11 w-11 flex items-center justify-center text-slate-400 dark:text-neutral-500 dark:text-neutral-400 hover:text-primary shrink-0"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -812,7 +812,7 @@ export function BulkOrderFormPage() {
                         value={row.variantId ?? ''}
                         onChange={(e) => setRowVariant(row.key, e.target.value || null)}
                         aria-label={`Variant for ${row.product.name}`}
-                        className="w-full h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background px-3 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full h-11 rounded-xl border border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-background px-3 text-xs font-medium text-slate-700 dark:text-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary"
                       >
                         <option value="">Base product (no variant)</option>
                         {row.product.variants.map((v) => (
@@ -829,7 +829,7 @@ export function BulkOrderFormPage() {
                       <div className="flex-1">
                         <label
                           htmlFor={`qty-${row.key}`}
-                          className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase"
+                          className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400 uppercase"
                         >
                           Quantity ({row.product.unit})
                         </label>
@@ -843,14 +843,14 @@ export function BulkOrderFormPage() {
                           onChange={(e) => setRowQtyText(row.key, e.target.value)}
                           onBlur={() => normalizeRowQty(row.key)}
                           aria-label={`Quantity in ${row.product.unit} for ${row.product.name}`}
-                          className="h-11 mt-0.5 text-sm font-bold rounded-xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800"
+                          className="h-11 mt-0.5 text-sm font-bold rounded-xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800"
                         />
                       </div>
                       <div className="text-right pb-0.5">
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">
+                        <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-medium">
                           {formatPrice(unitPrice)}/{row.product.unit}
                         </p>
-                        <p className="text-sm font-black text-slate-900 dark:text-slate-100">{formatPrice(totalPrice)}</p>
+                        <p className="text-sm font-black text-slate-900 dark:text-neutral-100">{formatPrice(totalPrice)}</p>
                       </div>
                     </div>
 
@@ -867,7 +867,7 @@ export function BulkOrderFormPage() {
                             <span
                               key={`${row.key}-tier-${i}`}
                               className={`text-[9px] font-bold rounded-md px-1.5 py-0.5 ${
-                                active ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-card text-slate-500 dark:text-slate-400'
+                                active ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-card text-slate-500 dark:text-neutral-400'
                               }`}
                             >
                               {t.minQty.toLocaleString()}
@@ -887,7 +887,7 @@ export function BulkOrderFormPage() {
                       <p className="text-[10px] font-bold text-primary bg-red-50 rounded-md px-2 py-1">{error}</p>
                     ) : null}
                     {variant && variant.priceOverride != null && !error ? (
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                      <p className="text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                         Variant price: {formatPrice(variant.priceOverride)}/{row.product.unit} (volume tiers don&apos;t apply to variants).
                       </p>
                     ) : null}
@@ -898,14 +898,14 @@ export function BulkOrderFormPage() {
           )}
 
           {/* Totals */}
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
-            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
+          <div className="pt-3 border-t border-slate-100 dark:border-neutral-800 space-y-1.5">
+            <div className="flex justify-between text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-medium">
               <span>Total quantity</span>
-              <span className="font-bold text-slate-800 dark:text-slate-200">{totalUnits.toLocaleString()}</span>
+              <span className="font-bold text-slate-800 dark:text-neutral-200">{totalUnits.toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-baseline">
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Grand total</span>
-              <span className="text-lg font-black text-slate-900 dark:text-slate-100">{formatPrice(grandTotal)}</span>
+              <span className="text-xs font-bold text-slate-800 dark:text-neutral-200">Grand total</span>
+              <span className="text-lg font-black text-slate-900 dark:text-neutral-100">{formatPrice(grandTotal)}</span>
             </div>
           </div>
 
@@ -926,7 +926,7 @@ export function BulkOrderFormPage() {
             )}
           </Button>
           {rows.length > 0 && !allValid && (
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 text-center">
+            <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 text-center">
               Fix the highlighted lines to enable submit.
             </p>
           )}
@@ -938,12 +938,12 @@ export function BulkOrderFormPage() {
         <motion.div
           initial={{ y: 40 }}
           animate={{ y: 0 }}
-          className="lg:hidden fixed inset-x-0 z-40 bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between gap-3 bottom-[calc(64px+env(safe-area-inset-bottom))]"
+          className="lg:hidden fixed inset-x-0 z-40 bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-neutral-800 px-4 py-3 flex items-center justify-between gap-3 bottom-[calc(64px+env(safe-area-inset-bottom))]"
         >
           <div>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold uppercase">Grand total</p>
-            <p className="text-base font-black text-slate-900 dark:text-slate-100">
-              {formatPrice(grandTotal)} <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400">· {totalUnits.toLocaleString()} units</span>
+            <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-bold uppercase">Grand total</p>
+            <p className="text-base font-black text-slate-900 dark:text-neutral-100">
+              {formatPrice(grandTotal)} <span className="text-[10px] font-medium text-slate-400 dark:text-neutral-500 dark:text-neutral-400">· {totalUnits.toLocaleString()} units</span>
             </p>
           </div>
           <Button

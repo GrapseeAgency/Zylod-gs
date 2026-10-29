@@ -3,6 +3,17 @@ import { db } from '@/lib/db'
 import { BUNDLE_IDENTITY } from '@/generated/bundle-identity'
 
 /**
+ * t230 STALE-DEVICE FLOOR: every release below this versionCode is running
+ * a build with KNOWN defects the owner kept reporting (broken back stack,
+ * offline white screen, guest ordering, navy chrome). The DB flag alone was
+ * `false`, so devices on v2.3.0 (code 230) polled, saw a soft "update
+ * available", and never updated — the owner then audited the OLD build and
+ * reported all its bugs against the new one. Below the floor the update is
+ * MANDATORY, no matter what the row says.
+ */
+const MIN_VERSION_CODE = 246
+
+/**
  * GET /api/app/version
  * Checks for app updates. Compares client version with latest published release.
  * Query params: ?platform=android&currentVersionCode=231
@@ -49,9 +60,14 @@ export async function GET(request: NextRequest) {
         isMandatory: false,
       }
     } else {
+      const belowFloor = currentVersionCode < MIN_VERSION_CODE
+      const updateAvailable = latest.versionCode > currentVersionCode || belowFloor
       data = {
-        updateAvailable: latest.versionCode > currentVersionCode,
-        isMandatory: latest.isMandatory,
+        updateAvailable,
+        // Mandatory only MEANINGFUL (and only reported) when an update is
+        // actually available — an up-to-date device must never read "mandatory".
+        isMandatory: updateAvailable && (belowFloor || latest.isMandatory),
+        blockedVersionRange: belowFloor ? `< ${MIN_VERSION_CODE}` : undefined,
         latestVersion: {
           versionNumber: latest.versionNumber,
           versionCode: latest.versionCode,

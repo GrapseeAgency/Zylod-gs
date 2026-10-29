@@ -119,10 +119,10 @@ export function UpiPaymentSetupPage() {
   if (!loading && !isAuthenticated) return <AccountGate title="Sign in to manage mobile banking" message="Linked bKash, Nagad, Rocket or Upay accounts belong to your account. Sign in to continue." />
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-10">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-10">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 md:px-6 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="md:hidden p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 md:px-6 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="md:hidden p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base md:text-xl font-black tracking-tight text-primary">UPI &amp; Mobile Banking</span>
@@ -137,14 +137,14 @@ export function UpiPaymentSetupPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-2xl md:px-6 md:py-6">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-neutral-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
               <Smartphone className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base font-black">MFS &amp; Instant Settlements</h1>
-              <p className="text-xs text-slate-600 dark:text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-neutral-300">
                 Link bKash, Nagad, Upay, or Rocket accounts for automated 1-click settlements.
               </p>
             </div>
@@ -160,8 +160,8 @@ export function UpiPaymentSetupPage() {
 
         {/* Add MFS Form Collapsible */}
         {showAddForm && (
-          <form onSubmit={handleAddMFS} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-xl space-y-3">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
+          <form onSubmit={handleAddMFS} className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-xl space-y-3">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
               Link Mobile Account
             </h2>
 
@@ -174,7 +174,7 @@ export function UpiPaymentSetupPage() {
                   className={`py-2 px-1 rounded-xl text-xs font-bold border text-center transition-all ${
                     provider === p
                       ? 'border-primary bg-rose-50 text-primary shadow-xs'
-                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300'
+                      : 'border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-neutral-300'
                   }`}
                 >
                   {p}
@@ -183,23 +183,23 @@ export function UpiPaymentSetupPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">
                 {provider} Number
               </label>
               <Input
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
                 placeholder="01XXXXXXXXX"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-mono font-bold"
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Account Classification</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">Account Classification</label>
               <select
                 value={accountType}
                 onChange={(e) => setAccountType(e.target.value)}
-                className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
+                className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-neutral-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-neutral-100 focus:outline-none focus:border-primary"
               >
                 <option value="Merchant">Merchant Wholesale Account</option>
                 <option value="Personal">Personal Account</option>
@@ -226,7 +226,7 @@ export function UpiPaymentSetupPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setShowAddForm(false)}
-                className="h-11 rounded-2xl border-slate-200 dark:border-slate-800 text-xs font-bold"
+                className="h-11 rounded-2xl border-slate-200 dark:border-neutral-800 text-xs font-bold"
               >
                 Cancel
               </Button>
@@ -248,7 +248,7 @@ export function UpiPaymentSetupPage() {
             accounts.map((acc) => (
               <div
                 key={acc.id}
-                className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between gap-3"
+                className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-neutral-800 shadow-2xs flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3.5">
                   <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-primary shrink-0">
@@ -256,12 +256,12 @@ export function UpiPaymentSetupPage() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{acc.provider}</h3>
-                      <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-full">
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">{acc.provider}</h3>
+                      <span className="text-[9px] font-black text-slate-500 dark:text-neutral-400 dark:text-neutral-500 bg-slate-100 dark:bg-card px-2 py-0.5 rounded-full">
                         {acc.accountType}
                       </span>
                     </div>
-                    <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono block mt-0.5">
+                    <span className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-mono block mt-0.5">
                       {acc.accountNumber}
                     </span>
                   </div>
@@ -275,10 +275,10 @@ export function UpiPaymentSetupPage() {
               </div>
             ))
           ) : !loadError ? (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-              <Smartphone className="h-10 w-10 mx-auto text-slate-400 dark:text-slate-300 stroke-[1.5]" />
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">No MFS accounts linked</span>
-              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
+              <Smartphone className="h-10 w-10 mx-auto text-slate-400 dark:text-neutral-300 stroke-[1.5]" />
+              <span className="text-xs font-bold text-slate-700 dark:text-neutral-300 block">No MFS accounts linked</span>
+              <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto">
                 Connect your bKash or Nagad wallet for 1-click order payments and refunds.
               </p>
             </div>

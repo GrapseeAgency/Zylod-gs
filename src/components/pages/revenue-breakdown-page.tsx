@@ -54,7 +54,7 @@ function paymentChip(status: string) {
     case 'partial':
       return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Partial</Badge>;
     case 'unpaid':
-      return <Badge className="bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Unpaid</Badge>;
+      return <Badge className="bg-slate-200 text-slate-700 dark:text-neutral-300 hover:bg-slate-200">Unpaid</Badge>;
     case 'refunded':
       return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Refunded</Badge>;
     default:
@@ -68,7 +68,7 @@ function fulfillmentChip(status: string) {
     shipped: 'bg-sky-100 text-sky-800 hover:bg-sky-100',
     packed: 'bg-violet-100 text-violet-800 hover:bg-violet-100',
     confirmed: 'bg-violet-100 text-violet-800 hover:bg-violet-100',
-    pending: 'bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200',
+    pending: 'bg-slate-200 text-slate-700 dark:text-neutral-300 hover:bg-slate-200',
     cancelled: 'bg-red-100 text-red-800 hover:bg-red-100',
     returned: 'bg-orange-100 text-orange-800 hover:bg-orange-100',
   };

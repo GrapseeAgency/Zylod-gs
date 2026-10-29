@@ -189,11 +189,11 @@ export function QuickOrderPage() {
   }, [orderItems, addItem, navigate])
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -203,20 +203,20 @@ export function QuickOrderPage() {
       <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:max-w-3xl md:px-6 md:py-8 md:space-y-6">
         {/* Title */}
         <div>
-          <h1 className="text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">Quick Order</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+          <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100 tracking-tight">Quick Order</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
             Add real catalog products by their SKU code.
           </p>
         </div>
 
         {/* SKU Input Box */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
           <form onSubmit={handleAddItem} className="flex gap-2">
             <Input
               value={inputSku}
               onChange={(e) => setInputSku(e.target.value)}
               placeholder="Enter product SKU"
-              className="h-11 pl-4 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
+              className="h-11 pl-4 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-semibold"
             />
 
             <Button
@@ -240,7 +240,7 @@ export function QuickOrderPage() {
         {/* Current Order Section */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">
               Current Order ({orderItems.length} item{orderItems.length === 1 ? '' : 's'})
             </h2>
             {orderItems.length > 0 && (
@@ -256,12 +256,12 @@ export function QuickOrderPage() {
           {/* Item Cards */}
           <div className="space-y-3">
             {orderItems.length === 0 && (
-              <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs p-8 text-center">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-2xs p-8 text-center">
                 <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mx-auto mb-3">
-                  <Package className="h-7 w-7 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+                  <Package className="h-7 w-7 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
                 </div>
-                <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">No items on this order yet</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
+                <h3 className="text-sm font-black text-slate-900 dark:text-neutral-100">No items on this order yet</h3>
+                <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs mx-auto">
                   Enter a real product SKU above — products are looked up live from
                   the catalog and added with their actual price.
                 </p>
@@ -271,11 +271,11 @@ export function QuickOrderPage() {
             {orderItems.map((item) => (
               <div
                 key={item.productId}
-                className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between gap-3"
+                className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-neutral-800 shadow-2xs flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   {/* Thumbnail / neutral placeholder */}
-                  <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-slate-800 overflow-hidden shrink-0 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-neutral-800 overflow-hidden shrink-0 flex items-center justify-center">
                     {item.image ? (
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     ) : (
@@ -284,10 +284,10 @@ export function QuickOrderPage() {
                   </div>
 
                   <div className="min-w-0">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">
                       SKU: {item.sku}
                     </span>
-                    <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1 leading-snug">
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100 line-clamp-1 leading-snug">
                       {item.name}
                     </h3>
                     <p className="text-xs font-black text-primary mt-0.5">
@@ -295,7 +295,7 @@ export function QuickOrderPage() {
                     </p>
                     <button
                       onClick={() => handleRemoveItem(item.productId)}
-                      className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-red-600 mt-0.5"
+                      className="text-[10px] font-semibold text-slate-400 dark:text-neutral-500 dark:text-neutral-400 hover:text-red-600 mt-0.5"
                     >
                       Remove
                     </button>
@@ -303,19 +303,19 @@ export function QuickOrderPage() {
                 </div>
 
                 {/* Stepper */}
-                <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-background/80 p-1 shrink-0">
+                <div className="flex items-center border border-slate-200 dark:border-neutral-800 rounded-xl bg-slate-50 dark:bg-background/80 p-1 shrink-0">
                   <button
                     onClick={() => handleQtyChange(item.productId, -1)}
-                    className="w-6 h-6 rounded-lg bg-white dark:bg-gray-900 shadow-2xs flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100 active:scale-95"
+                    className="w-6 h-6 rounded-lg bg-white dark:bg-gray-900 shadow-2xs flex items-center justify-center text-slate-600 dark:text-neutral-400 dark:text-neutral-500 hover:text-slate-900 dark:text-neutral-100 active:scale-95"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
-                  <span className="w-8 text-center text-xs font-bold text-slate-800 dark:text-slate-200 tabular-nums">
+                  <span className="w-8 text-center text-xs font-bold text-slate-800 dark:text-neutral-200 tabular-nums">
                     {item.quantity}
                   </span>
                   <button
                     onClick={() => handleQtyChange(item.productId, 1)}
-                    className="w-6 h-6 rounded-lg bg-white dark:bg-gray-900 shadow-2xs flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100 active:scale-95"
+                    className="w-6 h-6 rounded-lg bg-white dark:bg-gray-900 shadow-2xs flex items-center justify-center text-slate-600 dark:text-neutral-400 dark:text-neutral-500 hover:text-slate-900 dark:text-neutral-100 active:scale-95"
                   >
                     <Plus className="h-3 w-3" />
                   </button>
@@ -327,10 +327,10 @@ export function QuickOrderPage() {
       </main>
 
       {/* Sticky Bottom Summary Bar */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-neutral-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <div className="max-w-lg md:max-w-3xl mx-auto space-y-3">
           <div className="flex justify-between items-baseline">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
+            <span className="text-xs font-bold text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
               Subtotal ({orderItems.length} item{orderItems.length === 1 ? '' : 's'})
             </span>
             <div className="text-lg font-black text-primary">

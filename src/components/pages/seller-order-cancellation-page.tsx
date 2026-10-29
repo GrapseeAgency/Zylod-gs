@@ -91,7 +91,7 @@ export function SellerOrderCancellationPage() {
         <h1 className="text-lg md:hidden font-bold text-gray-900 dark:text-gray-100">Cancel Order</h1>
       </header>
 
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Cancel Order</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Cancel Order</h1>
 
       <div className="p-4 space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900/60 p-4 rounded-xl flex gap-3">

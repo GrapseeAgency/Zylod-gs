@@ -68,14 +68,14 @@ export function InvestorRelationsPage() {
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-5 pb-24 md:px-6 md:py-6 md:pb-8 md:space-y-8 lg:max-w-5xl">
         {/* Hero */}
-        <div className="bg-gradient-to-r from-emerald-100 via-teal-100 to-slate-100 dark:from-emerald-900 dark:via-teal-900 dark:to-slate-900 rounded-3xl p-6 md:p-8 text-gray-900 dark:text-white space-y-3">
+        <div className="bg-gradient-to-r from-emerald-100 via-teal-100 to-slate-100 dark:from-emerald-900 dark:via-teal-900 dark:to-neutral-900 rounded-3xl p-6 md:p-8 text-gray-900 dark:text-white space-y-3">
           <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-400/30 text-xs">
             Investor Relations
           </Badge>
           <h2 className="text-xl md:text-2xl font-black leading-tight">
             Nothing Published Yet
           </h2>
-          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-neutral-300 leading-relaxed">
             Investor relations materials — audited financials, filings, funding information — have
             not been released. They will appear on this page as they are published.
             {supportEmail
@@ -85,15 +85,15 @@ export function InvestorRelationsPage() {
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-black/10 dark:border-white/10">
             <div className="text-center">
               <p className="text-base md:text-xl font-black text-emerald-600 dark:text-emerald-400">{docs.length.toLocaleString()}</p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">Documents Published</p>
+              <p className="text-[10px] text-slate-500 dark:text-neutral-400">Documents Published</p>
             </div>
             <div className="text-center">
               <p className="text-base md:text-xl font-black text-teal-700 dark:text-teal-300">None</p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">Funding Rounds Announced</p>
+              <p className="text-[10px] text-slate-500 dark:text-neutral-400">Funding Rounds Announced</p>
             </div>
             <div className="text-center">
               <p className="text-base md:text-xl font-black text-amber-700 dark:text-amber-300">None</p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">Audited Financials Released</p>
+              <p className="text-[10px] text-slate-500 dark:text-neutral-400">Audited Financials Released</p>
             </div>
           </div>
         </div>

@@ -134,16 +134,16 @@ export function BusinessProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-8">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Business Profile</span>
         <button
           onClick={() => navigate('profile')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-neutral-300 hover:bg-slate-200"
           title="Profile"
         >
           <Building2 className="h-4 w-4" />
@@ -152,14 +152,14 @@ export function BusinessProfilePage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6 lg:max-w-3xl">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-neutral-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
               <Building2 className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base font-black">Registered Business Entity</h1>
-              <p className="text-xs text-slate-600 dark:text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-neutral-300">
                 Official commercial registration and trade license credentials.
               </p>
             </div>
@@ -175,44 +175,44 @@ export function BusinessProfilePage() {
 
         <form onSubmit={handleSave} className="space-y-4">
           {/* Corporate Entity Details */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
               Commercial Entity Details
             </h2>
 
             <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
               <div>
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">
                   Legal Entity / Company Name
                 </label>
                 <Input
                   value={legalEntityName}
                   onChange={(e) => setLegalEntityName(e.target.value)}
                   placeholder="Official registered company name"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-bold"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">
                   Trade License / Registration Number (BIN)
                 </label>
                 <Input
                   value={tradeLicenseNumber}
                   onChange={(e) => setTradeLicenseNumber(e.target.value)}
                   placeholder="TRD-XXXXX-BD"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-mono font-bold"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">
                   Primary Wholesale Business Model
                 </label>
                 <select
                   value={industryCategory}
                   onChange={(e) => setIndustryCategory(e.target.value)}
-                  className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary"
+                  className="w-full h-11 rounded-2xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-neutral-800 text-xs font-semibold px-3.5 text-slate-900 dark:text-neutral-100 focus:outline-none focus:border-primary"
                 >
                   <option value="Wholesale & Manufacturing">Wholesale &amp; Manufacturing</option>
                   <option value="OEM / ODM Custom Producer">OEM / ODM Custom Producer</option>
@@ -224,8 +224,8 @@ export function BusinessProfilePage() {
           </div>
 
           {/* Registered Address — honestly labelled: no backend storage exists yet */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
               <MapPin className="h-4 w-4 text-primary" />
               Registered Commercial Address
             </h2>
@@ -236,34 +236,34 @@ export function BusinessProfilePage() {
 
             <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
               <div className="md:col-span-2">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">
                   Street Address / Industrial Zone
                 </label>
                 <Input
                   value={streetAddress}
                   onChange={(e) => setStreetAddress(e.target.value)}
                   placeholder="e.g. Tejgaon Industrial Area, Plot 42"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-semibold"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3 md:contents">
                 <div>
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">City</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">City</label>
                   <Input
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="City"
-                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-semibold"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Postal Code</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">Postal Code</label>
                   <Input
                     value={postalCode}
                     onChange={(e) => setPostalCode(e.target.value)}
                     placeholder="Postal Code"
-                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold font-mono"
+                    className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-semibold font-mono"
                   />
                 </div>
               </div>
@@ -271,16 +271,16 @@ export function BusinessProfilePage() {
           </div>
 
           {/* Verified Documents */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
               <FileText className="h-4 w-4 text-primary" />
               Commercial Document Archive
             </h2>
             {documents.length > 0 ? (
               <div className="space-y-2">
                 {documents.map((doc) => (
-                  <div key={doc.id} className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-900 dark:text-slate-100">{doc.name}</span>
+                  <div key={doc.id} className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-neutral-800 flex items-center justify-between text-xs">
+                    <span className="font-bold text-slate-900 dark:text-neutral-100">{doc.name}</span>
                     <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
                       {doc.status}
                     </span>
@@ -288,7 +288,7 @@ export function BusinessProfilePage() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-2">Trade License verified through Zylod Merchant KYC.</p>
+              <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 py-2">Trade License verified through Zylod Merchant KYC.</p>
             )}
           </div>
 

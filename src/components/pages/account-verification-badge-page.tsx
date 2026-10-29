@@ -144,13 +144,13 @@ export function AccountVerificationBadgePage() {
   // ─── Not signed in — no fabrication of someone else's status ──────────────
   if (!token) {
     return (
-      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-sm">
           <div className="w-14 h-14 rounded-3xl bg-slate-100 dark:bg-card flex items-center justify-center mx-auto">
-            <ShieldCheck className="h-7 w-7 text-slate-400 dark:text-slate-500" />
+            <ShieldCheck className="h-7 w-7 text-slate-400 dark:text-neutral-500" />
           </div>
           <h1 className="text-base font-black">Sign in to view your verification status</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-neutral-400">
             Verification milestones are tied to your account — sign in to see the real state of your KYC documents.
           </p>
           <Button
@@ -165,10 +165,10 @@ export function AccountVerificationBadgePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Trust &amp; Verification</span>
@@ -177,7 +177,7 @@ export function AccountVerificationBadgePage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6 lg:max-w-3xl">
         {/* Verification Badge Showcase */}
-        <div className="bg-gradient-to-br from-slate-100 via-rose-100 to-slate-100 dark:from-slate-900 dark:via-rose-950 dark:to-slate-900 rounded-3xl p-6 text-gray-900 dark:text-white text-center shadow-xl space-y-3 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-slate-100 via-rose-100 to-slate-100 dark:from-neutral-900 dark:via-rose-950 dark:to-neutral-900 rounded-3xl p-6 text-gray-900 dark:text-white text-center shadow-xl space-y-3 relative overflow-hidden">
           <div className="w-16 h-16 rounded-3xl bg-black/5 dark:bg-gray-900/10 border-2 border-black/10 dark:border-white/20 mx-auto flex items-center justify-center shadow-inner">
             <Award className="h-8 w-8 text-rose-600 dark:text-rose-300" />
           </div>
@@ -188,7 +188,7 @@ export function AccountVerificationBadgePage() {
             <h1 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mt-2">
               {isVerified ? 'Verified B2B Credential' : 'Verification Status'}
             </h1>
-            <p className="text-xs text-slate-600 dark:text-slate-300 max-w-xs mx-auto mt-1 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-neutral-300 max-w-xs mx-auto mt-1 leading-relaxed">
               {isVerified
                 ? 'Displayed across all your wholesale catalog listings.'
                 : (verificationData?.description || fetchFailed
@@ -199,8 +199,8 @@ export function AccountVerificationBadgePage() {
         </div>
 
         {/* Benefits of Verification */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500">
             What Verification Unlocks
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
@@ -213,8 +213,8 @@ export function AccountVerificationBadgePage() {
               <div key={title} className="flex items-start gap-2.5">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-slate-900 dark:text-slate-100 block">{title}</span>
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500 block mt-0.5">{desc}</span>
+                  <span className="font-bold text-slate-900 dark:text-neutral-100 block">{title}</span>
+                  <span className="text-[11px] text-slate-400 dark:text-neutral-500 block mt-0.5">{desc}</span>
                 </div>
               </div>
             ))}
@@ -222,13 +222,13 @@ export function AccountVerificationBadgePage() {
         </div>
 
         {/* Milestone Verification Checkpoints */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-          <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-2xs overflow-hidden">
+          <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-neutral-800 flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-primary" />
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">KYC &amp; Verification Milestones</span>
           </div>
 
-          <div className="divide-y divide-slate-50 dark:divide-slate-800">
+          <div className="divide-y divide-slate-50 dark:divide-neutral-800">
             {milestones.map((m) => {
               const verified = m.state === 'verified'
               const pending = m.state === 'pending'
@@ -238,20 +238,20 @@ export function AccountVerificationBadgePage() {
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                       verified
                         ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                        : 'bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500'
+                        : 'bg-slate-100 dark:bg-card text-slate-400 dark:text-neutral-500'
                     }`}>
                       {verified ? <Check className="h-4 w-4 stroke-[3]" /> : <Clock className="h-4 w-4" />}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{m.label}</h3>
+                        <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">{m.label}</h3>
                         {m.required && (
                           <span className="text-[9px] font-black text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-full">
                             REQUIRED
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{m.description}</p>
+                      <p className="text-[11px] text-slate-400 dark:text-neutral-500 mt-0.5">{m.description}</p>
                     </div>
                   </div>
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${
@@ -259,7 +259,7 @@ export function AccountVerificationBadgePage() {
                       ? 'text-emerald-700 bg-emerald-50 border border-emerald-100'
                       : pending
                         ? 'text-amber-700 bg-amber-50 border border-amber-100'
-                        : 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800'
+                        : 'text-slate-500 dark:text-neutral-400 bg-slate-100 dark:bg-card border border-slate-200 dark:border-neutral-800'
                   }`}>
                     {verified ? 'Verified' : pending ? 'Pending' : 'Not started'}
                   </span>

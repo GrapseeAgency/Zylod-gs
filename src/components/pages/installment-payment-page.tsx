@@ -9,12 +9,12 @@ export function InstallmentPaymentPage() {
   const { navigate, goBack } = useNavigationStore()
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -26,26 +26,26 @@ export function InstallmentPaymentPage() {
       <main className="px-4 py-6 space-y-4 md:space-y-5 max-w-lg mx-auto md:max-w-3xl md:px-6 md:py-8">
         {/* Title */}
         <div>
-          <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">
             Installment Plans
           </h1>
-          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
+          <p className="text-xs md:text-sm text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 leading-relaxed">
             Pay for your order over time — not offered yet.
           </p>
         </div>
 
         {/* Honest state card */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-xl bg-rose-50 text-primary flex items-center justify-center border border-rose-100 shrink-0">
               <Info className="h-4 w-4" />
             </div>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 pt-1">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-neutral-100 pt-1">
               Financing is not available yet
             </h2>
           </div>
 
-          <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">
             Zylod doesn&apos;t offer installment/financing plans yet. Orders start UNPAID and are
             paid in full via verified bank transfer or mobile wallet. When financing becomes
             available, it will appear here.
@@ -54,7 +54,7 @@ export function InstallmentPaymentPage() {
       </main>
 
       {/* Fixed Bottom Actions */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-neutral-800 p-4 shadow-xl z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <div className="max-w-lg mx-auto md:max-w-2xl space-y-2">
           <Button
             onClick={() => navigate('my-orders')}
@@ -66,7 +66,7 @@ export function InstallmentPaymentPage() {
           <Button
             variant="outline"
             onClick={goBack}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold h-11 rounded-2xl text-xs"
           >
             Back
           </Button>

@@ -25,7 +25,7 @@ export function ShippingCourierIntegrationPage() {
   const { navigate, goBack } = useNavigationStore()
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100">
       <header className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 sticky top-0 z-10 flex items-center gap-3">
         <button onClick={goBack} aria-label="Go back" className="p-1 -ml-1 text-gray-600 dark:text-gray-400">
           <ArrowLeft className="w-6 h-6" />
@@ -48,8 +48,8 @@ export function ShippingCourierIntegrationPage() {
               <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
                 <Link2 className="h-4 w-4" />
               </div>
-              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <p className="font-bold text-slate-900 dark:text-slate-100">Per-account API keys aren&apos;t wired yet</p>
+              <div className="space-y-1 text-xs text-slate-700 dark:text-neutral-300 leading-relaxed">
+                <p className="font-bold text-slate-900 dark:text-neutral-100">Per-account API keys aren&apos;t wired yet</p>
                 <p>
                   The previous version of this page asked for a Pathao/RedX/Paperfly API key, secret and store
                   ID, then showed a &quot;Connect&quot; button that did nothing on click — no merchant account

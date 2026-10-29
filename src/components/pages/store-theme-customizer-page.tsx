@@ -45,7 +45,7 @@ export function StoreThemeCustomizerPage() {
   const { navigate, goBack } = useNavigationStore()
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100">
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center gap-3 shadow-sm md:hidden">
         <button onClick={goBack} aria-label="Go back" className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -68,8 +68,8 @@ export function StoreThemeCustomizerPage() {
               <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
                 <Palette className="h-4 w-4" />
               </div>
-              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <p className="font-bold text-slate-900 dark:text-slate-100">Brand color customization isn&apos;t available yet</p>
+              <div className="space-y-1 text-xs text-slate-700 dark:text-neutral-300 leading-relaxed">
+                <p className="font-bold text-slate-900 dark:text-neutral-100">Brand color customization isn&apos;t available yet</p>
                 <p>
                   Zylod storefronts share a single brand identity (the rose-red Zylod palette). There is no
                   per-supplier brand-color writer rail today, so an &quot;Apply Theme&quot; button here would
@@ -85,7 +85,7 @@ export function StoreThemeCustomizerPage() {
         </Card>
 
         <div className="space-y-3">
-          <h2 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
+          <h2 className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider px-1">
             What you can customize today
           </h2>
           {REAL_SURFACES.map(s => {

@@ -5,8 +5,12 @@
          Do not reuse these values in Compose/native screens. -->
     <color name="primary_red">#E11D48</color>
     <color name="primary_dark">#9F1239</color>
-    <color name="accent_blue">#2563EB</color>
-    <color name="surface_dark">#0F172A</color>
-    <color name="background_light">#F8FAFC</color>
-    <color name="text_primary">#0F172A</color>
+    <!-- t230 NAVY FIX: accent_blue #2563EB and surface_dark #0F172A (slate-900
+         navy) rendered BLUE/NAVY chrome — navigationBarColor painted a navy bar
+         under the pure-black web theme (#121212). Both are replaced with
+         hue-less neutrals that match the web dark tokens exactly. -->
+    <color name="accent_neutral">#262626</color>
+    <color name="surface_dark">#121212</color>
+    <color name="background_light">#FAFAFA</color>
+    <color name="text_primary">#171717</color>
 </resources>

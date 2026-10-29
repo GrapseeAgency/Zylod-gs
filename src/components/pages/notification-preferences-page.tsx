@@ -53,7 +53,7 @@ function CategoryCard({
   const channelCount = [category.push, category.email, category.sms, category.whatsapp].filter(Boolean).length
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-2xs overflow-hidden">
       {/* Header row */}
       <button
         onClick={() => setExpanded((e) => !e)}
@@ -64,8 +64,8 @@ function CategoryCard({
             <Icon className={`h-5 w-5 ${category.iconColor}`} />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">{category.label}</h3>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{category.description}</p>
+            <h3 className="text-xs font-black text-slate-900 dark:text-neutral-100">{category.label}</h3>
+            <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5 leading-snug">{category.description}</p>
             {category.persisted === false && (
               <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-1 flex items-start gap-1">
                 <Info className="h-3 w-3 shrink-0 mt-px" />
@@ -80,13 +80,13 @@ function CategoryCard({
               {channelCount} channel{channelCount > 1 ? 's' : ''} active
             </span>
           ) : (
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-card px-2.5 py-1 rounded-full">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400 bg-slate-100 dark:bg-card px-2.5 py-1 rounded-full">
               Muted
             </span>
           )}
           {expanded
-            ? <ChevronUp className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
-            : <ChevronDown className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />}
+            ? <ChevronUp className="h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
+            : <ChevronDown className="h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />}
         </div>
       </button>
 
@@ -100,16 +100,16 @@ function CategoryCard({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 space-y-3 border-t border-slate-100 dark:border-slate-800 pt-4">
+            <div className="px-5 pb-5 space-y-3 border-t border-slate-100 dark:border-neutral-800 pt-4">
               {/* Push toggle */}
               <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-neutral-800 flex items-center justify-center text-slate-600 dark:text-neutral-400 dark:text-neutral-500 shrink-0">
                     <Smartphone className="h-4 w-4" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-slate-900 dark:text-slate-100">Push Notification</span>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">In-app & mobile banner alerts</p>
+                    <span className="text-xs font-bold text-slate-900 dark:text-neutral-100">Push Notification</span>
+                    <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">In-app & mobile banner alerts</p>
                   </div>
                 </div>
                 <Switch
@@ -122,12 +122,12 @@ function CategoryCard({
               {/* Email toggle */}
               <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-neutral-800 flex items-center justify-center text-slate-600 dark:text-neutral-400 dark:text-neutral-500 shrink-0">
                     <Mail className="h-4 w-4" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-slate-900 dark:text-slate-100">Email Digest</span>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Sent to your registered email</p>
+                    <span className="text-xs font-bold text-slate-900 dark:text-neutral-100">Email Digest</span>
+                    <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Sent to your registered email</p>
                   </div>
                 </div>
                 <Switch
@@ -141,12 +141,12 @@ function CategoryCard({
               {category.hasSms !== false && (
                 <div className="flex items-center justify-between py-1">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500 shrink-0">
+                    <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-neutral-800 flex items-center justify-center text-slate-600 dark:text-neutral-400 dark:text-neutral-500 shrink-0">
                       <Phone className="h-4 w-4" />
                     </div>
                     <div>
-                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100">SMS Alert</span>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Critical events via text message</p>
+                      <span className="text-xs font-bold text-slate-900 dark:text-neutral-100">SMS Alert</span>
+                      <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Critical events via text message</p>
                     </div>
                   </div>
                   <Switch
@@ -165,8 +165,8 @@ function CategoryCard({
                       <Globe className="h-4 w-4" />
                     </div>
                     <div>
-                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100">WhatsApp Message</span>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Automated WhatsApp Business updates</p>
+                      <span className="text-xs font-bold text-slate-900 dark:text-neutral-100">WhatsApp Message</span>
+                      <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Automated WhatsApp Business updates</p>
                     </div>
                   </div>
                   <Switch
@@ -287,8 +287,8 @@ export function NotificationPreferencesPage() {
       label: 'Inventory & Stock Warnings',
       description: 'Low stock threshold alerts, out-of-stock SKUs, and reorder suggestions.',
       icon: Package,
-      iconColor: 'text-slate-600 dark:text-slate-400',
-      iconBg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800',
+      iconColor: 'text-slate-600 dark:text-neutral-400',
+      iconBg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-neutral-800',
       push: true, email: false, sms: false, whatsapp: false,
       hasSms: false, hasWhatsapp: false,
     },
@@ -328,8 +328,8 @@ export function NotificationPreferencesPage() {
       label: 'Platform & System Updates',
       description: 'Scheduled maintenance windows, new feature announcements, and policy changes.',
       icon: Layers,
-      iconColor: 'text-slate-600 dark:text-slate-400',
-      iconBg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800',
+      iconColor: 'text-slate-600 dark:text-neutral-400',
+      iconBg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-neutral-800',
       push: false, email: true, sms: false, whatsapp: false,
       hasSms: false, hasWhatsapp: false,
     },
@@ -547,12 +547,12 @@ export function NotificationPreferencesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-28 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-28 md:pb-8">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between">
         <button
           onClick={() => navigate('profile')}
-          className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100"
+          className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -561,7 +561,7 @@ export function NotificationPreferencesPage() {
         </div>
         <button
           onClick={() => navigate('account-settings')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-neutral-300"
         >
           <Settings className="h-4 w-4" />
         </button>
@@ -569,14 +569,14 @@ export function NotificationPreferencesPage() {
 
       <main className="max-w-lg mx-auto lg:max-w-5xl px-4 py-5 md:px-6 md:py-6 space-y-5 md:space-y-8">
         {/* Hero Banner */}
-        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-neutral-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
               <Bell className="h-6 w-6 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base md:text-2xl font-black">Notification Preferences</h1>
-              <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
+              <p className="text-xs text-slate-600 dark:text-neutral-300 mt-0.5">
                 Control exactly how and when Zylod reaches you — across 14 event categories and 4 delivery channels.
               </p>
             </div>
@@ -588,7 +588,7 @@ export function NotificationPreferencesPage() {
               onClick={masterMute ? enableAll : muteAll}
               className={`flex-1 h-10 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
                 masterMute
-                  ? 'bg-white dark:bg-gray-900 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-card'
+                  ? 'bg-white dark:bg-gray-900 text-slate-900 dark:text-neutral-100 hover:bg-slate-100 dark:hover:bg-card'
                   : 'bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/20 text-gray-900 dark:text-white hover:bg-white/20'
               }`}
             >
@@ -622,26 +622,26 @@ export function NotificationPreferencesPage() {
             { icon: Phone, label: 'SMS', count: categories.filter((c) => c.sms).length, color: 'text-emerald-600 bg-emerald-50 border-emerald-100' },
             { icon: Globe, label: 'WhatsApp', count: categories.filter((c) => c.whatsapp).length, color: 'text-green-600 bg-green-50 border-green-100' },
           ].map(({ icon: Icon, label, count, color }) => (
-            <div key={label} className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
+            <div key={label} className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
               <div className={`w-8 h-8 rounded-xl border flex items-center justify-center mx-auto ${color}`}>
                 <Icon className="h-4 w-4" />
               </div>
-              <div className="text-lg font-black text-slate-900 dark:text-slate-100 font-mono mt-1.5">{count}</div>
-              <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wider">{label}</span>
+              <div className="text-lg font-black text-slate-900 dark:text-neutral-100 font-mono mt-1.5">{count}</div>
+              <span className="text-[9px] font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{label}</span>
             </div>
           ))}
         </div>
 
         {/* Quiet Hours */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-          <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-2xs overflow-hidden">
+          <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100 dark:border-neutral-800">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300">
+              <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-neutral-800 flex items-center justify-center text-slate-700 dark:text-neutral-300">
                 <Moon className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-xs font-black text-slate-900 dark:text-slate-100">Quiet Hours — Do Not Disturb</h2>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Suppress push &amp; SMS during sleep hours</p>
+                <h2 className="text-xs font-black text-slate-900 dark:text-neutral-100">Quiet Hours — Do Not Disturb</h2>
+                <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Suppress push &amp; SMS during sleep hours</p>
               </div>
             </div>
             <Switch
@@ -661,13 +661,13 @@ export function NotificationPreferencesPage() {
                 className="overflow-hidden"
               >
                 <div className="px-5 py-4 space-y-3">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                  <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                     During quiet hours, push and SMS notifications are silently queued and delivered at your wake time.
                     Email and WhatsApp are not affected.
                   </p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                      <label className="text-[11px] font-bold text-slate-600 dark:text-neutral-400 dark:text-neutral-500 flex items-center gap-1.5">
                         <Moon className="h-3 w-3" />
                         Sleep (Quiet Start)
                       </label>
@@ -675,11 +675,11 @@ export function NotificationPreferencesPage() {
                         type="time"
                         value={quietStart}
                         onChange={(e) => setQuietStart(e.target.value)}
-                        className="w-full h-11 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-slate-100 font-mono focus:outline-none focus:border-primary"
+                        className="w-full h-11 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-neutral-800 px-3 text-sm font-bold text-slate-900 dark:text-neutral-100 font-mono focus:outline-none focus:border-primary"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                      <label className="text-[11px] font-bold text-slate-600 dark:text-neutral-400 dark:text-neutral-500 flex items-center gap-1.5">
                         <Sun className="h-3 w-3" />
                         Wake (Quiet End)
                       </label>
@@ -687,13 +687,13 @@ export function NotificationPreferencesPage() {
                         type="time"
                         value={quietEnd}
                         onChange={(e) => setQuietEnd(e.target.value)}
-                        className="w-full h-11 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 px-3 text-sm font-bold text-slate-900 dark:text-slate-100 font-mono focus:outline-none focus:border-primary"
+                        className="w-full h-11 rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-neutral-800 px-3 text-sm font-bold text-slate-900 dark:text-neutral-100 font-mono focus:outline-none focus:border-primary"
                       />
                     </div>
                   </div>
-                  <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 border border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                  <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 border border-slate-100 dark:border-neutral-800 flex items-center gap-2">
                     <Moon className="h-4 w-4 text-primary shrink-0" />
-                    <p className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                    <p className="text-[11px] font-bold text-slate-700 dark:text-neutral-300">
                       Quiet from <span className="text-primary font-black">{quietStart}</span> to <span className="text-primary font-black">{quietEnd}</span> (BST — Asia/Dhaka)
                     </p>
                   </div>
@@ -705,7 +705,7 @@ export function NotificationPreferencesPage() {
 
         {/* Category Cards */}
         <div className="space-y-1">
-          <h2 className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 px-1 pb-1">
+          <h2 className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-neutral-500 dark:text-neutral-400 px-1 pb-1">
             Event Categories — {categories.length} total
           </h2>
         </div>
@@ -744,7 +744,7 @@ export function NotificationPreferencesPage() {
             onClick={sendTestNotification}
             disabled={testing || testSent}
             variant="outline"
-            className="w-full font-bold h-11 rounded-2xl text-xs border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 flex items-center justify-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
+            className="w-full font-bold h-11 rounded-2xl text-xs border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 flex items-center justify-center gap-2 text-slate-700 dark:text-neutral-300 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
           >
             {testing ? (
               <><Loader2 className="h-4 w-4 animate-spin" />Sending Test...</>

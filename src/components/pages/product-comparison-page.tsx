@@ -212,15 +212,15 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
   }, [products])
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">
-          <button onClick={() => navigate('home')} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="QR">
+          <button onClick={() => navigate('home')} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="QR">
             <QrCode className="h-6 w-6 text-primary" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 relative" title="Notifications" aria-label="Notifications">
+          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100 relative" title="Notifications" aria-label="Notifications">
             <Bell className="h-6 w-6" />
           </button>
         </div>
@@ -228,8 +228,8 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
 
       {/* Page Title & Intro */}
       <div className="px-4 pt-4 pb-2 bg-white dark:bg-gray-900 md:px-6 md:pt-6 md:max-w-7xl md:mx-auto md:w-full">
-        <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Compare Products</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+        <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">Compare Products</h1>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
           {products.length > 0
             ? `Comparing ${products.length} product${products.length === 1 ? '' : 's'} side by side.`
             : 'Select products to begin side-by-side comparison.'}
@@ -237,8 +237,8 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
 
         {/* Differences Only Toggle Pill */}
         {products.length > 0 && (
-          <div className="mt-3 flex items-center justify-between p-2.5 bg-slate-50 dark:bg-background rounded-xl border border-slate-200 dark:border-slate-800">
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Differences Only</span>
+          <div className="mt-3 flex items-center justify-between p-2.5 bg-slate-50 dark:bg-background rounded-xl border border-slate-200 dark:border-neutral-800">
+            <span className="text-xs font-bold text-slate-700 dark:text-neutral-300">Differences Only</span>
             <Switch
               checked={diffOnly}
               onCheckedChange={setDiffOnly}
@@ -251,7 +251,7 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
       {/* Main Table */}
       <main className="mt-3 px-3 md:px-6 md:mt-4 md:max-w-7xl md:mx-auto">
         {loading ? (
-          <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-slate-100 dark:border-neutral-800 space-y-4">
             <div className="flex gap-4">
               <Skeleton className="w-1/3 h-48 rounded-xl" />
               <Skeleton className="w-2/3 h-48 rounded-xl" />
@@ -260,12 +260,12 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
             <Skeleton className="h-10 w-full" />
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-neutral-800">
             <Scale className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
+            <h3 className="text-base font-bold text-slate-800 dark:text-neutral-200">
               {loadError ? 'Comparison unavailable' : 'No products to compare'}
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs mx-auto">
               {loadError ||
                 'Add products from the catalog or product detail page to compare them side by side.'}
             </p>
@@ -277,15 +277,15 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
             </Button>
           </div>
         ) : (
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 overflow-hidden shadow-xs">
             <div className="overflow-x-auto no-scrollbar">
               <table className="w-full border-collapse text-left text-xs md:text-sm">
                 {/* Header Row with Product Cards */}
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800">
+                  <tr className="border-b border-slate-200 dark:border-neutral-800">
                     {/* Sticky Label Column Header */}
-                    <th className="p-3 w-32 min-w-[120px] md:min-w-[180px] bg-slate-50 dark:bg-background border-r border-slate-200 dark:border-slate-800 align-bottom">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                    <th className="p-3 w-32 min-w-[120px] md:min-w-[180px] bg-slate-50 dark:bg-background border-r border-slate-200 dark:border-neutral-800 align-bottom">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                         Specifications
                       </span>
                     </th>
@@ -296,13 +296,13 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                       return (
                         <th
                           key={product.id}
-                          className="p-3 w-48 min-w-[180px] max-w-[200px] md:min-w-[260px] md:max-w-none border-r border-slate-100 dark:border-slate-800 last:border-r-0 align-top"
+                          className="p-3 w-48 min-w-[180px] max-w-[200px] md:min-w-[260px] md:max-w-none border-r border-slate-100 dark:border-neutral-800 last:border-r-0 align-top"
                         >
                           <div className="relative flex flex-col h-full">
                             {products.length > 1 && (
                               <button
                                 onClick={() => handleRemoveProduct(product.id)}
-                                className="absolute -top-1 -right-1 p-1 rounded-full bg-slate-100 dark:bg-card text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-rose-500 transition-colors z-10"
+                                className="absolute -top-1 -right-1 p-1 rounded-full bg-slate-100 dark:bg-card text-slate-400 dark:text-neutral-500 dark:text-neutral-400 hover:text-rose-500 transition-colors z-10"
                                 title="Remove"
                               >
                                 <X className="h-3.5 w-3.5" />
@@ -325,20 +325,20 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                             </div>
 
                             {/* Name & Pricing */}
-                            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-2 leading-snug">
+                            <h4 className="text-xs font-bold text-slate-800 dark:text-neutral-200 line-clamp-2 leading-snug">
                               {product.name}
                             </h4>
                             <div className="mt-1 text-sm font-black text-primary">
                               {formatPrice(product.basePrice)}
                             </div>
-                            <div className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">
+                            <div className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-medium">
                               MOQ: {product.moq} {product.unit}
                             </div>
 
                             {/* Add to Cart Button */}
                             <Button
                               onClick={() => handleAddToCart(product)}
-                              className="mt-3 w-full bg-slate-100 dark:bg-card hover:bg-primary text-slate-800 dark:text-slate-200 hover:text-white font-bold text-xs h-9 rounded-xl transition-colors shadow-none border border-slate-200 dark:border-slate-800"
+                              className="mt-3 w-full bg-slate-100 dark:bg-card hover:bg-primary text-slate-800 dark:text-neutral-200 hover:text-white font-bold text-xs h-9 rounded-xl transition-colors shadow-none border border-slate-200 dark:border-neutral-800"
                             >
                               <ShoppingCart className="h-3.5 w-3.5 mr-1" />
                               Add to Cart
@@ -365,10 +365,10 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                     return (
                       <React.Fragment key={section.title}>
                         {/* Section Header */}
-                        <tr className="bg-slate-100 dark:bg-card/70 border-b border-t border-slate-200 dark:border-slate-800">
+                        <tr className="bg-slate-100 dark:bg-card/70 border-b border-t border-slate-200 dark:border-neutral-800">
                           <td
                             colSpan={products.length + 1}
-                            className="py-2 px-3 font-bold text-slate-800 dark:text-slate-200 text-[11px]"
+                            className="py-2 px-3 font-bold text-slate-800 dark:text-neutral-200 text-[11px]"
                           >
                             <span className="inline-flex items-center gap-1.5">
                               {section.icon}
@@ -381,15 +381,15 @@ export function ProductComparisonPage({ pageParams: _pageParams }: { pageParams?
                         {filteredRows.map((row) => (
                           <tr
                             key={row.label}
-                            className="border-b border-slate-100 dark:border-slate-800 last:border-b-0"
+                            className="border-b border-slate-100 dark:border-neutral-800 last:border-b-0"
                           >
-                            <td className="p-3 font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background/70 text-[11px]">
+                            <td className="p-3 font-semibold text-slate-600 dark:text-neutral-400 dark:text-neutral-500 border-r border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-background/70 text-[11px]">
                               {row.label}
                             </td>
                             {row.values.map((val, vIdx) => (
                               <td
                                 key={vIdx}
-                                className="p-3 text-slate-800 dark:text-slate-200 font-medium border-r border-slate-100 dark:border-slate-800 last:border-r-0 text-[11px]"
+                                className="p-3 text-slate-800 dark:text-neutral-200 font-medium border-r border-slate-100 dark:border-neutral-800 last:border-r-0 text-[11px]"
                               >
                                 {val}
                               </td>

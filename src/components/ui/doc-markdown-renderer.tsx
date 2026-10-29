@@ -243,14 +243,14 @@ export function DocMarkdownRenderer({
                 if (isBlock) {
                   const idx = Math.random()
                   return (
-                    <div className="my-4 rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden shadow-md text-slate-100 text-xs font-mono">
-                      <div className="flex items-center justify-between px-4 py-2 bg-slate-950/80 border-b border-slate-800 text-[11px] text-slate-400">
+                    <div className="my-4 rounded-2xl bg-neutral-900 border border-neutral-800 overflow-hidden shadow-md text-slate-100 text-xs font-mono">
+                      <div className="flex items-center justify-between px-4 py-2 bg-neutral-950/80 border-b border-neutral-800 text-[11px] text-slate-400">
                         <span className="font-semibold text-slate-300 uppercase tracking-wider">
                           {className?.replace('language-', '') || 'Specification Matrix'}
                         </span>
                         <button
                           onClick={() => handleCopy(codeString, 1)}
-                          className="flex items-center gap-1 text-slate-400 hover:text-white transition px-2 py-0.5 rounded-md hover:bg-slate-800"
+                          className="flex items-center gap-1 text-slate-400 hover:text-white transition px-2 py-0.5 rounded-md hover:bg-neutral-800"
                         >
                           {copiedCodeIndex === 1 ? (
                             <>

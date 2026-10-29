@@ -78,7 +78,7 @@ export function SharedWishlistPage() {
           </button>
           <h1 className="font-semibold text-gray-900 dark:text-gray-100">Share Wishlist</h1>
         </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Share Wishlist</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Share Wishlist</h1>
 
         <main className="flex-1 p-4 space-y-6">
           {loadError && (

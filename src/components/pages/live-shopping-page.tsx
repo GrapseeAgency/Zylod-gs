@@ -34,7 +34,7 @@ export function LiveShoppingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-neutral-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -70,9 +70,9 @@ export function LiveShoppingPage() {
             </div>
           ) : streams.length === 0 ? (
             <div className="col-span-full text-center py-16">
-              <Radio className="w-12 h-12 text-slate-700 dark:text-slate-300 mx-auto mb-3" />
-              <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300">No live streams right now</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
+              <Radio className="w-12 h-12 text-slate-700 dark:text-neutral-300 mx-auto mb-3" />
+              <h3 className="text-sm font-bold text-slate-600 dark:text-neutral-300">No live streams right now</h3>
+              <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs mx-auto">
                 No broadcast sessions have been scheduled yet. Check back once a supplier goes live.
               </p>
             </div>
@@ -81,7 +81,7 @@ export function LiveShoppingPage() {
               <div
                 key={st.id}
                 onClick={() => navigate('live-shopping-detail', { id: st.id })}
-                className="bg-white dark:bg-card border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:border-red-500 transition cursor-pointer group flex flex-col justify-between"
+                className="bg-white dark:bg-card border border-slate-200 dark:border-neutral-800 rounded-3xl overflow-hidden shadow-sm hover:border-red-500 transition cursor-pointer group flex flex-col justify-between"
               >
                 <div className="relative aspect-[16/10] bg-slate-200 dark:bg-card overflow-hidden">
                   {st.thumbnailUrl ? (
@@ -91,7 +91,7 @@ export function LiveShoppingPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-600 dark:text-slate-400 dark:text-slate-500">
+                    <div className="w-full h-full flex items-center justify-center text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
                       <Radio className="w-8 h-8" />
                     </div>
                   )}
@@ -102,7 +102,7 @@ export function LiveShoppingPage() {
                         <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-gray-900 animate-ping" /> LIVE
                       </span>
                     ) : (
-                      <span className="bg-slate-900/80 text-slate-200 dark:text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
+                      <span className="bg-neutral-900/80 text-slate-200 dark:text-neutral-300 text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
                         Scheduled
                       </span>
                     )}
@@ -123,13 +123,13 @@ export function LiveShoppingPage() {
 
                 <div className="p-4 space-y-2">
                   <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white line-clamp-2">{st.title}</h3>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 line-clamp-2">{st.description}</p>
+                  <p className="text-[11px] text-slate-400 dark:text-neutral-500 line-clamp-2">{st.description}</p>
 
-                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                  <div className="pt-2 border-t border-slate-200 dark:border-neutral-800 flex items-center justify-between">
                     {st.supplierName ? (
-                      <span className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate pr-2">{st.supplierName}</span>
+                      <span className="text-xs font-bold text-slate-600 dark:text-neutral-300 truncate pr-2">{st.supplierName}</span>
                     ) : (
-                      <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Supplier unnamed</span>
+                      <span className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Supplier unnamed</span>
                     )}
                     {/* Rating row hidden unless a real aggregate rating exists */}
                     {st.supplierRating != null && (

@@ -183,7 +183,7 @@ export function NotificationDetailPage() {
       case 'promotion': return 'from-amber-600 to-orange-700'
       case 'price_drop': return 'from-red-600 to-rose-700'
       case 'back_in_stock': return 'from-teal-600 to-cyan-700'
-      default: return 'from-slate-800 to-slate-900'
+      default: return 'from-neutral-800 to-neutral-900'
     }
   }
 

@@ -102,7 +102,7 @@ export function SpinWinPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-neutral-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -127,7 +127,7 @@ export function SpinWinPage() {
           <h2 className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-amber-500 via-rose-500 to-amber-400 dark:from-amber-400 dark:via-rose-400 dark:to-amber-200 bg-clip-text text-transparent">
             Spin the Lucky Wheel
           </h2>
-          <p className="text-xs text-slate-400 dark:text-slate-500">
+          <p className="text-xs text-slate-400 dark:text-neutral-500">
             Guaranteed discount vouchers or loyalty points on every turn!
           </p>
         </div>
@@ -156,7 +156,7 @@ export function SpinWinPage() {
           >
             {/* Inner Center Hub */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-slate-900 border-4 border-amber-400 flex items-center justify-center shadow-lg">
+              <div className="w-16 h-16 rounded-full bg-neutral-900 border-4 border-amber-400 flex items-center justify-center shadow-lg">
                 <Star className="w-7 h-7 text-amber-400 animate-pulse" />
               </div>
             </div>
@@ -174,7 +174,7 @@ export function SpinWinPage() {
               <Trophy className="w-4 h-4" /> Prize Unlocked
             </div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{wonPrize.label}</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-300">
+            <p className="text-xs text-slate-600 dark:text-neutral-300">
               Reward has been deposited into your My Coupons / Points vault!
             </p>
           </motion.div>
@@ -190,7 +190,7 @@ export function SpinWinPage() {
             {spinning ? 'Spinning the Wheel...' : spinsRemaining > 0 ? `SPIN NOW (Free)` : 'No Spins Remaining Today'}
           </Button>
 
-          <p className="text-xs font-bold text-slate-400 dark:text-slate-500">
+          <p className="text-xs font-bold text-slate-400 dark:text-neutral-500">
             Daily Spins Left: <strong className="text-amber-600 dark:text-amber-400">{spinsRemaining} of 3</strong>
           </p>
         </div>

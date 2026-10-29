@@ -39,7 +39,7 @@ export function SellerTermsPage() {
           <p className="text-xs text-gray-400 dark:text-gray-500">Rules Governing Verified Mill Storefronts</p>
         </div>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Supplier & Factory Terms</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Supplier & Factory Terms</h1>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-4 pb-24">
         <div className="bg-primary rounded-3xl p-5 text-white space-y-2">

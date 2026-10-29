@@ -88,7 +88,7 @@ export function BulkUploadProductsPage() {
         <div className="hidden md:flex items-center justify-between max-w-3xl mx-auto mb-6">
           <div className="flex items-center gap-3">
             <UploadCloud className="w-7 h-7 text-primary" />
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Bulk Upload Products</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-neutral-100">Bulk Upload Products</h1>
           </div>
           <Button variant="outline" onClick={() => navigate('bulk-upload-history')} className="rounded-xl text-xs font-bold gap-2">
             <History className="w-4 h-4" /> History

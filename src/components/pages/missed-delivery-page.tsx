@@ -152,13 +152,13 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
   if (!orderId) {
     return (
       <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
+        <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
-              <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
+              <Search className="h-6 w-6 text-slate-500 dark:text-neutral-400 dark:text-neutral-500" />
             </div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">No order selected</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-neutral-100">No order selected</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
               Open an order from your order history to request a delivery reschedule.
             </p>
             <Button onClick={() => navigate('orders-history')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
@@ -173,13 +173,13 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
   if (phase === 'anon') {
     return (
       <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
+        <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
               <LogIn className="h-6 w-6 text-amber-600" />
             </div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Sign in required</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Only the order's buyer can request a reschedule.</p>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-neutral-100">Sign in required</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Only the order's buyer can request a reschedule.</p>
             <Button onClick={() => navigate('login')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
               <LogIn className="h-4 w-4" /> Sign in
             </Button>
@@ -192,13 +192,13 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
   if (phase === 'notfound') {
     return (
       <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
+        <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
-              <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
+              <Search className="h-6 w-6 text-slate-500 dark:text-neutral-400 dark:text-neutral-500" />
             </div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Order not found</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">This order may have been removed or the link is stale.</p>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-neutral-100">Order not found</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">This order may have been removed or the link is stale.</p>
             <Button onClick={() => navigate('orders-history')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
               <ArrowRight className="h-4 w-4" /> Go to orders
             </Button>
@@ -211,13 +211,13 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
   if (phase === 'error') {
     return (
       <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
+        <Card className="max-w-md w-full rounded-3xl border-slate-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
               <AlertTriangle className="h-6 w-6 text-red-600" />
             </div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Couldn't load the order</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">{errorMsg}</p>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-neutral-100">Couldn't load the order</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 break-words">{errorMsg}</p>
             <Button onClick={load} variant="outline" className="text-xs font-bold gap-2">
               <Loader2 className="h-4 w-4" /> Retry
             </Button>
@@ -240,9 +240,9 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
   const hasPending = existing.some(r => r.status === 'pending')
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-neutral-100">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-base font-black text-primary">Missed delivery</span>
@@ -251,8 +251,8 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
 
       <main className="px-4 py-4 md:px-6 md:py-8 space-y-4 max-w-2xl mx-auto">
         <div className="hidden md:block">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Missed delivery</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-neutral-100">Missed delivery</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
             Order <span className="font-mono font-semibold">{order.orderNumber}</span>
           </p>
         </div>
@@ -263,8 +263,8 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
             <AlertTriangle className="h-5 w-5" />
           </div>
           <div className="space-y-1 min-w-0">
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Delivery couldn't be completed</h2>
-            <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">Delivery couldn't be completed</h2>
+            <p className="text-xs text-slate-600 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">
               If the courier couldn't reach the destination, request a new delivery window below.
               The seller is notified and will confirm the reschedule.
             </p>
@@ -272,33 +272,33 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
         </div>
 
         {/* Shipping address card */}
-        <Card className="rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
+        <Card className="rounded-3xl border-slate-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-5 space-y-3">
             <div className="flex items-start gap-3">
-              <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
+              <MapPin className="h-4 w-4 text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5 shrink-0" />
               <div className="min-w-0 flex-1">
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 block uppercase">Shipping address</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 block uppercase">Shipping address</span>
                 {addr ? (
-                  <p className="text-xs text-slate-800 dark:text-slate-200 mt-0.5 break-words">
+                  <p className="text-xs text-slate-800 dark:text-neutral-200 mt-0.5 break-words">
                     {[addr.recipientName, addr.addressLine1, addr.addressLine2, addr.city, addr.district].filter(Boolean).join(', ')}
-                    {addr.phone && <span className="block text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">📞 {addr.phone}</span>}
+                    {addr.phone && <span className="block text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">📞 {addr.phone}</span>}
                   </p>
                 ) : (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">No address on file.</p>
+                  <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">No address on file.</p>
                 )}
               </div>
             </div>
             {slices.length > 0 && (
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 block uppercase">Shipments</span>
+              <div className="pt-3 border-t border-slate-100 dark:border-neutral-800 space-y-2">
+                <span className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 block uppercase">Shipments</span>
                 {slices.map((s) => (
                   <div key={s.id} className="flex items-center justify-between gap-2 text-xs">
-                    <span className="text-slate-700 dark:text-slate-300 truncate">
+                    <span className="text-slate-700 dark:text-neutral-300 truncate">
                       {s.supplier?.companyName || 'Supplier'}
                     </span>
                     <span className="flex items-center gap-1.5 shrink-0">
-                      <Clock className="h-3 w-3 text-slate-400 dark:text-slate-500" />
-                      <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">Est. {formatDate(s.estimatedDelivery)}</span>
+                      <Clock className="h-3 w-3 text-slate-400 dark:text-neutral-500" />
+                      <span className="text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Est. {formatDate(s.estimatedDelivery)}</span>
                     </span>
                   </div>
                 ))}
@@ -339,10 +339,10 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
         )}
 
         {/* Reschedule form */}
-        <Card className="rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
+        <Card className="rounded-3xl border-slate-200 dark:border-neutral-800 shadow-sm">
           <CardContent className="p-5">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-neutral-100 flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-primary" /> Request a new window
               </h3>
 
@@ -357,7 +357,7 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
                   required
                   disabled={submitting || hasPending}
                 />
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Pick a future date (tomorrow or later).</p>
+                <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Pick a future date (tomorrow or later).</p>
               </div>
 
               <div className="space-y-2">
@@ -399,22 +399,22 @@ export function MissedDeliveryPage({ pageParams: _pageParams }: { pageParams?: R
 
         {/* Existing request history */}
         {existing.length > 0 && (
-          <Card className="rounded-3xl border-slate-200 dark:border-slate-800 shadow-sm">
+          <Card className="rounded-3xl border-slate-200 dark:border-neutral-800 shadow-sm">
             <CardContent className="p-5 space-y-3">
-              <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Request history</h3>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Request history</h3>
               <div className="space-y-2">
                 {existing.map((r) => (
-                  <div key={r.id} className="flex items-center justify-between gap-3 text-xs py-2 border-t border-slate-100 dark:border-slate-800 first:border-0">
+                  <div key={r.id} className="flex items-center justify-between gap-3 text-xs py-2 border-t border-slate-100 dark:border-neutral-800 first:border-0">
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-800 dark:text-slate-200">{formatDate(r.requestedDate)}</p>
-                      {r.note && <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 truncate">{r.note}</p>}
+                      <p className="font-semibold text-slate-800 dark:text-neutral-200">{formatDate(r.requestedDate)}</p>
+                      {r.note && <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 truncate">{r.note}</p>}
                     </div>
                     <span className={
                       'text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ' +
                       (r.status === 'pending' ? 'bg-amber-100 text-amber-700'
                       : r.status === 'approved' ? 'bg-emerald-100 text-emerald-700'
                       : r.status === 'rejected' ? 'bg-red-100 text-red-700'
-                      : 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-300')
+                      : 'bg-slate-100 dark:bg-card text-slate-600 dark:text-neutral-300')
                     }>
                       {r.status}
                     </span>

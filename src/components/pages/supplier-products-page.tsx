@@ -148,13 +148,13 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
   /* ─── No supplier selected — honest state ─── */
   if (!supplierId) {
     return (
-      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-neutral-100">
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
-          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 flex items-center justify-center mb-4">
             <Store className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No supplier selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">No supplier selected</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs mx-auto leading-relaxed">
             Open a supplier profile to browse their live product listings.
           </p>
           <Button
@@ -169,20 +169,20 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between mb-1">
-          <button onClick={() => navigate('home')} className="p-1 text-slate-700 dark:text-slate-300" title="QR">
+          <button onClick={() => navigate('home')} className="p-1 text-slate-700 dark:text-neutral-300" title="QR">
             <QrCode className="h-6 w-6 text-primary" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-slate-300" title="Notifications" aria-label="Notifications">
+          <button onClick={() => navigate("notifications")} className="p-1 text-slate-700 dark:text-neutral-300" title="Notifications" aria-label="Notifications">
             <Bell className="h-6 w-6" />
           </button>
         </div>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100 px-6 pt-6">Supplier Products</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100 px-6 pt-6">Supplier Products</h1>
 
       <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:max-w-4xl md:px-6">
         {/* Supplier Profile Card — real data or real error */}
@@ -193,21 +193,21 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                 <AlertCircle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load this supplier</h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">{profileError}</p>
+                <h3 className="text-xs font-black text-slate-900 dark:text-neutral-100">Couldn&apos;t load this supplier</h3>
+                <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 leading-relaxed">{profileError}</p>
               </div>
             </div>
             <Button
               variant="outline"
               onClick={fetchProfile}
-              className="h-9 px-4 rounded-xl text-xs font-bold bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 flex items-center gap-1.5"
+              className="h-9 px-4 rounded-xl text-xs font-bold bg-white dark:bg-gray-900 text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 flex items-center gap-1.5"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Try Again
             </Button>
           </div>
         ) : !profile ? (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3.5">
               <Skeleton className="w-16 h-16 rounded-2xl" />
               <div className="space-y-2">
@@ -218,12 +218,12 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
             <Skeleton className="h-14 w-full rounded-2xl" />
           </div>
         ) : (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
             <div className="flex items-center gap-3.5">
               {/* Neutral logo box — initials from the real company name */}
-              <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0">
+              <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-neutral-800 flex items-center justify-center shrink-0">
                 {initials ? (
-                  <span className="text-sm font-black text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-gray-300">{initials}</span>
+                  <span className="text-sm font-black text-slate-600 dark:text-neutral-400 dark:text-neutral-500 dark:text-gray-300">{initials}</span>
                 ) : (
                   <Store className="h-6 w-6 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
                 )}
@@ -231,14 +231,14 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
 
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <h1 className="text-base font-black text-slate-900 dark:text-slate-100 leading-tight">
+                  <h1 className="text-base font-black text-slate-900 dark:text-neutral-100 leading-tight">
                     {profile.companyName}
                   </h1>
                   {profile.verificationStatus === 'approved' && (
                     <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                   )}
                 </div>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                   {profile.verificationStatus === 'approved'
                     ? 'Verified supplier'
                     : `Verification status: ${profile.verificationStatus}`}
@@ -247,8 +247,8 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
             </div>
 
             {(profile.warehouseCity || profile.warehouseDistrict) && (
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
-                <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-medium">
+                <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 shrink-0" />
                 <span>
                   {profile.warehouseCity}
                   {profile.warehouseCity && profile.warehouseDistrict ? ', ' : ''}
@@ -258,23 +258,23 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
             )}
 
             {/* Stats Metric Strip — only metrics that exist in the database */}
-            <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-800 bg-slate-50 dark:bg-background rounded-2xl p-3 text-center">
+            <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-neutral-800 bg-slate-50 dark:bg-background rounded-2xl p-3 text-center">
               <div className="flex flex-col items-center">
-                <div className="flex items-center gap-1 text-xs font-black text-slate-900 dark:text-slate-100">
+                <div className="flex items-center gap-1 text-xs font-black text-slate-900 dark:text-neutral-100">
                   <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                   {profile.ratingCount > 0 ? profile.ratingAvg.toFixed(1) : '—'}
                 </div>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                   {profile.ratingCount > 0 ? `Rating (${profile.ratingCount})` : 'No ratings yet'}
                 </span>
               </div>
 
               <div className="flex flex-col items-center">
-                <div className="flex items-center gap-1 text-xs font-black text-slate-900 dark:text-slate-100">
+                <div className="flex items-center gap-1 text-xs font-black text-slate-900 dark:text-neutral-100">
                   <Package className="h-3.5 w-3.5 text-primary/80" />
                   {profile.productCount.toLocaleString()}
                 </div>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                   Active Listings
                 </span>
               </div>
@@ -299,7 +299,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
               className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                 activeCategory === 'all'
                   ? 'bg-primary text-white shadow-xs'
-                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+                  : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-neutral-400 border border-slate-200 dark:border-neutral-800 hover:bg-slate-50 dark:hover:bg-card'
               }`}
             >
               All Products
@@ -311,7 +311,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
                   activeCategory === name
                     ? 'bg-primary text-white shadow-xs'
-                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+                    : 'bg-white dark:bg-gray-900 text-slate-600 dark:text-neutral-400 border border-slate-200 dark:border-neutral-800 hover:bg-slate-50 dark:hover:bg-card'
                 }`}
               >
                 {name}
@@ -322,11 +322,11 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
 
         {/* Products Header */}
         <div className="flex items-center justify-between pt-1">
-          <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
+          <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">
             All Products ({total.toLocaleString()})
           </h2>
-          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-semibold">
-            <span>Sorted by <strong className="text-slate-800 dark:text-slate-200">Newest</strong></span>
+          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-semibold">
+            <span>Sorted by <strong className="text-slate-800 dark:text-neutral-200">Newest</strong></span>
             <ChevronDown className="h-3.5 w-3.5" />
           </div>
         </div>
@@ -339,14 +339,14 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                 <AlertCircle className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">Couldn&apos;t load products</h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">{error}</p>
+                <h3 className="text-xs font-black text-slate-900 dark:text-neutral-100">Couldn&apos;t load products</h3>
+                <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 leading-relaxed">{error}</p>
               </div>
             </div>
             <Button
               variant="outline"
               onClick={() => fetchProducts(1, false)}
-              className="h-9 px-4 rounded-xl text-xs font-bold bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 flex items-center gap-1.5"
+              className="h-9 px-4 rounded-xl text-xs font-bold bg-white dark:bg-gray-900 text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 flex items-center gap-1.5"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Try Again
@@ -359,14 +359,14 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
 
         {/* Empty — honest */}
         {!loading && !error && filteredProducts.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
+            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 flex items-center justify-center mb-4">
               <Package className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">
               {products.length === 0 ? 'No products listed yet' : 'No products in this category'}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-sm mx-auto leading-relaxed">
               {products.length === 0
                 ? 'This supplier hasn\u2019t published any approved listings yet. Their products will appear here as soon as they go live.'
                 : 'Try the “All Products” filter to see everything this supplier lists.'}
@@ -381,7 +381,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
               <div
                 key={p.id}
                 onClick={() => navigate('product-detail', { productId: p.id })}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between cursor-pointer"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-neutral-800 p-3 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between cursor-pointer"
               >
                 <div className="aspect-square rounded-xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 overflow-hidden mb-2">
                   {p.image ? (
@@ -394,13 +394,13 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
                 </div>
 
                 <div>
-                  <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-2 leading-snug">
+                  <h3 className="text-xs font-bold text-slate-800 dark:text-neutral-200 line-clamp-2 leading-snug">
                     {p.name}
                   </h3>
                   <div className="mt-1 text-sm font-black text-primary">
                     {formatPrice(p.basePrice)}
                   </div>
-                  <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1 pt-1 border-t border-slate-50 gap-2">
+                  <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-1 pt-1 border-t border-slate-50 gap-2">
                     <span className="truncate">MOQ: {p.moq.toLocaleString()} {p.unit}</span>
                     {p.soldCount > 0 && <span className="shrink-0">{p.soldCount.toLocaleString()} sold</span>}
                   </div>
@@ -417,7 +417,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
               variant="outline"
               onClick={() => fetchProducts(page + 1, true)}
               disabled={loadingMore}
-              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl shadow-xs disabled:opacity-60"
+              className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-neutral-200 border-slate-200 dark:border-neutral-800 font-bold text-xs h-11 rounded-2xl shadow-xs disabled:opacity-60"
             >
               {loadingMore ? 'Loading…' : `Load More (${total - products.length} remaining)`}
             </Button>

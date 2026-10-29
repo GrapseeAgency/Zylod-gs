@@ -92,7 +92,7 @@ export function SellerFlashSaleNominationPage() {
   }, [token])
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100">
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center gap-3 shadow-sm md:hidden">
         <button onClick={goBack} aria-label="Go back" className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
           <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
@@ -117,8 +117,8 @@ export function SellerFlashSaleNominationPage() {
               <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
                 <Tag className="h-4 w-4" />
               </div>
-              <div className="space-y-1 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <p className="font-bold text-slate-900 dark:text-slate-100">Suppliers do not self-nominate</p>
+              <div className="space-y-1 text-xs text-slate-700 dark:text-neutral-300 leading-relaxed">
+                <p className="font-bold text-slate-900 dark:text-neutral-100">Suppliers do not self-nominate</p>
                 <p>
                   Flash-sale and campaign slots are curated by the Zylod admin team. When a buyer-visiting
                   campaign is built, admin pins specific supplier products into it; the discount is funded by the
@@ -136,7 +136,7 @@ export function SellerFlashSaleNominationPage() {
         </Card>
 
         <div className="space-y-3">
-          <h2 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
+          <h2 className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-wider px-1">
             Your products currently in live campaigns
           </h2>
 

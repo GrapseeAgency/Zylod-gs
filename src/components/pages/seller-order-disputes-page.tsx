@@ -22,7 +22,7 @@ export function SellerOrderDisputesPage() {
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Dispute Details</h1>
         </div>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Dispute Details</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Dispute Details</h1>
 
       <div className="p-4">
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 text-center">

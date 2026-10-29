@@ -134,13 +134,13 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
   /* ─── No order reference — honest state ─── */
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-neutral-100">
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
-          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 flex items-center justify-center mb-4">
             <Box className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No return selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">No return selected</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs mx-auto leading-relaxed">
             Return details are shown per order. Submit a return request from one of your orders
             first.
           </p>
@@ -156,12 +156,12 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -173,8 +173,8 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
         {/* Title */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">Return Details</h1>
-            <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+            <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100 tracking-tight">Return Details</h1>
+            <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-mono mt-0.5">
               Order #{orderId.slice(-8).toUpperCase()}
             </p>
           </div>
@@ -183,7 +183,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
             <Button
               variant="outline"
               onClick={() => navigate('help-center')}
-              className="h-9 px-3 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 flex items-center gap-1.5"
+              className="h-9 px-3 rounded-xl text-xs font-bold text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 flex items-center gap-1.5"
             >
               <Headphones className="h-3.5 w-3.5" />
               Support
@@ -193,14 +193,14 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
 
         {/* Auth / not found / error — honest states */}
         {(notFound || needsAuth || error) && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 flex items-center justify-center mb-4">
               {needsAuth ? <LogIn className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <AlertCircle className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">
               {notFound ? 'Return not found' : needsAuth ? 'Sign in required' : 'Couldn\u2019t load this return'}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-sm mx-auto leading-relaxed">
               {notFound
                 ? 'We couldn\u2019t find this return request. It may belong to a different account.'
                 : needsAuth
@@ -219,7 +219,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                 <Button
                   variant="outline"
                   onClick={fetchReturns}
-                  className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
+                  className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   Try Again
@@ -236,19 +236,19 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
 
         {/* No return requests for this order — honest empty */}
         {!loading && !error && !needsAuth && !notFound && returns && returns.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
+            <div className="w-20 h-20 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 flex items-center justify-center mb-4">
               <RotateCcw className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">No return found for this order</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">No return found for this order</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-sm mx-auto leading-relaxed">
               No return request has been submitted for this order yet. Paid, delivered orders can
               start one.
             </p>
             <Button
               variant="outline"
               onClick={() => navigate('return-request', { orderId })}
-              className="mt-5 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 px-6 rounded-2xl"
+              className="mt-5 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-11 px-6 rounded-2xl"
             >
               Start a Return Request
             </Button>
@@ -260,7 +260,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
           returns.map((ret) => {
             const meta = STATUS_META[ret.status] ?? {
               label: ret.status,
-              className: 'bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300',
+              className: 'bg-slate-100 dark:bg-card text-slate-700 dark:text-neutral-300',
               icon: Clock,
               note: 'Status updates will appear here as the Zylod team reviews this request.',
             }
@@ -268,32 +268,32 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
             return (
               <div key={ret.id} className="space-y-4">
                 {/* Status card — real backend status */}
-                <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xs font-black text-slate-900 dark:text-slate-100">Return {ret.returnNumber}</h2>
+                    <h2 className="text-xs font-black text-slate-900 dark:text-neutral-100">Return {ret.returnNumber}</h2>
                     <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${meta.className}`}>
                       {meta.label}
                     </span>
                   </div>
 
-                  <div className="p-3 bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+                  <div className="p-3 bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 rounded-2xl flex items-start gap-2.5 text-xs text-slate-700 dark:text-neutral-300">
                     <MetaIcon className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <span className="text-[11px]">{meta.note}</span>
                   </div>
 
                   {ret.resolutionNote && (
-                    <div className="p-3 bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl">
-                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-1">Review note</p>
-                      <p className="text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed">{ret.resolutionNote}</p>
+                    <div className="p-3 bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 rounded-2xl">
+                      <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mb-1">Review note</p>
+                      <p className="text-[11px] text-slate-700 dark:text-neutral-300 leading-relaxed">{ret.resolutionNote}</p>
                     </div>
                   )}
 
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                    <span className="text-slate-500 dark:text-neutral-400 dark:text-neutral-500 flex items-center gap-1.5">
                       <Truck className="h-3.5 w-3.5" />
                       {ret.shippingMethod === 'dropoff' ? 'Drop-off' : 'Pickup'} (preferred)
                     </span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                    <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                       Submitted {new Date(ret.createdAt).toLocaleDateString()}
                     </span>
                   </div>
@@ -302,23 +302,23 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                 {/* Refund issued — real ledger rows only, hidden honestly when none exist */}
                 {ret.refunds.length > 0 && (
                   <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-emerald-200 shadow-2xs space-y-3">
-                    <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                    <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100 flex items-center gap-1.5">
                       <Banknote className="h-3.5 w-3.5 text-emerald-600" /> Refund issued
                     </h2>
                     {ret.refunds.map((f) => (
                       <div key={f.id} className="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-100 space-y-1">
                         <div className="flex justify-between items-baseline gap-2">
                           <span className="text-base font-black text-emerald-700 tabular-nums">{formatPrice(f.amount)}</span>
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">{new Date(f.processedAt).toLocaleString()}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 tabular-nums">{new Date(f.processedAt).toLocaleString()}</span>
                         </div>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
-                          <span className="font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500">Method: </span>{refundMethodLabel(f.method)}
+                        <p className="text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
+                          <span className="font-semibold text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Method: </span>{refundMethodLabel(f.method)}
                         </p>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 break-all">
-                          <span className="font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500">Reference: </span>
+                        <p className="text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500 break-all">
+                          <span className="font-semibold text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Reference: </span>
                           <span className="font-mono">{f.reference}</span>
                         </p>
-                        {f.note && <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">{f.note}</p>}
+                        {f.note && <p className="text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 break-words">{f.note}</p>}
                       </div>
                     ))}
                   </div>
@@ -327,7 +327,7 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                 {/* Goods received — the physical loop closing, real receipts only (Task 60-a) */}
                 {ret.receipts.length > 0 && (
                   <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-emerald-200 shadow-2xs space-y-3">
-                    <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                    <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100 flex items-center gap-1.5">
                       <PackageCheck className="h-3.5 w-3.5 text-emerald-600" /> Goods received by seller
                     </h2>
                     {ret.receipts.map((rc, idx) => (
@@ -335,13 +335,13 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                         <p className="text-[11px] font-bold text-emerald-800">
                           {rc.itemsRestored} item line(s) received back · {formatPrice(rc.restoredValue)} stock restored
                         </p>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                        <p className="text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                           Confirmed {new Date(rc.receivedAt).toLocaleString()}{rc.note ? ` — ${rc.note}` : ''}
                         </p>
                       </div>
                     ))}
                     {ret.supplierCount > ret.receipts.length && (
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                      <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                         Waiting on {ret.supplierCount - ret.receipts.length} more seller(s) to confirm their items arrived.
                       </p>
                     )}
@@ -349,30 +349,30 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                 )}
 
                 {/* Items in Return — real submitted items */}
-                <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-                  <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Items in Return</h2>
+                <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+                  <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Items in Return</h2>
 
                   <div className="space-y-3 pt-1">
                     {ret.items.map((item) => (
-                      <div key={item.id} className="p-3 bg-slate-50 dark:bg-background/70 rounded-2xl border border-slate-100 dark:border-slate-800">
+                      <div key={item.id} className="p-3 bg-slate-50 dark:bg-background/70 rounded-2xl border border-slate-100 dark:border-neutral-800">
                         <div className="flex justify-between items-start gap-2">
-                          <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 break-all">
+                          <span className="text-[11px] font-bold text-slate-700 dark:text-neutral-300 break-all">
                             Item #{item.orderItemId.slice(-8).toUpperCase()}
                           </span>
-                          <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 dark:text-slate-500 shrink-0">Qty: {item.quantity}</span>
+                          <span className="text-[10px] font-black text-slate-500 dark:text-neutral-400 dark:text-neutral-500 shrink-0">Qty: {item.quantity}</span>
                         </div>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 mt-1">
-                          <span className="font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500">Reason: </span>{item.reason}
+                        <p className="text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500 mt-1">
+                          <span className="font-semibold text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Reason: </span>{item.reason}
                         </p>
                         {item.comments && (
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">{item.comments}</p>
+                          <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">{item.comments}</p>
                         )}
                       </div>
                     ))}
 
-                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-baseline">
-                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Estimated refund</span>
-                      <span className="text-base font-black text-slate-900 dark:text-slate-100">{formatPrice(ret.estimatedRefund)}</span>
+                    <div className="pt-3 border-t border-slate-100 dark:border-neutral-800 flex justify-between items-baseline">
+                      <span className="text-xs font-bold text-slate-800 dark:text-neutral-200">Estimated refund</span>
+                      <span className="text-base font-black text-slate-900 dark:text-neutral-100">{formatPrice(ret.estimatedRefund)}</span>
                     </div>
                     {ret.refunds.length > 0 && (
                       <div className="flex justify-between items-baseline">
@@ -382,14 +382,14 @@ export function ReturnDetailPage({ pageParams: _pageParams }: { pageParams?: Rec
                         </span>
                       </div>
                     )}
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
+                    <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 leading-relaxed">
                       Estimate based on the returned quantities. The final refunded amount is decided
                       when the return is reviewed and approved.
                     </p>
                   </div>
                 </div>
                 {/* Evidence photos — buyer-provided review evidence (upload/delete only while pending) */}
-                <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs">
                   <EvidenceManager
                     ownerType="return"
                     ownerId={ret.id}

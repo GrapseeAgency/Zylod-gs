@@ -115,12 +115,12 @@ export function AccountVerificationCard() {
     verified: boolean
   }) => (
     <div className="flex items-center gap-3 py-2.5">
-      <span className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0">
-        <Icon className="h-4 w-4 text-slate-600 dark:text-slate-300" />
+      <span className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-neutral-800 flex items-center justify-center shrink-0">
+        <Icon className="h-4 w-4 text-slate-600 dark:text-neutral-300" />
       </span>
       <span className="flex-1 min-w-0">
-        <span className="block text-xs font-bold text-slate-900 dark:text-slate-100">{label}</span>
-        <span className="block text-[11px] text-slate-500 dark:text-slate-400 truncate">{value || 'Not set'}</span>
+        <span className="block text-xs font-bold text-slate-900 dark:text-neutral-100">{label}</span>
+        <span className="block text-[11px] text-slate-500 dark:text-neutral-400 truncate">{value || 'Not set'}</span>
       </span>
       {verified ? (
         <span className="flex items-center gap-1 text-[10px] font-black text-emerald-600 uppercase bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-full px-2 py-1">
@@ -156,23 +156,23 @@ export function AccountVerificationCard() {
           <ShieldAlert className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
         )}
         <div className="flex-1 min-w-0">
-          <h2 className="text-xs font-black text-slate-900 dark:text-slate-100">
+          <h2 className="text-xs font-black text-slate-900 dark:text-neutral-100">
             {allVerified ? 'Account verified' : 'Verify your account'}
           </h2>
-          <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed mt-0.5">
+          <p className="text-[11px] text-slate-600 dark:text-neutral-400 leading-relaxed mt-0.5">
             {allVerified
               ? 'Cash on Delivery is unlocked for this account.'
               : 'Cash on Delivery stays locked until your email or phone is verified. Wallet, bank transfer and mobile banking are unaffected.'}
           </p>
 
-          <div className="divide-y divide-slate-200/70 dark:divide-slate-800 mt-1">
+          <div className="divide-y divide-slate-200/70 dark:divide-neutral-800 mt-1">
             <Row kind="email" icon={Mail} label="Email" value={email} verified={emailVerified} />
             <Row kind="phone" icon={Phone} label="Phone" value={phone} verified={phoneVerified} />
           </div>
 
           {pending && (
-            <div className="mt-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-card p-3 space-y-2">
-              <label htmlFor="verification-code" className="block text-[11px] font-bold text-slate-700 dark:text-slate-200">
+            <div className="mt-3 rounded-xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-card p-3 space-y-2">
+              <label htmlFor="verification-code" className="block text-[11px] font-bold text-slate-700 dark:text-neutral-200">
                 Enter the 6-digit code sent to {pending === 'email' ? email : phone}
               </label>
               <div className="flex gap-2">
@@ -183,7 +183,7 @@ export function AccountVerificationCard() {
                   inputMode="numeric"
                   autoComplete="one-time-code"
                   placeholder="······"
-                  className="flex-1 h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-background px-3 text-sm font-black tracking-[0.3em] text-center outline-none focus:border-primary"
+                  className="flex-1 h-10 rounded-xl border border-slate-200 dark:border-neutral-800 bg-background px-3 text-sm font-black tracking-[0.3em] text-center outline-none focus:border-primary"
                 />
                 <Button
                   onClick={confirmCode}
@@ -194,7 +194,7 @@ export function AccountVerificationCard() {
                 </Button>
               </div>
               {devCode && (
-                <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                <p className="text-[10px] text-slate-500 dark:text-neutral-400">
                   Development hint — your code is <span className="font-black tracking-widest">{devCode}</span>
                 </p>
               )}

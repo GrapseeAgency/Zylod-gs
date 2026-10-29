@@ -223,7 +223,7 @@ export function SellerLiveConsolePage() {
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
         <div className="hidden md:flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Go Live console</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-neutral-100 dark:text-white">Go Live console</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
               Schedule factory-floor broadcasts, feature your own products, and control when the room is actually live.
             </p>

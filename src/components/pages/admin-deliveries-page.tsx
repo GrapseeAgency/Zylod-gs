@@ -43,7 +43,7 @@ const bdtTime = (iso: string) =>
 
 function assignmentChip(status: string) {
   if (status === 'active') return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Active</Badge>;
-  if (status === 'cancelled') return <Badge className="bg-slate-200 text-slate-700 dark:text-slate-300 hover:bg-slate-200">Superseded</Badge>;
+  if (status === 'cancelled') return <Badge className="bg-slate-200 text-slate-700 dark:text-neutral-300 hover:bg-slate-200">Superseded</Badge>;
   if (status === 'completed') return <Badge className="bg-sky-100 text-sky-800 hover:bg-sky-100">Completed</Badge>;
   return <Badge variant="outline">{status}</Badge>;
 }
@@ -181,7 +181,7 @@ export function AdminDeliveriesPage() {
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
         <div className="hidden md:flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Delivery ops</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-neutral-100 dark:text-white">Delivery ops</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
               Drivers + assignments — the gate that makes live GPS tracking possible.
             </p>

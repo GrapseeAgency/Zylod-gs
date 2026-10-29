@@ -64,7 +64,7 @@ export function WholesaleTermsPage() {
           {doc && <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">v{doc.version} · Effective {new Date(doc.effectiveDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
         </div>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Wholesale Terms</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Wholesale Terms</h1>
 
       <div className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-5 pb-24">
         {loadError && (

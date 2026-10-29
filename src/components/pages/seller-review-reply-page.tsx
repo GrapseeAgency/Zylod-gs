@@ -83,7 +83,7 @@ export function SellerReviewReplyPage({ id }: { id?: string }) {
         <button onClick={goBack} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-2xl leading-none active:scale-95 transition-transform" aria-label="Go back">←</button>
         <h1 className="text-xl font-bold">Reply to Review</h1>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Reply to Review</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Reply to Review</h1>
       <textarea className="w-full h-40 border rounded p-3 mb-2" placeholder="Write a polite response to the customer..." value={reply} onChange={(e) => setReply(e.target.value)}></textarea>
       {error && (
         <p className="flex items-start gap-1.5 text-xs text-red-600 mb-2">

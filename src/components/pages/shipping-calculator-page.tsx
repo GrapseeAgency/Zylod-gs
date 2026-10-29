@@ -103,10 +103,10 @@ export function ShippingCalculatorPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-neutral-100">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -116,34 +116,34 @@ export function ShippingCalculatorPage() {
       <main className="px-4 py-4 space-y-4 max-w-lg mx-auto">
         {/* Title */}
         <div>
-          <h1 className="text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Freight Calculator</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+          <h1 className="text-xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">Freight Calculator</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
             Live quotes from the operators&apos; zone book — the same rates checkout charges.
           </p>
         </div>
 
         {/* Shipment Details Form Card */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Shipment Details</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Shipment Details</h2>
 
           {/* Destination */}
           <div className="space-y-1.5">
-            <label htmlFor="calc-district" className="text-xs font-bold text-slate-700 dark:text-slate-300 block">Destination District</label>
+            <label htmlFor="calc-district" className="text-xs font-bold text-slate-700 dark:text-neutral-300 block">Destination District</label>
             <div className="relative">
-              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
               <Input
                 id="calc-district"
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 placeholder="e.g. Dhaka, Chittagong, Khulna"
-                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-semibold"
               />
             </div>
           </div>
 
           {/* Weight */}
           <div className="space-y-1.5">
-            <label htmlFor="calc-weight" className="text-xs font-bold text-slate-700 dark:text-slate-300 block">Chargeable Weight</label>
+            <label htmlFor="calc-weight" className="text-xs font-bold text-slate-700 dark:text-neutral-300 block">Chargeable Weight</label>
             <div className="flex gap-2">
               <Input
                 id="calc-weight"
@@ -153,9 +153,9 @@ export function ShippingCalculatorPage() {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="0.00"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-bold font-mono"
               />
-              <div className="h-11 px-4 rounded-2xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+              <div className="h-11 px-4 rounded-2xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-neutral-800 text-xs font-bold text-slate-700 dark:text-neutral-300 flex items-center justify-center shrink-0">
                 KG
               </div>
             </div>
@@ -163,7 +163,7 @@ export function ShippingCalculatorPage() {
 
           {/* Dimensions — real volumetric helper */}
           <div className="space-y-1.5">
-            <label htmlFor="calc-dim-l" className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+            <label htmlFor="calc-dim-l" className="text-xs font-bold text-slate-700 dark:text-neutral-300 block">
               Volumetric helper (L × W × H cm ÷ 5000)
             </label>
             <div className="flex items-center gap-2">
@@ -174,9 +174,9 @@ export function ShippingCalculatorPage() {
                 value={dims.l}
                 onChange={(e) => setDims((d) => ({ ...d, l: e.target.value }))}
                 placeholder="L"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs text-center font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs text-center font-bold"
               />
-              <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold">×</span>
+              <span className="text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-bold">×</span>
               <Input
                 aria-label="Width in cm"
                 type="number"
@@ -184,9 +184,9 @@ export function ShippingCalculatorPage() {
                 value={dims.w}
                 onChange={(e) => setDims((d) => ({ ...d, w: e.target.value }))}
                 placeholder="W"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs text-center font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs text-center font-bold"
               />
-              <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold">×</span>
+              <span className="text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-bold">×</span>
               <Input
                 aria-label="Height in cm"
                 type="number"
@@ -194,13 +194,13 @@ export function ShippingCalculatorPage() {
                 value={dims.h}
                 onChange={(e) => setDims((d) => ({ ...d, h: e.target.value }))}
                 placeholder="H"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs text-center font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs text-center font-bold"
               />
               <Button
                 type="button"
                 variant="outline"
                 onClick={applyVolumetric}
-                className="h-11 px-3 rounded-2xl border-slate-200 dark:border-slate-800 text-[11px] font-bold shrink-0"
+                className="h-11 px-3 rounded-2xl border-slate-200 dark:border-neutral-800 text-[11px] font-bold shrink-0"
               >
                 Apply
               </Button>
@@ -209,11 +209,11 @@ export function ShippingCalculatorPage() {
 
           {/* Subtotal (for freeAbove crossings) */}
           <div className="space-y-1.5">
-            <label htmlFor="calc-subtotal" className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-              Order subtotal <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">(optional — unlocks free-above thresholds)</span>
+            <label htmlFor="calc-subtotal" className="text-xs font-bold text-slate-700 dark:text-neutral-300 block">
+              Order subtotal <span className="text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-normal">(optional — unlocks free-above thresholds)</span>
             </label>
             <div className="relative">
-              <Warehouse className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+              <Warehouse className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
               <Input
                 id="calc-subtotal"
                 type="number"
@@ -222,7 +222,7 @@ export function ShippingCalculatorPage() {
                 value={subtotal}
                 onChange={(e) => setSubtotal(e.target.value)}
                 placeholder="e.g. 50000"
-                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-bold font-mono"
+                className="h-11 pl-10 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-bold font-mono"
               />
             </div>
           </div>
@@ -242,15 +242,15 @@ export function ShippingCalculatorPage() {
 
         {/* Result — the zone book's real answer */}
         {loading && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center">
             <PageLoader label="Asking the live zone book…" className="min-h-0" />
           </div>
         )}
 
         {!loading && error && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 text-center">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 text-center">
             <AlertCircle className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{error}</p>
+            <p className="text-sm font-semibold text-slate-700 dark:text-neutral-300">{error}</p>
             <Button variant="outline" size="sm" onClick={quote} className="mt-3">
               <RefreshCw className="h-4 w-4 mr-1" /> Retry
             </Button>
@@ -258,10 +258,10 @@ export function ShippingCalculatorPage() {
         )}
 
         {!loading && !error && loaded && options.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 text-center space-y-1">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 text-center space-y-1">
             <Truck className="h-8 w-8 text-slate-300 mx-auto" />
-            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">No shipping option covers that yet</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+            <p className="text-sm font-bold text-slate-800 dark:text-neutral-200">No shipping option covers that yet</p>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">
               No active zone in the operators&apos; book reaches &ldquo;{district}&rdquo; at this weight.
               Try a nearby district — or contact support to request the lane.
             </p>
@@ -275,18 +275,18 @@ export function ShippingCalculatorPage() {
             className="space-y-3"
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Live options</h2>
-              <span className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">{options.length} option{options.length !== 1 ? 's' : ''} · {district}</span>
+              <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Live options</h2>
+              <span className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-medium">{options.length} option{options.length !== 1 ? 's' : ''} · {district}</span>
             </div>
             {options.map((opt, idx) => (
               <div
                 key={opt.rateId}
-                className={`bg-white dark:bg-gray-900 rounded-3xl p-4 border shadow-2xs space-y-2 ${idx === 0 ? 'border-l-4 border-l-primary border-slate-200 dark:border-slate-800' : 'border-slate-200 dark:border-slate-800'}`}
+                className={`bg-white dark:bg-gray-900 rounded-3xl p-4 border shadow-2xs space-y-2 ${idx === 0 ? 'border-l-4 border-l-primary border-slate-200 dark:border-neutral-800' : 'border-slate-200 dark:border-neutral-800'}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-xs font-black text-slate-900 dark:text-slate-100 truncate">{opt.methodName}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide">{opt.zoneName}</p>
+                    <p className="text-xs font-black text-slate-900 dark:text-neutral-100 truncate">{opt.methodName}</p>
+                    <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-wide">{opt.zoneName}</p>
                   </div>
                   <div className="text-right shrink-0">
                     <p className={`text-lg font-black ${opt.freeShipping ? 'text-emerald-600' : 'text-primary'}`}>
@@ -300,15 +300,15 @@ export function ShippingCalculatorPage() {
                   </div>
                 </div>
                 {opt.methodDescription && (
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">{opt.methodDescription}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">{opt.methodDescription}</p>
                 )}
-                <div className="flex items-center justify-between pt-1.5 border-t border-slate-50 text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500">
-                  <span>Estimated transit: <strong className="text-slate-900 dark:text-slate-100">{opt.estimatedDays ?? 'Not stated by the operator'}</strong></span>
+                <div className="flex items-center justify-between pt-1.5 border-t border-slate-50 text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
+                  <span>Estimated transit: <strong className="text-slate-900 dark:text-neutral-100">{opt.estimatedDays ?? 'Not stated by the operator'}</strong></span>
                   {idx === 0 && <span className="text-primary font-black uppercase tracking-wide text-[10px]">Cheapest</span>}
                 </div>
               </div>
             ))}
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed px-1">
+            <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 leading-relaxed px-1">
               These are the operators&apos; configured rates for this lane — the same book checkout charges against.
               Freight is booked by placing an order; there is no separate freight booking on this platform.
             </p>

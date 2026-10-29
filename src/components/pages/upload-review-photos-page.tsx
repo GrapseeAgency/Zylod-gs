@@ -113,28 +113,28 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
   }
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-[calc(var(--bottom-nav-h)+140px)] text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3.5 shadow-xs">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3.5 shadow-xs">
         <div className="relative flex items-center justify-center">
           <button
             onClick={goBack}
-            className="absolute left-0 p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100"
+            className="absolute left-0 p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100"
           >
             <X className="h-5 w-5" />
           </button>
           <h1 className="text-sm font-bold text-primary">Upload Media</h1>
         </div>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Upload Media</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Upload Media</h1>
 
       <main className="px-4 py-4 max-w-lg mx-auto space-y-5">
         {/* Title & Intro */}
         <div>
-          <h2 className="text-lg font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <h2 className="text-lg font-black text-slate-900 dark:text-neutral-100 tracking-tight">
             Add Photos or Videos
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 leading-relaxed">
             Help other buyers make informed decisions. Upload high-quality images of the product you received.
           </p>
         </div>
@@ -155,10 +155,10 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
           <div className="w-12 h-12 rounded-full bg-rose-50 text-primary flex items-center justify-center mb-3">
             <UploadCloud className="h-6 w-6" />
           </div>
-          <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+          <h3 className="text-xs font-bold text-slate-800 dark:text-neutral-200 mb-1">
             Click or drag files here to upload
           </h3>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-4">
+          <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mb-4">
             Supports JPG, PNG, and MP4 (Max 50MB)
           </p>
           <Button
@@ -177,13 +177,13 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
             </div>
           )}
           {mediaList.length === 0 && !uploadError && (
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 text-center py-6">
+            <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 text-center py-6">
               No media selected. Upload real photos or videos of the product you received — nothing is
               pre-filled or faked.
             </p>
           )}
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">
               Selected Media ({mediaList.length})
             </h3>
             {mediaList.length > 0 && (
@@ -201,7 +201,7 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
             {mediaList.map((item) => (
               <div
                 key={item.id}
-                className="relative aspect-square rounded-2xl overflow-hidden bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 shadow-2xs group"
+                className="relative aspect-square rounded-2xl overflow-hidden bg-slate-100 dark:bg-card border border-slate-200 dark:border-neutral-800 shadow-2xs group"
               >
                 {/* Media Image / Thumbnail */}
                 <img
@@ -266,13 +266,13 @@ export function UploadReviewPhotosPage({ pageParams: _pageParams }: { pageParams
       </main>
 
       {/* Bottom Sticky Action Bar */}
-      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-slate-800 p-4 shadow-lg z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
+      <div className="fixed bottom-[var(--bottom-nav-h)] left-0 right-0 bg-white dark:bg-gray-900 border-t border-slate-100 dark:border-neutral-800 p-4 shadow-lg z-30 md:static md:bottom-auto md:border-0 md:bg-transparent md:p-0 md:shadow-none">
         <div className="max-w-lg mx-auto grid grid-cols-2 gap-3">
           <Button
             type="button"
             variant="outline"
             onClick={goBack}
-            className="h-12 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
+            className="h-12 rounded-2xl text-xs font-bold text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
           >
             Cancel
           </Button>

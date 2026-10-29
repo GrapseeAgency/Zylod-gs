@@ -44,7 +44,7 @@ export function SellerVerificationGuidePage() {
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Supplier Verification Guide</span>
         </div>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Supplier Verification Guide</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Supplier Verification Guide</h1>
 
       <div className="flex-1 px-4 py-6 space-y-6 max-w-3xl mx-auto w-full pb-24">
         {/* Banner */}

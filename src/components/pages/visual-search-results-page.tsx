@@ -61,7 +61,7 @@ export function VisualSearchResultsPage() {
           </div>
         )}
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Visual Search Results</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Visual Search Results</h1>
 
       <div className="flex-1 overflow-y-auto pb-20">
         {loading ? (

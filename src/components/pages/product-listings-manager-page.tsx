@@ -52,7 +52,7 @@ const TABS: Array<{ id: ListingTab; label: string }> = [
 function ModerationChip({ product }: { product: ApiProduct }) {
   if (!product.isActive) {
     return (
-      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-slate-50 dark:bg-background text-slate-600 dark:text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-800">
+      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-slate-50 dark:bg-background text-slate-600 dark:text-neutral-400 dark:text-neutral-500 border border-slate-200 dark:border-neutral-800">
         Hidden
       </span>
     );

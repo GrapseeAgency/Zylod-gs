@@ -109,27 +109,27 @@ export function ThemeSettingsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-10">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-10">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Theme &amp; Appearance</span>
         <div className="w-8" />
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Theme Appearance</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Theme Appearance</h1>
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-2xl md:px-6 md:py-6">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-neutral-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
               <Sun className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base font-black">Display &amp; Appearance</h1>
-              <p className="text-xs text-slate-600 dark:text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-neutral-300">
                 Your choice is saved to your account the moment you tap it.
               </p>
             </div>
@@ -137,10 +137,10 @@ export function ThemeSettingsPage() {
         </div>
 
         {needsAuth ? (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-amber-500 mx-auto" />
             <h2 className="text-sm font-black">Sign in to manage your saved theme</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Theme preferences are stored on your account.</p>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Theme preferences are stored on your account.</p>
             <Button onClick={() => navigate('login')} className="h-11 px-6 rounded-xl text-xs font-bold">Sign In</Button>
           </div>
         ) : (
@@ -154,11 +154,11 @@ export function ThemeSettingsPage() {
             )}
 
             {/* Theme Mode Selector */}
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Color Theme</h2>
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Color Theme</h2>
                 {!loading && (
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                     {configured ? 'Customized for your account' : 'Platform default — not customized yet'}
                   </span>
                 )}
@@ -178,11 +178,11 @@ export function ThemeSettingsPage() {
                         className={`p-3.5 rounded-2xl border text-left space-y-1.5 transition-all disabled:opacity-70 ${
                           isSelected
                             ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
+                            : 'border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <Icon className={`h-4 w-4 ${isSelected ? 'text-primary' : 'text-slate-500 dark:text-slate-400'}`} />
+                          <Icon className={`h-4 w-4 ${isSelected ? 'text-primary' : 'text-slate-500 dark:text-neutral-400'}`} />
                           {isSaving ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
                           ) : (
@@ -190,8 +190,8 @@ export function ThemeSettingsPage() {
                           )}
                         </div>
                         <div>
-                          <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>{label}</span>
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">{desc}</span>
+                          <span className={`text-xs font-bold block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-neutral-100'}`}>{label}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">{desc}</span>
                         </div>
                       </button>
                     )
@@ -208,8 +208,8 @@ export function ThemeSettingsPage() {
             </div>
 
             {/* Accessibility & Density — honestly not implemented (no backend storage) */}
-            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
-              <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-2xs overflow-hidden">
+              <div className="px-5 py-3.5 bg-slate-50 dark:bg-background border-b border-slate-100 dark:border-neutral-800 flex items-center gap-2">
                 <Sliders className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary">Catalog Ergonomics &amp; Motion</span>
               </div>
@@ -221,8 +221,8 @@ export function ThemeSettingsPage() {
                       <Eye className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">High Contrast Mode</h3>
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Not implemented yet — requires backend support</p>
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">High Contrast Mode</h3>
+                      <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Not implemented yet — requires backend support</p>
                     </div>
                   </div>
                   <Switch checked={false} disabled aria-label="High Contrast Mode (not implemented)" />
@@ -234,8 +234,8 @@ export function ThemeSettingsPage() {
                       <Layers className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Compact Density Grid</h3>
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Not implemented yet — requires backend support</p>
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Compact Density Grid</h3>
+                      <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Not implemented yet — requires backend support</p>
                     </div>
                   </div>
                   <Switch checked={false} disabled aria-label="Compact Density Grid (not implemented)" />
@@ -247,8 +247,8 @@ export function ThemeSettingsPage() {
                       <Activity className="h-4 w-4" />
                     </div>
                     <div>
-                      <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">Reduce Motion</h3>
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Not implemented yet — requires backend support</p>
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Reduce Motion</h3>
+                      <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Not implemented yet — requires backend support</p>
                     </div>
                   </div>
                   <Switch checked={false} disabled aria-label="Reduce Motion (not implemented)" />

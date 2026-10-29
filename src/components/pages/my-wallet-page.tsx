@@ -31,7 +31,7 @@ const claimChip: Record<string, string> = {
   credited: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   rejected: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
   failed: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
-  cancelled: 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-card dark:text-slate-400 dark:border-slate-800',
+  cancelled: 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-card dark:text-neutral-400 dark:border-neutral-800',
 }
 
 export function MyWalletPage() {
@@ -125,9 +125,9 @@ export function MyWalletPage() {
   // Same wall pattern as the cart page. ───
   if (!isAuthed || sessionInvalid) {
     return (
-      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-base font-black tracking-tight text-primary">Wholesale Wallet</span>
@@ -135,10 +135,10 @@ export function MyWalletPage() {
         </header>
         <main className="max-w-lg mx-auto px-4 py-16 md:py-24 text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
-            <LogIn className="h-9 w-9 text-slate-400 dark:text-slate-500" />
+            <LogIn className="h-9 w-9 text-slate-400 dark:text-neutral-500" />
           </div>
           <h2 className="text-base font-black">{sessionInvalid ? 'Your session expired' : 'Sign in to open your wallet'}</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6 max-w-xs mx-auto">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1 mb-6 max-w-xs mx-auto">
             Your wallet balance, funding claims and payouts live in your Zylod account — sign in or create one to continue.
           </p>
           <div className="flex flex-col gap-2 max-w-xs mx-auto">
@@ -162,16 +162,16 @@ export function MyWalletPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Wholesale Wallet</span>
         <button
           onClick={() => navigate('transaction-history')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-neutral-300 hover:bg-slate-200"
           title="History"
         >
           <Clock className="h-4 w-4" />
@@ -180,17 +180,17 @@ export function MyWalletPage() {
 
       <main className="max-w-lg mx-auto lg:max-w-5xl px-4 py-5 md:px-6 md:py-6 space-y-4 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:items-start">
         {/* Main Wallet Card */}
-        <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-slate-950 dark:via-slate-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white shadow-2xl space-y-5 relative overflow-hidden lg:col-span-3">
+        <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-neutral-950 dark:via-neutral-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white shadow-2xl space-y-5 relative overflow-hidden lg:col-span-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-black/5 dark:bg-gray-900/10 flex items-center justify-center border border-black/10 dark:border-white/10">
                 <Wallet className="h-4 w-4 text-rose-600 dark:text-rose-300" />
               </div>
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Zylod Enterprise Balance</span>
+              <span className="text-xs font-bold text-slate-600 dark:text-neutral-300">Zylod Enterprise Balance</span>
             </div>
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="flex h-9 w-9 items-center justify-center rounded-md text-slate-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-md text-slate-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               aria-label={showBalance ? 'Hide balance' : 'Show balance'}
             >
               {showBalance ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
@@ -198,7 +198,7 @@ export function MyWalletPage() {
           </div>
 
           <div>
-            <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">Available Payout &amp; Sourcing Fund</span>
+            <span className="text-xs text-slate-500 dark:text-neutral-400 block font-medium">Available Payout &amp; Sourcing Fund</span>
             <div className="text-3xl md:text-4xl font-black tracking-tight mt-1">
               {showBalance ? formatPrice(walletData.balance) : '••••••••'}
             </div>
@@ -206,20 +206,20 @@ export function MyWalletPage() {
 
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-black/10 dark:border-white/10">
             <div className="bg-black/5 dark:bg-gray-900/5 rounded-2xl p-3 border border-black/5 dark:border-white/5">
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">Total Outflow</span>
+              <span className="text-[10px] text-slate-500 dark:text-neutral-400 block uppercase font-bold tracking-wider">Total Outflow</span>
               <span className="text-sm font-bold text-amber-600 dark:text-amber-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.totalWithdrawals) : '••••••'}
               </span>
             </div>
             <div className="bg-black/5 dark:bg-gray-900/5 rounded-2xl p-3 border border-black/5 dark:border-white/5">
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">Total Inflow</span>
+              <span className="text-[10px] text-slate-500 dark:text-neutral-400 block uppercase font-bold tracking-wider">Total Inflow</span>
               <span className="text-sm font-bold text-emerald-600 dark:text-emerald-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.totalDeposits) : '••••••'}
               </span>
             </div>
             {/* Task 71: the SafePay escrow ledger is REAL now — show it. */}
             <div className="bg-black/5 dark:bg-gray-900/5 rounded-2xl p-3 border border-black/5 dark:border-white/5">
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">In Escrow</span>
+              <span className="text-[10px] text-slate-500 dark:text-neutral-400 block uppercase font-bold tracking-wider">In Escrow</span>
               <span className="text-sm font-bold text-sky-600 dark:text-sky-300 block mt-0.5">
                 {showBalance ? formatPrice(walletData.escrowBalance ?? 0) : '••••••'}
               </span>
@@ -231,9 +231,9 @@ export function MyWalletPage() {
         <div className="grid grid-cols-4 gap-2 lg:grid-cols-2">
           {[
             { label: 'Add Money', icon: Plus, page: 'add-money', bg: 'bg-rose-50 border-rose-200 text-primary' },
-            { label: 'Withdraw', icon: ArrowUpRight, page: 'withdraw-money', bg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200' },
-            { label: 'Statements', icon: Receipt, page: 'transaction-history', bg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200' },
-            { label: 'Overview', icon: TrendingUp, page: 'balance-overview', bg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200' },
+            { label: 'Withdraw', icon: ArrowUpRight, page: 'withdraw-money', bg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200' },
+            { label: 'Statements', icon: Receipt, page: 'transaction-history', bg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200' },
+            { label: 'Overview', icon: TrendingUp, page: 'balance-overview', bg: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200' },
           ].map(({ label, icon: Icon, page, bg }) => (
             <button
               key={label}
@@ -247,7 +247,7 @@ export function MyWalletPage() {
         </div>
 
         {/* Quick Access Menu */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden divide-y divide-slate-100 dark:divide-slate-800">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-2xs overflow-hidden divide-y divide-slate-100 dark:divide-neutral-800">
           {[
             { title: 'Commercial Bank Accounts', subtitle: 'Manage verified corporate bank routing', icon: Landmark, page: 'bank-accounts' },
             { title: 'UPI & Mobile Banking Setup', subtitle: 'bKash, Nagad, Rocket merchant links', icon: CreditCard, page: 'upi-payment-setup' },
@@ -265,11 +265,11 @@ export function MyWalletPage() {
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{title}</h3>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">{subtitle}</p>
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">{title}</h3>
+                  <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">{subtitle}</p>
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
+              <ChevronRight className="h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 shrink-0" />
             </button>
           ))}
         </div>
@@ -277,9 +277,9 @@ export function MyWalletPage() {
         {/* Funding Claims (Task 118) — the real walletTopups ledger with
             honest statuses: a claim NEVER moved money on its own; only an
             admin verification credits the wallet. */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 lg:col-span-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3 lg:col-span-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
               Funding claims
             </h2>
             <div className="flex items-center gap-3">
@@ -293,12 +293,12 @@ export function MyWalletPage() {
             </div>
           </div>
           {claims.length > 0 ? (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-64 overflow-y-auto">
+            <div className="divide-y divide-slate-100 dark:divide-neutral-800 max-h-64 overflow-y-auto">
               {claims.slice(0, 8).map((c) => (
                 <div key={c.id} className="py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-slate-900 dark:text-slate-100">{formatPrice(c.amount)}</span>
+                      <span className="text-xs font-black text-slate-900 dark:text-neutral-100">{formatPrice(c.amount)}</span>
                       <span className={`text-[9px] font-black border rounded-lg px-1.5 py-0.5 uppercase tracking-wide ${claimChip[c.status] ?? claimChip.cancelled}`}>
                         {c.status === 'credited' ? <CheckCircle2 className="h-2.5 w-2.5 inline mr-0.5" /> :
                          c.status === 'pending' ? <Clock className="h-2.5 w-2.5 inline mr-0.5" /> :
@@ -306,20 +306,20 @@ export function MyWalletPage() {
                         {c.status}
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block font-mono truncate">
+                    <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block font-mono truncate">
                       {c.provider} · {c.reference} · {new Date(c.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                   {c.status === 'pending' ? (
                     <span className="text-[10px] text-amber-600 font-bold shrink-0">awaiting verification</span>
                   ) : (
-                    <ChevronRight className="h-4 w-4 text-slate-400 dark:text-slate-300 shrink-0" />
+                    <ChevronRight className="h-4 w-4 text-slate-400 dark:text-neutral-300 shrink-0" />
                   )}
                 </div>
               ))}
             </div>
           ) : (
-            <div className="py-4 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 text-xs space-y-2">
+            <div className="py-4 text-center text-slate-400 dark:text-neutral-500 dark:text-neutral-400 text-xs space-y-2">
               <p>No funding claims yet.</p>
               <button
                 onClick={() => navigate('add-money')}
@@ -332,9 +332,9 @@ export function MyWalletPage() {
         </div>
 
         {/* Recent Transactions */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
               Recent Activity
             </h2>
             <button
@@ -346,7 +346,7 @@ export function MyWalletPage() {
           </div>
 
           {walletData.recentTransactions.length > 0 ? (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-slate-100 dark:divide-neutral-800">
               {walletData.recentTransactions.map((tx) => (
                 <div
                   key={tx.id}
@@ -360,12 +360,12 @@ export function MyWalletPage() {
                       {tx.amount >= 0 ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
                     </div>
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block truncate">{tx.description}</span>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">{new Date(tx.date).toLocaleDateString()}</span>
+                      <span className="text-xs font-bold text-slate-900 dark:text-neutral-100 block truncate">{tx.description}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">{new Date(tx.date).toLocaleDateString()}</span>
                     </div>
                   </div>
                   <span className={`text-xs font-black font-mono shrink-0 ${
-                    tx.amount >= 0 ? 'text-emerald-600' : 'text-slate-900 dark:text-slate-100'
+                    tx.amount >= 0 ? 'text-emerald-600' : 'text-slate-900 dark:text-neutral-100'
                   }`}>
                     {tx.amount >= 0 ? '+' : ''}{formatPrice(Math.abs(tx.amount))}
                   </span>
@@ -373,7 +373,7 @@ export function MyWalletPage() {
               ))}
             </div>
           ) : (
-            <div className="py-6 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 text-xs">
+            <div className="py-6 text-center text-slate-400 dark:text-neutral-500 dark:text-neutral-400 text-xs">
               No transactions recorded yet.
             </div>
           )}

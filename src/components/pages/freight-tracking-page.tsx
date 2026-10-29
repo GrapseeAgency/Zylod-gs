@@ -50,7 +50,7 @@ interface OrderView {
 }
 
 const STATUS_TONE: Record<string, string> = {
-  pending: 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800',
+  pending: 'text-slate-500 dark:text-neutral-400 bg-slate-100 dark:bg-card border-slate-200 dark:border-neutral-800',
   confirmed: 'text-sky-700 bg-sky-50 border-sky-200',
   packed: 'text-sky-700 bg-sky-50 border-sky-200',
   shipped: 'text-amber-700 bg-amber-50 border-amber-200',
@@ -134,10 +134,10 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
 
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-neutral-100">
         <AlertCircle className="h-10 w-10 text-slate-300 mb-3" />
-        <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Open this from an order</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
+        <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100">Open this from an order</h1>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs leading-relaxed">
           Tracking is tied to a real order&apos;s shipment slices. Open one of your orders and follow it from there.
         </p>
         <Button onClick={() => navigate('my-orders')} className="mt-5 w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl">
@@ -149,10 +149,10 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
 
   if (needsAuth) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-neutral-100">
         <AlertCircle className="h-10 w-10 text-slate-300 mb-3" />
-        <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Sign in required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs">Tracking is visible to the order&apos;s buyer and its suppliers.</p>
+        <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100">Sign in required</h1>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs">Tracking is visible to the order&apos;s buyer and its suppliers.</p>
         <Button onClick={() => navigate('login')} className="mt-5 w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-bold text-xs h-11 rounded-2xl">
           Sign in
         </Button>
@@ -162,7 +162,7 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background flex items-center justify-center text-slate-900 dark:text-neutral-100">
         <PageLoader className="min-h-0" />
       </div>
     )
@@ -170,10 +170,10 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-neutral-100">
         <AlertCircle className="h-10 w-10 text-slate-300 mb-3" />
-        <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Order not found</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs">{error || 'This order does not exist or is not visible to your account.'}</p>
+        <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100">Order not found</h1>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs">{error || 'This order does not exist or is not visible to your account.'}</p>
         <Button variant="outline" onClick={() => navigate('my-orders')} className="mt-5 w-full max-w-xs font-bold text-xs h-11 rounded-2xl">
           Go to my orders
         </Button>
@@ -182,10 +182,10 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5 text-primary" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -195,15 +195,15 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
       <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:max-w-3xl md:px-6 md:py-8">
         {/* Real order header */}
         <div>
-          <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 font-mono tracking-tight">{order.orderNumber}</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 font-medium">
+          <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-neutral-100 font-mono tracking-tight">{order.orderNumber}</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5 font-medium">
             Placed {new Date(order.placedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} ·
             payment {order.paymentStatus.toUpperCase()}
           </p>
         </div>
 
         {order.subOrders.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 text-center text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
             This order has no shipment slices on record.
           </div>
         )}
@@ -213,15 +213,15 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
             key={slice.id}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4"
+            className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4"
           >
             {/* Slice header */}
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Shipment</p>
-                <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 truncate">{slice.supplierName ?? 'Supplier shipment'}</h2>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Shipment</p>
+                <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100 truncate">{slice.supplierName ?? 'Supplier shipment'}</h2>
                 {slice.shippingMethodName && (
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-semibold">{slice.shippingMethodName}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-semibold">{slice.shippingMethodName}</p>
                 )}
               </div>
               <span className={`shrink-0 text-[10px] font-black uppercase tracking-wide px-2.5 py-1 rounded-full border ${STATUS_TONE[slice.status] ?? STATUS_TONE.pending}`}>
@@ -231,33 +231,33 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
 
             {/* Real fields only */}
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-slate-50 dark:bg-background p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
-                <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Estimated delivery</span>
-                <span className="text-xs font-black text-slate-900 dark:text-slate-100">
+              <div className="bg-slate-50 dark:bg-background p-3 rounded-2xl border border-slate-100 dark:border-neutral-800">
+                <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">Estimated delivery</span>
+                <span className="text-xs font-black text-slate-900 dark:text-neutral-100">
                   {slice.estimatedDelivery
                     ? new Date(slice.estimatedDelivery).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                     : 'Not scheduled yet'}
                 </span>
               </div>
-              <div className="bg-slate-50 dark:bg-background p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
-                <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Freight (quoted live)</span>
-                <span className="text-xs font-black text-slate-900 dark:text-slate-100 font-mono">{formatPrice(slice.shippingCost)}</span>
+              <div className="bg-slate-50 dark:bg-background p-3 rounded-2xl border border-slate-100 dark:border-neutral-800">
+                <span className="text-[9px] font-bold uppercase text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">Freight (quoted live)</span>
+                <span className="text-xs font-black text-slate-900 dark:text-neutral-100 font-mono">{formatPrice(slice.shippingCost)}</span>
               </div>
             </div>
             {slice.trackingNumber && (
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-semibold">
-                Carrier reference: <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{slice.trackingNumber}</span>
+              <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-semibold">
+                Carrier reference: <span className="font-mono font-bold text-slate-800 dark:text-neutral-200">{slice.trackingNumber}</span>
               </p>
             )}
 
             {/* REAL tracking events — the same orderTracking rows the order page renders */}
             <div className="pt-1">
-              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 mb-2">
+              <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mb-2">
                 Tracking events ({slice.tracking.length})
               </p>
               {slice.tracking.length === 0 ? (
-                <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-start gap-2">
-                  <Clock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0 mt-0.5" />
+                <div className="p-3 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-neutral-800 text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 flex items-start gap-2">
+                  <Clock className="h-3.5 w-3.5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 shrink-0 mt-0.5" />
                   No tracking events yet — the supplier&apos;s first status transition will appear here the moment it happens.
                 </div>
               ) : (
@@ -266,18 +266,18 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
                     <li key={t.id} className="flex items-start gap-3">
                       <div className="flex flex-col items-center">
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${
-                          i === 0 ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-gray-900 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-800'
+                          i === 0 ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-gray-900 text-slate-400 dark:text-neutral-500 border-slate-200 dark:border-neutral-800'
                         }`}>
                           {i === 0 ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Boxes className="h-3 w-3" />}
                         </div>
                         {i < slice.tracking.length - 1 && <div className="w-px h-6 bg-slate-200 mt-1" />}
                       </div>
                       <div className="min-w-0 pb-1">
-                        <p className="text-xs font-bold text-slate-900 dark:text-slate-100 capitalize">{t.status}</p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                        <p className="text-xs font-bold text-slate-900 dark:text-neutral-100 capitalize">{t.status}</p>
+                        <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                           {t.location ? `${t.location} · ` : ''}{new Date(t.trackedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                         </p>
-                        {t.note && <p className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 mt-0.5">{t.note}</p>}
+                        {t.note && <p className="text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">{t.note}</p>}
                       </div>
                     </li>
                   ))}
@@ -290,11 +290,11 @@ export function FreightTrackingPage({ pageParams: _pageParams }: { pageParams?: 
         <Button
           variant="outline"
           onClick={() => navigate('order-detail', { orderId: order.id })}
-          className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+          className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-neutral-200 border-slate-200 dark:border-neutral-800 font-bold h-11 rounded-2xl text-xs"
         >
           <Package className="h-4 w-4 mr-2" /> Open the full order
         </Button>
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed px-1 flex items-start gap-1.5">
+        <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 leading-relaxed px-1 flex items-start gap-1.5">
           <MapPin className="h-3 w-3 shrink-0 mt-0.5" />
           Every event above is a real row the platform persisted — seller status transitions and driver milestones. There is no live map: the operators&apos; driver app reports milestones, not continuous coordinates.
         </p>

@@ -68,7 +68,7 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
       <Button
         variant="outline"
         onClick={openDialog}
-        className={`h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 ${className ?? ''}`}
+        className={`h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-neutral-700 text-slate-700 dark:text-neutral-300 ${className ?? ''}`}
         data-testid="size-guide-button"
       >
         <Ruler className="h-3.5 w-3.5" /> Size guide
@@ -86,7 +86,7 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
           </DialogHeader>
 
           {loading && (
-            <div className="flex items-center justify-center gap-2 py-8 text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">
+            <div className="flex items-center justify-center gap-2 py-8 text-xs font-bold text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
               <Loader2 className="h-4 w-4 animate-spin" /> Loading size guide…
             </div>
           )}
@@ -103,11 +103,11 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
                 <Info className="h-4 w-4 shrink-0 mt-0.5" /> No size guide exists for this product yet. Reference guides on the platform:
               </div>
               {(data.availableGuides ?? []).map((g) => (
-                <div key={g.key} className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 font-bold flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3 w-3 text-slate-400 dark:text-slate-500 shrink-0" /> {g.category}
+                <div key={g.key} className="text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500 font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3 w-3 text-slate-400 dark:text-neutral-500 shrink-0" /> {g.category}
                 </div>
               ))}
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-bold">
+              <p className="text-[11px] text-slate-400 dark:text-neutral-500 font-bold">
                 Ask the supplier for measurements via “Request Quote” before ordering quantities that depend on sizing.
               </p>
             </div>
@@ -122,11 +122,11 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
               )}
 
               {data.guide.sizes.length > 0 && (
-                <div className="border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden">
+                <div className="border border-slate-100 dark:border-neutral-800 rounded-2xl overflow-hidden">
                   <div className="max-h-64 overflow-auto">
                     <table className="w-full text-[11px]">
                       <thead className="bg-slate-50 dark:bg-background sticky top-0">
-                        <tr className="text-left text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                        <tr className="text-left text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500">
                           {[firstLabel, ...columns].map((c) => (
                             <th key={c} className="px-3 py-2 whitespace-nowrap capitalize">{c}</th>
                           ))}
@@ -134,17 +134,17 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
                       </thead>
                       <tbody>
                         {data.guide.sizes.map((row, i) => (
-                          <tr key={i} className="border-t border-slate-50 dark:border-slate-800">
-                            <td className="px-3 py-1.5 font-black text-slate-700 dark:text-slate-300">{String(row[firstKey] ?? '—')}</td>
+                          <tr key={i} className="border-t border-slate-50 dark:border-neutral-800">
+                            <td className="px-3 py-1.5 font-black text-slate-700 dark:text-neutral-300">{String(row[firstKey] ?? '—')}</td>
                             {columns.map((c) => (
-                              <td key={c} className="px-3 py-1.5 text-slate-600 dark:text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">{String(row[c])}</td>
+                              <td key={c} className="px-3 py-1.5 text-slate-600 dark:text-neutral-400 dark:text-neutral-500 font-bold whitespace-nowrap">{String(row[c])}</td>
                             ))}
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
-                  <p className="bg-slate-50 dark:bg-background border-t border-slate-100 dark:border-slate-800 px-3 py-1.5 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  <p className="bg-slate-50 dark:bg-background border-t border-slate-100 dark:border-neutral-800 px-3 py-1.5 text-[9px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-wider">
                     All measurements in {data.guide.unit}
                   </p>
                 </div>
@@ -152,19 +152,19 @@ export function SizeGuideButton({ productId, className }: { productId: string; c
 
               {data.guide.measurementGuide.length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">How to measure</p>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500">How to measure</p>
                   {data.guide.measurementGuide.map((m) => (
-                    <p key={m.step} className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 font-bold flex gap-1.5">
-                      <span className="text-slate-400 dark:text-slate-500 shrink-0">{m.step}.</span> {m.instruction}
+                    <p key={m.step} className="text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500 font-bold flex gap-1.5">
+                      <span className="text-slate-400 dark:text-neutral-500 shrink-0">{m.step}.</span> {m.instruction}
                     </p>
                   ))}
                 </div>
               )}
 
               {data.guide.tips.length > 0 && (
-                <div className="space-y-1 rounded-2xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 px-3 py-2">
+                <div className="space-y-1 rounded-2xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 px-3 py-2">
                   {data.guide.tips.map((tip, i) => (
-                    <p key={i} className="text-[11px] text-slate-600 dark:text-slate-400 dark:text-slate-500 font-bold flex items-start gap-1.5">
+                    <p key={i} className="text-[11px] text-slate-600 dark:text-neutral-400 dark:text-neutral-500 font-bold flex items-start gap-1.5">
                       <CheckCircle2 className="h-3 w-3 text-emerald-500 shrink-0 mt-0.5" /> {tip}
                     </p>
                   ))}

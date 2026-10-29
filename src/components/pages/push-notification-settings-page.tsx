@@ -171,7 +171,7 @@ export function PushNotificationSettingsPage() {
       title: 'Platform & Security Alerts',
       desc: 'Account security, policy updates, and payment verification status',
       icon: Shield,
-      iconBg: 'bg-slate-50 dark:bg-background text-slate-700 dark:text-slate-300',
+      iconBg: 'bg-slate-50 dark:bg-background text-slate-700 dark:text-neutral-300',
       pushKey: 'pushSystem' as keyof Preferences,
       emailKey: null,
     },
@@ -334,7 +334,7 @@ export function PushNotificationSettingsPage() {
                 onClick={() => navigate('notification-muted')}
                 className="bg-white dark:bg-gray-900 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm text-left hover:border-red-200 transition space-y-1"
               >
-                <VolumeX className="w-4 h-4 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
+                <VolumeX className="w-4 h-4 text-slate-600 dark:text-neutral-400 dark:text-neutral-500" />
                 <p className="text-xs font-bold text-gray-900 dark:text-gray-100">Muted Alerts</p>
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400">Pause alerts</p>
               </button>

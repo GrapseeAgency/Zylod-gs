@@ -101,7 +101,7 @@ export function StockAlertCreatePage() {
         </button>
         <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Back in Stock Notification</span>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Back in Stock Notification</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Back in Stock Notification</h1>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24">
         {success ? (

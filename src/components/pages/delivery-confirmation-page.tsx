@@ -139,12 +139,12 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
   // ─── No order selected — honest state ───
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-neutral-100">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
-          <Truck className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+          <Truck className="h-8 w-8 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
         </div>
-        <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
+        <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100">No order selected</h1>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs leading-relaxed">
           Open an order to see its real delivery status — this screen confirms the
           delivery of a specific order.
         </p>
@@ -166,7 +166,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
   // ─── Real error ───
   if (loadError || !order) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-neutral-100">
         <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3 max-w-sm w-full text-left" role="alert">
           <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
           <div className="flex-1 min-w-0">
@@ -182,7 +182,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
         <Button
           variant="outline"
           onClick={() => navigate('orders')}
-          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+          className="mt-4 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-11 rounded-2xl"
         >
           Go to My Orders
         </Button>
@@ -191,17 +191,17 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100">
       <main className="px-4 py-8 md:px-6 space-y-5 md:space-y-6 max-w-lg mx-auto lg:max-w-3xl">
         {/* Status heading — real state only */}
         <div className="text-center space-y-2">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-lg ${allDelivered ? 'bg-primary text-white shadow-primary/20' : 'bg-slate-200 text-slate-500 dark:text-slate-400'}`}>
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-lg ${allDelivered ? 'bg-primary text-white shadow-primary/20' : 'bg-slate-200 text-slate-500 dark:text-neutral-400'}`}>
             {allDelivered ? <Check className="h-8 w-8 stroke-[3]" /> : <Truck className="h-7 w-7" />}
           </div>
-          <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">
             {allDelivered ? 'Order Delivered' : 'Delivery Status'}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
             Order #{order.orderNumber}
             {statusText ? ` • ${statusText}` : ''}
             {deliveredAt
@@ -209,24 +209,24 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
               : ''}
           </p>
           {!allDelivered && !anyDelivered && (
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+            <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
               This order has not been marked as delivered by the supplier yet.
             </p>
           )}
         </div>
 
         {/* Card 1: Proof of Delivery — honest: only if a real POD exists */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-          <div className="aspect-[16/9] rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center gap-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
+          <div className="aspect-[16/9] rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-neutral-800 flex flex-col items-center justify-center gap-2">
             <Truck className="h-8 w-8 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 dark:text-gray-400">No proof-of-delivery photo available yet</p>
           </div>
 
           <div className="flex items-start gap-2.5">
-            <ShieldCheck className="h-4 w-4 text-slate-700 dark:text-slate-300 shrink-0 mt-0.5" />
+            <ShieldCheck className="h-4 w-4 text-slate-700 dark:text-neutral-300 shrink-0 mt-0.5" />
             <div>
-              <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Proof of Delivery</h2>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+              <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Proof of Delivery</h2>
+              <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
                 {deliveredAt
                   ? `Delivery recorded on ${new Date(deliveredAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}.`
                   : 'Delivery will be confirmed by the supplier in the tracking timeline.'}
@@ -245,26 +245,26 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
 
         {/* Card 2: Items Received — real items */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 items-start">
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-2">
               <Package className="h-4 w-4 text-primary" />
-              <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Items Received ({items.length})</h2>
+              <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Items Received ({items.length})</h2>
             </div>
 
             {items.length === 0 ? (
-              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-3 text-center">
+              <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 py-3 text-center">
                 No line items recorded on this order.
               </p>
             ) : (
-              <div className="divide-y divide-slate-100 dark:divide-slate-800 space-y-2 pt-1">
+              <div className="divide-y divide-slate-100 dark:divide-neutral-800 space-y-2 pt-1">
                 {items.map((item) => (
                   <div key={item.id} className="flex justify-between items-center py-1">
                     <div className="min-w-0">
-                      <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1">
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100 line-clamp-1">
                         {item.product?.name || '--'}
                       </h3>
                     </div>
-                    <span className="bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 text-xs font-mono font-bold px-2.5 py-1 rounded-lg shrink-0 ml-3">
+                    <span className="bg-slate-100 dark:bg-card text-slate-700 dark:text-neutral-300 text-xs font-mono font-bold px-2.5 py-1 rounded-lg shrink-0 ml-3">
                       x{item.quantity}
                     </span>
                   </div>
@@ -274,10 +274,10 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
           </div>
 
           {/* Card 3: Rate Delivery — real submission to the feedback API */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center space-y-3">
             <div>
-              <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Rate Delivery</h2>
-              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">How was the logistics service?</p>
+              <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Rate Delivery</h2>
+              <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">How was the logistics service?</p>
             </div>
 
             <div className="flex justify-center gap-3">
@@ -291,7 +291,7 @@ export function DeliveryConfirmationPage({ pageParams: _pageParams }: { pagePara
                   aria-label={`Rate ${star} star${star === 1 ? '' : 's'}`}
                 >
                   {ratingSubmitting && rating === star ? (
-                    <Loader2 className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400 animate-spin" />
+                    <Loader2 className="h-5 w-5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 animate-spin" />
                   ) : (
                     <Star
                       className={`h-7 w-7 ${

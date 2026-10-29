@@ -80,10 +80,10 @@ export function PaymentPendingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Pending Clearances</span>
@@ -92,7 +92,7 @@ export function PaymentPendingPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 space-y-4 md:max-w-3xl md:px-6 md:py-6 lg:max-w-4xl">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-100 to-amber-100 dark:from-slate-900 dark:to-amber-950 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white shadow-xl space-y-2 border border-amber-200 dark:border-amber-800/30">
+        <div className="bg-gradient-to-br from-slate-100 to-amber-100 dark:from-neutral-900 dark:to-amber-950 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white shadow-xl space-y-2 border border-amber-200 dark:border-amber-800/30">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
               <Clock className="h-5 w-5 text-amber-600 dark:text-amber-300" />
@@ -104,7 +104,7 @@ export function PaymentPendingPage() {
               </div>
             </div>
           </div>
-          <p className="text-xs text-slate-600 dark:text-slate-300 pt-1">
+          <p className="text-xs text-slate-600 dark:text-neutral-300 pt-1">
             Payments reported but not yet verified. Orders stay UNPAID until Zylod verifies the payment.
           </p>
         </div>
@@ -116,15 +116,15 @@ export function PaymentPendingPage() {
           ) : loadError ? (
             <div className="md:col-span-2 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-3xl p-6 text-center space-y-2">
               <AlertCircle className="h-8 w-8 mx-auto text-red-400" />
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">Could not load pending payments</span>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{loadError}</p>
+              <span className="text-xs font-bold text-slate-700 dark:text-neutral-300 block">Could not load pending payments</span>
+              <p className="text-xs text-slate-500 dark:text-neutral-400">{loadError}</p>
             </div>
           ) : pendingItems.length > 0 ? (
             pendingItems.map((item) => (
               <div
                 key={item.id}
                 onClick={() => navigate('order-detail', { orderId: item.orderId })}
-                className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 cursor-pointer hover:border-amber-300 transition-all"
+                className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3 cursor-pointer hover:border-amber-300 transition-all"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -133,32 +133,32 @@ export function PaymentPendingPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">PO #{item.orderNumber}</h3>
+                        <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">PO #{item.orderNumber}</h3>
                         <span className="text-[9px] font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
                           {item.type}
                         </span>
                       </div>
-                      <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-0.5">
+                      <span className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block mt-0.5">
                         Initiated on {new Date(item.date).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
 
-                  <span className="text-xs font-black font-mono text-slate-900 dark:text-slate-100">
+                  <span className="text-xs font-black font-mono text-slate-900 dark:text-neutral-100">
                     {formatPrice(item.amount)}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-background p-3 rounded-2xl border border-slate-100 dark:border-slate-800 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-neutral-400 dark:text-neutral-500 bg-slate-50 dark:bg-background p-3 rounded-2xl border border-slate-100 dark:border-neutral-800 leading-relaxed">
                   {item.description}
                 </p>
               </div>
             ))
           ) : (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
               <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500 stroke-[1.5]" />
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">All settlements cleared</span>
-              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+              <span className="text-xs font-bold text-slate-700 dark:text-neutral-300 block">All settlements cleared</span>
+              <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto">
                 No pending payments at this moment.
               </p>
             </div>

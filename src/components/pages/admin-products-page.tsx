@@ -43,7 +43,7 @@ interface ApiProduct {
 
 type ProductsTab = 'pending' | 'approved'
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 rounded-lg px-2 py-1 text-slate-500 dark:text-neutral-400'
 
 export function AdminProductsPage() {
   const { navigate } = useNavigationStore()
@@ -180,7 +180,7 @@ export function AdminProductsPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This moderation queue is restricted to Zylod admins. Sign in with an admin account to approve or reject product listings.</p>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-sm mx-auto">This moderation queue is restricted to Zylod admins. Sign in with an admin account to approve or reject product listings.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -196,10 +196,10 @@ export function AdminProductsPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Product Moderation</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Approve or reject supplier product listings. Only approved products appear in the public catalog.</p>
+            <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Approve or reject supplier product listings. Only approved products appear in the public catalog.</p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => loadProducts()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
+        <Button variant="outline" onClick={() => loadProducts()} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-neutral-800 dark:border-neutral-700">
           <RefreshCw className="h-3.5 w-3.5" /> Refresh
         </Button>
       </div>
@@ -208,18 +208,18 @@ export function AdminProductsPage() {
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => switchTab('pending')}
-          className={`h-9 px-4 rounded-xl text-xs font-bold transition ${tab === 'pending' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+          className={`h-9 px-4 rounded-xl text-xs font-bold transition ${tab === 'pending' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 dark:text-neutral-300'}`}
         >
           Pending approval
         </button>
         <button
           onClick={() => switchTab('approved')}
-          className={`h-9 px-4 rounded-xl text-xs font-bold transition ${tab === 'approved' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+          className={`h-9 px-4 rounded-xl text-xs font-bold transition ${tab === 'approved' ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 dark:text-neutral-300'}`}
         >
           Approved
         </button>
         <div className="relative flex-1 min-w-[200px] max-w-sm ml-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
           <Input
             value={q}
             onChange={(e) => { setQ(e.target.value) }}
@@ -240,11 +240,11 @@ export function AdminProductsPage() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-20 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load the moderation queue</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -253,12 +253,12 @@ export function AdminProductsPage() {
           </Button>
         </div>
       ) : products.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-neutral-800 text-center space-y-2">
           {tab === 'pending' ? (
             <>
               <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
               <h2 className="text-sm font-black">No products waiting for review</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-sm mx-auto">
                 {q ? `No pending products match "${q}".` : "New supplier listings appear here as soon as they're submitted."}
               </p>
             </>
@@ -266,7 +266,7 @@ export function AdminProductsPage() {
             <>
               <Package className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No approved products yet</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-sm mx-auto">
                 {q ? `No approved products match "${q}".` : 'Products you approve from the Pending tab appear here.'}
               </p>
             </>
@@ -279,7 +279,7 @@ export function AdminProductsPage() {
             const images = Array.isArray(p.images) ? p.images : []
             const videos = Array.isArray(p.videos) ? p.videos : []
             return (
-              <div key={p.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={p.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 overflow-hidden">
                 {/* Row */}
                 <div className="p-4 flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2 min-w-[220px] flex-1">
@@ -287,13 +287,13 @@ export function AdminProductsPage() {
                       ? <Clock className="h-4 w-4 text-amber-500 shrink-0" />
                       : <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />}
                     <div className="min-w-0">
-                      <p className="text-xs font-black text-slate-800 dark:text-slate-200 truncate">{p.name}</p>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 truncate">{p.supplierName || '--'}</p>
+                      <p className="text-xs font-black text-slate-800 dark:text-neutral-200 truncate">{p.name}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 truncate">{p.supplierName || '--'}</p>
                     </div>
                   </div>
                   <div className="text-right min-w-[110px] ml-auto">
                     <p className="text-sm font-black text-primary">{formatPrice(p.basePrice)}</p>
-                    <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">per {p.unit || '--'}</p>
+                    <p className="text-[10px] uppercase font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400">per {p.unit || '--'}</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className={chipClass}>MOQ {p.moq.toLocaleString()}</span>
@@ -301,7 +301,7 @@ export function AdminProductsPage() {
                     <span className={chipClass}>{p.categoryName || '--'}</span>
                     <span className={chipClass}>{p.reviewCount} review{p.reviewCount === 1 ? '' : 's'}</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 min-w-[90px]">
+                  <div className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 min-w-[90px]">
                     {new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     <span className="block">submitted</span>
                   </div>
@@ -309,7 +309,7 @@ export function AdminProductsPage() {
                     <div className="flex items-center gap-2">
                       {armedId === p.id ? (
                         <>
-                          <Button variant="outline" onClick={() => setArmedId(null)} className="h-9 px-3 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 dark:border-slate-700">Cancel</Button>
+                          <Button variant="outline" onClick={() => setArmedId(null)} className="h-9 px-3 rounded-xl text-xs font-bold border-slate-200 dark:border-neutral-800 dark:border-neutral-700">Cancel</Button>
                           <Button
                             onClick={() => patchProduct(p, 'approve')}
                             disabled={actingId === p.id}
@@ -338,7 +338,7 @@ export function AdminProductsPage() {
                     <div className="flex items-center gap-2">
                       {armedId === p.id ? (
                         <>
-                          <Button variant="outline" onClick={() => setArmedId(null)} className="h-9 px-3 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 dark:border-slate-700">Cancel</Button>
+                          <Button variant="outline" onClick={() => setArmedId(null)} className="h-9 px-3 rounded-xl text-xs font-bold border-slate-200 dark:border-neutral-800 dark:border-neutral-700">Cancel</Button>
                           <Button
                             onClick={() => patchProduct(p, 'reject')}
                             disabled={actingId === p.id}
@@ -362,10 +362,10 @@ export function AdminProductsPage() {
 
                 {/* Media review strip (Task 51-b) — approval is an INFORMED decision */}
                 {images.length > 0 || videos.length > 0 ? (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-background/30 px-4 py-3">
+                  <div className="border-t border-slate-100 dark:border-neutral-800 bg-slate-50/50 dark:bg-background/30 px-4 py-3">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <ImageIcon className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                      <ImageIcon className="h-3.5 w-3.5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                         Media review · {images.length} image{images.length === 1 ? '' : 's'} · {videos.length} video{videos.length === 1 ? '' : 's'}
                       </span>
                       {videos.length > 0 && (
@@ -382,7 +382,7 @@ export function AdminProductsPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Open full image in a new tab"
-                          className="block rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 dark:border-slate-700 hover:ring-2 hover:ring-primary/40 transition min-h-11"
+                          className="block rounded-xl overflow-hidden border border-slate-200 dark:border-neutral-800 dark:border-neutral-700 hover:ring-2 hover:ring-primary/40 transition min-h-11"
                         >
                           {/* Plain <img> — uploads are served publicly under /uploads, same tool as evidence-thumbs */}
                           <img src={img.imageUrl} alt={`${p.name} image ${img.sortOrder + 1}`} loading="lazy" className="h-16 w-16 object-cover" />
@@ -397,13 +397,13 @@ export function AdminProductsPage() {
                           muted
                           preload="metadata"
                           title={v.title || `${p.name} video ${v.sortOrder + 1}`}
-                          className="h-16 rounded-xl border border-slate-200 dark:border-slate-800 dark:border-slate-700 bg-black"
+                          className="h-16 rounded-xl border border-slate-200 dark:border-neutral-800 dark:border-neutral-700 bg-black"
                         />
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-amber-50/60 dark:bg-amber-950/20 px-4 py-2.5 flex items-center gap-2">
+                  <div className="border-t border-slate-100 dark:border-neutral-800 bg-amber-50/60 dark:bg-amber-950/20 px-4 py-2.5 flex items-center gap-2">
                     <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
                     <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400">
                       No images or videos were uploaded for this listing — reviewing it means approving blind media.
@@ -420,12 +420,12 @@ export function AdminProductsPage() {
 
                 {/* Inline reject form (pending tab) */}
                 {tab === 'pending' && isRejectOpen && (
-                  <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">
+                  <div className="border-t border-slate-100 dark:border-neutral-800 bg-slate-50/60 dark:bg-background/40 p-4 space-y-3">
+                    <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">
                       Rejecting sets this product to not approved — it will not appear in the public catalog. The optional reason is stored in the server audit log for this action.
                     </p>
                     <div className="space-y-1">
-                      <label htmlFor={`reject-reason-${p.id}`} className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Reason (optional)</label>
+                      <label htmlFor={`reject-reason-${p.id}`} className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">Reason (optional)</label>
                       <Input
                         id={`reject-reason-${p.id}`}
                         value={reason}
@@ -435,7 +435,7 @@ export function AdminProductsPage() {
                       />
                     </div>
                     <div className="flex flex-wrap gap-2 justify-end">
-                      <Button variant="outline" onClick={() => { setRejectId(null); setReason('') }} className="h-10 px-4 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 dark:border-slate-700">Cancel</Button>
+                      <Button variant="outline" onClick={() => { setRejectId(null); setReason('') }} className="h-10 px-4 rounded-xl text-xs font-bold border-slate-200 dark:border-neutral-800 dark:border-neutral-700">Cancel</Button>
                       <Button
                         onClick={() => patchProduct(p, 'reject')}
                         disabled={actingId === p.id}
@@ -453,7 +453,7 @@ export function AdminProductsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{total} product{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">{total} product{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const np = page - 1; setPage(np); loadProducts({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const np = page + 1; setPage(np); loadProducts({ page: np }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>

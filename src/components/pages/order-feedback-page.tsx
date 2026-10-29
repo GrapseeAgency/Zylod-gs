@@ -169,13 +169,13 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
 
   // ─── Header (shared) ───
   const header = (
-    <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+    <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
       <div className="flex items-center justify-between">
-        <button onClick={() => navigate("home")} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Menu" aria-label="Menu">
+        <button onClick={() => navigate("home")} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Menu" aria-label="Menu">
           <Menu className="h-6 w-6" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
-        <button onClick={() => navigate("search-home")} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Search" aria-label="Search">
+        <button onClick={() => navigate("search-home")} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Search" aria-label="Search">
           <Search className="h-6 w-6" />
         </button>
       </div>
@@ -185,14 +185,14 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
   // ─── No order selected — honest state ───
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-neutral-100">
         {header}
         <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
           <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
-            <Star className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+            <Star className="h-8 w-8 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
           </div>
-          <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">No order selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
+          <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100">No order selected</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs leading-relaxed">
             Open one of your delivered orders and choose to leave feedback there —
             this screen reviews a specific order.
           </p>
@@ -208,14 +208,14 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 text-slate-900 dark:text-neutral-100">
       {header}
 
       <main className="px-4 py-4 space-y-4 max-w-lg mx-auto md:px-6 md:py-6 md:max-w-3xl lg:max-w-4xl md:space-y-6">
         {/* Back Link */}
         <button
           onClick={() => navigate('orders')}
-          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100"
+          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-neutral-400 dark:text-neutral-500 hover:text-slate-900 dark:text-neutral-100"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Order History</span>
@@ -223,10 +223,10 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
 
         {/* Title — real order reference only */}
         <div>
-          <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-lg md:text-2xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">
             Order Feedback &amp; Issues
           </h1>
-          <p className="text-xs md:text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+          <p className="text-xs md:text-sm text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5 font-medium">
             {loading ? 'Loading order…' : order ? `Order #${order.orderNumber}` : 'Order unavailable'}
           </p>
         </div>
@@ -247,7 +247,7 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
         )}
 
         {loading && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex gap-3.5 items-start" aria-busy="true" aria-live="polite">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs flex gap-3.5 items-start" aria-busy="true" aria-live="polite">
             <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-card animate-pulse shrink-0" />
             <div className="flex-1 space-y-2 pt-1">
               <div className="h-3.5 w-3/4 bg-slate-200 rounded animate-pulse" />
@@ -260,9 +260,9 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
         {!loading && !loadError && order && (
           <div className="space-y-3">
             {items.length === 0 ? (
-              <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-                <Package className="h-7 w-7 text-slate-400 dark:text-slate-500 dark:text-slate-400 mx-auto mb-2" />
-                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
+                <Package className="h-7 w-7 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mx-auto mb-2" />
+                <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                   This order has no recorded products to review.
                 </p>
               </div>
@@ -270,9 +270,9 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
               items.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex gap-3.5 items-start"
+                  className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs flex gap-3.5 items-start"
                 >
-                  <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-slate-800 overflow-hidden shrink-0 flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-900 dark:bg-gray-800 border border-slate-200 dark:border-neutral-800 overflow-hidden shrink-0 flex items-center justify-center">
                     {item.product?.thumbnailUrl ? (
                       <img
                         src={item.product.thumbnailUrl}
@@ -285,17 +285,17 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug">
+                    <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100 leading-snug">
                       {item.product?.name || '--'}
                     </h2>
                     {supplierNames.length > 0 && (
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 flex items-center gap-1">
-                        <Building2 className="h-3 w-3 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
+                      <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 flex items-center gap-1">
+                        <Building2 className="h-3 w-3 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 shrink-0" />
                         <span>Supplier: {supplierNames.join(', ')}</span>
                       </p>
                     )}
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 flex items-center gap-1">
-                      <Package className="h-3 w-3 text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0" />
+                    <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5 flex items-center gap-1">
+                      <Package className="h-3 w-3 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 shrink-0" />
                       <span>
                         Qty: {item.quantity}{item.product?.unit ? ` ${item.product.unit}` : ''}
                       </span>
@@ -309,8 +309,8 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
 
         {/* Rate Your Experience Section */}
         {!loading && !loadError && order && items.length > 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
-            <h2 className="text-xs md:text-sm font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-5">
+            <h2 className="text-xs md:text-sm font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
               Rate your experience
             </h2>
 
@@ -327,28 +327,28 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
                 {/* Criteria Grid */}
                 <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
                   {/* Criterion 1: Item Quality */}
-                  <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+                  <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-neutral-800 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Item Quality</span>
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{getLabel(qualityRating)}</span>
+                      <span className="text-xs font-bold text-slate-800 dark:text-neutral-200">Item Quality</span>
+                      <span className="text-xs font-bold text-slate-500 dark:text-neutral-400 dark:text-neutral-500">{getLabel(qualityRating)}</span>
                     </div>
                     <StarPicker value={qualityRating} onChange={setQualityRating} />
                   </div>
 
                   {/* Criterion 2: Shipping Speed */}
-                  <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+                  <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-neutral-800 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Shipping Speed</span>
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{getLabel(shippingRating)}</span>
+                      <span className="text-xs font-bold text-slate-800 dark:text-neutral-200">Shipping Speed</span>
+                      <span className="text-xs font-bold text-slate-500 dark:text-neutral-400 dark:text-neutral-500">{getLabel(shippingRating)}</span>
                     </div>
                     <StarPicker value={shippingRating} onChange={setShippingRating} />
                   </div>
 
                   {/* Criterion 3: Supplier Comm. */}
-                  <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+                  <div className="p-4 bg-slate-50 dark:bg-background rounded-2xl border border-slate-100 dark:border-neutral-800 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200">Supplier Comm.</span>
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">{getLabel(commRating)}</span>
+                      <span className="text-xs font-bold text-slate-800 dark:text-neutral-200">Supplier Comm.</span>
+                      <span className="text-xs font-bold text-slate-500 dark:text-neutral-400 dark:text-neutral-500">{getLabel(commRating)}</span>
                     </div>
                     <StarPicker value={commRating} onChange={setCommRating} />
                   </div>
@@ -356,13 +356,13 @@ export function OrderFeedbackPage({ pageParams: _pageParams }: { pageParams?: Re
 
                 {/* Written Review Textarea */}
                 <div className="space-y-1.5 pt-1">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Detailed Feedback (Optional)</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-neutral-300">Detailed Feedback (Optional)</label>
                   <Textarea
                     value={reviewText}
                     onChange={(e) => setReviewText(e.target.value)}
                     placeholder="Share details about packaging quality, delivery punctuality, or vendor cooperation..."
                     rows={3}
-                    className="rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-medium resize-none"
+                    className="rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-medium resize-none"
                   />
                 </div>
 

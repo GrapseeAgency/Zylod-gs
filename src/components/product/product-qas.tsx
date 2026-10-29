@@ -135,7 +135,7 @@ export function ProductQas({ productId }: { productId: string }) {
 
   if (qas === null && !loadError) {
     return (
-      <div className="flex items-center gap-2 p-6 text-xs text-slate-400 dark:text-slate-500">
+      <div className="flex items-center gap-2 p-6 text-xs text-slate-400 dark:text-neutral-500">
         <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading Q&amp;A…
       </div>
     )
@@ -152,9 +152,9 @@ export function ProductQas({ productId }: { productId: string }) {
     <div className="p-4 md:p-6 space-y-5">
       <div className="flex flex-wrap items-center gap-2">
         <MessageSquareText className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">Questions &amp; answers</h3>
+        <h3 className="text-sm font-black text-slate-900 dark:text-neutral-100">Questions &amp; answers</h3>
         {list.length > 0 && (
-          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-wider">
             {list.length} question{list.length === 1 ? '' : 's'} · {answeredCount} answered
           </span>
         )}
@@ -178,7 +178,7 @@ export function ProductQas({ productId }: { productId: string }) {
             </p>
           )}
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] text-slate-400 dark:text-slate-500">{question.trim().length < 5 ? 'Minimum 5 characters' : `${question.length}/500`}</span>
+            <span className="text-[10px] text-slate-400 dark:text-neutral-500">{question.trim().length < 5 ? 'Minimum 5 characters' : `${question.length}/500`}</span>
             <Button
               type="submit"
               disabled={asking || question.trim().length < 5}
@@ -190,9 +190,9 @@ export function ProductQas({ productId }: { productId: string }) {
           </div>
         </form>
       ) : (
-        <div className="flex items-start gap-3 p-3.5 bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-2xl">
-          <HelpCircle className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+        <div className="flex items-start gap-3 p-3.5 bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 rounded-2xl">
+          <HelpCircle className="h-4 w-4 text-slate-400 dark:text-neutral-500 mt-0.5 shrink-0" />
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
             <Link href="/?page=login" className="font-bold text-primary hover:underline">Sign in</Link>
             {' '}to ask the supplier a question about this product.
           </p>
@@ -204,28 +204,28 @@ export function ProductQas({ productId }: { productId: string }) {
         {list.length === 0 ? (
           <div className="flex items-start gap-3 p-4">
             <ShieldQuestion className="h-4 w-4 text-slate-300 mt-0.5 shrink-0" />
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
               No questions yet. Be the first to ask — answers here are published for every buyer to see.
             </p>
           </div>
         ) : (
           list.map((qa) => (
-            <div key={qa.id} className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-gray-900 overflow-hidden">
+            <div key={qa.id} className="rounded-2xl border border-slate-100 dark:border-neutral-800 bg-white dark:bg-gray-900 overflow-hidden">
               <div className="p-3.5 pb-2">
-                <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{qa.question}</p>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 flex items-center gap-1">
+                <p className="text-xs font-bold text-slate-900 dark:text-neutral-100">{qa.question}</p>
+                <p className="text-[10px] text-slate-400 dark:text-neutral-500 mt-1 flex items-center gap-1">
                   <User className="h-3 w-3" /> {qa.askedBy} · {fmt(qa.askedAt)}
                 </p>
               </div>
               {qa.answer ? (
                 <div className="mx-3.5 mb-3.5 rounded-xl bg-emerald-50/60 border border-emerald-100 p-3">
-                  <p className="text-xs text-slate-800 dark:text-slate-200 leading-relaxed">{qa.answer}</p>
+                  <p className="text-xs text-slate-800 dark:text-neutral-200 leading-relaxed">{qa.answer}</p>
                   <p className="text-[10px] text-emerald-700 font-bold mt-1.5 uppercase tracking-wide">
                     Supplier&apos;s answer · {qa.answeredAt ? fmt(qa.answeredAt) : ''}
                   </p>
                 </div>
               ) : canAnswer ? (
-                <div className="mx-3.5 mb-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 p-3 space-y-2">
+                <div className="mx-3.5 mb-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 p-3 space-y-2">
                   <Textarea
                     value={answerDraft[qa.id] || ''}
                     onChange={(e) => setAnswerDraft((d) => ({ ...d, [qa.id]: e.target.value }))}
@@ -247,8 +247,8 @@ export function ProductQas({ productId }: { productId: string }) {
                   </div>
                 </div>
               ) : (
-                <div className="mx-3.5 mb-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 p-3">
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">Awaiting the supplier&apos;s answer.</p>
+                <div className="mx-3.5 mb-3.5 rounded-xl bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 p-3">
+                  <p className="text-[11px] text-slate-400 dark:text-neutral-500 italic">Awaiting the supplier&apos;s answer.</p>
                 </div>
               )}
             </div>

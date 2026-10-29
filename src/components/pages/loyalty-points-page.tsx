@@ -99,7 +99,7 @@ export function LoyaltyPointsPage() {
     switch (tier?.toLowerCase()) {
       case 'platinum': return 'from-primary via-purple-600 to-primary/80'
       case 'gold': return 'from-amber-500 via-orange-500 to-yellow-600'
-      case 'silver': return 'from-slate-600 via-slate-700 to-slate-800'
+      case 'silver': return 'from-slate-600 via-slate-700 to-neutral-800'
       default: return 'from-amber-700 via-orange-800 to-stone-800'
     }
   }

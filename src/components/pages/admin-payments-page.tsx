@@ -82,11 +82,11 @@ const statusChip: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900',
   success: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-900',
   failed: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-900',
-  refunded: 'bg-slate-100 text-slate-600 dark:text-slate-400 border-slate-200 dark:bg-card dark:text-slate-300 dark:border-slate-800',
+  refunded: 'bg-slate-100 text-slate-600 dark:text-neutral-400 border-slate-200 dark:bg-card dark:text-neutral-300 dark:border-neutral-800',
 }
 
 function StatusChip({ status }: { status: string }) {
-  const cls = statusChip[status] ?? 'bg-slate-50 text-slate-500 dark:text-slate-400 border-slate-100 dark:bg-background dark:border-slate-800'
+  const cls = statusChip[status] ?? 'bg-slate-50 text-slate-500 dark:text-neutral-400 border-slate-100 dark:bg-background dark:border-neutral-800'
   return <span className={`text-[10px] font-black border rounded-lg px-2 py-1 uppercase tracking-wide ${cls}`}>{status}</span>
 }
 
@@ -261,7 +261,7 @@ export function AdminPaymentsPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Admin access required</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This queue is restricted to Zylod admins. Sign in with an admin account to verify payments.</p>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-sm mx-auto">This queue is restricted to Zylod admins. Sign in with an admin account to verify payments.</p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
       </div>
     )
@@ -308,10 +308,10 @@ export function AdminPaymentsPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Payment Verification</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Every buyer payment submission across the platform — verify after confirming money arrived. Every action is audit-logged.</p>
+            <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Every buyer payment submission across the platform — verify after confirming money arrived. Every action is audit-logged.</p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => loadPayments({ background: true })} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700">
+        <Button variant="outline" onClick={() => loadPayments({ background: true })} className="h-9 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-neutral-800 dark:border-neutral-700">
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
         </Button>
       </div>
@@ -322,13 +322,13 @@ export function AdminPaymentsPage() {
           { key: 'pending', label: 'Pending', tone: 'text-amber-600', Icon: Clock },
           { key: 'success', label: 'Success', tone: 'text-emerald-600', Icon: CheckCircle2 },
           { key: 'failed', label: 'Failed', tone: 'text-red-500', Icon: XCircle },
-          { key: 'refunded', label: 'Refunded', tone: 'text-slate-500 dark:text-slate-400', Icon: RotateCcw },
-          { key: 'total', label: 'Total', tone: 'text-slate-700 dark:text-slate-300 dark:text-slate-200', Icon: Wallet },
+          { key: 'refunded', label: 'Refunded', tone: 'text-slate-500 dark:text-neutral-400', Icon: RotateCcw },
+          { key: 'total', label: 'Total', tone: 'text-slate-700 dark:text-neutral-300 dark:text-neutral-200', Icon: Wallet },
         ].map(({ key, label, tone, Icon }) => (
           <button
             key={key}
             onClick={() => switchTab(STATUS_TABS.some((t) => t.key === key) ? key : 'all')}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 text-left hover:border-slate-300 dark:hover:border-slate-700 transition"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 p-4 text-left hover:border-slate-300 dark:hover:border-slate-700 transition"
           >
             <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider ${tone}`}>
               <Icon className="h-3.5 w-3.5" /> {label}
@@ -344,7 +344,7 @@ export function AdminPaymentsPage() {
           <button
             key={t.key}
             onClick={() => switchTab(t.key)}
-            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'}`}
+            className={`h-9 px-4 rounded-xl text-xs font-bold transition ${statusTab === t.key ? 'bg-primary text-white shadow-md' : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 dark:text-neutral-300'}`}
           >
             {t.label}
           </button>
@@ -355,11 +355,11 @@ export function AdminPaymentsPage() {
       {loading ? (
         <div className="space-y-2">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-16 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+            <div key={i} className="h-16 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 animate-pulse" />
           ))}
         </div>
       ) : error ? (
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
           <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
           <h2 className="text-sm font-black">Could not load the queue</h2>
           <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -368,12 +368,12 @@ export function AdminPaymentsPage() {
           </Button>
         </div>
       ) : rows.length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-neutral-800 text-center space-y-2">
           {statusTab === 'pending' ? (
             <>
               <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
               <h2 className="text-sm font-black">No payments awaiting verification</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
+              <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-sm mx-auto">
                 Buyer submissions appear here the moment POST /api/orders/[id]/payment-submit records them. Nothing is marked paid until a seller, an admin, or the verified webhook confirms it.
               </p>
             </>
@@ -381,49 +381,49 @@ export function AdminPaymentsPage() {
             <>
               <Wallet className="h-10 w-10 text-slate-300 mx-auto" />
               <h2 className="text-sm font-black">No {statusTab} payments</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">This tab reflects the real payments table — counts in the strip above are platform-wide.</p>
+              <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-sm mx-auto">This tab reflects the real payments table — counts in the strip above are platform-wide.</p>
             </>
           )}
         </div>
       ) : (
         <div className="space-y-2">
           {/* Desktop table */}
-          <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 overflow-hidden">
             <table className="w-full text-xs">
               <thead>
                 <tr className="bg-slate-50 dark:bg-background text-left">
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Order</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Buyer</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Supplier(s)</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Method</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">TRX ID</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 text-right">Amount</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Status</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Date</th>
-                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 text-right">Action</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Order</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Buyer</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Supplier(s)</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Method</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">TRX ID</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 text-right">Amount</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Status</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Date</th>
+                  <th className="px-3 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-neutral-800">
                 {rows.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-card dark:bg-background/60 dark:hover:bg-background/40">
                     <td className="px-3 py-2.5 font-black whitespace-nowrap">#{p.orderNumber}</td>
-                    <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 max-w-[140px] truncate">{p.buyer.displayName || '--'}</td>
-                    <td className="px-3 py-2.5 text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 max-w-[140px] truncate">{p.suppliers.join(', ') || '--'}</td>
-                    <td className="px-3 py-2.5 capitalize">{p.method}{p.brand ? <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400"> · {p.brand}</span> : null}</td>
+                    <td className="px-3 py-2.5 text-slate-600 dark:text-neutral-400 dark:text-neutral-500 dark:text-neutral-300 max-w-[140px] truncate">{p.buyer.displayName || '--'}</td>
+                    <td className="px-3 py-2.5 text-slate-600 dark:text-neutral-400 dark:text-neutral-500 dark:text-neutral-300 max-w-[140px] truncate">{p.suppliers.join(', ') || '--'}</td>
+                    <td className="px-3 py-2.5 capitalize">{p.method}{p.brand ? <span className="text-slate-400 dark:text-neutral-500 dark:text-neutral-400"> · {p.brand}</span> : null}</td>
                     <td className="px-3 py-2.5 font-mono max-w-[150px] truncate">{p.transactionId || '--'}</td>
                     <td className="px-3 py-2.5 text-right font-black whitespace-nowrap">
                       {formatPrice(p.amount)}
-                      <span className="block text-[9px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">of {formatPrice(p.orderTotal)} · {p.orderPaymentStatus}</span>
+                      <span className="block text-[9px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-normal">of {formatPrice(p.orderTotal)} · {p.orderPaymentStatus}</span>
                     </td>
                     <td className="px-3 py-2.5"><StatusChip status={p.status} /></td>
-                    <td className="px-3 py-2.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 whitespace-nowrap">{formatDate(p.submittedAt ?? p.paidAt)}</td>
+                    <td className="px-3 py-2.5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 whitespace-nowrap">{formatDate(p.submittedAt ?? p.paidAt)}</td>
                     <td className="px-3 py-2.5 text-right whitespace-nowrap">
                       {p.status === 'pending' ? (
                         <Button onClick={() => setExpandedId(expandedId === p.id ? null : p.id)} className="h-8 px-3 rounded-lg text-[11px] font-bold bg-primary hover:bg-primary/90 text-white gap-1">
                           {expandedId === p.id ? <><ChevronUp className="h-3 w-3" /> Close</> : <>Decide</>}
                         </Button>
                       ) : (
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">decided</span>
+                        <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">decided</span>
                       )}
                     </td>
                   </tr>
@@ -435,21 +435,21 @@ export function AdminPaymentsPage() {
           {/* Mobile cards */}
           <div className="md:hidden space-y-2">
             {rows.map((p) => (
-              <div key={p.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2">
+              <div key={p.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 p-4 space-y-2">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-xs font-black">#{p.orderNumber}</p>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 truncate">{p.buyer.displayName || '--'} → {p.suppliers.join(', ') || '--'}</p>
+                    <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 truncate">{p.buyer.displayName || '--'} → {p.suppliers.join(', ') || '--'}</p>
                   </div>
                   <StatusChip status={p.status} />
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
-                  <span className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 capitalize">{p.method}{p.brand ? ` · ${p.brand}` : ''}</span>
-                  <span className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 font-mono">{p.transactionId || '--'}</span>
+                  <span className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 rounded-lg px-2 py-1 capitalize">{p.method}{p.brand ? ` · ${p.brand}` : ''}</span>
+                  <span className="bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 rounded-lg px-2 py-1 font-mono">{p.transactionId || '--'}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-primary">{formatPrice(p.amount)} <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-normal">of {formatPrice(p.orderTotal)} · {p.orderPaymentStatus}</span></span>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{formatDate(p.submittedAt ?? p.paidAt)}</span>
+                  <span className="text-sm font-black text-primary">{formatPrice(p.amount)} <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-normal">of {formatPrice(p.orderTotal)} · {p.orderPaymentStatus}</span></span>
+                  <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">{formatDate(p.submittedAt ?? p.paidAt)}</span>
                 </div>
                 {p.status === 'pending' && (
                   <div className="grid grid-cols-2 gap-2 pt-1">
@@ -466,9 +466,9 @@ export function AdminPaymentsPage() {
             const p = rows.find((r) => r.id === expandedId)
             if (!p || p.status !== 'pending') return null
             return (
-              <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3">
-                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
-                  Decide the pending submission for <span className="font-bold text-slate-800 dark:text-slate-200">#{p.orderNumber}</span> — verify only after confirming {formatPrice(p.amount)} really arrived ({p.method}{p.brand ? ` · ${p.brand}` : ''}, ref {p.transactionId || '--'}).
+              <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-background border border-slate-200 dark:border-neutral-800 rounded-2xl px-4 py-3">
+                <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
+                  Decide the pending submission for <span className="font-bold text-slate-800 dark:text-neutral-200">#{p.orderNumber}</span> — verify only after confirming {formatPrice(p.amount)} really arrived ({p.method}{p.brand ? ` · ${p.brand}` : ''}, ref {p.transactionId || '--'}).
                 </p>
                 <div className="flex gap-2">
                   <Button onClick={() => openDecision(p, 'reject')} variant="outline" className="h-9 px-4 rounded-xl text-xs font-bold border-red-200 text-red-600 hover:bg-red-50">Reject</Button>
@@ -481,7 +481,7 @@ export function AdminPaymentsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{total} payment{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
+              <span className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">{total} payment{total === 1 ? '' : 's'} · page {page}/{totalPages}</span>
               <div className="flex gap-2">
                 <Button variant="outline" disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); loadPayments({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Previous</Button>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => { const p = page + 1; setPage(p); loadPayments({ page: p }) }} className="h-9 px-4 rounded-xl text-xs font-bold">Next</Button>
@@ -509,7 +509,7 @@ export function AdminPaymentsPage() {
 
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Verification note (optional)</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">Verification note (optional)</label>
                   <Input
                     value={dialogNote}
                     onChange={(e) => setDialogNote(e.target.value)}
@@ -569,7 +569,7 @@ function MoneyRailSwitcher({
           className={`h-9 px-4 rounded-xl text-xs font-bold transition ${
             rail === t.id
               ? 'bg-primary text-white shadow-md'
-              : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 dark:border-slate-700 text-slate-600 dark:text-slate-400 dark:text-slate-300'
+              : 'bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 dark:border-neutral-700 text-slate-600 dark:text-neutral-400 dark:text-neutral-300'
           }`}
         >
           {t.label}

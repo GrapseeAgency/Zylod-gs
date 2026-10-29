@@ -97,7 +97,7 @@ export function ProfilePhotoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 text-slate-900 dark:text-neutral-100">
       {/* Hidden file input */}
       <input
         type="file"
@@ -108,14 +108,14 @@ export function ProfilePhotoPage() {
       />
 
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={() => navigate('profile')} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={() => navigate('profile')} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
         <button
           onClick={() => navigate('account-settings')}
-          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+          className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-neutral-300 hover:bg-slate-200"
           title="Account Settings"
         >
           <User className="h-5 w-5" />
@@ -126,15 +126,15 @@ export function ProfilePhotoPage() {
         {/* Back Link */}
         <button
           onClick={() => navigate('profile')}
-          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:text-slate-100"
+          className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-neutral-400 dark:text-neutral-500 hover:text-slate-900 dark:text-neutral-100"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Profile</span>
         </button>
 
         {/* Profile Photo Management */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-4">
-          <h1 className="text-base md:text-2xl font-black text-slate-900 dark:text-slate-100">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center space-y-4">
+          <h1 className="text-base md:text-2xl font-black text-slate-900 dark:text-neutral-100">
             Profile Photo Management
           </h1>
 
@@ -147,11 +147,11 @@ export function ProfilePhotoPage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <User className="h-12 w-12 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+              <User className="h-12 w-12 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
             )}
           </div>
 
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-xs mx-auto leading-relaxed">
             A clear profile photo helps build trust with buyers and suppliers on Zylod.
           </p>
 
@@ -173,7 +173,7 @@ export function ProfilePhotoPage() {
               <Button
                 variant="outline"
                 onClick={handleRemovePhoto}
-                className="w-full bg-white dark:bg-gray-900 hover:bg-rose-50 text-primary border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-rose-50 text-primary border-slate-200 dark:border-neutral-800 font-bold h-11 rounded-2xl text-xs flex items-center justify-center gap-2"
               >
                 <Trash2 className="h-4 w-4" />
                 Remove Current Photo
@@ -191,7 +191,7 @@ export function ProfilePhotoPage() {
             <p className="text-xs font-semibold text-red-600">{error}</p>
           )}
 
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+          <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
             Max file size: 10MB. Formats: JPG, PNG, WebP.
           </p>
         </div>

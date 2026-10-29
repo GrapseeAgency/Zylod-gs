@@ -86,15 +86,15 @@ function CertRow({ cert, onDelete, deleting }: {
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">{cert.certName}</h4>
+          <h4 className="text-xs font-bold text-slate-900 dark:text-neutral-100">{cert.certName}</h4>
           <StatusChip status={cert.status} />
         </div>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+        <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
           Issued {fmtDate(cert.issuedAt)} by {cert.issuedBy}
           {cert.expiresAt ? ` · valid until ${fmtDate(cert.expiresAt)}` : ' · no expiry on file'}
         </p>
         {cert.certNumber && (
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 font-mono">Cert № {cert.certNumber}</p>
+          <p className="text-[10px] text-slate-400 dark:text-neutral-500 mt-0.5 font-mono">Cert № {cert.certNumber}</p>
         )}
         {cert.documentUrl && (
           <a
@@ -114,7 +114,7 @@ function CertRow({ cert, onDelete, deleting }: {
               variant="ghost"
               size="sm"
               disabled={deleting}
-              className="h-8 w-8 p-0 text-slate-400 dark:text-slate-500 hover:text-rose-600 shrink-0"
+              className="h-8 w-8 p-0 text-slate-400 dark:text-neutral-500 hover:text-rose-600 shrink-0"
               aria-label={`Remove certification ${cert.certName}`}
             >
               {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
@@ -240,7 +240,7 @@ export function ProductCertifications({ productId, manage = false }: {
 
   if (certs === null && !loadError) {
     return (
-      <div className="flex items-center gap-2 p-4 text-xs text-slate-400 dark:text-slate-500">
+      <div className="flex items-center gap-2 p-4 text-xs text-slate-400 dark:text-neutral-500">
         <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading certifications…
       </div>
     )
@@ -256,11 +256,11 @@ export function ProductCertifications({ productId, manage = false }: {
 
   return (
     <div>
-      <div className="divide-y divide-slate-100 dark:divide-slate-800">
+      <div className="divide-y divide-slate-100 dark:divide-neutral-800">
         {list.length === 0 ? (
           <div className="p-4 flex items-start gap-3">
             <Award className="h-4 w-4 text-slate-300 mt-0.5 shrink-0" />
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
               {manage
                 ? 'No certifications on file for this product yet. Add real, verifiable certificates only — false claims are strictly penalized.'
                 : 'No certifications on file for this product.'}
@@ -274,10 +274,10 @@ export function ProductCertifications({ productId, manage = false }: {
       </div>
 
       {manage && (
-        <form onSubmit={submit} className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background/60 p-4 space-y-3">
+        <form onSubmit={submit} className="border-t border-slate-200 dark:border-neutral-800 bg-slate-50 dark:bg-background/60 p-4 space-y-3">
           <div className="flex items-center gap-2">
             <Plus className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">Add certification</span>
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Add certification</span>
           </div>
           {formError && (
             <p className="text-[11px] font-semibold text-rose-600 bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">
@@ -286,7 +286,7 @@ export function ProductCertifications({ productId, manage = false }: {
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="cert-name" className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500">Certificate name *</Label>
+              <Label htmlFor="cert-name" className="text-[11px] font-bold text-slate-600 dark:text-neutral-400 dark:text-neutral-500">Certificate name *</Label>
               <Input
                 id="cert-name"
                 value={form.certName}
@@ -299,7 +299,7 @@ export function ProductCertifications({ productId, manage = false }: {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="cert-issuer" className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500">Issued by *</Label>
+              <Label htmlFor="cert-issuer" className="text-[11px] font-bold text-slate-600 dark:text-neutral-400 dark:text-neutral-500">Issued by *</Label>
               <Input
                 id="cert-issuer"
                 value={form.issuedBy}
@@ -312,7 +312,7 @@ export function ProductCertifications({ productId, manage = false }: {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="cert-number" className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500">Certificate № (optional)</Label>
+              <Label htmlFor="cert-number" className="text-[11px] font-bold text-slate-600 dark:text-neutral-400 dark:text-neutral-500">Certificate № (optional)</Label>
               <Input
                 id="cert-number"
                 value={form.certNumber}
@@ -324,7 +324,7 @@ export function ProductCertifications({ productId, manage = false }: {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="cert-issued" className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500">
+                <Label htmlFor="cert-issued" className="text-[11px] font-bold text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
                   <CalendarClock className="inline h-3 w-3 mr-1" />Issued on *
                 </Label>
                 <Input
@@ -337,7 +337,7 @@ export function ProductCertifications({ productId, manage = false }: {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="cert-expires" className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500">Expires (optional)</Label>
+                <Label htmlFor="cert-expires" className="text-[11px] font-bold text-slate-600 dark:text-neutral-400 dark:text-neutral-500">Expires (optional)</Label>
                 <Input
                   id="cert-expires"
                   type="date"
@@ -348,7 +348,7 @@ export function ProductCertifications({ productId, manage = false }: {
               </div>
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="cert-doc" className="text-[11px] font-bold text-slate-600 dark:text-slate-400 dark:text-slate-500">Document URL (optional)</Label>
+              <Label htmlFor="cert-doc" className="text-[11px] font-bold text-slate-600 dark:text-neutral-400 dark:text-neutral-500">Document URL (optional)</Label>
               <Input
                 id="cert-doc"
                 type="url"

@@ -228,11 +228,11 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
   // ── Honest empty / guard states ───────────────────────────────────────
   if (!loading && !orderId) {
     return (
-      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <Package className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">No order selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Pick an order from your order history to see its timeline.</p>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Pick an order from your order history to see its timeline.</p>
           <Button onClick={() => navigate('my-orders')} className="h-10 px-5 rounded-xl text-xs font-bold">View My Orders</Button>
         </div>
       </div>
@@ -241,11 +241,11 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
 
   if (!loading && needsAuth) {
     return (
-      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto" />
           <h1 className="text-base font-black">Sign in required</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">You need to be signed in to view this order timeline.</p>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">You need to be signed in to view this order timeline.</p>
           <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold">Sign In</Button>
         </div>
       </div>
@@ -254,11 +254,11 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
 
   if (!loading && notFound) {
     return (
-      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <XCircle className="h-10 w-10 text-slate-300 mx-auto" />
           <h1 className="text-base font-black">Order not found</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">This order does not exist or is not visible to your account.</p>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">This order does not exist or is not visible to your account.</p>
           <Button onClick={() => navigate('my-orders')} className="h-10 px-5 rounded-xl text-xs font-bold">View My Orders</Button>
         </div>
       </div>
@@ -267,7 +267,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
 
   if (!loading && error) {
     return (
-      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100 flex items-center justify-center px-4">
         <div className="text-center max-w-xs space-y-3">
           <AlertTriangle className="h-10 w-10 text-red-500 mx-auto" />
           <h1 className="text-base font-black">Could not load order</h1>
@@ -306,17 +306,17 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
               <ArrowLeft className="h-5 w-5 text-primary" />
             </button>
             <h1 className="text-base font-bold text-primary truncate max-w-[200px]">Order #{order.orderNumber || '--'}</h1>
           </div>
-          <button onClick={() => navigate('help-center')} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Help">
+          <button onClick={() => navigate('help-center')} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Help">
             <HelpCircle className="h-5 w-5 text-primary" />
           </button>
         </div>
@@ -324,9 +324,9 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
 
       <main className="px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg mx-auto md:max-w-2xl">
         {/* Expected Delivery Card (real data only — no carrier invention) */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-900 dark:text-slate-100">Expected Delivery</span>
+            <span className="text-xs font-bold text-slate-900 dark:text-neutral-100">Expected Delivery</span>
             <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${badgeClasses[badge]}`}>
               {badge}
             </span>
@@ -336,8 +336,8 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
             {estDelivery ? formatDeliveryDate(estDelivery) : 'To be scheduled by the supplier'}
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800">
-            <Truck className="h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 pt-1 border-t border-slate-100 dark:border-neutral-800">
+            <Truck className="h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
             <span>
               {shipmentCount > 0
                 ? `${shipmentCount} shipment${shipmentCount === 1 ? '' : 's'} from ${supplierCount} supplier${supplierCount === 1 ? '' : 's'} — tracking details below`
@@ -347,7 +347,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
         </div>
 
         {/* Timeline Events List (built only from real placedAt / payments / tracking data) */}
-        <div className="space-y-6 pt-2 pl-2 relative before:absolute before:left-7 before:top-4 before:bottom-4 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
+        <div className="space-y-6 pt-2 pl-2 relative before:absolute before:left-7 before:top-4 before:bottom-4 before:w-0.5 before:bg-slate-200 dark:before:bg-neutral-800">
           {timelineEvents.map((event, index) => {
             const Icon = event.icon
 
@@ -358,25 +358,25 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
                   className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 z-10 ${
                     index === 0
                       ? 'bg-primary text-white shadow-md shadow-primary/25'
-                      : 'bg-rose-50 dark:bg-rose-950/40 text-slate-700 dark:text-slate-300 border border-rose-100 dark:border-rose-900/60'
+                      : 'bg-rose-50 dark:bg-rose-950/40 text-slate-700 dark:text-neutral-300 border border-rose-100 dark:border-rose-900/60'
                   }`}
                 >
                   <Icon className="h-5 w-5" />
                 </div>
 
                 {/* Event Details Card */}
-                <div className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
+                <div className="flex-1 bg-white dark:bg-gray-900 rounded-2xl p-4 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-1">
                   <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-xs font-black text-slate-900 dark:text-slate-100">{event.title}</h3>
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono shrink-0">
+                    <h3 className="text-xs font-black text-slate-900 dark:text-neutral-100">{event.title}</h3>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-mono shrink-0">
                       {event.ts !== null ? formatEventTime(event.ts) : '--'}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 leading-relaxed">{event.description}</p>
+                  <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">{event.description}</p>
                   {event.meta && (
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium break-words">{event.meta}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-medium break-words">{event.meta}</p>
                   )}
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium pt-1">
+                  <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-medium pt-1">
                     {event.ts !== null ? formatEventDate(event.ts) : 'No timestamp recorded'}
                   </p>
                 </div>
@@ -390,7 +390,7 @@ export function OrderTimelinePage({ pageParams: _pageParams }: { pageParams?: Re
           <Button
             variant="outline"
             onClick={() => navigate('help-center')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-800 dark:border-slate-700 font-bold h-12 rounded-2xl text-xs flex items-center justify-center gap-2"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-800 dark:text-neutral-200 border-slate-200 dark:border-neutral-800 dark:border-neutral-700 font-bold h-12 rounded-2xl text-xs flex items-center justify-center gap-2"
           >
             <Headphones className="h-4 w-4" />
             Contact Support

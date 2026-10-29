@@ -32,7 +32,7 @@ export function SellerBadgeLevelsPagePage() {
       </header>
 
       <main className="p-4 space-y-6 md:p-6 md:max-w-3xl md:mx-auto md:pt-6">
-        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Badge levels</h1>
+        <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100 dark:text-white">Badge levels</h1>
 
         {/* The one REAL badge */}
         <Card className="border-none shadow-sm dark:bg-gray-800">

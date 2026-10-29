@@ -83,7 +83,7 @@ export function SellerSupportPage() {
           <h1 className="text-xl font-bold">Seller Support</h1>
         </div>
       </header>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Seller Support</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Seller Support</h1>
       <main className="flex-1 p-4">
         <div className="mb-6 flex space-x-4">
           <button onClick={() => navigate('seller-create-ticket')} className="flex-1 bg-white dark:bg-gray-900 border border-primary text-primary py-3 rounded-lg flex items-center justify-center font-bold">

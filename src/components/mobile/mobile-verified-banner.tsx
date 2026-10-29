@@ -33,7 +33,7 @@ export function MobileVerifiedBanner() {
         {/* Trade Assurance card */}
         <button
           onClick={() => navigate('suppliers')}
-          className="flex-1 bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-slate-900/30 rounded-xl p-3 flex items-center gap-2 border border-primary/20 dark:border-primary/30 active:scale-[0.98] transition-transform text-left"
+          className="flex-1 bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-neutral-900/30 rounded-xl p-3 flex items-center gap-2 border border-primary/20 dark:border-primary/30 active:scale-[0.98] transition-transform text-left"
         >
           <div className="h-9 w-9 rounded-lg bg-primary/80/15 flex items-center justify-center shrink-0">
             <BadgeCheck className="w-5 h-5 text-primary" />

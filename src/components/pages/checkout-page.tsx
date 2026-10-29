@@ -460,12 +460,12 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   // ─── Success screen (real order number, honest unpaid status) ───
   if (orderPlaced && placedOrder) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 md:p-10 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 md:p-10 text-center text-slate-900 dark:text-neutral-100">
         <div className="w-16 h-16 md:w-20 md:h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
           <CheckCircle2 className="h-10 w-10 md:h-12 w-12" />
         </div>
-        <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100">Order {placedOrder.orderNumber} Created</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
+        <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-neutral-100">Order {placedOrder.orderNumber} Created</h1>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs leading-relaxed">
           {placedPromotion && (
             <span className="block text-emerald-600 font-bold mb-1">
               Promotion “{placedPromotion.name}” saved you {formatPrice(placedPromotion.discount)}.
@@ -477,7 +477,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             </span>
           )}
           {placedReceipt && placedReceipt.shippingFee > 0 && (
-            <span className="block text-slate-600 dark:text-slate-400 dark:text-slate-500 font-bold mb-1">
+            <span className="block text-slate-600 dark:text-neutral-400 dark:text-neutral-500 font-bold mb-1">
               Goods {formatPrice(placedReceipt.totalAmount - placedReceipt.shippingFee)} + Shipping {formatPrice(placedReceipt.shippingFee)} = {formatPrice(placedReceipt.totalAmount)}
             </span>
           )}
@@ -508,7 +508,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-11 rounded-2xl"
           >
             Continue Shopping
           </Button>
@@ -524,10 +524,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   // out at all". The addresses-401 already set needsAuth — surface it FIRST.
   if (needsAuth) {
     return (
-      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
           <div className="flex items-center justify-between">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -536,10 +536,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         </header>
         <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
           <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
-            <LogIn className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+            <LogIn className="h-8 w-8 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
           </div>
-          <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Sign in required</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs">
+          <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100">Sign in required</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs">
             You need a buyer account to check out — your cart, addresses and payment methods live in your account.
           </p>
           <Button
@@ -551,7 +551,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="mt-2 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-10 rounded-2xl"
+            className="mt-2 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-10 rounded-2xl"
           >
             Browse Products
           </Button>
@@ -563,10 +563,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   // ─── Empty cart — honest state, no fake product ───
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
           <div className="flex items-center justify-between">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
             <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -575,10 +575,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         </header>
         <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
           <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
-            <Package className="h-8 w-8 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+            <Package className="h-8 w-8 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
           </div>
-          <h1 className="text-lg font-black text-slate-900 dark:text-slate-100">Your cart is empty</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs">
+          <h1 className="text-lg font-black text-slate-900 dark:text-neutral-100">Your cart is empty</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs">
             Nothing to check out. Browse the catalog and add products first.
           </p>
           <Button
@@ -593,11 +593,11 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
   }
 
   return (
-    <div className="min-h-screen bg-background pb-28 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-28 md:pb-10 text-slate-900 dark:text-neutral-100">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-xl font-black tracking-tight text-primary">Zylod</span>
@@ -608,7 +608,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
       <main className="px-4 py-4 md:px-6 md:py-6 space-y-4 max-w-lg mx-auto lg:max-w-5xl lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0 lg:items-start">
         <div className="space-y-4 lg:col-span-2">
         {/* Page Title */}
-        <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+        <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">
           Review Order ({items.length} item{items.length > 1 ? 's' : ''})
         </h1>
 
@@ -631,11 +631,11 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         )}
 
         {/* Card 1: Shipping Address (real, from /api/addresses) */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-primary" />
-              <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Shipping Address</h2>
+              <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Shipping Address</h2>
             </div>
             <button
               onClick={() => navigate('shipping-address')}
@@ -645,14 +645,14 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             </button>
           </div>
 
-          <div className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 space-y-0.5 pt-1 pl-6">
+          <div className="text-xs text-slate-600 dark:text-neutral-400 dark:text-neutral-500 space-y-0.5 pt-1 pl-6">
             {addressesLoading ? (
-              <p className="flex items-center gap-2 text-slate-400 dark:text-slate-500 dark:text-slate-400">
+              <p className="flex items-center gap-2 text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                 <Loader2 className="h-3 w-3 animate-spin" /> Loading your addresses…
               </p>
             ) : selectedAddress ? (
               <>
-                <p className="font-bold text-slate-900 dark:text-slate-100">
+                <p className="font-bold text-slate-900 dark:text-neutral-100">
                   {selectedAddress.label}
                   {(selectedAddress.isDefault || selectedAddress.is_default) && (
                     <span className="ml-2 text-[10px] font-black text-primary uppercase">Default</span>
@@ -664,7 +664,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
               </>
             ) : (
               <div className="space-y-2">
-                <p className="text-slate-500 dark:text-slate-400 dark:text-slate-500">{addressesError || 'No shipping address on file.'}</p>
+                <p className="text-slate-500 dark:text-neutral-400 dark:text-neutral-500">{addressesError || 'No shipping address on file.'}</p>
                 <Button
                   onClick={() => navigate('add-address')}
                   className="h-9 px-4 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-xl"
@@ -677,27 +677,27 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         </div>
 
         {/* Card 2: Items (real cart contents) */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs md:text-sm font-bold text-slate-900 dark:text-slate-100">Items</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+          <h2 className="text-xs md:text-sm font-bold text-slate-900 dark:text-neutral-100">Items</h2>
           {items.map((item) => (
             <div key={item.id} className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-slate-800 overflow-hidden shrink-0 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-card border border-slate-200 dark:border-neutral-800 overflow-hidden shrink-0 flex items-center justify-center">
                   {item.productImage ? (
                     <img src={item.productImage} alt={item.productName} className="w-full h-full object-cover" />
                   ) : (
-                    <Package className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+                    <Package className="h-5 w-5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400" />
                   )}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1">{item.productName}</h3>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100 line-clamp-1">{item.productName}</h3>
+                  <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                     Qty: {item.quantity} · {item.supplierName}
                     {item.variantName ? ` · ${item.variantName}: ${item.variantValue}` : ''}
                   </p>
                 </div>
               </div>
-              <span className="text-xs font-black text-slate-900 dark:text-slate-100 shrink-0">
+              <span className="text-xs font-black text-slate-900 dark:text-neutral-100 shrink-0">
                 {formatPrice(item.totalPrice || item.unitPrice * item.quantity)}
               </span>
             </div>
@@ -705,14 +705,14 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
         </div>
 
         {/* Card 2.5: Shipping — quoted live per supplier shipment (Task 95) */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Truck className="h-4 w-4 text-primary" />
-              <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Shipping</h2>
+              <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Shipping</h2>
             </div>
             {selectedAddress && (
-              <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 uppercase tracking-wide">to {selectedAddress.district}</span>
+              <span className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">to {selectedAddress.district}</span>
             )}
           </div>
 
@@ -720,20 +720,20 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             const q = quotes[g.supplierId]
             const picked = shippingChoices[g.supplierId]
             return (
-              <div key={g.supplierId} className="border-t border-slate-100 dark:border-slate-800 first:border-t-0 first:pt-0 pt-3 space-y-2">
+              <div key={g.supplierId} className="border-t border-slate-100 dark:border-neutral-800 first:border-t-0 first:pt-0 pt-3 space-y-2">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{g.supplierName}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 shrink-0">
+                  <p className="text-xs font-bold text-slate-800 dark:text-neutral-200 truncate">{g.supplierName}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 shrink-0">
                     {g.weightKg === null ? 'no weight on file' : `${g.weightKg} kg · ships separately`}
                   </p>
                 </div>
 
                 {g.weightKg === null ? (
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
+                  <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 leading-relaxed">
                     A product in this shipment has no weight on file — shipping settles directly with the supplier.
                   </p>
                 ) : !q || q.loading ? (
-                  <p className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                  <p className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                     <Loader2 className="h-3 w-3 animate-spin" /> Quoting couriers for {selectedAddress?.district ?? 'your district'}…
                   </p>
                 ) : q.error ? (
@@ -748,7 +748,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                     </button>
                   </div>
                 ) : q.options.length === 0 ? (
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
+                  <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 leading-relaxed">
                     No courier covers {g.weightKg} kg to {selectedAddress?.district ?? 'this district'} — place the order and settle shipping with the supplier.
                   </p>
                 ) : (
@@ -759,7 +759,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                         <label
                           key={opt.methodId}
                           className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 cursor-pointer transition-colors ${
-                            active ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+                            active ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-neutral-800 hover:bg-slate-50 dark:hover:bg-card'
                           }`}
                         >
                           <input
@@ -779,19 +779,19 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                           </span>
                           <span className="flex-1 min-w-0">
                             <span className="flex items-center gap-2">
-                              <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{opt.methodName}</span>
+                              <span className="text-xs font-bold text-slate-900 dark:text-neutral-100 truncate">{opt.methodName}</span>
                               {opt.freeShipping && (
                                 <span className="text-[9px] font-black text-emerald-600 uppercase bg-emerald-50 border border-emerald-200 rounded-full px-1.5 py-0.5">Free</span>
                               )}
                             </span>
-                            <span className="block text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                            <span className="block text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                               {opt.estimatedDays ? `Est. ${opt.estimatedDays}` : 'Est. delivery not stated'}
                               {opt.freeShipping && opt.basePrice > 0 && (
                                 <s className="ml-1">{formatPrice(opt.basePrice)}</s>
                               )}
                             </span>
                           </span>
-                          <span className={`text-xs font-black shrink-0 ${opt.freeShipping ? 'text-emerald-600' : 'text-slate-900 dark:text-slate-100'}`}>
+                          <span className={`text-xs font-black shrink-0 ${opt.freeShipping ? 'text-emerald-600' : 'text-slate-900 dark:text-neutral-100'}`}>
                             {opt.freeShipping ? 'Free' : formatPrice(opt.price)}
                           </span>
                         </label>
@@ -807,7 +807,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                             return next
                           })
                         }
-                        className="text-[10px] font-bold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400 underline"
+                        className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 hover:text-slate-600 dark:text-neutral-400 underline"
                       >
                         No shipping method — settle with the supplier
                       </button>
@@ -818,7 +818,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             )
           })}
 
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 leading-relaxed">
             Quotes are re-computed server-side from the live rate book when the order is placed — what you see is
             what the couriers charge today, not a stored estimate.
           </p>
@@ -826,10 +826,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
 
         {/* Card 3: Payment — t194: explicit radio choice, NO silent default.
             Wallet (real balance) · Bank transfer · Mobile banking · COD. */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-2">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-2">
           <div className="flex items-center gap-2">
             <CreditCard className="h-4 w-4 text-primary" />
-            <h2 className="text-xs font-bold text-slate-900 dark:text-slate-100">Payment</h2>
+            <h2 className="text-xs font-bold text-slate-900 dark:text-neutral-100">Payment</h2>
           </div>
 
           <div className="space-y-1.5" role="radiogroup" aria-label="Payment method">
@@ -840,8 +840,8 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                   paymentMethod === 'wallet'
                     ? 'border-primary bg-primary/5'
                     : walletCanCover
-                      ? 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
-                      : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-background opacity-70 cursor-not-allowed'
+                      ? 'border-slate-200 dark:border-neutral-800 hover:bg-slate-50 dark:hover:bg-card'
+                      : 'border-slate-100 dark:border-neutral-800 bg-slate-50 dark:bg-background opacity-70 cursor-not-allowed'
                 }`}
               >
                 <input
@@ -860,22 +860,22 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                 >
                   {paymentMethod === 'wallet' && <span className="h-2 w-2 rounded-full bg-primary" />}
                 </span>
-                <Wallet className={`h-4 w-4 shrink-0 ${paymentMethod === 'wallet' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
+                <Wallet className={`h-4 w-4 shrink-0 ${paymentMethod === 'wallet' ? 'text-primary' : 'text-slate-400 dark:text-neutral-500'}`} />
                 <span className="text-xs">
                   {walletCanCover ? (
                     <>
                       {/* Task 131: the wallet label quotes the SAME payable the summary
                           shows (orderTotal − validated coupon discount) — never a
                           different number on one screen. */}
-                      <span className="font-bold text-slate-900 dark:text-slate-100">Pay {formatPrice(payableTotal)} from wallet balance</span>
-                      <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                      <span className="font-bold text-slate-900 dark:text-neutral-100">Pay {formatPrice(payableTotal)} from wallet balance</span>
+                      <span className="block text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                         Balance {formatPrice(walletBalance)} — the order is marked PAID instantly, no verification wait.
                       </span>
                     </>
                   ) : (
                     <>
-                      <span className="font-bold text-slate-500 dark:text-slate-400 dark:text-slate-500">Wallet balance {formatPrice(walletBalance)}</span>
-                      <span className="block text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                      <span className="font-bold text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Wallet balance {formatPrice(walletBalance)}</span>
+                      <span className="block text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                         Not enough for this order ({formatPrice(payableTotal)}) — top up from the wallet page.
                       </span>
                     </>
@@ -887,34 +887,34 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             {/* Bank transfer */}
             <label
               className={`flex items-center gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-colors ${
-                paymentMethod === 'bank_transfer' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+                paymentMethod === 'bank_transfer' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-neutral-800 hover:bg-slate-50 dark:hover:bg-card'
               }`}
             >
               <input type="radio" name="checkout-pay" className="sr-only" checked={paymentMethod === 'bank_transfer'} onChange={() => setPaymentMethod('bank_transfer')} />
               <span aria-hidden className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${paymentMethod === 'bank_transfer' ? 'border-primary' : 'border-slate-300'}`}>
                 {paymentMethod === 'bank_transfer' && <span className="h-2 w-2 rounded-full bg-primary" />}
               </span>
-              <Landmark className={`h-4 w-4 shrink-0 ${paymentMethod === 'bank_transfer' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
+              <Landmark className={`h-4 w-4 shrink-0 ${paymentMethod === 'bank_transfer' ? 'text-primary' : 'text-slate-400 dark:text-neutral-500'}`} />
               <span className="text-xs">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Bank Transfer</span>
-                <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Transfer the total, then submit the payment reference for verification.</span>
+                <span className="font-bold text-slate-900 dark:text-neutral-100">Bank Transfer</span>
+                <span className="block text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Transfer the total, then submit the payment reference for verification.</span>
               </span>
             </label>
 
             {/* Mobile banking */}
             <label
               className={`flex items-center gap-3 rounded-2xl border px-4 py-3 cursor-pointer transition-colors ${
-                paymentMethod === 'mobile_banking' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card'
+                paymentMethod === 'mobile_banking' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-neutral-800 hover:bg-slate-50 dark:hover:bg-card'
               }`}
             >
               <input type="radio" name="checkout-pay" className="sr-only" checked={paymentMethod === 'mobile_banking'} onChange={() => setPaymentMethod('mobile_banking')} />
               <span aria-hidden className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${paymentMethod === 'mobile_banking' ? 'border-primary' : 'border-slate-300'}`}>
                 {paymentMethod === 'mobile_banking' && <span className="h-2 w-2 rounded-full bg-primary" />}
               </span>
-              <Smartphone className={`h-4 w-4 shrink-0 ${paymentMethod === 'mobile_banking' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
+              <Smartphone className={`h-4 w-4 shrink-0 ${paymentMethod === 'mobile_banking' ? 'text-primary' : 'text-slate-400 dark:text-neutral-500'}`} />
               <span className="text-xs">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Mobile Banking</span>
-                <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">bKash / Nagad — submit the transaction ID after sending.</span>
+                <span className="font-bold text-slate-900 dark:text-neutral-100">Mobile Banking</span>
+                <span className="block text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">bKash / Nagad — submit the transaction ID after sending.</span>
               </span>
             </label>
 
@@ -923,10 +923,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             <label
               className={`flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors ${
                 codLocked
-                  ? 'border-slate-100 dark:border-slate-800 opacity-60 cursor-not-allowed'
+                  ? 'border-slate-100 dark:border-neutral-800 opacity-60 cursor-not-allowed'
                   : paymentMethod === 'cod'
                     ? 'border-primary bg-primary/5 cursor-pointer'
-                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-card cursor-pointer'
+                    : 'border-slate-200 dark:border-neutral-800 hover:bg-slate-50 dark:hover:bg-card cursor-pointer'
               }`}
             >
               <input
@@ -940,10 +940,10 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
               <span aria-hidden className={`flex h-4 w-4 items-center justify-center rounded-full border shrink-0 ${paymentMethod === 'cod' ? 'border-primary' : 'border-slate-300'}`}>
                 {paymentMethod === 'cod' && <span className="h-2 w-2 rounded-full bg-primary" />}
               </span>
-              <Banknote className={`h-4 w-4 shrink-0 ${paymentMethod === 'cod' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`} />
+              <Banknote className={`h-4 w-4 shrink-0 ${paymentMethod === 'cod' ? 'text-primary' : 'text-slate-400 dark:text-neutral-500'}`} />
               <span className="text-xs flex-1 min-w-0">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Cash on Delivery</span>
-                <span className="block text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                <span className="font-bold text-slate-900 dark:text-neutral-100">Cash on Delivery</span>
+                <span className="block text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                   {codLocked ? 'Locked — verify your email or phone in your profile first' : 'Pay the supplier in cash when the goods arrive.'}
                 </span>
               </span>
@@ -957,8 +957,8 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
             </p>
           )}
 
-          <div className="flex items-start gap-2 pt-1 pl-6 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
-            <Lock className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
+          <div className="flex items-start gap-2 pt-1 pl-6 text-xs text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
+            <Lock className="h-3.5 w-3.5 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5 shrink-0" />
             <p>
               {paymentMethod === 'wallet' && walletCanCover ? (
                 <>
@@ -985,27 +985,27 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
 
         {/* Card 4: Order Summary (sticky sidebar on desktop) */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-          <h2 className="text-xs md:text-sm font-bold text-slate-900 dark:text-slate-100">Order Summary</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+          <h2 className="text-xs md:text-sm font-bold text-slate-900 dark:text-neutral-100">Order Summary</h2>
 
-          <div className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 pt-1">
+          <div className="space-y-1.5 text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 pt-1">
             <div className="flex justify-between">
               <span>Items ({items.length})</span>
-              <span className="font-semibold text-slate-800 dark:text-slate-200">{formatPrice(subtotal)}</span>
+              <span className="font-semibold text-slate-800 dark:text-neutral-200">{formatPrice(subtotal)}</span>
             </div>
             {/* Task 95: the honest shipping line — real quoted fee, or the
                 truthful "settles with the supplier" when nothing is picked. */}
             <div className="flex justify-between">
               <span>Shipping</span>
-              <span className={`font-semibold ${hasShippingChoice && shippingFee === 0 ? 'text-emerald-600' : 'text-slate-800 dark:text-slate-200'}`}>
+              <span className={`font-semibold ${hasShippingChoice && shippingFee === 0 ? 'text-emerald-600' : 'text-slate-800 dark:text-neutral-200'}`}>
                 {hasShippingChoice ? (shippingFee === 0 ? 'Free' : formatPrice(shippingFee)) : 'Settled with supplier'}
               </span>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+          <div className="pt-2 border-t border-slate-100 dark:border-neutral-800 space-y-1.5">
             <div className="flex justify-between items-baseline">
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{hasShippingChoice ? 'Total (goods + shipping)' : 'Goods total'}</span>
+              <span className="text-xs font-bold text-slate-800 dark:text-neutral-200">{hasShippingChoice ? 'Total (goods + shipping)' : 'Goods total'}</span>
               <div className="text-xl md:text-2xl font-black text-primary">
                 {formatPrice(payableTotal)}
               </div>
@@ -1052,14 +1052,14 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
                   placeholder="Coupon code"
                   aria-label="Coupon code"
                   maxLength={24}
-                  className="flex-1 h-9 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs uppercase tracking-wide placeholder:normal-case placeholder:text-slate-400 dark:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="flex-1 h-9 rounded-xl border border-slate-200 dark:border-neutral-800 px-3 text-xs uppercase tracking-wide placeholder:normal-case placeholder:text-slate-400 dark:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => void applyCoupon()}
                   disabled={couponChecking}
-                  className="h-9 px-4 rounded-xl text-xs font-bold border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
+                  className="h-9 px-4 rounded-xl text-xs font-bold border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
                 >
                   {couponChecking ? 'Checking…' : 'Apply'}
                 </Button>
@@ -1069,7 +1069,7 @@ export function CheckoutPage({ pageParams: _pageParams }: { pageParams?: Record<
               <p className="text-[10px] font-bold text-red-600 leading-relaxed" role="alert">{couponError}</p>
             )}
           </div>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 leading-relaxed">
             Prices are recalculated from the live database when the order is placed. Stock and MOQ
             are enforced server-side.
           </p>

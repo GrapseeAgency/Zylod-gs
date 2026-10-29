@@ -88,7 +88,7 @@ export function NotificationMutedPage() {
         {/* Pause Master Card */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-card text-slate-700 dark:text-slate-300 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-card text-slate-700 dark:text-neutral-300 flex items-center justify-center flex-shrink-0">
               <VolumeX className="w-5 h-5" />
             </div>
             <div>

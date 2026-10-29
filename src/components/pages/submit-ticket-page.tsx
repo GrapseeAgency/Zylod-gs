@@ -103,7 +103,7 @@ export function SubmitTicketPage() {
           <span className="font-bold text-gray-900 dark:text-gray-100 text-base">Open Support Ticket</span>
         </div>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">Open Support Ticket</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">Open Support Ticket</h1>
 
       <div className="flex-1 px-4 py-6 max-w-2xl mx-auto w-full pb-24">
         <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-5">

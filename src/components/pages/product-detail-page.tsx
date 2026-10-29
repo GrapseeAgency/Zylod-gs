@@ -789,7 +789,7 @@ function DesktopProductDetailPage() {
             )}
             {/* Task 95: the filed shipping weight — buyers see what couriers quote against */}
             {product.weightKg != null && (
-              <Badge variant="outline" className="text-xs border-slate-300 text-slate-600 dark:text-slate-400 dark:text-slate-500">
+              <Badge variant="outline" className="text-xs border-slate-300 text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
                 <Truck className="h-3 w-3 mr-1" />
                 {formatQty(product.weightKg)} kg per {isBundle ? 'bundle' : unit === 'pcs' ? 'pc' : unit}
               </Badge>

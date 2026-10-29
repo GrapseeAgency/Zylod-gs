@@ -59,7 +59,7 @@ export function VipMembershipPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
+      <div className="md:hidden sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-slate-200 dark:border-neutral-800 px-4 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <button onClick={goBack} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-card transition">
             <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
@@ -78,7 +78,7 @@ export function VipMembershipPage() {
           All Tiers →
         </Button>
       </div>
-      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-slate-100">VIP Wholesale Club</h1>
+      <h1 className="hidden md:block text-2xl font-bold text-slate-900 dark:text-neutral-100">VIP Wholesale Club</h1>
 
       <div className="flex-1 px-4 py-6 max-w-xl mx-auto w-full space-y-6 pb-24">
         {loadError && (
@@ -104,8 +104,8 @@ export function VipMembershipPage() {
         </div>
 
         {/* Exclusive VIP Privileges */}
-        <div className="bg-white dark:bg-card/80 rounded-3xl p-5 border border-slate-200 dark:border-slate-700/80 shadow-sm space-y-4">
-          <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+        <div className="bg-white dark:bg-card/80 rounded-3xl p-5 border border-slate-200 dark:border-neutral-700/80 shadow-sm space-y-4">
+          <h3 className="text-xs font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-wider">
             Your VIP Enterprise Privileges
           </h3>
 
@@ -116,13 +116,13 @@ export function VipMembershipPage() {
               { icon: ShieldCheck, title: 'Documented Order Records', desc: 'Every order keeps its payment verification status and history on your account.' },
               { icon: PhoneCall, title: 'Key Account Director', desc: 'Direct WhatsApp and direct phone access to wholesale trading heads.' },
             ].map(item => (
-              <div key={item.title} className="flex items-start gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-card/60 border border-slate-200 dark:border-slate-800">
+              <div key={item.title} className="flex items-start gap-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-card/60 border border-slate-200 dark:border-neutral-800">
                 <div className="w-9 h-9 rounded-xl bg-amber-400/10 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <item.icon className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
                   <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{item.title}</h4>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">{item.desc}</p>
+                  <p className="text-[11px] text-slate-400 dark:text-neutral-500 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}

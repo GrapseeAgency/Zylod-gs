@@ -19,7 +19,7 @@ import { useLiveDelivery } from '@/hooks/use-live-delivery'
 const LiveDeliveryMap = dynamic(() => import('@/components/maps/live-delivery-map'), {
   ssr: false,
   loading: () => (
-    <div className="h-[300px] md:h-[420px] w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-card animate-pulse" />
+    <div className="h-[300px] md:h-[420px] w-full rounded-2xl border border-slate-200 dark:border-neutral-800 bg-slate-100 dark:bg-card animate-pulse" />
   ),
 })
 
@@ -48,10 +48,10 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
   if (loading && !data) {
     return (
       <section aria-busy="true" className="space-y-2">
-        <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+        <h3 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
           <Satellite className="h-4 w-4 text-[var(--primary)]" /> Live Delivery Tracking
         </h3>
-        <div className="h-[300px] md:h-[420px] w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-card animate-pulse" />
+        <div className="h-[300px] md:h-[420px] w-full rounded-2xl border border-slate-200 dark:border-neutral-800 bg-slate-100 dark:bg-card animate-pulse" />
       </section>
     )
   }
@@ -59,7 +59,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
   if (error && !data) {
     return (
       <section className="space-y-2">
-        <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+        <h3 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
           <Satellite className="h-4 w-4 text-[var(--primary)]" /> Live Delivery Tracking
         </h3>
         <div className="rounded-2xl border border-amber-300 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-4 flex items-start gap-3">
@@ -81,13 +81,13 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
   // Real answer from the API: no live delivery on this order (yet)
   if (data && !data.live) {
     return (
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 p-4 flex items-start gap-3">
-        <Satellite className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-0.5 shrink-0" />
+      <section className="rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 p-4 flex items-start gap-3">
+        <Satellite className="h-4 w-4 text-slate-400 dark:text-neutral-500 mt-0.5 shrink-0" />
         <div className="min-w-0">
-          <p className="text-xs font-bold text-slate-700 dark:text-slate-300 dark:text-slate-200">
+          <p className="text-xs font-bold text-slate-700 dark:text-neutral-300 dark:text-neutral-200">
             Live driver tracking is not active for this order yet.
           </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
+          <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">
             {data.message}
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
   return (
     <section className="space-y-2" aria-label="Live delivery tracking">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+        <h3 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
           <Satellite className="h-4 w-4 text-[var(--primary)]" /> Live Delivery Tracking
         </h3>
         <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
             className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
               realtime
                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
-                : 'bg-slate-100 text-slate-500 dark:bg-card dark:text-slate-400'
+                : 'bg-slate-100 text-slate-500 dark:bg-card dark:text-neutral-400'
             }`}
             title={badgeTitle}
           >
@@ -123,7 +123,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
           </span>
           <button
             onClick={refresh}
-            className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-slate-800 dark:text-slate-200 dark:text-slate-400 dark:text-slate-500 dark:hover:text-slate-100"
+            className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-slate-800 dark:text-neutral-200 dark:text-neutral-400 dark:text-neutral-500 dark:hover:text-slate-100"
             title="Refresh now"
           >
             <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
@@ -137,7 +137,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
       {/* Honest note when the socket refused/auth could not grant the signed
           room join — polling via the authed REST API keeps data real. */}
       {liveFeed === 'denied' && (
-        <p className="text-[10.5px] leading-snug text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-start gap-1.5">
+        <p className="text-[10.5px] leading-snug text-slate-500 dark:text-neutral-400 dark:text-neutral-500 flex items-start gap-1.5">
           <AlertTriangle className="h-3 w-3 mt-0.5 shrink-0 text-amber-500" />
           Live feed unavailable for this order — the driver&apos;s position is refreshing
           every 20 seconds instead.
@@ -148,7 +148,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
       {data.notes.length > 0 && (
         <ul className="space-y-1">
           {data.notes.map((note, i) => (
-            <li key={i} className="text-[10.5px] leading-snug text-slate-500 dark:text-slate-400 dark:text-slate-500 flex items-start gap-1.5">
+            <li key={i} className="text-[10.5px] leading-snug text-slate-500 dark:text-neutral-400 dark:text-neutral-500 flex items-start gap-1.5">
               <AlertTriangle className="h-3 w-3 mt-0.5 shrink-0 text-amber-500" />
               {note}
             </li>
@@ -157,7 +157,7 @@ export default function LiveDeliverySection({ orderId, orderInTransit }: Props) 
       )}
 
       {newestPing && (
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+        <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
           Driver position last received {new Date(newestPing).toLocaleTimeString('en-US', { hour12: false })} ·
           positions are sent by the driver&apos;s own phone while the delivery is in progress.
         </p>

@@ -85,9 +85,9 @@ export function AddCardPage() {
   // ─── t214 GUEST WALL — a payment method always belongs to an account ───
   if (!isAuthed) {
     return (
-      <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-          <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+          <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <span className="text-base font-black tracking-tight text-primary">Add Payment Card</span>
@@ -95,10 +95,10 @@ export function AddCardPage() {
         </header>
         <main className="max-w-lg mx-auto px-4 py-16 md:py-24 text-center">
           <div className="w-20 h-20 mx-auto rounded-full bg-slate-100 dark:bg-card flex items-center justify-center mb-4">
-            <LogIn className="h-9 w-9 text-slate-400 dark:text-slate-500" />
+            <LogIn className="h-9 w-9 text-slate-400 dark:text-neutral-500" />
           </div>
           <h2 className="text-base font-black">Sign in to add a card</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6 max-w-xs mx-auto">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 mt-1 mb-6 max-w-xs mx-auto">
             Saved card references belong to your Zylod account — sign in or create one to continue.
           </p>
           <div className="flex flex-col gap-2 max-w-xs mx-auto">
@@ -183,10 +183,10 @@ export function AddCardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Add Payment Card</span>
@@ -195,10 +195,10 @@ export function AddCardPage() {
 
       <main className="max-w-lg mx-auto px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6 lg:max-w-3xl">
         {/* Honesty banner — what this entry IS and IS NOT */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 flex items-start gap-2.5">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 p-4 flex items-start gap-2.5">
           <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-          <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
-            <span className="font-black text-slate-900 dark:text-slate-100">Card references only.</span> Zylod saves the
+          <p className="text-[11px] leading-relaxed text-slate-600 dark:text-neutral-400">
+            <span className="font-black text-slate-900 dark:text-neutral-100">Card references only.</span> Zylod saves the
             brand, last 4 digits, holder and expiry — never the full number or CVV. Cards on file are for
             reconciliation display; they <span className="font-black">cannot be charged</span>. Checkout pays with your
             wallet balance (real debit) or a verified bank / mobile-banking transfer.
@@ -206,36 +206,36 @@ export function AddCardPage() {
         </div>
 
         {/* Card preview — reference styling only, no fake metal card */}
-        <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-slate-950 dark:via-slate-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white shadow-2xl space-y-5 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-slate-200 via-slate-100 to-rose-100 dark:from-neutral-950 dark:via-neutral-900 dark:to-rose-950 rounded-3xl p-6 text-gray-900 dark:text-white shadow-2xl space-y-5 relative overflow-hidden">
           <div className="flex justify-between items-center">
             <span className="text-xs font-black tracking-widest uppercase text-rose-600 dark:text-rose-300">ZYLOD · CARD REFERENCE</span>
             <span className="text-sm font-black italic">{brand}</span>
           </div>
 
           <div className="py-2">
-            <span className="text-xs text-slate-500 dark:text-slate-400 block font-mono">Card Number</span>
-            <span className="text-lg font-black font-mono tracking-widest text-slate-800 dark:text-slate-100 mt-0.5 block">
+            <span className="text-xs text-slate-500 dark:text-neutral-400 block font-mono">Card Number</span>
+            <span className="text-lg font-black font-mono tracking-widest text-slate-800 dark:text-neutral-100 mt-0.5 block">
               {fullNumber ? `•••• •••• •••• ${fullNumber.replace(/\s+/g, '').slice(-4)}` : '•••• •••• •••• ••••'}
             </span>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-1">
+            <span className="text-[10px] text-slate-500 dark:text-neutral-400 block mt-1">
               Only the last 4 digits are stored — the full number stays on this device.
             </span>
           </div>
 
           <div className="flex justify-between items-center text-xs">
             <div>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Cardholder</span>
-              <span className="font-bold text-slate-700 dark:text-slate-200 uppercase">{holderName || 'AUTHORIZED SIGNATORY'}</span>
+              <span className="text-[10px] text-slate-500 dark:text-neutral-400 block uppercase font-bold">Cardholder</span>
+              <span className="font-bold text-slate-700 dark:text-neutral-200 uppercase">{holderName || 'AUTHORIZED SIGNATORY'}</span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Expires</span>
-              <span className="font-bold font-mono text-slate-700 dark:text-slate-200">{expiry || 'MM/YY'}</span>
+              <span className="text-[10px] text-slate-500 dark:text-neutral-400 block uppercase font-bold">Expires</span>
+              <span className="font-bold font-mono text-slate-700 dark:text-neutral-200">{expiry || 'MM/YY'}</span>
             </div>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3.5">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3.5">
             <div className="grid grid-cols-3 gap-2">
               {(['Visa', 'Mastercard', 'Amex'] as Brand[]).map((b) => (
                 <button
@@ -245,7 +245,7 @@ export function AddCardPage() {
                   className={`py-2 text-xs font-bold rounded-xl border text-center transition-all ${
                     brand === b
                       ? 'border-primary bg-rose-50 text-primary shadow-xs'
-                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300'
+                      : 'border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-neutral-300'
                   }`}
                 >
                   {b}
@@ -254,8 +254,8 @@ export function AddCardPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                Card Number <span className="font-normal text-slate-400 dark:text-slate-500">(checked on-device, never stored)</span>
+              <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">
+                Card Number <span className="font-normal text-slate-400 dark:text-neutral-500">(checked on-device, never stored)</span>
               </label>
               <Input
                 value={fullNumber}
@@ -263,13 +263,13 @@ export function AddCardPage() {
                 placeholder="4000 1234 5678 9010"
                 inputMode="numeric"
                 autoComplete="off"
-                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-mono font-bold"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               <div>
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">
                   Cardholder Legal Name
                 </label>
                 <Input
@@ -277,25 +277,25 @@ export function AddCardPage() {
                   onChange={(e) => setHolderName(e.target.value)}
                   placeholder="Name printed on card"
                   autoComplete="off"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-semibold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-semibold"
                 />
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Expiration (MM/YY)</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">Expiration (MM/YY)</label>
                 <Input
                   value={expiry}
                   onChange={(e) => setExpiry(e.target.value.slice(0, 5))}
                   placeholder="12/28"
                   inputMode="numeric"
                   autoComplete="off"
-                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 text-xs font-mono font-bold"
+                  className="h-11 rounded-2xl bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 text-xs font-mono font-bold"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Card Type</span>
+                <span className="text-xs font-bold text-slate-700 dark:text-neutral-300 block mb-1">Card Type</span>
                 <div className="grid grid-cols-2 gap-2">
                   {(['credit', 'debit'] as const).map((t) => (
                     <button
@@ -305,7 +305,7 @@ export function AddCardPage() {
                       className={`py-2 text-xs font-bold rounded-xl border capitalize transition-all ${
                         cardType === t
                           ? 'border-primary bg-rose-50 text-primary'
-                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-slate-300'
+                          : 'border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 text-slate-700 dark:text-neutral-300'
                       }`}
                     >
                       {t}
@@ -315,10 +315,10 @@ export function AddCardPage() {
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="pt-2 border-t border-slate-100 dark:border-neutral-800 flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-slate-900 dark:text-slate-100 block">Set as Primary Reference</span>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Display ordering only — not a checkout payment method</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-neutral-100 block">Set as Primary Reference</span>
+                <span className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">Display ordering only — not a checkout payment method</span>
               </div>
               <Switch checked={isDefault} onCheckedChange={setIsDefault} className="data-[state=checked]:bg-primary" />
             </div>
@@ -347,7 +347,7 @@ export function AddCardPage() {
             {loading ? 'Saving card reference…' : 'Save Card Reference'}
           </Button>
 
-          <p className="flex items-start gap-2 text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
+          <p className="flex items-start gap-2 text-[10px] text-slate-400 dark:text-neutral-500 leading-relaxed">
             <Lock className="h-3 w-3 shrink-0 mt-0.5" />
             No card can be charged on Zylod. Orders are paid from your wallet balance (debited in real time) or by a
             bank / mobile transfer that a finance admin verifies against the real receipt.

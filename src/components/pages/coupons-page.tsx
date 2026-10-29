@@ -187,20 +187,20 @@ export function CouponsPage() {
       <div className="flex-1 px-4 py-4 md:px-6 md:py-6 max-w-3xl mx-auto w-full space-y-4 md:space-y-5 pb-24 md:pb-8 lg:max-w-5xl">
         {/* Task 74: ADMIN creation panel — admin-only, collapsed by default. */}
         {isAdmin && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-2xs overflow-hidden">
             <button
               type="button"
               onClick={() => setShowCreate((v) => !v)}
               className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-slate-50 dark:bg-background dark:hover:bg-card transition"
               aria-expanded={showCreate}
             >
-              <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 dark:text-slate-500">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                 Admin — Create Coupon
               </span>
               <span className="text-xs font-bold text-primary">{showCreate ? 'Hide' : 'Open'}</span>
             </button>
             {showCreate && (
-              <div className="px-5 pb-5 space-y-3 border-t border-slate-100 dark:border-slate-800 pt-4">
+              <div className="px-5 pb-5 space-y-3 border-t border-slate-100 dark:border-neutral-800 pt-4">
                 <div className="grid grid-cols-2 gap-2">
                   <input
                     value={form.code}
@@ -208,13 +208,13 @@ export function CouponsPage() {
                     placeholder="CODE"
                     aria-label="Coupon code"
                     maxLength={24}
-                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs font-bold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-neutral-800 px-3 text-xs font-bold uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <select
                     value={form.discountType}
                     onChange={(e) => setForm((f) => ({ ...f, discountType: e.target.value }))}
                     aria-label="Discount type"
-                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-2 text-xs font-bold bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-neutral-800 px-2 text-xs font-bold bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
                   >
                     <option value="percentage">Percentage %</option>
                     <option value="fixed">Fixed ৳</option>
@@ -225,7 +225,7 @@ export function CouponsPage() {
                     placeholder={form.discountType === 'percentage' ? 'Discount %' : 'Discount ৳'}
                     aria-label="Discount amount"
                     inputMode="decimal"
-                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-neutral-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <input
                     value={form.minOrderAmount}
@@ -233,7 +233,7 @@ export function CouponsPage() {
                     placeholder="Min order ৳ (optional)"
                     aria-label="Minimum order amount"
                     inputMode="decimal"
-                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-neutral-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <input
                     value={form.maxDiscount}
@@ -241,7 +241,7 @@ export function CouponsPage() {
                     placeholder="Max discount ৳ (optional)"
                     aria-label="Maximum discount"
                     inputMode="decimal"
-                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-neutral-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <input
                     value={form.usageLimit}
@@ -249,16 +249,16 @@ export function CouponsPage() {
                     placeholder="Usage limit"
                     aria-label="Usage limit"
                     inputMode="numeric"
-                    className="h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="h-10 rounded-xl border border-slate-200 dark:border-neutral-800 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                   Valid until
                   <input
                     type="datetime-local"
                     value={form.validUntil}
                     onChange={(e) => setForm((f) => ({ ...f, validUntil: e.target.value }))}
-                    className="mt-1 w-full h-10 rounded-xl border border-slate-200 dark:border-slate-800 px-3 text-xs font-normal normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="mt-1 w-full h-10 rounded-xl border border-slate-200 dark:border-neutral-800 px-3 text-xs font-normal normal-case tracking-normal focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </label>
                 {createError && <p className="text-[11px] font-bold text-red-600" role="alert">{createError}</p>}

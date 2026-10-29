@@ -33,7 +33,7 @@ interface ApiComplaint {
 
 const REFRESH_INTERVAL_MS = 30_000
 
-const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 rounded-lg px-2 py-1 text-slate-500 dark:text-slate-400'
+const chipClass = 'text-[10px] font-bold bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 rounded-lg px-2 py-1 text-slate-500 dark:text-neutral-400'
 
 // Real complaint status → chip color (honest palette language, same as admin queues)
 const statusChipClass: Record<string, string> = {
@@ -41,7 +41,7 @@ const statusChipClass: Record<string, string> = {
   in_review: 'text-primary dark:text-primary/70 bg-primary/5 dark:bg-primary/10 border-primary/20 dark:border-primary/30',
   resolved: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 border-emerald-100 dark:border-emerald-900',
   rejected: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 border-red-100 dark:border-red-900',
-  withdrawn: 'text-slate-600 dark:text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-background border-slate-100 dark:border-slate-800',
+  withdrawn: 'text-slate-600 dark:text-neutral-400 dark:text-neutral-300 bg-slate-50 dark:bg-background border-slate-100 dark:border-neutral-800',
 }
 
 function formatTimestamp(iso: string): string {
@@ -212,7 +212,7 @@ export function DisputeCenterPage() {
       <div className="max-w-[1280px] mx-auto px-4 py-16 text-center space-y-3">
         <Scale className="h-10 w-10 text-amber-500 mx-auto" />
         <h1 className="text-base font-black">Sign in to file a complaint</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-sm mx-auto">
           The dispute center needs to know who you are so your complaints stay linked to your account and you can see the real resolution.
         </p>
         <Button onClick={() => navigate('login')} className="h-10 px-5 rounded-xl text-xs font-bold gap-1.5">
@@ -232,18 +232,18 @@ export function DisputeCenterPage() {
           </div>
           <div>
             <h1 className="text-lg md:text-xl font-black tracking-tight">Dispute Center</h1>
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">File a complaint and track it for real — the reference you get is the actual record id, and every status change comes from the Zylod review team.</p>
+            <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">File a complaint and track it for real — the reference you get is the actual record id, and every status change comes from the Zylod review team.</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {lastUpdated && (
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
+            <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 tabular-nums">Updated {lastUpdated.toLocaleTimeString('en-GB')} · auto-refreshes every 30s</span>
           )}
           <Button
             variant="outline"
             onClick={() => loadComplaints(true)}
             disabled={refreshing}
-            className="min-h-11 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-slate-800 dark:border-slate-700"
+            className="min-h-11 px-3 rounded-xl text-xs font-bold gap-1.5 border-slate-200 dark:border-neutral-800 dark:border-neutral-700"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} /> Refresh
           </Button>
@@ -260,7 +260,7 @@ export function DisputeCenterPage() {
       )}
 
       {/* File-a-complaint form */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-5 space-y-3">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 p-4 md:p-5 space-y-3">
         <h2 className="text-sm font-black">File a complaint</h2>
 
         {filed && (
@@ -310,7 +310,7 @@ export function DisputeCenterPage() {
             className="min-h-[100px] rounded-xl text-xs"
             maxLength={5000}
           />
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{description.trim().length}/5000 characters</p>
+          <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">{description.trim().length}/5000 characters</p>
         </div>
 
         <div className="space-y-1.5">
@@ -322,7 +322,7 @@ export function DisputeCenterPage() {
             placeholder="The order this complaint is about"
             className="h-11 rounded-xl text-xs font-mono"
           />
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">Leave empty if not order-related. If given, the order must belong to your account.</p>
+          <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Leave empty if not order-related. If given, the order must belong to your account.</p>
         </div>
 
         {formError && (
@@ -346,11 +346,11 @@ export function DisputeCenterPage() {
         {loading ? (
           <div className="space-y-3">
             {[0, 1].map((i) => (
-              <div key={i} className="h-24 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />
+              <div key={i} className="h-24 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 animate-pulse" />
             ))}
           </div>
         ) : error ? (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
             <AlertTriangle className="h-8 w-8 text-red-500 mx-auto" />
             <h3 className="text-sm font-black">Could not load your complaints</h3>
             <p className="text-xs text-red-600 dark:text-red-400 break-words">{error}</p>
@@ -360,10 +360,10 @@ export function DisputeCenterPage() {
           </div>
         ) : complaints.length === 0 ? (
           // Honest empty state — this account truly has zero complaints
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-slate-800 text-center space-y-2">
-            <Inbox className="h-10 w-10 text-slate-300 dark:text-slate-700 dark:text-slate-300 mx-auto" />
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-10 border border-slate-200 dark:border-neutral-800 text-center space-y-2">
+            <Inbox className="h-10 w-10 text-slate-300 dark:text-neutral-700 dark:text-neutral-300 mx-auto" />
             <h3 className="text-sm font-black">No complaints filed yet</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-md mx-auto leading-relaxed">
               Your account has no complaints on record — this list only shows real complaints you have filed.
             </p>
           </div>
@@ -372,15 +372,15 @@ export function DisputeCenterPage() {
             {complaints.map((c) => (
               <div
                 key={c.id}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-neutral-800 p-4 space-y-2 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
               >
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`text-[10px] font-bold border rounded-lg px-2 py-0.5 ${chipClass}`}>{categoryLabel(c.category)}</span>
-                      <p className="text-sm font-black text-slate-800 dark:text-slate-200 break-words">{c.title}</p>
+                      <p className="text-sm font-black text-slate-800 dark:text-neutral-200 break-words">{c.title}</p>
                     </div>
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                    <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                       Filed {formatTimestamp(c.createdAt)} · ref <span className="font-mono">{c.id}</span>
                       {c.orderId ? ` · order ${c.orderId}` : ' · not order-related'}
                     </p>
@@ -389,9 +389,9 @@ export function DisputeCenterPage() {
                     {c.status.toUpperCase()}
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500 dark:text-slate-300 break-words line-clamp-2">{c.description}</p>
+                <p className="text-xs text-slate-600 dark:text-neutral-400 dark:text-neutral-500 dark:text-neutral-300 break-words line-clamp-2">{c.description}</p>
                 {c.resolutionNote && (
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
+                  <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 break-words">
                     <span className="font-black">Resolution:</span> {c.resolutionNote}
                   </p>
                 )}

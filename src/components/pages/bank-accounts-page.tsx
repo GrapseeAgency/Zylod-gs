@@ -126,7 +126,7 @@ export function BankAccountsPage() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-md">
-          <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{loadError}</p>
+          <p className="text-sm font-bold text-slate-900 dark:text-neutral-100">{loadError}</p>
           <Button variant="outline" size="sm" onClick={loadAccounts}>Retry</Button>
         </div>
       </div>
@@ -134,10 +134,10 @@ export function BankAccountsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-8">
       {/* Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Commercial Bank Accounts</span>
@@ -153,7 +153,7 @@ export function BankAccountsPage() {
       <main className="max-w-lg mx-auto md:max-w-3xl px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 w-full">
         {/* Desktop page title */}
         <div className="hidden md:flex items-center justify-between">
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">Commercial Bank Accounts</h1>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-neutral-100">Commercial Bank Accounts</h1>
           <Button
             onClick={() => navigate('add-bank-account')}
             size="sm"
@@ -165,14 +165,14 @@ export function BankAccountsPage() {
         </div>
 
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-neutral-900 dark:to-rose-950 rounded-3xl p-5 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
               <Landmark className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base font-black">Corporate Bank Payouts</h1>
-              <p className="text-xs text-slate-600 dark:text-slate-300">
+              <p className="text-xs text-slate-600 dark:text-neutral-300">
                 Verified commercial bank routing for high-volume wholesale settlements.
               </p>
             </div>
@@ -188,7 +188,7 @@ export function BankAccountsPage() {
               {accounts.map((acc) => (
               <div
                 key={acc.id}
-                className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3 relative overflow-hidden"
+                className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3 relative overflow-hidden"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -197,14 +197,14 @@ export function BankAccountsPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{acc.bankName}</h3>
+                        <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">{acc.bankName}</h3>
                         {acc.isDefault && (
                           <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
                             PRIMARY
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono block mt-0.5">
+                      <span className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-mono block mt-0.5">
                         A/C: •••• {acc.accountNumber.slice(-4)}
                       </span>
                     </div>
@@ -213,20 +213,20 @@ export function BankAccountsPage() {
                   <button
                     onClick={() => handleDelete(acc.id)}
                     disabled={actionLoading === acc.id}
-                    className="text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors"
+                    className="text-slate-400 dark:text-neutral-500 dark:text-neutral-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
 
-                <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 text-xs divide-y divide-slate-100 dark:divide-slate-800">
+                <div className="bg-slate-50 dark:bg-background rounded-2xl p-3 text-xs divide-y divide-slate-100 dark:divide-neutral-800">
                   <div className="pb-1.5 flex justify-between">
-                    <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">Beneficiary</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">{acc.accountHolderName}</span>
+                    <span className="text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-medium">Beneficiary</span>
+                    <span className="font-bold text-slate-800 dark:text-neutral-200">{acc.accountHolderName}</span>
                   </div>
                   <div className="pt-1.5 flex justify-between">
-                    <span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 font-medium">Branch</span>
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">{acc.branchName}</span>
+                    <span className="text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-medium">Branch</span>
+                    <span className="font-semibold text-slate-700 dark:text-neutral-300">{acc.branchName}</span>
                   </div>
                 </div>
 
@@ -235,7 +235,7 @@ export function BankAccountsPage() {
                     onClick={() => handleSetDefault(acc.id)}
                     disabled={actionLoading === acc.id}
                     variant="outline"
-                    className="w-full h-9 rounded-xl border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
+                    className="w-full h-9 rounded-xl border-slate-200 dark:border-neutral-800 text-xs font-bold text-slate-700 dark:text-neutral-300 hover:bg-slate-50 dark:bg-background dark:hover:bg-card"
                   >
                     {actionLoading === acc.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Set as Primary Payout Account'}
                   </Button>
@@ -244,10 +244,10 @@ export function BankAccountsPage() {
               ))}
             </div>
           ) : (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-              <Landmark className="h-10 w-10 mx-auto text-slate-400 dark:text-slate-300 stroke-[1.5]" />
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">No bank accounts linked</span>
-              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 text-center space-y-3">
+              <Landmark className="h-10 w-10 mx-auto text-slate-400 dark:text-neutral-300 stroke-[1.5]" />
+              <span className="text-xs font-bold text-slate-700 dark:text-neutral-300 block">No bank accounts linked</span>
+              <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto">
                 Add a corporate bank account to enable direct wholesale withdrawals.
               </p>
             </div>

@@ -312,17 +312,17 @@ export function SearchResultsPage() {
   const hasQuery = activeSearch.trim().length > 0
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-neutral-100">
       {/* Search Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:px-6">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:px-6">
         <form onSubmit={handleSearchSubmit} className="relative flex items-center md:max-w-3xl md:mx-auto">
-          <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-slate-500 dark:text-slate-400 pointer-events-none" />
+          <Search className="absolute left-3.5 h-4 w-4 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 pointer-events-none" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search products, categories..."
             aria-label="Search wholesale products"
-            className="pl-10 pr-4 h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
+            className="pl-10 pr-4 h-11 bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 rounded-xl text-sm font-medium focus-visible:ring-primary"
           />
         </form>
       </header>
@@ -330,7 +330,7 @@ export function SearchResultsPage() {
       {/* Related Categories — real counts from GET /api/categories */}
       {categories.length > 0 && (
         <section className="px-4 py-4 md:px-6 md:max-w-5xl mx-auto">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-3">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-neutral-300 mb-3">
             Browse Categories
           </h3>
           <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1">
@@ -338,12 +338,12 @@ export function SearchResultsPage() {
               <button
                 key={c.id || c.slug || i}
                 onClick={() => navigate('category-products', { category: c.slug })}
-                className="flex flex-col items-center justify-center min-h-11 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xs hover:shadow-md transition-all min-w-[96px] shrink-0"
+                className="flex flex-col items-center justify-center min-h-11 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-neutral-800 shadow-2xs hover:shadow-md transition-all min-w-[96px] shrink-0"
               >
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 text-center line-clamp-1">
+                <span className="text-xs font-semibold text-slate-700 dark:text-neutral-300 text-center line-clamp-1">
                   {c.name}
                 </span>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                   {c.productCount.toLocaleString()} products
                 </span>
               </button>
@@ -356,28 +356,28 @@ export function SearchResultsPage() {
       <main className="px-4 pt-2 md:px-6 md:max-w-5xl md:mx-auto md:w-full md:pt-4">
         {hasQuery && !loading && !loadError && (
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 tracking-tight">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100 tracking-tight">
               Products ({products.length})
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
-              for &ldquo;<span className="font-semibold text-slate-800 dark:text-slate-200">{activeSearch}</span>&rdquo;
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
+              for &ldquo;<span className="font-semibold text-slate-800 dark:text-neutral-200">{activeSearch}</span>&rdquo;
             </p>
           </div>
         )}
 
         {/* Idle state — nothing searched yet */}
         {!hasQuery && !loading ? (
-          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-neutral-800">
             <Search className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">Search wholesale products</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
+            <h3 className="text-base font-bold text-slate-800 dark:text-neutral-200">Search wholesale products</h3>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs mx-auto">
               Type a product, brand, or SKU above. Every result shows unit, MOQ, and volume-tier savings.
             </p>
           </div>
         ) : loading ? (
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 flex gap-3">
+              <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl p-3 border border-slate-100 dark:border-neutral-800 flex gap-3">
                 <Skeleton className="w-24 h-24 rounded-xl shrink-0" />
                 <div className="flex-1 space-y-2 py-1">
                   <Skeleton className="h-4 w-3/4" />
@@ -388,11 +388,11 @@ export function SearchResultsPage() {
             ))}
           </div>
         ) : loadError ? (
-          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-neutral-800">
             <AlertTriangle className="h-12 w-12 mx-auto text-primary mb-3" />
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{loadError}</h3>
+            <h3 className="text-base font-bold text-slate-800 dark:text-neutral-200">{loadError}</h3>
             {errorStatus ? (
-              <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-1">HTTP {errorStatus} from /api/products</p>
+              <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-1">HTTP {errorStatus} from /api/products</p>
             ) : null}
             <Button
               variant="outline"
@@ -404,10 +404,10 @@ export function SearchResultsPage() {
             </Button>
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+          <div className="text-center py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-neutral-800">
             <Package className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No results found</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
+            <h3 className="text-base font-bold text-slate-800 dark:text-neutral-200">No results found</h3>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs mx-auto">
               We couldn&apos;t find any products matching &ldquo;{activeSearch}&rdquo;. Try another term or browse categories.
             </p>
             <Button
@@ -439,7 +439,7 @@ export function SearchResultsPage() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   onClick={() => navigate('product-detail', { productId: product.id })}
-                  className="relative bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-3 shadow-2xs hover:shadow-md transition-all flex gap-3.5 cursor-pointer items-start"
+                  className="relative bg-white dark:bg-gray-900 rounded-2xl border border-slate-100 dark:border-neutral-800 p-3 shadow-2xs hover:shadow-md transition-all flex gap-3.5 cursor-pointer items-start"
                 >
                   {/* Thumbnail */}
                   <div className="relative w-24 h-24 rounded-xl bg-slate-100 dark:bg-card shrink-0 overflow-hidden">
@@ -455,7 +455,7 @@ export function SearchResultsPage() {
                       </div>
                     )}
                     {outOfStock && (
-                      <div className="absolute inset-x-0 bottom-0 bg-slate-900/80 text-white text-[9px] font-black uppercase tracking-wider text-center py-0.5">
+                      <div className="absolute inset-x-0 bottom-0 bg-neutral-900/80 text-white text-[9px] font-black uppercase tracking-wider text-center py-0.5">
                         Out of stock
                       </div>
                     )}
@@ -463,14 +463,14 @@ export function SearchResultsPage() {
 
                   {/* Details */}
                   <div className="flex-1 min-w-0 pr-14">
-                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-2 leading-snug">
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-neutral-200 line-clamp-2 leading-snug">
                       {product.name}
                     </h4>
                     {product.sku ? (
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">SKU: {product.sku}</p>
+                      <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">SKU: {product.sku}</p>
                     ) : null}
                     {product.supplierName ? (
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 line-clamp-1">
+                      <p className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5 line-clamp-1">
                         {product.supplierName}
                       </p>
                     ) : null}
@@ -480,10 +480,10 @@ export function SearchResultsPage() {
                         {bestTier && savingsPercent > 0
                           ? `${formatPrice(lowPrice)} – ${formatPrice(product.basePrice)}`
                           : formatPrice(product.basePrice)}
-                        <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 dark:text-slate-400"> /{product.unit}</span>
+                        <span className="text-[10px] font-medium text-slate-400 dark:text-neutral-500 dark:text-neutral-400"> /{product.unit}</span>
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium bg-slate-100 dark:bg-card rounded-md px-1.5 py-0.5">
+                        <span className="text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-medium bg-slate-100 dark:bg-card rounded-md px-1.5 py-0.5">
                           MOQ {product.moq.toLocaleString()} {product.unit}
                         </span>
                         {bestTier && savingsPercent > 0 && (
@@ -493,7 +493,7 @@ export function SearchResultsPage() {
                           </span>
                         )}
                         {product.soldCount > 0 && (
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                          <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                             {product.soldCount.toLocaleString()} sold
                           </span>
                         )}
@@ -505,7 +505,7 @@ export function SearchResultsPage() {
                   <button
                     onClick={(e) => handleToggleWishlist(e, product)}
                     aria-label={inWish ? 'Remove from wishlist' : 'Add to wishlist'}
-                    className="absolute top-2 right-2 h-11 w-11 flex items-center justify-center text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-primary transition-colors"
+                    className="absolute top-2 right-2 h-11 w-11 flex items-center justify-center text-slate-400 dark:text-neutral-500 dark:text-neutral-400 hover:text-primary transition-colors"
                   >
                     <Heart className={`h-4 w-4 ${inWish ? 'fill-primary text-primary' : ''}`} />
                   </button>
@@ -548,7 +548,7 @@ export function SearchResultsPage() {
 
         {/* Sign-in hint for cart sync — cart persistence requires a buyer account */}
         {!loading && !loadError && products.length > 0 && (
-          <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+          <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
             <LogIn className="h-3 w-3" />
             Sign in as a buyer to keep your cart across devices.
           </div>

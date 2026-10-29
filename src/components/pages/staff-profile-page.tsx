@@ -73,19 +73,19 @@ function StaffStatCard({
     emerald: 'bg-emerald-50 border-emerald-100 text-emerald-600',
     amber: 'bg-amber-50 border-amber-100 text-amber-600',
     sky: 'bg-sky-50 border-sky-100 text-sky-600',
-    slate: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400',
+    slate: 'bg-slate-100 dark:bg-card border-slate-200 dark:border-neutral-800 text-slate-600 dark:text-neutral-400',
     violet: 'bg-violet-50 border-violet-100 text-violet-600',
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+    <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
       <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center ${iconMap[color] || iconMap.primary}`}>
         <Icon className="h-5 w-5" />
       </div>
       <div>
-        <div className="text-2xl font-black text-slate-900 dark:text-slate-100 font-mono leading-none">{value}</div>
-        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-1 uppercase tracking-wider">{label}</span>
-        {sub && <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block">{sub}</span>}
+        <div className="text-2xl font-black text-slate-900 dark:text-neutral-100 font-mono leading-none">{value}</div>
+        <span className="text-[11px] font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block mt-1 uppercase tracking-wider">{label}</span>
+        {sub && <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">{sub}</span>}
       </div>
     </div>
   )
@@ -315,16 +315,16 @@ export function StaffProfilePage() {
 
   // ─── RENDER ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-28 md:pb-10">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-28 md:pb-10">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('home')} className="md:hidden p-1 text-slate-700 dark:text-slate-300" title="Home">
+          <button onClick={() => navigate('home')} className="md:hidden p-1 text-slate-700 dark:text-neutral-300" title="Home">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="md:hidden">
             <span className="text-lg font-black tracking-tight text-primary">Zylod</span>
-            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400 block -mt-0.5 uppercase tracking-widest">
+            <span className="text-[9px] font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block -mt-0.5 uppercase tracking-widest">
               Staff Operations
             </span>
           </div>
@@ -338,7 +338,7 @@ export function StaffProfilePage() {
           )}
           <button
             onClick={() => navigate('account-settings')}
-            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-slate-300"
+            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center text-slate-700 dark:text-neutral-300"
             title="Settings"
           >
             <Settings className="h-4 w-4" />
@@ -348,8 +348,8 @@ export function StaffProfilePage() {
 
       <main className="max-w-lg mx-auto md:max-w-3xl">
         {/* ─── STAFF IDENTITY CARD ─────────────────────────────────────── */}
-        <div className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-slate-800">
-          <div className="h-20 bg-gradient-to-r from-slate-300 to-slate-400 dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-neutral-800">
+          <div className="h-20 bg-gradient-to-r from-slate-300 to-slate-400 dark:from-neutral-800 dark:to-neutral-900 relative overflow-hidden">
             <div className="absolute top-3 left-3">
               <span className="bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full border border-white/20 flex items-center gap-1.5">
                 <Warehouse className="h-3 w-3 text-slate-300" />
@@ -361,8 +361,8 @@ export function StaffProfilePage() {
           <div className="px-4 pb-4 -mt-8 space-y-3">
             <div className="flex items-end justify-between">
               <div className="relative">
-                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-slate-200 dark:ring-slate-800 flex items-center justify-center bg-slate-100 dark:bg-card">
-                  <HardHat className="h-8 w-8 text-slate-600 dark:text-slate-400 dark:text-slate-500" />
+                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-900 border-4 border-white shadow-lg overflow-hidden ring-2 ring-slate-200 dark:ring-neutral-800 flex items-center justify-center bg-slate-100 dark:bg-card">
+                  <HardHat className="h-8 w-8 text-slate-600 dark:text-neutral-400 dark:text-neutral-500" />
                 </div>
               </div>
 
@@ -382,23 +382,23 @@ export function StaffProfilePage() {
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-black text-slate-900 dark:text-slate-100 tracking-tight">{fullName}</h1>
+                <h1 className="text-xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">{fullName}</h1>
                 <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 ${
                   clockedIn
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                    : 'bg-slate-100 dark:bg-card text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
+                    : 'bg-slate-100 dark:bg-card text-slate-500 dark:text-neutral-400 border border-slate-200 dark:border-neutral-800'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${clockedIn ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
                   {clockedIn ? 'On Duty' : 'Off Duty'}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">Warehouse &amp; Logistics Staff</p>
+              <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5">Warehouse &amp; Logistics Staff</p>
             </div>
           </div>
         </div>
 
         {/* ─── TAB NAVIGATION (CLEAN ICONS, NO EMOJIS) ──────────────────── */}
-        <div className="sticky top-[57px] z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 shadow-xs">
+        <div className="sticky top-[57px] z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 shadow-xs">
           <div className="flex items-center gap-1 overflow-x-auto no-scrollbar px-3 py-2">
             {[
               { key: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -419,7 +419,7 @@ export function StaffProfilePage() {
                   className={`px-3.5 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isActive
                       ? 'bg-primary text-white shadow-xs font-black'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-card'
+                      : 'text-slate-500 dark:text-neutral-400 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-card'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -445,7 +445,7 @@ export function StaffProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'dashboard' && (
                 <>
-                  <div className={`rounded-3xl p-5 shadow-lg space-y-3 ${clockedIn ? 'bg-gradient-to-br from-emerald-700 to-emerald-800 dark:from-emerald-800 dark:to-emerald-900' : 'bg-gradient-to-br from-slate-500 to-slate-600 dark:from-slate-800 dark:to-slate-900'}`}>
+                  <div className={`rounded-3xl p-5 shadow-lg space-y-3 ${clockedIn ? 'bg-gradient-to-br from-emerald-700 to-emerald-800 dark:from-emerald-800 dark:to-emerald-900' : 'bg-gradient-to-br from-slate-500 to-slate-600 dark:from-neutral-800 dark:to-neutral-900'}`}>
                     <div className="flex items-center justify-between text-white">
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-white/60 block">Shift Timer</span>
@@ -477,22 +477,22 @@ export function StaffProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'shifts' && (
                 <>
-                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
                       <Clock className="h-4 w-4 text-primary" />
                       Recent Shift Attendance
                     </h2>
                     {shiftLogs.length > 0 ? (
-                      <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                      <div className="divide-y divide-slate-100 dark:divide-neutral-800">
                         {shiftLogs.map((log) => (
                           <div key={log.id} className="py-2.5 flex justify-between text-xs">
-                            <span className="font-bold text-slate-800 dark:text-slate-200">{log.date}</span>
-                            <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono">{log.clockIn} - {log.clockOut || 'Active'}</span>
+                            <span className="font-bold text-slate-800 dark:text-neutral-200">{log.date}</span>
+                            <span className="text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-mono">{log.clockIn} - {log.clockOut || 'Active'}</span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-4 text-center">No previous shift records found. Clock in to log current shift.</p>
+                      <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 py-4 text-center">No previous shift records found. Clock in to log current shift.</p>
                     )}
                   </div>
                 </>
@@ -511,25 +511,25 @@ export function StaffProfilePage() {
                     Open Barcode Scanner Camera
                   </Button>
 
-                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
                       <ScanLine className="h-4 w-4 text-primary" />
                       Scan Activity History
                     </h2>
                     {scanHistory.length > 0 ? (
-                      <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                      <div className="divide-y divide-slate-100 dark:divide-neutral-800">
                         {scanHistory.map((s) => (
                           <div key={s.id} className="py-2.5 flex justify-between text-xs">
                             <div>
-                              <span className="font-bold text-slate-800 dark:text-slate-200 block">{s.productName || s.barcode}</span>
-                              <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">{s.action}</span>
+                              <span className="font-bold text-slate-800 dark:text-neutral-200 block">{s.productName || s.barcode}</span>
+                              <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">{s.action}</span>
                             </div>
-                            <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">{new Date(s.scannedAt).toLocaleTimeString()}</span>
+                            <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-mono">{new Date(s.scannedAt).toLocaleTimeString()}</span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-4 text-center">No recent scan activity recorded.</p>
+                      <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 py-4 text-center">No recent scan activity recorded.</p>
                     )}
                   </div>
                 </>
@@ -540,8 +540,8 @@ export function StaffProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'vehicles' && (
                 <>
-                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
                       <Truck className="h-4 w-4 text-primary" />
                       Active Dispatch Vehicles
                     </h2>
@@ -550,8 +550,8 @@ export function StaffProfilePage() {
                         {vehicles.map((v) => (
                           <div key={v.id} className="p-3 bg-slate-50 dark:bg-background rounded-xl flex justify-between items-center text-xs">
                             <div>
-                              <span className="font-bold text-slate-900 dark:text-slate-100 block">{v.plateNumber}</span>
-                              <span className="text-[10px] text-slate-500 dark:text-slate-400 dark:text-slate-500">Driver: {v.driverName} • Route: {v.route}</span>
+                              <span className="font-bold text-slate-900 dark:text-neutral-100 block">{v.plateNumber}</span>
+                              <span className="text-[10px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Driver: {v.driverName} • Route: {v.route}</span>
                             </div>
                             <span className="text-[10px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100">
                               {v.status}
@@ -560,7 +560,7 @@ export function StaffProfilePage() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 py-4 text-center">No vehicles currently assigned to this dock.</p>
+                      <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 py-4 text-center">No vehicles currently assigned to this dock.</p>
                     )}
                   </div>
                 </>
@@ -571,14 +571,14 @@ export function StaffProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'qc' && (
                 <>
-                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
                       <ClipboardCheck className="h-4 w-4 text-primary" />
                       Log Quality Control Rejection
                     </h2>
                     <div className="space-y-3">
                       <div>
-                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Product SKU / Barcode</label>
+                        <label className="text-xs font-bold text-slate-700 dark:text-neutral-300">Product SKU / Barcode</label>
                         <Input
                           value={qcProductId}
                           onChange={(e) => setQcProductId(e.target.value)}
@@ -587,7 +587,7 @@ export function StaffProfilePage() {
                         />
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Defect Reason</label>
+                        <label className="text-xs font-bold text-slate-700 dark:text-neutral-300">Defect Reason</label>
                         <Input
                           value={qcReason}
                           onChange={(e) => setQcReason(e.target.value)}
@@ -612,14 +612,14 @@ export function StaffProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'incidents' && (
                 <>
-                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
                       <AlertTriangle className="h-4 w-4 text-rose-600" />
                       Report Warehouse Incident
                     </h2>
                     <div className="space-y-3">
                       <div>
-                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Incident Summary</label>
+                        <label className="text-xs font-bold text-slate-700 dark:text-neutral-300">Incident Summary</label>
                         <Input
                           value={incidentTitle}
                           onChange={(e) => setIncidentTitle(e.target.value)}
@@ -628,13 +628,13 @@ export function StaffProfilePage() {
                         />
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Detailed Report</label>
+                        <label className="text-xs font-bold text-slate-700 dark:text-neutral-300">Detailed Report</label>
                         <textarea
                           rows={3}
                           value={incidentDesc}
                           onChange={(e) => setIncidentDesc(e.target.value)}
                           placeholder="Location, equipment involved, and actions taken..."
-                          className="w-full rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 p-3 text-xs resize-none focus:outline-none focus:border-primary mt-1"
+                          className="w-full rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-neutral-800 p-3 text-xs resize-none focus:outline-none focus:border-primary mt-1"
                         />
                       </div>
                       <Button
@@ -654,8 +654,8 @@ export function StaffProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'customs' && (
                 <>
-                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
                       <FileCheck2 className="h-4 w-4 text-primary" />
                       Freight Customs Document Checklist
                     </h2>
@@ -669,7 +669,7 @@ export function StaffProfilePage() {
                       ].map((item, i) => (
                         <div key={i} className="flex items-center gap-2.5 py-1.5 border-b border-slate-50 last:border-0">
                           <CheckSquare className="h-4 w-4 text-emerald-600 shrink-0" />
-                          <span className="text-slate-800 dark:text-slate-200 font-semibold">{item}</span>
+                          <span className="text-slate-800 dark:text-neutral-200 font-semibold">{item}</span>
                         </div>
                       ))}
                     </div>
@@ -682,8 +682,8 @@ export function StaffProfilePage() {
               ═══════════════════════════════════════════════════════════ */}
               {activeTab === 'handover' && (
                 <>
-                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-                    <h2 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-4">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100 flex items-center gap-2">
                       <FileText className="h-4 w-4 text-primary" />
                       Shift Handover Note
                     </h2>
@@ -692,7 +692,7 @@ export function StaffProfilePage() {
                       value={handoverNotes}
                       onChange={(e) => setHandoverNotes(e.target.value)}
                       placeholder="Notes for next shift supervisor regarding pending dock arrivals or equipment..."
-                      className="w-full rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-slate-800 p-3 text-xs resize-none focus:outline-none focus:border-primary"
+                      className="w-full rounded-xl bg-slate-50 dark:bg-background border border-slate-200 dark:border-neutral-800 p-3 text-xs resize-none focus:outline-none focus:border-primary"
                     />
                     <Button
                       onClick={generateHandover}

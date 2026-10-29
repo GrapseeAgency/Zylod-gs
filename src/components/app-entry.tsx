@@ -8,6 +8,7 @@ import { loadPage, getChunkForPage, isRegisteredPage, warmPageChunks } from '@/l
 import type { GenericPageType } from '@/lib/page-loader'
 import { AppShell } from '@/components/layout/app-shell'
 import { SocialConsentModal } from '@/components/shared/social-consent-modal'
+import { MandatoryUpdateGate } from '@/components/shared/mandatory-update-gate'
 import { PageLoader } from '@/components/ui/page-loader'
 import { Button } from '@/components/ui/button'
 
@@ -408,22 +409,24 @@ export function AppEntry() {
 
   return (
     <>
-      <AppShell>
-        <Suspense fallback={
-          <div className="flex min-h-[70vh] items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-              <img src="/zylod-logo.svg" alt="Zylod" className="h-10 w-auto animate-pulse" />
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="h-2 w-2 rounded-full bg-primary animate-bounce"></div>
+      <MandatoryUpdateGate>
+        <AppShell>
+          <Suspense fallback={
+            <div className="flex min-h-[70vh] items-center justify-center">
+              <div className="flex flex-col items-center gap-4">
+                <img src="/zylod-logo.svg" alt="Zylod" className="h-10 w-auto animate-pulse" />
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]"></div>
+                  <div className="h-2 w-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]"></div>
+                  <div className="h-2 w-2 rounded-full bg-primary animate-bounce"></div>
+                </div>
               </div>
             </div>
-          </div>
-        }>
-          <PageRenderer pageId={currentPage} pageParams={pageParams} />
-        </Suspense>
-      </AppShell>
+          }>
+            <PageRenderer pageId={currentPage} pageParams={pageParams} />
+          </Suspense>
+        </AppShell>
+      </MandatoryUpdateGate>
       <SocialConsentModal />
     </>
   )

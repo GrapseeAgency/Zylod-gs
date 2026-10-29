@@ -176,13 +176,13 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
   /* ─── Success — real response data ─── */
   if (result) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-slate-100">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-6 text-center text-slate-900 dark:text-neutral-100">
         <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
           <CheckCircle2 className="h-10 w-10" />
         </div>
-        <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">Exchange Request Submitted</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs leading-relaxed">
-          Reference <strong className="text-slate-800 dark:text-slate-200">{result.exchangeId}</strong> —{' '}
+        <h1 className="text-xl font-black text-slate-900 dark:text-neutral-100">Exchange Request Submitted</h1>
+        <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs leading-relaxed">
+          Reference <strong className="text-slate-800 dark:text-neutral-200">{result.exchangeId}</strong> —{' '}
           {result.message || 'You will be notified once it is processed.'}
         </p>
         <div className="mt-6 space-y-2 w-full max-w-xs">
@@ -195,7 +195,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
           <Button
             variant="outline"
             onClick={() => navigate('home')}
-            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl"
+            className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-11 rounded-2xl"
           >
             Back to Home
           </Button>
@@ -207,21 +207,21 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
   /* ─── No order/item reference — honest state ─── */
   if (!orderId || !itemId) {
     return (
-      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-slate-100">
-        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <div className="min-h-screen bg-background pb-24 md:pb-10 text-slate-900 dark:text-neutral-100">
+        <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Exchange Request</h1>
+            <h1 className="text-base font-bold text-slate-900 dark:text-neutral-100">Exchange Request</h1>
           </div>
         </header>
         <main className="px-4 py-16 max-w-lg mx-auto text-center">
-          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="w-20 h-20 mx-auto rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 flex items-center justify-center mb-4">
             <RefreshCcw className="h-9 w-9 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
-          <h1 className="text-base font-black text-slate-900 dark:text-slate-100">No order item selected</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
+          <h1 className="text-base font-black text-slate-900 dark:text-neutral-100">No order item selected</h1>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-xs mx-auto leading-relaxed">
             Exchanges are started from a specific item in one of your orders. Open the order and
             choose “Exchange” on the item.
           </p>
@@ -237,19 +237,19 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-32 md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs md:hidden">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs md:hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+            <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <h1 className="text-base font-bold text-slate-900 dark:text-slate-100">Exchange Request</h1>
+            <h1 className="text-base font-bold text-slate-900 dark:text-neutral-100">Exchange Request</h1>
           </div>
           <button
             onClick={() => navigate('help-center')}
-            className="p-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300"
+            className="p-1 text-slate-400 dark:text-neutral-500 dark:text-neutral-400 hover:text-slate-700 dark:text-neutral-300"
             title="Help"
             aria-label="Open help center"
           >
@@ -261,14 +261,14 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
       <main className="px-4 py-5 md:px-6 md:py-8 space-y-4 md:space-y-6 max-w-lg mx-auto md:max-w-2xl">
         {/* Error / auth / not found states */}
         {(notFound || needsAuth || error) && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 flex items-center justify-center mb-4">
               {needsAuth ? <LogIn className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" /> : <AlertCircle className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />}
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">
               {notFound ? 'Order not found' : needsAuth ? 'Sign in required' : 'Couldn\u2019t load this exchange'}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-sm mx-auto leading-relaxed">
               {notFound
                 ? 'We couldn\u2019t find this order. It may belong to a different account.'
                 : needsAuth
@@ -287,7 +287,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
                 <Button
                   variant="outline"
                   onClick={fetchData}
-                  className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
+                  className="bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-11 rounded-2xl flex items-center justify-center gap-1.5"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   Try Again
@@ -304,13 +304,13 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
 
         {/* Original Item — real order data */}
         {!loading && !error && !needsAuth && !notFound && originalItem && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 dark:text-slate-400 block">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">
               ORIGINAL ITEM · ORDER #{order?.orderNumber}
             </span>
 
             <div className="flex gap-3 items-center">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-slate-200 dark:border-slate-800">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-slate-200 dark:border-neutral-800">
                 {originalItem.product?.thumbnailUrl ? (
                   <img
                     src={originalItem.product.thumbnailUrl}
@@ -325,17 +325,17 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1">
+                <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100 line-clamp-1">
                   {originalItem.product?.name || 'Product'}
                 </h3>
                 {originalItem.variant && (
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+                  <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                     Current: {originalItem.variant.variantName}: {originalItem.variant.variantValue}
                   </p>
                 )}
 
                 <div className="flex justify-between items-baseline mt-2">
-                  <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">
+                  <span className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-medium">
                     Qty: {originalItem.quantity} {originalItem.product?.unit || 'units'}
                   </span>
                   <span className="text-xs font-black text-primary">{formatPrice(originalItem.totalPrice)}</span>
@@ -347,12 +347,12 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
 
         {/* Item not found in order — honest */}
         {!loading && !error && !needsAuth && !notFound && !originalItem && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 flex items-center justify-center mb-4">
               <AlertCircle className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">Item not found in this order</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">Item not found in this order</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-sm mx-auto leading-relaxed">
               The selected item doesn&apos;t belong to this order anymore.
             </p>
           </div>
@@ -362,10 +362,10 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
         {!loading && !error && !needsAuth && !notFound && originalItem && options.length > 0 && (
           <div className="space-y-2.5">
             <div>
-              <h2 className="text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+              <h2 className="text-xs font-black uppercase tracking-widest text-slate-700 dark:text-neutral-300">
                 REPLACEMENT SELECTION
               </h2>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                 Live variants of this product — stock and prices are real.
               </p>
             </div>
@@ -382,25 +382,25 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
                     onClick={() => setSelectedId(opt.id)}
                     className={`w-full text-left bg-white dark:bg-gray-900 rounded-3xl p-4 border transition-all shadow-2xs ${
                       !opt.isAvailable
-                        ? 'opacity-60 bg-slate-50 dark:bg-background border-slate-200 dark:border-slate-800 cursor-not-allowed'
+                        ? 'opacity-60 bg-slate-50 dark:bg-background border-slate-200 dark:border-neutral-800 cursor-not-allowed'
                         : isSelected
                           ? 'border-primary ring-2 ring-primary/20'
-                          : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                          : 'border-slate-200 dark:border-neutral-800 hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                          <h3 className="text-xs font-bold text-slate-900 dark:text-neutral-100">
                             {opt.variantName}: {opt.variantValue}
                           </h3>
                           {!opt.isAvailable && (
-                            <span className="bg-slate-200 text-slate-600 dark:text-slate-400 dark:text-slate-500 text-[9px] font-bold px-2 py-0.5 rounded-md">
+                            <span className="bg-slate-200 text-slate-600 dark:text-neutral-400 dark:text-neutral-500 text-[9px] font-bold px-2 py-0.5 rounded-md">
                               Out of Stock
                             </span>
                           )}
                         </div>
-                        {opt.sku && <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">SKU: {opt.sku}</p>}
+                        {opt.sku && <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">SKU: {opt.sku}</p>}
                       </div>
 
                       {opt.isAvailable && (
@@ -415,12 +415,12 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
                     </div>
 
                     <div className="pt-2 mt-2 border-t border-slate-50 flex justify-between items-baseline text-xs">
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                      <span className="text-[11px] text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                         In stock: {opt.stockQuantity.toLocaleString()}
                       </span>
-                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">
+                      <span className="text-xs font-black text-slate-800 dark:text-neutral-200">
                         {formatPrice(opt.effectivePrice)}
-                        <span className="text-[10px] font-normal text-slate-400 dark:text-slate-500 dark:text-slate-400 ml-1">
+                        <span className="text-[10px] font-normal text-slate-400 dark:text-neutral-500 dark:text-neutral-400 ml-1">
                           ({diffUnit === 0 ? 'same price' : `${diffUnit > 0 ? '+' : '−'}${formatPrice(Math.abs(diffUnit))}/unit`})
                         </span>
                       </span>
@@ -434,19 +434,19 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
 
         {/* No variants configured — honest */}
         {!loading && !error && !needsAuth && !notFound && originalItem && options.length === 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-50 dark:bg-background border border-slate-100 dark:border-neutral-800 flex items-center justify-center mb-4">
               <Package className="h-7 w-7 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
             </div>
-            <h2 className="text-sm font-black text-slate-900 dark:text-slate-100">No replacement variants available</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+            <h2 className="text-sm font-black text-slate-900 dark:text-neutral-100">No replacement variants available</h2>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-2 max-w-sm mx-auto leading-relaxed">
               This product has no variants configured to exchange to. Contact the supplier or
               request a return instead.
             </p>
             <Button
               variant="outline"
               onClick={() => navigate('return-request', { orderId })}
-              className="mt-5 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold text-xs h-11 px-6 rounded-2xl"
+              className="mt-5 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold text-xs h-11 px-6 rounded-2xl"
             >
               Request a Return
             </Button>
@@ -455,27 +455,27 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
 
         {/* Exchange Summary + submit — computed from real prices */}
         {!loading && !error && !needsAuth && !notFound && originalItem && options.length > 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-            <h2 className="text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+            <h2 className="text-xs font-black uppercase tracking-widest text-slate-700 dark:text-neutral-300">
               EXCHANGE SUMMARY
             </h2>
 
-            <div className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 pt-1">
+            <div className="space-y-1.5 text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 pt-1">
               <div className="flex justify-between">
                 <span>Current item value ({originalItem.quantity} units)</span>
-                <span className="font-semibold text-slate-900 dark:text-slate-100">{formatPrice(originalItem.totalPrice)}</span>
+                <span className="font-semibold text-slate-900 dark:text-neutral-100">{formatPrice(originalItem.totalPrice)}</span>
               </div>
               {selectedOpt && (
                 <div className="flex justify-between">
                   <span>Replacement value ({originalItem.quantity} units)</span>
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">
+                  <span className="font-semibold text-slate-900 dark:text-neutral-100">
                     {formatPrice(selectedOpt.effectivePrice * originalItem.quantity)}
                   </span>
                 </div>
               )}
 
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-baseline">
-                <span className="text-xs font-bold text-slate-900 dark:text-slate-100">Price difference</span>
+              <div className="pt-2 border-t border-slate-100 dark:border-neutral-800 flex justify-between items-baseline">
+                <span className="text-xs font-bold text-slate-900 dark:text-neutral-100">Price difference</span>
                 <span className="text-base font-black text-primary">
                   {priceDiffTotal === 0 ? formatPrice(0) : `${priceDiffTotal > 0 ? '+' : '−'}${formatPrice(Math.abs(priceDiffTotal))}`}
                 </span>
@@ -483,11 +483,11 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
             </div>
 
             <div className="space-y-1 pt-1">
-              <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">Reason for Exchange *</label>
+              <label className="text-xs font-semibold text-slate-800 dark:text-neutral-200">Reason for Exchange *</label>
               <select
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full h-11 rounded-2xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 text-xs font-medium px-3 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full h-11 rounded-2xl bg-white dark:bg-gray-900 border border-slate-200 dark:border-neutral-800 text-xs font-medium px-3 text-slate-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
                 <option value="">Select a reason…</option>
                 {REASONS.map((r) => (
@@ -497,17 +497,17 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-800 dark:text-slate-200">Additional Notes</label>
+              <label className="text-xs font-semibold text-slate-800 dark:text-neutral-200">Additional Notes</label>
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Anything the supplier should know…"
                 rows={2}
-                className="rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-slate-800 text-xs font-medium resize-none"
+                className="rounded-2xl bg-white dark:bg-gray-900 border-slate-200 dark:border-neutral-800 text-xs font-medium resize-none"
               />
             </div>
 
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+            <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
               The final settlement is confirmed by the supplier when the exchange is processed.
             </p>
 
@@ -522,7 +522,7 @@ export function ExchangeRequestPage({ pageParams: _pageParams }: { pageParams?: 
               <Button
                 variant="outline"
                 onClick={goBack}
-                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 font-bold h-11 rounded-2xl text-xs"
+                className="w-full bg-white dark:bg-gray-900 hover:bg-slate-50 dark:bg-background dark:hover:bg-card text-slate-700 dark:text-neutral-300 border-slate-200 dark:border-neutral-800 font-bold h-11 rounded-2xl text-xs"
               >
                 Cancel Exchange
               </Button>

@@ -112,10 +112,10 @@ export function LanguageSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-900 dark:text-slate-100 pb-24 md:pb-8">
+    <div className="min-h-screen bg-background text-slate-900 dark:text-neutral-100 pb-24 md:pb-8">
       {/* Top Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back">
+      <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900/95 backdrop-blur-md border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Language &amp; Locale</span>
@@ -124,14 +124,14 @@ export function LanguageSettingsPage() {
 
       <main className="max-w-lg mx-auto lg:max-w-3xl px-4 py-5 md:px-6 md:py-6 space-y-4 md:space-y-6">
         {/* Banner */}
-        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-slate-900 dark:to-rose-950 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white shadow-xl space-y-2">
+        <div className="bg-gradient-to-br from-slate-100 to-rose-100 dark:from-neutral-900 dark:to-rose-950 rounded-3xl p-5 md:p-6 text-gray-900 dark:text-white shadow-xl space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-black/5 dark:bg-gray-900/10 border border-black/10 dark:border-white/20 flex items-center justify-center">
               <Globe className="h-5 w-5 text-rose-600 dark:text-rose-300" />
             </div>
             <div>
               <h1 className="text-base md:text-xl font-black">Language &amp; Currency</h1>
-              <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300">
+              <p className="text-xs md:text-sm text-slate-600 dark:text-neutral-300">
                 Your interface language is saved to your account the moment you tap it.
               </p>
             </div>
@@ -139,10 +139,10 @@ export function LanguageSettingsPage() {
         </div>
 
         {needsAuth ? (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xs text-center space-y-3">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-neutral-800 shadow-2xs text-center space-y-3">
             <AlertCircle className="h-8 w-8 text-amber-500 mx-auto" />
             <h2 className="text-sm font-black">Sign in to manage your saved language</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Language preferences are stored on your account.</p>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Language preferences are stored on your account.</p>
             <Button onClick={() => navigate('login')} className="h-11 px-6 rounded-xl text-xs font-bold">Sign In</Button>
           </div>
         ) : (
@@ -156,11 +156,11 @@ export function LanguageSettingsPage() {
             )}
 
             {/* Language Selection */}
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Interface Language</h2>
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Interface Language</h2>
                 {!loading && (
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 dark:text-slate-400">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                     {configured ? 'Customized for your account' : 'Platform default — not customized yet'}
                   </span>
                 )}
@@ -180,14 +180,14 @@ export function LanguageSettingsPage() {
                         className={`w-full p-3.5 rounded-2xl border flex items-center justify-between text-left transition-all disabled:opacity-70 ${
                           isSelected
                             ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                            : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
+                            : 'border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                         }`}
                       >
                         <div>
-                          <span className={`text-xs font-black block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>
+                          <span className={`text-xs font-black block ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-neutral-100'}`}>
                             {lang.nativeName} ({lang.name})
                           </span>
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 block mt-0.5">{lang.region}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block mt-0.5">{lang.region}</span>
                         </div>
                         {isSaving ? (
                           <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center">
@@ -210,15 +210,15 @@ export function LanguageSettingsPage() {
                   <p className="text-xs font-bold text-red-600">{saveError}</p>
                 </div>
               )}
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+              <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                 Spanish, French, and Arabic were listed before but were never actually supported — they are
                 not implemented yet and require backend support before they can be selected.
               </p>
             </div>
 
             {/* Preferred Currency — real device-local preference (zustand persist) */}
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
-              <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <div className="bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-3">
+              <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5">
                 <DollarSign className="h-4 w-4 text-primary" />
                 Wholesale Catalog Currency
               </h2>
@@ -232,16 +232,16 @@ export function LanguageSettingsPage() {
                       className={`p-3 rounded-2xl border text-left transition-all ${
                         isSelected
                           ? 'border-primary bg-rose-50/60 ring-2 ring-primary/20 shadow-xs'
-                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
+                          : 'border-slate-200 dark:border-neutral-800 bg-white dark:bg-gray-900 hover:bg-slate-50 dark:hover:bg-card'
                       }`}
                     >
                       <span className="text-sm font-black font-mono text-primary block">{c.symbol}</span>
-                      <span className={`text-xs font-bold block mt-0.5 ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>{c.code}</span>
+                      <span className={`text-xs font-bold block mt-0.5 ${isSelected ? 'text-primary' : 'text-slate-900 dark:text-neutral-100'}`}>{c.code}</span>
                     </button>
                   )
                 })}
               </div>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400">
+              <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400">
                 Currency is stored on this device only (it is not part of your account settings).
               </p>
             </div>

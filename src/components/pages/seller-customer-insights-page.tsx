@@ -90,7 +90,7 @@ export function SellerCustomerInsightsPagePage() {
 
       <main className="p-4 space-y-6 md:p-6 md:max-w-5xl md:mx-auto md:pt-6">
         <div className="hidden md:block">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 dark:text-white">Customer insights</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-neutral-100 dark:text-white">Customer insights</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-1">
             Everyone who ordered from your store — built from your real order lines, nothing modeled.
           </p>

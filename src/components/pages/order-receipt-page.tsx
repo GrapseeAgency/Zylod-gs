@@ -64,7 +64,7 @@ const PAYMENT_BADGE: Record<string, string> = {
   success: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
   pending: 'bg-amber-50 text-amber-700 border border-amber-100',
   failed: 'bg-red-50 text-red-700 border border-red-100',
-  unpaid: 'bg-slate-100 dark:bg-card text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800',
+  unpaid: 'bg-slate-100 dark:bg-card text-slate-600 dark:text-neutral-400 border border-slate-200 dark:border-neutral-800',
 }
 
 export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Record<string, string> }) {
@@ -102,12 +102,12 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
   if (!orderId || phase === 'notfound') {
     return (
       <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 text-center space-y-3">
+        <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-sm p-8 text-center space-y-3">
           <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-card flex items-center justify-center">
-            <Search className="h-6 w-6 text-slate-500 dark:text-slate-400 dark:text-slate-500" />
+            <Search className="h-6 w-6 text-slate-500 dark:text-neutral-400 dark:text-neutral-500" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">No receipt selected</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-neutral-100">No receipt selected</h2>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
             Open an order from your order history to view or print its receipt.
           </p>
           <Button onClick={() => navigate('orders-history')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
@@ -120,12 +120,12 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
   if (phase === 'anon') {
     return (
       <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 text-center space-y-3">
+        <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-sm p-8 text-center space-y-3">
           <div className="mx-auto h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
             <LogIn className="h-6 w-6 text-amber-600" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Sign in required</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">Receipts are visible to the order's buyer, its suppliers, or an admin.</p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-neutral-100">Sign in required</h2>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500">Receipts are visible to the order's buyer, its suppliers, or an admin.</p>
           <Button onClick={() => navigate('login')} className="bg-primary text-primary-foreground text-xs font-bold gap-2">
             <LogIn className="h-4 w-4" /> Sign in
           </Button>
@@ -136,12 +136,12 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
   if (phase === 'error') {
     return (
       <div className="min-h-[60vh] bg-slate-50 dark:bg-background flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-8 text-center space-y-3">
+        <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-neutral-800 shadow-sm p-8 text-center space-y-3">
           <div className="mx-auto h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
             <AlertCircle className="h-6 w-6 text-red-600" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Couldn't load the receipt</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">{errorMsg}</p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-neutral-100">Couldn't load the receipt</h2>
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 break-words">{errorMsg}</p>
           <Button onClick={load} variant="outline" className="text-xs font-bold gap-2">
             <Loader2 className="h-4 w-4" /> Retry
           </Button>
@@ -160,14 +160,14 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
   const isPaid = ['paid', 'success'].includes((receipt.paymentStatus || '').toLowerCase())
 
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-background pb-20 md:pb-8 text-slate-900 dark:text-neutral-100">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 shadow-xs flex items-center justify-between print:hidden md:hidden">
-        <button onClick={goBack} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Back" aria-label="Back">
+      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-slate-100 dark:border-neutral-800 px-4 py-3 shadow-xs flex items-center justify-between print:hidden md:hidden">
+        <button onClick={goBack} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Back" aria-label="Back">
           <X className="h-5 w-5" />
         </button>
         <span className="text-base font-black tracking-tight text-primary">Zylod</span>
-        <button onClick={handlePrint} className="p-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100" title="Print receipt" aria-label="Print receipt">
+        <button onClick={handlePrint} className="p-1 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:text-neutral-100" title="Print receipt" aria-label="Print receipt">
           <Printer className="h-5 w-5" />
         </button>
       </header>
@@ -176,8 +176,8 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
         {/* Desktop header row */}
         <div className="hidden md:flex items-center justify-between">
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Order receipt</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5 font-mono">{receipt.orderNumber}</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-neutral-100">Order receipt</h1>
+            <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 mt-0.5 font-mono">{receipt.orderNumber}</p>
           </div>
           <Button onClick={handlePrint} variant="outline" className="text-xs font-bold gap-2 print:hidden">
             <Printer className="h-4 w-4" /> Print / Save PDF
@@ -200,10 +200,10 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
               <CreditCard className="h-7 w-7" />
             )}
           </div>
-          <h2 className="text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+          <h2 className="text-xl md:text-2xl font-black text-slate-900 dark:text-neutral-100 tracking-tight">
             {isPaid ? 'Payment received' : 'Payment pending'}
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500 max-w-xs mx-auto">
+          <p className="text-xs text-slate-500 dark:text-neutral-400 dark:text-neutral-500 max-w-xs mx-auto">
             {isPaid
               ? 'Payment verified — the order is moving through fulfilment.'
               : 'This receipt reflects the current order state. The seller confirms payment before dispatch.'}
@@ -211,24 +211,24 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
         </div>
 
         {/* Receipt card */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-neutral-800 shadow-2xs space-y-5">
           <div className="text-center">
-            <h2 className="text-base font-black tracking-wider text-slate-900 dark:text-slate-100 uppercase">Digital receipt</h2>
-            <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 mt-0.5">Zylod Wholesale Hub · Dhaka, Bangladesh</p>
+            <h2 className="text-base font-black tracking-wider text-slate-900 dark:text-neutral-100 uppercase">Digital receipt</h2>
+            <p className="text-xs text-slate-400 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">Zylod Wholesale Hub · Dhaka, Bangladesh</p>
           </div>
 
           {/* Meta */}
-          <div className="p-4 bg-slate-50 dark:bg-background/80 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2 md:space-y-0 md:grid md:grid-cols-3 md:gap-4 text-xs">
+          <div className="p-4 bg-slate-50 dark:bg-background/80 rounded-2xl border border-slate-100 dark:border-neutral-800 space-y-2 md:space-y-0 md:grid md:grid-cols-3 md:gap-4 text-xs">
             <div>
-              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Order</span>
-              <span className="font-bold text-slate-900 dark:text-slate-100 font-mono break-all">{receipt.orderNumber}</span>
+              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">Order</span>
+              <span className="font-bold text-slate-900 dark:text-neutral-100 font-mono break-all">{receipt.orderNumber}</span>
             </div>
             <div>
-              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Date</span>
-              <span className="font-semibold text-slate-700 dark:text-slate-300">{fmtDate(receipt.orderDate)}</span>
+              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">Date</span>
+              <span className="font-semibold text-slate-700 dark:text-neutral-300">{fmtDate(receipt.orderDate)}</span>
             </div>
             <div>
-              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 block">Payment</span>
+              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 block">Payment</span>
               <span
                 className={
                   'inline-block mt-0.5 text-[10px] font-bold px-2 py-0.5 rounded-md ' +
@@ -237,21 +237,21 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
               >
                 {(receipt.paymentStatus || 'unpaid').toUpperCase()}
               </span>
-              <span className="block text-slate-600 dark:text-slate-400 dark:text-slate-500 mt-1">{METHOD_LABEL[receipt.paymentMethod] || receipt.paymentMethod}</span>
+              <span className="block text-slate-600 dark:text-neutral-400 dark:text-neutral-500 mt-1">{METHOD_LABEL[receipt.paymentMethod] || receipt.paymentMethod}</span>
             </div>
           </div>
 
           {/* Buyer + address */}
           <div className="text-xs space-y-1">
-            <h3 className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400">Billed to</h3>
-            <p className="font-semibold text-slate-800 dark:text-slate-200">
+            <h3 className="text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400">Billed to</h3>
+            <p className="font-semibold text-slate-800 dark:text-neutral-200">
               {receipt.buyer?.businessName || receipt.buyer?.name || 'N/A'}
               {receipt.buyer?.businessName && receipt.buyer?.name && (
-                <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500 font-normal"> · {receipt.buyer.name}</span>
+                <span className="text-slate-500 dark:text-neutral-400 dark:text-neutral-500 font-normal"> · {receipt.buyer.name}</span>
               )}
             </p>
             {receipt.shippingAddress && (
-              <p className="text-slate-500 dark:text-slate-400 dark:text-slate-500 break-words">
+              <p className="text-slate-500 dark:text-neutral-400 dark:text-neutral-500 break-words">
                 {[receipt.shippingAddress.address, receipt.shippingAddress.city, receipt.shippingAddress.district, receipt.shippingAddress.country].filter(Boolean).join(', ')}
               </p>
             )}
@@ -259,19 +259,19 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
 
           {/* Items */}
           <div className="space-y-4 pt-1">
-            <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 pb-2">
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-neutral-500 dark:text-neutral-400 border-b border-slate-100 dark:border-neutral-800 pb-2">
               Order details
             </h3>
-            <div className="divide-y divide-slate-100 dark:divide-slate-800 space-y-3">
+            <div className="divide-y divide-slate-100 dark:divide-neutral-800 space-y-3">
               {receipt.items.map((item) => (
                 <div key={item.id} className="space-y-1 pt-1 first:pt-0">
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug">{item.productName}</h4>
-                  <p className="text-[11px] text-slate-400 dark:text-slate-500 dark:text-slate-400 font-mono">SKU: {item.sku}</p>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-neutral-100 leading-snug">{item.productName}</h4>
+                  <p className="text-[11px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 font-mono">SKU: {item.sku}</p>
                   <div className="flex justify-between items-baseline text-xs pt-1">
-                    <span className="text-slate-500 dark:text-slate-400 dark:text-slate-500">
+                    <span className="text-slate-500 dark:text-neutral-400 dark:text-neutral-500">
                       Qty: {item.quantity} &nbsp; Price: {formatPrice(item.unitPrice)}
                     </span>
-                    <span className="font-black text-slate-900 dark:text-slate-100">{formatPrice(item.total)}</span>
+                    <span className="font-black text-slate-900 dark:text-neutral-100">{formatPrice(item.total)}</span>
                   </div>
                 </div>
               ))}
@@ -282,22 +282,22 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
               summed into the charged total (the same honest presentation as the
               invoice page, Task 132: the platform's wholesale prices carry no
               separate VAT charge — pretending otherwise would be a lie). */}
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">
+          <div className="pt-3 border-t border-slate-100 dark:border-neutral-800 space-y-2 text-xs text-slate-600 dark:text-neutral-400 dark:text-neutral-500">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">{formatPrice(receipt.subtotal)}</span>
+              <span className="font-semibold text-slate-900 dark:text-neutral-100">{formatPrice(receipt.subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span>Shipping (freight)</span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
+              <span className="font-semibold text-slate-900 dark:text-neutral-100">
                 {receipt.shipping > 0 ? formatPrice(receipt.shipping) : 'FREE'}
               </span>
             </div>
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-between items-baseline">
-              <span className="text-base font-bold text-slate-900 dark:text-slate-100">Total (as charged)</span>
+            <div className="pt-2 border-t border-slate-200 dark:border-neutral-800 flex justify-between items-baseline">
+              <span className="text-base font-bold text-slate-900 dark:text-neutral-100">Total (as charged)</span>
               <span className="text-2xl font-black text-primary">{formatPrice(receipt.total)}</span>
             </div>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p className="text-[10px] text-slate-400 dark:text-neutral-500 dark:text-neutral-400 leading-relaxed">
               VAT (15%) regulatory reference: {formatPrice(receipt.tax)}. This total is the amount
               actually charged for the order.
             </p>
@@ -315,7 +315,7 @@ export function OrderReceiptPage({ pageParams: _pageParams }: { pageParams?: Rec
           <Button
             onClick={() => navigate('order-detail', { orderId })}
             variant="outline"
-            className="flex-1 bg-white dark:bg-gray-900 text-slate-800 dark:text-slate-200 font-bold h-12 rounded-2xl text-xs"
+            className="flex-1 bg-white dark:bg-gray-900 text-slate-800 dark:text-neutral-200 font-bold h-12 rounded-2xl text-xs"
           >
             View full order
           </Button>
