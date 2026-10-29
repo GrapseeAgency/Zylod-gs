@@ -4,6 +4,14 @@ const nextConfig: NextConfig = {
   // output: "standalone", // Disabled — causes OOM in 4GB container
   /* config options here */
   reactStrictMode: false,
+  // t230 CRITICAL MOBILE FIX: the Next dev-tools floating badge (32×32 at
+  // bottom-left) renders EXACTLY on top of the mobile bottom-nav's Home
+  // button (button rect x=8 y=793; badge x=22 y=790). Taps on Home landed
+  // on the overlay's shadow DOM instead — the reported "nav bar home button
+  // doesn't work, can't come back from search/hot deals" defect. The
+  // preview URL serves this dev server, so users get the overlay too.
+  // devIndicators: false removes the badge entirely.
+  devIndicators: false,
   // t187 CRITICAL FIX: the sandbox mounts a FUSE volume at ./upload (ossfs).
   // When that mount wedges, ANY process doing a recursive directory scan of
   // the project root hangs forever inside the kernel (fuse request_wait_answer)
