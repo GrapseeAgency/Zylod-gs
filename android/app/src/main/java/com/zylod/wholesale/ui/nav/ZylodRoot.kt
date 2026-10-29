@@ -221,10 +221,32 @@ fun ZylodRoot() {
     val navigateResolved: (Destination) -> Unit = { destination ->
         when (destination) {
             is Destination.Home ->
-                navController.navigate(HOME_ROUTE) {
-                    popUpTo(HOME_ROUTE) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
+                // t229g (CI-emulator-reproduced defect): the previous
+                // navigate(HOME_ROUTE){popUpTo(HOME_ROUTE){saveState=true};
+                // launchSingleTop; restoreState} triple was a COMPLETE NO-OP
+                // whenever a web/{pageId} entry sat on top of home — the
+                // NavController deduped the navigate against the post-pop top
+                // and the pop never landed (android-screenshots 21/23: the
+                // Search / Hot Deals page still painted after the Home tab
+                // tap, its tab still highlighted). popBackStack(HOME_ROUTE)
+                // is the EXACT mechanism the hardware Back key drives — CI
+                // screenshot 24 proves that path recomposes home's WebScreen
+                // and soft-navigates back to ?page=home correctly — so the
+                // Home destination uses it too. Fallback (home not on the
+                // stack, e.g. a cold deep link) pushes it. When home is
+                // ALREADY the native route, the SPA may have drifted inside
+                // the home shell — the SAME probe/reset contract as the
+                // Home-tab tap (t227).
+                if (!navController.popBackStack(HOME_ROUTE, inclusive = false)) {
+                    if (route == HOME_ROUTE) {
+                        probeSpaPage(com.zylod.wholesale.ui.web.NativeWebRegistry.webView) { page ->
+                            if (page != null && page != "null" && page != "home") {
+                                com.zylod.wholesale.ui.web.NativeWebBus.requestHomeReset()
+                            }
+                        }
+                    } else {
+                        navController.navigate(HOME_ROUTE) { launchSingleTop = true }
+                    }
                 }
             is Destination.Cart ->
                 navController.navigate("cart") {

@@ -102,13 +102,27 @@ adb shell input keyevent 4 || true
 sleep 8
 cap screenshots/24-back-from-search.png
 
-# Footer build badge inside the native shell (web commit + APK versionName):
-# scroll the home WebView to the footer and capture the identity line.
-adb shell input swipe 540 1800 540 500 400 || true
+# Footer build badge inside the native shell (web commit + APK versionName).
+# t229g: the HOME feed is infinite-scroll — the footer sits below an
+# ever-growing feed, so the badge is captured on a SHORT Tier-3 page instead
+# (privacy-policy renders the legal doc with the footer right below it).
+# Swipe coordinates are computed from the ACTUAL screen size (the previous
+# hardcoded 540/1800 values were off-screen on the 320x640 default AVD).
+adb shell am start -a android.intent.action.VIEW -d "zylod://privacy-policy" com.zylod.wholesale.debug > /dev/null 2>&1 || true
+sleep 12
+SW=$(adb shell wm size | grep -oE '[0-9]+' | head -1 | tr -d '[:space:]')
+SH=$(adb shell wm size | grep -oE '[0-9]+' | tail -1 | tr -d '[:space:]')
+SW=${SW:-320}; SH=${SH:-640}
+CX=$((SW / 2)); Y1=$((SH * 3 / 4)); Y2=$((SH / 5))
+adb shell input swipe $CX $Y1 $CX $Y2 400 || true
 sleep 2
-adb shell input swipe 540 1800 540 500 400 || true
+adb shell input swipe $CX $Y1 $CX $Y2 400 || true
 sleep 2
-adb shell input swipe 540 1800 540 500 400 || true
+adb shell input swipe $CX $Y1 $CX $Y2 400 || true
+sleep 2
+adb shell input swipe $CX $Y1 $CX $Y2 400 || true
+sleep 2
+adb shell input swipe $CX $Y1 $CX $Y2 400 || true
 sleep 3
 cap screenshots/25-footer-build-badge.png
 
