@@ -32,13 +32,38 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { usePublicSettings } from '@/lib/use-public-settings'
 
 export function Footer() {
   const { navigate } = useNavigationStore()
   const { currentCurrency, setCurrency, formatPrice } = useCurrencyStore()
   const [email, setEmail] = useState('')
+
+  // t229g build badge — the REAL build identity, always visible to any user
+  // (owner audit confusion: "which build am I actually running?" was
+  // unanswerable on-device, so old-APK defect reports kept recurring).
+  // Sources: the head-injected web bundle identity (exact commit the server
+  // is serving) and, when hosted in the Android shell, the APK's own
+  // versionName (CI-stamped 2.4.x-<shortsha>). Inert in plain browsers when
+  // the identity is absent — nothing is fabricated.
+  const [buildInfo, setBuildInfo] = useState<string | null>(null)
+  useEffect(() => {
+    try {
+      const w = window as unknown as {
+        __ZylodBundleIdentity?: { shortCommit?: string }
+        ZylodNativeBridge?: { getAppVersionName?: () => string }
+      }
+      const parts: string[] = []
+      const webCommit = w.__ZylodBundleIdentity?.shortCommit
+      if (webCommit) parts.push(`web ${webCommit}`)
+      const appVersion = w.ZylodNativeBridge?.getAppVersionName?.()
+      if (appVersion) parts.push(`app ${appVersion}`)
+      setBuildInfo(parts.length > 0 ? parts.join(' · ') : null)
+    } catch {
+      setBuildInfo(null)
+    }
+  }, [])
 
   // Real, owner-published support contacts (Admin → System Settings).
   // Nothing is fabricated here: while loading / on error / when the owner has
@@ -616,6 +641,16 @@ export function Footer() {
                 <rect width="16" height="11" rx="1.5" fill="#006A4E"/>
                 <circle cx="6" cy="5.5" r="3.5" fill="#F42A41"/>
               </svg>
+              {/* t229g: exact build identity (web commit · APK version) — the
+                  one-click answer to "is this the latest build?" for audits. */}
+              {buildInfo && (
+                <span
+                  className="text-[10px] leading-none text-muted-foreground/50 tabular-nums select-none ml-1"
+                  title={`Zylod build identity — ${buildInfo}`}
+                >
+                  · Build {buildInfo}
+                </span>
+              )}
             </p>
             <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
               <button

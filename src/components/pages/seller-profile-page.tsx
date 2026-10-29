@@ -275,7 +275,19 @@ export function SellerProfilePage() {
       if (res.ok) {
         const json = await res.json()
         if (json.data && Array.isArray(json.data)) {
-          setProducts(json.data)
+          // t229g IMAGE FIX: /api/products image rows carry `imageUrl` (Prisma
+          // ProductImage), never `url` — normalize once at the boundary so
+          // the seller's product cards render real photos (not placeholders).
+          const rows = json.data.map((raw: Record<string, unknown>) => {
+            const rawImages = raw.images as Array<{ url?: string; imageUrl?: string; alt?: string }> | undefined
+            return {
+              ...raw,
+              images: (Array.isArray(rawImages) ? rawImages : [])
+                .map((img) => ({ url: img.url ?? img.imageUrl ?? '', alt: img.alt ?? (raw.name as string) ?? '' }))
+                .filter((img: { url: string }) => img.url.length > 0),
+            }
+          })
+          setProducts(rows)
           if (json.pagination) {
             setTotalProductPages(json.pagination.totalPages || 1)
           }

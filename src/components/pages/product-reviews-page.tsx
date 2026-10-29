@@ -64,7 +64,13 @@ export function ProductReviewsPage({ pageParams: _pageParams }: { pageParams?: R
               name: p.name || 'Unnamed product',
               rating_avg: Number(p.ratingAvg ?? p.rating_avg ?? 0),
               rating_count: Number(p.reviewCount ?? p.reviewsCount ?? p.reviews_count ?? 0),
-              images: Array.isArray(p.images) ? p.images : [],
+              // t229g IMAGE FIX: /api/products image rows carry `imageUrl`
+              // (Prisma ProductImage) — normalize so the card shows the real photo.
+              images: (Array.isArray(p.images) ? p.images : [])
+                .map((img: { url?: string; imageUrl?: string }) => ({
+                  url: img.url ?? img.imageUrl ?? '',
+                }))
+                .filter((img: { url: string }) => img.url.length > 0),
             }
             setProduct(productData)
 

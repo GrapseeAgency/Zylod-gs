@@ -67,7 +67,13 @@ export function ProductSpecificationsPage({ pageParams: _pageParams }: { pagePar
             id: p.id || '',
             name: p.name || '',
             sku: p.sku || '',
-            images: Array.isArray(p.images) ? p.images : [],
+            // t229g IMAGE FIX: /api/products/[id] image rows carry `imageUrl`
+            // (Prisma ProductImage) — normalize so the hero shows the real photo.
+            images: (Array.isArray(p.images) ? p.images : [])
+              .map((img: { url?: string; imageUrl?: string }) => ({
+                url: img.url ?? img.imageUrl ?? '',
+              }))
+              .filter((img: { url: string }) => img.url.length > 0),
           })
         }
         // Real grouped specifications (same feed the PDP tab consumes)

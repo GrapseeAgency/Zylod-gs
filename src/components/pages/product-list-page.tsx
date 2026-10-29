@@ -37,7 +37,15 @@ interface Product {
 
 function normalizeProduct(raw: Record<string, unknown>): Product {
   const supplier = raw.supplier as { companyName?: string; slug?: string } | undefined
-  const images = raw.images as { url: string }[] | undefined
+  // t229g IMAGE FIX: /api/products image rows carry `imageUrl` (Prisma
+  // ProductImage), never `url` — normalize both shapes so product cards show
+  // the real image instead of the placeholder icon.
+  const rawImages = raw.images as Array<{ url?: string; imageUrl?: string }> | undefined
+  const images = Array.isArray(rawImages)
+    ? rawImages
+        .map((img) => ({ url: img.url ?? img.imageUrl ?? '' }))
+        .filter((img) => img.url.length > 0)
+    : []
   return {
     id: (raw.id as string) ?? '',
     name: (raw.name as string) ?? '',
@@ -50,7 +58,7 @@ function normalizeProduct(raw: Record<string, unknown>): Product {
     supplier_id: (raw.supplier_id as string) ?? (raw.supplierId as string) ?? '',
     supplier_name: (raw.supplier_name as string) ?? (supplier?.companyName ?? ''),
     supplier_slug: (raw.supplier_slug as string) ?? (supplier?.slug ?? ''),
-    images: Array.isArray(images) ? images : [],
+    images,
     tags: Array.isArray(raw.tags) ? (raw.tags as string[]) : [],
   }
 }

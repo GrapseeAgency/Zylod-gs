@@ -16,7 +16,10 @@ interface WishlistItemDetails {
     name: string
     basePrice: number
     moq: number
-    images: { url: string }[]
+    // t229g IMAGE FIX: /api/wishlist image rows are Prisma ProductImage
+    // rows — `imageUrl`, never `url` (the old shape always fell back to the
+    // placeholder). Both shapes accepted.
+    images: Array<{ url?: string; imageUrl?: string }>
     supplier: {
       id: string
       companyName: string
@@ -45,8 +48,15 @@ export function WishlistDetailPage() {
         if (!res.ok) throw new Error('Failed to load')
         const json = await res.json()
         if (json.success) {
-          setItem(json.data)
-          setNote(json.data.note || '')
+          const d = json.data
+          // t229g: normalize image rows (imageUrl → url) once, at the boundary.
+          if (d?.product && Array.isArray(d.product.images)) {
+            d.product.images = d.product.images.map((img: { url?: string; imageUrl?: string }) => ({
+              url: img.url ?? img.imageUrl ?? '',
+            })).filter((img: { url: string }) => img.url.length > 0)
+          }
+          setItem(d)
+          setNote(d.note || '')
         }
       } catch (err) {
         console.error(err)

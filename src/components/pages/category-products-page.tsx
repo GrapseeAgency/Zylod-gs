@@ -46,7 +46,16 @@ interface CategoryProduct {
 
 function normalizeApiProduct(raw: Record<string, unknown>): CategoryProduct {
   const supplier = raw.supplier as { companyName?: string; slug?: string; verified?: boolean } | undefined
-  const images = raw.images as { url: string }[] | undefined
+  // t229g IMAGE FIX: /api/products image rows carry `imageUrl` (Prisma
+  // ProductImage), never `url` — the old passthrough left every card on the
+  // placeholder Package icon (owner's #1 complaint: broken product pictures).
+  // Accept both shapes defensively, drop empties.
+  const rawImages = raw.images as Array<{ url?: string; imageUrl?: string }> | undefined
+  const images = Array.isArray(rawImages)
+    ? rawImages
+        .map((img) => ({ url: img.url ?? img.imageUrl ?? '' }))
+        .filter((img) => img.url.length > 0)
+    : []
   return {
     id: (raw.id as string) ?? '',
     name: (raw.name as string) ?? '',
@@ -64,7 +73,7 @@ function normalizeApiProduct(raw: Record<string, unknown>): CategoryProduct {
     supplier_name: (raw.supplier_name as string) ?? (supplier?.companyName ?? ''),
     supplier_slug: (raw.supplier_slug as string) ?? (supplier?.slug ?? ''),
     supplier_verified: (raw.supplier_verified as boolean) ?? (supplier?.verified ?? false),
-    images: Array.isArray(images) ? images : [],
+    images,
   }
 }
 

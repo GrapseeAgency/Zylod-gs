@@ -37,9 +37,15 @@ interface ApiProduct {
   unit: string
   bundleSize: number | null
   weightKg: number | null
-  images?: { url: string }[]
+  // t229g IMAGE FIX: /api/products rows carry `imageUrl` (Prisma ProductImage).
+  images?: Array<{ url?: string; imageUrl?: string }>
   supplier?: { id: string; companyName: string }
   priceTiers?: { minQty: number; maxQty: number | null; pricePerUnit: number }[]
+}
+
+/** t229g: first REAL image URL off an API product (both shapes), or the placeholder. */
+function apiProductImage(p: ApiProduct): string {
+  return p.images?.[0]?.imageUrl || p.images?.[0]?.url || '/placeholder.svg'
 }
 
 export function AddToCartConfirmationPage() {
@@ -101,7 +107,7 @@ export function AddToCartConfirmationPage() {
       productId: p.id,
       productName: p.name,
       productSlug: p.slug,
-      productImage: p.images?.[0]?.url ?? '/placeholder.svg',
+      productImage: apiProductImage(p),
       variantId: null,
       variantName: null,
       variantValue: null,
@@ -199,7 +205,7 @@ export function AddToCartConfirmationPage() {
           {addonsState === 'ready' && addons.map(p => (
             <div key={p.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 p-3 flex gap-3 items-center">
               <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-card overflow-hidden shrink-0">
-                <img src={p.images?.[0]?.url ?? '/placeholder.svg'} alt={p.name} className="w-full h-full object-cover" />
+                <img src={apiProductImage(p)} alt={p.name} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1">{p.name}</h4>
