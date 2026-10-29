@@ -12,9 +12,10 @@ package com.zylod.wholesale.ui.nav
  * Ownership decisions recorded here (Phase 1, NATIVE_PRODUCT_SPECIFICATION
  * §2.2 — Tier-1 surfaces native, Tier-3 long-tail WebView):
  *
- *  NATIVE   cart, product-detail, buyer-orders (Phase 2), and the auth suite
- *           entry points (welcome/login/register-buyer/register-supplier/
- *           forgot-password).
+ *  NATIVE   cart, product-detail, buyer-orders (Phase 2), hot deals (v2.4.8:
+ *           flash-deals / daily-deals / hot-deals / deals — the last Tier-1
+ *           surface moved off the WebView), and the auth suite entry points
+ *           (welcome/login/register-buyer/register-supplier/forgot-password).
  *  WEBVIEW  home, plus everything else — the ~400 Tier-3 pageIds of the SPA
  *           contract (src/lib/page-loader.ts is the web-side registry; the
  *           default for an unknown pageId is WEBVIEW, matching the SPA's own
@@ -94,6 +95,17 @@ object RouteOwnership {
          */
         data object Orders : Destination()
 
+        /**
+         * Native Compose Hot Deals (v2.4.8 ownership row — the owner's
+         * "no page is its own Kotlin" complaint ends here). Tab-like
+         * destination: highlights the deals tab; home stays DIRECTLY beneath
+         * it on the stack, so both the bottom-bar Home tap and system Back
+         * land on Home. Owns pageIds: flash-deals, daily-deals, hot-deals,
+         * deals. "flash-sale" deliberately stays WEBVIEW (it is a different
+         * SPA page) but still highlights the deals tab via TAB_ALIASES.
+         */
+        data object Deals : Destination()
+
         /** Native Compose product detail (back-bar push, no tab highlight). */
         data class Product(val productId: String) : Destination()
 
@@ -114,6 +126,10 @@ object RouteOwnership {
     private const val PAGE_CART = "cart"
     private const val PAGE_PRODUCT_DETAIL = "product-detail"
     private const val PAGE_BUYER_ORDERS = "buyer-orders"
+
+    // v2.4.8 native Hot Deals ownership row (one screen, four SPA pageIds —
+    // the web bar's deals tab targets "flash-deals", deep links use the rest).
+    private val NATIVE_DEALS_PAGE_IDS = setOf("flash-deals", "daily-deals", "hot-deals", "deals")
 
     // NOTE: PAGE_HOME is deliberately NOT in the native set — home → WEBVIEW
     // (owner directive). It survives as a named constant because the tab
@@ -145,6 +161,9 @@ object RouteOwnership {
             // the screen's own needsAuth state is the guest UX (soft CTA);
             // see the Phase 2 guest-policy note in the object KDoc.
             PAGE_BUYER_ORDERS -> Destination.Orders
+            // v2.4.8: the Hot Deals tab (and every alias pageId) renders the
+            // NATIVE Compose deals screen — see Destination.Deals.
+            in NATIVE_DEALS_PAGE_IDS -> Destination.Deals
             PAGE_PRODUCT_DETAIL -> {
                 // Links use either `productId=` (web PDP contract) or `id=`
                 // (legacy zylod:// deep links).
@@ -188,7 +207,10 @@ object RouteOwnership {
         // pageId in src/lib/page-loader.ts, so both highlight "search").
         putAll(listOf("search-results", "search").associateWith { "search" })
         putAll(listOf("chat-list", "chat-detail", "messages").associateWith { "profile" })
-        putAll(listOf("flash-sale", "flash-deals", "daily-deals", "deals").associateWith { "deals" })
+        // v2.4.8: "hot-deals" joins the deals alias set alongside the other
+        // deals pageIds (now native; "flash-sale" remains a WEBVIEW page that
+        // still highlights the deals tab, exactly like checkout highlights cart).
+        putAll(listOf("flash-sale", "flash-deals", "daily-deals", "hot-deals", "deals").associateWith { "deals" })
         // t208: the rest of the CHECKOUT FLOW highlighted "home" — buy-now is
         // opened from the NATIVE PDP, order-summary/order-confirmation from
         // the checkout flow itself, while "checkout" already highlighted the

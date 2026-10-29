@@ -68,6 +68,7 @@ import com.zylod.wholesale.ui.auth.ResetPasswordScreen
 import com.zylod.wholesale.ui.auth.TwoFactorAuthScreen
 import com.zylod.wholesale.ui.cart.CartScreen
 import com.zylod.wholesale.ui.cart.CartStore
+import com.zylod.wholesale.ui.deals.DealsScreen
 import com.zylod.wholesale.ui.nav.RouteOwnership.Destination
 import com.zylod.wholesale.ui.orders.OrdersScreen
 import com.zylod.wholesale.ui.pdp.ProductDetailScreen
@@ -188,6 +189,10 @@ fun ZylodRoot() {
         null, "home" -> "home"
         "cart" -> "cart"
         "orders" -> "profile"
+        // v2.4.8: the NATIVE Hot Deals route highlights its own bottom-bar
+        // tab (the bar HAS a deals tab — TabItem("deals", "Hot Deals") —
+        // so it is a tab destination like cart/orders, not fullscreen).
+        "deals" -> "deals"
         in FULLSCREEN_ROUTES, "product-detail/{productId}" -> ""
         else -> RouteOwnership.activeTabFor(webPageId)
     }
@@ -257,6 +262,22 @@ fun ZylodRoot() {
             is Destination.Orders ->
                 // Same tab-destination semantics as Cart (Phase 2 row).
                 navController.navigate("orders") {
+                    popUpTo(HOME_ROUTE) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            is Destination.Deals ->
+                // v2.4.8: native Hot Deals — tab-destination semantics
+                // identical to Cart/Orders. popUpTo(HOME_ROUTE) keeps home
+                // DIRECTLY beneath the deals entry, which is the back
+                // contract in one move:
+                //   • bottom-bar Home tap → Destination.Home →
+                //     popBackStack(HOME_ROUTE) pops deals → home (t229g path);
+                //   • system Back → the root BackHandler is enabled ONLY on
+                //     HOME_ROUTE, so it stays disabled here and the NavHost's
+                //     own pop runs → home. No BackHandler may ever be added
+                //     inside DealsScreen (it would eat the back event).
+                navController.navigate("deals") {
                     popUpTo(HOME_ROUTE) { saveState = true }
                     launchSingleTop = true
                     restoreState = true
@@ -435,6 +456,17 @@ fun ZylodRoot() {
                     onBack = null, // tab-like destination (highlights profile) — no back bar
                     openPage = { pageId, query -> openPage(pageId, query) },
                     openAuth = { navController.navigate("login") { launchSingleTop = true } },
+                )
+            }
+            composable("deals") {
+                // v2.4.8: NATIVE Hot Deals (RouteOwnership: flash-deals /
+                // daily-deals / hot-deals / deals → Destination.Deals).
+                // onBack == null — tab destination (highlights the deals tab),
+                // same as Cart/Orders; deals→PDP rides the existing
+                // Destination.Product path via openPage.
+                DealsScreen(
+                    onBack = null,
+                    openPage = { pageId, query -> openPage(pageId, query) },
                 )
             }
             composable("product-detail/{productId}") { entry ->

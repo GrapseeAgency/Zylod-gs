@@ -194,4 +194,7 @@ object ApiClient {
 
     fun ordersApi(baseUrl: String): OrdersApi =
         cachedApi(baseUrl, "orders") { it.create(OrdersApi::class.java) }
+
+    fun dealsApi(baseUrl: String): DealsApi =
+        cachedApi(baseUrl, "deals") { it.create(DealsApi::class.java) }
 }

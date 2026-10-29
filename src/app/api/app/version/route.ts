@@ -10,8 +10,12 @@ import { BUNDLE_IDENTITY } from '@/generated/bundle-identity'
  * available", and never updated — the owner then audited the OLD build and
  * reported all its bugs against the new one. Below the floor the update is
  * MANDATORY, no matter what the row says. 247 = v2.4.7 (navy-chrome fix).
+ * 248 = v2.4.8 (native Kotlin Hot Deals screen + deals back-nav hardening).
+ * Floor safety: android-build.yml builds the release APK FROM THIS COMMIT
+ * (assembleRelease), so this commit's APK is versionCode 248 — a floor of
+ * 248 can never gate-block the release it ships with (248 < 248 is false).
  */
-const MIN_VERSION_CODE = 247
+const MIN_VERSION_CODE = 248
 
 /**
  * GET /api/app/version
