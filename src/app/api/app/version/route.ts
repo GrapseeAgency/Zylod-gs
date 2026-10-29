@@ -9,9 +9,9 @@ import { BUNDLE_IDENTITY } from '@/generated/bundle-identity'
  * `false`, so devices on v2.3.0 (code 230) polled, saw a soft "update
  * available", and never updated — the owner then audited the OLD build and
  * reported all its bugs against the new one. Below the floor the update is
- * MANDATORY, no matter what the row says.
+ * MANDATORY, no matter what the row says. 247 = v2.4.7 (navy-chrome fix).
  */
-const MIN_VERSION_CODE = 246
+const MIN_VERSION_CODE = 247
 
 /**
  * GET /api/app/version
