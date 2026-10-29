@@ -12,7 +12,7 @@ from playwright.async_api import async_playwright
 
 BASE = "http://localhost:3000"
 STALE_UA = "Mozilla/5.0 (Linux; Android 13; Pixel 7) ZylodAndroidNative/2.3.0 AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36"
-CURRENT_UA = "Mozilla/5.0 (Linux; Android 13; Pixel 7) ZylodAndroidNative/2.4.6 AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36"
+CURRENT_UA = "Mozilla/5.0 (Linux; Android 13; Pixel 7) ZylodAndroidNative/2.4.7 AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36"
 
 async def run_ua(pw, ua: str):
     browser = await pw.chromium.launch()
@@ -26,7 +26,7 @@ async def run_ua(pw, ua: str):
         "ua": ua.split("ZylodAndroidNative/")[1].split(" ")[0],
         "blocked": "Update required" in body,
         "download_link": await page.locator("a[download]").count(),
-        "version_text": "2.4.6" in body,
+        "version_text": "2.4.7" in body,
         "home_visible": "Featured" in body or "featured" in body.lower(),
     }
     await browser.close()
@@ -38,7 +38,7 @@ async def main():
         current = await run_ua(pw, CURRENT_UA)
 
     print("stale-2.3.0   ->", stale)
-    print("current-2.4.6 ->", current)
+    print("current-2.4.7 ->", current)
 
     ok = (stale["blocked"] and stale["download_link"] >= 1 and stale["version_text"]
           and not current["blocked"])
