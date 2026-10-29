@@ -301,7 +301,7 @@ export function BarcodeScannerPage() {
         >
           <ArrowLeft className="w-5 h-5 text-white" />
         </button>
-        <span className="text-white font-semibold">Scan Barcode</span>
+        <span className="text-white font-semibold">{mode === 'qr' ? 'Scan QR Code' : 'Scan Barcode'}</span>
         {!nativeMode ? (
           <button
             onClick={toggleTorch}
@@ -483,7 +483,7 @@ export function BarcodeScannerPage() {
         )}
 
         <p className="text-xs text-center text-gray-600 dark:text-gray-400 dark:text-gray-500">
-          Point camera at any product barcode or QR code
+          {mode === 'qr' ? 'Point camera at any product QR code' : 'Point camera at any product barcode'}
         </p>
       </div>
 

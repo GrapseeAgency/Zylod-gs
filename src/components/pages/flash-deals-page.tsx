@@ -9,6 +9,8 @@ import { useAuthStore } from '@/store/auth-store'
 import { toast } from 'sonner'
 import { ArrowLeft, HelpCircle, ShoppingCart, Zap, AlertTriangle } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
+import { useInfiniteProducts, type InfinitePage } from '@/hooks/use-infinite-products'
+
 interface FlashDeal {
   id: string
   productId: string
@@ -30,14 +32,49 @@ interface FlashDeal {
   endAt: string
 }
 
+const DEALS_PAGE_SIZE = 20
+
 export function FlashDealsPage() {
   const { navigate, goBack } = useNavigationStore()
   const { formatPrice } = useCurrencyStore()
   const { addItem } = useCartStore()
 
-  const [deals, setDeals] = useState<FlashDeal[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [loadError, setLoadError] = useState<string | null>(null)
+  // t230: social-style infinite scroll — /api/deals is paginated (page/limit,
+  // max 50). The shared hook loads page 1, then auto-appends each further
+  // page (deduped by deal id) when the sentinel nears the viewport, with a
+  // manual "Load more" button fallback. The endpoint wraps its rows as
+  // { data: { flashDeals }, pagination: { flash: {...} } } — the fetcher
+  // below adapts that to the hook's flat page shape.
+  const fetchDealsPage = useCallback(async (page: number): Promise<InfinitePage<FlashDeal>> => {
+    const res = await fetch(`/api/deals?type=flash&limit=${DEALS_PAGE_SIZE}&page=${page}`)
+    if (!res.ok) throw new Error(`deals ${res.status}`)
+    const body: {
+      success?: boolean
+      data?: { flashDeals?: FlashDeal[] }
+      pagination?: { flash?: { page?: number; total?: number; totalPages?: number } }
+    } = await res.json()
+    const rows: FlashDeal[] = Array.isArray(body?.data?.flashDeals) ? body.data.flashDeals : []
+    const pag = body?.pagination?.flash
+    return {
+      data: rows,
+      pagination: {
+        page: typeof pag?.page === 'number' ? pag.page : page,
+        total: typeof pag?.total === 'number' ? pag.total : rows.length,
+        totalPages: typeof pag?.totalPages === 'number' ? pag.totalPages : 1,
+      },
+    }
+  }, [])
+
+  const {
+    items: deals,
+    loading: isLoading,
+    loadingMore,
+    hasMore,
+    sentinelRef,
+    loadMore,
+    failed,
+  } = useInfiniteProducts<FlashDeal>(fetchDealsPage)
+  const loadError = failed ? 'Flash deals are unavailable right now.' : null
 
   // Countdown target = soonest active deal expiry (real, from the API)
   const endsAt = useMemo(() => {
@@ -46,29 +83,6 @@ export function FlashDealsPage() {
   }, [deals])
 
   const [nowTs, setNowTs] = useState(Date.now())
-
-  useEffect(() => {
-    let cancelled = false
-
-    const load = async () => {
-      try {
-        const res = await fetch('/api/deals?type=flash&limit=20')
-        const json = await res.json()
-        if (!cancelled && res.ok && json.success) {
-          setDeals(json.data.flashDeals)
-        } else if (!cancelled) {
-          setLoadError('Flash deals are unavailable right now.')
-        }
-      } catch {
-        if (!cancelled) setLoadError('Network error. Please try again.')
-      } finally {
-        if (!cancelled) setIsLoading(false)
-      }
-    }
-
-    load()
-    return () => { cancelled = true }
-  }, [])
 
   useEffect(() => {
     if (!endsAt) return
@@ -144,7 +158,7 @@ export function FlashDealsPage() {
           key={deal.id}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: idx * 0.05 }}
+          transition={{ delay: Math.min(idx * 0.05, 0.5) }}
           onClick={() => navigate('product-detail', { productId: deal.productId })}
           className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-md cursor-pointer hover:border-[#FF4D6D]/40 transition-colors"
         >
@@ -297,6 +311,30 @@ export function FlashDealsPage() {
 
         {/* ─── Flash Deal Cards (memoized — see t221 note above) ─── */}
         {dealGrid}
+
+        {/* ─── Infinite scroll: sentinel + manual fallback ─── */}
+        {!isLoading && !loadError && hasMore && (
+          <>
+            {/* Sentinel — fetches the next page when it nears the viewport */}
+            <div ref={sentinelRef} aria-hidden className="py-3 text-center">
+              {loadingMore && (
+                <p className="text-xs text-muted-foreground">Loading more deals…</p>
+              )}
+            </div>
+
+            {/* Fallback for when the sentinel never fires (e.g. no scrolling) */}
+            <div className="text-center">
+              <button
+                onClick={() => void loadMore()}
+                disabled={loadingMore}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold rounded-lg border border-border px-4 py-2 hover:bg-muted/50 transition-colors disabled:opacity-60"
+                style={{ color: '#E31C3D' }}
+              >
+                {loadingMore ? 'Loading…' : 'Load more deals'}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

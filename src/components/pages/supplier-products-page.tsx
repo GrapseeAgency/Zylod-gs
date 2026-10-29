@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react'
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageLoader } from '@/components/ui/page-loader'
 import { useNavigationStore } from '@/store/navigation-store'
 import { useCurrencyStore } from '@/store/currency-store'
+import { useInfiniteScrollSentinel } from '@/hooks/use-infinite-products'
 import {
   QrCode, Bell, Mail, Star, Store,
   CheckCircle2, Package, MapPin, AlertCircle, RefreshCw, ChevronDown
@@ -49,6 +50,10 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
   const [loadingMore, setLoadingMore] = useState(false)
+  // t230: the infinite-scroll observer and the manual button can now fire
+  // the same append concurrently — a ref guard (same pattern as the shared
+  // useInfiniteProducts hook) prevents duplicate fetches/duplicated rows.
+  const loadingMoreRef = useRef(false)
 
   const PAGE_SIZE = 12
 
@@ -86,8 +91,11 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
 
   const fetchProducts = useCallback(async (pageNum: number, append: boolean) => {
     if (!supplierId) return
-    if (append) setLoadingMore(true)
-    else {
+    if (append) {
+      if (loadingMoreRef.current) return
+      loadingMoreRef.current = true
+      setLoadingMore(true)
+    } else {
       setLoading(true)
       setError(null)
     }
@@ -101,7 +109,13 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
       }
       const items = Array.isArray(data?.data) ? data.data : []
       const mapped = items.map(mapProduct)
-      setProducts((prev) => (append ? [...prev, ...mapped] : mapped))
+      // t230: append is id-dedupe safe (same pattern as the shared infinite-
+      // scroll hook) — a retry after a partial failure can't double rows.
+      setProducts((prev) => {
+        if (!append) return mapped
+        const seen = new Set(prev.map((p) => p.id))
+        return [...prev, ...mapped.filter((p) => !seen.has(p.id))]
+      })
       setTotal(typeof data?.pagination?.total === 'number' ? data.pagination.total : mapped.length)
       setTotalPages(typeof data?.pagination?.totalPages === 'number' ? data.pagination.totalPages : 1)
       setPage(pageNum)
@@ -109,6 +123,7 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
       setError(e instanceof Error ? e.message : 'Network error while loading supplier products')
       if (!append) setProducts([])
     } finally {
+      loadingMoreRef.current = false
       setLoading(false)
       setLoadingMore(false)
     }
@@ -129,6 +144,18 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
     for (const p of products) if (p.categoryName) names.add(p.categoryName)
     return Array.from(names)
   }, [products])
+
+  // t230: auto-append — when the sentinel (rendered just above the manual
+  // Load More button) nears the viewport, fire the SAME append the button
+  // performs. The button stays as the fallback for observers that never
+  // fire. handleLoadMore's identity changes when a page is appended, which
+  // re-arms the observer so loading continues while the sentinel is visible
+  // (same pattern as the shared useInfiniteProducts hook).
+  const handleLoadMore = useCallback(() => {
+    void fetchProducts(page + 1, true)
+  }, [fetchProducts, page])
+  const canLoadMore = !loading && !error && page < totalPages
+  const loadMoreSentinelRef = useInfiniteScrollSentinel(handleLoadMore, canLoadMore)
 
   const filteredProducts = useMemo(() => {
     if (activeCategory === 'all') return products
@@ -410,7 +437,11 @@ export function SupplierProductsPage({ pageParams: _pageParams }: { pageParams?:
           </div>
         )}
 
-        {/* Load More — real pagination */}
+        {/* Infinite-scroll sentinel — auto-fires the same fetch as the
+            Load More button below it when it nears the viewport */}
+        {canLoadMore && <div ref={loadMoreSentinelRef} className="h-px" aria-hidden />}
+
+        {/* Load More — real pagination (manual fallback) */}
         {!loading && !error && page < totalPages && (
           <div className="pt-2">
             <Button

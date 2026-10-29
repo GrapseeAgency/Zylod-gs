@@ -8,20 +8,20 @@
  *    eliminated from link-generator and deep-link-handler). Now seeded with
  *    a REAL product id from /api/products?limit=1 on mount, or an honest
  *    templated placeholder when the catalog is empty.
- * 2. The QR was a decorative SVG (just hardcoded rects) — NOT a real QR of
- *    the URL. A marketer printing it would ship a broken code. Now generates
- *    a REAL QR matrix using a tiny inline encoder (the numeric/alphanumeric
- *    Reed-Solomon path is heavy; instead we use a lightweight grid-hash
- *    approach that produces a deterministic, scannable-looking pattern —
- *    honest about being a "preview rendering" and the Print/Download buttons
- *    open the browser's print dialog so the user can save the page as PDF,
- *    which is the real "print this" path).
+ * 2. The QR was a decorative pseudo-random "QR-looking" grid — NOT a
+ *    scannable code. A marketer printing it would ship a broken code. Now
+ *    renders a REAL spec-compliant QR code (qrcode.react's QRCodeSVG,
+ *    black on white for printability) that encodes the exact deep-link URL
+ *    shown above it. The Print/Download buttons open the browser's print
+ *    dialog so the user can save the page as PDF, which is the real
+ *    "print this" path.
  *
  * The old `alert()` theater on Print/Download is gone — Print now calls
  * window.print() (the real browser print dialog) and Download copies the URL
  * with an honest toast.
  */
 import React, { useEffect, useState } from 'react'
+import { QRCodeSVG } from 'qrcode.react'
 import { QrCode, ArrowLeft, Printer, Copy, Check, ExternalLink } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -29,51 +29,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useNavigationStore } from '@/store/navigation-store'
 import { toast } from 'sonner'
-
-// Deterministic pseudo-QR grid from a string. NOT a spec-compliant QR code
-// (that requires Reed-Solomon ECC + masking) — this is an honest "preview
-// pattern" derived from the URL so the user sees a unique, scannable-looking
-// grid per URL. The Print path uses the browser's real print dialog.
-function generateGrid(url: string, size = 25): boolean[][] {
-  const grid: boolean[][] = []
-  // Simple hash for deterministic pseudo-random bits
-  let h = 2166136261
-  for (let i = 0; i < url.length; i++) {
-    h ^= url.charCodeAt(i)
-    h = Math.imul(h, 16777619)
-  }
-  for (let y = 0; y < size; y++) {
-    const row: boolean[] = []
-    for (let x = 0; x < size; x++) {
-      h ^= h << 13; h ^= h >>> 17; h ^= h << 5
-      row.push(((h >>> 0) & 1) === 1)
-    }
-    grid.push(row)
-  }
-  // Add finder patterns (the 3 corner squares that make a QR look like a QR)
-  const drawFinder = (ox: number, oy: number) => {
-    for (let y = 0; y < 7; y++) {
-      for (let x = 0; x < 7; x++) {
-        const onBorder = x === 0 || x === 6 || y === 0 || y === 6
-        const inner = x >= 2 && x <= 4 && y >= 2 && y <= 4
-        grid[oy + y][ox + x] = onBorder || inner
-      }
-    }
-    // quiet zone around finder
-    for (let y = -1; y <= 7; y++) {
-      for (let x = -1; x <= 7; x++) {
-        if (x === -1 || x === 7 || y === -1 || y === 7) {
-          const px = ox + x, py = oy + y
-          if (px >= 0 && px < size && py >= 0 && py < size) grid[py][px] = false
-        }
-      }
-    }
-  }
-  drawFinder(0, 0)
-  drawFinder(size - 7, 0)
-  drawFinder(0, size - 7)
-  return grid
-}
 
 export function QrDeeplinkPage() {
   const { navigate } = useNavigationStore()
@@ -95,7 +50,6 @@ export function QrDeeplinkPage() {
       .finally(() => setSeeded(true))
   }, [])
 
-  const grid = generateGrid(targetUrl)
   const hasPlaceholder = targetUrl.includes('{id}')
 
   const copyUrl = () => {
@@ -165,18 +119,20 @@ export function QrDeeplinkPage() {
 
             <div className="flex flex-col items-center justify-center p-8 bg-slate-50 dark:bg-background border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-2xl space-y-4">
               <div className="p-4 bg-white dark:bg-gray-900 rounded-2xl shadow-md">
-                <svg width="180" height="180" viewBox="0 0 25 25" fill="none" shapeRendering="crispEdges">
-                  <rect width="25" height="25" fill="white" />
-                  {grid.map((row, y) =>
-                    row.map((on, x) =>
-                      on ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="#000000" /> : null
-                    )
-                  )}
-                </svg>
+                {/* Real, scannable QR — black on white for printability */}
+                <QRCodeSVG
+                  value={targetUrl}
+                  size={180}
+                  level="M"
+                  fgColor="#000000"
+                  bgColor="#FFFFFF"
+                  marginSize={2}
+                  title={`QR code for ${targetUrl}`}
+                />
               </div>
               <span className="text-xs font-mono text-muted-foreground break-all text-center max-w-xs">{targetUrl}</span>
               <p className="text-[10px] text-muted-foreground text-center max-w-xs">
-                Preview rendering — use Print to save the page as a PDF for production artwork.
+                Real, scannable QR code — use Print to save the page as a PDF for production artwork.
               </p>
             </div>
 

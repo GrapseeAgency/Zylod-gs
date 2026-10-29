@@ -11,13 +11,13 @@ import { Separator } from '@/components/ui/separator'
 const QUICK_ACTIONS = [
   { icon: ClipboardList, label: 'Orders', page: 'orders' as const, color: '#E53935' },
   { icon: Heart, label: 'Wishlist', page: 'wishlist' as const, color: '#AD1457' },
-  { icon: ShoppingCart, label: 'Cart', page: 'cart' as const, color: '#37474F' },
+  { icon: ShoppingCart, label: 'Cart', page: 'cart' as const, color: '#616161' },
   { icon: MessageSquare, label: 'Chat', page: 'chat-list' as const, color: '#388E3C' },
 ]
 
 const DASHBOARD_FEATURES = [
   { label: 'Order Management', color: '#388E3C' },
-  { label: 'Price Negotiations', color: '#37474F' },
+  { label: 'Price Negotiations', color: '#616161' },
   { label: 'Supplier Verification', color: '#E53935' },
   { label: 'Bulk Order Tracking', color: '#F57C00' },
   { label: 'Secure Payments', color: '#388E3C' },

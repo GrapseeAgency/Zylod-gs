@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 /* ─── Color Constants ─── */
-const RED = 'primary'
+const RED = '#C8102E'
 
 interface ProductQRCodeProps {
   productId: string
@@ -156,8 +156,7 @@ export function ProductQRCodeDialog({
             {copied ? 'Copied!' : 'Copy Link'}
           </Button>
           <Button
-            className="flex-1"
-            style={{ backgroundColor: RED }}
+            className="flex-1 bg-[#C8102E] text-white hover:bg-[#C8102E]/90"
             onClick={handleDownload}
           >
             <Download className="h-4 w-4 mr-2" />

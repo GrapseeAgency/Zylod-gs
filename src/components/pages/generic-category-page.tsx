@@ -34,7 +34,7 @@ interface Product {
 const CATEGORY_META: Record<string, { name: string; description: string; icon: React.ReactNode; colorFrom: string; colorTo: string }> = {
   'textiles-fabrics': { name: 'Textiles & Fabrics', description: 'Premium Bangladeshi textiles — from Dhaka muslin to Narayanganj silk', icon: <Shirt className="h-8 w-8 text-white" />, colorFrom: '#E53935', colorTo: '#FF8A80' },
   'agriculture-food': { name: 'Agriculture & Food', description: 'Fresh Bangladeshi produce — from Rajshahi rice to Sylhet tea', icon: <Wheat className="h-8 w-8 text-white" />, colorFrom: '#2E7D32', colorTo: '#81C784' },
-  'electronics': { name: 'Electronics & Components', description: 'Wholesale electronics and components', icon: <Cpu className="h-8 w-8 text-white" />, colorFrom: '#37474F', colorTo: '#B0BEC5' },
+  'electronics': { name: 'Electronics & Components', description: 'Wholesale electronics and components', icon: <Cpu className="h-8 w-8 text-white" />, colorFrom: '#262626', colorTo: '#404040' },
   'construction': { name: 'Construction & Real Estate', description: 'Building materials, hardware, and safety gear', icon: <HardHat className="h-8 w-8 text-white" />, colorFrom: '#E65100', colorTo: '#FFB74D' },
   'packaging-printing': { name: 'Packaging & Printing', description: 'Boxes, bags, containers, and print materials', icon: <Box className="h-8 w-8 text-white" />, colorFrom: '#6A1B9A', colorTo: '#BA68C8' },
   'home-garden': { name: 'Home & Garden', description: 'Home decor, cookware, and garden supplies', icon: <Leaf className="h-8 w-8 text-white" />, colorFrom: '#00695C', colorTo: '#4DB6AC' },

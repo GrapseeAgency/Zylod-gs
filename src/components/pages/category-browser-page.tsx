@@ -163,7 +163,7 @@ export function CategoryBrowserPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.03, 0.3) }}
                 onClick={() => navigate('category-products', { category: cat.slug })}
-                className="relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer group min-h-[160px] md:min-h-[180px] flex flex-col justify-end p-3 border border-black/5 bg-gradient-to-br from-[#3B3B44] to-[#17171C]"
+                className="relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer group min-h-[160px] md:min-h-[180px] flex flex-col justify-end p-3 border border-black/5 bg-gradient-to-br from-[#3A3A3A] to-[#1A1A1A]"
               >
                 {/* Decorative pattern backdrop */}
                 <div className="absolute inset-0 opacity-20 pointer-events-none">

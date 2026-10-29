@@ -31,17 +31,17 @@ const PRIMARY_LINKS: QuickLink[] = [
 ]
 
 const MORE_LINKS: QuickLink[] = [
-  { icon: LayoutGrid, label: 'Categories', color: '#37474F', bg: 'linear-gradient(135deg, #ECEFF1, #CFD8DC)', page: 'category-browser' },
+  { icon: LayoutGrid, label: 'Categories', color: '#C8102E', bg: 'linear-gradient(135deg, #2E2E2E, #1E1E1E)', page: 'category-browser' },
   { icon: BadgePercent, label: 'Coupons', color: '#C62828', bg: 'linear-gradient(135deg, #FFEBEE, #FFCDD2)', page: 'coupons' },
   { icon: Store, label: 'Suppliers', color: '#E53935', bg: 'linear-gradient(135deg, #FFEBEE, #FFCDD2)', page: 'suppliers' },
-  { icon: Shield, label: 'Trade Assurance', color: '#37474F', bg: 'linear-gradient(135deg, #ECEFF1, #CFD8DC)', page: 'suppliers' },
+  { icon: Shield, label: 'Trade Assurance', color: '#C8102E', bg: 'linear-gradient(135deg, #2E2E2E, #1E1E1E)', page: 'suppliers' },
   { icon: CreditCard, label: 'Easy Payments', color: '#388E3C', bg: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)', page: 'checkout' },
   { icon: Truck, label: 'Fast Shipping', color: '#6A1B9A', bg: 'linear-gradient(135deg, #F3E5F5, #E1BEE7)', page: 'orders' },
   { icon: Clock, label: 'Top Deals', color: '#F57C00', bg: 'linear-gradient(135deg, #FFF3E0, #FFE0B2)', page: 'top-deals' },
   { icon: Package, label: 'Bulk Orders', color: '#00695C', bg: 'linear-gradient(135deg, #E0F2F1, #B2DFDB)', page: 'bulk-order' },
-  { icon: Banknote, label: 'RFQ', color: '#37474F', bg: 'linear-gradient(135deg, #ECEFF1, #CFD8DC)', page: 'rfq-list' },
+  { icon: Banknote, label: 'RFQ', color: '#C8102E', bg: 'linear-gradient(135deg, #2E2E2E, #1E1E1E)', page: 'rfq-list' },
   { icon: Headphones, label: 'Support', color: '#C8102E', bg: 'linear-gradient(135deg, #FFEBEE, #FFCDD2)', page: 'support' },
-  { icon: Globe, label: 'Cross-border', color: '#37474F', bg: 'linear-gradient(135deg, #ECEFF1, #CFD8DC)', page: 'cross-border' },
+  { icon: Globe, label: 'Cross-border', color: '#C8102E', bg: 'linear-gradient(135deg, #2E2E2E, #1E1E1E)', page: 'cross-border' },
   { icon: Factory, label: 'Factory Direct', color: '#388E3C', bg: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)', page: 'factory-direct' },
 ]
 

@@ -9,15 +9,11 @@ import {
   Zap,
 } from 'lucide-react'
 
-/* ─── Color Constants ─── */
-
-const BLUE = '#37474F'
-
 const PROMO_FEATURES = [
-  { icon: Scissors, title: 'Daily Deals', color: 'primary', desc: 'Bulk discounts on selected items' },
-  { icon: Globe, title: 'Cross-border', color: BLUE, desc: 'International sourcing made easy' },
-  { icon: Clock, title: 'Flash Sale', color: 'primary', desc: 'Limited time bulk offers' },
-  { icon: Zap, title: 'Lightning Deal', color: 'primary', desc: 'Deep-discount bulk deals' },
+  { icon: Scissors, title: 'Daily Deals', desc: 'Bulk discounts on selected items' },
+  { icon: Globe, title: 'Cross-border', desc: 'International sourcing made easy' },
+  { icon: Clock, title: 'Flash Sale', desc: 'Limited time bulk offers' },
+  { icon: Zap, title: 'Lightning Deal', desc: 'Deep-discount bulk deals' },
 ]
 
 export function PromoFeatures() {
@@ -39,14 +35,11 @@ export function PromoFeatures() {
             }}
           >
             <div className="flex items-center gap-2.5">
-              <div
-                className="h-9 w-9 rounded-lg flex items-center justify-center"
-                style={{ background: `${feature.color}10` }}
-              >
-                <IconComp className="h-5 w-5" style={{ color: feature.color }} />
+              <div className="h-9 w-9 rounded-lg flex items-center justify-center bg-primary/10">
+                <IconComp className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-xs font-bold" style={{ color: feature.color }}>{feature.title}</p>
+                <p className="text-xs font-bold text-primary">{feature.title}</p>
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-tight mt-0.5">{feature.desc}</p>
               </div>
             </div>
