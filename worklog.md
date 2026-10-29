@@ -6876,3 +6876,41 @@ Stage Summary:
 
 ## t229i — stale open-item correction: orders pagination EXISTS
 - The standing "orders API unpaginated" note was WRONG (probe used d['data']['pagination'] — the metadata is a TOP-LEVEL sibling of data). Live proof: /api/orders?page=1&limit=2 → 2 items + pagination {page:1,limit:2,total:3,totalPages:2}; page=2 returns a different order. /api/admin/orders paginates identically (page/limit 1..100, skip/take, pagination block). Open-item list updated: pagination CLOSED.
+
+## t229h — 2026-10-30 (Asia/Dhaka) — final audit round: STALE-APK root cause + release pipeline + image previews
+
+**Root cause of every recurring "still broken" native report:** the APKs in
+`public/downloads/` were dated **Sep 10** (v2.4.0–v2.4.5) while CI kept building
+fresh APKs that never got published. The owner was testing a month-old package
+against a server running current code — every t229 native fix (back button,
+smoothness, offline catalog, session honesty) was IN the repo but NOT in the
+owner's hands. Fixed end-to-end:
+
+1. `public/downloads/zylod-b2b-v2.4.6.apk` — swapped the interim CI debug
+   package for the CI **release** artifact (24.2MB, `com.zylod.wholesale`,
+   versionCode 246, versionName 2.4.6-6b2ece4, debug-key signed = same signer
+   as every prior published APK → installs as an IN-PLACE UPDATE over the old
+   app, not a side-loaded second app).
+2. `appVersions` seeded (v2.4.6/246, published) → the APK download page and the
+   in-app updater now serve the current build; old installs see
+   `updateAvailable: true`. Live-verified: page shows "v2.4.6 · Build #246 ·
+   23.1 MB" with a working download link (HTTP 206 range probe OK).
+3. `android-build.yml` now builds BOTH debug and release APKs on every commit —
+   the update package is produced continuously, not by hand.
+
+**Web verification round (agent-browser, live):** footer-link navigation →
+Terms of Service renders + scrollY=0 (works); guest add-to-cart → login gate
+("Sign in required"); guest cart API → 401; guest seller-add-product → gate;
+seller-dashboard gates after session probe; QR/image-search pages functional;
+fresh reload → zero console/page errors.
+
+**Image-preview fixes (owner top priority):** ProductCard, MobileProductCard
+and PDP gallery switched `object-cover` → `object-contain` (products are never
+cropped by the square frame) and image tiles stay LIGHT in dark mode (white-bg
+product art blends seamlessly — the Amazon/Alibaba dark-mode standard; kills
+the harsh bright-square-on-dark-tile defect). Verified live via computed
+styles: `object-fit: contain`, 1024² art in 164² tiles.
+
+**CI:** 6b2ece4 all green (android-build incl. new release step, web-ci,
+ios-build). 39b2dda (APK swap) pushed; android-build in progress at report
+time. Recurring 15-min webDevReview cron created (job 484578).
