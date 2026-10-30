@@ -7,7 +7,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
- * Wallet endpoints — the REAL GET routes under src/app/api/wallet/**:
+ * Wallet endpoints — the REAL GET routes under src/app/api/wallet/ (nested route.ts files):
  *
  *  - GET api/wallet                     (wallet/route.ts)          overview + 5 recent rows
  *  - GET api/wallet/balance             (wallet/balance/route.ts)  available/escrow/inflow/outflow breakdown
