@@ -112,8 +112,9 @@ log () { echo "── $1 ──"; }
 # t240: adb shell with a hard timeout, never fatal. Usage: adbt 20 uiautomator dump /sdcard/ui.xml
 adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
 
-# t240 GLOBAL BUDGET: 30 minutes of wall clock for the capture blocks.
-budget_left () { [ $((1800 - SECONDS)) -gt 10 ]; }
+# t240 GLOBAL BUDGET: 30 minutes of wall clock for the capture blocks
+# (t248: raised to 1900s — two more admin captures, ~20s each, must fit).
+budget_left () { [ $((1900 - SECONDS)) -gt 10 ]; }
 budget_stop () {
   if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
     BUDGET_EXHAUSTED=1
@@ -1068,6 +1069,9 @@ guarded_deeplink "15-admin-dashboard" 10 "zylod://admin-dashboard"
 guarded_deeplink "16-applink-wallet" 8 "https://zylod.com/?page=wallet"
 guarded_deeplink "17-profile" 10 "zylod://profile"
 guarded_deeplink "18-orders-authed" 10 "zylod://buyer-orders"
+# t248: the two typed admin surfaces — moderation + operations queues.
+guarded_deeplink "19-admin-users" 10 "zylod://admin-users"
+guarded_deeplink "20-admin-orders" 10 "zylod://admin-orders"
 
 log "Screen inventory"
 ls -la screenshots/ || true

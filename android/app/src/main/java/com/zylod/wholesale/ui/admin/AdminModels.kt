@@ -6,6 +6,7 @@ import com.zylod.wholesale.data.api.AdminDashboardDataDto
 import com.zylod.wholesale.data.api.AdminDashboardRecentOrderDto
 import com.zylod.wholesale.data.api.AdminDashboardRecentUserDto
 import com.zylod.wholesale.data.api.AdminOrderDto
+import com.zylod.wholesale.data.api.AdminOrderPaymentDto
 import com.zylod.wholesale.data.api.AdminOrdersPageDto
 import com.zylod.wholesale.data.api.AdminPendingApprovalsDto
 import com.zylod.wholesale.data.api.AdminPlatformOverviewDto
@@ -13,6 +14,8 @@ import com.zylod.wholesale.data.api.AdminRegionCountDto
 import com.zylod.wholesale.data.api.AdminReportDto
 import com.zylod.wholesale.data.api.AdminUserDto
 import com.zylod.wholesale.data.api.ApiEnvelope
+import com.zylod.wholesale.ui.wallet.formatBdt
+import com.zylod.wholesale.ui.wallet.formatRelativeDate
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -76,6 +79,13 @@ data class AdminPendingApprovals(
  * account status and real order counts; dashboard-fallback rows (the
  * dashboard's recentUsers) carry only the handler's display label — the
  * nullable fields make the difference honest on screen.
+ *
+ * t248 users-screen extras (all defaulted, so the dashboard mappers/fallback
+ * rows compile untouched): [id] is the raw account id the moderation PATCH
+ * needs, [verificationStatus] the supplier-profile state, [ratingLine] the
+ * precomputed "★ 4.5 · 3 orders" text (null unless the rating is real) and
+ * [joinedLabel] the precomputed "Joined <relative>" text (null when the
+ * createdAt instant is unparsable — never invented).
  */
 data class AdminUserRow(
     val key: String,
@@ -86,6 +96,10 @@ data class AdminUserRow(
     val phone: String?,
     val orderCount: Int,
     val dateLabel: String,
+    val id: String? = null,
+    val verificationStatus: String? = null,
+    val ratingLine: String? = null,
+    val joinedLabel: String? = null,
 )
 
 /**
@@ -94,6 +108,16 @@ data class AdminUserRow(
  * dashboard-fallback rows carry only orderNumber/totalAmount and the PAYMENT
  * status (the dashboard payload maps paymentStatus into its status field) —
  * status is null there and the screen renders the chip accordingly.
+ *
+ * t248 orders-screen extras (all defaulted, so the dashboard mappers/fallback
+ * rows compile untouched): [id] the raw order id the verify-payment POST
+ * needs, [buyerEmail] the buyer brief's email, [subOrderCount] the real
+ * subOrder array length, [relativeLabel] the precomputed "3h ago" text for
+ * placedAt, [paymentSummary] the precomputed first-payment line
+ * ("bkash · pending · ৳1,500"), [subOrderStatuses] the real per-subOrder
+ * states and [hasPendingPayment] marking an order the verify-payment
+ * endpoint will accept (paymentStatus unpaid/partial — the handler 409s only
+ * when already paid).
  */
 data class AdminOrderRow(
     val key: String,
@@ -104,6 +128,13 @@ data class AdminOrderRow(
     val itemCount: Int,
     val totalAmount: Double,
     val dateLabel: String,
+    val id: String? = null,
+    val buyerEmail: String? = null,
+    val subOrderCount: Int = 0,
+    val relativeLabel: String? = null,
+    val paymentSummary: String? = null,
+    val subOrderStatuses: List<String> = emptyList(),
+    val hasPendingPayment: Boolean = false,
 )
 
 /** One moderation-report row from GET api/admin/reports. */
@@ -215,6 +246,8 @@ fun AdminDashboardRecentUserDto.toUserRow() = AdminUserRow(
     phone = null,
     orderCount = 0,
     dateLabel = formatAdminDate(createdAt),
+    id = id?.takeIf(String::isNotBlank),
+    joinedLabel = joinedLabelOf(createdAt),
 )
 
 /** Rich users-row from GET api/admin/users. */
@@ -234,6 +267,10 @@ fun AdminUserDto.toUserRow() = AdminUserRow(
     phone = phone?.takeIf(String::isNotBlank),
     orderCount = orderCount ?: 0,
     dateLabel = formatAdminDate(createdAt),
+    id = id?.takeIf(String::isNotBlank),
+    verificationStatus = verificationStatus?.takeIf(String::isNotBlank),
+    ratingLine = ratingLineOf(ratingAvg, orderCount ?: 0),
+    joinedLabel = joinedLabelOf(createdAt),
 )
 
 /** Fallback orders-row from the dashboard's recentOrders (payment status only). */
@@ -246,6 +283,8 @@ fun AdminDashboardRecentOrderDto.toOrderRow() = AdminOrderRow(
     itemCount = 0,
     totalAmount = totalAmount ?: 0.0,
     dateLabel = formatAdminDate(placedAt),
+    id = id?.takeIf(String::isNotBlank),
+    relativeLabel = relativeLabelOf(placedAt),
 )
 
 /** Rich orders-row from GET api/admin/orders (buyer + item count + statuses). */
@@ -259,6 +298,13 @@ fun AdminOrderDto.toOrderRow() = AdminOrderRow(
     itemCount = itemCount ?: 0,
     totalAmount = totalAmount ?: 0.0,
     dateLabel = formatAdminDate(placedAt),
+    id = id?.takeIf(String::isNotBlank),
+    buyerEmail = buyer?.email?.takeIf(String::isNotBlank),
+    subOrderCount = subOrderCount ?: subOrders.size,
+    relativeLabel = relativeLabelOf(placedAt),
+    paymentSummary = paymentSummaryOf(payments),
+    subOrderStatuses = subOrders.mapNotNull { it.status?.takeIf(String::isNotBlank) },
+    hasPendingPayment = paymentStatus?.trim()?.lowercase(Locale.US).let { it == "unpaid" || it == "partial" },
 )
 
 /** Rich moderation-row from GET api/admin/reports. */
@@ -290,4 +336,35 @@ fun formatAdminDate(iso: String?): String {
             ?: return iso.take(10)
         SimpleDateFormat("d MMM yyyy, h:mm a", Locale.US).format(date)
     }.getOrElse { iso.take(10) }
+}
+
+/* ─── t248 mapper precomputes (pure JVM, main-thread like formatAdminDate;
+       formatRelativeDate/formatBdt are the shared WalletFormat helpers) ─── */
+
+/** "Joined 3d ago" — null when the instant is missing/unparsable (honest). */
+private fun joinedLabelOf(iso: String?): String? {
+    val relative = formatRelativeDate(iso)
+    return relative.takeIf(String::isNotBlank)?.let { "Joined $it" }
+}
+
+/** "3h ago" for placedAt — null when the instant is missing/unparsable. */
+private fun relativeLabelOf(iso: String?): String? =
+    formatRelativeDate(iso).takeIf(String::isNotBlank)
+
+/** "★ 4.5 · 3 orders" — null unless the rating is a real positive value. */
+private fun ratingLineOf(ratingAvg: Double?, orderCount: Int): String? {
+    val rating = ratingAvg?.takeIf { it > 0.0 } ?: return null
+    val stars = String.format(Locale.US, "%.1f", rating)
+    return if (orderCount > 0) "★ $stars · $orderCount order${if (orderCount != 1) "s" else ""}" else "★ $stars"
+}
+
+/** First-payment line "bkash · pending · ৳1,500" — null with no payments. */
+private fun paymentSummaryOf(payments: List<AdminOrderPaymentDto>): String? {
+    val first = payments.firstOrNull() ?: return null
+    val parts = listOfNotNull(
+        first.method?.takeIf(String::isNotBlank),
+        first.status?.takeIf(String::isNotBlank),
+        first.amount?.takeIf { it > 0.0 }?.let { formatBdt(it) },
+    )
+    return parts.takeIf { it.isNotEmpty() }?.joinToString(" · ")
 }
