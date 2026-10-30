@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zylod.wholesale.data.api.AdminRfqCloseRequest
 import com.zylod.wholesale.data.api.AdminRfqDetailDto
+import com.zylod.wholesale.data.api.AdminRfqDetailQuoteDto
+import com.zylod.wholesale.data.api.AdminRfqItemDto
 import com.zylod.wholesale.data.api.AdminRfqRowDto
 import com.zylod.wholesale.data.api.AdminRfqStatsDto
 import com.zylod.wholesale.data.api.AdminRfqsEnvelope
@@ -532,7 +534,9 @@ fun AdminRfqRowDto.toAdminRfqRow() = AdminRfqRow(
 
 /** Admin detail mapper — the expanded card's payload of record. */
 fun AdminRfqDetailDto.toAdminRfqDetail() = AdminRfqDetail(
-    key = "rfq-$stableKey",
+    // AdminRfqDetailDto carries no stableKey — id with hash fallback (the
+    // AdminRfqRowDto.stableKey / SupportModels.toDomain key convention).
+    key = "rfq-" + (id?.takeIf(String::isNotBlank) ?: "detail-${hashCode()}"),
     id = id?.takeIf(String::isNotBlank),
     title = title?.takeIf(String::isNotBlank) ?: "Untitled RFQ",
     description = description?.takeIf(String::isNotBlank),
@@ -591,7 +595,7 @@ private fun bestQuoteLabelOf(min: Double?, max: Double?): String {
 private fun summaryLabelOf(quantity: Double?, unit: String?, targetPrice: Double?): String {
     val qty = quantityLabelOf(quantity, unit)
     val target = targetPrice?.takeIf { it > 0.0 }?.let { "target ${formatBdt(it)}" }
-    return listOf(qty, target).filter { it.isNotBlank() }.joinToString(" · ")
+    return listOf(qty, target).filter { !it.isNullOrBlank() }.joinToString(" · ")
 }
 
 /** "120 pcs" / "120" / "" — never invents a unit. */

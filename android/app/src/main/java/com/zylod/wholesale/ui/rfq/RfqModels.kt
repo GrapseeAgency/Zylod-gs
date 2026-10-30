@@ -151,7 +151,9 @@ fun RfqRowDto.toRfqRow() = RfqRow(
 
 /** Detail mapper — the expanded card's payload of record. */
 fun RfqDetailDto.toRfqDetail() = RfqDetail(
-    key = "rfq-$stableKey",
+    // RfqDetailDto carries no stableKey — id with hash fallback (the
+    // RfqRowDto.stableKey / SupportModels.toDomain key convention).
+    key = "rfq-" + (id?.takeIf(String::isNotBlank) ?: "detail-${hashCode()}"),
     id = id?.takeIf(String::isNotBlank),
     title = title?.takeIf(String::isNotBlank) ?: "Untitled RFQ",
     description = description?.takeIf(String::isNotBlank),
@@ -175,7 +177,8 @@ fun RfqDetailDto.toRfqDetail() = RfqDetail(
 )
 
 private fun RfqItemDto.toItemRow() = RfqItemRow(
-    key = "ritem-$stableKey",
+    // RfqItemDto carries no stableKey — id with hash fallback.
+    key = "ritem-" + (id?.takeIf(String::isNotBlank) ?: "item-${hashCode()}"),
     name = productName?.takeIf(String::isNotBlank) ?: "Unnamed item",
     specs = specifications?.takeIf(String::isNotBlank),
     qtyLabel = quantityLabelOf(quantity, unit),
@@ -241,7 +244,7 @@ fun quoteCountLabelOf(count: Int): String = when {
 private fun summaryLabelOf(quantity: Double?, unit: String?, targetPrice: Double?): String {
     val qty = quantityLabelOf(quantity, unit)
     val target = targetPrice?.takeIf { it > 0.0 }?.let { "target ${formatBdt(it)}" }
-    return listOf(qty, target).filter { it.isNotBlank() }.joinToString(" · ")
+    return listOf(qty, target).filter { !it.isNullOrBlank() }.joinToString(" · ")
 }
 
 /** "120 pcs" / "120" / "" — never invents a unit. */
