@@ -72,7 +72,7 @@ class DealsViewModel(private val appContext: Context) : ViewModel() {
         // blank it behind a spinner — refresh replaces it in place.
         val hasData = _state.value.flashDeals.isNotEmpty() || _state.value.dailyDeals.isNotEmpty()
         _state.value = _state.value.copy(loading = !hasData, offline = false, error = null)
-        viewModelScope.launch { fetch(page = 1, replace = true) }
+        viewModelScope.launch { fetch(pageNumber = 1, replace = true) }
     }
 
     /** Auto-append (robust guard: one fetch in flight, in-range pages only). */
@@ -81,7 +81,7 @@ class DealsViewModel(private val appContext: Context) : ViewModel() {
         if (s.loading || s.loadingMore || s.error != null) return
         if (page == 0 || page >= maxOf(flashTotalPages, dailyTotalPages)) return
         _state.value = s.copy(loadingMore = true)
-        viewModelScope.launch { fetch(page = page + 1, replace = false) }
+        viewModelScope.launch { fetch(pageNumber = page + 1, replace = false) }
     }
 
     private suspend fun fetch(pageNumber: Int, replace: Boolean) {
