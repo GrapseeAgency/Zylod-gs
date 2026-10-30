@@ -171,6 +171,7 @@
 # t249-h: sent EXPLICITLY (-n com.zylod.wholesale.debug/com.zylod.wholesale.debug.DebugSessionReceiver — the installed DEBUG appId carries applicationIdSuffix ".debug") — Android 8+ background limits drop IMPLICIT broadcasts to manifest-declared receivers (t249-g CI: "Broadcast completed: result=0" ack with ZERO ZylodDebugSession lines), plus a dumpsys receiver-registered=yes|no evidence key.
 # t249-i: logcat -c moved BEFORE the am broadcast (the old clear ran ~2s AFTER it and erased the receiver's "session injected user_type=..." proof line before the ≤15s poll — broadcast-delivered=no recorded despite delivery) + the buyer DEBUG_SET_SESSION broadcast is UNCONDITIONAL (login_buyer's weak UI verify set AUTHED=1 with zero session and skipped the injection — capture 18 kept its sign-in gate); dumpsys receiver-registered key, admin flow, budget, evidence formats unchanged.
 # t249-j: the receiver's session write is now a SYNCHRONOUS commit() — the old apply() (via SessionManager.setSession) sat queued on QueuedWork and the immediate am force-stop killed the flush before it landed, silently losing the buyer session (CI artifact 13008487170); this script adds a 2s grace sleep before that force-stop and a receiver-commit-ack=yes|no evidence key (derived from the receiver's committed=true log line); delivery mechanism, verification, budget unchanged.
+# t249-k: buyer session RE-INJECTED immediately before capture 18 — mid-flow 401s from the seller/admin deeplinks (shots 12-17) trigger the app's SessionAuthenticator logout (401 → refresh → retry → LOGOUT) and clear the persisted buyer session before 18-orders-authed (CI artifact 13011155289: 401 lines at 20:37:59–20:40:24 between the buyer injection 20:35:22 and shot 18; admin passes because its injection runs right before its shots); the same broadcast_inject_session runs a second time right before the shot (buyer-session-check.txt appends — the second run's keys are the authoritative ones) + the buyer-pre18-reinjection=yes|no evidence key; nothing else changes (no Kotlin, no version bump).
 # The receiver writes the session through the app's OWN SessionManager
 # .setSession(token, userJson) — exactly what a real login does
 # (LoginScreen.kt:289-291) — so the EncryptedSharedPreferences store
@@ -1905,6 +1906,28 @@ guarded_deeplink "15-admin-dashboard" 10 "zylod://admin-dashboard"
 # wallet page as zylod://wallet above.
 guarded_deeplink "16-applink-wallet" 8 "https://zylod.com/?page=wallet"
 guarded_deeplink "17-profile" 10 "zylod://profile"
+# t249-k: RE-INJECT the buyer session IMMEDIATELY before capture 18. CI
+# artifact 13011155289 (7346b17) proved the t249-i injection DOES commit
+# (committed=true, cold-start verified), but the deeplinks in between —
+# 12-seller-dashboard, 13-wallet, 14-notifications, 15-admin-dashboard —
+# then fire authenticated API calls that return 401 for a buyer token, and
+# the app's SessionAuthenticator (401 → refresh → retry → LOGOUT) clears
+# the persisted session BEFORE shot 18 (logcat 401 lines 20:37:59-20:40:24
+# sit between the buyer injection 20:35:22 and capture 18). The admin flow
+# passes because its injection runs right before its own shots — so the
+# exact same broadcast_inject_session runs AGAIN here (evidence appends to
+# buyer-session-check.txt; this second run's keys are the authoritative
+# ones), leaving a freshly committed buyer session on a cold-started home
+# seconds before the 18-orders-authed deeplink. Non-fatal: on failure the
+# marker below records it and capture 18 keeps its honest gate verdict.
+BUYER_PRE18_REINJECTED=no
+if ! budget_stop; then
+  log "t249-k: re-injecting the buyer session immediately before capture 18 (mid-flow 401s from the seller/admin deeplinks trigger the SessionAuthenticator logout that clears it)"
+  if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
+    BUYER_PRE18_REINJECTED=yes
+  fi
+fi
+echo "buyer-pre18-reinjection=$BUYER_PRE18_REINJECTED" >> screenshots/buyer-session-check.txt 2>/dev/null || true
 # t249-f: 18-orders-authed with a STRICT signed-in verdict (replaces the
 # blind guarded_deeplink). Needles verified in OrdersScreen.kt:
 #   gate   — "Sign in to see your orders" (:425) renders ONLY when
