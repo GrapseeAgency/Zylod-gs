@@ -80,14 +80,21 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             isDebuggable = true
-            // Dev discovery list: LIVE DEPLOYED BACKEND first (t227 — verified
-            // 200 + bundle identity), then local Wi-Fi host, emulator, ADB
-            // reverse tunnel, public ngrok tunnels, production placeholder.
-            // Personal/dev URLs must never leak into release builds.
+            // Dev discovery list. t241: the emulator loopback (CI-local dev
+            // server at 10.0.2.2:3000, serving THIS commit's web bundle)
+            // comes FIRST — ServerConfig.resolve now prefers the endpoint
+            // whose served bundle matches this APK's build sha (PASS 1),
+            // with first-genuine-in-order (PASS 2) as the fallback, so a
+            // stale deployed preview can no longer outrank the local CI
+            // server on the emulator. On real devices 10.0.2.2 is the
+            // device's own loopback (probe-dead, skipped), so the rest of
+            // the order — Wi-Fi dev hosts, localhost, ngrok tunnels, then
+            // the live deployed backend — decides as before. Personal/dev
+            // URLs must never leak into release builds.
             buildConfigField(
                 "String[]",
                 "SERVER_ENDPOINTS",
-                "new String[]{\"https://preview-chat-a71d16fe-4230-4770-8de5-4a51e638e6e8.space-z.ai\", \"http://192.168.2.100:3000\", \"http://192.168.2.101:3000\", \"http://192.168.43.79:3000\", \"http://10.0.2.2:3000\", \"http://localhost:3000\", \"https://jugular-winnings-backfield.ngrok-free.dev\", \"https://zylodbd.ngrok.dev\", \"https://zylod.com\"}"
+                "new String[]{\"http://10.0.2.2:3000\", \"https://preview-chat-a71d16fe-4230-4770-8de5-4a51e638e6e8.space-z.ai\", \"http://192.168.2.100:3000\", \"http://192.168.2.101:3000\", \"http://192.168.43.79:3000\", \"http://localhost:3000\", \"https://jugular-winnings-backfield.ngrok-free.dev\", \"https://zylodbd.ngrok.dev\", \"https://zylod.com\"}"
             )
             manifestPlaceholders["usesCleartextTraffic"] = "true"
         }

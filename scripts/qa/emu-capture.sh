@@ -189,6 +189,61 @@ hide_ime () {
   fi
 }
 
+# t241: current pid of the debug app (FIRST token — pidof can print several
+# space-separated pids and logcat --pid accepts only one). Empty when the
+# app is not running; callers fall back to unfiltered dumps. Never fatal.
+app_pid () {
+  timeout 10 adb shell pidof com.zylod.wholesale.debug 2>/dev/null | tr -d '\r' | awk '{print $1}' || true
+}
+
+# t241: login evidence — REAL shared_prefs dump. t239's
+# `run-as ... sh -c 'cat shared_prefs/*.xml'` relied on a glob that never
+# expanded inside run-as on the CI image, so login-prefs.txt held a useless
+# listing of the data dir instead of the token prefs. Now: list
+# shared_prefs, then cat every *.xml found (relative paths under run-as,
+# per-file head -80 so one huge xml cannot drown the rest). Never fatal.
+dump_login_prefs () {
+  {
+    echo "=== shared_prefs ($(date -u '+%Y-%m-%dT%H:%M:%SZ')) ==="
+    PREFS_FILES=$(timeout 15 adb shell run-as com.zylod.wholesale.debug ls shared_prefs 2>/dev/null | tr -d '\r' || true)
+    echo "$PREFS_FILES"
+    for xml in $PREFS_FILES; do
+      case "$xml" in
+        *.xml)
+          echo "===== shared_prefs/$xml ====="
+          timeout 15 adb shell run-as com.zylod.wholesale.debug cat "shared_prefs/$xml" 2>/dev/null | head -80 || true
+          ;;
+      esac
+    done
+  } > screenshots/login-prefs.txt 2>&1 || true
+}
+
+# t241: auth/provenance logcat at decision time, scoped to the app's own
+# pid when it is alive (--pid — the whole-device grep drowned in unrelated
+# system lines); falls back to the t239 whole-device grep when pidof fails.
+# Never fatal.
+dump_login_logcat () {
+  local PID
+  PID=$(app_pid)
+  if [ -n "$PID" ]; then
+    timeout 20 adb logcat -d --pid="$PID" 2>/dev/null | grep -iE "auth|login|token|session|provenance|ServerConfig|okhttp" | tail -80 > screenshots/login-logcat.txt || true
+  else
+    timeout 20 adb logcat -d 2>/dev/null | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
+  fi
+}
+
+# t241: deals logcat (ZylodDeals), same --pid scoping as the login evidence
+# when the app pid is available; unfiltered -s dump otherwise. Never fatal.
+dump_deals_logcat () {
+  local PID
+  PID=$(app_pid)
+  if [ -n "$PID" ]; then
+    timeout 20 adb logcat -d --pid="$PID" -s ZylodDeals 2>/dev/null
+  else
+    timeout 20 adb logcat -d -s ZylodDeals 2>/dev/null
+  fi
+}
+
 # t234: deep-link capture helper — fire a VIEW intent on the debug package
 # (rides onNewIntent; unknown pageIds route natively via NativePageRegistry),
 # let the page settle, screenshot. Never fatal: an am start failure is
@@ -338,13 +393,11 @@ login_buyer () {
     fi
     sleep 5
   done
-  # t239 DEFECT 1c: token evidence — did a session token actually get
-  # stored? run-as reads the debug app's private shared_prefs dir; never
-  # fatal (a run-as failure just means the evidence file says so).
-  adbt 15 run-as com.zylod.wholesale.debug sh -c 'ls shared_prefs/' > screenshots/login-prefs.txt 2>&1
-  adbt 15 run-as com.zylod.wholesale.debug sh -c 'cat shared_prefs/*.xml' | head -40 >> screenshots/login-prefs.txt 2>&1
-  # t239 DEFECT 1d: auth-related logcat at decision time.
-  timeout 20 adb logcat -d | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
+  # t239 DEFECT 1c/1d + t241: token prefs + auth logcat at decision time —
+  # REAL per-file prefs dump under run-as and pid-scoped logcat (helpers
+  # above); never fatal (a failure just means the evidence file says so).
+  dump_login_prefs
+  dump_login_logcat
   # t239 DEFECT 1e: ONE retry — re-focus the password field, tap Login
   # again, wait, re-verify. Skipped when we are not on a login form
   # (tapping a stray "Login" label elsewhere could navigate away).
@@ -375,12 +428,17 @@ login_buyer () {
         fi
         sleep 5
       done
-      # Refresh the evidence with the retry's outcome.
-      adbt 15 run-as com.zylod.wholesale.debug sh -c 'ls shared_prefs/' > screenshots/login-prefs.txt 2>&1
-      adbt 15 run-as com.zylod.wholesale.debug sh -c 'cat shared_prefs/*.xml' | head -40 >> screenshots/login-prefs.txt 2>&1
-      timeout 20 adb logcat -d | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
+      # Refresh the evidence with the retry's outcome (t241 helpers).
+      dump_login_prefs
+      dump_login_logcat
     else
       echo "::warning::login retry: no password EditText on screen — not on the login form, skipping re-tap"
+      # t241: the retry PATH ran even though no re-tap was possible — capture
+      # the blocking screen so 04c-after-login-retry.png ALWAYS exists when
+      # the retry path executed (previously this branch left the file
+      # missing and the artifact lost the evidence; the post-tap capture in
+      # the re-tap branch above is kept unchanged).
+      cap screenshots/04c-after-login-retry.png
     fi
   fi
   if [ "$verified" -eq 1 ]; then
@@ -464,7 +522,7 @@ if [ "$DEALS_SETTLED" -eq 0 ]; then
   echo "::warning::capture 22: deal content not detected — capturing anyway + evidence dumps (server-empty vs app-bug)"
   {
     echo "=== 22-hot-deals-tab settle timeout $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
-    timeout 20 adb logcat -d -s ZylodDeals 2>/dev/null
+    dump_deals_logcat
   } >> screenshots/deals-logcat.txt 2>&1 || true
   timeout 10 curl -s "http://127.0.0.1:3000/api/deals?type=all&page=1&limit=5" 2>/dev/null | head -c 800 >> screenshots/server-deals.json 2>/dev/null || true
   echo >> screenshots/server-deals.json 2>/dev/null || true
@@ -639,7 +697,7 @@ elif ensure_home; then
     echo "::warning::capture 10: deal content not detected within 25s — capturing anyway + evidence dumps (server-empty vs app-bug)"
     {
       echo "=== 10-deals settle timeout $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
-      timeout 20 adb logcat -d -s ZylodDeals 2>/dev/null
+      dump_deals_logcat
     } >> screenshots/deals-logcat.txt 2>&1 || true
     timeout 10 curl -s "http://127.0.0.1:3000/api/deals?type=all&page=1&limit=5" 2>/dev/null | head -c 800 >> screenshots/server-deals.json 2>/dev/null || true
     echo >> screenshots/server-deals.json 2>/dev/null || true
