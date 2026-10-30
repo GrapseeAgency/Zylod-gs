@@ -169,6 +169,7 @@
 #   am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION
 #     --es token <opaque> --es user_json <login user JSON> --es user_type <role>
 # t249-h: sent EXPLICITLY (-n com.zylod.wholesale.debug/com.zylod.wholesale.debug.DebugSessionReceiver — the installed DEBUG appId carries applicationIdSuffix ".debug") — Android 8+ background limits drop IMPLICIT broadcasts to manifest-declared receivers (t249-g CI: "Broadcast completed: result=0" ack with ZERO ZylodDebugSession lines), plus a dumpsys receiver-registered=yes|no evidence key.
+# t249-i: logcat -c moved BEFORE the am broadcast (the old clear ran ~2s AFTER it and erased the receiver's "session injected user_type=..." proof line before the ≤15s poll — broadcast-delivered=no recorded despite delivery) + the buyer DEBUG_SET_SESSION broadcast is UNCONDITIONAL (login_buyer's weak UI verify set AUTHED=1 with zero session and skipped the injection — capture 18 kept its sign-in gate); dumpsys receiver-registered key, admin flow, budget, evidence formats unchanged.
 # The receiver writes the session through the app's OWN SessionManager
 # .setSession(token, userJson) — exactly what a real login does
 # (LoginScreen.kt:289-291) — so the EncryptedSharedPreferences store
@@ -890,8 +891,12 @@ inject_session () { # email password role evidence_file diag_prefix
 #      (adb joins argv; the device shell strips the quotes back off).
 #   4. Delivery proof: poll logcat for the receiver's ZylodDebugSession
 #      "session injected user_type=<role>" line (up to 15s). The receiver
-#      NEVER logs the token (length only). The buffer is cleared right
-#      before the broadcast so a previous role's line cannot false-match.
+#      NEVER logs the token (length only). t249-i: the buffer is cleared
+#      BEFORE the broadcast (a clear AFTER it erased the proof line before
+#      the poll ran — broadcast-delivered=no recorded despite delivery) and
+#      there is NO clear between the broadcast and this poll; the
+#      pre-broadcast clear still keeps the poll unambiguous across roles
+#      (a previous role's line cannot false-match).
 #   5. Cold start: am force-stop -> logcat -c (clean buffer for the role's
 #      post-relaunch verification) -> monkey relaunch -> ensure_home — the
 #      verdict proves the session SURVIVED a process restart.
@@ -946,6 +951,14 @@ broadcast_inject_session () { # email password role evidence_file
     echo "::warning::broadcast_inject_session($role): $BROADCAST_REASON"
     return 1
   fi
+  # t249-i DEFECT 1 FIX: clear the logcat buffer BEFORE the broadcast. The
+  # old code cleared ~2s AFTER it (between the broadcast and the poll),
+  # erasing the receiver's "session injected user_type=..." proof line
+  # before the ≤15s poll could match — broadcast-delivered=no was recorded
+  # despite delivery (proven by the empty-prefs → authed admin fetches with
+  # zero 401/403 in artifact 13006945695). NO clear between the broadcast
+  # and the poll below.
+  adbt 10 logcat -c >/dev/null 2>&1 || true
   # (3) the broadcast. user_json is shlex-quoted for the adb remote shell
   # (bare JSON would lose its quotes to the device's re-splitting shell).
   # Omitted entirely when the login response had no user object — the
@@ -981,10 +994,12 @@ except Exception:
     echo "receiver-registered=no" >> "$evfile" 2>/dev/null || true
     echo "receiver-registered-detail=dumpsys package com.zylod.wholesale.debug lists no DebugSessionReceiver" >> "$evfile" 2>/dev/null || true
   fi
-  # (4) delivery proof — the receiver's own log line (up to 15s). Clean the
-  # buffer FIRST so a previous role's ZylodDebugSession line cannot
-  # false-match this role's poll.
-  adbt 10 logcat -c >/dev/null 2>&1 || true
+  # (4) delivery proof — the receiver's own log line (up to 15s). t249-i:
+  # the buffer was cleared BEFORE the broadcast above and is NOT cleared
+  # here — a clear between the broadcast and this poll is what erased the
+  # proof line (t249-i defect 1). The pre-broadcast clear still keeps the
+  # poll unambiguous across roles (a previous role's line cannot match:
+  # the grep pins user_type=$role, and any older line was wiped pre-broadcast).
   for poll in 1 2 3 4 5; do
     sleep 2
     logline=$(timeout 10 adb logcat -d -s ZylodDebugSession 2>/dev/null | grep -m1 "session injected user_type=$role" | tr -d '\r' || true)
@@ -1748,23 +1763,29 @@ else
   sleep 6
 fi
 AUTHED=0
+BUYER_UI_LOGIN_OK=0
 if login_buyer; then
-  AUTHED=1
+  BUYER_UI_LOGIN_OK=1
 fi
 
-# t249-g BUYER SESSION INJECTION — the deterministic auth establishment.
-# login_buyer above is KEPT (its typed-text proof + decision-time dumps are
-# the UI-path evidence), but when it fails to verify, the authed suite no
-# longer degrades to guest shots: a REAL session is established via the
-# backend's login API + the app's OWN debug-broadcast receiver
+# t249-i BUYER SESSION INJECTION — UNCONDITIONAL (defect 2 fix; the t249-g
+# gate is dead). Artifact 13006945695 proved login_buyer's weak UI verify
+# can pass with ZERO session: it set AUTHED=1, the old
+# `[ "$AUTHED" -eq 0 ]` gate then SKIPPED the broadcast entirely, and
+# capture 18 kept showing the "Sign in to see your orders" gate. The
+# broadcast now ALWAYS runs before capture 18, whatever login_buyer
+# concluded — its verdict is kept as evidence only (BUYER_UI_LOGIN_OK) and
+# can no longer set AUTHED or skip the injection; AUTHED is set ONLY by a
+# verified injection below. Still the deterministic establishment: backend
+# login API + the app's OWN debug-broadcast receiver
 # (com.zylod.wholesale.DEBUG_SET_SESSION -> SessionManager.setSession — the
-# exact writer a real login uses), then proven on a cold start. This also
-# covers the t249-g wire-in for capture 18 below (which runs its own strict
-# settle-poll verdict into buyer-session-check.txt; buyer-injection-method
-# is derived there from the injection-method= lines written here).
+# exact writer a real login uses), proven on a cold start. Capture 18 below
+# keeps its own strict settle-poll verdict into buyer-session-check.txt;
+# buyer-injection-method is derived there from the injection-method= lines
+# written here (debug-broadcast-receiver on success).
 BUYER_INJECTED=0
-if [ "$AUTHED" -eq 0 ] && ! budget_stop; then
-  log "t249-g: buyer UI login failed — DETERMINISTIC SESSION INJECTION (real /api/auth/login -> DEBUG_SET_SESSION broadcast -> SessionManager.setSession -> cold start)"
+if ! budget_stop; then
+  log "t249-i: UNCONDITIONAL buyer session injection (real /api/auth/login -> DEBUG_SET_SESSION broadcast -> SessionManager.setSession -> cold start; UI-login verdict: $([ "$BUYER_UI_LOGIN_OK" -eq 1 ] && echo verified || echo not-verified) — evidence only, cannot gate this injection)"
   if broadcast_inject_session "buyer1@zylod.bd" "Passw0rd!23" "buyer" "screenshots/buyer-session-check.txt"; then
     BUYER_INJECTED=1
     AUTHED=1
@@ -1772,7 +1793,7 @@ if [ "$AUTHED" -eq 0 ] && ! budget_stop; then
 fi
 
 if [ "$AUTHED" -eq 1 ]; then
-  log "t238: authed deep-link suite (seeded buyer session; t249-g injection used: $BUYER_INJECTED)"
+  log "t238: authed deep-link suite (seeded buyer session; t249-i injection used: $BUYER_INJECTED)"
 else
   log "t238: deep-link suite (GUEST fallback — gated captures will show the sign-in gate)"
 fi
