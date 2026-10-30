@@ -2,10 +2,11 @@ package com.zylod.wholesale.ui.nav
 
 import androidx.compose.runtime.Composable
 import com.zylod.wholesale.ui.pages.NativePageMeta
+import com.zylod.wholesale.ui.screens.*
 
 /**
  * t233 — THE Kotlin page registry: EVERY pageId the web SPA serves
- * (src/lib/page-loader.ts + src/lib/page-chunks/*) maps to a NATIVE Compose
+ * (src/lib/page-loader.ts + src/lib/page-chunks/) maps to a NATIVE Compose
  * screen here. RouteOwnership resolves registered ids to
  * [Destination.NativePage] FIRST — the `web/{pageId}` route is a LAST-RESORT
  * fallback for ids the SPA contract does not know (matching the SPA's own

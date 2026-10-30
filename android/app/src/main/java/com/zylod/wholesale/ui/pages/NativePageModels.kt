@@ -4,7 +4,7 @@ package com.zylod.wholesale.ui.pages
  * t233 — PURE NATIVE conversion core.
  *
  * The owner's order: every pageId the web SPA registry serves
- * (src/lib/page-loader.ts + src/lib/page-chunks/*) must render as a native
+ * (src/lib/page-loader.ts + src/lib/page-chunks/) must render as a native
  * Kotlin/Jetpack Compose screen — zero React in the app layer.
  *
  * ~780 long-tail pageIds cannot each hand-write a bespoke data pipeline, so
