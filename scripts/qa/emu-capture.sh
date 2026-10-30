@@ -70,6 +70,29 @@
 #   4. Deals evidence (ZylodDeals grep → deals-logcat.txt, curl /api/deals
 #      → server-deals.json) now dumps UNCONDITIONALLY right after the
 #      10-deals capture — not only on settle-timeout.
+#
+# t244 REWRITE (login state machine): t243's typing never registered
+# (typed-email-registered=no, zero submits) because the dismiss_email_dialog
+# BACK fallback fired on a mis-detected dialog and popped the LOGIN ROUTE —
+# every later tap/keystroke landed on Home. Now:
+#   1. login_screen_ok(): identity check — main-form hint "Email or Phone"
+#      (verified LoginScreen.kt string) present AND no dialog markers
+#      ("Display name" / "Sign in with your email").
+#   2. fresh_login_mount(): bottom-bar Home → Profile → sleep → identity
+#      check. A fresh Profile-tab mount can never have the consent dialog
+#      open (it opens ONLY via "Continue with Email"), so login_buyer calls
+#      NO dismiss_email_dialog; the dialog is dismissed ONLY in the 04
+#      capture block — the one place it can genuinely exist.
+#   3. login_buyer(): 2 mount attempts (04z-login-screen-wrong.png + guest
+#      path on failure) → type email after a FRESH dump → type password
+#      after ANOTHER fresh dump (bounds shift) → check_typed_text →
+#      typed-email=no triggers ONE retype round, and even a still-empty
+#      form is submitted ANYWAY (an empty submit still emits a ZylodAuth
+#      log line — disambiguates tap-miss vs typing-fail) → trace "login:
+#      submit tapped (typed= yes/no)" → sleep 14 → 04b captured
+#      unconditionally → strict verify → ONE full retry round (fresh mount
+#      → retype → re-tap; 04c captured unconditionally on every attempt) →
+#      token prefs + auth logcat at decision time. Guest path never fatal.
 set -u
 mkdir -p screenshots
 
@@ -563,6 +586,81 @@ guarded_deeplink () { # name sleep_seconds uri
   fi
 }
 
+# t244: does the CURRENT screen hold the MAIN login form — and nothing on
+# top of it? Needle: "Email or Phone" — the main form's own hint (verified
+# string in LoginScreen.kt; uia matching is a case-sensitive substring of
+# "Email or Phone Number"). Anti-markers: "Display name" (the consent
+# dialog's optional field) and "Sign in with your email" (the dialog's
+# heading) — either one present means the social consent dialog is
+# contaminating the screen AND the EditText list, so the mount is not clean.
+# Every ui_has_text call dumps fresh; all three probes must agree. Never
+# fatal (a failed dump simply reads as "not ok").
+login_screen_ok () {
+  ui_has_text "Email or Phone" \
+    && ! ui_has_text "Display name" \
+    && ! ui_has_text "Sign in with your email"
+}
+
+# t244: rebuild a CLEAN login mount from wherever we are. The guest policy
+# opens the native login through the bottom-bar Profile tab, so: tap Home →
+# sleep 3 → tap Profile → sleep 4 → login_screen_ok. If we were ALREADY on
+# the login screen, the tab taps find no bottom bar (fullscreen routes hide
+# it) and change nothing — the identity check then passes on the screen as
+# it stands. A fresh Profile-tab mount can never have the consent dialog
+# open (it opens ONLY via "Continue with Email"), which is exactly why
+# login_buyer needs no dismiss_email_dialog at all. Returns 0 iff the main
+# form is verified up (the 2-attempt policy lives in the caller). Never
+# fatal.
+fresh_login_mount () {
+  tap_tab "Home" || true
+  sleep 3
+  tap_tab "Profile" || true
+  sleep 4
+  login_screen_ok
+}
+
+# t244: verdict of the LATEST check_typed_text run — it appends exactly two
+# lines per call (email line first) to screenshots/login-typed-check.txt, so
+# tail -2 is always the newest pair. Exit 0 iff typed-email-registered=yes.
+# Never fatal (missing file / grep miss reads as "no").
+typed_email_ok () {
+  tail -2 screenshots/login-typed-check.txt 2>/dev/null | grep -q "^typed-email-registered=yes$"
+}
+
+# t244: type BOTH login fields, each after its OWN fresh dump — the first
+# tap + IME can shift the layout, so field #2's bounds come from a dump
+# taken AFTER field #1 was typed (EditText#1 = email, #2 = password; Compose
+# OutlinedTextFields surface in form order — same assumption edittext_center
+# documents). Cadence per the t244 spec: tap → sleep 1 → input text →
+# hide_ime (→ sleep 1 before the next dump). Never fatal: a missing field
+# only warns; check_typed_text records what actually landed.
+login_type_fields () {
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+  local c
+  c=$(edittext_center 1 /tmp/ui.xml)
+  if [ -n "$c" ]; then
+    adbt 20 input tap $c
+    sleep 1
+    adbt 20 input text "buyer1@zylod.bd"
+    hide_ime
+    sleep 1
+  else
+    echo "::warning::login_type_fields: no EditText#1 (email) in the dump"
+  fi
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+  c=$(edittext_center 2 /tmp/ui.xml)
+  if [ -n "$c" ]; then
+    adbt 20 input tap $c
+    sleep 1
+    adbt 20 input text "Passw0rd!23"
+    hide_ime
+  else
+    echo "::warning::login_type_fields: no EditText#2 (password) in the dump"
+  fi
+}
+
 # t238: sign in the seeded buyer (scripts/qa/seed-marketplace.mjs:
 # buyer1@zylod.bd / Passw0rd!23) on the NATIVE login screen, then VERIFY the
 # session. Returns 0 when auth is verified, 1 otherwise (caller continues as
@@ -572,93 +670,83 @@ guarded_deeplink () { # name sleep_seconds uri
 # email + DISPLAY NAME and runs the social exchange — it has NO password
 # field and its "Continue" button is not the credential submit. The real
 # email + password + "Login" form sits directly on the main login screen
-# (LoginScreen.kt). We therefore land on the login screen, dismiss the
-# consent dialog if it is open, and fill the main form by TAPPING each
-# EditText's center (TAB/keyevent 61 cannot move focus between Compose
-# fields — that is why t237's typed text went nowhere).
+# (LoginScreen.kt).
+#
+# t244 STATE MACHINE (replaces the t243 dismiss-then-type flow): t243's run
+# typed nothing (typed-email-registered=no) and submitted nothing — the
+# dismiss_email_dialog BACK fallback fired on a mis-detected dialog and
+# popped the LOGIN ROUTE, so every later tap and keystroke landed on Home.
+# login_buyer therefore no longer dismisses dialogs and no longer trusts the
+# incoming screen:
+#   a. CLEAN MOUNT — fresh_login_mount ×2 (bottom-bar Home → Profile);
+#      login_screen_ok must prove the MAIN form ("Email or Phone" hint, NO
+#      dialog markers). Failure: 04z-login-screen-wrong.png + loud warning
+#      + guest path (return 1, never fatal).
+#   b. TYPE EMAIL — fresh dump → tap EditText#1 center → sleep 1 → type →
+#      hide_ime → sleep 1.
+#   c. TYPE PASSWORD — FRESH dump again (bounds can shift) → tap EditText#2
+#      center → sleep 1 → type → hide_ime.
+#   d. TYPED CHECK — check_typed_text → screenshots/login-typed-check.txt.
+#   e. typed-email=no → ONE retype round on a fresh mount (retype runs only
+#      when the mount VERIFIES — typing into an unknown screen would poison
+#      both the form and the verdict). STILL no → submit anyway: an empty
+#      submit still emits a ZylodAuth log line proving the button works,
+#      which disambiguates tap-miss vs typing-fail in the artifact.
+#   f. SUBMIT — tap_clickable_text "Login" (its built-in fallback is
+#      tap_text "Login"); trace line "login: submit tapped (typed= yes/no)".
+#   g. sleep 14 → 04b-after-login-tap.png captured UNCONDITIONALLY.
+#   h. STRICT VERIFY (login_verify_ok). On fail: ONE full retry round —
+#      fresh mount → retype (only when the mount verifies) → re-tap Login →
+#      sleep 14 → 04c-after-login-retry.png captured UNCONDITIONALLY on
+#      every retry attempt → re-verify. Final fail: warning + evidence
+#      dumps + return 1.
+#   i. Decision-time evidence either way: dump_login_prefs +
+#      dump_login_logcat; success → return 0.
 login_buyer () {
-  # t239: verification is STRICT (login_verify_ok) — see that helper.
-  # t243 FIX 1: the consent dialog (04 just captured it) may be open OVER
-  # the login form — its own Email/"Display name" EditTexts would swallow
-  # the form taps + typing. Dismiss it FIRST (Cancel chain, 04z-dialog-
-  # stuck.png diagnostic when stuck); never fatal.
-  dismiss_email_dialog || true
-  # t243 FIX 2: fresh dump after dismissal; choose the field indexes. The
-  # MAIN form's email field shows hint "Email or Phone Number"
-  # (LoginScreen.kt:451) — when the dump's EditText list still contains a
-  # node carrying the dialog's "Display name" label, the dialog survived
-  # dismissal and #1/#2 are the DIALOG's fields: shift to the form's #3/#4.
-  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
-  timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
-  local eidx=1 pidx=2
-  if edittext_mentions "Display name" /tmp/ui.xml; then
-    echo "::warning::login: 'Display name' EditText still present — consent dialog survived dismissal (04z-dialog-stuck.png captured); shifting to EditText#3+"
-    eidx=3
-    pidx=4
-  fi
-  # Field <eidx> = email: tap its center, then type.
-  local c1
-  c1=$(edittext_center "$eidx" /tmp/ui.xml)
-  if [ -n "$c1" ]; then
-    adbt 20 input tap $c1
-    sleep 2
-    adbt 20 input text "buyer1@zylod.bd"
-    sleep 1
-    hide_ime
-  elif [ "$eidx" -ne 1 ]; then
-    # t243: dialog still up AND no form fields behind it (dialog-only
-    # screen) — abort to the guest path gracefully (never fatal).
-    echo "::warning::login: no EditText#3+ behind the consent dialog — aborting login to the guest path (non-fatal)"
-    check_typed_text
+  local attempt i mounted=0 verified=0 typed="no"
+  # (a) clean mount — 2 attempts; failure is the guest path (never fatal).
+  for attempt in 1 2; do
+    if fresh_login_mount; then
+      mounted=1
+      break
+    fi
+    echo "login_buyer: fresh mount attempt $attempt — main login form NOT verified"
+  done
+  if [ "$mounted" -eq 0 ]; then
+    echo "::warning::login_buyer: NOT on the login screen after 2 fresh mounts (login_screen_ok failed both times) — capturing screenshots/04z-login-screen-wrong.png and continuing as GUEST (non-fatal)"
+    cap screenshots/04z-login-screen-wrong.png
     return 1
-  else
-    echo "::warning::login: no email EditText found on the login screen"
   fi
-  # Field <pidx> = password: FRESH dump (the layout may have shifted), tap
-  # its center, then type.
-  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
-  timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
-  local c2
-  c2=$(edittext_center "$pidx" /tmp/ui.xml)
-  if [ -n "$c2" ]; then
-    adbt 20 input tap $c2
-    sleep 2
-    adbt 20 input text "Passw0rd!23"
-    sleep 1
-    hide_ime
-  else
-    echo "::warning::login: no password EditText found on the login screen"
-  fi
-  # t243 FIX 1b: dismiss once more right before the typed-check — the dump
-  # behind check_typed_text must describe the MAIN form, never a lingering
-  # dialog (never fatal).
-  dismiss_email_dialog || true
-  # t242 TYPED-TEXT PROOF: both fields typed — record what the UI actually
-  # holds BEFORE submitting (evidence only; never fatal, never prints the
-  # password). t243: runs AFTER dismissal + typing so yes/yes is achievable.
+  # (b)+(c) type both fields (fresh dump per field), then (d) the typed
+  # proof into screenshots/login-typed-check.txt.
+  login_type_fields
   check_typed_text
-  # Submit: the native form's button is labelled "Login" (ZylodButton).
-  # t242: tap_clickable_text — the tap must land on the CLICKABLE node;
-  # tap_text's first-text-match could hit a same-named non-clickable label
-  # and no-op with zero auth requests (falls back to tap_text).
-  if ui_has_text "Login"; then
-    tap_clickable_text "Login"
-  elif ui_has_text "Sign in"; then
-    tap_clickable_text "Sign in"
-  else
-    echo "::warning::login: no Login/Sign-in button found on screen"
+  if typed_email_ok; then typed="yes"; fi
+  # (e) typed-email=no → ONE retype round; still no → submit ANYWAY (the
+  # empty-submit ZylodAuth log line disambiguates tap-miss vs typing-fail).
+  if [ "$typed" != "yes" ]; then
+    echo "::warning::login_buyer: typed-email-registered=no — ONE retype round (fresh mount + fresh per-field dumps)"
+    if fresh_login_mount; then
+      login_type_fields
+    else
+      echo "::warning::login_buyer: retype round skipped — fresh mount still cannot verify the login form (submit below proceeds for diagnostics)"
+    fi
+    check_typed_text
+    if typed_email_ok; then
+      typed="yes"
+    else
+      echo "::warning::login_buyer: typed-email STILL no — submitting ANYWAY (empty submit still emits a ZylodAuth log line iff the button works)"
+    fi
   fi
+  # (f) submit — tap_clickable_text falls back to tap_text internally when
+  # no clickable "Login" node exists.
+  tap_clickable_text "Login"
+  echo "login: submit tapped (typed= $typed)"
+  # (g) settle, then the post-tap diagnostic — UNCONDITIONAL (whether or not
+  # verification passes; ground truth for what the screen showed).
   sleep 14
-  # t239 DEFECT 1b: capture the post-Login-tap diagnostic UNCONDITIONALLY —
-  # whether verification passes or fails. This is the artifact's ground
-  # truth for what the screen actually showed after the submit tap (t238
-  # only captured 04b on failure, so a false-positive verify had NO
-  # diagnostic at all).
   cap screenshots/04b-after-login-tap.png
-  # t239 DEFECT 1a: strict verification only — NO "buyer1" probe (the login
-  # form's own email field contains the typed address; see login_verify_ok).
-  local i
-  local verified=0
+  # (h) strict verify; on fail ONE full retry round.
   for i in 1 2 3; do
     if login_verify_ok; then
       verified=1
@@ -666,71 +754,36 @@ login_buyer () {
     fi
     sleep 5
   done
-  # t239 DEFECT 1c/1d + t241: token prefs + auth logcat at decision time —
-  # REAL per-file prefs dump under run-as and pid-scoped logcat (helpers
-  # above); never fatal (a failure just means the evidence file says so).
+  if [ "$verified" -eq 0 ]; then
+    echo "::warning::login_buyer: AUTH NOT VERIFIED after the first submit — ONE retry round: fresh mount → retype → re-tap Login"
+    if fresh_login_mount; then
+      login_type_fields
+    else
+      echo "::warning::login_buyer: retry retype skipped — fresh mount cannot verify the login form (re-tap below still runs)"
+    fi
+    tap_clickable_text "Login"
+    echo "login: submit re-tapped (retry round, typed= $typed)"
+    sleep 14
+    # Retry's own diagnostic — kept SEPARATE so the first 04b survives —
+    # captured UNCONDITIONALLY on every retry attempt.
+    cap screenshots/04c-after-login-retry.png
+    echo "trace: 04c captured (retry attempt, unconditional)"
+    for i in 1 2 3; do
+      if login_verify_ok; then
+        verified=1
+        break
+      fi
+      sleep 5
+    done
+  fi
+  # (i) decision-time evidence either way (t241 helpers; never fatal).
   dump_login_prefs
   dump_login_logcat
-  # t239 DEFECT 1e: ONE retry — re-focus the password field, tap Login
-  # again, wait, re-verify. Skipped when we are not on a login form
-  # (tapping a stray "Login" label elsewhere could navigate away).
-  if [ "$verified" -eq 0 ]; then
-    echo "::warning::login_buyer: AUTH NOT VERIFIED on first attempt — retrying the Login tap once"
-    # t243: a still-open consent dialog would swallow the re-tap too —
-    # dismiss it first (never fatal), then re-derive the password index
-    # with the same dialog-contamination rule as the first pass (when the
-    # dialog is up the form's password sits at #4, not #2).
-    dismiss_email_dialog || true
-    adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
-    timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
-    local pidx_r=2
-    if edittext_mentions "Display name" /tmp/ui.xml; then
-      pidx_r=4
-    fi
-    local c2r
-    c2r=$(edittext_center "$pidx_r" /tmp/ui.xml)
-    if [ -n "$c2r" ]; then
-      adbt 20 input tap $c2r
-      sleep 2
-      hide_ime
-      if ui_has_text "Login"; then
-        tap_clickable_text "Login"
-      elif ui_has_text "Sign in"; then
-        tap_clickable_text "Sign in"
-      else
-        echo "::warning::login retry: no Login/Sign-in button found on screen"
-      fi
-      sleep 14
-      # Retry's own diagnostic (kept SEPARATE so the first 04b survives).
-      # t243: cap is UNCONDITIONAL on EVERY retry attempt.
-      cap screenshots/04c-after-login-retry.png
-      echo "trace: 04c captured (retry re-tap attempt)"
-      for i in 1 2 3; do
-        if login_verify_ok; then
-          verified=1
-          break
-        fi
-        sleep 5
-      done
-      # Refresh the evidence with the retry's outcome (t241 helpers).
-      dump_login_prefs
-      dump_login_logcat
-    else
-      echo "::warning::login retry: no password EditText on screen — not on the login form, skipping re-tap"
-      # t241: the retry PATH ran even though no re-tap was possible — capture
-      # the blocking screen so 04c-after-login-retry.png ALWAYS exists when
-      # the retry path executed (previously this branch left the file
-      # missing and the artifact lost the evidence; the post-tap capture in
-      # the re-tap branch above is kept unchanged).
-      cap screenshots/04c-after-login-retry.png
-      echo "trace: 04c captured (retry path, no re-tap possible)"
-    fi
-  fi
   if [ "$verified" -eq 1 ]; then
     echo "login_buyer: authed ✓ (strict verify: Sign out, or home without login-screen signals)"
     return 0
   fi
-  echo "::warning::login_buyer: AUTH NOT VERIFIED after retry — continuing as guest; downstream gated captures will show the login gate (acceptable, non-fatal)"
+  echo "::warning::login_buyer: AUTH NOT VERIFIED after the retry round — continuing as guest; downstream gated captures will show the login gate (acceptable, non-fatal)"
   return 1
 }
 
@@ -863,6 +916,14 @@ log "Open Continue-with-Email dialog (tap by UI text)"
 tap_text "Continue with Email"
 sleep 5
 cap screenshots/04-email-signin-dialog.png
+# t244: the consent dialog can ONLY exist right here (it opens via
+# "Continue with Email" and capture 04 just opened it) — dismiss it NOW via
+# the robust helper (Cancel chain + verified re-dumps; BACK only as a
+# verified last resort). This is the ONLY dismiss_email_dialog call site in
+# the script: login_buyer rebuilds its own clean mount instead, so t243's
+# failure mode (a BACK fired on a mis-detected dialog popping the login
+# route, stranding the flow on Home) cannot reach the login state machine.
+dismiss_email_dialog || true
 
 log "t238: guest-context evidence BEFORE login — 05 register + 09 orders-guest"
 # These two captures must stay GUEST (the register screen and the Phase 2
@@ -870,12 +931,9 @@ log "t238: guest-context evidence BEFORE login — 05 register + 09 orders-guest
 # CTA, never a redirect). They are deep links, so each is fired ONLY after
 # ensure_home — a link fired off-home queues (ZylodRoot drains on
 # HOME_ROUTE only) and that is how t237 captured wrong screens. The consent
-# dialog is dismissed first (if open) so the ensure_home BACK-chain starts
-# clean — BACK with no dialog would pop the login route instead.
-if ui_has_text "Sign in with your email"; then
-  adbt 20 input keyevent 4
-  sleep 2
-fi
+# dialog was already dismissed right after capture 04 (dismiss_email_dialog
+# above), so the ensure_home BACK-chain starts clean — BACK with no dialog
+# would pop the login route instead.
 if ensure_home; then
   deeplink "05-register-buyer" 8 "zylod://register-buyer"
 else
@@ -891,7 +949,8 @@ log "t238: AUTH-FIRST — sign in the seeded buyer (buyer1@zylod.bd) before the 
 # The gated deep-link suite below only means something signed-in (authed
 # cart, orders, profile, wallet). Return home, open the native login through
 # the guest Profile policy (bottom-bar tab — deterministic), then run
-# login_buyer (tap EditText centers → type → Login → verify).
+# login_buyer (t244 state machine: fresh-mount identity check → per-field
+# typing with fresh dumps → diagnostic submit → strict verify).
 if ensure_home; then
   tap_tab "Profile"
   sleep 6
