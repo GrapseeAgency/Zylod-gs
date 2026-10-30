@@ -5,11 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.zylod.wholesale.BuildConfig
+import com.zylod.wholesale.ZylodApp
 import com.zylod.wholesale.data.api.ApiClient
 import com.zylod.wholesale.data.api.AuthUserDto
 import com.zylod.wholesale.data.api.UserProfileSeed
 import com.zylod.wholesale.data.api.toUserProfileSeed
-import com.zylod.wholesale.data.session.SessionManager
 
 /**
  * t249-g — DEBUG-ONLY session establishment for CI screenshot runs.
@@ -29,12 +29,15 @@ import com.zylod.wholesale.data.session.SessionManager
  *   adb shell am broadcast -a com.zylod.wholesale.DEBUG_SET_SESSION
  *     --es token <opaque> --es user_json <login-response user JSON>
  *     --es user_type <buyer|admin>
- * and this receiver persists the session through the app's OWN SessionManager
- * — [SessionManager.setSession] `(token: String, userJson: String?)`
- * (data/session/SessionManager.kt:80-88), the exact writer every real login
- * uses (LoginScreen.kt:289-291) — so the store stays self-consistent: the app
- * produces its own ciphertext, atomically paired with the `user_json_token`
- * stamp (t206 B2).
+ * and this receiver persists the session with an editor write that MIRRORS
+ * the app's OWN SessionManager.setSession `(token: String, userJson: String?)`
+ * (data/session/SessionManager.kt:80-88) key-for-key — auth_token /
+ * user_json / user_json_token into ZylodApp.instance.securePrefs, the same
+ * store every real login writes (LoginScreen.kt:289-291) — so the store stays
+ * self-consistent: the app produces its own ciphertext, atomically paired
+ * with the `user_json_token` stamp (t206 B2). t249-j: the mirror is inlined
+ * here (instead of calling setSession) ONLY to make the write a synchronous
+ * commit() — see THREADING.
  *
  * PROFILE SHAPE: parsed with the app's OWN Json config (ApiClient.json) into
  * the same UserProfileSeed a real login caches. Preferred path: the login
@@ -62,8 +65,13 @@ import com.zylod.wholesale.data.session.SessionManager
  * THREADING: onReceive runs on the main thread of the app process (the
  * broadcast itself starts the process when it is warm; emu-capture.sh only
  * fires it AFTER the app has been launched once, because a STOPPED app does
- * not receive manifest broadcasts). The write is a SharedPreferences apply()
- * — async flush, no goAsync() required.
+ * not receive manifest broadcasts). The write is a SharedPreferences commit()
+ * — SYNCHRONOUS ON PURPOSE (t249-j): this is a debug-QA receiver and
+ * emu-capture.sh force-stops the process immediately after the broadcast;
+ * the old async flush was queued on QueuedWork and the force-stop killed it
+ * before it landed, silently losing the buyer session (CI artifact
+ * 13008487170). commit() blocks until the disk write returns; no goAsync()
+ * required — the main-thread cost is debug-only and irrelevant here.
  *
  * Never logs the token (length only: "token_len=N").
  */
@@ -90,15 +98,28 @@ class DebugSessionReceiver : BroadcastReceiver() {
             val storedJson = seed?.let {
                 ApiClient.json.encodeToString(UserProfileSeed.serializer(), it)
             }
-            // The app's own writer — identical to a real login.
-            SessionManager.setSession(token, storedJson)
-            Log.i(
-                TAG,
-                "session injected user_type=${seed?.userType ?: userType.ifEmpty { "unknown" }} " +
-                    "token_len=${token.length} profile=${source.label}",
-            )
+            // t249-j — key-for-key mirror of SessionManager.setSession
+            // (auth_token / user_json / user_json_token into
+            // ZylodApp.instance.securePrefs) with a SYNCHRONOUS commit():
+            // setSession's write is an async flush queued on QueuedWork and
+            // the capture script force-stops the process right after this
+            // broadcast, which raced the flush away and lost the session
+            // (CI artifact 13008487170).
+            val editor = ZylodApp.instance.securePrefs.edit()
+            editor.putString("auth_token", token)
+            if (storedJson.isNullOrBlank()) editor.remove("user_json") else editor.putString("user_json", storedJson)
+            editor.putString("user_json_token", token)
+            if (editor.commit()) {
+                Log.i(
+                    TAG,
+                    "session injected user_type=${seed?.userType ?: userType.ifEmpty { "unknown" }} " +
+                        "token_len=${token.length} profile=${source.label} committed=true",
+                )
+            } else {
+                Log.e(TAG, "session injection failed: securePrefs commit() returned false committed=false")
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "session injection failed: ${e.javaClass.simpleName}: ${e.message}")
+            Log.e(TAG, "session injection failed: ${e.javaClass.simpleName}: ${e.message} committed=false")
         }
     }
 

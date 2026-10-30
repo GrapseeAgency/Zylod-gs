@@ -170,6 +170,7 @@
 #     --es token <opaque> --es user_json <login user JSON> --es user_type <role>
 # t249-h: sent EXPLICITLY (-n com.zylod.wholesale.debug/com.zylod.wholesale.debug.DebugSessionReceiver — the installed DEBUG appId carries applicationIdSuffix ".debug") — Android 8+ background limits drop IMPLICIT broadcasts to manifest-declared receivers (t249-g CI: "Broadcast completed: result=0" ack with ZERO ZylodDebugSession lines), plus a dumpsys receiver-registered=yes|no evidence key.
 # t249-i: logcat -c moved BEFORE the am broadcast (the old clear ran ~2s AFTER it and erased the receiver's "session injected user_type=..." proof line before the ≤15s poll — broadcast-delivered=no recorded despite delivery) + the buyer DEBUG_SET_SESSION broadcast is UNCONDITIONAL (login_buyer's weak UI verify set AUTHED=1 with zero session and skipped the injection — capture 18 kept its sign-in gate); dumpsys receiver-registered key, admin flow, budget, evidence formats unchanged.
+# t249-j: the receiver's session write is now a SYNCHRONOUS commit() — the old apply() (via SessionManager.setSession) sat queued on QueuedWork and the immediate am force-stop killed the flush before it landed, silently losing the buyer session (CI artifact 13008487170); this script adds a 2s grace sleep before that force-stop and a receiver-commit-ack=yes|no evidence key (derived from the receiver's committed=true log line); delivery mechanism, verification, budget unchanged.
 # The receiver writes the session through the app's OWN SessionManager
 # .setSession(token, userJson) — exactly what a real login does
 # (LoginScreen.kt:289-291) — so the EncryptedSharedPreferences store
@@ -1017,7 +1018,15 @@ except Exception:
   echo "broadcast-delivered=yes" >> "$evfile" 2>/dev/null || true
   echo "broadcast-log=$logline" >> "$evfile" 2>/dev/null || true
   echo "session-user-type=$role" >> "$evfile" 2>/dev/null || true
+  # t249-j: the receiver logs committed=true only after its synchronous
+  # EncryptedSharedPreferences write returned true.
+  case "$logline" in
+    *committed=true*) echo "receiver-commit-ack=yes" >> "$evfile" 2>/dev/null || true ;;
+    *) echo "receiver-commit-ack=no" >> "$evfile" 2>/dev/null || true ;;
+  esac
   # (5) cold start so the verdict proves the session SURVIVED a restart
+  # t249-j: give QueuedWork a grace window; commit() makes this redundant but harmless.
+  sleep 2
   adbt 15 am force-stop com.zylod.wholesale.debug >/dev/null 2>&1 || true
   adbt 10 logcat -c >/dev/null 2>&1 || true
   adbt 20 monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1 || true
