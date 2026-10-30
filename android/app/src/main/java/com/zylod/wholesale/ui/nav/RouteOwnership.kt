@@ -151,8 +151,10 @@ object RouteOwnership {
                 val productId = RouteOwnership.queryParam(query, "productId")
                     .ifBlank { RouteOwnership.queryParam(query, "id") }
                 if (productId.isNotBlank()) Destination.Product(productId)
-                // A product-detail without an id cannot render natively.
-                else Destination.Web(pageId, query)
+                // t246 — zero-WebView coverage contract: known pageIds never
+                // fall back to Web; id-less product links land on the native
+                // catalog (all-products), not a blank WebView PDP.
+                else Destination.NativePage("all-products", query)
             }
             in NATIVE_AUTH_PAGE_IDS -> when (pageId) {
                 // The welcome GATE is shell state — an openPage("welcome")
