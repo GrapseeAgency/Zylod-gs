@@ -257,7 +257,7 @@ class CouponsViewModel(private val appContext: Context) : ViewModel() {
                 val current = _state.value
                 _state.value = current.copy(
                     claimingKey = null,
-                    notice = CouponsUiState.Notice("${item.code} added to your vouchers"),
+                    notice = CouponsUiState.Notice("${item.code} added to your vouchers", isError = false),
                     available = current.available.filterNot { it.stableKey == coupon.stableKey },
                     active = dedupe(listOf(item) + current.active),
                 )

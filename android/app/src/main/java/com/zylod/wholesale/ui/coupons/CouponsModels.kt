@@ -33,6 +33,7 @@ enum class CouponStatus { ACTIVE, USED, EXPIRED, UNKNOWN }
 enum class CouponStyle { PERCENTAGE, FIXED, FREE_SHIPPING, UNKNOWN }
 
 /** One voucher in the buyer's vault (GET /api/coupons/my, any status). */
+@Serializable
 data class CouponVaultItem(
     val id: String,
     val code: String,
@@ -58,6 +59,7 @@ data class CouponVaultItem(
 }
 
 /** One claimable row of the public campaign list (GET /api/coupons). */
+@Serializable
 data class PlatformCoupon(
     val id: String,
     val code: String,
@@ -84,6 +86,7 @@ data class PlatformCoupon(
 }
 
 /** Loyalty points summary (GET /api/rewards), for the redeem-points rail. */
+@Serializable
 data class RewardsSummary(
     val points: Int,
     val tier: String?,
