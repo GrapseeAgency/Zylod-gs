@@ -34,15 +34,40 @@
 set -u
 mkdir -p screenshots
 
+# t240 HARDENING — run 41033361159/job 123988158474 hung 45+ min right after
+# 04b-after-login-tap.png: the post-login verify loop's `adb shell uiautomator
+# dump` blocked FOREVER while the login "Logging in..." CircularProgressIndicator
+# kept the device non-idle (uiautomator dump waits for idle). EVERY adb call
+# below now runs under `timeout` (non-fatal: the probe degrades, the script
+# never wedges) and a 30-minute GLOBAL capture budget skips the remaining
+# captures when spent — the dedup audit + logcat dumps at the bottom always
+# run so duplicates.txt + the artifact still upload.
+SECONDS=0
+BUDGET_EXHAUSTED=0
+
 log () { echo "── $1 ──"; }
+
+# t240: adb shell with a hard timeout, never fatal. Usage: adbt 20 uiautomator dump /sdcard/ui.xml
+adbt () { timeout "${1:-20}" adb shell "${@:2}" || true; }
+
+# t240 GLOBAL BUDGET: 30 minutes of wall clock for the capture blocks.
+budget_left () { [ $((1800 - SECONDS)) -gt 10 ]; }
+budget_stop () {
+  if [ "$BUDGET_EXHAUSTED" -eq 0 ] && ! budget_left; then
+    BUDGET_EXHAUSTED=1
+    echo "::warning::capture budget exhausted, skipping rest"
+  fi
+  [ "$BUDGET_EXHAUSTED" -eq 1 ]
+}
 
 # Resilient screencap: swiftshader occasionally throws transient
 # "Failed to find ColorBuffer" — retry up to 4x, never fatal.
 cap () {
+  if budget_stop; then return 0; fi
   local f="$1"
   local try
   for try in 1 2 3 4; do
-    if adb exec-out screencap -p > "$f" 2>/dev/null && [ -s "$f" ]; then
+    if timeout 15 adb exec-out screencap -p > "$f" 2>/dev/null && [ -s "$f" ]; then
       echo "captured $f (try $try)"
       return 0
     fi
@@ -55,12 +80,12 @@ cap () {
 # Resilient tap by visible text via uiautomator dump.
 tap_text () {
   local text="$1"
-  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
-  adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
   local bounds
   bounds=$(python3 scripts/qa/uia-tap-center.py "$text" ui.xml)
   if [ -n "$bounds" ]; then
-    adb shell input tap $bounds && echo "tapped '$text' at $bounds"
+    timeout 20 adb shell input tap $bounds && echo "tapped '$text' at $bounds"
   else
     echo "::warning::text '$text' not found on screen"
   fi
@@ -72,12 +97,12 @@ tap_text () {
 # bottom bar from CI.
 tap_tab () {
   local text="$1"
-  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
-  adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
   local bounds
   bounds=$(python3 scripts/qa/uia-tap-tab.py "$text" ui.xml)
   if [ -n "$bounds" ]; then
-    adb shell input tap $bounds && echo "tapped tab '$text' at $bounds"
+    timeout 20 adb shell input tap $bounds && echo "tapped tab '$text' at $bounds"
   else
     echo "::warning::tab '$text' not found in the bottom-bar region"
   fi
@@ -86,8 +111,8 @@ tap_tab () {
 # t234: best-effort "is this text on screen?" probe — same uiautomator dump
 # the tap helpers use, but only reports presence (exit 0) / absence (exit 1).
 ui_has_text () {
-  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
-  adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
   [ -n "$(python3 scripts/qa/uia-tap-center.py "$1" ui.xml 2>/dev/null)" ]
 }
 
@@ -118,8 +143,8 @@ login_verify_ok () {
 # need several probes per iteration and ui_has_text re-dumps per call (too
 # slow). Exit 0 when ANY needle appears in a text= or content-desc= attr.
 any_text_on_screen () {
-  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
-  adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
   python3 - ui.xml "$@" <<'PYEOF'
 import re, sys
 try:
@@ -158,8 +183,8 @@ PYEOF
 # t238: close the soft keyboard if it is showing (BACK dismisses the IME
 # before it pops a route) so it cannot cover the next EditText tap.
 hide_ime () {
-  if adb shell dumpsys input_method 2>/dev/null | grep -q "mInputShown=true"; then
-    adb shell input keyevent 4 || true
+  if timeout 20 adb shell dumpsys input_method 2>/dev/null | grep -q "mInputShown=true"; then
+    adbt 20 input keyevent 4
     sleep 1
   fi
 }
@@ -169,7 +194,8 @@ hide_ime () {
 # let the page settle, screenshot. Never fatal: an am start failure is
 # tolerated and the capture still runs.
 deeplink () { # name sleep_seconds uri
-  adb shell am start -a android.intent.action.VIEW -d "$3" com.zylod.wholesale.debug >/dev/null 2>&1 || true
+  if budget_stop; then return 0; fi
+  adbt 15 am start -a android.intent.action.VIEW -d "$3" com.zylod.wholesale.debug >/dev/null 2>&1
   sleep "$2"
   cap "screenshots/$1.png"
 }
@@ -186,6 +212,7 @@ deeplink () { # name sleep_seconds uri
 # more BACK → app relaunch (recovers a BACK-exited task). Returns 1 only if
 # nothing worked; callers skip the link with a warning (never fatal).
 ensure_home () {
+  if budget_stop; then return 1; fi
   local i
   if any_text_on_screen "Hot deals" "Featured products"; then
     return 0
@@ -197,14 +224,14 @@ ensure_home () {
   done
   # Fullscreen native routes (login, register-buyer, otp...) hide the bottom
   # bar entirely — BACK pops one route and the bar comes back.
-  adb shell input keyevent 4 || true
+  adbt 20 input keyevent 4
   sleep 2
   tap_tab "Home" || true
   for i in 1 2 3 4; do
     sleep 2
     any_text_on_screen "Hot deals" "Featured products" && return 0
   done
-  adb shell input keyevent 4 || true
+  adbt 20 input keyevent 4
   sleep 2
   tap_tab "Home" || true
   for i in 1 2 3 4; do
@@ -213,7 +240,7 @@ ensure_home () {
   done
   # Last resort: BACK may have exited the task to the launcher — re-launch.
   log "ensure_home: relaunching the app to recover HOME_ROUTE"
-  adb shell monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1 || true
+  adbt 20 monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
   sleep 8
   for i in 1 2 3 4; do
     sleep 2
@@ -228,6 +255,7 @@ ensure_home () {
 # byte-identical captures came from exactly that. Enforce home first; when
 # home can't be reached, SKIP the link with a warning (never fatal).
 guarded_deeplink () { # name sleep_seconds uri
+  if budget_stop; then return 0; fi
   if ensure_home; then
     deeplink "$1" "$2" "$3"
   else
@@ -252,18 +280,18 @@ login_buyer () {
   # t239: verification is STRICT (login_verify_ok) — see that helper.
   # If the consent dialog is open (04 just captured it), dismiss it.
   if ui_has_text "Sign in with your email"; then
-    adb shell input keyevent 4 || true
+    adbt 20 input keyevent 4
     sleep 2
   fi
   # Field 1 = email: tap the FIRST EditText's center, then type.
-  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
-  adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
   local c1
   c1=$(edittext_center 1 /tmp/ui.xml)
   if [ -n "$c1" ]; then
-    adb shell input tap $c1 || true
+    adbt 20 input tap $c1
     sleep 2
-    adb shell input text "buyer1@zylod.bd" || true
+    adbt 20 input text "buyer1@zylod.bd"
     sleep 1
     hide_ime
   else
@@ -271,14 +299,14 @@ login_buyer () {
   fi
   # Field 2 = password: FRESH dump (the layout may have shifted), tap the
   # SECOND EditText's center, then type.
-  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
-  adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+  adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+  timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
   local c2
   c2=$(edittext_center 2 /tmp/ui.xml)
   if [ -n "$c2" ]; then
-    adb shell input tap $c2 || true
+    adbt 20 input tap $c2
     sleep 2
-    adb shell input text "Passw0rd!23" || true
+    adbt 20 input text "Passw0rd!23"
     sleep 1
     hide_ime
   else
@@ -313,21 +341,21 @@ login_buyer () {
   # t239 DEFECT 1c: token evidence — did a session token actually get
   # stored? run-as reads the debug app's private shared_prefs dir; never
   # fatal (a run-as failure just means the evidence file says so).
-  adb shell run-as com.zylod.wholesale.debug sh -c 'ls shared_prefs/' > screenshots/login-prefs.txt 2>&1 || true
-  adb shell run-as com.zylod.wholesale.debug sh -c 'cat shared_prefs/*.xml' | head -40 >> screenshots/login-prefs.txt 2>&1 || true
+  adbt 15 run-as com.zylod.wholesale.debug sh -c 'ls shared_prefs/' > screenshots/login-prefs.txt 2>&1
+  adbt 15 run-as com.zylod.wholesale.debug sh -c 'cat shared_prefs/*.xml' | head -40 >> screenshots/login-prefs.txt 2>&1
   # t239 DEFECT 1d: auth-related logcat at decision time.
-  adb logcat -d | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
+  timeout 20 adb logcat -d | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
   # t239 DEFECT 1e: ONE retry — re-focus the password field, tap Login
   # again, wait, re-verify. Skipped when we are not on a login form
   # (tapping a stray "Login" label elsewhere could navigate away).
   if [ "$verified" -eq 0 ]; then
     echo "::warning::login_buyer: AUTH NOT VERIFIED on first attempt — retrying the Login tap once"
-    adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
-    adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+    adbt 20 uiautomator dump /sdcard/ui.xml > /dev/null 2>&1
+    timeout 15 adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
     local c2r
     c2r=$(edittext_center 2 /tmp/ui.xml)
     if [ -n "$c2r" ]; then
-      adb shell input tap $c2r || true
+      adbt 20 input tap $c2r
       sleep 2
       hide_ime
       if ui_has_text "Login"; then
@@ -348,9 +376,9 @@ login_buyer () {
         sleep 5
       done
       # Refresh the evidence with the retry's outcome.
-      adb shell run-as com.zylod.wholesale.debug sh -c 'ls shared_prefs/' > screenshots/login-prefs.txt 2>&1 || true
-      adb shell run-as com.zylod.wholesale.debug sh -c 'cat shared_prefs/*.xml' | head -40 >> screenshots/login-prefs.txt 2>&1 || true
-      adb logcat -d | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
+      adbt 15 run-as com.zylod.wholesale.debug sh -c 'ls shared_prefs/' > screenshots/login-prefs.txt 2>&1
+      adbt 15 run-as com.zylod.wholesale.debug sh -c 'cat shared_prefs/*.xml' | head -40 >> screenshots/login-prefs.txt 2>&1
+      timeout 20 adb logcat -d | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
     else
       echo "::warning::login retry: no password EditText on screen — not on the login form, skipping re-tap"
     fi
@@ -364,14 +392,14 @@ login_buyer () {
 }
 
 log "Installing APK"
-adb install -r android/app/build/outputs/apk/debug/app-debug.apk || echo "::warning::apk install failed"
+timeout 120 adb install -r android/app/build/outputs/apk/debug/app-debug.apk || echo "::warning::apk install failed"
 # t238: keep the software IME out of the way when a hard keyboard is
 # attached — `input text` injects events directly, and a hidden IME cannot
 # cover the second EditText when login_buyer taps it.
-adb shell settings put secure show_ime_with_hard_keyboard 0 > /dev/null 2>&1 || true
+adbt 20 settings put secure show_ime_with_hard_keyboard 0 > /dev/null 2>&1
 
 log "Launching app (Welcome gate)"
-adb shell monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1 || true
+adbt 20 monkey -p com.zylod.wholesale.debug -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
 sleep 12
 cap screenshots/01-welcome.png
 
@@ -436,9 +464,9 @@ if [ "$DEALS_SETTLED" -eq 0 ]; then
   echo "::warning::capture 22: deal content not detected — capturing anyway + evidence dumps (server-empty vs app-bug)"
   {
     echo "=== 22-hot-deals-tab settle timeout $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
-    adb logcat -d -s ZylodDeals 2>/dev/null
+    timeout 20 adb logcat -d -s ZylodDeals 2>/dev/null
   } >> screenshots/deals-logcat.txt 2>&1 || true
-  curl -s "http://127.0.0.1:3000/api/deals?type=all&page=1&limit=5" 2>/dev/null | head -c 800 >> screenshots/server-deals.json 2>/dev/null || true
+  timeout 10 curl -s "http://127.0.0.1:3000/api/deals?type=all&page=1&limit=5" 2>/dev/null | head -c 800 >> screenshots/server-deals.json 2>/dev/null || true
   echo >> screenshots/server-deals.json 2>/dev/null || true
 fi
 cap screenshots/22-hot-deals-tab.png
@@ -449,7 +477,7 @@ cap screenshots/23-home-return-from-hot-deals.png
 # System BACK from a web tab → NavHost pops → home must be visible again.
 tap_tab "Search"
 sleep 10
-adb shell input keyevent 4 || true
+adbt 20 input keyevent 4
 sleep 8
 cap screenshots/24-back-from-search.png
 
@@ -464,15 +492,16 @@ cap screenshots/24-back-from-search.png
 if ensure_home; then
   deeplink "25-footer-build-badge-pre" 12 "zylod://privacy-policy"
 else
-  adb shell am start -a android.intent.action.VIEW -d "zylod://privacy-policy" com.zylod.wholesale.debug > /dev/null 2>&1 || true
+  adbt 15 am start -a android.intent.action.VIEW -d "zylod://privacy-policy" com.zylod.wholesale.debug > /dev/null 2>&1
   sleep 12
 fi
-SW=$(adb shell wm size | grep -oE '[0-9]+' | head -1 | tr -d '[:space:]')
-SH=$(adb shell wm size | grep -oE '[0-9]+' | tail -1 | tr -d '[:space:]')
+SW=$(timeout 20 adb shell wm size | grep -oE '[0-9]+' | head -1 | tr -d '[:space:]')
+SH=$(timeout 20 adb shell wm size | grep -oE '[0-9]+' | tail -1 | tr -d '[:space:]')
 SW=${SW:-320}; SH=${SH:-640}
 CX=$((SW / 2)); Y1=$((SH * 3 / 4)); Y2=$((SH / 5))
 for i in 1 2 3 4 5 6 7 8; do
-  adb shell input swipe $CX $Y1 $CX $Y2 400 || true
+  budget_stop && break
+  adbt 20 input swipe $CX $Y1 $CX $Y2 400
   sleep 2
 done
 sleep 3
@@ -501,7 +530,7 @@ log "t238: guest-context evidence BEFORE login — 05 register + 09 orders-guest
 # dialog is dismissed first (if open) so the ensure_home BACK-chain starts
 # clean — BACK with no dialog would pop the login route instead.
 if ui_has_text "Sign in with your email"; then
-  adb shell input keyevent 4 || true
+  adbt 20 input keyevent 4
   sleep 2
 fi
 if ensure_home; then
@@ -547,14 +576,16 @@ fi
 # the PDP before capturing.
 echo "capture 06: PRODUCT_ID=${PRODUCT_ID:-} (before self-fetch)"
 if [ -z "${PRODUCT_ID:-}" ]; then
-  PRODUCT_ID=$(curl -s "http://127.0.0.1:3000/api/products?limit=1" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['data'][0]['id'])" 2>/dev/null || true)
+  PRODUCT_ID=$(timeout 10 curl -s "http://127.0.0.1:3000/api/products?limit=1" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['data'][0]['id'])" 2>/dev/null || true)
   echo "capture 06: self-fetched PRODUCT_ID=$PRODUCT_ID from /api/products?limit=1"
 fi
 echo "${PRODUCT_ID:-}" > screenshots/product-id.txt 2>/dev/null || true
-if [ -n "$PRODUCT_ID" ]; then
+if budget_stop; then
+  echo "capture 06: SKIPPED — capture budget exhausted"
+elif [ -n "$PRODUCT_ID" ]; then
   if ensure_home; then
     echo "capture 06: PRODUCT_ID=$PRODUCT_ID ensure_home=0 — firing zylod://product/$PRODUCT_ID"
-    adb shell am start -a android.intent.action.VIEW -d "zylod://product/$PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1 || true
+    adbt 15 am start -a android.intent.action.VIEW -d "zylod://product/$PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1
     # t239 DEFECT 2c: settle-poll up to 20s (4×5s) for REAL PDP content.
     # Needles verified in ProductDetailScreen.kt (NOT guessed):
     #   "MOQ"        — "Quantity (MOQ: N)" stepper label (line 615; the
@@ -591,9 +622,11 @@ guarded_deeplink "07-cart" 8 "zylod://cart"
 # server-empty vs app-bug. Same verified card-level needle set as capture
 # 22 (see DealsScreen.kt audit there) — the "Hot Deals" top-bar title can
 # never satisfy the poll.
-if ensure_home; then
+if budget_stop; then
+  echo "capture 10: SKIPPED — capture budget exhausted"
+elif ensure_home; then
   echo "capture 10: ensure_home=0 — firing zylod://deals"
-  adb shell am start -a android.intent.action.VIEW -d "zylod://deals" com.zylod.wholesale.debug >/dev/null 2>&1 || true
+  adbt 15 am start -a android.intent.action.VIEW -d "zylod://deals" com.zylod.wholesale.debug >/dev/null 2>&1
   DEALS_SETTLED=0
   for i in 1 2 3 4 5; do
     sleep 5
@@ -606,9 +639,9 @@ if ensure_home; then
     echo "::warning::capture 10: deal content not detected within 25s — capturing anyway + evidence dumps (server-empty vs app-bug)"
     {
       echo "=== 10-deals settle timeout $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
-      adb logcat -d -s ZylodDeals 2>/dev/null
+      timeout 20 adb logcat -d -s ZylodDeals 2>/dev/null
     } >> screenshots/deals-logcat.txt 2>&1 || true
-    curl -s "http://127.0.0.1:3000/api/deals?type=all&page=1&limit=5" 2>/dev/null | head -c 800 >> screenshots/server-deals.json 2>/dev/null || true
+    timeout 10 curl -s "http://127.0.0.1:3000/api/deals?type=all&page=1&limit=5" 2>/dev/null | head -c 800 >> screenshots/server-deals.json 2>/dev/null || true
     echo >> screenshots/server-deals.json 2>/dev/null || true
   fi
   cap "screenshots/10-deals.png"
@@ -648,7 +681,7 @@ printf '%s\n' "$DUP_REPORT" > screenshots/duplicates.txt
 
 # Provenance diagnostics — WebProvenance logs every gate decision under
 # ZylodProvenance; full logcat covers WebView console + network too.
-adb logcat -d -s ZylodProvenance > screenshots/provenance.log 2>/dev/null || true
-adb logcat -d > screenshots/logcat-full.txt 2>/dev/null || true
+timeout 20 adb logcat -d -s ZylodProvenance > screenshots/provenance.log 2>/dev/null || true
+timeout 20 adb logcat -d > screenshots/logcat-full.txt 2>/dev/null || true
 echo "--- provenance log ---"
 cat screenshots/provenance.log 2>/dev/null | tail -30 || true
