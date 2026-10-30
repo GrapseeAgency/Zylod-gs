@@ -214,4 +214,10 @@ object ApiClient {
 
     fun supportApi(baseUrl: String): SupportApi =
         cachedApi(baseUrl, "support") { it.create(SupportApi::class.java) }
+
+    fun adminApi(baseUrl: String): AdminApi =
+        cachedApi(baseUrl, "admin") { it.create(AdminApi::class.java) }
+
+    fun couponsApi(baseUrl: String): CouponsApi =
+        cachedApi(baseUrl, "coupons") { it.create(CouponsApi::class.java) }
 }
