@@ -17,6 +17,20 @@
 # BEFORE login → login_buyer() (tap the EditText centers directly, submit,
 # VERIFY authed) → the gated deep-link suite 06→18, each link preceded by an
 # ensure_home() guard → md5 dedup audit. Everything stays non-fatal.
+#
+# t239 FIXES (three defects proven by the VLM-verified CI artifact):
+#   1. LOGIN VERIFY FALSE-POSITIVE: the old "buyer1" probe matched the typed
+#      email inside the login form's own EditText, so "authed" passed while
+#      still on the login screen and every gated capture showed login.
+#      Verification is now STRICT ("Sign out", or home WITHOUT login-screen
+#      signals), 04b-after-login-tap.png is captured unconditionally, token
+#      prefs + auth logcat are dumped, and the Login tap is retried once.
+#   2. 06-product-detail was SILENTLY SKIPPED when PRODUCT_ID was unset —
+#      it now self-fetches the id from /api/products?limit=1 and settle-polls
+#      the PDP for source-verified strings before capturing.
+#   3. 10-deals / 22-hot-deals captured BARE SPINNERS — both settle-poll 25s
+#      for card-level deal strings and dump deals logcat + server deals JSON
+#      on timeout (server-empty vs app-bug is visible in the artifact).
 set -u
 mkdir -p screenshots
 
@@ -75,6 +89,29 @@ ui_has_text () {
   adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
   adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
   [ -n "$(python3 scripts/qa/uia-tap-center.py "$1" ui.xml 2>/dev/null)" ]
+}
+
+# t239 DEFECT 1a: STRICT post-login auth check. All needles are exact-case
+# UI strings verified in source (uia matching is case-sensitive substring):
+#   "Sign out"     — ProfileScreen.kt:151 (ONLY rendered signed-in; also on
+#                    the suspended-account screen, which is authed context too)
+#   "Hot deals"    — the HOME feed's own section title (lowercase d; the
+#                    bottom tab / deals top-bar are "Hot Deals" capital-D)
+#   "New to Zylod" — LoginScreen.kt:561 footer ("New to Zylod? ") — login-screen marker
+#   "Login"        — LoginScreen.kt:527 submit button ("Login"; while loading
+#                    it reads "Logging in...", which still contains "Login")
+# The home route alone is NOT proof: accept it only when NO login-screen
+# signal is visible. NEVER probe "buyer1" — the login form's email EditText
+# CONTAINS the typed "buyer1@zylod.bd", which is exactly how t238's check
+# false-positived on the login screen itself.
+login_verify_ok () {
+  if ui_has_text "Sign out"; then
+    return 0
+  fi
+  if ui_has_text "Hot deals" && ! ui_has_text "New to Zylod" && ! ui_has_text "Login"; then
+    return 0
+  fi
+  return 1
 }
 
 # t238: one uiautomator dump, many needles — the ensure_home / settle polls
@@ -212,6 +249,7 @@ guarded_deeplink () { # name sleep_seconds uri
 # EditText's center (TAB/keyevent 61 cannot move focus between Compose
 # fields — that is why t237's typed text went nowhere).
 login_buyer () {
+  # t239: verification is STRICT (login_verify_ok) — see that helper.
   # If the consent dialog is open (04 just captured it), dismiss it.
   if ui_has_text "Sign in with your email"; then
     adb shell input keyevent 4 || true
@@ -255,20 +293,73 @@ login_buyer () {
     echo "::warning::login: no Login/Sign-in button found on screen"
   fi
   sleep 14
-  # Authed verification. Strong signals first ("Sign out" / the seeded email
-  # are only visible signed-in); the fallback is the bottom bar being back —
-  # a successful login lands on home via goHomeAfterAuth, while the
-  # fullscreen login route NEVER shows the bar.
+  # t239 DEFECT 1b: capture the post-Login-tap diagnostic UNCONDITIONALLY —
+  # whether verification passes or fails. This is the artifact's ground
+  # truth for what the screen actually showed after the submit tap (t238
+  # only captured 04b on failure, so a false-positive verify had NO
+  # diagnostic at all).
+  cap screenshots/04b-after-login-tap.png
+  # t239 DEFECT 1a: strict verification only — NO "buyer1" probe (the login
+  # form's own email field contains the typed address; see login_verify_ok).
   local i
+  local verified=0
   for i in 1 2 3; do
-    if ui_has_text "Sign out" || ui_has_text "buyer1" || { ui_has_text "Profile" && ui_has_text "Hot Deals"; }; then
-      echo "login_buyer: authed ✓ (seeded buyer session verified)"
-      return 0
+    if login_verify_ok; then
+      verified=1
+      break
     fi
     sleep 5
   done
-  cap screenshots/04b-login-attempt.png
-  echo "::warning::login_buyer: AUTH NOT VERIFIED — continuing as guest; downstream gated captures will show the login gate (acceptable, non-fatal)"
+  # t239 DEFECT 1c: token evidence — did a session token actually get
+  # stored? run-as reads the debug app's private shared_prefs dir; never
+  # fatal (a run-as failure just means the evidence file says so).
+  adb shell run-as com.zylod.wholesale.debug sh -c 'ls shared_prefs/' > screenshots/login-prefs.txt 2>&1 || true
+  adb shell run-as com.zylod.wholesale.debug sh -c 'cat shared_prefs/*.xml' | head -40 >> screenshots/login-prefs.txt 2>&1 || true
+  # t239 DEFECT 1d: auth-related logcat at decision time.
+  adb logcat -d | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
+  # t239 DEFECT 1e: ONE retry — re-focus the password field, tap Login
+  # again, wait, re-verify. Skipped when we are not on a login form
+  # (tapping a stray "Login" label elsewhere could navigate away).
+  if [ "$verified" -eq 0 ]; then
+    echo "::warning::login_buyer: AUTH NOT VERIFIED on first attempt — retrying the Login tap once"
+    adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
+    adb pull /sdcard/ui.xml /tmp/ui.xml > /dev/null 2>&1 || true
+    local c2r
+    c2r=$(edittext_center 2 /tmp/ui.xml)
+    if [ -n "$c2r" ]; then
+      adb shell input tap $c2r || true
+      sleep 2
+      hide_ime
+      if ui_has_text "Login"; then
+        tap_text "Login"
+      elif ui_has_text "Sign in"; then
+        tap_text "Sign in"
+      else
+        echo "::warning::login retry: no Login/Sign-in button found on screen"
+      fi
+      sleep 14
+      # Retry's own diagnostic (kept SEPARATE so the first 04b survives).
+      cap screenshots/04c-after-login-retry.png
+      for i in 1 2 3; do
+        if login_verify_ok; then
+          verified=1
+          break
+        fi
+        sleep 5
+      done
+      # Refresh the evidence with the retry's outcome.
+      adb shell run-as com.zylod.wholesale.debug sh -c 'ls shared_prefs/' > screenshots/login-prefs.txt 2>&1 || true
+      adb shell run-as com.zylod.wholesale.debug sh -c 'cat shared_prefs/*.xml' | head -40 >> screenshots/login-prefs.txt 2>&1 || true
+      adb logcat -d | grep -iE "auth|login|session|token" | tail -40 > screenshots/login-logcat.txt || true
+    else
+      echo "::warning::login retry: no password EditText on screen — not on the login form, skipping re-tap"
+    fi
+  fi
+  if [ "$verified" -eq 1 ]; then
+    echo "login_buyer: authed ✓ (strict verify: Sign out, or home without login-screen signals)"
+    return 0
+  fi
+  echo "::warning::login_buyer: AUTH NOT VERIFIED after retry — continuing as guest; downstream gated captures will show the login gate (acceptable, non-fatal)"
   return 1
 }
 
@@ -311,26 +402,44 @@ sleep 10
 cap screenshots/21-home-return-from-search.png
 
 tap_tab "Hot Deals"
-# t238: state.loading renders ONLY a full-screen spinner — t237's fixed 10s
-# sleep caught it mid-load (11.5KB, no content). Poll up to 15s for real
-# content ("Flash Deals" section / "N flash" meta / "N sold" counters).
-# "Deal" is NOT a usable needle: the always-on "Hot Deals" top-bar title and
-# the bottom-bar tab match it while the spinner is still up.
-SETTLED=0
+# t238/t239: state.loading renders ONLY a full-screen spinner — t237's fixed
+# 10s sleep caught it mid-load (11.5KB, no content). t239 DEFECT 3b: settle-
+# poll 25s (5×5s), retry round, then evidence dumps on final timeout.
+# ANTI-FALSE-POSITIVE: needles are card/list-level strings verified in
+# DealsScreen.kt and NONE matches the "Hot Deals" top-bar title or bottom
+# tab: "Flash Deals"/"Daily Deals" (LazyColumn section headers, rendered
+# only once the list is up), "daily deals" (meta line "N flash • N daily
+# deals"), "sold"/"Sold out" (DealCard urgency lines). "Deal" and bare
+# "Hot Deals" remain REJECTED (top-bar/tab matches while spinner is up).
+# "Claim" does not exist anywhere in DealsScreen.kt — never guessed.
+DEALS_NEEDLES=("Flash Deals" "Daily Deals" "daily deals" "sold" "Sold out")
+DEALS_SETTLED=0
 for i in 1 2 3 4 5; do
-  sleep 3
-  if any_text_on_screen "Flash" "flash" "sold"; then
-    SETTLED=1
+  sleep 5
+  if any_text_on_screen "${DEALS_NEEDLES[@]}"; then
+    DEALS_SETTLED=1
     break
   fi
 done
-if [ "$SETTLED" -eq 0 ]; then
-  echo "::warning::hot-deals content not detected after 15s — retry tap + wait"
+if [ "$DEALS_SETTLED" -eq 0 ]; then
+  echo "::warning::hot-deals content not detected after 25s — retry tap + wait (25s more)"
   tap_tab "Hot Deals" || true
   for i in 1 2 3 4 5; do
-    sleep 3
-    if any_text_on_screen "Flash" "flash" "sold"; then break; fi
+    sleep 5
+    if any_text_on_screen "${DEALS_NEEDLES[@]}"; then
+      DEALS_SETTLED=1
+      break
+    fi
   done
+fi
+if [ "$DEALS_SETTLED" -eq 0 ]; then
+  echo "::warning::capture 22: deal content not detected — capturing anyway + evidence dumps (server-empty vs app-bug)"
+  {
+    echo "=== 22-hot-deals-tab settle timeout $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+    adb logcat -d -s ZylodDeals 2>/dev/null
+  } >> screenshots/deals-logcat.txt 2>&1 || true
+  curl -s "http://127.0.0.1:3000/api/deals?type=all&page=1&limit=5" 2>/dev/null | head -c 800 >> screenshots/server-deals.json 2>/dev/null || true
+  echo >> screenshots/server-deals.json 2>/dev/null || true
 fi
 cap screenshots/22-hot-deals-tab.png
 tap_tab "Home"
@@ -431,13 +540,82 @@ fi
 # Order: PDP (real seeded product) → cart (authed now) → registry suite →
 # app-link wallet → authed profile → authed orders. Numbers follow the
 # orchestrator's plan (08 reserved); every call is non-fatal.
-if [ -n "${PRODUCT_ID:-}" ]; then
-  guarded_deeplink "06-product-detail" 12 "zylod://product/$PRODUCT_ID"
+# t239 DEFECT 2: 06-product-detail was silently skipped in the last run
+# whenever PRODUCT_ID was empty in the CI env — the guard chain produced no
+# warning that named the cause. Now: self-fetch the id right here, trace the
+# decision, ALWAYS attempt the deeplink when an id exists, and settle-poll
+# the PDP before capturing.
+echo "capture 06: PRODUCT_ID=${PRODUCT_ID:-} (before self-fetch)"
+if [ -z "${PRODUCT_ID:-}" ]; then
+  PRODUCT_ID=$(curl -s "http://127.0.0.1:3000/api/products?limit=1" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['data'][0]['id'])" 2>/dev/null || true)
+  echo "capture 06: self-fetched PRODUCT_ID=$PRODUCT_ID from /api/products?limit=1"
+fi
+echo "${PRODUCT_ID:-}" > screenshots/product-id.txt 2>/dev/null || true
+if [ -n "$PRODUCT_ID" ]; then
+  if ensure_home; then
+    echo "capture 06: PRODUCT_ID=$PRODUCT_ID ensure_home=0 — firing zylod://product/$PRODUCT_ID"
+    adb shell am start -a android.intent.action.VIEW -d "zylod://product/$PRODUCT_ID" com.zylod.wholesale.debug >/dev/null 2>&1 || true
+    # t239 DEFECT 2c: settle-poll up to 20s (4×5s) for REAL PDP content.
+    # Needles verified in ProductDetailScreen.kt (NOT guessed):
+    #   "MOQ"        — "Quantity (MOQ: N)" stepper label (line 615; the
+    #                  Min. Order InfoTile + Q&A copy also contain it)
+    #   "Add to Cart" — ActionRow button (line 811, capital C — the spec's
+    #                  "Add to cart" DOES NOT EXIST in the source)
+    #   "In Stock"   — InfoTile (line 925). "BDT" never renders (prices use "৳").
+    # All render only when state.product != null — never on PdpLoading.
+    PDP_SETTLED=0
+    for i in 1 2 3 4; do
+      sleep 5
+      if any_text_on_screen "MOQ" "Add to Cart" "In Stock"; then
+        PDP_SETTLED=1
+        break
+      fi
+    done
+    if [ "$PDP_SETTLED" -eq 0 ]; then
+      echo "::warning::capture 06: PDP content not detected within 20s — capturing current state anyway"
+    fi
+    cap "screenshots/06-product-detail.png"
+  else
+    echo "capture 06: PRODUCT_ID=$PRODUCT_ID ensure_home=1 — SKIPPED (ensure_home failed; the link would queue off-home)"
+    echo "::warning::capture 06-product-detail skipped: ensure_home failed (PRODUCT_ID=$PRODUCT_ID available)"
+  fi
 else
-  echo "::warning::No product id — PDP screenshot skipped"
+  echo "capture 06: PRODUCT_ID= — SKIPPED (empty id: env unset AND /api/products fetch returned nothing)"
+  echo "::warning::capture 06-product-detail skipped: PRODUCT_ID empty (env unset + server fetch failed)"
 fi
 guarded_deeplink "07-cart" 8 "zylod://cart"
-guarded_deeplink "10-deals" 12 "zylod://deals"
+# t239 DEFECT 3a: 10-deals captured a bare spinner (state.loading renders
+# ONLY a full-screen CircularProgressIndicator). Settle-poll up to 25s
+# (5×5s) for card-level deal content; on timeout capture anyway + dump the
+# deals logcat tag and the raw server response so the artifact itself shows
+# server-empty vs app-bug. Same verified card-level needle set as capture
+# 22 (see DealsScreen.kt audit there) — the "Hot Deals" top-bar title can
+# never satisfy the poll.
+if ensure_home; then
+  echo "capture 10: ensure_home=0 — firing zylod://deals"
+  adb shell am start -a android.intent.action.VIEW -d "zylod://deals" com.zylod.wholesale.debug >/dev/null 2>&1 || true
+  DEALS_SETTLED=0
+  for i in 1 2 3 4 5; do
+    sleep 5
+    if any_text_on_screen "${DEALS_NEEDLES[@]}"; then
+      DEALS_SETTLED=1
+      break
+    fi
+  done
+  if [ "$DEALS_SETTLED" -eq 0 ]; then
+    echo "::warning::capture 10: deal content not detected within 25s — capturing anyway + evidence dumps (server-empty vs app-bug)"
+    {
+      echo "=== 10-deals settle timeout $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
+      adb logcat -d -s ZylodDeals 2>/dev/null
+    } >> screenshots/deals-logcat.txt 2>&1 || true
+    curl -s "http://127.0.0.1:3000/api/deals?type=all&page=1&limit=5" 2>/dev/null | head -c 800 >> screenshots/server-deals.json 2>/dev/null || true
+    echo >> screenshots/server-deals.json 2>/dev/null || true
+  fi
+  cap "screenshots/10-deals.png"
+else
+  echo "capture 10: SKIPPED — ensure_home=1 (zylod://deals fired off-home would queue)"
+  echo "::warning::capture 10-deals skipped: ensure_home failed (queue desync guard)"
+fi
 guarded_deeplink "11-search" 8 "zylod://search"
 guarded_deeplink "12-seller-dashboard" 10 "zylod://seller-dashboard"
 guarded_deeplink "13-wallet" 8 "zylod://wallet"
