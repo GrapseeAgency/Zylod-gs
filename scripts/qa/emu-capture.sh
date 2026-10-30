@@ -54,6 +54,24 @@ tap_tab () {
   fi
 }
 
+# t234: best-effort "is this text on screen?" probe — same uiautomator dump
+# the tap helpers use, but only reports presence (exit 0) / absence (exit 1).
+ui_has_text () {
+  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
+  adb pull /sdcard/ui.xml ui.xml > /dev/null 2>&1 || true
+  [ -n "$(python3 scripts/qa/uia-tap-center.py "$1" ui.xml 2>/dev/null)" ]
+}
+
+# t234: deep-link capture helper — fire a VIEW intent on the debug package
+# (rides onNewIntent; unknown pageIds route natively via NativePageRegistry),
+# let the page settle, screenshot. Never fatal: an am start failure is
+# tolerated and the capture still runs.
+deeplink () { # name sleep_seconds uri
+  adb shell am start -a android.intent.action.VIEW -d "$3" com.zylod.wholesale.debug >/dev/null 2>&1 || true
+  sleep "$2"
+  cap "screenshots/$1.png"
+}
+
 log "Installing APK"
 adb install -r android/app/build/outputs/apk/debug/app-debug.apk || echo "::warning::apk install failed"
 
@@ -164,6 +182,54 @@ log "Native Buyer Orders (guest state — Phase 2 ownership row)"
 adb shell am start -a android.intent.action.VIEW -d "zylod://buyer-orders" com.zylod.wholesale.debug > /dev/null 2>&1 || true
 sleep 8
 cap screenshots/09-orders-guest.png
+
+log "t234: deep-link suite (guest context) — registry pages route natively"
+# Deep links drain on HOME_ROUTE, so return home first (same bottom-bar idiom
+# as the 21/23 return captures). Numbers 10-19 are reserved for this suite;
+# every call is non-fatal via the deeplink helper.
+tap_tab "Home"
+sleep 6
+deeplink "10-deals" 12 "zylod://deals"
+deeplink "11-search" 8 "zylod://search"
+deeplink "12-seller-dashboard" 10 "zylod://seller-dashboard"
+deeplink "13-wallet" 8 "zylod://wallet"
+deeplink "14-notifications" 8 "zylod://notifications"
+deeplink "15-admin-dashboard" 10 "zylod://admin-dashboard"
+# App-Link path proof: the https host-form must resolve to the same native
+# wallet page as zylod://wallet above.
+deeplink "16-applink-wallet" 8 "https://zylod.com/?page=wallet"
+
+log "t234: authenticated buyer flow (seeded credential buyer1@zylod.bd) — best effort"
+# seed-marketplace.mjs registers buyer1@zylod.bd / Passw0rd!23 as a real
+# buyer. Re-open the native login through the guest Profile policy and sign
+# in via the email dialog (TAB = keyevent 61, ENTER = keyevent 66). Every
+# step is guarded: if the dialog can't be reached, the authed captures are
+# skipped and the script continues.
+AUTHED=0
+if ui_has_text "Profile"; then
+  tap_text "Profile"
+  sleep 6
+  if ui_has_text "Continue with Email"; then
+    tap_text "Continue with Email"
+    sleep 4
+    tap_text "Email" || true
+    sleep 2
+    adb shell input text "buyer1@zylod.bd" || true
+    adb shell input keyevent 61 || true
+    adb shell input text "Passw0rd!23" || true
+    adb shell input keyevent 66 || true
+    sleep 12
+    AUTHED=1
+  else
+    echo "::warning::'Continue with Email' not found — authed captures skipped"
+  fi
+else
+  echo "::warning::Profile entry not found — authed captures skipped"
+fi
+if [ "$AUTHED" -eq 1 ]; then
+  deeplink "17-profile" 8 "zylod://profile"
+  deeplink "18-orders-authed" 8 "zylod://buyer-orders"
+fi
 
 log "Screen inventory"
 ls -la screenshots/ || true

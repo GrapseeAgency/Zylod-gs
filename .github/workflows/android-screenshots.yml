@@ -145,7 +145,7 @@ jobs:
             echo "## Zylod Android screenshots"
             echo ""
             echo "Commit: ${GITHUB_SHA}"
-            echo "Screens captured: 01-welcome, 02-login, 03-email-signin-dialog, 04-register-buyer, 05-product-detail, 06-cart"
+            echo "Screens captured: 01-welcome, 02-login, 03-email-signin-dialog, 04-register-buyer, 05-product-detail, 06-cart, Deals, Search, Seller Dashboard, Wallet, Notifications, Admin Dashboard, App-Link Wallet, Profile, Orders-authed"
             echo "Backend: locally-seeded Next.js server on the runner (real API, real products)"
             echo "Download from the run's Artifacts section."
           } >> $GITHUB_STEP_SUMMARY
